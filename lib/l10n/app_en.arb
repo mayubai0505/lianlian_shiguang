@@ -1355,5 +1355,20 @@
   "title_contact_us": "Contact Us",
   "desc_contact_us": "We value your suggestions!\nPlease write down your thoughts here to help us make the game better.",
   "hint_enter_feedback": "Please enter your feedback here...",
-  "action_send_via_email": "Send via Email"
+  "action_send_via_email": "Send via Email",
+  "error_email_password_empty": "Email and password cannot be empty!",
+  "auth_error_default": "An error occurred, please try again later.",
+  "auth_error_user_not_found": "Email not found, please register first!",
+  "auth_error_wrong_password": "Wrong password, please try again!",
+  "auth_error_email_in_use": "This email is already registered! Please log in directly.",
+  "auth_error_weak_password": "Password is too weak, please enter at least 6 characters!",
+  "auth_error_invalid_email": "Invalid email format!",
+  "title_welcome_back": "Welcome back",
+  "title_register_account": "Register exclusive account",
+  "label_email": "Email",
+  "label_password": "Password",
+  "action_login": "Log in",
+  "action_register": "Register",
+  "prompt_no_account": "Don't have an account yet? Click here to register",
+  "prompt_has_account": "Already have an account? Click here to log in"
 }

@@ -1142,5 +1142,20 @@
     "title_contact_us": "Hubungi Kami",
     "desc_contact_us": "Kami sangat menghargai cadangan awak!\nSila tulis buah fikiran awak di sini untuk membantu kami menjadikan permainan ini lebih baik.",
     "hint_enter_feedback": "Sila masukkan cadangan awak di sini...",
-    "action_send_via_email": "Hantar melalui E-mel"
+    "action_send_via_email": "Hantar melalui E-mel",
+    "error_email_password_empty": "E-mel dan kata laluan tidak boleh kosong!",
+    "auth_error_default": "Ralat berlaku, sila cuba lagi nanti.",
+    "auth_error_user_not_found": "E-mel ini tidak ditemui, sila daftar dahulu!",
+    "auth_error_wrong_password": "Kata laluan salah, sila cuba lagi!",
+    "auth_error_email_in_use": "E-mel ini telah didaftarkan! Sila log masuk terus.",
+    "auth_error_weak_password": "Kata laluan terlalu lemah, sila masukkan sekurang-kurangnya 6 aksara!",
+    "auth_error_invalid_email": "Format e-mel tidak sah!",
+    "title_welcome_back": "Selamat kembali",
+    "title_register_account": "Daftar akaun eksklusif",
+    "label_email": "E-mel",
+    "label_password": "Kata laluan",
+    "action_login": "Log masuk",
+    "action_register": "Daftar",
+    "prompt_no_account": "Belum mempunyai akaun? Klik di sini untuk mendaftar",
+    "prompt_has_account": "Sudah mempunyai akaun? Klik di sini untuk log masuk"
 }

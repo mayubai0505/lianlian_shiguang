@@ -2879,4 +2879,54 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'إرسال عبر البريد الإلكتروني';
+
+  @override
+  String get error_email_password_empty =>
+      'لا يمكن أن يكون البريد الإلكتروني وكلمة المرور فارغين!';
+
+  @override
+  String get auth_error_default => 'حدث خطأ، يرجى المحاولة لاحقاً.';
+
+  @override
+  String get auth_error_user_not_found =>
+      'لم يتم العثور على هذا البريد الإلكتروني، يرجى التسجيل أولاً!';
+
+  @override
+  String get auth_error_wrong_password =>
+      'كلمة المرور خاطئة، يرجى المحاولة مرة أخرى!';
+
+  @override
+  String get auth_error_email_in_use =>
+      'تم تسجيل هذا البريد الإلكتروني مسبقاً! يرجى تسجيل الدخول مباشرة.';
+
+  @override
+  String get auth_error_weak_password =>
+      'كلمة المرور ضعيفة جداً، يرجى إدخال 6 أحرف على الأقل!';
+
+  @override
+  String get auth_error_invalid_email => 'تنسيق البريد الإلكتروني غير صحيح!';
+
+  @override
+  String get title_welcome_back => 'مرحباً بعودتك';
+
+  @override
+  String get title_register_account => 'تسجيل حساب حصري';
+
+  @override
+  String get label_email => 'البريد الإلكتروني';
+
+  @override
+  String get label_password => 'كلمة المرور';
+
+  @override
+  String get action_login => 'تسجيل الدخول';
+
+  @override
+  String get action_register => 'تسجيل';
+
+  @override
+  String get prompt_no_account => 'ليس لديك حساب بعد؟ انقر هنا للتسجيل';
+
+  @override
+  String get prompt_has_account => 'لديك حساب بالفعل؟ انقر هنا لتسجيل الدخول';
 }

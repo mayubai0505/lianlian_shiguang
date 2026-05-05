@@ -1142,5 +1142,20 @@
     "title_contact_us": "हमसे संपर्क करें",
     "desc_contact_us": "हम आपके सुझावों को बहुत महत्व देते हैं!\nगेम को बेहतर बनाने में हमारी मदद करने के लिए कृपया अपने विचार यहाँ लिखें।",
     "hint_enter_feedback": "कृपया अपना सुझाव यहाँ दर्ज करें...",
-    "action_send_via_email": "ईमेल के माध्यम से भेजें"
+    "action_send_via_email": "ईमेल के माध्यम से भेजें",
+    "error_email_password_empty": "ईमेल और पासवर्ड खाली नहीं हो सकते!",
+    "auth_error_default": "एक त्रुटि हुई, कृपया बाद में पुनः प्रयास करें।",
+    "auth_error_user_not_found": "यह ईमेल नहीं मिला, कृपया पहले पंजीकरण करें!",
+    "auth_error_wrong_password": "गलत पासवर्ड, कृपया पुनः प्रयास करें!",
+    "auth_error_email_in_use": "यह ईमेल पहले से पंजीकृत है! कृपया सीधे लॉग इन करें।",
+    "auth_error_weak_password": "पासवर्ड बहुत कमज़ोर है, कृपया कम से कम 6 अक्षर दर्ज करें!",
+    "auth_error_invalid_email": "ईमेल प्रारूप अमान्य है!",
+    "title_welcome_back": "वापसी पर स्वागत है",
+    "title_register_account": "विशेष खाता पंजीकृत करें",
+    "label_email": "ईमेल",
+    "label_password": "पासवर्ड",
+    "action_login": "लॉग इन",
+    "action_register": "पंजीकरण करें",
+    "prompt_no_account": "अभी तक खाता नहीं है? पंजीकरण करने के लिए यहाँ क्लिक करें",
+    "prompt_has_account": "क्या आपके पास पहले से खाता है? लॉग इन करने के लिए यहाँ क्लिक करें"
 }

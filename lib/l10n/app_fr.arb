@@ -1312,5 +1312,20 @@
     "title_contact_us": "Nous contacter",
     "desc_contact_us": "Nous accordons une grande importance à vos suggestions !\nVeuillez écrire vos idées ici pour nous aider à améliorer le jeu.",
     "hint_enter_feedback": "Veuillez saisir votre suggestion ici...",
-    "action_send_via_email": "Envoyer par e-mail"
+    "action_send_via_email": "Envoyer par e-mail",
+    "error_email_password_empty": "L'e-mail et le mot de passe ne peuvent pas être vides !",
+    "auth_error_default": "Une erreur s'est produite, veuillez réessayer plus tard.",
+    "auth_error_user_not_found": "Cet e-mail est introuvable, veuillez vous inscrire d'abord !",
+    "auth_error_wrong_password": "Mot de passe incorrect, veuillez réessayer !",
+    "auth_error_email_in_use": "Cet e-mail est déjà enregistré ! Veuillez vous connecter directement.",
+    "auth_error_weak_password": "Le mot de passe est trop faible, veuillez saisir au moins 6 caractères !",
+    "auth_error_invalid_email": "Format d'e-mail invalide !",
+    "title_welcome_back": "Bon retour",
+    "title_register_account": "Créer un compte exclusif",
+    "label_email": "E-mail",
+    "label_password": "Mot de passe",
+    "action_login": "Se connecter",
+    "action_register": "S'inscrire",
+    "prompt_no_account": "Pas encore de compte ? Cliquez ici pour vous inscrire",
+    "prompt_has_account": "Déjà un compte ? Cliquez ici pour vous connecter"
 }

@@ -1142,5 +1142,20 @@
     "title_contact_us": "Contáctanos",
     "desc_contact_us": "¡Valoramos mucho tus sugerencias!\nPor favor, escribe tus ideas aquí para ayudarnos a mejorar el juego.",
     "hint_enter_feedback": "Por favor, introduce tu sugerencia aquí...",
-    "action_send_via_email": "Enviar por correo electrónico"
+    "action_send_via_email": "Enviar por correo electrónico",
+    "error_email_password_empty": "¡El correo y la contraseña no pueden estar vacíos!",
+    "auth_error_default": "Ocurrió un error, inténtalo de nuevo más tarde.",
+    "auth_error_user_not_found": "No se encuentra este correo, ¡por favor regístrate primero!",
+    "auth_error_wrong_password": "¡Contraseña incorrecta, inténtalo de nuevo!",
+    "auth_error_email_in_use": "¡Este correo ya está registrado! Por favor, inicia sesión directamente.",
+    "auth_error_weak_password": "La contraseña es muy débil, ¡ingresa al menos 6 caracteres!",
+    "auth_error_invalid_email": "¡Formato de correo inválido!",
+    "title_welcome_back": "Bienvenido/a de nuevo",
+    "title_register_account": "Registrar cuenta exclusiva",
+    "label_email": "Correo electrónico",
+    "label_password": "Contraseña",
+    "action_login": "Iniciar sesión",
+    "action_register": "Registrarse",
+    "prompt_no_account": "¿Aún no tienes cuenta? Haz clic aquí para registrarte",
+    "prompt_has_account": "¿Ya tienes cuenta? Haz clic aquí para iniciar sesión"
 }

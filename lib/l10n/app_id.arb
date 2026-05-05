@@ -1142,5 +1142,20 @@
     "title_contact_us": "Hubungi Kami",
     "desc_contact_us": "Kami sangat menghargai saranmu!\nSilakan tuliskan pemikiranmu di sini untuk membantu kami membuat game menjadi lebih baik.",
     "hint_enter_feedback": "Silakan masukkan saranmu di sini...",
-    "action_send_via_email": "Kirim via Email"
+    "action_send_via_email": "Kirim via Email",
+    "error_email_password_empty": "Email dan kata sandi tidak boleh kosong!",
+    "auth_error_default": "Terjadi kesalahan, silakan coba lagi nanti.",
+    "auth_error_user_not_found": "Email tidak ditemukan, silakan daftar terlebih dahulu!",
+    "auth_error_wrong_password": "Kata sandi salah, silakan coba lagi!",
+    "auth_error_email_in_use": "Email ini sudah terdaftar! Silakan langsung login.",
+    "auth_error_weak_password": "Kata sandi terlalu lemah, masukkan minimal 6 karakter!",
+    "auth_error_invalid_email": "Format email tidak valid!",
+    "title_welcome_back": "Selamat datang kembali",
+    "title_register_account": "Daftar akun eksklusif",
+    "label_email": "Email",
+    "label_password": "Kata sandi",
+    "action_login": "Login",
+    "action_register": "Daftar",
+    "prompt_no_account": "Belum punya akun? Klik di sini untuk mendaftar",
+    "prompt_has_account": "Sudah punya akun? Klik di sini untuk login"
 }

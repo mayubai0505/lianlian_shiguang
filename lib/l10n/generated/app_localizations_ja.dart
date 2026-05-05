@@ -2780,4 +2780,49 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'メールで送信';
+
+  @override
+  String get error_email_password_empty => 'メールアドレスとパスワードは空にできません！';
+
+  @override
+  String get auth_error_default => 'エラーが発生しました。後でもう一度お試しください。';
+
+  @override
+  String get auth_error_user_not_found => 'このメールアドレスは見つかりません。先に登録してください！';
+
+  @override
+  String get auth_error_wrong_password => 'パスワードが間違っています。もう一度お試しください！';
+
+  @override
+  String get auth_error_email_in_use => 'このメールアドレスは既に登録されています！直接ログインしてください。';
+
+  @override
+  String get auth_error_weak_password => 'パスワードが弱すぎます。少なくとも6文字以上入力してください！';
+
+  @override
+  String get auth_error_invalid_email => 'メールアドレスの形式が正しくありません！';
+
+  @override
+  String get title_welcome_back => 'おかえりなさい';
+
+  @override
+  String get title_register_account => '専用アカウントを登録';
+
+  @override
+  String get label_email => 'メールアドレス';
+
+  @override
+  String get label_password => 'パスワード';
+
+  @override
+  String get action_login => 'ログイン';
+
+  @override
+  String get action_register => '登録';
+
+  @override
+  String get prompt_no_account => 'まだアカウントを持っていませんか？ここをクリックして登録';
+
+  @override
+  String get prompt_has_account => 'すでにアカウントを持っていますか？ここをクリックしてログイン';
 }

@@ -1142,5 +1142,20 @@
   "title_contact_us": "お問い合わせ",
   "desc_contact_us": "私たちはあなたの提案をとても大切にしています！\nゲームをより良くするために、ここにあなたの考えを書き込んでください。",
   "hint_enter_feedback": "ここに提案を入力してください...",
-  "action_send_via_email": "メールで送信"
+  "action_send_via_email": "メールで送信",
+  "error_email_password_empty": "メールアドレスとパスワードは空にできません！",
+  "auth_error_default": "エラーが発生しました。後でもう一度お試しください。",
+  "auth_error_user_not_found": "このメールアドレスは見つかりません。先に登録してください！",
+  "auth_error_wrong_password": "パスワードが間違っています。もう一度お試しください！",
+  "auth_error_email_in_use": "このメールアドレスは既に登録されています！直接ログインしてください。",
+  "auth_error_weak_password": "パスワードが弱すぎます。少なくとも6文字以上入力してください！",
+  "auth_error_invalid_email": "メールアドレスの形式が正しくありません！",
+  "title_welcome_back": "おかえりなさい",
+  "title_register_account": "専用アカウントを登録",
+  "label_email": "メールアドレス",
+  "label_password": "パスワード",
+  "action_login": "ログイン",
+  "action_register": "登録",
+  "prompt_no_account": "まだアカウントを持っていませんか？ここをクリックして登録",
+  "prompt_has_account": "すでにアカウントを持っていますか？ここをクリックしてログイン"
 }

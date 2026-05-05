@@ -1142,5 +1142,20 @@
   "title_contact_us": "Liên hệ chúng tôi",
   "desc_contact_us": "Chúng tôi rất coi trọng những góp ý của bạn!\nVui lòng viết ra suy nghĩ của bạn ở đây để giúp chúng tôi làm cho trò chơi trở nên tốt hơn.",
   "hint_enter_feedback": "Vui lòng nhập góp ý của bạn tại đây...",
-  "action_send_via_email": "Gửi qua Email"
+  "action_send_via_email": "Gửi qua Email",
+  "error_email_password_empty": "Email và mật khẩu không được để trống!",
+  "auth_error_default": "Đã xảy ra lỗi, vui lòng thử lại sau.",
+  "auth_error_user_not_found": "Không tìm thấy email này, vui lòng đăng ký trước!",
+  "auth_error_wrong_password": "Sai mật khẩu, vui lòng thử lại!",
+  "auth_error_email_in_use": "Email này đã được đăng ký! Vui lòng đăng nhập trực tiếp.",
+  "auth_error_weak_password": "Mật khẩu quá yếu, vui lòng nhập ít nhất 6 ký tự!",
+  "auth_error_invalid_email": "Định dạng email không hợp lệ!",
+  "title_welcome_back": "Chào mừng trở lại",
+  "title_register_account": "Đăng ký tài khoản độc quyền",
+  "label_email": "Email",
+  "label_password": "Mật khẩu",
+  "action_login": "Đăng nhập",
+  "action_register": "Đăng ký",
+  "prompt_no_account": "Chưa có tài khoản? Nhấn vào đây để đăng ký",
+  "prompt_has_account": "Đã có tài khoản? Nhấn vào đây để đăng nhập"
 }

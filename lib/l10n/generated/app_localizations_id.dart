@@ -2917,4 +2917,56 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'Kirim via Email';
+
+  @override
+  String get error_email_password_empty =>
+      'Email dan kata sandi tidak boleh kosong!';
+
+  @override
+  String get auth_error_default =>
+      'Terjadi kesalahan, silakan coba lagi nanti.';
+
+  @override
+  String get auth_error_user_not_found =>
+      'Email tidak ditemukan, silakan daftar terlebih dahulu!';
+
+  @override
+  String get auth_error_wrong_password =>
+      'Kata sandi salah, silakan coba lagi!';
+
+  @override
+  String get auth_error_email_in_use =>
+      'Email ini sudah terdaftar! Silakan langsung login.';
+
+  @override
+  String get auth_error_weak_password =>
+      'Kata sandi terlalu lemah, masukkan minimal 6 karakter!';
+
+  @override
+  String get auth_error_invalid_email => 'Format email tidak valid!';
+
+  @override
+  String get title_welcome_back => 'Selamat datang kembali';
+
+  @override
+  String get title_register_account => 'Daftar akun eksklusif';
+
+  @override
+  String get label_email => 'Email';
+
+  @override
+  String get label_password => 'Kata sandi';
+
+  @override
+  String get action_login => 'Login';
+
+  @override
+  String get action_register => 'Daftar';
+
+  @override
+  String get prompt_no_account =>
+      'Belum punya akun? Klik di sini untuk mendaftar';
+
+  @override
+  String get prompt_has_account => 'Sudah punya akun? Klik di sini untuk login';
 }

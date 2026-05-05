@@ -2919,4 +2919,55 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'Hantar melalui E-mel';
+
+  @override
+  String get error_email_password_empty =>
+      'E-mel dan kata laluan tidak boleh kosong!';
+
+  @override
+  String get auth_error_default => 'Ralat berlaku, sila cuba lagi nanti.';
+
+  @override
+  String get auth_error_user_not_found =>
+      'E-mel ini tidak ditemui, sila daftar dahulu!';
+
+  @override
+  String get auth_error_wrong_password => 'Kata laluan salah, sila cuba lagi!';
+
+  @override
+  String get auth_error_email_in_use =>
+      'E-mel ini telah didaftarkan! Sila log masuk terus.';
+
+  @override
+  String get auth_error_weak_password =>
+      'Kata laluan terlalu lemah, sila masukkan sekurang-kurangnya 6 aksara!';
+
+  @override
+  String get auth_error_invalid_email => 'Format e-mel tidak sah!';
+
+  @override
+  String get title_welcome_back => 'Selamat kembali';
+
+  @override
+  String get title_register_account => 'Daftar akaun eksklusif';
+
+  @override
+  String get label_email => 'E-mel';
+
+  @override
+  String get label_password => 'Kata laluan';
+
+  @override
+  String get action_login => 'Log masuk';
+
+  @override
+  String get action_register => 'Daftar';
+
+  @override
+  String get prompt_no_account =>
+      'Belum mempunyai akaun? Klik di sini untuk mendaftar';
+
+  @override
+  String get prompt_has_account =>
+      'Sudah mempunyai akaun? Klik di sini untuk log masuk';
 }

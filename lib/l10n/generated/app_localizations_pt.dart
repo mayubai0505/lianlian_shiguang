@@ -2928,4 +2928,55 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'Enviar por E-mail';
+
+  @override
+  String get error_email_password_empty =>
+      'O e-mail e a senha não podem ficar em branco!';
+
+  @override
+  String get auth_error_default =>
+      'Ocorreu um erro, tente novamente mais tarde.';
+
+  @override
+  String get auth_error_user_not_found =>
+      'Este e-mail não foi encontrado, por favor registre-se primeiro!';
+
+  @override
+  String get auth_error_wrong_password => 'Senha incorreta, tente novamente!';
+
+  @override
+  String get auth_error_email_in_use =>
+      'Este e-mail já está registrado! Por favor, faça login diretamente.';
+
+  @override
+  String get auth_error_weak_password =>
+      'A senha é muito fraca, digite pelo menos 6 caracteres!';
+
+  @override
+  String get auth_error_invalid_email => 'Formato de e-mail inválido!';
+
+  @override
+  String get title_welcome_back => 'Bem-vindo(a) de volta';
+
+  @override
+  String get title_register_account => 'Registrar conta exclusiva';
+
+  @override
+  String get label_email => 'E-mail';
+
+  @override
+  String get label_password => 'Senha';
+
+  @override
+  String get action_login => 'Entrar';
+
+  @override
+  String get action_register => 'Registrar';
+
+  @override
+  String get prompt_no_account =>
+      'Ainda não tem uma conta? Clique aqui para se registrar';
+
+  @override
+  String get prompt_has_account => 'Já tem uma conta? Clique aqui para entrar';
 }

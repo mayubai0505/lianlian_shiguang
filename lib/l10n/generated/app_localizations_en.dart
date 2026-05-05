@@ -2894,4 +2894,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'Send via Email';
+
+  @override
+  String get error_email_password_empty =>
+      'Email and password cannot be empty!';
+
+  @override
+  String get auth_error_default => 'An error occurred, please try again later.';
+
+  @override
+  String get auth_error_user_not_found =>
+      'Email not found, please register first!';
+
+  @override
+  String get auth_error_wrong_password => 'Wrong password, please try again!';
+
+  @override
+  String get auth_error_email_in_use =>
+      'This email is already registered! Please log in directly.';
+
+  @override
+  String get auth_error_weak_password =>
+      'Password is too weak, please enter at least 6 characters!';
+
+  @override
+  String get auth_error_invalid_email => 'Invalid email format!';
+
+  @override
+  String get title_welcome_back => 'Welcome back';
+
+  @override
+  String get title_register_account => 'Register exclusive account';
+
+  @override
+  String get label_email => 'Email';
+
+  @override
+  String get label_password => 'Password';
+
+  @override
+  String get action_login => 'Log in';
+
+  @override
+  String get action_register => 'Register';
+
+  @override
+  String get prompt_no_account =>
+      'Don\'t have an account yet? Click here to register';
+
+  @override
+  String get prompt_has_account =>
+      'Already have an account? Click here to log in';
 }

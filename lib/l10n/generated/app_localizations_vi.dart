@@ -2920,4 +2920,53 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'Gửi qua Email';
+
+  @override
+  String get error_email_password_empty =>
+      'Email và mật khẩu không được để trống!';
+
+  @override
+  String get auth_error_default => 'Đã xảy ra lỗi, vui lòng thử lại sau.';
+
+  @override
+  String get auth_error_user_not_found =>
+      'Không tìm thấy email này, vui lòng đăng ký trước!';
+
+  @override
+  String get auth_error_wrong_password => 'Sai mật khẩu, vui lòng thử lại!';
+
+  @override
+  String get auth_error_email_in_use =>
+      'Email này đã được đăng ký! Vui lòng đăng nhập trực tiếp.';
+
+  @override
+  String get auth_error_weak_password =>
+      'Mật khẩu quá yếu, vui lòng nhập ít nhất 6 ký tự!';
+
+  @override
+  String get auth_error_invalid_email => 'Định dạng email không hợp lệ!';
+
+  @override
+  String get title_welcome_back => 'Chào mừng trở lại';
+
+  @override
+  String get title_register_account => 'Đăng ký tài khoản độc quyền';
+
+  @override
+  String get label_email => 'Email';
+
+  @override
+  String get label_password => 'Mật khẩu';
+
+  @override
+  String get action_login => 'Đăng nhập';
+
+  @override
+  String get action_register => 'Đăng ký';
+
+  @override
+  String get prompt_no_account => 'Chưa có tài khoản? Nhấn vào đây để đăng ký';
+
+  @override
+  String get prompt_has_account => 'Đã có tài khoản? Nhấn vào đây để đăng nhập';
 }

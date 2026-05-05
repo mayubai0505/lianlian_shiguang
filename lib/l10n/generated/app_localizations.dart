@@ -5157,6 +5157,96 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'透過 Email 傳送'**
   String get action_send_via_email;
+
+  /// No description provided for @error_email_password_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'信箱和密碼不能為空喔！'**
+  String get error_email_password_empty;
+
+  /// No description provided for @auth_error_default.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發生錯誤，請稍後再試。'**
+  String get auth_error_default;
+
+  /// No description provided for @auth_error_user_not_found.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到此信箱，請先註冊喔！'**
+  String get auth_error_user_not_found;
+
+  /// No description provided for @auth_error_wrong_password.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'密碼錯誤，請再試一次！'**
+  String get auth_error_wrong_password;
+
+  /// No description provided for @auth_error_email_in_use.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個信箱已經被註冊過囉！請直接登入。'**
+  String get auth_error_email_in_use;
+
+  /// No description provided for @auth_error_weak_password.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'密碼太弱了，請至少輸入 6 個字元！'**
+  String get auth_error_weak_password;
+
+  /// No description provided for @auth_error_invalid_email.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'信箱格式不正確！'**
+  String get auth_error_invalid_email;
+
+  /// No description provided for @title_welcome_back.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'歡迎回來'**
+  String get title_welcome_back;
+
+  /// No description provided for @title_register_account.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'註冊專屬帳號'**
+  String get title_register_account;
+
+  /// No description provided for @label_email.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'電子郵件'**
+  String get label_email;
+
+  /// No description provided for @label_password.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'密碼'**
+  String get label_password;
+
+  /// No description provided for @action_login.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'登入'**
+  String get action_login;
+
+  /// No description provided for @action_register.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'註冊'**
+  String get action_register;
+
+  /// No description provided for @prompt_no_account.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有帳號？點我註冊'**
+  String get prompt_no_account;
+
+  /// No description provided for @prompt_has_account.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已經有帳號了？點我登入'**
+  String get prompt_has_account;
 }
 
 class _AppLocalizationsDelegate

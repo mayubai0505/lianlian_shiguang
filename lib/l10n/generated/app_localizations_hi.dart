@@ -2916,4 +2916,56 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'ईमेल के माध्यम से भेजें';
+
+  @override
+  String get error_email_password_empty => 'ईमेल और पासवर्ड खाली नहीं हो सकते!';
+
+  @override
+  String get auth_error_default =>
+      'एक त्रुटि हुई, कृपया बाद में पुनः प्रयास करें।';
+
+  @override
+  String get auth_error_user_not_found =>
+      'यह ईमेल नहीं मिला, कृपया पहले पंजीकरण करें!';
+
+  @override
+  String get auth_error_wrong_password =>
+      'गलत पासवर्ड, कृपया पुनः प्रयास करें!';
+
+  @override
+  String get auth_error_email_in_use =>
+      'यह ईमेल पहले से पंजीकृत है! कृपया सीधे लॉग इन करें।';
+
+  @override
+  String get auth_error_weak_password =>
+      'पासवर्ड बहुत कमज़ोर है, कृपया कम से कम 6 अक्षर दर्ज करें!';
+
+  @override
+  String get auth_error_invalid_email => 'ईमेल प्रारूप अमान्य है!';
+
+  @override
+  String get title_welcome_back => 'वापसी पर स्वागत है';
+
+  @override
+  String get title_register_account => 'विशेष खाता पंजीकृत करें';
+
+  @override
+  String get label_email => 'ईमेल';
+
+  @override
+  String get label_password => 'पासवर्ड';
+
+  @override
+  String get action_login => 'लॉग इन';
+
+  @override
+  String get action_register => 'पंजीकरण करें';
+
+  @override
+  String get prompt_no_account =>
+      'अभी तक खाता नहीं है? पंजीकरण करने के लिए यहाँ क्लिक करें';
+
+  @override
+  String get prompt_has_account =>
+      'क्या आपके पास पहले से खाता है? लॉग इन करने के लिए यहाँ क्लिक करें';
 }

@@ -2751,6 +2751,51 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get action_send_via_email => '透過 Email 傳送';
+
+  @override
+  String get error_email_password_empty => '信箱和密碼不能為空喔！';
+
+  @override
+  String get auth_error_default => '發生錯誤，請稍後再試。';
+
+  @override
+  String get auth_error_user_not_found => '找不到此信箱，請先註冊喔！';
+
+  @override
+  String get auth_error_wrong_password => '密碼錯誤，請再試一次！';
+
+  @override
+  String get auth_error_email_in_use => '這個信箱已經被註冊過囉！請直接登入。';
+
+  @override
+  String get auth_error_weak_password => '密碼太弱了，請至少輸入 6 個字元！';
+
+  @override
+  String get auth_error_invalid_email => '信箱格式不正確！';
+
+  @override
+  String get title_welcome_back => '歡迎回來';
+
+  @override
+  String get title_register_account => '註冊專屬帳號';
+
+  @override
+  String get label_email => '電子郵件';
+
+  @override
+  String get label_password => '密碼';
+
+  @override
+  String get action_login => '登入';
+
+  @override
+  String get action_register => '註冊';
+
+  @override
+  String get prompt_no_account => '還沒有帳號？點我註冊';
+
+  @override
+  String get prompt_has_account => '已經有帳號了？點我登入';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5500,6 +5545,51 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get action_send_via_email => '通过 Email 传送';
+
+  @override
+  String get error_email_password_empty => '邮箱和密码不能为空喔！';
+
+  @override
+  String get auth_error_default => '发生错误，请稍后再试。';
+
+  @override
+  String get auth_error_user_not_found => '找不到此邮箱，请先注册喔！';
+
+  @override
+  String get auth_error_wrong_password => '密码错误，请再试一次！';
+
+  @override
+  String get auth_error_email_in_use => '这个邮箱已经被注册过啰！请直接登录。';
+
+  @override
+  String get auth_error_weak_password => '密码太弱了，请至少输入 6 个字符！';
+
+  @override
+  String get auth_error_invalid_email => '邮箱格式不正确！';
+
+  @override
+  String get title_welcome_back => '欢迎回来';
+
+  @override
+  String get title_register_account => '注册专属账号';
+
+  @override
+  String get label_email => '电子邮件';
+
+  @override
+  String get label_password => '密码';
+
+  @override
+  String get action_login => '登录';
+
+  @override
+  String get action_register => '注册';
+
+  @override
+  String get prompt_no_account => '还没有账号？点我注册';
+
+  @override
+  String get prompt_has_account => '已经有账号了？点我登录';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8249,4 +8339,49 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get action_send_via_email => '透過 Email 傳送';
+
+  @override
+  String get error_email_password_empty => '信箱和密碼不能為空喔！';
+
+  @override
+  String get auth_error_default => '發生錯誤，請稍後再試。';
+
+  @override
+  String get auth_error_user_not_found => '找不到此信箱，請先註冊喔！';
+
+  @override
+  String get auth_error_wrong_password => '密碼錯誤，請再試一次！';
+
+  @override
+  String get auth_error_email_in_use => '這個信箱已經被註冊過囉！請直接登入。';
+
+  @override
+  String get auth_error_weak_password => '密碼太弱了，請至少輸入 6 個字元！';
+
+  @override
+  String get auth_error_invalid_email => '信箱格式不正確！';
+
+  @override
+  String get title_welcome_back => '歡迎回來';
+
+  @override
+  String get title_register_account => '註冊專屬帳號';
+
+  @override
+  String get label_email => '電子郵件';
+
+  @override
+  String get label_password => '密碼';
+
+  @override
+  String get action_login => '登入';
+
+  @override
+  String get action_register => '註冊';
+
+  @override
+  String get prompt_no_account => '還沒有帳號？點我註冊';
+
+  @override
+  String get prompt_has_account => '已經有帳號了？點我登入';
 }

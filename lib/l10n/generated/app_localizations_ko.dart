@@ -2794,4 +2794,49 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get action_send_via_email => '이메일로 보내기';
+
+  @override
+  String get error_email_password_empty => '이메일과 비밀번호는 비워둘 수 없습니다!';
+
+  @override
+  String get auth_error_default => '오류가 발생했습니다. 나중에 다시 시도해 주세요.';
+
+  @override
+  String get auth_error_user_not_found => '이 이메일을 찾을 수 없습니다. 먼저 가입해 주세요!';
+
+  @override
+  String get auth_error_wrong_password => '비밀번호가 틀렸습니다. 다시 시도해 주세요!';
+
+  @override
+  String get auth_error_email_in_use => '이미 등록된 이메일입니다! 바로 로그인해 주세요.';
+
+  @override
+  String get auth_error_weak_password => '비밀번호가 너무 약합니다. 최소 6자 이상 입력해 주세요!';
+
+  @override
+  String get auth_error_invalid_email => '이메일 형식이 올바르지 않습니다!';
+
+  @override
+  String get title_welcome_back => '환영합니다';
+
+  @override
+  String get title_register_account => '전용 계정 등록';
+
+  @override
+  String get label_email => '이메일';
+
+  @override
+  String get label_password => '비밀번호';
+
+  @override
+  String get action_login => '로그인';
+
+  @override
+  String get action_register => '가입하기';
+
+  @override
+  String get prompt_no_account => '아직 계정이 없으신가요? 여기를 눌러 가입하세요';
+
+  @override
+  String get prompt_has_account => '이미 계정이 있으신가요? 여기를 눌러 로그인하세요';
 }

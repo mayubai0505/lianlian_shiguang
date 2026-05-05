@@ -2889,4 +2889,53 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'ส่งทางอีเมล';
+
+  @override
+  String get error_email_password_empty => 'อีเมลและรหัสผ่านต้องไม่ว่างเปล่า!';
+
+  @override
+  String get auth_error_default => 'เกิดข้อผิดพลาด โปรดลองอีกครั้งในภายหลัง';
+
+  @override
+  String get auth_error_user_not_found => 'ไม่พบอีเมลนี้ โปรดลงทะเบียนก่อนนะ!';
+
+  @override
+  String get auth_error_wrong_password => 'รหัสผ่านผิด โปรดลองอีกครั้ง!';
+
+  @override
+  String get auth_error_email_in_use =>
+      'อีเมลนี้ถูกลงทะเบียนไปแล้ว! โปรดเข้าสู่ระบบโดยตรง';
+
+  @override
+  String get auth_error_weak_password =>
+      'รหัสผ่านเดาง่ายเกินไป โปรดป้อนอย่างน้อย 6 ตัวอักษร!';
+
+  @override
+  String get auth_error_invalid_email => 'รูปแบบอีเมลไม่ถูกต้อง!';
+
+  @override
+  String get title_welcome_back => 'ยินดีต้อนรับกลับมา';
+
+  @override
+  String get title_register_account => 'ลงทะเบียนบัญชีพิเศษ';
+
+  @override
+  String get label_email => 'อีเมล';
+
+  @override
+  String get label_password => 'รหัสผ่าน';
+
+  @override
+  String get action_login => 'เข้าสู่ระบบ';
+
+  @override
+  String get action_register => 'ลงทะเบียน';
+
+  @override
+  String get prompt_no_account =>
+      'ยังไม่มีบัญชีใช่ไหม? คลิกที่นี่เพื่อลงทะเบียน';
+
+  @override
+  String get prompt_has_account =>
+      'มีบัญชีอยู่แล้วใช่ไหม? คลิกที่นี่เพื่อเข้าสู่ระบบ';
 }

@@ -2948,4 +2948,57 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get action_send_via_email => 'Envoyer par e-mail';
+
+  @override
+  String get error_email_password_empty =>
+      'L\'e-mail et le mot de passe ne peuvent pas être vides !';
+
+  @override
+  String get auth_error_default =>
+      'Une erreur s\'est produite, veuillez réessayer plus tard.';
+
+  @override
+  String get auth_error_user_not_found =>
+      'Cet e-mail est introuvable, veuillez vous inscrire d\'abord !';
+
+  @override
+  String get auth_error_wrong_password =>
+      'Mot de passe incorrect, veuillez réessayer !';
+
+  @override
+  String get auth_error_email_in_use =>
+      'Cet e-mail est déjà enregistré ! Veuillez vous connecter directement.';
+
+  @override
+  String get auth_error_weak_password =>
+      'Le mot de passe est trop faible, veuillez saisir au moins 6 caractères !';
+
+  @override
+  String get auth_error_invalid_email => 'Format d\'e-mail invalide !';
+
+  @override
+  String get title_welcome_back => 'Bon retour';
+
+  @override
+  String get title_register_account => 'Créer un compte exclusif';
+
+  @override
+  String get label_email => 'E-mail';
+
+  @override
+  String get label_password => 'Mot de passe';
+
+  @override
+  String get action_login => 'Se connecter';
+
+  @override
+  String get action_register => 'S\'inscrire';
+
+  @override
+  String get prompt_no_account =>
+      'Pas encore de compte ? Cliquez ici pour vous inscrire';
+
+  @override
+  String get prompt_has_account =>
+      'Déjà un compte ? Cliquez ici pour vous connecter';
 }

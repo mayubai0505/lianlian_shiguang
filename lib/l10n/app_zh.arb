@@ -1251,5 +1251,23 @@
   "title_contact_us": "聯絡我們",
   "desc_contact_us": "我們非常重視您的建議！\n請在這裡寫下您的想法，幫助我們把遊戲變得更好。",
   "hint_enter_feedback": "請在此輸入您的建議...",
-  "action_send_via_email": "透過 Email 傳送"
+  "action_send_via_email": "透過 Email 傳送",
+
+  "error_email_password_empty": "信箱和密碼不能為空喔！",
+  "auth_error_default": "發生錯誤，請稍後再試。",
+  "auth_error_user_not_found": "找不到此信箱，請先註冊喔！",
+  "auth_error_wrong_password": "密碼錯誤，請再試一次！",
+  "auth_error_email_in_use": "這個信箱已經被註冊過囉！請直接登入。",
+  "auth_error_weak_password": "密碼太弱了，請至少輸入 6 個字元！",
+  "auth_error_invalid_email": "信箱格式不正確！",
+
+  "title_welcome_back": "歡迎回來",
+  "title_register_account": "註冊專屬帳號",
+  "label_email": "電子郵件",
+  "label_password": "密碼",
+  "action_login": "登入",
+  "action_register": "註冊",
+
+  "prompt_no_account": "還沒有帳號？點我註冊",
+  "prompt_has_account": "已經有帳號了？點我登入"
 }
