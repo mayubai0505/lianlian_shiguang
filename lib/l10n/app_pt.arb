@@ -1065,31 +1065,6 @@
          "date": { "type": "String" }
       }
    },
-   "memo_delete_confirm": "Tem certeza de que deseja excluir esta nota? Esta ação não pode ser desfeita.",
-   "memo_add_title": "Adicionar Nota",
-   "memo_edit_title": "Editar Nota",
-   "memo_hint_text": "O que você gostaria de anotar sobre {name}?",
-   "@memo_hint_text": {
-      "placeholders": {
-         "name": { "type": "String" }
-      }
-   },
-   "memo_label_reminder_date": "Data do Lembrete:",
-   "memo_action_save": "Salvar Nota",
-   "memo_error_empty_content": "O conteúdo não pode estar vazio!",
-   "memo_list_title": "Notas com {name}",
-   "@memo_list_title": {
-      "placeholders": {
-         "name": { "type": "String" }
-      }
-   },
-   "memo_empty_state": "Ainda não há notas!\nClique no canto superior direito para adicionar uma!",
-   "memo_reminder_date_display": "Data do Lembrete: {date}",
-   "@memo_reminder_date_display": {
-      "placeholders": {
-         "date": { "type": "String" }
-      }
-   },
    "moment_delete_confirm_title": "Tem certeza de que deseja excluir esta publicação?",
    "moment_delete_confirm_content": "Depois de excluída, esta memória dos Momentos desaparecerá!",
    "action_confirm_delete": "Confirmar Exclusão",
