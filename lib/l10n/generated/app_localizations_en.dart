@@ -2846,4 +2846,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get title_language_settings => 'Language Settings';
+
+  @override
+  String get app_name => 'Lianlian Shiguang';
+
+  @override
+  String get login_slogan => 'Start your exclusive moments';
+
+  @override
+  String get login_with_google => 'Log in with Google';
+
+  @override
+  String get login_with_apple => 'Log in with Apple';
+
+  @override
+  String get login_with_facebook => 'Log in with Facebook';
+
+  @override
+  String get login_with_email => 'Log in with Lianlian Account (Email)';
+
+  @override
+  String get title_contact_us_heading => 'We value your suggestions!';
+
+  @override
+  String get desc_contact_us_body =>
+      'Please write down your thoughts here to help us make the game better.';
 }

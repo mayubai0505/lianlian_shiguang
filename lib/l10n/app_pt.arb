@@ -1159,5 +1159,7 @@
    "login_with_apple": "Entrar com a Apple",
    "login_with_facebook": "Entrar com o Facebook",
    "login_with_email": "Entrar com a conta Lianlian (E-mail)",
-   "title_language_settings": "Configurações de Idioma"
+   "title_language_settings": "Configurações de Idioma",
+   "title_contact_us_heading": "Nós valorizamos muito suas sugestões!",
+   "desc_contact_us_body": "Por favor, escreva suas ideias aqui para nos ajudar a melhorar o jogo."
 }

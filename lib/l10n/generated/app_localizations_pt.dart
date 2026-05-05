@@ -2877,4 +2877,30 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get title_language_settings => 'Configurações de Idioma';
+
+  @override
+  String get app_name => 'Lianlian Shiguang';
+
+  @override
+  String get login_slogan => 'Comece seus momentos exclusivos';
+
+  @override
+  String get login_with_google => 'Entrar com o Google';
+
+  @override
+  String get login_with_apple => 'Entrar com a Apple';
+
+  @override
+  String get login_with_facebook => 'Entrar com o Facebook';
+
+  @override
+  String get login_with_email => 'Entrar com a conta Lianlian (E-mail)';
+
+  @override
+  String get title_contact_us_heading =>
+      'Nós valorizamos muito suas sugestões!';
+
+  @override
+  String get desc_contact_us_body =>
+      'Por favor, escreva suas ideias aqui para nos ajudar a melhorar o jogo.';
 }

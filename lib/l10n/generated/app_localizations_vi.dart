@@ -2870,4 +2870,30 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get title_language_settings => 'Cài đặt ngôn ngữ';
+
+  @override
+  String get app_name => 'Luyến Luyến Thập Quang';
+
+  @override
+  String get login_slogan => 'Bắt đầu khoảng thời gian độc quyền của bạn';
+
+  @override
+  String get login_with_google => 'Đăng nhập bằng Google';
+
+  @override
+  String get login_with_apple => 'Đăng nhập bằng Apple';
+
+  @override
+  String get login_with_facebook => 'Đăng nhập bằng Facebook';
+
+  @override
+  String get login_with_email => 'Đăng nhập bằng tài khoản Luyến Luyến (Email)';
+
+  @override
+  String get title_contact_us_heading =>
+      'Chúng tôi rất coi trọng những góp ý của bạn!';
+
+  @override
+  String get desc_contact_us_body =>
+      'Vui lòng viết ra suy nghĩ của bạn ở đây để giúp chúng tôi làm cho trò chơi trở nên tốt hơn.';
 }

@@ -2866,4 +2866,30 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get title_language_settings => 'भाषा सेटिंग';
+
+  @override
+  String get app_name => 'लियानलिआन शिगुआंग';
+
+  @override
+  String get login_slogan => 'अपना विशेष समय शुरू करें';
+
+  @override
+  String get login_with_google => 'Google के साथ लॉग इन करें';
+
+  @override
+  String get login_with_apple => 'Apple के साथ लॉग इन करें';
+
+  @override
+  String get login_with_facebook => 'Facebook के साथ लॉग इन करें';
+
+  @override
+  String get login_with_email => 'लियानलिआन खाते से लॉग इन करें (ईमेल)';
+
+  @override
+  String get title_contact_us_heading =>
+      'हम आपके सुझावों को बहुत महत्व देते हैं!';
+
+  @override
+  String get desc_contact_us_body =>
+      'गेम को बेहतर बनाने में हमारी मदद करने के लिए कृपया अपने विचार यहाँ लिखें।';
 }

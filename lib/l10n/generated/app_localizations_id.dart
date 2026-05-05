@@ -2869,4 +2869,29 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get title_language_settings => 'Pengaturan Bahasa';
+
+  @override
+  String get app_name => 'Lianlian Shiguang';
+
+  @override
+  String get login_slogan => 'Mulai momen eksklusifmu';
+
+  @override
+  String get login_with_google => 'Login dengan Google';
+
+  @override
+  String get login_with_apple => 'Login dengan Apple';
+
+  @override
+  String get login_with_facebook => 'Login dengan Facebook';
+
+  @override
+  String get login_with_email => 'Login dengan Akun Lianlian (Email)';
+
+  @override
+  String get title_contact_us_heading => 'Kami sangat menghargai saranmu!';
+
+  @override
+  String get desc_contact_us_body =>
+      'Silakan tuliskan pemikiranmu di sini untuk membantu kami membuat game menjadi lebih baik.';
 }

@@ -2733,4 +2733,28 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get title_language_settings => '言語設定';
+
+  @override
+  String get app_name => '恋恋拾光';
+
+  @override
+  String get login_slogan => 'あなただけの専属時間を始めよう';
+
+  @override
+  String get login_with_google => 'Google でログイン';
+
+  @override
+  String get login_with_apple => 'Apple でログイン';
+
+  @override
+  String get login_with_facebook => 'Facebook でログイン';
+
+  @override
+  String get login_with_email => '恋恋アカウントでログイン (メール)';
+
+  @override
+  String get title_contact_us_heading => '私たちはあなたの提案をとても大切にしています！';
+
+  @override
+  String get desc_contact_us_body => 'ゲームをより良くするために、ここにあなたの考えを書き込んでください。';
 }

@@ -5067,6 +5067,54 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'語言設定'**
   String get title_language_settings;
+
+  /// No description provided for @app_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光'**
+  String get app_name;
+
+  /// No description provided for @login_slogan.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開啟妳的專屬時光'**
+  String get login_slogan;
+
+  /// No description provided for @login_with_google.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'使用 Google 登入'**
+  String get login_with_google;
+
+  /// No description provided for @login_with_apple.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'透過 Apple 登入'**
+  String get login_with_apple;
+
+  /// No description provided for @login_with_facebook.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'使用 Facebook 登入'**
+  String get login_with_facebook;
+
+  /// No description provided for @login_with_email.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'使用戀戀帳號登入 (Email)'**
+  String get login_with_email;
+
+  /// No description provided for @title_contact_us_heading.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我們非常重視您的建議！'**
+  String get title_contact_us_heading;
+
+  /// No description provided for @desc_contact_us_body.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請在這裡寫下您的想法，幫助我們把遊戲變得更好。'**
+  String get desc_contact_us_body;
 }
 
 class _AppLocalizationsDelegate

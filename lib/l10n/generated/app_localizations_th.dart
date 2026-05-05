@@ -2839,4 +2839,30 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get title_language_settings => 'การตั้งค่าภาษา';
+
+  @override
+  String get app_name => 'Lianlian Shiguang';
+
+  @override
+  String get login_slogan => 'เริ่มต้นช่วงเวลาพิเศษของคุณ';
+
+  @override
+  String get login_with_google => 'เข้าสู่ระบบด้วย Google';
+
+  @override
+  String get login_with_apple => 'เข้าสู่ระบบด้วย Apple';
+
+  @override
+  String get login_with_facebook => 'เข้าสู่ระบบด้วย Facebook';
+
+  @override
+  String get login_with_email => 'เข้าสู่ระบบด้วยบัญชี Lianlian (อีเมล)';
+
+  @override
+  String get title_contact_us_heading =>
+      'เราให้ความสำคัญกับข้อเสนอแนะของคุณมาก!';
+
+  @override
+  String get desc_contact_us_body =>
+      'โปรดเขียนความคิดเห็นของคุณที่นี่เพื่อช่วยเราปรับปรุงเกมให้ดีขึ้น';
 }

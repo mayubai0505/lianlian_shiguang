@@ -2706,6 +2706,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get title_language_settings => '語言設定';
+
+  @override
+  String get app_name => '戀戀拾光';
+
+  @override
+  String get login_slogan => '開啟妳的專屬時光';
+
+  @override
+  String get login_with_google => '使用 Google 登入';
+
+  @override
+  String get login_with_apple => '透過 Apple 登入';
+
+  @override
+  String get login_with_facebook => '使用 Facebook 登入';
+
+  @override
+  String get login_with_email => '使用戀戀帳號登入 (Email)';
+
+  @override
+  String get title_contact_us_heading => '我們非常重視您的建議！';
+
+  @override
+  String get desc_contact_us_body => '請在這裡寫下您的想法，幫助我們把遊戲變得更好。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5410,6 +5434,30 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get title_language_settings => '语言设置';
+
+  @override
+  String get app_name => '恋恋拾光';
+
+  @override
+  String get login_slogan => '开启妳的专属时光';
+
+  @override
+  String get login_with_google => '使用 Google 登录';
+
+  @override
+  String get login_with_apple => '通过 Apple 登录';
+
+  @override
+  String get login_with_facebook => '使用 Facebook 登录';
+
+  @override
+  String get login_with_email => '使用恋恋账号登录 (Email)';
+
+  @override
+  String get title_contact_us_heading => '我们非常重视您的建议！';
+
+  @override
+  String get desc_contact_us_body => '请在这里写下您的想法，帮助我们把游戏变得更好。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8114,4 +8162,28 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get title_language_settings => '語言設定';
+
+  @override
+  String get app_name => '戀戀拾光';
+
+  @override
+  String get login_slogan => '開啟妳的專屬時光';
+
+  @override
+  String get login_with_google => '使用 Google 登入';
+
+  @override
+  String get login_with_apple => '透過 Apple 登入';
+
+  @override
+  String get login_with_facebook => '使用 Facebook 登入';
+
+  @override
+  String get login_with_email => '使用戀戀帳號登入 (Email)';
+
+  @override
+  String get title_contact_us_heading => '我們非常重視您的建議！';
+
+  @override
+  String get desc_contact_us_body => '請在這裡寫下您的想法，幫助我們把遊戲變得更好。';
 }

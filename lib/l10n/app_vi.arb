@@ -1133,5 +1133,7 @@
   "login_with_apple": "Đăng nhập bằng Apple",
   "login_with_facebook": "Đăng nhập bằng Facebook",
   "login_with_email": "Đăng nhập bằng tài khoản Luyến Luyến (Email)",
-  "title_language_settings": "Cài đặt ngôn ngữ"
+  "title_language_settings": "Cài đặt ngôn ngữ",
+  "title_contact_us_heading": "Chúng tôi rất coi trọng những góp ý của bạn!",
+  "desc_contact_us_body": "Vui lòng viết ra suy nghĩ của bạn ở đây để giúp chúng tôi làm cho trò chơi trở nên tốt hơn."
 }

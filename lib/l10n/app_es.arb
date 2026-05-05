@@ -1133,5 +1133,7 @@
     "login_with_apple": "Iniciar sesión con Apple",
     "login_with_facebook": "Iniciar sesión con Facebook",
     "login_with_email": "Iniciar sesión con cuenta Lianlian (Correo)",
-    "title_language_settings": "Ajustes de idioma"
+    "title_language_settings": "Ajustes de idioma",
+    "title_contact_us_heading": "¡Valoramos mucho tus sugerencias!",
+    "desc_contact_us_body": "Por favor, escribe tus ideas aquí para ayudarnos a mejorar el juego."
 }

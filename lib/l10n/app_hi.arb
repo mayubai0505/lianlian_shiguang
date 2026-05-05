@@ -1133,5 +1133,7 @@
     "login_with_apple": "Apple के साथ लॉग इन करें",
     "login_with_facebook": "Facebook के साथ लॉग इन करें",
     "login_with_email": "लियानलिआन खाते से लॉग इन करें (ईमेल)",
-    "title_language_settings": "भाषा सेटिंग"
+    "title_language_settings": "भाषा सेटिंग",
+    "title_contact_us_heading": "हम आपके सुझावों को बहुत महत्व देते हैं!",
+    "desc_contact_us_body": "गेम को बेहतर बनाने में हमारी मदद करने के लिए कृपया अपने विचार यहाँ लिखें।"
 }

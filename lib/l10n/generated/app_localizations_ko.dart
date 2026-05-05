@@ -2747,4 +2747,28 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get title_language_settings => '언어 설정';
+
+  @override
+  String get app_name => '연련습광';
+
+  @override
+  String get login_slogan => '당신만의 전속 시간을 시작하세요';
+
+  @override
+  String get login_with_google => 'Google로 로그인';
+
+  @override
+  String get login_with_apple => 'Apple로 로그인';
+
+  @override
+  String get login_with_facebook => 'Facebook으로 로그인';
+
+  @override
+  String get login_with_email => '연련 계정으로 로그인 (이메일)';
+
+  @override
+  String get title_contact_us_heading => '저희는 여러분의 제안을 매우 소중하게 생각합니다!';
+
+  @override
+  String get desc_contact_us_body => '게임 개선에 도움이 되도록 여기에 의견을 남겨주세요.';
 }

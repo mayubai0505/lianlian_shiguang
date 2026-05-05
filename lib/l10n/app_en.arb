@@ -1346,5 +1346,7 @@
   "login_with_apple": "Log in with Apple",
   "login_with_facebook": "Log in with Facebook",
   "login_with_email": "Log in with Lianlian Account (Email)",
-  "title_language_settings": "Language Settings"
+  "title_language_settings": "Language Settings",
+  "title_contact_us_heading": "We value your suggestions!",
+  "desc_contact_us_body": "Please write down your thoughts here to help us make the game better."
 }

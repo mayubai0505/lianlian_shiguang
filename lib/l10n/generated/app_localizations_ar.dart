@@ -2829,4 +2829,30 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get title_language_settings => 'إعدادات اللغة';
+
+  @override
+  String get app_name => 'ليانليان شيغوانغ';
+
+  @override
+  String get login_slogan => 'ابدئي وقتك الحصري';
+
+  @override
+  String get login_with_google => 'تسجيل الدخول باستخدام Google';
+
+  @override
+  String get login_with_apple => 'تسجيل الدخول عبر Apple';
+
+  @override
+  String get login_with_facebook => 'تسجيل الدخول باستخدام Facebook';
+
+  @override
+  String get login_with_email =>
+      'تسجيل الدخول بحساب ليانليان (البريد الإلكتروني)';
+
+  @override
+  String get title_contact_us_heading => 'نحن نقدر اقتراحاتك جداً!';
+
+  @override
+  String get desc_contact_us_body =>
+      'يرجى كتابة أفكارك هنا لمساعدتنا في تحسين اللعبة.';
 }

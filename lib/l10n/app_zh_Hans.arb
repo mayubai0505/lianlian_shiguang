@@ -1145,5 +1145,7 @@
   "login_with_apple": "通过 Apple 登录",
   "login_with_facebook": "使用 Facebook 登录",
   "login_with_email": "使用恋恋账号登录 (Email)",
-  "title_language_settings": "语言设置"
+  "title_language_settings": "语言设置",
+  "title_contact_us_heading": "我们非常重视您的建议！",
+  "desc_contact_us_body": "请在这里写下您的想法，帮助我们把游戏变得更好。"
 }

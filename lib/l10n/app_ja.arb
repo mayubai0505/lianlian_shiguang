@@ -1133,5 +1133,7 @@
   "login_with_apple": "Apple でログイン",
   "login_with_facebook": "Facebook でログイン",
   "login_with_email": "恋恋アカウントでログイン (メール)",
-  "title_language_settings": "言語設定"
+  "title_language_settings": "言語設定",
+  "title_contact_us_heading": "私たちはあなたの提案をとても大切にしています！",
+  "desc_contact_us_body": "ゲームをより良くするために、ここにあなたの考えを書き込んでください。"
 }

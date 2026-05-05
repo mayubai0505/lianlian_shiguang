@@ -1174,5 +1174,7 @@
     "login_with_apple": "تسجيل الدخول عبر Apple",
     "login_with_facebook": "تسجيل الدخول باستخدام Facebook",
     "login_with_email": "تسجيل الدخول بحساب ليانليان (البريد الإلكتروني)",
-    "title_language_settings": "إعدادات اللغة"
+    "title_language_settings": "إعدادات اللغة",
+    "title_contact_us_heading": "نحن نقدر اقتراحاتك جداً!",
+    "desc_contact_us_body": "يرجى كتابة أفكارك هنا لمساعدتنا في تحسين اللعبة."
 }
