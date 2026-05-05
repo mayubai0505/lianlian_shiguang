@@ -48,11 +48,11 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       bool confirm = await showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('確定要刪除這則動態嗎？'),
-          content: const Text('刪除後，這段朋友圈的回憶就會消失喔！'),
+          title: Text(l10n.moment_delete_confirm_title),
+          content:Text(l10n.moment_delete_confirm_content),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancelButton)),
-            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('確定刪除', style: TextStyle(color: Colors.red))),
+            TextButton(onPressed: () => Navigator.pop(context, true), child:Text(l10n.action_confirm_delete, style: TextStyle(color: Colors.red))),
           ],
         ),
       ) ?? false;
@@ -69,6 +69,8 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
 
   // 1. 詳情頁的按讚邏輯 (跟大廳完全同步)
   Future<void> _handleLikeTaskProgress(Moment moment) async {
+    final l10n = AppLocalizations.of(context)!;
+    final String currentNickname = _myNickname ?? l10n.friend_unknown;
     if (_userId.isEmpty) return;
 
     try {
@@ -77,8 +79,8 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       if (recipientId.isNotEmpty && recipientId != _userId) {
         // ✨ 完美的專屬文案判斷
         String mailBody = moment.isCreatorPost
-            ? '${_myNickname ?? "某位朋友"}覺得妳的動態很讚喔！💖'
-            : '${_myNickname ?? "某位朋友"}覺得${moment.authorName}很有魅力，點了個讚！✨';
+            ? l10n.moment_like_yours(currentNickname)
+            : l10n.moment_like_others(currentNickname, moment.authorName);
 
         // 🌟 呼叫專屬的寄信函式 (不要借用留言的)
         await _sendNotificationLetter(
@@ -90,7 +92,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         );
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已傳遞妳的心動！✨')));
+      ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(l10n.moment_like_success)));
     } catch (e) {
       print("按讚失敗: $e");
     }
@@ -104,6 +106,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     required String senderName,
     required String body,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -112,7 +115,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
           .add({
         'type': type,
         'fromId': _userId,
-        'title': '新點讚！💖', // 專屬按讚標題
+        'title': l10n.moment_notification_new_like, // 專屬按讚標題
         'body': body,
         'postId': postId,
         'createdAt': FieldValue.serverTimestamp(),
@@ -170,15 +173,13 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     required String text,
     required String postId,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
+    final currentNickname = _myNickname ?? l10n.friend_unknown;
     if (_userId.isEmpty) return;
-
-    // 1. 利用 Regex 抓取所有以 @ 開頭的字串
-    // 例如輸入 "@程宇"，會把 "程宇" 這個名字單獨抓出來
+    // 利用 Regex 抓取所有以 @ 開頭的字串,例如輸入 "@程宇"，會把 "程宇" 這個名字單獨抓出來
     Iterable<RegExpMatch> matches = RegExp(r'@(\S+)').allMatches(text);
     List<String> taggedNames = matches.map((m) => m.group(1)!).toList();
-
     if (taggedNames.isEmpty) return; // 沒標註任何人就直接結束
-
     // 2. 針對每個被 Tag 的名字去撈資料庫
     for (String name in taggedNames) {
       try {
@@ -188,17 +189,14 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
             .where('name', isEqualTo: name)
             .limit(1)
             .get();
-
         if (query.docs.isNotEmpty) {
           var characterData = query.docs.first.data();
           // ✨ 關鍵修改：用 createdBy 來當作親媽 UID
           String motherUid = characterData['createdBy'] ?? '';
           // 3. 🎯 核心重點：判斷是否為親媽 Tag 自己的小孩
            if (motherUid.isNotEmpty && motherUid != _userId) {
-
             // 不是親媽！代表是其他玩家或角色 Tag 的，可以發送通知信！
-            String mailBody = '${_myNickname ?? "某位朋友"} 在動態中提到了 @$name 喔！✨';
-
+            String mailBody =l10n.moment_mention_mail_body(currentNickname, name);
             await _sendNotificationLetter(
               recipientId: motherUid, // 信件精準投遞給親媽的 UID
               postId: postId,
@@ -207,7 +205,6 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
               body: mailBody,
             );
             print("💌 已發送 Tag 通知給 $name 的親媽 ($motherUid)");
-
           } else {
             // 親媽自己 Tag 自己名下的角色（例如大叔程宇的親媽 Tag 程宇），就不發信！
             print("🛑 攔截通知：親媽 (${_userId}) Tag 了自己的角色 ($name)，不重複寄信。");
@@ -223,12 +220,12 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('動態詳情')),
+      appBar: AppBar(title:Text(l10n.moment_detail_title)),
       body: FutureBuilder<DocumentSnapshot>(
         future: _db.collection('artifacts').doc(AppConfig.appId).collection('moments').doc(widget.postId).get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-          if (!snapshot.hasData || !snapshot.data!.exists) return const Center(child: Text('這篇動態好像不見了... 😢'));
+          if (!snapshot.hasData || !snapshot.data!.exists) return Center(child: Text(l10n.moment_not_found));
 
           final moment = Moment.fromFirestore(snapshot.data!);
 
@@ -256,7 +253,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                       // --- B. 留言清單標題 ---
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-                        child: Text('朋友圈留言', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                        child: Text(l10n.moment_comment_title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                       ),
 
                       // --- C. 即時留言列表 (StreamBuilder) ---
@@ -274,9 +271,9 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                           final docs = commentSnapshot.data!.docs;
 
                           if (docs.isEmpty) {
-                            return const Padding(
+                            return Padding(
                               padding: EdgeInsets.symmetric(vertical: 40),
-                              child: Center(child: Text('還沒有人留言，快來搶沙發！🛋️', style: TextStyle(color: Colors.grey))),
+                              child: Center(child: Text(l10n.moment_comment_empty, style: TextStyle(color: Colors.grey))),
                             );
                           }
 
@@ -360,7 +357,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                           const Icon(Icons.reply, size: 16, color: Colors.grey),
                           const SizedBox(width: 8),
                           Text(
-                            "正在回覆 @${_replyTarget!['authorName']}",
+                            l10n.moment_replying_to(_replyTarget!['authorName']),
                             style: const TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                           const Spacer(),
@@ -390,7 +387,9 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                             child: TextField(
                               controller: _commentController,
                               decoration: InputDecoration(
-                                hintText: _replyTarget != null ? '回覆 @${_replyTarget!['authorName']}...' : '留下妳的回應...',
+                                hintText: _replyTarget != null
+                                    ? l10n.moment_reply_hint(_replyTarget!['authorName'])
+                                    : l10n.moment_leave_comment_hint,
                                 filled: true,
                                 fillColor: Colors.grey[100],
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
