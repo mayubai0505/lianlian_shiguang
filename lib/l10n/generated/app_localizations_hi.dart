@@ -2892,4 +2892,28 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get desc_contact_us_body =>
       'गेम को बेहतर बनाने में हमारी मदद करने के लिए कृपया अपने विचार यहाँ लिखें।';
+
+  @override
+  String get error_feedback_empty => 'सुझाव की सामग्री खाली नहीं हो सकती!';
+
+  @override
+  String get email_subject_feedback =>
+      'लियानलिआन शिगुआंग - खिलाड़ी प्रतिक्रिया';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      'मेल ऐप स्वचालित रूप से नहीं खुल सकता, आपके लिए आधिकारिक ईमेल कॉपी कर लिया गया है!';
+
+  @override
+  String get title_contact_us => 'हमसे संपर्क करें';
+
+  @override
+  String get desc_contact_us =>
+      'हम आपके सुझावों को बहुत महत्व देते हैं!\nगेम को बेहतर बनाने में हमारी मदद करने के लिए कृपया अपने विचार यहाँ लिखें।';
+
+  @override
+  String get hint_enter_feedback => 'कृपया अपना सुझाव यहाँ दर्ज करें...';
+
+  @override
+  String get action_send_via_email => 'ईमेल के माध्यम से भेजें';
 }

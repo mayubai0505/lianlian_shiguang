@@ -1147,5 +1147,12 @@
   "login_with_email": "使用恋恋账号登录 (Email)",
   "title_language_settings": "语言设置",
   "title_contact_us_heading": "我们非常重视您的建议！",
-  "desc_contact_us_body": "请在这里写下您的想法，帮助我们把游戏变得更好。"
+  "desc_contact_us_body": "请在这里写下您的想法，帮助我们把游戏变得更好。",
+  "error_feedback_empty": "建议内容不能为空喔！",
+  "email_subject_feedback": "恋恋拾光 - 玩家反馈建议",
+  "msg_email_app_not_found_copied": "无法自动开启邮件，已为您复制官方邮箱！",
+  "title_contact_us": "联络我们",
+  "desc_contact_us": "我们非常重视您的建议！\n请在这里写下您的想法，帮助我们把游戏变得更好。",
+  "hint_enter_feedback": "请在此输入您的建议...",
+  "action_send_via_email": "通过 Email 传送"
 }

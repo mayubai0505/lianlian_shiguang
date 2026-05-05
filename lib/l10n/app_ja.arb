@@ -1135,5 +1135,12 @@
   "login_with_email": "恋恋アカウントでログイン (メール)",
   "title_language_settings": "言語設定",
   "title_contact_us_heading": "私たちはあなたの提案をとても大切にしています！",
-  "desc_contact_us_body": "ゲームをより良くするために、ここにあなたの考えを書き込んでください。"
+  "desc_contact_us_body": "ゲームをより良くするために、ここにあなたの考えを書き込んでください。",
+  "error_feedback_empty": "提案の内容は空にできません！",
+  "email_subject_feedback": "恋恋拾光 - プレイヤーからのフィードバック",
+  "msg_email_app_not_found_copied": "メールアプリを自動で開けませんでした。公式メールアドレスをコピーしました！",
+  "title_contact_us": "お問い合わせ",
+  "desc_contact_us": "私たちはあなたの提案をとても大切にしています！\nゲームをより良くするために、ここにあなたの考えを書き込んでください。",
+  "hint_enter_feedback": "ここに提案を入力してください...",
+  "action_send_via_email": "メールで送信"
 }

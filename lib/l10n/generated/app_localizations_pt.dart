@@ -2903,4 +2903,29 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get desc_contact_us_body =>
       'Por favor, escreva suas ideias aqui para nos ajudar a melhorar o jogo.';
+
+  @override
+  String get error_feedback_empty =>
+      'O conteúdo da sugestão não pode estar vazio!';
+
+  @override
+  String get email_subject_feedback =>
+      'Lianlian Shiguang - Feedback dos Jogadores';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      'Não foi possível abrir o aplicativo de e-mail automaticamente. O e-mail oficial foi copiado para você!';
+
+  @override
+  String get title_contact_us => 'Fale Conosco';
+
+  @override
+  String get desc_contact_us =>
+      'Nós valorizamos muito suas sugestões!\nPor favor, escreva suas ideias aqui para nos ajudar a melhorar o jogo.';
+
+  @override
+  String get hint_enter_feedback => 'Por favor, insira sua sugestão aqui...';
+
+  @override
+  String get action_send_via_email => 'Enviar por E-mail';
 }

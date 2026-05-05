@@ -2865,4 +2865,28 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get desc_contact_us_body =>
       'โปรดเขียนความคิดเห็นของคุณที่นี่เพื่อช่วยเราปรับปรุงเกมให้ดีขึ้น';
+
+  @override
+  String get error_feedback_empty => 'เนื้อหาข้อเสนอแนะต้องไม่ว่างเปล่า!';
+
+  @override
+  String get email_subject_feedback =>
+      'Lianlian Shiguang - ข้อเสนอแนะจากผู้เล่น';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      'ไม่สามารถเปิดแอปอีเมลได้อัตโนมัติ คัดลอกอีเมลทางการให้คุณแล้ว!';
+
+  @override
+  String get title_contact_us => 'ติดต่อเรา';
+
+  @override
+  String get desc_contact_us =>
+      'เราให้ความสำคัญกับข้อเสนอแนะของคุณมาก!\nโปรดเขียนความคิดเห็นของคุณที่นี่เพื่อช่วยเราปรับปรุงเกมให้ดีขึ้น';
+
+  @override
+  String get hint_enter_feedback => 'โปรดป้อนข้อเสนอแนะของคุณที่นี่...';
+
+  @override
+  String get action_send_via_email => 'ส่งทางอีเมล';
 }

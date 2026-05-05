@@ -2896,4 +2896,28 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get desc_contact_us_body =>
       'Vui lòng viết ra suy nghĩ của bạn ở đây để giúp chúng tôi làm cho trò chơi trở nên tốt hơn.';
+
+  @override
+  String get error_feedback_empty => 'Nội dung góp ý không được để trống!';
+
+  @override
+  String get email_subject_feedback =>
+      'Luyến Luyến Thập Quang - Góp ý của người chơi';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      'Không thể tự động mở ứng dụng thư, đã sao chép email chính thức cho bạn!';
+
+  @override
+  String get title_contact_us => 'Liên hệ chúng tôi';
+
+  @override
+  String get desc_contact_us =>
+      'Chúng tôi rất coi trọng những góp ý của bạn!\nVui lòng viết ra suy nghĩ của bạn ở đây để giúp chúng tôi làm cho trò chơi trở nên tốt hơn.';
+
+  @override
+  String get hint_enter_feedback => 'Vui lòng nhập góp ý của bạn tại đây...';
+
+  @override
+  String get action_send_via_email => 'Gửi qua Email';
 }

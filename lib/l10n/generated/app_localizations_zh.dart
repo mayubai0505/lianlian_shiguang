@@ -2730,6 +2730,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get desc_contact_us_body => '請在這裡寫下您的想法，幫助我們把遊戲變得更好。';
+
+  @override
+  String get error_feedback_empty => '建議內容不能為空喔！';
+
+  @override
+  String get email_subject_feedback => '戀戀拾光 - 玩家反饋建議';
+
+  @override
+  String get msg_email_app_not_found_copied => '無法自動開啟郵件，已為您複製官方信箱！';
+
+  @override
+  String get title_contact_us => '聯絡我們';
+
+  @override
+  String get desc_contact_us => '我們非常重視您的建議！\n請在這裡寫下您的想法，幫助我們把遊戲變得更好。';
+
+  @override
+  String get hint_enter_feedback => '請在此輸入您的建議...';
+
+  @override
+  String get action_send_via_email => '透過 Email 傳送';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5458,6 +5479,27 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get desc_contact_us_body => '请在这里写下您的想法，帮助我们把游戏变得更好。';
+
+  @override
+  String get error_feedback_empty => '建议内容不能为空喔！';
+
+  @override
+  String get email_subject_feedback => '恋恋拾光 - 玩家反馈建议';
+
+  @override
+  String get msg_email_app_not_found_copied => '无法自动开启邮件，已为您复制官方邮箱！';
+
+  @override
+  String get title_contact_us => '联络我们';
+
+  @override
+  String get desc_contact_us => '我们非常重视您的建议！\n请在这里写下您的想法，帮助我们把游戏变得更好。';
+
+  @override
+  String get hint_enter_feedback => '请在此输入您的建议...';
+
+  @override
+  String get action_send_via_email => '通过 Email 传送';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8186,4 +8228,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get desc_contact_us_body => '請在這裡寫下您的想法，幫助我們把遊戲變得更好。';
+
+  @override
+  String get error_feedback_empty => '建議內容不能為空喔！';
+
+  @override
+  String get email_subject_feedback => '戀戀拾光 - 玩家反饋建議';
+
+  @override
+  String get msg_email_app_not_found_copied => '無法自動開啟郵件，已為您複製官方信箱！';
+
+  @override
+  String get title_contact_us => '聯絡我們';
+
+  @override
+  String get desc_contact_us => '我們非常重視您的建議！\n請在這裡寫下您的想法，幫助我們把遊戲變得更好。';
+
+  @override
+  String get hint_enter_feedback => '請在此輸入您的建議...';
+
+  @override
+  String get action_send_via_email => '透過 Email 傳送';
 }

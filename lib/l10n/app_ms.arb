@@ -1135,5 +1135,12 @@
     "login_with_email": "Log masuk dengan Akaun Lianlian (E-mel)",
     "title_language_settings": "Tetapan Bahasa",
     "title_contact_us_heading": "Kami sangat menghargai cadangan awak!",
-    "desc_contact_us_body": "Sila tulis buah fikiran awak di sini untuk membantu kami menjadikan permainan ini lebih baik."
+    "desc_contact_us_body": "Sila tulis buah fikiran awak di sini untuk membantu kami menjadikan permainan ini lebih baik.",
+    "error_feedback_empty": "Kandungan cadangan tidak boleh kosong!",
+    "email_subject_feedback": "Lianlian Shiguang - Maklum Balas Pemain",
+    "msg_email_app_not_found_copied": "Tidak dapat membuka apl e-mel secara automatik, e-mel rasmi telah disalin untuk awak!",
+    "title_contact_us": "Hubungi Kami",
+    "desc_contact_us": "Kami sangat menghargai cadangan awak!\nSila tulis buah fikiran awak di sini untuk membantu kami menjadikan permainan ini lebih baik.",
+    "hint_enter_feedback": "Sila masukkan cadangan awak di sini...",
+    "action_send_via_email": "Hantar melalui E-mel"
 }

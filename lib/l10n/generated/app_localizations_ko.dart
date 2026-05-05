@@ -2771,4 +2771,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get desc_contact_us_body => '게임 개선에 도움이 되도록 여기에 의견을 남겨주세요.';
+
+  @override
+  String get error_feedback_empty => '제안 내용은 비워둘 수 없습니다!';
+
+  @override
+  String get email_subject_feedback => '연련습광 - 플레이어 피드백';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      '메일 앱을 자동으로 열 수 없습니다. 공식 이메일 주소가 복사되었습니다!';
+
+  @override
+  String get title_contact_us => '문의하기';
+
+  @override
+  String get desc_contact_us =>
+      '저희는 여러분의 제안을 매우 소중하게 생각합니다!\n게임 개선에 도움이 되도록 여기에 의견을 남겨주세요.';
+
+  @override
+  String get hint_enter_feedback => '여기에 제안을 입력해 주세요...';
+
+  @override
+  String get action_send_via_email => '이메일로 보내기';
 }

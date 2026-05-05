@@ -1348,5 +1348,12 @@
   "login_with_email": "Log in with Lianlian Account (Email)",
   "title_language_settings": "Language Settings",
   "title_contact_us_heading": "We value your suggestions!",
-  "desc_contact_us_body": "Please write down your thoughts here to help us make the game better."
+  "desc_contact_us_body": "Please write down your thoughts here to help us make the game better.",
+  "error_feedback_empty": "Feedback content cannot be empty!",
+  "email_subject_feedback": "Lianlian Shiguang - Player Feedback",
+  "msg_email_app_not_found_copied": "Cannot open mail app automatically. Official email address has been copied to clipboard!",
+  "title_contact_us": "Contact Us",
+  "desc_contact_us": "We value your suggestions!\nPlease write down your thoughts here to help us make the game better.",
+  "hint_enter_feedback": "Please enter your feedback here...",
+  "action_send_via_email": "Send via Email"
 }

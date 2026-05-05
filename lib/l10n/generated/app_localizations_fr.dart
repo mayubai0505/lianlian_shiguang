@@ -2923,4 +2923,29 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get desc_contact_us_body =>
       'Veuillez écrire vos idées ici pour nous aider à améliorer le jeu.';
+
+  @override
+  String get error_feedback_empty =>
+      'Le contenu de la suggestion ne peut pas être vide !';
+
+  @override
+  String get email_subject_feedback =>
+      'Lianlian Shiguang - Retours des joueurs';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      'Impossible d\'ouvrir l\'application de messagerie automatiquement, l\'e-mail officiel a été copié pour vous !';
+
+  @override
+  String get title_contact_us => 'Nous contacter';
+
+  @override
+  String get desc_contact_us =>
+      'Nous accordons une grande importance à vos suggestions !\nVeuillez écrire vos idées ici pour nous aider à améliorer le jeu.';
+
+  @override
+  String get hint_enter_feedback => 'Veuillez saisir votre suggestion ici...';
+
+  @override
+  String get action_send_via_email => 'Envoyer par e-mail';
 }

@@ -1135,5 +1135,12 @@
     "login_with_email": "Iniciar sesión con cuenta Lianlian (Correo)",
     "title_language_settings": "Ajustes de idioma",
     "title_contact_us_heading": "¡Valoramos mucho tus sugerencias!",
-    "desc_contact_us_body": "Por favor, escribe tus ideas aquí para ayudarnos a mejorar el juego."
+    "desc_contact_us_body": "Por favor, escribe tus ideas aquí para ayudarnos a mejorar el juego.",
+    "error_feedback_empty": "¡El contenido de la sugerencia no puede estar vacío!",
+    "email_subject_feedback": "Lianlian Shiguang - Comentarios de los jugadores",
+    "msg_email_app_not_found_copied": "No se puede abrir el correo automáticamente, ¡se ha copiado el correo oficial para ti!",
+    "title_contact_us": "Contáctanos",
+    "desc_contact_us": "¡Valoramos mucho tus sugerencias!\nPor favor, escribe tus ideas aquí para ayudarnos a mejorar el juego.",
+    "hint_enter_feedback": "Por favor, introduce tu sugerencia aquí...",
+    "action_send_via_email": "Enviar por correo electrónico"
 }

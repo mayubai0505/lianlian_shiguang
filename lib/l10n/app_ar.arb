@@ -1176,5 +1176,12 @@
     "login_with_email": "تسجيل الدخول بحساب ليانليان (البريد الإلكتروني)",
     "title_language_settings": "إعدادات اللغة",
     "title_contact_us_heading": "نحن نقدر اقتراحاتك جداً!",
-    "desc_contact_us_body": "يرجى كتابة أفكارك هنا لمساعدتنا في تحسين اللعبة."
+    "desc_contact_us_body": "يرجى كتابة أفكارك هنا لمساعدتنا في تحسين اللعبة.",
+    "error_feedback_empty": "لا يمكن أن يكون محتوى الاقتراح فارغاً!",
+    "email_subject_feedback": "Lianlian Shiguang - اقتراحات وتعليقات اللاعبين",
+    "msg_email_app_not_found_copied": "تعذر فتح تطبيق البريد تلقائياً، تم نسخ البريد الإلكتروني الرسمي لك!",
+    "title_contact_us": "اتصل بنا",
+    "desc_contact_us": "نحن نقدر اقتراحاتك جداً!\nيرجى كتابة أفكارك هنا لمساعدتنا في تحسين اللعبة.",
+    "hint_enter_feedback": "يرجى إدخال اقتراحك هنا...",
+    "action_send_via_email": "إرسال عبر البريد الإلكتروني"
 }

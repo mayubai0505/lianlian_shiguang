@@ -1135,5 +1135,12 @@
     "login_with_email": "Login dengan Akun Lianlian (Email)",
     "title_language_settings": "Pengaturan Bahasa",
     "title_contact_us_heading": "Kami sangat menghargai saranmu!",
-    "desc_contact_us_body": "Silakan tuliskan pemikiranmu di sini untuk membantu kami membuat game menjadi lebih baik."
+    "desc_contact_us_body": "Silakan tuliskan pemikiranmu di sini untuk membantu kami membuat game menjadi lebih baik.",
+    "error_feedback_empty": "Isi saran tidak boleh kosong!",
+    "email_subject_feedback": "Lianlian Shiguang - Umpan Balik Pemain",
+    "msg_email_app_not_found_copied": "Tidak dapat membuka aplikasi email secara otomatis, email resmi telah disalin untukmu!",
+    "title_contact_us": "Hubungi Kami",
+    "desc_contact_us": "Kami sangat menghargai saranmu!\nSilakan tuliskan pemikiranmu di sini untuk membantu kami membuat game menjadi lebih baik.",
+    "hint_enter_feedback": "Silakan masukkan saranmu di sini...",
+    "action_send_via_email": "Kirim via Email"
 }

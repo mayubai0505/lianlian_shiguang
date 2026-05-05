@@ -1246,5 +1246,12 @@
   "login_with_facebook": "使用 Facebook 登入",
   "login_with_email": "使用戀戀帳號登入 (Email)",
   "title_contact_us_heading": "我們非常重視您的建議！",
-  "desc_contact_us_body": "請在這裡寫下您的想法，幫助我們把遊戲變得更好。"
+  "desc_contact_us_body": "請在這裡寫下您的想法，幫助我們把遊戲變得更好。",
+  "error_feedback_empty": "建議內容不能為空喔！",
+  "email_subject_feedback": "戀戀拾光 - 玩家反饋建議",
+  "msg_email_app_not_found_copied": "無法自動開啟郵件，已為您複製官方信箱！",
+  "title_contact_us": "聯絡我們",
+  "desc_contact_us": "我們非常重視您的建議！\n請在這裡寫下您的想法，幫助我們把遊戲變得更好。",
+  "hint_enter_feedback": "請在此輸入您的建議...",
+  "action_send_via_email": "透過 Email 傳送"
 }

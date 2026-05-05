@@ -1135,5 +1135,12 @@
   "login_with_email": "Đăng nhập bằng tài khoản Luyến Luyến (Email)",
   "title_language_settings": "Cài đặt ngôn ngữ",
   "title_contact_us_heading": "Chúng tôi rất coi trọng những góp ý của bạn!",
-  "desc_contact_us_body": "Vui lòng viết ra suy nghĩ của bạn ở đây để giúp chúng tôi làm cho trò chơi trở nên tốt hơn."
+  "desc_contact_us_body": "Vui lòng viết ra suy nghĩ của bạn ở đây để giúp chúng tôi làm cho trò chơi trở nên tốt hơn.",
+  "error_feedback_empty": "Nội dung góp ý không được để trống!",
+  "email_subject_feedback": "Luyến Luyến Thập Quang - Góp ý của người chơi",
+  "msg_email_app_not_found_copied": "Không thể tự động mở ứng dụng thư, đã sao chép email chính thức cho bạn!",
+  "title_contact_us": "Liên hệ chúng tôi",
+  "desc_contact_us": "Chúng tôi rất coi trọng những góp ý của bạn!\nVui lòng viết ra suy nghĩ của bạn ở đây để giúp chúng tôi làm cho trò chơi trở nên tốt hơn.",
+  "hint_enter_feedback": "Vui lòng nhập góp ý của bạn tại đây...",
+  "action_send_via_email": "Gửi qua Email"
 }

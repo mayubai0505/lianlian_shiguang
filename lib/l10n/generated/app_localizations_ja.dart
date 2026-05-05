@@ -2757,4 +2757,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get desc_contact_us_body => 'ゲームをより良くするために、ここにあなたの考えを書き込んでください。';
+
+  @override
+  String get error_feedback_empty => '提案の内容は空にできません！';
+
+  @override
+  String get email_subject_feedback => '恋恋拾光 - プレイヤーからのフィードバック';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      'メールアプリを自動で開けませんでした。公式メールアドレスをコピーしました！';
+
+  @override
+  String get title_contact_us => 'お問い合わせ';
+
+  @override
+  String get desc_contact_us =>
+      '私たちはあなたの提案をとても大切にしています！\nゲームをより良くするために、ここにあなたの考えを書き込んでください。';
+
+  @override
+  String get hint_enter_feedback => 'ここに提案を入力してください...';
+
+  @override
+  String get action_send_via_email => 'メールで送信';
 }

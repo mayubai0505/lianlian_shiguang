@@ -2871,4 +2871,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get desc_contact_us_body =>
       'Please write down your thoughts here to help us make the game better.';
+
+  @override
+  String get error_feedback_empty => 'Feedback content cannot be empty!';
+
+  @override
+  String get email_subject_feedback => 'Lianlian Shiguang - Player Feedback';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      'Cannot open mail app automatically. Official email address has been copied to clipboard!';
+
+  @override
+  String get title_contact_us => 'Contact Us';
+
+  @override
+  String get desc_contact_us =>
+      'We value your suggestions!\nPlease write down your thoughts here to help us make the game better.';
+
+  @override
+  String get hint_enter_feedback => 'Please enter your feedback here...';
+
+  @override
+  String get action_send_via_email => 'Send via Email';
 }

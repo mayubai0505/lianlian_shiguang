@@ -2894,4 +2894,27 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get desc_contact_us_body =>
       'Silakan tuliskan pemikiranmu di sini untuk membantu kami membuat game menjadi lebih baik.';
+
+  @override
+  String get error_feedback_empty => 'Isi saran tidak boleh kosong!';
+
+  @override
+  String get email_subject_feedback => 'Lianlian Shiguang - Umpan Balik Pemain';
+
+  @override
+  String get msg_email_app_not_found_copied =>
+      'Tidak dapat membuka aplikasi email secara otomatis, email resmi telah disalin untukmu!';
+
+  @override
+  String get title_contact_us => 'Hubungi Kami';
+
+  @override
+  String get desc_contact_us =>
+      'Kami sangat menghargai saranmu!\nSilakan tuliskan pemikiranmu di sini untuk membantu kami membuat game menjadi lebih baik.';
+
+  @override
+  String get hint_enter_feedback => 'Silakan masukkan saranmu di sini...';
+
+  @override
+  String get action_send_via_email => 'Kirim via Email';
 }

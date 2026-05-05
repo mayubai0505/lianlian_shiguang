@@ -5115,6 +5115,48 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'請在這裡寫下您的想法，幫助我們把遊戲變得更好。'**
   String get desc_contact_us_body;
+
+  /// No description provided for @error_feedback_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建議內容不能為空喔！'**
+  String get error_feedback_empty;
+
+  /// No description provided for @email_subject_feedback.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光 - 玩家反饋建議'**
+  String get email_subject_feedback;
+
+  /// No description provided for @msg_email_app_not_found_copied.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法自動開啟郵件，已為您複製官方信箱！'**
+  String get msg_email_app_not_found_copied;
+
+  /// No description provided for @title_contact_us.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聯絡我們'**
+  String get title_contact_us;
+
+  /// No description provided for @desc_contact_us.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我們非常重視您的建議！\n請在這裡寫下您的想法，幫助我們把遊戲變得更好。'**
+  String get desc_contact_us;
+
+  /// No description provided for @hint_enter_feedback.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請在此輸入您的建議...'**
+  String get hint_enter_feedback;
+
+  /// No description provided for @action_send_via_email.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'透過 Email 傳送'**
+  String get action_send_via_email;
 }
 
 class _AppLocalizationsDelegate
