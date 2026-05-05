@@ -1327,5 +1327,47 @@
     "action_login": "Se connecter",
     "action_register": "S'inscrire",
     "prompt_no_account": "Pas encore de compte ? Cliquez ici pour vous inscrire",
-    "prompt_has_account": "Déjà un compte ? Cliquez ici pour vous connecter"
+    "prompt_has_account": "Déjà un compte ? Cliquez ici pour vous connecter",
+    "error_nickname_empty": "Le pseudo ne peut pas être vide !",
+    "profile_saved_success": "Profil enregistré !",
+    "error_id_empty": "L'ID ne peut pas être vide !",
+    "error_id_too_long": "La longueur de l'ID ne peut pas dépasser 10 caractères !",
+    "error_id_already_used": "Cet ID est déjà utilisé, veuillez en choisir un autre !",
+    "profile_save_failed": "Échec de l'enregistrement : {error}",
+    "@profile_save_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "draft_saved_success_msg": "C'est noté ! Sauvegardé dans les brouillons pour vous, vous pourrez revenir l'éditer à tout moment ! ✨",
+    "dialog_reminder_title": "Rappel",
+    "warning_id_not_edited": "L'ID exclusif n'a pas encore été modifié, êtes-vous sûr de vouloir enregistrer maintenant ?",
+    "action_continue_editing": "Continuer à modifier",
+    "action_edit_later": "Modifier plus tard",
+    "action_edit_later_short": "Modifier plus tard",
+    "action_cancel_changes": "Annuler les modifications",
+    "error_birthdate_locked": "La date de naissance est déjà définie et ne peut plus être modifiée !",
+    "action_select_avatar": "Sélectionner un avatar",
+    "action_choose_from_gallery": "Choisir depuis la galerie",
+    "title_adjust_avatar": "Ajuster votre avatar",
+    "avatar_updated_success": "Avatar mis à jour pour vous 🍃",
+    "title_create_profile": "Créer votre profil",
+    "title_edit_profile": "Modifier le profil",
+    "label_your_nickname": "Votre pseudo",
+    "label_player_exclusive_id": "ID exclusif du joueur",
+    "msg_id_locked": "L'ID est verrouillé et ne peut plus être modifié.",
+    "msg_id_change_chance": "Vous avez une chance gratuite de modifier votre ID.",
+    "action_select_birthdate": "Veuillez sélectionner votre date de naissance",
+    "label_birthdate": "Date de naissance : {date}",
+    "@label_birthdate": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "msg_birthdate_immutable": "L'anniversaire ne peut pas être modifié une fois défini ✨",
+    "action_start_journey": "Commencer le voyage"
 }

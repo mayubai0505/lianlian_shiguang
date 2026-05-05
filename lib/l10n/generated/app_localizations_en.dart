@@ -2945,4 +2945,100 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get prompt_has_account =>
       'Already have an account? Click here to log in';
+
+  @override
+  String get error_nickname_empty => 'Nickname cannot be empty!';
+
+  @override
+  String get profile_saved_success => 'Profile saved!';
+
+  @override
+  String get error_id_empty => 'ID cannot be empty!';
+
+  @override
+  String get error_id_too_long => 'ID length cannot exceed 10 characters!';
+
+  @override
+  String get error_id_already_used =>
+      'This ID is already in use, please choose another one!';
+
+  @override
+  String profile_save_failed(String error) {
+    return 'Save failed: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg =>
+      'Got it! Saved in drafts for you, you can come back and edit anytime! ✨';
+
+  @override
+  String get dialog_reminder_title => 'Reminder';
+
+  @override
+  String get warning_id_not_edited =>
+      'The exclusive ID hasn\'t been edited yet. Are you sure you want to save now?';
+
+  @override
+  String get action_continue_editing => 'Continue editing';
+
+  @override
+  String get action_edit_later => 'Edit later';
+
+  @override
+  String get action_edit_later_short => 'Edit later';
+
+  @override
+  String get action_cancel_changes => 'Cancel changes';
+
+  @override
+  String get error_birthdate_locked =>
+      'Birthdate has been set and cannot be changed!';
+
+  @override
+  String get action_select_avatar => 'Select avatar';
+
+  @override
+  String get action_choose_from_gallery => 'Choose from gallery';
+
+  @override
+  String get title_adjust_avatar => 'Adjust your avatar';
+
+  @override
+  String get avatar_updated_success => 'Avatar updated for you 🍃';
+
+  @override
+  String get title_create_profile => 'Create your profile';
+
+  @override
+  String get title_edit_profile => 'Edit profile';
+
+  @override
+  String get label_your_nickname => 'Your nickname';
+
+  @override
+  String get label_player_exclusive_id => 'Player exclusive ID';
+
+  @override
+  String get msg_id_locked => 'ID is locked and cannot be changed again.';
+
+  @override
+  String get msg_id_change_chance =>
+      'You have one free chance to change your ID.';
+
+  @override
+  String get action_select_birthdate => 'Please select a birthdate';
+
+  @override
+  String label_birthdate(String date) {
+    return 'Birthdate: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable => 'Birthday cannot be changed once set ✨';
+
+  @override
+  String get action_start_journey => 'Start the journey';
+
+  @override
+  String get action_add_image => 'Add image';
 }

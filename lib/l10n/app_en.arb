@@ -1370,5 +1370,47 @@
   "action_login": "Log in",
   "action_register": "Register",
   "prompt_no_account": "Don't have an account yet? Click here to register",
-  "prompt_has_account": "Already have an account? Click here to log in"
+  "prompt_has_account": "Already have an account? Click here to log in",
+  "error_nickname_empty": "Nickname cannot be empty!",
+  "profile_saved_success": "Profile saved!",
+  "error_id_empty": "ID cannot be empty!",
+  "error_id_too_long": "ID length cannot exceed 10 characters!",
+  "error_id_already_used": "This ID is already in use, please choose another one!",
+  "profile_save_failed": "Save failed: {error}",
+  "@profile_save_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "draft_saved_success_msg": "Got it! Saved in drafts for you, you can come back and edit anytime! ✨",
+  "dialog_reminder_title": "Reminder",
+  "warning_id_not_edited": "The exclusive ID hasn't been edited yet. Are you sure you want to save now?",
+  "action_continue_editing": "Continue editing",
+  "action_edit_later": "Edit later",
+  "action_edit_later_short": "Edit later",
+  "action_cancel_changes": "Cancel changes",
+  "error_birthdate_locked": "Birthdate has been set and cannot be changed!",
+  "action_select_avatar": "Select avatar",
+  "action_choose_from_gallery": "Choose from gallery",
+  "title_adjust_avatar": "Adjust your avatar",
+  "avatar_updated_success": "Avatar updated for you 🍃",
+  "title_create_profile": "Create your profile",
+  "title_edit_profile": "Edit profile",
+  "label_your_nickname": "Your nickname",
+  "label_player_exclusive_id": "Player exclusive ID",
+  "msg_id_locked": "ID is locked and cannot be changed again.",
+  "msg_id_change_chance": "You have one free chance to change your ID.",
+  "action_select_birthdate": "Please select a birthdate",
+  "label_birthdate": "Birthdate: {date}",
+  "@label_birthdate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "msg_birthdate_immutable": "Birthday cannot be changed once set ✨",
+  "action_start_journey": "Start the journey"
 }

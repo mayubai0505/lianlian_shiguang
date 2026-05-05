@@ -1183,5 +1183,47 @@
    "action_login": "Entrar",
    "action_register": "Registrar",
    "prompt_no_account": "Ainda não tem uma conta? Clique aqui para se registrar",
-   "prompt_has_account": "Já tem uma conta? Clique aqui para entrar"
+   "prompt_has_account": "Já tem uma conta? Clique aqui para entrar",
+   "error_nickname_empty": "O apelido não pode ficar em branco!",
+   "profile_saved_success": "Perfil salvo!",
+   "error_id_empty": "O ID não pode ficar em branco!",
+   "error_id_too_long": "O comprimento do ID não pode exceder 10 caracteres!",
+   "error_id_already_used": "Este ID já está em uso, por favor escolha outro!",
+   "profile_save_failed": "Falha ao salvar: {error}",
+   "@profile_save_failed": {
+      "placeholders": {
+         "error": {
+            "type": "String"
+         }
+      }
+   },
+   "draft_saved_success_msg": "Entendido! Salvo nos rascunhos para você, volte e edite a qualquer momento! ✨",
+   "dialog_reminder_title": "Lembrete",
+   "warning_id_not_edited": "O ID exclusivo ainda não foi editado. Tem certeza de que deseja salvar agora?",
+   "action_continue_editing": "Continuar editando",
+   "action_edit_later": "Editar mais tarde",
+   "action_edit_later_short": "Editar depois",
+   "action_cancel_changes": "Cancelar alterações",
+   "error_birthdate_locked": "A data de nascimento foi definida e não pode ser alterada!",
+   "action_select_avatar": "Selecionar avatar",
+   "action_choose_from_gallery": "Escolher da galeria",
+   "title_adjust_avatar": "Ajustar seu avatar",
+   "avatar_updated_success": "Avatar atualizado para você 🍃",
+   "title_create_profile": "Crie seu perfil",
+   "title_edit_profile": "Editar perfil",
+   "label_your_nickname": "Seu apelido",
+   "label_player_exclusive_id": "ID exclusivo de jogador",
+   "msg_id_locked": "O ID está bloqueado e não pode ser alterado novamente.",
+   "msg_id_change_chance": "Você tem uma chance gratuita de alterar seu ID.",
+   "action_select_birthdate": "Por favor, selecione a data de nascimento",
+   "label_birthdate": "Data de nascimento: {date}",
+   "@label_birthdate": {
+      "placeholders": {
+         "date": {
+            "type": "String"
+         }
+      }
+   },
+   "msg_birthdate_immutable": "O aniversário não pode ser alterado depois de definido ✨",
+   "action_start_journey": "Iniciar a jornada"
 }

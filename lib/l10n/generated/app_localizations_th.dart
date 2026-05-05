@@ -2938,4 +2938,98 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get prompt_has_account =>
       'มีบัญชีอยู่แล้วใช่ไหม? คลิกที่นี่เพื่อเข้าสู่ระบบ';
+
+  @override
+  String get error_nickname_empty => 'ชื่อเล่นต้องไม่ว่างเปล่า!';
+
+  @override
+  String get profile_saved_success => 'บันทึกโปรไฟล์แล้ว!';
+
+  @override
+  String get error_id_empty => 'ID ต้องไม่ว่างเปล่า!';
+
+  @override
+  String get error_id_too_long => 'ความยาวของ ID ต้องไม่เกิน 10 ตัวอักษร!';
+
+  @override
+  String get error_id_already_used => 'ID นี้ถูกใช้ไปแล้ว โปรดเลือก ID อื่น!';
+
+  @override
+  String profile_save_failed(String error) {
+    return 'บันทึกล้มเหลว: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg =>
+      'รับทราบ! บันทึกไว้ในฉบับร่างให้แล้ว คุณสามารถกลับมาแก้ไขได้ตลอดเวลา! ✨';
+
+  @override
+  String get dialog_reminder_title => 'คำเตือน';
+
+  @override
+  String get warning_id_not_edited =>
+      'ยังไม่ได้แก้ไข ID พิเศษ แน่ใจหรือไม่ว่าต้องการบันทึกตอนนี้?';
+
+  @override
+  String get action_continue_editing => 'แก้ไขต่อ';
+
+  @override
+  String get action_edit_later => 'แก้ไขภายหลัง';
+
+  @override
+  String get action_edit_later_short => 'แก้ไขทีหลัง';
+
+  @override
+  String get action_cancel_changes => 'ยกเลิกการเปลี่ยนแปลง';
+
+  @override
+  String get error_birthdate_locked =>
+      'ตั้งวันเกิดแล้ว ไม่สามารถเปลี่ยนแปลงได้!';
+
+  @override
+  String get action_select_avatar => 'เลือกรูปประจำตัว';
+
+  @override
+  String get action_choose_from_gallery => 'เลือกจากคลังภาพ';
+
+  @override
+  String get title_adjust_avatar => 'ปรับรูปประจำตัวของคุณ';
+
+  @override
+  String get avatar_updated_success => 'เปลี่ยนรูปประจำตัวให้คุณแล้ว 🍃';
+
+  @override
+  String get title_create_profile => 'สร้างโปรไฟล์ของคุณ';
+
+  @override
+  String get title_edit_profile => 'แก้ไขโปรไฟล์';
+
+  @override
+  String get label_your_nickname => 'ชื่อเล่นของคุณ';
+
+  @override
+  String get label_player_exclusive_id => 'ID พิเศษของผู้เล่น';
+
+  @override
+  String get msg_id_locked => 'ID ถูกล็อคแล้ว ไม่สามารถเปลี่ยนแปลงได้อีก';
+
+  @override
+  String get msg_id_change_chance => 'คุณมีโอกาสเปลี่ยน ID ได้ฟรีหนึ่งครั้ง';
+
+  @override
+  String get action_select_birthdate => 'โปรดเลือกวันเกิด';
+
+  @override
+  String label_birthdate(String date) {
+    return 'วันเกิด: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable => 'ตั้งวันเกิดแล้วแก้ไขไม่ได้นะ ✨';
+
+  @override
+  String get action_start_journey => 'เริ่มการเดินทาง';
+
+  @override
+  String get action_add_image => 'เพิ่มรูปภาพ';
 }

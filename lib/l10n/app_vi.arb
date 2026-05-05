@@ -1157,5 +1157,47 @@
   "action_login": "Đăng nhập",
   "action_register": "Đăng ký",
   "prompt_no_account": "Chưa có tài khoản? Nhấn vào đây để đăng ký",
-  "prompt_has_account": "Đã có tài khoản? Nhấn vào đây để đăng nhập"
+  "prompt_has_account": "Đã có tài khoản? Nhấn vào đây để đăng nhập",
+  "error_nickname_empty": "Biệt danh không được để trống!",
+  "profile_saved_success": "Đã lưu hồ sơ!",
+  "error_id_empty": "ID không được để trống!",
+  "error_id_too_long": "Độ dài ID không được vượt quá 10 ký tự!",
+  "error_id_already_used": "ID này đã được sử dụng, vui lòng chọn ID khác!",
+  "profile_save_failed": "Lưu thất bại: {error}",
+  "@profile_save_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "draft_saved_success_msg": "Đã rõ! Đã lưu vào bản nháp cho bạn, bạn có thể quay lại chỉnh sửa bất cứ lúc nào! ✨",
+  "dialog_reminder_title": "Nhắc nhở",
+  "warning_id_not_edited": "ID độc quyền chưa được chỉnh sửa, bạn có chắc chắn muốn lưu bây giờ không?",
+  "action_continue_editing": "Tiếp tục chỉnh sửa",
+  "action_edit_later": "Chỉnh sửa sau",
+  "action_edit_later_short": "Sửa sau",
+  "action_cancel_changes": "Hủy thay đổi",
+  "error_birthdate_locked": "Ngày sinh đã được đặt, không thể thay đổi!",
+  "action_select_avatar": "Chọn ảnh đại diện",
+  "action_choose_from_gallery": "Chọn từ thư viện",
+  "title_adjust_avatar": "Điều chỉnh ảnh đại diện của bạn",
+  "avatar_updated_success": "Đã đổi ảnh đại diện cho bạn 🍃",
+  "title_create_profile": "Tạo hồ sơ của bạn",
+  "title_edit_profile": "Chỉnh sửa hồ sơ",
+  "label_your_nickname": "Biệt danh của bạn",
+  "label_player_exclusive_id": "ID độc quyền của người chơi",
+  "msg_id_locked": "ID đã bị khóa, không thể thay đổi nữa.",
+  "msg_id_change_chance": "Bạn có một cơ hội miễn phí để đổi ID.",
+  "action_select_birthdate": "Vui lòng chọn ngày sinh",
+  "label_birthdate": "Ngày sinh: {date}",
+  "@label_birthdate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "msg_birthdate_immutable": "Sinh nhật sau khi thiết lập sẽ không thể thay đổi ✨",
+  "action_start_journey": "Bắt đầu hành trình"
 }

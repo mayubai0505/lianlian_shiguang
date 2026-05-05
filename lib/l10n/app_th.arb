@@ -1157,5 +1157,47 @@
     "action_login": "เข้าสู่ระบบ",
     "action_register": "ลงทะเบียน",
     "prompt_no_account": "ยังไม่มีบัญชีใช่ไหม? คลิกที่นี่เพื่อลงทะเบียน",
-    "prompt_has_account": "มีบัญชีอยู่แล้วใช่ไหม? คลิกที่นี่เพื่อเข้าสู่ระบบ"
+    "prompt_has_account": "มีบัญชีอยู่แล้วใช่ไหม? คลิกที่นี่เพื่อเข้าสู่ระบบ",
+    "error_nickname_empty": "ชื่อเล่นต้องไม่ว่างเปล่า!",
+    "profile_saved_success": "บันทึกโปรไฟล์แล้ว!",
+    "error_id_empty": "ID ต้องไม่ว่างเปล่า!",
+    "error_id_too_long": "ความยาวของ ID ต้องไม่เกิน 10 ตัวอักษร!",
+    "error_id_already_used": "ID นี้ถูกใช้ไปแล้ว โปรดเลือก ID อื่น!",
+    "profile_save_failed": "บันทึกล้มเหลว: {error}",
+    "@profile_save_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "draft_saved_success_msg": "รับทราบ! บันทึกไว้ในฉบับร่างให้แล้ว คุณสามารถกลับมาแก้ไขได้ตลอดเวลา! ✨",
+    "dialog_reminder_title": "คำเตือน",
+    "warning_id_not_edited": "ยังไม่ได้แก้ไข ID พิเศษ แน่ใจหรือไม่ว่าต้องการบันทึกตอนนี้?",
+    "action_continue_editing": "แก้ไขต่อ",
+    "action_edit_later": "แก้ไขภายหลัง",
+    "action_edit_later_short": "แก้ไขทีหลัง",
+    "action_cancel_changes": "ยกเลิกการเปลี่ยนแปลง",
+    "error_birthdate_locked": "ตั้งวันเกิดแล้ว ไม่สามารถเปลี่ยนแปลงได้!",
+    "action_select_avatar": "เลือกรูปประจำตัว",
+    "action_choose_from_gallery": "เลือกจากคลังภาพ",
+    "title_adjust_avatar": "ปรับรูปประจำตัวของคุณ",
+    "avatar_updated_success": "เปลี่ยนรูปประจำตัวให้คุณแล้ว 🍃",
+    "title_create_profile": "สร้างโปรไฟล์ของคุณ",
+    "title_edit_profile": "แก้ไขโปรไฟล์",
+    "label_your_nickname": "ชื่อเล่นของคุณ",
+    "label_player_exclusive_id": "ID พิเศษของผู้เล่น",
+    "msg_id_locked": "ID ถูกล็อคแล้ว ไม่สามารถเปลี่ยนแปลงได้อีก",
+    "msg_id_change_chance": "คุณมีโอกาสเปลี่ยน ID ได้ฟรีหนึ่งครั้ง",
+    "action_select_birthdate": "โปรดเลือกวันเกิด",
+    "label_birthdate": "วันเกิด: {date}",
+    "@label_birthdate": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "msg_birthdate_immutable": "ตั้งวันเกิดแล้วแก้ไขไม่ได้นะ ✨",
+    "action_start_journey": "เริ่มการเดินทาง"
 }

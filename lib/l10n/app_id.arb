@@ -1157,5 +1157,47 @@
     "action_login": "Login",
     "action_register": "Daftar",
     "prompt_no_account": "Belum punya akun? Klik di sini untuk mendaftar",
-    "prompt_has_account": "Sudah punya akun? Klik di sini untuk login"
+    "prompt_has_account": "Sudah punya akun? Klik di sini untuk login",
+    "error_nickname_empty": "Nama panggilan tidak boleh kosong!",
+    "profile_saved_success": "Profil berhasil disimpan!",
+    "error_id_empty": "ID tidak boleh kosong!",
+    "error_id_too_long": "Panjang ID tidak boleh melebihi 10 karakter!",
+    "error_id_already_used": "ID ini sudah digunakan, silakan pilih yang lain!",
+    "profile_save_failed": "Gagal menyimpan: {error}",
+    "@profile_save_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "draft_saved_success_msg": "Baiklah! Disimpan di draf untukmu, kamu bisa kembali mengeditnya kapan saja! ✨",
+    "dialog_reminder_title": "Pengingat",
+    "warning_id_not_edited": "ID Eksklusif belum diedit, apakah Anda yakin ingin menyimpannya sekarang?",
+    "action_continue_editing": "Lanjutkan mengedit",
+    "action_edit_later": "Edit nanti",
+    "action_edit_later_short": "Edit nanti",
+    "action_cancel_changes": "Batal ubah",
+    "error_birthdate_locked": "Tanggal lahir sudah diatur dan tidak dapat diubah!",
+    "action_select_avatar": "Pilih avatar",
+    "action_choose_from_gallery": "Pilih dari galeri",
+    "title_adjust_avatar": "Sesuaikan avatar Anda",
+    "avatar_updated_success": "Avatar telah diperbarui untukmu 🍃",
+    "title_create_profile": "Buat profilmu",
+    "title_edit_profile": "Edit Profil",
+    "label_your_nickname": "Nama panggilan Anda",
+    "label_player_exclusive_id": "ID Eksklusif Pemain",
+    "msg_id_locked": "ID telah dikunci dan tidak dapat diubah lagi.",
+    "msg_id_change_chance": "Anda memiliki satu kesempatan gratis untuk mengubah ID Anda.",
+    "action_select_birthdate": "Silakan pilih tanggal lahir",
+    "label_birthdate": "Tanggal Lahir: {date}",
+    "@label_birthdate": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "msg_birthdate_immutable": "Ulang tahun tidak dapat diubah setelah diatur ✨",
+    "action_start_journey": "Mulai perjalanan"
 }

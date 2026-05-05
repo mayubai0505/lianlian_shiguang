@@ -1269,5 +1269,55 @@
   "action_register": "註冊",
 
   "prompt_no_account": "還沒有帳號？點我註冊",
-  "prompt_has_account": "已經有帳號了？點我登入"
+  "prompt_has_account": "已經有帳號了？點我登入",
+  "error_nickname_empty": "暱稱不能為空！",
+  "profile_saved_success": "個人檔案儲存！",
+  "error_id_empty": "ID不能為空！",
+  "error_id_too_long": "ID長度不能超過10個字元！",
+  "error_id_already_used": "此ID已被使用，請換一個！",
+
+  "profile_save_failed": "儲存失敗: {error}",
+  "@profile_save_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "draft_saved_success_msg": "好的！先幫你保存在草稿裡，隨時可以回來編輯喔！✨",
+  "dialog_reminder_title": "提醒",
+  "warning_id_not_edited": "專屬ID尚未編輯，您確定要現在儲存嗎？",
+  "action_continue_editing": "繼續編輯",
+  "action_edit_later": "之後再編輯",
+  "action_edit_later_short": "稍後再編輯",
+  "action_cancel_changes": "取消變更",
+
+  "error_birthdate_locked": "出生日期已設定，不可更改！",
+  "action_select_avatar": "選擇頭像",
+  "action_choose_from_gallery": "從相冊選擇",
+  "title_adjust_avatar": "調整您的時光頭像",
+  "avatar_updated_success": "已為您換上頭像 🍃",
+
+  "title_create_profile": "建立你的檔案",
+  "title_edit_profile": "編輯個人檔案",
+  "label_your_nickname": "您的暱稱",
+  "label_player_exclusive_id": "玩家專屬 ID",
+
+  "msg_id_locked": "ID 已鎖定，無法再次更改。",
+  "msg_id_change_chance": "您有一次免費更改 ID 的機會。",
+
+  "action_select_birthdate": "請選擇出生日期",
+  "label_birthdate": "出生日期: {date}",
+  "@label_birthdate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+
+  "msg_birthdate_immutable": "生日設定後不可更改 ✨",
+  "action_start_journey": "開啟時光旅程",
+  "action_add_image": "新增圖片"
 }

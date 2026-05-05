@@ -2929,4 +2929,101 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get prompt_has_account => 'لديك حساب بالفعل؟ انقر هنا لتسجيل الدخول';
+
+  @override
+  String get error_nickname_empty => 'لا يمكن أن يكون اللقب فارغاً!';
+
+  @override
+  String get profile_saved_success => 'تم حفظ الملف الشخصي!';
+
+  @override
+  String get error_id_empty => 'لا يمكن أن يكون المعرف (ID) فارغاً!';
+
+  @override
+  String get error_id_too_long => 'لا يمكن أن يتجاوز طول المعرف 10 أحرف!';
+
+  @override
+  String get error_id_already_used =>
+      'هذا المعرف مستخدم بالفعل، يرجى اختيار واحد آخر!';
+
+  @override
+  String profile_save_failed(String error) {
+    return 'فشل الحفظ: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg =>
+      'حسناً! تم حفظه في المسودات لك، يمكنك العودة للتعديل في أي وقت! ✨';
+
+  @override
+  String get dialog_reminder_title => 'تذكير';
+
+  @override
+  String get warning_id_not_edited =>
+      'لم يتم تعديل المعرف الحصري بعد، هل أنت متأكد من رغبتك في الحفظ الآن؟';
+
+  @override
+  String get action_continue_editing => 'متابعة التعديل';
+
+  @override
+  String get action_edit_later => 'التعديل لاحقاً';
+
+  @override
+  String get action_edit_later_short => 'تعديل لاحقاً';
+
+  @override
+  String get action_cancel_changes => 'إلغاء التغييرات';
+
+  @override
+  String get error_birthdate_locked =>
+      'تم تعيين تاريخ الميلاد ولا يمكن تغييره!';
+
+  @override
+  String get action_select_avatar => 'اختيار صورة شخصية';
+
+  @override
+  String get action_choose_from_gallery => 'اختيار من المعرض';
+
+  @override
+  String get title_adjust_avatar => 'ضبط صورتك الشخصية';
+
+  @override
+  String get avatar_updated_success => 'تم تحديث صورتك الشخصية 🍃';
+
+  @override
+  String get title_create_profile => 'إنشاء ملفك الشخصي';
+
+  @override
+  String get title_edit_profile => 'تعديل الملف الشخصي';
+
+  @override
+  String get label_your_nickname => 'لقبك';
+
+  @override
+  String get label_player_exclusive_id => 'المعرف الحصري للاعب';
+
+  @override
+  String get msg_id_locked => 'المعرف مقفل ولا يمكن تغييره مرة أخرى.';
+
+  @override
+  String get msg_id_change_chance =>
+      'لديك فرصة واحدة مجانية لتغيير المعرف الخاص بك.';
+
+  @override
+  String get action_select_birthdate => 'يرجى تحديد تاريخ الميلاد';
+
+  @override
+  String label_birthdate(String date) {
+    return 'تاريخ الميلاد: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable =>
+      'لا يمكن تغيير يوم الميلاد بعد تعيينه ✨';
+
+  @override
+  String get action_start_journey => 'بدء رحلة الزمن';
+
+  @override
+  String get action_add_image => 'إضافة صورة';
 }

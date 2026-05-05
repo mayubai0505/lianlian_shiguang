@@ -5247,6 +5247,180 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'已經有帳號了？點我登入'**
   String get prompt_has_account;
+
+  /// No description provided for @error_nickname_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'暱稱不能為空！'**
+  String get error_nickname_empty;
+
+  /// No description provided for @profile_saved_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'個人檔案儲存！'**
+  String get profile_saved_success;
+
+  /// No description provided for @error_id_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'ID不能為空！'**
+  String get error_id_empty;
+
+  /// No description provided for @error_id_too_long.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'ID長度不能超過10個字元！'**
+  String get error_id_too_long;
+
+  /// No description provided for @error_id_already_used.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'此ID已被使用，請換一個！'**
+  String get error_id_already_used;
+
+  /// No description provided for @profile_save_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存失敗: {error}'**
+  String profile_save_failed(String error);
+
+  /// No description provided for @draft_saved_success_msg.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好的！先幫你保存在草稿裡，隨時可以回來編輯喔！✨'**
+  String get draft_saved_success_msg;
+
+  /// No description provided for @dialog_reminder_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'提醒'**
+  String get dialog_reminder_title;
+
+  /// No description provided for @warning_id_not_edited.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬ID尚未編輯，您確定要現在儲存嗎？'**
+  String get warning_id_not_edited;
+
+  /// No description provided for @action_continue_editing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'繼續編輯'**
+  String get action_continue_editing;
+
+  /// No description provided for @action_edit_later.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'之後再編輯'**
+  String get action_edit_later;
+
+  /// No description provided for @action_edit_later_short.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'稍後再編輯'**
+  String get action_edit_later_short;
+
+  /// No description provided for @action_cancel_changes.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消變更'**
+  String get action_cancel_changes;
+
+  /// No description provided for @error_birthdate_locked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'出生日期已設定，不可更改！'**
+  String get error_birthdate_locked;
+
+  /// No description provided for @action_select_avatar.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇頭像'**
+  String get action_select_avatar;
+
+  /// No description provided for @action_choose_from_gallery.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'從相冊選擇'**
+  String get action_choose_from_gallery;
+
+  /// No description provided for @title_adjust_avatar.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'調整您的時光頭像'**
+  String get title_adjust_avatar;
+
+  /// No description provided for @avatar_updated_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已為您換上頭像 🍃'**
+  String get avatar_updated_success;
+
+  /// No description provided for @title_create_profile.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建立你的檔案'**
+  String get title_create_profile;
+
+  /// No description provided for @title_edit_profile.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯個人檔案'**
+  String get title_edit_profile;
+
+  /// No description provided for @label_your_nickname.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您的暱稱'**
+  String get label_your_nickname;
+
+  /// No description provided for @label_player_exclusive_id.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'玩家專屬 ID'**
+  String get label_player_exclusive_id;
+
+  /// No description provided for @msg_id_locked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'ID 已鎖定，無法再次更改。'**
+  String get msg_id_locked;
+
+  /// No description provided for @msg_id_change_chance.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您有一次免費更改 ID 的機會。'**
+  String get msg_id_change_chance;
+
+  /// No description provided for @action_select_birthdate.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請選擇出生日期'**
+  String get action_select_birthdate;
+
+  /// No description provided for @label_birthdate.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'出生日期: {date}'**
+  String label_birthdate(String date);
+
+  /// No description provided for @msg_birthdate_immutable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生日設定後不可更改 ✨'**
+  String get msg_birthdate_immutable;
+
+  /// No description provided for @action_start_journey.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開啟時光旅程'**
+  String get action_start_journey;
+
+  /// No description provided for @action_add_image.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增圖片'**
+  String get action_add_image;
 }
 
 class _AppLocalizationsDelegate

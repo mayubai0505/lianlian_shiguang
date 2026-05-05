@@ -2839,4 +2839,96 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get prompt_has_account => '이미 계정이 있으신가요? 여기를 눌러 로그인하세요';
+
+  @override
+  String get error_nickname_empty => '닉네임은 비워둘 수 없습니다!';
+
+  @override
+  String get profile_saved_success => '프로필 저장 완료!';
+
+  @override
+  String get error_id_empty => 'ID는 비워둘 수 없습니다!';
+
+  @override
+  String get error_id_too_long => 'ID 길이는 10자를 초과할 수 없습니다!';
+
+  @override
+  String get error_id_already_used => '이미 사용 중인 ID입니다. 다른 ID를 선택해 주세요!';
+
+  @override
+  String profile_save_failed(String error) {
+    return '저장 실패: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg =>
+      '알겠습니다! 임시 보관함에 저장해 두었으니 언제든 다시 와서 편집할 수 있어요! ✨';
+
+  @override
+  String get dialog_reminder_title => '알림';
+
+  @override
+  String get warning_id_not_edited => '전용 ID가 아직 편집되지 않았습니다. 지금 저장하시겠습니까?';
+
+  @override
+  String get action_continue_editing => '계속 편집';
+
+  @override
+  String get action_edit_later => '나중에 편집하기';
+
+  @override
+  String get action_edit_later_short => '나중에 편집';
+
+  @override
+  String get action_cancel_changes => '변경 취소';
+
+  @override
+  String get error_birthdate_locked => '생년월일이 설정되어 변경할 수 없습니다!';
+
+  @override
+  String get action_select_avatar => '아바타 선택';
+
+  @override
+  String get action_choose_from_gallery => '갤러리에서 선택';
+
+  @override
+  String get title_adjust_avatar => '아바타 조정';
+
+  @override
+  String get avatar_updated_success => '아바타가 변경되었습니다 🍃';
+
+  @override
+  String get title_create_profile => '프로필 만들기';
+
+  @override
+  String get title_edit_profile => '프로필 편집';
+
+  @override
+  String get label_your_nickname => '당신의 닉네임';
+
+  @override
+  String get label_player_exclusive_id => '플레이어 전용 ID';
+
+  @override
+  String get msg_id_locked => 'ID가 잠겨 있어 다시 변경할 수 없습니다.';
+
+  @override
+  String get msg_id_change_chance => 'ID를 무료로 변경할 수 있는 기회가 한 번 있습니다.';
+
+  @override
+  String get action_select_birthdate => '생년월일을 선택해 주세요';
+
+  @override
+  String label_birthdate(String date) {
+    return '생년월일: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable => '생일은 한 번 설정하면 변경할 수 없습니다 ✨';
+
+  @override
+  String get action_start_journey => '여정 시작하기';
+
+  @override
+  String get action_add_image => '이미지 추가';
 }

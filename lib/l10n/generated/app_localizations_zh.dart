@@ -2796,6 +2796,97 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get prompt_has_account => '已經有帳號了？點我登入';
+
+  @override
+  String get error_nickname_empty => '暱稱不能為空！';
+
+  @override
+  String get profile_saved_success => '個人檔案儲存！';
+
+  @override
+  String get error_id_empty => 'ID不能為空！';
+
+  @override
+  String get error_id_too_long => 'ID長度不能超過10個字元！';
+
+  @override
+  String get error_id_already_used => '此ID已被使用，請換一個！';
+
+  @override
+  String profile_save_failed(String error) {
+    return '儲存失敗: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg => '好的！先幫你保存在草稿裡，隨時可以回來編輯喔！✨';
+
+  @override
+  String get dialog_reminder_title => '提醒';
+
+  @override
+  String get warning_id_not_edited => '專屬ID尚未編輯，您確定要現在儲存嗎？';
+
+  @override
+  String get action_continue_editing => '繼續編輯';
+
+  @override
+  String get action_edit_later => '之後再編輯';
+
+  @override
+  String get action_edit_later_short => '稍後再編輯';
+
+  @override
+  String get action_cancel_changes => '取消變更';
+
+  @override
+  String get error_birthdate_locked => '出生日期已設定，不可更改！';
+
+  @override
+  String get action_select_avatar => '選擇頭像';
+
+  @override
+  String get action_choose_from_gallery => '從相冊選擇';
+
+  @override
+  String get title_adjust_avatar => '調整您的時光頭像';
+
+  @override
+  String get avatar_updated_success => '已為您換上頭像 🍃';
+
+  @override
+  String get title_create_profile => '建立你的檔案';
+
+  @override
+  String get title_edit_profile => '編輯個人檔案';
+
+  @override
+  String get label_your_nickname => '您的暱稱';
+
+  @override
+  String get label_player_exclusive_id => '玩家專屬 ID';
+
+  @override
+  String get msg_id_locked => 'ID 已鎖定，無法再次更改。';
+
+  @override
+  String get msg_id_change_chance => '您有一次免費更改 ID 的機會。';
+
+  @override
+  String get action_select_birthdate => '請選擇出生日期';
+
+  @override
+  String label_birthdate(String date) {
+    return '出生日期: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable => '生日設定後不可更改 ✨';
+
+  @override
+  String get action_start_journey => '開啟時光旅程';
+
+  @override
+  String get action_add_image => '新增圖片';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5590,6 +5681,97 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get prompt_has_account => '已经有账号了？点我登录';
+
+  @override
+  String get error_nickname_empty => '昵称不能为空！';
+
+  @override
+  String get profile_saved_success => '个人档案保存！';
+
+  @override
+  String get error_id_empty => 'ID不能为空！';
+
+  @override
+  String get error_id_too_long => 'ID长度不能超过10个字符！';
+
+  @override
+  String get error_id_already_used => '此ID已被使用，请换一个！';
+
+  @override
+  String profile_save_failed(String error) {
+    return '保存失败: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg => '好的！先帮你保存在草稿里，随时可以回来编辑喔！✨';
+
+  @override
+  String get dialog_reminder_title => '提醒';
+
+  @override
+  String get warning_id_not_edited => '专属ID尚未编辑，您确定要现在保存吗？';
+
+  @override
+  String get action_continue_editing => '继续编辑';
+
+  @override
+  String get action_edit_later => '之后再编辑';
+
+  @override
+  String get action_edit_later_short => '稍后再编辑';
+
+  @override
+  String get action_cancel_changes => '取消更改';
+
+  @override
+  String get error_birthdate_locked => '出生日期已设定，不可更改！';
+
+  @override
+  String get action_select_avatar => '选择头像';
+
+  @override
+  String get action_choose_from_gallery => '从相册选择';
+
+  @override
+  String get title_adjust_avatar => '调整您的时光头像';
+
+  @override
+  String get avatar_updated_success => '已为您换上头像 🍃';
+
+  @override
+  String get title_create_profile => '建立你的档案';
+
+  @override
+  String get title_edit_profile => '编辑个人档案';
+
+  @override
+  String get label_your_nickname => '您的昵称';
+
+  @override
+  String get label_player_exclusive_id => '玩家专属 ID';
+
+  @override
+  String get msg_id_locked => 'ID 已锁定，无法再次更改。';
+
+  @override
+  String get msg_id_change_chance => '您有一次免费更改 ID 的机会。';
+
+  @override
+  String get action_select_birthdate => '请选择出生日期';
+
+  @override
+  String label_birthdate(String date) {
+    return '出生日期: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable => '生日设定后不可更改 ✨';
+
+  @override
+  String get action_start_journey => '开启时光旅程';
+
+  @override
+  String get action_add_image => '新增图片';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8384,4 +8566,95 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get prompt_has_account => '已經有帳號了？點我登入';
+
+  @override
+  String get error_nickname_empty => '暱稱不能為空！';
+
+  @override
+  String get profile_saved_success => '個人檔案儲存！';
+
+  @override
+  String get error_id_empty => 'ID不能為空！';
+
+  @override
+  String get error_id_too_long => 'ID長度不能超過10個字元！';
+
+  @override
+  String get error_id_already_used => '此ID已被使用，請換一個！';
+
+  @override
+  String profile_save_failed(String error) {
+    return '儲存失敗: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg => '好的！先幫你保存在草稿裡，隨時可以回來編輯喔！✨';
+
+  @override
+  String get dialog_reminder_title => '提醒';
+
+  @override
+  String get warning_id_not_edited => '專屬ID尚未編輯，您確定要現在儲存嗎？';
+
+  @override
+  String get action_continue_editing => '繼續編輯';
+
+  @override
+  String get action_edit_later => '之後再編輯';
+
+  @override
+  String get action_edit_later_short => '稍後再編輯';
+
+  @override
+  String get action_cancel_changes => '取消變更';
+
+  @override
+  String get error_birthdate_locked => '出生日期已設定，不可更改！';
+
+  @override
+  String get action_select_avatar => '選擇頭像';
+
+  @override
+  String get action_choose_from_gallery => '從相冊選擇';
+
+  @override
+  String get title_adjust_avatar => '調整您的時光頭像';
+
+  @override
+  String get avatar_updated_success => '已為您換上頭像 🍃';
+
+  @override
+  String get title_create_profile => '建立你的檔案';
+
+  @override
+  String get title_edit_profile => '編輯個人檔案';
+
+  @override
+  String get label_your_nickname => '您的暱稱';
+
+  @override
+  String get label_player_exclusive_id => '玩家專屬 ID';
+
+  @override
+  String get msg_id_locked => 'ID 已鎖定，無法再次更改。';
+
+  @override
+  String get msg_id_change_chance => '您有一次免費更改 ID 的機會。';
+
+  @override
+  String get action_select_birthdate => '請選擇出生日期';
+
+  @override
+  String label_birthdate(String date) {
+    return '出生日期: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable => '生日設定後不可更改 ✨';
+
+  @override
+  String get action_start_journey => '開啟時光旅程';
+
+  @override
+  String get action_add_image => '新增圖片';
 }

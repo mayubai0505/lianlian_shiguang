@@ -2825,4 +2825,95 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get prompt_has_account => 'すでにアカウントを持っていますか？ここをクリックしてログイン';
+
+  @override
+  String get error_nickname_empty => 'ニックネームは空にできません！';
+
+  @override
+  String get profile_saved_success => 'プロフィールを保存しました！';
+
+  @override
+  String get error_id_empty => 'IDは空にできません！';
+
+  @override
+  String get error_id_too_long => 'IDの長さは10文字を超えてはいけません！';
+
+  @override
+  String get error_id_already_used => 'このIDはすでに使用されています。別のものを選択してください！';
+
+  @override
+  String profile_save_failed(String error) {
+    return '保存に失敗しました：$error';
+  }
+
+  @override
+  String get draft_saved_success_msg => '了解しました！下書きに保存しました。いつでも編集を再開できますよ！✨';
+
+  @override
+  String get dialog_reminder_title => 'リマインダー';
+
+  @override
+  String get warning_id_not_edited => '専用IDがまだ編集されていませんが、今すぐ保存してもよろしいですか？';
+
+  @override
+  String get action_continue_editing => '編集を続ける';
+
+  @override
+  String get action_edit_later => '後で編集する';
+
+  @override
+  String get action_edit_later_short => '後で編集';
+
+  @override
+  String get action_cancel_changes => '変更をキャンセル';
+
+  @override
+  String get error_birthdate_locked => '生年月日は既に設定されているため、変更できません！';
+
+  @override
+  String get action_select_avatar => 'アバターを選択';
+
+  @override
+  String get action_choose_from_gallery => 'ギャラリーから選択';
+
+  @override
+  String get title_adjust_avatar => 'アバターを調整';
+
+  @override
+  String get avatar_updated_success => 'アバターを変更しました 🍃';
+
+  @override
+  String get title_create_profile => 'プロフィールを作成';
+
+  @override
+  String get title_edit_profile => 'プロフィールを編集';
+
+  @override
+  String get label_your_nickname => 'あなたのニックネーム';
+
+  @override
+  String get label_player_exclusive_id => 'プレイヤー専用ID';
+
+  @override
+  String get msg_id_locked => 'IDはロックされており、再度変更することはできません。';
+
+  @override
+  String get msg_id_change_chance => 'IDを無料で変更できるチャンスが1回あります。';
+
+  @override
+  String get action_select_birthdate => '生年月日を選択してください';
+
+  @override
+  String label_birthdate(String date) {
+    return '生年月日：$date';
+  }
+
+  @override
+  String get msg_birthdate_immutable => '誕生日は一度設定すると変更できません ✨';
+
+  @override
+  String get action_start_journey => '時間の旅を始める';
+
+  @override
+  String get action_add_image => '画像を追加';
 }

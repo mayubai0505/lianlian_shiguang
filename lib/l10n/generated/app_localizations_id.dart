@@ -2969,4 +2969,102 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get prompt_has_account => 'Sudah punya akun? Klik di sini untuk login';
+
+  @override
+  String get error_nickname_empty => 'Nama panggilan tidak boleh kosong!';
+
+  @override
+  String get profile_saved_success => 'Profil berhasil disimpan!';
+
+  @override
+  String get error_id_empty => 'ID tidak boleh kosong!';
+
+  @override
+  String get error_id_too_long =>
+      'Panjang ID tidak boleh melebihi 10 karakter!';
+
+  @override
+  String get error_id_already_used =>
+      'ID ini sudah digunakan, silakan pilih yang lain!';
+
+  @override
+  String profile_save_failed(String error) {
+    return 'Gagal menyimpan: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg =>
+      'Baiklah! Disimpan di draf untukmu, kamu bisa kembali mengeditnya kapan saja! ✨';
+
+  @override
+  String get dialog_reminder_title => 'Pengingat';
+
+  @override
+  String get warning_id_not_edited =>
+      'ID Eksklusif belum diedit, apakah Anda yakin ingin menyimpannya sekarang?';
+
+  @override
+  String get action_continue_editing => 'Lanjutkan mengedit';
+
+  @override
+  String get action_edit_later => 'Edit nanti';
+
+  @override
+  String get action_edit_later_short => 'Edit nanti';
+
+  @override
+  String get action_cancel_changes => 'Batal ubah';
+
+  @override
+  String get error_birthdate_locked =>
+      'Tanggal lahir sudah diatur dan tidak dapat diubah!';
+
+  @override
+  String get action_select_avatar => 'Pilih avatar';
+
+  @override
+  String get action_choose_from_gallery => 'Pilih dari galeri';
+
+  @override
+  String get title_adjust_avatar => 'Sesuaikan avatar Anda';
+
+  @override
+  String get avatar_updated_success => 'Avatar telah diperbarui untukmu 🍃';
+
+  @override
+  String get title_create_profile => 'Buat profilmu';
+
+  @override
+  String get title_edit_profile => 'Edit Profil';
+
+  @override
+  String get label_your_nickname => 'Nama panggilan Anda';
+
+  @override
+  String get label_player_exclusive_id => 'ID Eksklusif Pemain';
+
+  @override
+  String get msg_id_locked => 'ID telah dikunci dan tidak dapat diubah lagi.';
+
+  @override
+  String get msg_id_change_chance =>
+      'Anda memiliki satu kesempatan gratis untuk mengubah ID Anda.';
+
+  @override
+  String get action_select_birthdate => 'Silakan pilih tanggal lahir';
+
+  @override
+  String label_birthdate(String date) {
+    return 'Tanggal Lahir: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable =>
+      'Ulang tahun tidak dapat diubah setelah diatur ✨';
+
+  @override
+  String get action_start_journey => 'Mulai perjalanan';
+
+  @override
+  String get action_add_image => 'Tambah gambar';
 }

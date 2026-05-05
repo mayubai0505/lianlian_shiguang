@@ -1169,5 +1169,47 @@
   "action_login": "登录",
   "action_register": "注册",
   "prompt_no_account": "还没有账号？点我注册",
-  "prompt_has_account": "已经有账号了？点我登录"
+  "prompt_has_account": "已经有账号了？点我登录",
+  "error_nickname_empty": "昵称不能为空！",
+  "profile_saved_success": "个人档案保存！",
+  "error_id_empty": "ID不能为空！",
+  "error_id_too_long": "ID长度不能超过10个字符！",
+  "error_id_already_used": "此ID已被使用，请换一个！",
+  "profile_save_failed": "保存失败: {error}",
+  "@profile_save_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "draft_saved_success_msg": "好的！先帮你保存在草稿里，随时可以回来编辑喔！✨",
+  "dialog_reminder_title": "提醒",
+  "warning_id_not_edited": "专属ID尚未编辑，您确定要现在保存吗？",
+  "action_continue_editing": "继续编辑",
+  "action_edit_later": "之后再编辑",
+  "action_edit_later_short": "稍后再编辑",
+  "action_cancel_changes": "取消更改",
+  "error_birthdate_locked": "出生日期已设定，不可更改！",
+  "action_select_avatar": "选择头像",
+  "action_choose_from_gallery": "从相册选择",
+  "title_adjust_avatar": "调整您的时光头像",
+  "avatar_updated_success": "已为您换上头像 🍃",
+  "title_create_profile": "建立你的档案",
+  "title_edit_profile": "编辑个人档案",
+  "label_your_nickname": "您的昵称",
+  "label_player_exclusive_id": "玩家专属 ID",
+  "msg_id_locked": "ID 已锁定，无法再次更改。",
+  "msg_id_change_chance": "您有一次免费更改 ID 的机会。",
+  "action_select_birthdate": "请选择出生日期",
+  "label_birthdate": "出生日期: {date}",
+  "@label_birthdate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "msg_birthdate_immutable": "生日设定后不可更改 ✨",
+  "action_start_journey": "开启时光旅程"
 }

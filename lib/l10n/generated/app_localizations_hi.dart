@@ -2968,4 +2968,103 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get prompt_has_account =>
       'क्या आपके पास पहले से खाता है? लॉग इन करने के लिए यहाँ क्लिक करें';
+
+  @override
+  String get error_nickname_empty => 'उपनाम खाली नहीं हो सकता!';
+
+  @override
+  String get profile_saved_success => 'प्रोफ़ाइल सहेजी गई!';
+
+  @override
+  String get error_id_empty => 'ID खाली नहीं हो सकती!';
+
+  @override
+  String get error_id_too_long =>
+      'ID की लंबाई 10 अक्षरों से अधिक नहीं हो सकती!';
+
+  @override
+  String get error_id_already_used =>
+      'यह ID पहले से उपयोग में है, कृपया दूसरी चुनें!';
+
+  @override
+  String profile_save_failed(String error) {
+    return 'सहेजने में विफल: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg =>
+      'ठीक है! आपके लिए ड्राफ्ट में सहेज लिया गया है, आप कभी भी वापस आकर संपादन कर सकते हैं! ✨';
+
+  @override
+  String get dialog_reminder_title => 'अनुस्मारक';
+
+  @override
+  String get warning_id_not_edited =>
+      'विशेष ID अभी तक संपादित नहीं की गई है, क्या आप वाकई अभी सहेजना चाहते हैं?';
+
+  @override
+  String get action_continue_editing => 'संपादन जारी रखें';
+
+  @override
+  String get action_edit_later => 'बाद में संपादित करें';
+
+  @override
+  String get action_edit_later_short => 'बाद में संपादित करें';
+
+  @override
+  String get action_cancel_changes => 'बदलाव रद्द करें';
+
+  @override
+  String get error_birthdate_locked =>
+      'जन्म तिथि निर्धारित की जा चुकी है और इसे बदला नहीं जा सकता!';
+
+  @override
+  String get action_select_avatar => 'अवतार चुनें';
+
+  @override
+  String get action_choose_from_gallery => 'गैलरी से चुनें';
+
+  @override
+  String get title_adjust_avatar => 'अपना अवतार समायोजित करें';
+
+  @override
+  String get avatar_updated_success => 'आपके लिए अवतार अपडेट कर दिया गया है 🍃';
+
+  @override
+  String get title_create_profile => 'अपनी प्रोफ़ाइल बनाएं';
+
+  @override
+  String get title_edit_profile => 'प्रोफ़ाइल संपादित करें';
+
+  @override
+  String get label_your_nickname => 'आपका उपनाम';
+
+  @override
+  String get label_player_exclusive_id => 'खिलाड़ी की विशेष ID';
+
+  @override
+  String get msg_id_locked =>
+      'ID लॉक हो गई है और इसे दोबारा नहीं बदला जा सकता।';
+
+  @override
+  String get msg_id_change_chance =>
+      'आपके पास अपनी ID बदलने का एक मुफ्त मौका है।';
+
+  @override
+  String get action_select_birthdate => 'कृपया जन्म तिथि चुनें';
+
+  @override
+  String label_birthdate(String date) {
+    return 'जन्म तिथि: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable =>
+      'सेट होने के बाद जन्मदिन नहीं बदला जा सकता ✨';
+
+  @override
+  String get action_start_journey => 'यात्रा शुरू करें';
+
+  @override
+  String get action_add_image => 'छवि जोड़ें';
 }

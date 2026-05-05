@@ -2979,4 +2979,104 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get prompt_has_account => 'Já tem uma conta? Clique aqui para entrar';
+
+  @override
+  String get error_nickname_empty => 'O apelido não pode ficar em branco!';
+
+  @override
+  String get profile_saved_success => 'Perfil salvo!';
+
+  @override
+  String get error_id_empty => 'O ID não pode ficar em branco!';
+
+  @override
+  String get error_id_too_long =>
+      'O comprimento do ID não pode exceder 10 caracteres!';
+
+  @override
+  String get error_id_already_used =>
+      'Este ID já está em uso, por favor escolha outro!';
+
+  @override
+  String profile_save_failed(String error) {
+    return 'Falha ao salvar: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg =>
+      'Entendido! Salvo nos rascunhos para você, volte e edite a qualquer momento! ✨';
+
+  @override
+  String get dialog_reminder_title => 'Lembrete';
+
+  @override
+  String get warning_id_not_edited =>
+      'O ID exclusivo ainda não foi editado. Tem certeza de que deseja salvar agora?';
+
+  @override
+  String get action_continue_editing => 'Continuar editando';
+
+  @override
+  String get action_edit_later => 'Editar mais tarde';
+
+  @override
+  String get action_edit_later_short => 'Editar depois';
+
+  @override
+  String get action_cancel_changes => 'Cancelar alterações';
+
+  @override
+  String get error_birthdate_locked =>
+      'A data de nascimento foi definida e não pode ser alterada!';
+
+  @override
+  String get action_select_avatar => 'Selecionar avatar';
+
+  @override
+  String get action_choose_from_gallery => 'Escolher da galeria';
+
+  @override
+  String get title_adjust_avatar => 'Ajustar seu avatar';
+
+  @override
+  String get avatar_updated_success => 'Avatar atualizado para você 🍃';
+
+  @override
+  String get title_create_profile => 'Crie seu perfil';
+
+  @override
+  String get title_edit_profile => 'Editar perfil';
+
+  @override
+  String get label_your_nickname => 'Seu apelido';
+
+  @override
+  String get label_player_exclusive_id => 'ID exclusivo de jogador';
+
+  @override
+  String get msg_id_locked =>
+      'O ID está bloqueado e não pode ser alterado novamente.';
+
+  @override
+  String get msg_id_change_chance =>
+      'Você tem uma chance gratuita de alterar seu ID.';
+
+  @override
+  String get action_select_birthdate =>
+      'Por favor, selecione a data de nascimento';
+
+  @override
+  String label_birthdate(String date) {
+    return 'Data de nascimento: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable =>
+      'O aniversário não pode ser alterado depois de definido ✨';
+
+  @override
+  String get action_start_journey => 'Iniciar a jornada';
+
+  @override
+  String get action_add_image => 'Adicionar imagem';
 }

@@ -2969,4 +2969,100 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get prompt_has_account => 'Đã có tài khoản? Nhấn vào đây để đăng nhập';
+
+  @override
+  String get error_nickname_empty => 'Biệt danh không được để trống!';
+
+  @override
+  String get profile_saved_success => 'Đã lưu hồ sơ!';
+
+  @override
+  String get error_id_empty => 'ID không được để trống!';
+
+  @override
+  String get error_id_too_long => 'Độ dài ID không được vượt quá 10 ký tự!';
+
+  @override
+  String get error_id_already_used =>
+      'ID này đã được sử dụng, vui lòng chọn ID khác!';
+
+  @override
+  String profile_save_failed(String error) {
+    return 'Lưu thất bại: $error';
+  }
+
+  @override
+  String get draft_saved_success_msg =>
+      'Đã rõ! Đã lưu vào bản nháp cho bạn, bạn có thể quay lại chỉnh sửa bất cứ lúc nào! ✨';
+
+  @override
+  String get dialog_reminder_title => 'Nhắc nhở';
+
+  @override
+  String get warning_id_not_edited =>
+      'ID độc quyền chưa được chỉnh sửa, bạn có chắc chắn muốn lưu bây giờ không?';
+
+  @override
+  String get action_continue_editing => 'Tiếp tục chỉnh sửa';
+
+  @override
+  String get action_edit_later => 'Chỉnh sửa sau';
+
+  @override
+  String get action_edit_later_short => 'Sửa sau';
+
+  @override
+  String get action_cancel_changes => 'Hủy thay đổi';
+
+  @override
+  String get error_birthdate_locked =>
+      'Ngày sinh đã được đặt, không thể thay đổi!';
+
+  @override
+  String get action_select_avatar => 'Chọn ảnh đại diện';
+
+  @override
+  String get action_choose_from_gallery => 'Chọn từ thư viện';
+
+  @override
+  String get title_adjust_avatar => 'Điều chỉnh ảnh đại diện của bạn';
+
+  @override
+  String get avatar_updated_success => 'Đã đổi ảnh đại diện cho bạn 🍃';
+
+  @override
+  String get title_create_profile => 'Tạo hồ sơ của bạn';
+
+  @override
+  String get title_edit_profile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get label_your_nickname => 'Biệt danh của bạn';
+
+  @override
+  String get label_player_exclusive_id => 'ID độc quyền của người chơi';
+
+  @override
+  String get msg_id_locked => 'ID đã bị khóa, không thể thay đổi nữa.';
+
+  @override
+  String get msg_id_change_chance => 'Bạn có một cơ hội miễn phí để đổi ID.';
+
+  @override
+  String get action_select_birthdate => 'Vui lòng chọn ngày sinh';
+
+  @override
+  String label_birthdate(String date) {
+    return 'Ngày sinh: $date';
+  }
+
+  @override
+  String get msg_birthdate_immutable =>
+      'Sinh nhật sau khi thiết lập sẽ không thể thay đổi ✨';
+
+  @override
+  String get action_start_journey => 'Bắt đầu hành trình';
+
+  @override
+  String get action_add_image => 'Thêm hình ảnh';
 }
