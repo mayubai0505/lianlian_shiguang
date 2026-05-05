@@ -1,0 +1,5 @@
+flutter_native_splash:
+  color: "#ffffff" # 或是妳想要的背景色
+  image: assets/images/logo.jpg # 妳的 Logo 路徑
+  android_12:
+    image: assets/images/logo.jpg

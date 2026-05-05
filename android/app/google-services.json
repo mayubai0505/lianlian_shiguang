@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "project_number": "892791360631",
+    "project_id": "lianlianshiguang",
+    "storage_bucket": "lianlianshiguang.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892791360631:android:8c69780fcb330facdb4a72",
+        "android_client_info": {
+          "package_name": "com.example.google_test_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "892791360631-0q8r6c8kh64k7vm208vkrmpt9rm4i6f4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg3fe_ZSEgzsIYDSqzAISOPKesbkLIjP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "892791360631-0q8r6c8kh64k7vm208vkrmpt9rm4i6f4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "892791360631-gej1ev8lf868us296e22917gchp4vtgn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yubaimo.lianlian-shiguang"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892791360631:android:a4bcf2264ca69d74db4a72",
+        "android_client_info": {
+          "package_name": "com.example.lianlian_shiguang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "892791360631-0q8r6c8kh64k7vm208vkrmpt9rm4i6f4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg3fe_ZSEgzsIYDSqzAISOPKesbkLIjP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "892791360631-0q8r6c8kh64k7vm208vkrmpt9rm4i6f4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "892791360631-gej1ev8lf868us296e22917gchp4vtgn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yubaimo.lianlian-shiguang"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892791360631:android:aa3288f48c9d4600db4a72",
+        "android_client_info": {
+          "package_name": "com.yubaimo.lianlian_shiguang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "892791360631-2764m81poj1m0pbcc8u5tdqqvtaf71f9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yubaimo.lianlian_shiguang",
+            "certificate_hash": "36608886a08cd1c883e1f4cd0ef1536eb8d55bf1"
+          }
+        },
+        {
+          "client_id": "892791360631-0q8r6c8kh64k7vm208vkrmpt9rm4i6f4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg3fe_ZSEgzsIYDSqzAISOPKesbkLIjP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "892791360631-0q8r6c8kh64k7vm208vkrmpt9rm4i6f4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "892791360631-gej1ev8lf868us296e22917gchp4vtgn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yubaimo.lianlian-shiguang"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>真實之鏡</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+                Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            padding: 40px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+        }
+        h1 {
+            color: #d63384;
+        }
+        p {
+            font-size: 1.2em;
+            word-break: break-all;
+        }
+        .success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .error {
+            color: #842029;
+            background-color: #f8d7da;
+            padding: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>真實之鏡：聖旨檢查中...</h1>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // 我們在這裡直接、坦率地去 window 物件裡尋找聖旨
+        // 我們會檢查 5 次，確保給 Canvas 環境足夠的時間
+        let attempts = 0;
+        const maxAttempts = 5;
+        const interval = setInterval(() => {
+            attempts++;
+            const resultDiv = document.getElementById('result');
+            
+            // 檢查 __firebase_config 是否存在
+            if (window.__firebase_config) {
+                clearInterval(interval); // 找到了就停止檢查
+                console.log('找到了！', window.__firebase_config);
+                resultDiv.className = 'success';
+                resultDiv.innerHTML = `
+                    <h2>٩(ˊᗜˋ*)و 找到了！聖旨就在這裡！</h2>
+                    <p><strong>Firebase 設定:</strong></p>
+                    <p>${window.__firebase_config}</p>
+                    <p><strong>Token:</strong> ${window.__initial_auth_token || '（沒有 Token）'}</p>
+                `;
+            } else if (attempts >= maxAttempts) {
+                clearInterval(interval); // 試了 5 次還沒有，就放棄
+                console.error('找不到聖旨...');
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `
+                    <h2>｡･ﾟﾟ･(>д<)･ﾟﾟ･｡ 找不到聖旨...</h2>
+                    <p>在等待了 5 秒後，Canvas 環境仍然沒有提供 <strong>__firebase_config</strong> 變數。</p>
+                    <p>這 100% 證明了問題不在我們的 Flutter 程式，而在於環境本身。</p>
+                `;
+            } else {
+                 resultDiv.innerHTML = `<p>第 ${attempts} 次檢查，聖旨還沒到...</p>`;
+            }
+        }, 1000); // 每秒檢查一次
+    </script>
+</body>
+</html>

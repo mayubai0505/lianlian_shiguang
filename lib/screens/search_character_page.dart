@@ -1,0 +1,371 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/theme_notifier.dart';
+import 'character_model.dart';
+import 'character_profile_page.dart';
+import 'dart:math'; // ✨ 加上這一行就解決了
+import '../services/app_constants.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
+//搜尋頁面
+class SearchCharacterPage extends StatefulWidget {
+  const SearchCharacterPage({super.key});
+
+  @override
+  State<SearchCharacterPage> createState() => _SearchCharacterPageState();
+}
+
+class _SearchCharacterPageState extends State<SearchCharacterPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+  final String APP_ID = AppConfig.appId;
+
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return Container(
+      decoration: themeNotifier.currentBackground,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('搜尋拾光伴侶'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: theme.colorScheme.onSurface,
+        ),
+        body: Column(
+          children: [
+            // 🔍 搜尋框
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: TextField(
+                controller: _searchController,
+                style: TextStyle(color: theme.colorScheme.onSurface),
+                decoration: InputDecoration(
+                  hintText: '輸入他的名字...',
+                  hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                  prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
+                  filled: true,
+                  fillColor: theme.cardColor.withOpacity(isDarkMode ? 0.6 : 0.4),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: theme.colorScheme.primary.withOpacity(0.2)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(color: theme.colorScheme.primary.withOpacity(0.1)),
+                  ),
+                ),
+                onChanged: (value) => setState(() => _searchQuery = value.trim()),
+              ),
+            ),
+
+            // 📜 雙排格網結果
+            Expanded(
+              child: _buildGridResults(theme),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridResults(ThemeData theme) {
+    Query query = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('public_characters');
+
+    if (_searchQuery.isEmpty) {
+      query = query.orderBy('likes', descending: true).limit(6);
+    } else {
+      query = query.where('name', isGreaterThanOrEqualTo: _searchQuery)
+          .where('name', isLessThanOrEqualTo: '$_searchQuery\uf8ff');
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: query.snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+
+        final docs = snapshot.data!.docs;
+        if (docs.isEmpty) {
+          return Center(
+              child: Text("找不到角色，試試其他名字？ ✨",
+                  style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)))
+          );
+        }
+
+        return GridView.builder(
+          padding: const EdgeInsets.all(12),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.75,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+          ),
+          itemCount: docs.length,
+          itemBuilder: (context, index) => _buildCharacterCard(docs[index], theme),
+        );
+      },
+    );
+  }
+
+  Widget _buildCharacterCard(DocumentSnapshot doc, ThemeData theme) {
+    final charData = doc.data() as Map<String, dynamic>;
+    final primaryColor = theme.colorScheme.primary;
+
+    return GestureDetector(
+      // ✨ 1. 這裡要加上 async
+      onTap: () async {
+        // ✨ 2. 顯示一個簡單的載入提示（可選），避免玩家以為沒點到
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('正在開啟角色檔案...'), duration: Duration(milliseconds: 500)));
+        // ✨ 3. 使用 await 等待角色資料「變身」完成
+        final targetCharacter = await Character.fromFirestoreAsync(doc);
+        // ✨ 4. 變身完成後，再帶著完整的資料跳轉
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CharacterProfilePage
+                (character: targetCharacter,
+                characterId: targetCharacter.id,
+              ),
+            ),
+          );
+        }
+      },
+      child: LayoutBuilder(builder: (context, constraints) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: primaryColor.withOpacity(0.1)),
+            image: DecorationImage(
+              image: NetworkImage(charData['avatar'] ?? charData['avatarPath'] ?? ''),
+              fit: BoxFit.cover,
+            ),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Stack(
+              children: [
+                // 1. 底部陰影遮罩
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // ✨✨✨ 2. 在這裡加入「隨機位置」的玩家留言氣泡 ✨✨✨
+                AnimatedDanmu(
+                  characterId: doc.id,
+                  appId: AppConfig.appId,
+                ),
+
+                // 💖  右上角：心動數 (保留這個讓大家知道熱門度)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.favorite, color: Colors.white, size: 12),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${charData['likesCount'] ?? 0}',
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 📜 3. 底部文字資訊
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        charData['name'] ?? '',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        (charData['occupation'] != null && charData['occupation'].toString().isNotEmpty)
+                            ? '${charData['age'] ?? '??'}歲 | ${charData['occupation']}'
+                            : '${charData['age'] ?? '??'}歲',
+                        style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+// 💬 專屬小工具：會自己呼吸、飄浮的限時動態彈幕
+class AnimatedDanmu extends StatefulWidget {
+  final String characterId; // 接收角色 ID
+  final String appId;       // 接收 appId
+
+  const AnimatedDanmu({
+    super.key,
+    required this.characterId,
+    required this.appId,     // ✨ 這樣寫才是正確的接收方式
+  });
+
+  @override
+  State<AnimatedDanmu> createState() => _AnimatedDanmuState();
+}
+
+class _AnimatedDanmuState extends State<AnimatedDanmu> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacity;
+  late Animation<Offset> _position;
+
+  List<String> _echoMessages = []; // ✨ 這裡存放從 Firestore 抓到的留言
+  int _currentIndex = 0;
+  final Random _random = Random();
+  double _top = 20.0;
+  double _left = 20.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 1. 初始化動畫 (這部分保持您的精美設定)
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 5));
+    _opacity = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 15),
+      TweenSequenceItem(tween: ConstantTween(1.0), weight: 70),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 15),
+    ]).animate(_controller);
+
+    _position = TweenSequence<Offset>([
+      TweenSequenceItem(tween: Tween(begin: const Offset(0, 0.5), end: Offset.zero), weight: 20),
+      TweenSequenceItem(tween: ConstantTween(Offset.zero), weight: 80),
+    ]).animate(_controller);
+
+    // 2. ✨ 開始監聽 Firestore 的「時空迴音」
+    _listenToEchoes();
+  }
+
+  void _listenToEchoes() {
+    FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('public_characters')
+        .doc(widget.characterId)
+        .collection('echoes') // 👈 抓取您指定的子集合
+        .orderBy('timestamp', descending: true)
+        .limit(10) // 抓最新的 10 則來輪播
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted) return;
+
+      setState(() {
+        _echoMessages = snapshot.docs
+            .map((doc) => doc.data()['content']?.toString() ?? '')
+            .where((content) => content.isNotEmpty)
+            .toList();
+
+        // 如果完全沒留言，就給一句預設的
+        if (_echoMessages.isEmpty) {
+          _echoMessages = ["這裡還留存著時空的餘溫..."];
+        }
+      });
+
+      // 如果動畫還沒開始過，就啟動它
+      if (!_controller.isAnimating) {
+        _startDanmuLoop();
+      }
+    });
+  }
+
+  void _startDanmuLoop() {
+    if (!mounted || _echoMessages.isEmpty) return;
+
+    setState(() {
+      _currentIndex = _random.nextInt(_echoMessages.length);
+
+      // 🎲 每次發射前，隨機決定出現在卡片的哪個位置！
+      // 假設卡片寬高比約 0.75，我們把範圍限制在安全區內
+      _top = _random.nextDouble() * 120 + 20;  // 距離頂部 20~140 之間
+      _left = _random.nextDouble() * 60 + 10; // 距離左邊 10~70 之間
+    });
+
+    _controller.forward(from: 0.0).then((_) {
+      if (mounted) {
+        Future.delayed(Duration(seconds: _random.nextInt(2) + 1), _startDanmuLoop);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_echoMessages.isEmpty) return const SizedBox.shrink();
+
+    return Positioned(
+      top: _top,
+      left: _left,
+      child: FadeTransition(
+        opacity: _opacity,
+        child: SlideTransition(
+          position: _position,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            constraints: const BoxConstraints(maxWidth: 120), // 限制寬度，避免太長超出卡片
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.55),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: Colors.white.withOpacity(0.15)),
+            ),
+            child: Text(
+              _echoMessages[_currentIndex],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  shadows: [Shadow(color: Colors.black26, blurRadius: 2)]
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

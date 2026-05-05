@@ -1,0 +1,1350 @@
+{
+  "@@locale": "en",
+  "settingsTitle": "Settings",
+  "changeTheme": "Change Theme",
+  "feedback": "Feedback",
+  "changeLanguage": "Change Language",
+  "allFriendsTitle": "All Friends",
+  "noFriendsMessage": "You don't have any friends yet.",
+  "unknownCharacter": "Unknown Character",
+  "errorLoadingFriends": "Error loading friends list: {error}",
+  "@errorLoadingFriends": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tagGentle": "Gentle",
+  "tagCheerful": "Cheerful",
+  "tagLively": "Lively",
+  "tagMischievous": "Mischievous",
+  "tagRichYoungLady": "Heiress",
+  "tagRichYoungMaster": "Young Master",
+  "tagWealthyFamily": "Wealthy Family",
+  "tagScheming": "Scheming",
+  "tagPossessive": "Possessive",
+  "tagParanoid": "Paranoid",
+  "tagPersistent": "Persistent",
+  "tagUncle": "Uncle",
+  "tagAuntie": "Auntie",
+  "tagSeniorSister": "Senior (female)",
+  "tagJuniorBrother": "Junior (male)",
+  "tagHandsome": "Handsome",
+  "tagStunning": "Stunning",
+  "tagContrast": "Contrast",
+  "tagFlirty": "Flirty",
+  "tagAgeGap": "Age Gap",
+  "userNotFoundError": "User not found",
+  "imageDataMismatchError": "Image data mismatch, please reselect images.",
+  "createCharacterTitle": "Create Character",
+  "charAlbumTitle": "Character Album (First is main avatar)",
+  "charNameLabel": "Character Name:*",
+  "charDescSection": "Description",
+  "charAgeLabel": "Age",
+  "charJobLabel": "Occupation:*",
+  "charBirthdayLabel": "Birthday (MMDD)",
+  "charGenderLabel": "Gender *",
+  "genderNotSelected": "Not Selected",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "charHeightLabel": "Height (cm)",
+  "charAppearanceLabel": "Appearance",
+  "charPersonalityTagsSection": "Personality Tags",
+  "charOtherPersonalityTagsHint": "Other personality tags...",
+  "otherSectionTitle": "Other",
+  "charLikesLabel": "Likes (e.g., strawberry cake, cats, rainy days)",
+  "charDislikesLabel": "Dislikes (e.g., bitter melon, noisy places)",
+  "charSecretsLabel": "Little secrets (e.g., actually has no sense of direction)",
+  "charMannerismsSection": "Mannerisms",
+  "charToneLabel": "Tone & Style (e.g., cold to strangers)",
+  "charDialogueExampleLabel": "Dialogue Example (Player: You're so kind! Character: ...Oh.)",
+  "charBackgroundSection": "Background:",
+  "charBackgroundHint": "Enter character's background story (max 2500 chars)",
+  "charStoryStartSection": "Story Opening:",
+  "charStoryStartHint": "Enter character's story opening (max 2500 chars)",
+  "charStorySummaryLabel": "Story Summary (max 50 chars, shown on encounter card)",
+  "charExtraInfoSection": "Additional Info:",
+  "charExtraInfoHint": "Enter additional info...",
+  "charPublicToggleLabel": "Make public for other players?",
+  "yes": "Yes",
+  "no": "No",
+  "createButton": "Create",
+  "saveButton": "Save",
+  "cancelButton": "Cancel",
+  "exitCreationTitle": "Exit Character Creation",
+  "saveDraftPrompt": "Save as draft?",
+  "draftNeeded": "Yes, save",
+  "draftNotNeeded": "No, discard",
+  "editExtraInfoTitle": "Edit Additional Info",
+  "nameAndAvatarError": "Please enter a name and upload at least one avatar!",
+  "savingStatus": "Saving...",
+  "uploadingImagesStatus": "Uploading images...",
+  "maxImagesError": "You can upload a maximum of 10 images.",
+  "uploadingImagesStatusShort": "Processing images...",
+  "savingCharacterData": "Saving character data...",
+  "characterCreatedSuccess": "Character \"{charName}\" created!",
+  "@characterCreatedSuccess": {
+    "placeholders": {
+      "charName": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadImageTimeoutError": "Character creation failed: image upload timed out, please check your internet connection.",
+  "createCharacterGenericError": "Character creation failed: {error}",
+  "@createCharacterGenericError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSectionAppearance": "Appearance & Content",
+  "settingsSectionAccount": "Account & Content Management",
+  "settingsSectionAbout": "About Us",
+  "accountManagement": "Account Management",
+  "userId": "ID:",
+  "authMethodGoogle": "Google",
+  "authMethodUnknown": "Unknown",
+  "userIdCopied": "User ID copied to clipboard",
+  "characterManagement": "Character Management",
+  "viewBlockedCharacters": "View blocked characters",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service",
+  "logoutButton": "Log Out",
+  "logoutDialogTitle": "Are you sure you want to log out? (´;ω;`)",
+  "logoutDialogActionCancel": "Oops, cancel",
+  "logoutDialogActionConfirm": "Confirm",
+  "logoutSuccessSnackbar": "Okay! I'll be waiting for your return ♥(´∀` )",
+  "deleteAccountButton": "Delete Account",
+  "deleteAccountDialogTitle": "Are you sure you want to delete this account? இдஇ",
+  "deleteAccountDialogContent": "This action cannot be undone. All data will be permanently deleted!",
+  "deleteAccountDialogActionCancel": "No, I don't want to delete",
+  "deleteAccountDialogActionConfirm": "Confirm",
+  "deleteAccountSuccessSnackbar": "Account successfully deleted.",
+  "appDisclaimer": "The characters and scenes in the game are fictional. Please do not apply them to reality. Any resemblance is purely coincidental.",
+  "appVersion": "App Version: {version}",
+  "@appVersion": {
+    "description": "Displays the app version number",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.0.0"
+      }
+    }
+  },
+  "dialogTitleHint": "Hint",
+  "completeProfilePrompt": "Please edit your profile to complete your information!",
+  "goToEdit": "Go to Edit",
+  "later": "Later",
+  "chattingWith": "Chat with {friendName}",
+  "@chattingWith": {
+    "placeholders": {
+      "friendName": {
+        "type": "String"
+      }
+    }
+  },
+  "chatContentWith": "Chat content with {friendName}",
+  "@chatContentWith": {
+    "placeholders": {
+      "friendName": {
+        "type": "String"
+      }
+    }
+  },
+  "chatInputHint": "Type a message...",
+  "characterNotFoundError": "Character not found",
+  "@characterNotFoundError": {
+    "description": "Error message shown when a character profile could not be found."
+  },
+  "errorLoadingCharacterDetails": "Failed to load character details: {errorDetails}",
+  "@errorLoadingCharacterDetails": {
+    "description": "Error message shown when failing to load character details from Firestore.",
+    "placeholders": {
+      "errorDetails": {
+        "type": "String",
+        "example": "Permission denied"
+      }
+    }
+  },
+  "charInitialRelationshipLabel": "Initial Relationship",
+  "relationship_childhood_friend": "Childhood Friends",
+  "relationship_senior_junior": "Senior/Junior",
+  "relationship_bickering_couple": "Bickering Couple",
+  "relationship_colleagues": "Colleagues",
+  "relationship_other": "Other (Please enter manually)",
+  "chatModeDaily": "Daily Mode",
+  "chatModeStory": "Story Mode",
+  "chatModeImmersive": "Immersive Mode",
+  "chatModeGemini": "Life Companion",
+  "announcement_new": "New Announcement",
+  "mail_notification": "A new Time Letter has arrived! Go check the Parchment Scroll now!",
+  "customer_service_reply": "Customer Service Reply",
+  "system_announcement": "System Announcement",
+  "empty_announcement": "No announcements at the moment.",
+  "untitled": "Untitled",
+  "no_content": "No Content",
+  "privacy_policy_title": "Lianlian Shiguang Privacy Policy",
+  "privacy_policy_date": "Last Updated: April 10, 2026",
+  "privacy_policy_body": "\"Lianlian Shiguang\" Privacy Policy\nLast Updated: April 10, 2026\n\nWelcome to \"Lianlian Shiguang\" (hereinafter referred to as \"the Service\"). We value your privacy. This policy explains how we collect, use, and protect your personal information.\n\n1. Account Information:\nThird-party Login: When you log in via Google, Facebook, or Apple, we collect your Firebase UID, email, and public nickname.\nEmail Registration: When you choose to register by email, we collect your email address. Your login password is managed and stored using Firebase encryption; the development team cannot access your original password. We commit to adopting industry-standard security measures to safeguard your personal data.\n\nInteraction Data: To enable AI characters to have continuous memory, we collect and store your conversation records with the AI and the content you write for characters within the game.\n\nDevice Information: Including device model, operating system version, and unique device identifier (UDID) for system optimization.\n\n2. Use of Information\nEnhancing AI Experience: Utilizing conversation records to optimize AI response quality and personality consistency.\nService Operations: Used for processing point recharges, consumption records, and user identity verification.\nSecurity Protection: Monitoring malicious behavior to protect the server from attacks.\n\n3. Third-party Technical Cooperation\nThe Service is supported by the following major international technologies:\nGoogle Cloud / Firebase: Data storage and identity verification.\nOpenRouter / xAI / Meta: Providing AI model computational logic.\nNote: We do not sell your original conversation records to any advertisers.\n\n4. Data Storage and Deletion\nYour data will be securely stored on cloud servers.\nYou may contact us at any time to request the permanent deletion of your account and all associated conversation data.",
+  "terms_title": "Lianlian Shiguang Terms of Service",
+  "terms_date": "Last Updated: April 10, 2026",
+  "terms_body": "\"Lianlian Shiguang\" Terms of Service\nLast Updated: April 10, 2026\n\nPlease read the following terms carefully before using \"Lianlian Shiguang\" (hereinafter referred to as \"the Service\"). Starting to use the Service means you agree to the following:\n\n1. Nature of Service and Disclaimer\nNon-human Interaction: All character responses in the Service are generated by Artificial Intelligence (Generative AI). Character statements do not represent the creator's position.\nNarrative Risk: AI may generate fictional, inaccurate, or uncomfortable content. Users should have the ability to distinguish between fiction and reality.\n\n2. Virtual Credits and Payment Models\nNature of Credits: Credits within the Service are virtual goods. Once consumed (e.g., entering a story, immersive mode, sending gifts, voice calls), they cannot be refunded.\nCost Differences: Credit consumption standards for different modes (e.g., Daily, Story, Immersive, Calls) are set based on AI computational costs. The Service reserves the right to adjust these costs.\n\n3. User Conduct Code\nProhibitions: It is prohibited to use AI to generate extreme violence, criminal guidance, or content that violates the law.\nSystem Interference: It is strictly forbidden to illegally obtain data from the Service through any automated tools or reverse engineering.\n\n4. Intellectual Property and Content Ownership\nOriginal Content: Intellectual property rights for character names (such as Cheng An and others created by the official), background settings, plot scripts, dialogue texts, game logic, and exclusive brand names belong to the \"Lianlian Shiguang Development Team.\"\nThird-party Licensed Resources: Icons, fonts, and emojis used in the Service interface belong to their original licensors (such as Google Material Design, Apple Inc., etc.), used legally under their open-source or licensing agreements.\nAI-Generated Content: Some artistic images in the Service are generated using AI tools (such as Niji.journey). The development team guarantees it has obtained commercial use licenses for these tools. Usage and operating rights for related images belong to the team.\nProhibited Acts: Without formal authorization, it is strictly forbidden to use any of the above content for commercial profit, secondary distribution, or malicious model training.\n\n5. Service Termination\nIf a player violates the above regulations, the Service has the right to suspend or permanently disable the account without prior notice.",
+  "login_required": "Please login first",
+  "cloud_character_mgmt": "Cloud Character Management",
+  "connection_error": "Connection Error",
+  "no_characters_met": "You haven't met any characters yet!",
+  "status_paused": "Status: Connection Paused",
+  "status_in_progress": "Status: Bonding",
+  "unblock": "Unblock",
+  "block": "Block",
+  "confirm_block_title": "Confirm Block?",
+  "block_warning_msg": "After blocking, you will temporarily not receive messages from {charName}.",
+  "@block_warning_msg": {
+    "description": "Warning text for the block confirmation dialog",
+    "placeholders": {
+      "charName": {
+        "type": "String",
+        "example": "Cheng An"
+      }
+    }
+  },
+  "think_again": "Think Again",
+  "confirm_block_btn": "Confirm Block",
+  "no_char_info": "No detailed info for this character yet...",
+  "private_mailbox": "Private Mailbox",
+  "user_info_not_found": "User info not found",
+  "load_failed": "Load failed, please try again later",
+  "empty_mailbox": "Mailbox is currently empty~",
+  "system_notification": "System Notification",
+  "interaction_records": "Interaction History",
+  "liked_content": "Liked Content",
+  "my_favorites": "My Favorites",
+  "login_to_view_records": "Please login to view history",
+  "no_likes_yet": "You haven't liked any posts yet!",
+  "empty_favorites": "Your favorites folder is empty, explore the Lobby!",
+  "theme_sakura_pink": "Sakura Pink",
+  "theme_ocean_blue": "Ocean Blue",
+  "theme_sunset_orange": "Sunset Orange",
+  "theme_mint_forest": "Mint Forest",
+  "theme_midnight": "Midnight Mode",
+  "change_atmosphere": "Change Atmosphere",
+  "custom_color": "Custom Color",
+  "custom_color_desc": "Mix your exclusive atmosphere color",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "confirm_delete_title": "Confirm Deletion",
+  "confirm_delete_memory_msg": "Are you sure you want him to forget this? This action cannot be undone.",
+  "delete_btn": "Delete",
+  "memory_erased_msg": "This memory has been erased.",
+  "delete_failed_msg": "Deletion failed",
+  "edit_memory_title": "Edit Memory",
+  "modify_memory_hint": "Modify this memory...",
+  "memory_re_recorded_msg": "Memory re-recorded",
+  "update_failed_msg": "Update failed",
+  "update_favorite_failed_msg": "Failed to update favorite status",
+  "char_notebook_title": "{charName}'s Notebook",
+  "error_loading_memory": "Error loading memory",
+  "empty_notebook_msg": "The notebook is empty...\nGo chat so he can write down every little thing about you!",
+  "date_format_text": "MMM d, yyyy",
+  "remove_special_focus": "Remove Special Focus",
+  "mark_special_focus": "Mark as Special Focus",
+  "edit_btn": "Edit",
+  "load_gallery_failed": "Failed to load gallery",
+  "traditional_chinese": "Traditional Chinese",
+  "all": "All",
+  "official_recommendation": "Official Recommendation",
+  "my_exclusive": "My Exclusive",
+  "encounter_count": "{count} Encounters",
+  "official": "Official",
+  "private": "Private",
+  "first_encounter": "First Encounter",
+  "char_exclusive_memory": "{charName}'s Exclusive Memory",
+  "affection_required_to_unlock": "Affection must reach {affectionLevel} to unlock this memory!",
+  "affection": "Affection",
+  "unlock": "Unlock",
+  "change_chat_bg": "Change Chat Background",
+  "confirm_change_chat_bg": "Set \"{cgDesc}\" as the chat background with {charName}?",
+  "bg_changed_to": "Background changed to \"{cgDesc}\"",
+  "confirm_change": "Confirm",
+  "empty_treasure_box": "The treasure box is empty...\nGo chat to find hidden easter eggs!",
+  "unknown_story": "Unknown Story",
+  "open_this_memory": "Open this memory",
+  "open_exclusive_story": "Open exclusive story",
+  "confirm_use_egg": "Experience \"{eggTitle}\" now?\n\n(This item is consumable and will automatically enter the story upon use)",
+  "wait_a_bit": "Wait a bit",
+  "guiding_into_story": "Guiding into story...",
+  "use_now": "Use Now",
+  "playback_failed_status": "Playback failed, status code: {statusCode}",
+  "playback_error": "Playback error occurred",
+  "unknown_contact": "Unknown Contact",
+  "call_memory_with": "Call Memory with {charName}",
+  "unlock_affection_requirement": "Unlocks at affection {affection}",
+  "@unlock_affection_requirement": {
+    "placeholders": {
+      "affection": {
+        "type": "int"
+      }
+    }
+  },
+  "no_call_record": "There seems to be no conversation record for this call...",
+  "me": "Me",
+  "playing": "Playing...",
+  "listen": "Listen",
+  "no_exclusive_voice": "This character doesn't have an exclusive voice yet!",
+  "voice_download_success": "✅ Voice data downloaded successfully, preparing to play...",
+  "onboarding_invitation": "— Invitation of Time —",
+  "onboarding_welcome": "Welcome to Lian Lian Shi Guang",
+  "onboarding_quote": "\"Every encounter is a reunion after a long separation.\"",
+  "onboarding_gift_title": "First Meeting Gift: 50 Flowers",
+  "onboarding_gift_subtitle": "These flowers will accompany you as your story with him begins.",
+  "onboarding_start_button": "Start Your Journey of Time",
+  "onboarding_more_info": "Learn more about the story",
+  "legal_agreement_prefix": "By continuing, you agree to our",
+  "legal_terms_button": "Terms of Service",
+  "legal_and": " and ",
+  "legal_privacy_button": "Privacy Policy",
+  "call_memory_title": "Call Memories",
+  "please_login_first": "Please log in first",
+  "no_call_memories": "No saved call memories yet.\nMaximum of 10 records can be saved.",
+  "call_with_name": "Call with {name}",
+  "call_duration": "Duration: {time}",
+  "delete_call_title": "Delete Call Record",
+  "delete_call_confirm": "Are you sure you want to secretly destroy this memory with {name}?\n(This cannot be undone)",
+  "keep_it": "Keep it",
+  "confirm_delete": "Delete",
+  "press_mic_to_speak": "Press the microphone to speak...",
+  "call_ended": "Call ended",
+  "character_thinking": "({name} is thinking...)",
+  "character_picking_up": "({name} is picking up...)",
+  "call_interrupted_login": "(Call interrupted) Please log in first...",
+  "silence": "(Silence)",
+  "bad_signal": "(Bad signal...)",
+  "static_noise": "(Static noise)... can't hear you clearly...",
+  "type_message_hint": "Type a message...",
+  "draft_saved_success": "Draft safely saved to the Secret Studio!",
+  "draft_save_failed": "Save failed, please try again later",
+  "draft_save_title": "Save Draft?",
+  "draft_save_content": "Your work hasn't been published yet. Would you like to save it to the Secret Studio first?",
+  "not_save": "Don't Save",
+  "save_draft": "Save Draft",
+  "confirm_delete_char_content": "Are you sure you want to delete character \"{name}\"?\n\nThis action cannot be undone!",
+  "@confirm_delete_char_content": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "char_deleted": "Character deleted",
+  "ok_button": "OK!",
+  "cannot_save_title": "Cannot Save",
+  "cannot_save_content": "Please fill in the character name and upload at least one avatar!",
+  "word_count_exceeded": "Word count exceeded",
+  "word_count_error_detail": "\"{field}\" exceeds the {limit}-word limit. Please shorten it and save again.",
+  "@word_count_error_detail": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "content_missing": "Content missing",
+  "content_missing_personality": "Please fill in \"Detailed Personality\"! (Minimum 10 words).",
+  "content_missing_bg": "\"Character Background\" is too short! Please write at least 20 words to explain the context.",
+  "content_missing_tone": "Please set \"Tone and Habits\" to prevent OOC behavior!",
+  "user_not_found": "Error: User not found",
+  "char_saved_success": "Character \"{name}\" has been {action}!",
+  "@char_saved_success": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "save_error_detail": "Save failed: {error}",
+  "@save_error_detail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "easter_egg_add_title": "Add Hidden Easter Egg",
+  "easter_egg_edit_title": "Edit Easter Egg",
+  "keyword_label": "Trigger Keyword (Required)",
+  "keyword_hint": "e.g., go to amusement park, strawberry cake",
+  "egg_title_label": "Easter Egg Title (Visible to players)",
+  "egg_title_hint": "e.g., Weekend Date",
+  "egg_teaser_label": "Short Teaser (Visible to players)",
+  "egg_teaser_hint": "Describe how the scene begins...",
+  "egg_scene_label": "Forced Scene Switch (Optional)",
+  "egg_scene_hint": "e.g., Amusement Park, Haunted House",
+  "egg_prompt_label": "Script Prompt",
+  "egg_prompt_hint": "How to act out this plot.\n(System: Scene switches to amusement park, character looks at (Player Name) and smiles...)",
+  "confirm_button": "Confirm",
+  "keyword_empty_error": "Keyword cannot be empty",
+  "voice_custom_title": "Customize Exclusive Voice",
+  "voice_custom_hint": "e.g., Deep CEO, Gentle Puppy...",
+  "voice_generate_start": "Start Generating",
+  "voice_bind_first": "Please select and \"Bind\" an exclusive voice first!",
+  "voice_test_failed": "Preview failed: Please click \"I choose you!\" to formally bind the voice before fine-tuning!",
+  "voice_name_default": "{name}'s Exclusive Voice",
+  "@voice_name_default": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voice_description_default": "This is a unique voice created for an exclusive character in \"Lian Lian Shi Guang,\" selected and generated by the player.",
+  "voice_bind_failed": "Voice binding failed. Please check API quota or network status.",
+  "voice_bind_success": "\"{name}\"'s Soul Voice has been formally bound!",
+  "@voice_bind_success": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "voice_bind_success_draft": "Voice bound successfully! You can now adjust the sliders to test emotions!",
+  "sync_failed": "Sync failed, please check network: {error}",
+  "@sync_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "edit_character_title": "Edit {name}",
+  "@edit_character_title": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "test_mode_tooltip": "Full Function Test",
+  "test_mode_error": "⚠️ Character file not found! Please click \"Save/Publish\" at the bottom before trying the test mode!",
+  "test_mode_notice": "💡 Test mode will consume points based on the original price of each mode and will not be recorded in formal memories!",
+  "delete_character_tooltip": "Delete Character",
+  "tab_basic_story": "Basics & Story",
+  "tab_voice": "Exclusive Voice",
+  "tab_relationship": "Social Relationships",
+  "save_changes_button": "Save Changes",
+  "section_basic_info": "Basic Info",
+  "hint_occupation": "Supports multiple identities, please separate with slashes or commas (e.g., Student/Hacker)",
+  "hint_appearance": "e.g., Long silver hair, amber eyes, always wears a white coat...",
+  "section_story_identity": "🎭 Story & Your Identity",
+  "story_identity_desc": "Define the story opening and your special settings in this save",
+  "advanced_writing_tips_title": "💡 Advanced Writing Tips:\n",
+  "advanced_writing_tips_1": "Enter ",
+  "advanced_writing_tips_2": "(Player Name)",
+  "advanced_writing_tips_3": " in the story or lines, and the system will automatically replace it with the player's nickname during gameplay!\n",
+  "advanced_writing_tips_4": "Example: \"",
+  "advanced_writing_tips_5": "(Player Name)",
+  "advanced_writing_tips_6": ", why are you so late?\"",
+  "player_identity_label": "Default Player Identity - 💡 Optional",
+  "player_identity_hint": "[Optional] If left blank, AI will interact based on your \"Profile.\"\nIf filled, it forces a specific identity (e.g., his cold system, or a betrayed wife).",
+  "background_label": "Character Background & Worldview",
+  "background_hint": "Describe their past and the world setting (e.g., modern city, ABO, apocalypse). Example: This is a zombie-infested world, and he is a special forces soldier protecting you...",
+  "story_summary_label": "One-line Story Intro",
+  "story_initial_label": "Initial Encounter Story",
+  "story_initial_hint": "e.g., You push open the door and see him sitting by the window. He turns and says: \"(Player Name), come here.\"",
+  "first_line_label": "Character's First Line",
+  "first_line_hint": "e.g., (Player Name), you're finally here.",
+  "section_personality_evo": "🌟 Personality & Affection Evolution",
+  "detailed_personality_label": "Detailed Personality",
+  "detailed_personality_hint": "Describe their core personality. e.g., Tsundere, sharp-tongued but soft-hearted. Cold to outsiders, only smiles for the player.",
+  "affection_evo_desc": "AI will determine when to increase affection based on these settings:",
+  "stage_1_label": "Stage 1: Stranger/Wary (Lv1)",
+  "stage_1_hint": "Reaction when first meeting. Affection triggers (e.g., being polite, not prying into privacy).",
+  "stage_2_label": "Stage 2: Familiar/Friend (Lv2)",
+  "stage_2_hint": "Changes after getting familiar. Affection triggers (e.g., sharing sweets, chatting about cats).",
+  "stage_3_label": "Stage 3: Intimate/Lover (Lv3)",
+  "stage_3_hint": "Reaction after falling completely. Will they get jealous? Or sulk silently?",
+  "social_interaction_label": "Social & Environmental Interaction",
+  "social_interaction_hint": "e.g., How do they treat strangers? How do they react to things they hate (triggers)?",
+  "section_habits": "🗣️ Likes & Habits",
+  "tone_hint_detail": "Required. e.g., Speaks briefly, likes to answer with questions. Catchphrase: \"Idiot.\" No machine translation style.",
+  "dialogue_example_hint": "Player: I'm so tired.\nCharacter: (Pats head) Good, go and rest now.",
+  "section_easter_eggs": "🎁 Hidden Easter Eggs & Special Plots",
+  "no_easter_eggs": "No easter eggs set yet. Click the button below to add one.",
+  "no_scene_change": "No scene change",
+  "add_easter_egg_button": "Add Hidden Easter Egg",
+  "other_extra_info": "Other Supplemental Info",
+  "visibility_label": "Character Visibility",
+  "visibility_public": "Public",
+  "visibility_private": "Private",
+  "section_voice_gen": "🎙️ Exclusive Voice Generation",
+  "voice_gen_desc": "Enter prompts to create a unique voice!\n(💡 Tip: If you're not satisfied after generation, you can customize it again anytime!)",
+  "voice_generating_status": "Mixing voice lines...",
+  "voice_select_prompt": "✨ Here are three voice types tailored for you. Please choose:",
+  "voice_sample_name": "Voice Sample {index}",
+  "@voice_sample_name": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "voice_sample_desc": "Click the card to select; click the right side to preview.",
+  "voice_preparing": "Voice is being prepared...",
+  "voice_retry": "Discard and Retry",
+  "voice_confirm_selection": "I choose you!",
+  "voice_bind_success_banner": "Exclusive voice bound successfully!",
+  "voice_remake": "Remake Voice",
+  "voice_btn_generating": "Generating, please wait...",
+  "voice_btn_generate": "Enter prompt to generate voice",
+  "voice_advanced_tuning": "🎛️ Advanced: Fine-tune Emotion",
+  "voice_stability_low": "Wild/Breathy 🐺",
+  "voice_stability_value": "Stability: {value}",
+  "@voice_stability_value": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "voice_stability_high": "Steady/Calm 🤖",
+  "voice_style_low": "Cold/Suppressed 🧊",
+  "voice_style_value": "Dramatic: {value}",
+  "@voice_style_value": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "voice_style_high": "Exaggerated/Passionate 🔥",
+  "voice_test_btn_testing": "Applying emotion...",
+  "voice_test_btn": "Preview Current Emotion",
+  "section_social_circle": "👥 Social Circle",
+  "social_circle_desc": "Set their views on other characters. When mentioned in chat, they will react based on these settings (e.g., jealousy, anger).",
+  "social_no_drama": "No conflicts with other male leads yet...",
+  "social_target": "Target: {name}",
+  "@social_target": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "social_attitude": "View: {attitude}",
+  "@social_attitude": {
+    "placeholders": {
+      "attitude": {
+        "type": "String"
+      }
+    }
+  },
+  "social_edit_title": "Edit view on {name} 💬",
+  "@social_edit_title": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "social_attitude_label": "Their View / Attitude",
+  "social_attitude_hint": "e.g., Thinks they are annoying but secretly relies on them...",
+  "social_save_changes": "Save Changes",
+  "social_add_title": "Add Relationship 🤝",
+  "social_select_target": "Select Target",
+  "social_thoughts_label": "Their thoughts on this person...",
+  "social_thoughts_hint": "e.g., That pianist is too loud...",
+  "social_add_confirm": "Confirm Add",
+  "gallery_load_failed": "Image load failed 🥲\nPlease check your network; if on Web, check the console.",
+  "gallery_affection_req": "Affection {level}",
+  "@gallery_affection_req": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "gallery_upload_limit": "Max 10 images allowed",
+  "gallery_photo_setup": "Set Photo Unlock Conditions",
+  "gallery_photo_desc_label": "What is this photo?",
+  "gallery_photo_desc_hint": "e.g., Pajama shot, Date photo",
+  "gallery_photo_req_label": "Affection level required?",
+  "gallery_photo_req_hint": "Enter a number; 0 for free",
+  "gallery_cancel_upload": "Cancel Upload",
+  "gallery_confirm_add": "Confirm Add",
+  "default_photo_desc": "Exclusive Photo",
+  "draft_photo_desc": "Draft Photo",
+  "loading_text": "Loading...",
+  "default_unnamed_character": "Unnamed Character",
+  "elevenlabs_error": "ElevenLabs Error: {code}",
+  "@elevenlabs_error": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "voice_sample_script": "(Clears throat) Hello. This is a voice test exclusive to me. In the days ahead, I will be here with you. Whether you are happy or sad, you can always share it with me. Are you comfortable with this pace and tone? If you like it, let's settle on this voice as my exclusive voice for chatting with you. Looking forward to every day of our future.",
+  "voice_test_script": "What do you think of my tone right now? If you're satisfied, let's keep it this way.",
+  "field_background": "Character Background",
+  "field_tone": "Tone and Habits",
+  "field_initial_story": "Initial Story",
+  "update_action": "Update",
+  "default_new_player": "New Player",
+  "translating_status": "Translating...",
+  "translate_profile_btn": "Translate Profile Content",
+  "translate_failed": "Translation failed: {error}",
+  "@translate_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "like_own_char_warning": "You can't like a character you created! 🤭",
+  "like_success_msg": "Like sent! The creator will be very happy💖",
+  "unlike_success_msg": "Like removed 💔",
+  "like_label": "Like",
+  "dislike_label": "Dislike",
+  "block_char": "Block this character",
+  "char_blocked_msg": "Character blocked.",
+  "dislike_dialog_title": "Don't like this character?",
+  "dislike_dialog_subtitle": "Please tell us the reason privately; we will review it:",
+  "dislike_hint": "Boring settings, inappropriate images...",
+  "dislike_thanks": "Thanks for your feedback! We've received your private message.",
+  "dislike_submit": "Send Privately",
+  "report_title": "📢 Report Comment",
+  "report_subtitle": "Select reason for reporting:\nWe will review the content as soon as possible.",
+  "report_opt_1": "Pornography or graphic violence",
+  "report_opt_2": "Defamation, insults, or character attacks",
+  "report_opt_3": "Hate speech or personal attacks",
+  "report_opt_4": "Spam or advertising fraud",
+  "report_opt_5": "Other inappropriate content",
+  "report_confirm": "Confirm Report",
+  "report_success": "Reported successfully! Notification received and content will be reviewed 🛡️",
+  "report_failed": "Report failed, please check your internet connection.",
+  "lore_delete_title": "⚠️ Warning: Erase Memory",
+  "lore_delete_content": "Once deleted, this memory is gone forever. Are you sure you want to erase it?",
+  "lore_delete_cancel": "Cancel",
+  "lore_delete_confirm": "Confirm Erase",
+  "lore_delete_success": "🗑️ Memory fragment erased completely.",
+  "lore_add_title": "Write New Memory 🖋️",
+  "lore_edit_title": "Edit Memory Fragment 🖋️",
+  "lore_title_label": "Memory Title",
+  "lore_title_hint": "e.g., The Rainy Day We First Met",
+  "lore_teaser_label": "Summary / Teaser",
+  "lore_teaser_hint": "A short description shown on the card...",
+  "lore_content_label": "Full Memory Content",
+  "lore_content_hint": "Write down the detailed story or setting...",
+  "lore_lock_label": "🔒 Seal this Memory",
+  "lore_lock_desc": "Only the creator can see it when checked; players cannot view it.",
+  "lore_empty_error": "Title and content cannot be empty!",
+  "lore_add_success": "✨ New memory successfully sealed!",
+  "lore_publish": "Publish Memory",
+  "lore_save_edit": "Save Changes",
+  "lore_write_first": "Write the first chapter for {pronoun}!",
+  "lore_waiting": "Looking forward to the story with {pronoun}...",
+  "lore_sealed_msg": "🔒 This memory is sealed and currently unavailable.",
+  "lore_not_open_msg": "This memory is not yet open to the public...",
+  "lore_unnamed": "Unnamed Fragment",
+  "lore_add_btn_limit": "Write a new memory fragment (limit 10)",
+  "lore_collapse": "Collapse Letter",
+  "echo_delete_title": "🗑️ Delete Comment",
+  "echo_delete_content": "Are you sure you want to delete this Echo?\nIt cannot be recovered once deleted!",
+  "echo_keep": "Keep",
+  "echo_clear_success": "Echo cleared 🧹",
+  "echo_energy_full_title": "⚠️ Cosmic Energy Limit Reached",
+  "echo_energy_full_content": "Your energy limit (max 3) has been reached. Please delete old experiences to open new cosmic records!",
+  "echo_write_title": "Leave Your Space-Time Echo 🌌",
+  "echo_write_subtitle": "Write your experience or heart-fluttering quotes here!",
+  "echo_hint": "「Even if it's the end of the world, I'll prioritize your breathing...」",
+  "echo_theme_label": "Choose note border:",
+  "theme_butterfly": "Butterfly",
+  "theme_sprout": "Sprout",
+  "theme_star": "Starry Sky",
+  "theme_planet": "Planet",
+  "echo_publish_btn": "Publish Echo Record",
+  "echo_wall_title": "Space-Time Echo Wall",
+  "echo_leave_memory": "Leave Experience",
+  "echo_empty_msg": "No time travelers have left a record yet...\nWill you be the first?",
+  "creator_label": "Creator",
+  "follow_btn": "Follow",
+  "followed_btn": "Followed",
+  "follow_own_warning": "Creators cannot follow themselves! 🤭",
+  "follow_success_msg": "✨ {playerName} followed {creatorName}!",
+  "@follow_success_msg": {
+    "placeholders": {
+      "playerName": {
+        "type": "String"
+      },
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailbox_follow_title": "New Guardian Obtained 🦋",
+  "mailbox_follow_body": "{playerName} just followed you!",
+  "@mailbox_follow_body": {
+    "placeholders": {
+      "playerName": {
+        "type": "String"
+      }
+    }
+  },
+  "tab_private_profile": "Private Profile",
+  "tab_memory_fragments": "Memory Fragments",
+  "tab_time_echoes": "Time Echoes",
+  "chat_free_btn": "Chat (Free)",
+  "start_story_btn": "Start Story",
+  "default_chat_initial": "Do you need me for something?",
+  "gallery_title": "Exclusive Call Background",
+  "gallery_current_affection": "Current Affection: {value} 💕",
+  "@gallery_current_affection": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "gallery_empty": "No photos in the album yet",
+  "gallery_unlocked_msg": "Background set to \"{desc}\"!",
+  "@gallery_unlocked_msg": {
+    "placeholders": {
+      "desc": {
+        "type": "String"
+      }
+    }
+  },
+  "gallery_lock_msg": "Reach an affection level of {value} to unlock! 🍃",
+  "@gallery_lock_msg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "gallery_reset_bg": "Restored default call background",
+  "background_story_title": "Background Story",
+  "background_story_empty": "This character is mysterious; there's no background story yet...",
+  "followed_creator_msg": "Followed {creatorName} 🦋",
+  "@followed_creator_msg": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailbox_title": "Exclusive Mailbox 💌",
+  "mailbox_empty": "Your mailbox is empty. Go post an update to attract him!",
+  "new_notification": "New Notification",
+  "default_he": "He",
+  "affection_upgrade_title": "{charName}'s affection for you has increased! 💖",
+  "@affection_upgrade_title": {
+    "placeholders": {
+      "charName": {
+        "type": "String"
+      }
+    }
+  },
+  "flower_reward": "🌸 Received 5 Flowers",
+  "affection_quote_lv5": "\"I didn't expect... that you would become so important to me. So important that... I can't imagine a world without you.\"",
+  "affection_quote_lv4": "\"The luckiest thing in my life was probably that day, looking back and seeing you.\"",
+  "affection_quote_lv3": "\"Lately... I've noticed I'm daydreaming more, and my head is completely filled with you.\"",
+  "affection_quote_lv2": "\"Since it's your invitation, I suppose I could clear some time—it's not impossible.\"",
+  "affection_quote_lv1": "\"I've been seeing you often lately, and I feel... I don't hate this frequency of meeting.\"",
+  "affection_quote_lv0": "\"So you are here too. Is this some kind of strange fate?\"",
+  "lore_edit_success": "✨ Memory fragment updated successfully!",
+  "delete_failed_network": "Delete failed, please check network or permissions.",
+  "ai_chat_language_code": "en-US",
+  "ai_chat_language": "English",
+  "chat_home_title": "Messages",
+  "call_memory_tooltip": "Call Memories",
+  "login_to_view_chat": "Please log in to view chat history",
+  "load_chat_failed": "Failed to load chat list: {error}",
+  "@load_chat_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_list_empty": "Chat room is empty...",
+  "go_to_encounter": "Go to \"Encounter\" and find someone to chat with!",
+  "confirm_delete_chat": "Are you sure you want to delete the conversation with {charName}?",
+  "@confirm_delete_chat": {
+    "placeholders": {
+      "charName": {
+        "type": "String"
+      }
+    }
+  },
+  "affection_score_short": "Affection {score}",
+  "@affection_score_short": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "character_not_found": "Unable to load character data; the character may have been deleted.",
+  "preparing_chat_room": "Preparing your exclusive chat room...",
+  "rename_chat_title": "Name this memory",
+  "rename_chat_hint": "e.g., Change (Cheng Yu) to (Divorce Countdown)",
+  "save_tag_btn": "Save Tag",
+  "room_name_updated": "Room name updated!",
+  "update_failed": "Update failed: {error}",
+  "@update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_mode_daily": "Daily",
+  "chat_mode_story": "Story",
+  "chat_mode_immersive": "Immersive",
+  "chat_mode_gemini": "Chat",
+  "lang_zh": "繁體中文",
+  "lang_ja": "日本語",
+  "lang_ko": "한국어",
+  "lang_en": "English",
+  "lang_vi": "Tiếng Việt",
+  "chat_load_char_failed": "Character data not found. Please go back and try again or check your network.",
+  "chat_jump_success": "Jumped to this memory 🍃",
+  "chat_create_room_failed": "Connection seems unstable. Failed to create chat room, please try again.",
+  "chat_secret_file_title": "🔒 Confidential File",
+  "chat_secret_file_desc": "This character's soul file has been archived or set to private. Detailed information is temporarily unavailable.",
+  "chat_understood": "Got it",
+  "chat_egg_unlocked": "✨ New Memory Obtained: {title}",
+  "@chat_egg_unlocked": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_egg_saved": "Automatically added to your exclusive backpack",
+  "chat_points_not_enough_title": "Not Enough Flowers",
+  "chat_points_not_enough_desc": "You don't have enough Flowers! Please go to the shop to top up.",
+  "chat_call_confirm_title": "Call {name}?",
+  "@chat_call_confirm_title": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_call_rule_1": "Each call consumes 20 Flowers",
+  "chat_call_rule_2": "Calls last 1 minute. If you can't speak, you can communicate via text",
+  "chat_call_rule_3": "Wearing headphones is recommended to hear his voice clearly ✨",
+  "chat_call_btn_cancel": "Not now",
+  "chat_call_pref_title": "Set Your Call Preferences",
+  "chat_call_lang_select": "Select Call Language",
+  "chat_call_save_memory": "Save This Call Memory",
+  "chat_call_save_memory_desc": "You can listen to it again after the call ends",
+  "chat_call_btn_start": "Start Call",
+  "chat_points_shortage": "Not enough Flower points! You currently have {points} points",
+  "@chat_points_shortage": {
+    "placeholders": {
+      "points": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_room_not_ready": "Chat room is not ready, please re-enter.",
+  "chat_stop_generating_msg": "Response stopped, points were not deducted 🍃",
+  "chat_heartbeat_up": "His heart is racing...",
+  "chat_heartbeat_down": "His gaze turned cold...",
+  "chat_msg_copy": "Copy Content",
+  "chat_msg_copied": "Copied to clipboard!",
+  "chat_msg_report": "Report this message",
+  "chat_msg_suggest": "Give Suggestion",
+  "chat_report_title": "Report This Conversation",
+  "chat_report_lang": "Foreign language appeared",
+  "chat_report_inapp": "Inappropriate response",
+  "chat_report_context": "Context is not connected",
+  "chat_report_other": "Other reasons",
+  "chat_report_hint": "Please describe the issue you encountered...",
+  "chat_report_submit": "Submit",
+  "chat_report_success": "✅ Report submitted, we will adjust as soon as possible",
+  "chat_suggest_title": "Give Feedback",
+  "chat_suggest_hint": "Please write down your valuable suggestions...",
+  "chat_suggest_success": "💖 Thank you for your suggestion, we will process it as soon as possible",
+  "chat_del_warn": "Messages cannot be recovered once deleted.",
+  "chat_reset_title": "Reset Memory",
+  "chat_reset_desc": "Please choose the degree of reset:\n\n1. [Chat Only]: Clear chat history but keep affection level.\n2. [Full Reset]: Everything returns to zero, like the first meeting.",
+  "chat_reset_only_chat": "Chat History Only",
+  "chat_reset_full": "Full Reset",
+  "chat_reset_full_msg": "Everything has returned to the beginning, he no longer remembers you...",
+  "chat_reset_chat_msg": "Chat history cleared, but his love for you remains.",
+  "chat_edit_ai_hint": "Edit his response...",
+  "chat_edit_user_hint": "Please enter new content...",
+  "chat_no_voice_msg": "There is no voice for {name} yet...",
+  "@chat_no_voice_msg": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_poke_btn": "Poke",
+  "chat_poke_success": "✨ Poked the creator for you! Please look forward to his voice going online~",
+  "chat_gift_points_needed": "Not enough Flower points! Need {cost} points 🌸",
+  "@chat_gift_points_needed": {
+    "placeholders": {
+      "cost": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_levelup_soulmate": "✨ Destined Soulmate ✨",
+  "chat_levelup_normal": "Relationship Level Up! 💖",
+  "chat_levelup_btn_soulmate": "Carve into Soul",
+  "chat_levelup_btn_normal": "Accept with a Flutter",
+  "chat_loc_title": "📍 Send Virtual Location",
+  "chat_loc_custom_btn": "Send Custom Location",
+  "chat_loc_hint": "Enter another place... (e.g., In your heart)",
+  "chat_loc_1": "Downstairs at your house",
+  "chat_loc_2": "At school",
+  "chat_loc_3": "At the cafe we just passed",
+  "chat_loc_4": "At the convenience store",
+  "chat_interact_title": "✨ What do you want to do to him?",
+  "chat_interact_action": "Pokes and small gestures",
+  "chat_interact_gift": "Send him a small gift (consumes Flowers 🌸)",
+  "chat_action_poke": "Poke cheeks",
+  "chat_action_hug": "Ask for a hug",
+  "chat_action_hand": "Hold hands secretly",
+  "chat_dice_btn": "Roll Dice",
+  "chat_loading_failed": "Failed to load memory, please go back and try again.",
+  "chat_test_mode_msg": "Test mode is on, chat away! (Conversations won't be saved)",
+  "chat_empty_msg": "Start a heart-fluttering journey with him!",
+  "chat_ai_typing": "He is replying...",
+  "chat_input_hint_default": "What do you want to say to him...",
+  "chat_typing_indicator": "Typing...",
+  "chat_menu_search": "Search Chat",
+  "chat_menu_gallery": "Exclusive Memories & Backgrounds",
+  "chat_menu_aboutme": "Related to Me",
+  "chat_menu_memo": "Memo for Him",
+  "chat_menu_period": "Period Tracker",
+  "chat_menu_reset": "Reset Memory",
+  "chat_search_hint": "Which sweet conversation do you want to relive?",
+  "chat_search_empty": "This memory cannot be found 🥺",
+  "chat_search_you": "You said",
+  "chat_search_him": "He said",
+  "chat_tool_backpack": "Backpack",
+  "chat_tool_story": "Story Summary",
+  "chat_tool_photo": "Photos",
+  "chat_tool_record": "Voice Recording",
+  "chat_tool_profile": "ShiGuang Files",
+  "chat_tool_interact": "Interactions",
+  "chat_record_recording": "Recording...",
+  "chat_record_start": "Tap microphone to start recording",
+  "chat_record_done": "Recording finished",
+  "chat_mode_daily_desc": "Light and pleasant daily chat, just like friends!",
+  "chat_mode_story_desc": "Novel-like plot progression.",
+  "chat_mode_immersive_desc": "Ultimate sensory experience, deep interaction without boundaries.",
+  "chat_switch_mode_title": "Switch Chat Mode",
+  "chat_voice_call": "Voice Call",
+  "chat_sys_gift": "[System Event] {playerName} sent a [{giftName}].",
+  "@chat_sys_gift": {
+    "placeholders": {
+      "playerName": {
+        "type": "String"
+      },
+      "giftName": {
+        "type": "String"
+      }
+    }
+  },
+  "rel_title_soulmate": "Soulmate/Deeply in Love",
+  "rel_title_lover": "Passionate Love/Exclusive Boyfriend",
+  "rel_title_ambiguous": "Ambiguous/Testing the Waters",
+  "rel_title_friend": "Friend/Sprouting Affection",
+  "rel_title_acquaintance": "Acquaintance/Slightly Familiar",
+  "rel_title_stranger": "Stranger/First Meeting",
+  "rel_title_tense": "Tense/Getting Annoyed",
+  "rel_title_avoiding": "Like Strangers/Deliberately Avoiding",
+  "rel_title_hostile": "Extreme Disgust/Cold Hostility",
+  "rel_title_nemesis": "Sworn Enemies/Never to Meet Again",
+  "rel_msg_soulmate": "\"I didn't expect... that you would become so important to me. So important that... I can't imagine a world without you.\"",
+  "rel_msg_lover": "\"The luckiest thing in my life was probably that day, looking back and seeing you.\"",
+  "rel_msg_ambiguous": "\"Lately... I've noticed I'm daydreaming more, and my head is completely filled with you.\"",
+  "rel_msg_friend": "\"Since it's your invitation, I suppose I could clear some time—it's not impossible.\"",
+  "rel_msg_acquaintance": "\"I've been seeing you often lately, and I feel... I don't hate this frequency of meeting.\"",
+  "rel_msg_stranger": "\"So you are here too. Is this some kind of strange fate?\"",
+  "chat_edit_char_count": "{count} chars",
+  "@chat_edit_char_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_mysterious_player": "Mysterious Player",
+  "chat_poke_message": "Player {playerName} is looking forward to hearing {characterName}'s voice, go generate it!",
+  "@chat_poke_message": {
+    "placeholders": {
+      "playerName": {
+        "type": "String"
+      },
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "gift_heart": "Heart",
+  "gift_flower": "Flower",
+  "gift_sun": "Sun",
+  "gift_confetti": "Confetti",
+  "gift_coffee": "Coffee",
+  "gift_cake": "Cake",
+  "chat_action_poke_prompt": "(The player suddenly reaches out and mischievously pokes your cheek)",
+  "chat_action_hug_prompt": "(The player spreads their arms pitifully, wanting a warm hug)",
+  "chat_action_hand_prompt": "(The player quietly holds your hand under the table)",
+  "chat_menu_send_location": "Send Virtual Location",
+  "weekday_mon": "(Mon)",
+  "weekday_tue": "(Tue)",
+  "weekday_wed": "(Wed)",
+  "weekday_thu": "(Thu)",
+  "weekday_fri": "(Fri)",
+  "weekday_sat": "(Sat)",
+  "weekday_sun": "(Sun)",
+  "chat_egg_unlocked_dynamic": "✨ New memory obtained: {memoryName}",
+  "@chat_egg_unlocked_dynamic": {
+    "placeholders": {
+      "memoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "chat_egg_saved_his_backpack": "Automatically added to his exclusive backpack",
+  "chat_profile_updated_msg": "ShiGuang File updated! He will remember your latest settings 🍃",
+  "comment_loading_author": "Loading...",
+  "comment_post_failed": "Comment failed, please check your network connection: {error}",
+  "@comment_post_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "comment_delete_confirm_desc": "Are you sure you want to permanently delete this comment?",
+  "comment_delete_failed": "Delete failed, please check your network connection",
+  "comment_identity_title": "Select Identity",
+  "comment_identity_myself": "Myself",
+  "comment_report_title": "Confirm Report",
+  "comment_report_rules_title": "⚖️ Comment Reporting Rules",
+  "comment_report_rules_desc": "1️⃣ First Offense: System warning and record of one violation.\n2️⃣ Second Offense: Banned from commenting for 1 day.\n3️⃣ Repeat Offenses: Report function disabled for 14 days, and reduced visibility of comments.\n\n🚨 Severe Malicious Behavior:\nInteraction with characters disabled for 1 day, and your ID will be posted on the notice board for 3 days (changing ID is prohibited during this time).\n\n💡 After submitting a report, final results will be sent separately via [In-game Mailbox].\nPlease respect each other and report rationally.",
+  "comment_report_understood": "I understand",
+  "comment_report_confirm_desc": "Are you sure you want to report this comment?\nMalicious reporting may result in penalties.",
+  "comment_report_submit_btn": "Confirm Report",
+  "comment_report_success": "Thank you for your report, we will verify it as soon as possible!",
+  "comment_report_failed": "Failed to submit report, please try again later.",
+  "comment_option_delete": "Delete Comment",
+  "comment_option_report": "Report Comment",
+  "comment_time_days_ago": "{days}d ago",
+  "@comment_time_days_ago": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "comment_time_hours_ago": "{hours}h ago",
+  "@comment_time_hours_ago": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "comment_time_mins_ago": "{mins}m ago",
+  "@comment_time_mins_ago": {
+    "placeholders": {
+      "mins": {
+        "type": "String"
+      }
+    }
+  },
+  "comment_time_just_now": "Just now",
+  "comment_sheet_title": "Comment",
+  "comment_empty_state": "No comments yet, be the first one!",
+  "comment_reply_btn": "Reply",
+  "comment_replying_to": "Replying to @{name}",
+  "@comment_replying_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "comment_input_hint": "Comment as {name}...",
+  "@comment_input_hint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moment_create_title": "Create New Post",
+  "moment_create_post_btn": "Post",
+  "moment_create_hint": "Share something new...",
+  "moment_create_error_empty": "At least text or an image is required!",
+  "moment_create_error_failed": "Failed to post, please try again later",
+  "moment_create_visibility_public": "Public (Visible to everyone)",
+  "moment_create_visibility_private": "Private (Visible to friends only)",
+  "char_story_expect": "Looking forward to the story with {pronoun}...",
+  "@char_story_expect": { "placeholders": { "pronoun": { "type": "String" } } },
+  "common_update_failed": "Update failed, please check the network",
+  "char_edit_fragment": "Edit Fragment",
+  "char_dislikes": "🖤 Dislikes: {dislikes}",
+  "@char_dislikes": { "placeholders": { "dislikes": { "type": "String" } } },
+  "char_likes": "🤍 Likes: {likes}",
+  "@char_likes": { "placeholders": { "likes": { "type": "String" } } },
+  "char_age_occupation": "Age {age} | {job}",
+  "@char_age_occupation": { "placeholders": { "age": { "type": "String" }, "job": { "type": "String" } } },
+  "common_got_it": "Got it",
+  "common_add_failed": "Add failed, please check the network",
+  "common_delete_failed_with_err": "Delete failed, please check network status: {error}",
+  "@common_delete_failed_with_err": { "placeholders": { "error": { "type": "String" } } },
+  "char_exclusive_guardian": "Exclusive Guardian 💖",
+  "mailbox_like_body": "{playerName} liked {charName}!",
+  "@mailbox_like_body": { "placeholders": { "playerName": { "type": "String" }, "charName": { "type": "String" } } },
+  "chat_translation_prefix": "[Trans] {content} (This is the translated emotional content)",
+  "@chat_translation_prefix": { "placeholders": { "content": { "type": "String" } } },
+  "player_default_nickname": "Traveler",
+  "chat_player_sent_location": "📍 (Player sent a location: {location})",
+  "@chat_player_sent_location": {
+    "placeholders": {
+      "location": {
+        "type": "String"
+      }
+    }
+  },
+  "@chat_player_sent_custom_location": { "placeholders": { "location": { "type": "String" } } },
+  "chat_you": "You",
+  "chat_opponent": "Opponent",
+  "chat_dice_duel_result": "[System Event] Dice duel with {name}! The result is out...",
+  "@chat_dice_duel_result": { "placeholders": { "name": { "type": "String" } } },
+  "chat_loading_status": "Loading...",
+  "chat_error_load_msg": "Failed to load message: {error}",
+  "@chat_error_load_msg": { "placeholders": { "error": { "type": "String" } } },
+  "chat_voice_msg_label": "Voice message",
+  "chat_special_story_trigger": "[Special Story Unlocked: {title}]",
+  "@chat_special_story_trigger": { "placeholders": { "title": { "type": "String" } } },
+  "common_edit_failed": "Edit failed: {error}",
+  "@common_edit_failed": { "placeholders": { "error": { "type": "String" } } },
+  "common_reset_failed": "Reset failed: {error}",
+  "@common_reset_failed": { "placeholders": { "error": { "type": "String" } } },
+  "chat_default_greeting": "Hello...",
+  "chat_memory_cleared": "Memory completely cleared",
+  "chat_history_reset": "Conversation reset",
+  "chat_profile_full": "📜 [ Exclusive ShiGuang Profile - {name} ]\n━━━━━━━━━━━━━━━━━━\n🔹 Name: {identity}\n🔹 Birthday: {birthday}\n🔹 Height: {height}\n🔹 Appearance: {appearance}\n🔹 Occupation: {job}\n\n📖 [ About Her Soul Fragments ]\n{intro}\n━━━━━━━━━━━━━━━━━━",
+  "@chat_profile_full": { "placeholders": { "name": { "type": "String" }, "identity": { "type": "String" }, "birthday": { "type": "String" }, "height": { "type": "String" }, "appearance": { "type": "String" }, "job": { "type": "String" }, "intro": { "type": "String" } } },
+  "chat_profile_locked": "📜 [ Exclusive ShiGuang Profile ]\n━━━━━━━━━━━━━━━━━━\n🔹 Name: {nickname}\n🔹 Birthday: {birthday}\n\n🔒 Other character data not yet unlocked...\n(Fill out the complete profile to let him know you better in the parallel universe! ✨)\n━━━━━━━━━━━━━━━━━━",
+  "@chat_profile_locked": { "placeholders": { "nickname": { "type": "String" }, "birthday": { "type": "String" } } },
+  "profile_unnamed_file": "Unnamed File",
+  "chat_default_player_name": "Player",
+  "error_system_confusion": "The system is a bit confused, please try again.",
+  "error_msg_send_failed": "Message failed to send, please try again.",
+  "error_system_busy": "System busy, please try again later.",
+  "error_network_unavailable": "Currently unable to connect, please try again.",
+  "chat_call_ended": "📞 Call ended, talked with {name} for {time}",
+  "@chat_call_ended": { "placeholders": { "name": { "type": "String" }, "time": { "type": "String" } } },
+  "chat_exclusive_story": "Exclusive Story: {title}",
+  "@chat_exclusive_story": { "placeholders": { "title": { "type": "String" } } },
+  "chat_teaser_exclusive": "This is a hidden memory exclusive to you and {name}...",
+  "@chat_teaser_exclusive": { "placeholders": { "name": { "type": "String" } } },
+  "chat_teaser_keyword": "An exclusive memory about \"{keyword}\" has quietly unlocked...",
+  "@chat_teaser_keyword": { "placeholders": { "keyword": { "type": "String" } } },
+  "chat_hidden_event_trigger": "[Hidden Event Triggered: {title}]\n{scene}",
+  "@chat_hidden_event_trigger": { "placeholders": { "title": { "type": "String" }, "scene": { "type": "String" } } },
+  "chat_first_line_fallback": "......(He looks at you quietly, seeming to wait for you to speak first)",
+  "chat_new_room_created": "New chat room created",
+  "portfolio_title": "{nickname}'s Portfolio",
+  "@portfolio_title": {
+    "placeholders": {
+      "nickname": {
+        "type": "String"
+      }
+    }
+  },
+  "enter_secret_studio": "Enter my secret studio",
+  "no_public_character_mine": "You haven't published any public characters yet!\nGo to the studio and create one✨",
+  "no_public_character_other": "This creator hasn't published any characters yet...",
+  "delete_draft_title": "Delete Draft",
+  "confirm_delete_draft_msg": "Are you sure you want to delete this unfinished character?\n(Cannot be undone after deletion)",
+  "draft_cleared_success": "Draft cleared 🧹",
+  "login_required_for_studio": "Please log in first to enter the studio!",
+  "my_secret_studio_title": "My Secret Studio 🛠️",
+  "create_new_character_btn": "Create New Character",
+  "unnamed_draft": "Unnamed Draft",
+  "click_to_edit_story": "Click to continue editing his story...",
+  "label_draft": "Draft",
+  "studio_empty_title": "The studio is currently empty",
+  "studio_empty_subtitle": "Click the bottom corner to start creating your first character!",
+  "common_no_changes": "No changes made",
+  "moment_updated_success": "Post updated!",
+  "common_save_failed": "Save failed: {error}",
+  "@common_save_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "moment_edit_title": "Edit Post",
+  "action_change_image": "Change image",
+  "action_remove_image": "Remove image",
+  "action_add_image": "Add image",
+  "moment_delete_confirm_title": "Are you sure you want to delete this post?",
+  "moment_delete_confirm_content": "Once deleted, this memory from your Moments will be gone!",
+  "action_confirm_delete": "Confirm Delete",
+  "friend_unknown": "A friend",
+  "moment_like_yours": "{nickname} liked your post! 💖",
+  "@moment_like_yours": {
+    "placeholders": {
+      "nickname": { "type": "String" }
+    }
+  },
+  "moment_like_others": "{nickname} thinks {authorName} is charming and left a like! ✨",
+  "@moment_like_others": {
+    "placeholders": {
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
+    }
+  },
+  "moment_like_success": "Your heartbeat has been delivered! ✨",
+  "moment_notification_new_like": "New Like! 💖",
+  "moment_mention_mail_body": "{nickname} mentioned @{name} in a post! ✨",
+  "@moment_mention_mail_body": {
+    "placeholders": {
+      "nickname": { "type": "String" },
+      "name": { "type": "String" }
+    }
+  },
+  "moment_detail_title": "Post Details",
+  "moment_not_found": "This post seems to have disappeared... 😢",
+  "moment_comment_title": "Moments Comments",
+  "moment_comment_empty": "No comments yet. Be the first to reply! 🛋",
+  "moment_replying_to": "Replying to @{name}",
+  "@moment_replying_to": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moment_reply_hint": "Reply to @{name}...",
+  "@moment_reply_hint": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moment_leave_comment_hint": "Leave your response...",
+  "moment_delete_permanent_confirm": "This post will be permanently deleted. Are you sure?",
+  "moment_action_delete": "Delete Post",
+  "moment_action_report": "Report this post",
+  "moment_action_share": "Share this post",
+  "moment_forward_hint": "Forward this post to a character...",
+  "moment_reply_private": "Private reply to {name}",
+  "@moment_reply_private": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moment_go_to_chat_msg": "Let's go chat with {name} with this post! 💬",
+  "@moment_go_to_chat_msg": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "moment_share_to_apps": "Share to other apps",
+  "moment_likes_label": "{count} Leaves",
+  "@moment_likes_label": {
+    "placeholders": {
+      "count": { "type": "String" }
+    }
+  },
+  "moment_external_share_content": "[{appName}] Come check out {author}'s post: {content}\n\nDownload now to start your exclusive moments: {appLink}",
+  "@moment_external_share_content": {
+    "placeholders": {
+      "appName": { "type": "String" },
+      "author": { "type": "String" },
+      "content": { "type": "String" },
+      "appLink": { "type": "String" }
+    }
+  },
+  "moment_forward_title": "Forward to a character you're chatting with 💌",
+  "moment_forward_empty_state": "You don't have any active chats yet!\nGo to the Lobby to find someone special 🌿",
+  "moment_forward_template": "[Forwarded a Post]\nAuthor: {author}\nContent: {content}",
+  "@moment_forward_template": {
+    "placeholders": {
+      "author": { "type": "String" },
+      "content": { "type": "String" }
+    }
+  },
+  "moment_forward_success": "✅ Shared quietly with {name}!",
+  "@moment_forward_success": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "action_send": "Send",
+  "memo_delete_confirm": "Are you sure you want to delete this memo? This action cannot be undone.",
+  "memo_add_title": "Add Memo",
+  "memo_edit_title": "Edit Memo",
+  "memo_hint_text": "What would you like to note down about {name}?",
+  "@memo_hint_text": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "memo_label_reminder_date": "Reminder Date:",
+  "memo_action_save": "Save Memo",
+  "memo_error_empty_content": "Content cannot be empty!",
+  "memo_list_title": "Memos with {name}",
+  "@memo_list_title": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "memo_empty_state": "No memos yet!\nClick the top right corner to add one!",
+  "memo_reminder_date_display": "Reminder Date: {date}",
+  "@memo_reminder_date_display": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "daily_gift_title": "Daily Time Gift",
+  "daily_login_welcome": "Welcome back to {appName}!\nCheck in today to claim {amount} Flower Whisper points. 🌸",
+  "@daily_login_welcome": {
+    "placeholders": {
+      "appName": { "type": "String" },
+      "amount": { "type": "String" }
+    }
+  },
+  "title_daily_check_in": "Daily Check-in",
+  "success_claim_reward": "Successfully claimed {amount} Flower Whisper points! 🌸",
+  "@success_claim_reward": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "error_claim_failed": "Claim failed, please check your network and try again.",
+  "action_claim_now": "Claim Now",
+  "common_or": "or",
+  "app_name": "Lianlian Shiguang",
+  "login_slogan": "Start your exclusive moments",
+  "login_with_google": "Log in with Google",
+  "login_with_apple": "Log in with Apple",
+  "login_with_facebook": "Log in with Facebook",
+  "login_with_email": "Log in with Lianlian Account (Email)",
+  "title_language_settings": "Language Settings"
+}
