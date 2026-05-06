@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lianlian_shiguang/models/player_profile.dart';
 import 'package:provider/provider.dart';      // 這一行是為了讓檔案認識 Provider
 import '../services/theme_notifier.dart'; // 這一行是為了讓檔案認識你自訂的 ThemeNotifier
 import 'package:flutter/foundation.dart';
