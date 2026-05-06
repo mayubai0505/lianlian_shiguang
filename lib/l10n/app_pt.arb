@@ -1328,5 +1328,9 @@
    "hint_click_avatar_to_edit": "Clique no avatar para editar o perfil",
    "title_my_friends": "Meus Amigos",
    "action_show_all": "Mostrar Tudo",
-   "empty_no_characters_created": "Você ainda não criou nenhum personagem."
+   "empty_no_characters_created": "Você ainda não criou nenhum personagem.",
+   "common_close": "Fechar",
+   "@common_close": {
+      "description": "Texto geral do botão de fechar"
+   }
 }

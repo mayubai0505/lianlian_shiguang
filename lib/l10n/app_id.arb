@@ -1327,5 +1327,9 @@
     "hint_click_avatar_to_edit": "Klik avatar untuk mengedit profil",
     "title_my_friends": "Teman-temanku",
     "action_show_all": "Tampilkan Semua",
-    "empty_no_characters_created": "Anda belum membuat karakter apa pun."
+    "empty_no_characters_created": "Anda belum membuat karakter apa pun.",
+    "common_close": "Tutup",
+    "@common_close": {
+        "description": "Teks tombol tutup umum"
+    }
 }

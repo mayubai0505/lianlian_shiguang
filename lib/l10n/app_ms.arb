@@ -1327,5 +1327,9 @@
     "hint_click_avatar_to_edit": "Klik avatar untuk mengedit profil",
     "title_my_friends": "Kawan-kawan Saya",
     "action_show_all": "Tunjukkan Semua",
-    "empty_no_characters_created": "Awak belum mencipta sebarang watak lagi."
+    "empty_no_characters_created": "Awak belum mencipta sebarang watak lagi.",
+    "common_close": "Tutup",
+    "@common_close": {
+        "description": "Teks butang tutup umum"
+    }
 }

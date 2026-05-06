@@ -3267,4 +3267,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get empty_no_characters_created => 'คุณยังไม่ได้สร้างตัวละครใดๆ';
+
+  @override
+  String get common_close => 'ปิด';
 }

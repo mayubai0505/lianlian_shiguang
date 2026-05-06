@@ -1540,5 +1540,9 @@
   "hint_click_avatar_to_edit": "Click avatar to edit profile",
   "title_my_friends": "My Friends",
   "action_show_all": "Show All",
-  "empty_no_characters_created": "You haven't created any characters yet."
+  "empty_no_characters_created": "You haven't created any characters yet.",
+  "common_close": "Close",
+  "@common_close": {
+    "description": "General close button text"
+  }
 }

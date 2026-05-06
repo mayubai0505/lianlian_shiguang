@@ -1327,5 +1327,9 @@
     "hint_click_avatar_to_edit": "คลิกที่รูปโปรไฟล์เพื่อแก้ไขข้อมูลส่วนตัว",
     "title_my_friends": "เพื่อนของฉัน",
     "action_show_all": "แสดงทั้งหมด",
-    "empty_no_characters_created": "คุณยังไม่ได้สร้างตัวละครใดๆ"
+    "empty_no_characters_created": "คุณยังไม่ได้สร้างตัวละครใดๆ",
+    "common_close": "ปิด",
+    "@common_close": {
+        "description": "ข้อความปุ่มปิดทั่วไป"
+    }
 }

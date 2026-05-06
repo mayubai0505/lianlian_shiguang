@@ -1448,5 +1448,9 @@
   "hint_click_avatar_to_edit": "點擊頭像進行個人檔案編輯",
   "title_my_friends": "我的好友",
   "action_show_all": "顯示全部",
-  "empty_no_characters_created": "您尚未創建任何角色。"
+  "empty_no_characters_created": "您尚未創建任何角色。",
+  "common_close": "關閉",
+  "@common_close": {
+    "description": "通用關閉按鈕文字"
+  }
 }

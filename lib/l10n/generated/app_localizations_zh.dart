@@ -3115,6 +3115,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get empty_no_characters_created => '您尚未創建任何角色。';
+
+  @override
+  String get common_close => '關閉';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6228,6 +6231,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get empty_no_characters_created => '您尚未创建任何角色。';
+
+  @override
+  String get common_close => '关闭';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9341,4 +9347,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get empty_no_characters_created => '您尚未創建任何角色。';
+
+  @override
+  String get common_close => '關閉';
 }

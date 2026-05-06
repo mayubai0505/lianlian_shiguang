@@ -425,7 +425,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
-              actions: [ TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('關閉')) ],
+              actions: [ TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.common_close)) ],
             );
           },
         );

@@ -3161,4 +3161,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get empty_no_characters_created => '아직 생성된 캐릭터가 없습니다.';
+
+  @override
+  String get common_close => '닫기';
 }

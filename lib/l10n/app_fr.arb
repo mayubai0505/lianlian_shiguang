@@ -1497,5 +1497,9 @@
     "hint_click_avatar_to_edit": "Cliquez sur l'avatar pour modifier le profil",
     "title_my_friends": "Mes amis",
     "action_show_all": "Tout afficher",
-    "empty_no_characters_created": "Vous n'avez pas encore créé de personnage."
+    "empty_no_characters_created": "Vous n'avez pas encore créé de personnage.",
+    "common_close": "Fermer",
+    "@common_close": {
+        "description": "Texte général du bouton de fermeture"
+    }
 }

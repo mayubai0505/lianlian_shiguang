@@ -3145,4 +3145,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get empty_no_characters_created => 'まだキャラクターを作成していません。';
+
+  @override
+  String get common_close => '閉じる';
 }

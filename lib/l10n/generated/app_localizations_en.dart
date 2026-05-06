@@ -3277,4 +3277,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get empty_no_characters_created =>
       'You haven\'t created any characters yet.';
+
+  @override
+  String get common_close => 'Close';
 }

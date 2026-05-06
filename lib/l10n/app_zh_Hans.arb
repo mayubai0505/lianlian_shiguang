@@ -1339,5 +1339,9 @@
   "hint_click_avatar_to_edit": "点击头像进行个人档案编辑",
   "title_my_friends": "我的好友",
   "action_show_all": "显示全部",
-  "empty_no_characters_created": "您尚未创建任何角色。"
+  "empty_no_characters_created": "您尚未创建任何角色。",
+  "common_close": "关闭",
+  "@common_close": {
+    "description": "通用关闭按钮文字"
+  }
 }

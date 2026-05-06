@@ -3307,4 +3307,7 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get empty_no_characters_created =>
       'आपने अभी तक कोई पात्र नहीं बनाया है।';
+
+  @override
+  String get common_close => 'बंद करें';
 }

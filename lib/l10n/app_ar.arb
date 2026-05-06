@@ -1368,5 +1368,9 @@
     "hint_click_avatar_to_edit": "انقر على الصورة الرمزية لتعديل الملف الشخصي",
     "title_my_friends": "أصدقائي",
     "action_show_all": "عرض الكل",
-    "empty_no_characters_created": "لم تقم بإنشاء أي شخصية بعد."
+    "empty_no_characters_created": "لم تقم بإنشاء أي شخصية بعد.",
+    "common_close": "إغلاق",
+    "@common_close": {
+        "description": "نص زر الإغلاق العام"
+    }
 }

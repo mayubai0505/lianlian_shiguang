@@ -1327,5 +1327,9 @@
   "hint_click_avatar_to_edit": "Nhấn vào ảnh đại diện để chỉnh sửa hồ sơ",
   "title_my_friends": "Bạn bè của tôi",
   "action_show_all": "Hiển thị tất cả",
-  "empty_no_characters_created": "Bạn chưa tạo nhân vật nào."
+  "empty_no_characters_created": "Bạn chưa tạo nhân vật nào.",
+  "common_close": "Đóng",
+  "@common_close": {
+    "description": "Văn bản nút đóng chung"
+  }
 }

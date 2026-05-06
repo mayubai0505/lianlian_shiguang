@@ -3307,4 +3307,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get empty_no_characters_created => 'Bạn chưa tạo nhân vật nào.';
+
+  @override
+  String get common_close => 'Đóng';
 }

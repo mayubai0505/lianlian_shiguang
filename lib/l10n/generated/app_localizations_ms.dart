@@ -3307,4 +3307,7 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get empty_no_characters_created =>
       'Awak belum mencipta sebarang watak lagi.';
+
+  @override
+  String get common_close => 'Tutup';
 }

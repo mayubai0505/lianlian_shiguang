@@ -5829,6 +5829,12 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'您尚未創建任何角色。'**
   String get empty_no_characters_created;
+
+  /// 通用關閉按鈕文字
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關閉'**
+  String get common_close;
 }
 
 class _AppLocalizationsDelegate

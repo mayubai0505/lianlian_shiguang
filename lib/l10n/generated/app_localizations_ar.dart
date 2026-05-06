@@ -3260,4 +3260,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get empty_no_characters_created => 'لم تقم بإنشاء أي شخصية بعد.';
+
+  @override
+  String get common_close => 'إغلاق';
 }

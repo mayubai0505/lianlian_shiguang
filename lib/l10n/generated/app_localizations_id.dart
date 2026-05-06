@@ -3307,4 +3307,7 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get empty_no_characters_created =>
       'Anda belum membuat karakter apa pun.';
+
+  @override
+  String get common_close => 'Tutup';
 }

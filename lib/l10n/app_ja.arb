@@ -1327,5 +1327,9 @@
   "hint_click_avatar_to_edit": "アバターをタップしてプロフィールを編集",
   "title_my_friends": "私のフレンド",
   "action_show_all": "すべて表示",
-  "empty_no_characters_created": "まだキャラクターを作成していません。"
+  "empty_no_characters_created": "まだキャラクターを作成していません。",
+  "common_close": "閉じる",
+  "@common_close": {
+    "description": "共通の閉じるボタンのテキスト"
+  }
 }

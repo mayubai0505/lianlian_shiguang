@@ -3322,4 +3322,7 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get empty_no_characters_created =>
       'Você ainda não criou nenhum personagem.';
+
+  @override
+  String get common_close => 'Fechar';
 }

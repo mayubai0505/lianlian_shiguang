@@ -1326,5 +1326,9 @@
   "hint_click_avatar_to_edit": "프로필을 편집하려면 아바타를 클릭하세요",
   "title_my_friends": "내 친구들",
   "action_show_all": "모두 보기",
-  "empty_no_characters_created": "아직 생성된 캐릭터가 없습니다."
+  "empty_no_characters_created": "아직 생성된 캐릭터가 없습니다.",
+  "common_close": "닫기",
+  "@common_close": {
+    "description": "일반 닫기 버튼 텍스트"
+  }
 }

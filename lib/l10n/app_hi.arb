@@ -1327,5 +1327,9 @@
     "hint_click_avatar_to_edit": "प्रोफ़ाइल संपादित करने के लिए अवतार पर क्लिक करें",
     "title_my_friends": "मेरे दोस्त",
     "action_show_all": "सभी दिखाएं",
-    "empty_no_characters_created": "आपने अभी तक कोई पात्र नहीं बनाया है।"
+    "empty_no_characters_created": "आपने अभी तक कोई पात्र नहीं बनाया है।",
+    "common_close": "बंद करें",
+    "@common_close": {
+        "description": "सामान्य बंद करें बटन टेक्स्ट"
+    }
 }
