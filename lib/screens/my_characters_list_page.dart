@@ -81,6 +81,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final primaryColor = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       // ✅ 背景：完全跟隨 themeNotifier 的設定（可能是玩家自選的漸層）
@@ -88,7 +89,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent, // 讓漸層背景透上來
         appBar: AppBar(
-          title: Text('我創建的角色', style: TextStyle(color: theme.colorScheme.onSurface)),
+          title: Text(l10n.my_created_characters, style: TextStyle(color: theme.colorScheme.onSurface)),
           backgroundColor: Colors.transparent,
           elevation: 0,
           // ✅ 返回按鈕顏色自動適配
@@ -102,7 +103,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
             }
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Center(
-                child: Text('尚未創建角色', style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+                child: Text(l10n.no_characters_yet, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
               );
             }
 
@@ -156,7 +157,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
                           Icon(Icons.auto_awesome, size: 14, color: primaryColor),
                           const SizedBox(width: 4),
                           Text(
-                            '遊玩次數: ${character.playCount}',
+                            l10n.play_count_display(character.playCount),
                             style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 13),
                           ),
                         ],
@@ -182,6 +183,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
 
   // ✨ 動態標籤：顏色會根據「公開/私人」與「主題亮度」微調
   Widget _buildStatusBadge(bool isPublic, ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     final color = isPublic ? Colors.teal : Colors.blueGrey;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -191,7 +193,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
         border: Border.all(color: color.withOpacity(0.5), width: 1),
       ),
       child: Text(
-        isPublic ? '公開' : '私人',
+        isPublic ? l10n.visibility_public : l10n.visibility_private,
         style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.bold),
       ),
     );

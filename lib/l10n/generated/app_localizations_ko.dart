@@ -3026,4 +3026,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => '모먼트가 아직 조용하네요 ✨';
+
+  @override
+  String get my_created_characters => '내가 만든 캐릭터';
+
+  @override
+  String get no_characters_yet => '아직 생성된 캐릭터가 없습니다';
+
+  @override
+  String play_count_display(int count) {
+    return '플레이 횟수: $count';
+  }
 }

@@ -1252,5 +1252,16 @@
         }
     },
     "empty_public_moments_short": "ยังไม่มีโพสต์สาธารณะ 🌍",
-    "empty_private_moments_short": "โมเมนต์ยังเงียบเชียบอยู่เลย ✨"
+    "empty_private_moments_short": "โมเมนต์ยังเงียบเชียบอยู่เลย ✨",
+    "my_created_characters": "ตัวละครที่ฉันสร้าง",
+    "no_characters_yet": "ยังไม่ได้สร้างตัวละคร",
+    "play_count_display": "จำนวนครั้งที่เล่น: {count}",
+    "@play_count_display": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    }
 }

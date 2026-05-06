@@ -3165,4 +3165,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'Vòng bạn bè vẫn đang im lìm ✨';
+
+  @override
+  String get my_created_characters => 'Nhân vật tôi đã tạo';
+
+  @override
+  String get no_characters_yet => 'Chưa tạo nhân vật nào';
+
+  @override
+  String play_count_display(int count) {
+    return 'Số lần chơi: $count';
+  }
 }

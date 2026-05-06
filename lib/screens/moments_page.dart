@@ -271,68 +271,6 @@ class _MomentsPageState extends State<MomentsPage> {
     }
   }
 
-  // ✨ 負責畫出動態牆，並根據 isPublicTab 進行智慧過濾
-  Widget _buildFeed({required List<String> friendIds, required bool isPublicTab}) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        setState(() {});
-        await Future.delayed(const Duration(milliseconds: 500));
-      },
-      child: StreamBuilder<QuerySnapshot>(
-        stream: _db
-            .collection('artifacts')
-            .doc(_appId)
-            .collection('moments')
-            .orderBy('createdAt', descending: true)
-            .limit(50)
-            .snapshots(),
-        builder: (context, momentSnapshot) {
-          if (momentSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!momentSnapshot.hasData || momentSnapshot.data!.docs.isEmpty) {
-            return _buildEmptyState(isPublicTab);
-          }
-
-          final allMoments = momentSnapshot.data!.docs
-              .map((doc) => Moment.fromFirestore(doc))
-              .toList();
-
-          // ✨✨✨ 終極看門狗：分流過濾邏輯 ✨✨✨
-          final filteredMoments = allMoments.where((m) {
-            if (isPublicTab) {
-              // 🌍 公海規則：只要貼文標籤是公開的，就放行！
-              return m.isPublic == true;
-            } else {
-              // 🔒 朋友圈規則：只有我的好友發的，或是我自己發的，才放行！
-              return friendIds.contains(m.authorId) || m.createdBy == _userId;
-            }
-          }).toList();
-
-          if (filteredMoments.isEmpty) {
-            return _buildEmptyState(isPublicTab);
-          }
-
-          return ListView.builder(
-            padding: EdgeInsets.zero,
-            itemCount: filteredMoments.length,
-            itemBuilder: (context, index) {
-              return MomentCard(
-                moment: filteredMoments[index],
-                currentUserId: _userId!,
-                onLikeTapped: () => _handleLikeTaskProgress(filteredMoments[index]),
-                onDeleteTapped: () => _deleteMoment(filteredMoments[index].id),
-                // ✨ 加上這行：當頭像被點擊時，執行跳轉
-                onAvatarTapped: () => _navigateToCharacterProfile(filteredMoments[index]),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
   // 小優化：根據不同頁面顯示不同的空白提示
   Widget _buildEmptyState(bool isPublicTab) {
     final l10n = AppLocalizations.of(context)!;

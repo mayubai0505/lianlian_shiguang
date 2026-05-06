@@ -3010,4 +3010,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'タイムラインはまだ静かです ✨';
+
+  @override
+  String get my_created_characters => '作成したキャラクター';
+
+  @override
+  String get no_characters_yet => 'まだキャラクターが作成されていません';
+
+  @override
+  String play_count_display(int count) {
+    return 'プレイ回数: $count';
+  }
 }

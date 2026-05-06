@@ -1264,5 +1264,16 @@
     }
   },
   "empty_public_moments_short": "目前还没有公开动态 🌍",
-  "empty_private_moments_short": "朋友圈还静悄悄的 ✨"
+  "empty_private_moments_short": "朋友圈还静悄悄的 ✨",
+  "my_created_characters": "我创建的角色",
+  "no_characters_yet": "尚未创建角色",
+  "play_count_display": "游玩次数: {count}",
+  "@play_count_display": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  }
 }

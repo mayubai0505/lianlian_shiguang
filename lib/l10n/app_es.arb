@@ -1252,5 +1252,16 @@
         }
     },
     "empty_public_moments_short": "No hay publicaciones públicas aún 🌍",
-    "empty_private_moments_short": "El círculo está muy tranquilo ✨"
+    "empty_private_moments_short": "El círculo está muy tranquilo ✨",
+    "my_created_characters": "Mis personajes creados",
+    "no_characters_yet": "Aún no se han creado personajes",
+    "play_count_display": "Veces jugado: {count}",
+    "@play_count_display": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    }
 }

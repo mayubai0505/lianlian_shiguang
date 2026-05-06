@@ -1252,5 +1252,16 @@
         }
     },
     "empty_public_moments_short": "Belum ada postingan publik 🌍",
-    "empty_private_moments_short": "Lingkaran pertemanan masih sunyi ✨"
+    "empty_private_moments_short": "Lingkaran pertemanan masih sunyi ✨",
+    "my_created_characters": "Karakter Buatanku",
+    "no_characters_yet": "Belum ada karakter yang dibuat",
+    "play_count_display": "Jumlah main: {count}",
+    "@play_count_display": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    }
 }

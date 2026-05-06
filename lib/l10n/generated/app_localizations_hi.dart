@@ -3166,4 +3166,15 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'सर्कल अभी बहुत शांत है ✨';
+
+  @override
+  String get my_created_characters => 'मेरे बनाए गए पात्र';
+
+  @override
+  String get no_characters_yet => 'अभी तक कोई पात्र नहीं बनाया गया है';
+
+  @override
+  String play_count_display(int count) {
+    return 'खेलने की संख्या: $count';
+  }
 }

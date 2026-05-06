@@ -5583,6 +5583,24 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'朋友圈還靜悄悄的 ✨'**
   String get empty_private_moments_short;
+
+  /// No description provided for @my_created_characters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我創建的角色'**
+  String get my_created_characters;
+
+  /// No description provided for @no_characters_yet.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未創建角色'**
+  String get no_characters_yet;
+
+  /// No description provided for @play_count_display.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'遊玩次數: {count}'**
+  String play_count_display(int count);
 }
 
 class _AppLocalizationsDelegate

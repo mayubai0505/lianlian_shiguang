@@ -1251,5 +1251,16 @@
     }
   },
   "empty_public_moments_short": "현재 공개 포스트가 없습니다 🌍",
-  "empty_private_moments_short": "모먼트가 아직 조용하네요 ✨"
+  "empty_private_moments_short": "모먼트가 아직 조용하네요 ✨",
+  "my_created_characters": "내가 만든 캐릭터",
+  "no_characters_yet": "아직 생성된 캐릭터가 없습니다",
+  "play_count_display": "플레이 횟수: {count}",
+  "@play_count_display": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  }
 }

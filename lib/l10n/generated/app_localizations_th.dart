@@ -3128,4 +3128,15 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'โมเมนต์ยังเงียบเชียบอยู่เลย ✨';
+
+  @override
+  String get my_created_characters => 'ตัวละครที่ฉันสร้าง';
+
+  @override
+  String get no_characters_yet => 'ยังไม่ได้สร้างตัวละคร';
+
+  @override
+  String play_count_display(int count) {
+    return 'จำนวนครั้งที่เล่น: $count';
+  }
 }

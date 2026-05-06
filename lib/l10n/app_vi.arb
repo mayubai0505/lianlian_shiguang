@@ -1252,5 +1252,16 @@
     }
   },
   "empty_public_moments_short": "Hiện chưa có bài đăng công khai 🌍",
-  "empty_private_moments_short": "Vòng bạn bè vẫn đang im lìm ✨"
+  "empty_private_moments_short": "Vòng bạn bè vẫn đang im lìm ✨",
+  "my_created_characters": "Nhân vật tôi đã tạo",
+  "no_characters_yet": "Chưa tạo nhân vật nào",
+  "play_count_display": "Số lần chơi: {count}",
+  "@play_count_display": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  }
 }

@@ -1252,5 +1252,16 @@
         }
     },
     "empty_public_moments_short": "अभी तक कोई सार्वजनिक पोस्ट नहीं है 🌍",
-    "empty_private_moments_short": "सर्कल अभी बहुत शांत है ✨"
+    "empty_private_moments_short": "सर्कल अभी बहुत शांत है ✨",
+    "my_created_characters": "मेरे बनाए गए पात्र",
+    "no_characters_yet": "अभी तक कोई पात्र नहीं बनाया गया है",
+    "play_count_display": "खेलने की संख्या: {count}",
+    "@play_count_display": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    }
 }

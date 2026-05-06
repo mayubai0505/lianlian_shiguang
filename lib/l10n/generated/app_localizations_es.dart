@@ -3186,4 +3186,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'El círculo está muy tranquilo ✨';
+
+  @override
+  String get my_created_characters => 'Mis personajes creados';
+
+  @override
+  String get no_characters_yet => 'Aún no se han creado personajes';
+
+  @override
+  String play_count_display(int count) {
+    return 'Veces jugado: $count';
+  }
 }

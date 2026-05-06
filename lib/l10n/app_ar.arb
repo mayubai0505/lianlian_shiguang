@@ -1293,5 +1293,16 @@
         }
     },
     "empty_public_moments_short": "لا توجد منشورات عامة حالياً 🌍",
-    "empty_private_moments_short": "دائرة الأصدقاء هادئة حالياً ✨"
+    "empty_private_moments_short": "دائرة الأصدقاء هادئة حالياً ✨",
+    "my_created_characters": "شخصياتي المبتكرة",
+    "no_characters_yet": "لم يتم إنشاء أي شخصيات بعد",
+    "play_count_display": "عدد مرات اللعب: {count}",
+    "@play_count_display": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    }
 }

@@ -2980,6 +2980,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => '朋友圈還靜悄悄的 ✨';
+
+  @override
+  String get my_created_characters => '我創建的角色';
+
+  @override
+  String get no_characters_yet => '尚未創建角色';
+
+  @override
+  String play_count_display(int count) {
+    return '遊玩次數: $count';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5958,6 +5969,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get empty_private_moments_short => '朋友圈还静悄悄的 ✨';
+
+  @override
+  String get my_created_characters => '我创建的角色';
+
+  @override
+  String get no_characters_yet => '尚未创建角色';
+
+  @override
+  String play_count_display(int count) {
+    return '游玩次数: $count';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8936,4 +8958,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get empty_private_moments_short => '朋友圈還靜悄悄的 ✨';
+
+  @override
+  String get my_created_characters => '我創建的角色';
+
+  @override
+  String get no_characters_yet => '尚未創建角色';
+
+  @override
+  String play_count_display(int count) {
+    return '遊玩次數: $count';
+  }
 }

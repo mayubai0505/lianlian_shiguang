@@ -1422,5 +1422,16 @@
         }
     },
     "empty_public_moments_short": "Pas encore de publications publiques 🌍",
-    "empty_private_moments_short": "Le cercle est très calme ✨"
+    "empty_private_moments_short": "Le cercle est très calme ✨",
+    "my_created_characters": "Mes personnages créés",
+    "no_characters_yet": "Aucun personnage créé pour le moment",
+    "play_count_display": "Nombre de parties : {count}",
+    "@play_count_display": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    }
 }

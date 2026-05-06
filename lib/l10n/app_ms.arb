@@ -1252,5 +1252,16 @@
         }
     },
     "empty_public_moments_short": "Belum ada siaran awam 🌍",
-    "empty_private_moments_short": "Bulatan rakan masih sunyi ✨"
+    "empty_private_moments_short": "Bulatan rakan masih sunyi ✨",
+    "my_created_characters": "Watak Ciptaan Saya",
+    "no_characters_yet": "Belum ada watak dicipta lagi",
+    "play_count_display": "Jumlah main: {count}",
+    "@play_count_display": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    }
 }

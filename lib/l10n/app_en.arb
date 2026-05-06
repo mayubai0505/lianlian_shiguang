@@ -1465,5 +1465,16 @@
     }
   },
   "empty_public_moments_short": "No public posts yet 🌍",
-  "empty_private_moments_short": "The circle is still quiet ✨"
+  "empty_private_moments_short": "The circle is still quiet ✨",
+  "my_created_characters": "My Created Characters",
+  "no_characters_yet": "No characters created yet",
+  "play_count_display": "Play count: {count}",
+  "@play_count_display": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  }
 }

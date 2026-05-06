@@ -1252,5 +1252,16 @@
     }
   },
   "empty_public_moments_short": "現在、公開投稿はありません 🌍",
-  "empty_private_moments_short": "タイムラインはまだ静かです ✨"
+  "empty_private_moments_short": "タイムラインはまだ静かです ✨",
+  "my_created_characters": "作成したキャラクター",
+  "no_characters_yet": "まだキャラクターが作成されていません",
+  "play_count_display": "プレイ回数: {count}",
+  "@play_count_display": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  }
 }

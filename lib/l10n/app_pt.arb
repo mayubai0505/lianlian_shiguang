@@ -1253,5 +1253,16 @@
       }
    },
    "empty_public_moments_short": "Ainda não há postagens públicas 🌍",
-   "empty_private_moments_short": "O círculo de amigos ainda está silencioso ✨"
+   "empty_private_moments_short": "O círculo de amigos ainda está silencioso ✨",
+   "my_created_characters": "Meus Personagens Criados",
+   "no_characters_yet": "Nenhum personagem criado ainda",
+   "play_count_display": "Número de jogadas: {count}",
+   "@play_count_display": {
+      "placeholders": {
+         "count": {
+            "type": "int",
+            "example": "10"
+         }
+      }
+   }
 }

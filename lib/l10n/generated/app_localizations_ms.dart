@@ -3167,4 +3167,15 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'Bulatan rakan masih sunyi ✨';
+
+  @override
+  String get my_created_characters => 'Watak Ciptaan Saya';
+
+  @override
+  String get no_characters_yet => 'Belum ada watak dicipta lagi';
+
+  @override
+  String play_count_display(int count) {
+    return 'Jumlah main: $count';
+  }
 }

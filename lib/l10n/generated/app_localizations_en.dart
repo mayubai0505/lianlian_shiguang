@@ -3138,4 +3138,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'The circle is still quiet ✨';
+
+  @override
+  String get my_created_characters => 'My Created Characters';
+
+  @override
+  String get no_characters_yet => 'No characters created yet';
+
+  @override
+  String play_count_display(int count) {
+    return 'Play count: $count';
+  }
 }

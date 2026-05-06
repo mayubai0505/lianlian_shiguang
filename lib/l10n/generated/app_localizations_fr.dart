@@ -3203,4 +3203,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'Le cercle est très calme ✨';
+
+  @override
+  String get my_created_characters => 'Mes personnages créés';
+
+  @override
+  String get no_characters_yet => 'Aucun personnage créé pour le moment';
+
+  @override
+  String play_count_display(int count) {
+    return 'Nombre de parties : $count';
+  }
 }

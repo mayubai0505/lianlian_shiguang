@@ -3122,4 +3122,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get empty_private_moments_short => 'دائرة الأصدقاء هادئة حالياً ✨';
+
+  @override
+  String get my_created_characters => 'شخصياتي المبتكرة';
+
+  @override
+  String get no_characters_yet => 'لم يتم إنشاء أي شخصيات بعد';
+
+  @override
+  String play_count_display(int count) {
+    return 'عدد مرات اللعب: $count';
+  }
 }
