@@ -519,18 +519,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return InputDecoration(
         labelText: label,
         helperText: helper,
-        helperStyle: TextStyle(color: onSurface.withOpacity(0.5)),
+        helperStyle: TextStyle(color: onSurface.withValues(alpha:0.5)),
         filled: true,
-        fillColor: theme.cardColor.withOpacity(isDarkMode ? 0.6 : 0.4),
+        fillColor: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15.0),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15.0),
-          borderSide: BorderSide(color: primaryColor.withOpacity(0.1)),
+          borderSide: BorderSide(color: primaryColor.withValues(alpha:0.1)),
         ),
-        labelStyle: TextStyle(color: onSurface.withOpacity(0.8)),
+        labelStyle: TextStyle(color: onSurface.withValues(alpha:0.8)),
       );
     }
 
@@ -562,7 +562,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: primaryColor.withOpacity(0.5), width: 2),
+                        border: Border.all(color: primaryColor.withValues(alpha:0.5), width: 2),
                       ),
                       child: CircleAvatar(
                         radius: 55,
@@ -624,9 +624,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                 decoration: BoxDecoration(
-                  color: theme.cardColor.withOpacity(isDarkMode ? 0.6 : 0.4),
+                  color: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: primaryColor.withOpacity(0.1)),
+                  border: Border.all(color: primaryColor.withValues(alpha:0.1)),
                 ),
                 child: Row(
                   children: [
@@ -639,7 +639,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       style: TextStyle(color: onSurface, fontSize: 16),
                     ),
                     const Spacer(),
-                    Icon(Icons.chevron_right, color: onSurface.withOpacity(0.5)),
+                    Icon(Icons.chevron_right, color: onSurface.withValues(alpha:0.5)),
                   ],
                 ),
               ),
@@ -648,7 +648,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             if (!_isAgeEditable && !widget.isCreating)
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 8),
-                child: Text(l10n.msg_birthdate_immutable, style: TextStyle(color: onSurface.withOpacity(0.4), fontSize: 12)),
+                child: Text(l10n.msg_birthdate_immutable, style: TextStyle(color: onSurface.withValues(alpha:0.4), fontSize: 12)),
               ),
 
             const SizedBox(height: 48),
@@ -669,7 +669,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       minimumSize: const Size(double.infinity, 56),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                       elevation: 8,
-                      shadowColor: primaryColor.withOpacity(0.5),
+                      shadowColor: primaryColor.withValues(alpha:0.5),
                     ),
                     child: Text(
                       widget.isCreating ? l10n.action_start_journey : l10n.save_changes_button,
@@ -688,7 +688,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     child: Text(
                       widget.isCreating ? l10n.action_edit_later_short :l10n.action_cancel_changes,
                       style: TextStyle(
-                        color: onSurface.withOpacity(0.6),
+                        color: onSurface.withValues(alpha:0.6),
                         fontSize: 15,
                         letterSpacing: 1.2,
                       ),
