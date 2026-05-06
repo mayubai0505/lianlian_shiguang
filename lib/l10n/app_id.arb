@@ -1331,5 +1331,22 @@
     "common_close": "Tutup",
     "@common_close": {
         "description": "Teks tombol tutup umum"
-    }
+    },
+    "search_companion_title": "Cari Pendamping ShiGuang",
+    "search_name_placeholder": "Masukkan namanya...",
+    "search_no_match_hint": "Karakter tidak ditemukan, coba nama lain? ✨",
+    "character_info_full": "{age} thn | {occupation}",
+    "@character_info_full": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "character_info_age_only": "{age} thn",
+    "@character_info_age_only": {
+        "placeholders": {
+            "age": { "type": "String" }
+        }
+    },
+    "empty_state_warmth": "Sisa kehangatan ruang dan waktu masih tertinggal di sini..."
 }

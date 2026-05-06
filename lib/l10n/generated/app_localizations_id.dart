@@ -3310,4 +3310,28 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get common_close => 'Tutup';
+
+  @override
+  String get search_companion_title => 'Cari Pendamping ShiGuang';
+
+  @override
+  String get search_name_placeholder => 'Masukkan namanya...';
+
+  @override
+  String get search_no_match_hint =>
+      'Karakter tidak ditemukan, coba nama lain? ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age thn | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age thn';
+  }
+
+  @override
+  String get empty_state_warmth =>
+      'Sisa kehangatan ruang dan waktu masih tertinggal di sini...';
 }

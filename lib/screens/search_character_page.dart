@@ -26,13 +26,14 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       decoration: themeNotifier.currentBackground,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text('搜尋拾光伴侶'),
+          title:  Text(l10n.search_companion_title),
           backgroundColor: Colors.transparent,
           elevation: 0,
           foregroundColor: theme.colorScheme.onSurface,
@@ -46,18 +47,18 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                 controller: _searchController,
                 style: TextStyle(color: theme.colorScheme.onSurface),
                 decoration: InputDecoration(
-                  hintText: '輸入他的名字...',
-                  hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5)),
+                  hintText: l10n.search_name_placeholder,
+                  hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5)),
                   prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
                   filled: true,
-                  fillColor: theme.cardColor.withOpacity(isDarkMode ? 0.6 : 0.4),
+                  fillColor: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide(color: theme.colorScheme.primary.withOpacity(0.2)),
+                    borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.2)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide(color: theme.colorScheme.primary.withOpacity(0.1)),
+                    borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.1)),
                   ),
                 ),
                 onChanged: (value) => setState(() => _searchQuery = value.trim()),
@@ -75,6 +76,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
   }
 
   Widget _buildGridResults(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     Query query = FirebaseFirestore.instance
         .collection('artifacts')
         .doc(AppConfig.appId)
@@ -95,8 +97,8 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
         final docs = snapshot.data!.docs;
         if (docs.isEmpty) {
           return Center(
-              child: Text("找不到角色，試試其他名字？ ✨",
-                  style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)))
+              child: Text(l10n.search_no_match_hint,
+                  style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6)))
           );
         }
 
@@ -118,12 +120,11 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
   Widget _buildCharacterCard(DocumentSnapshot doc, ThemeData theme) {
     final charData = doc.data() as Map<String, dynamic>;
     final primaryColor = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return GestureDetector(
       // ✨ 1. 這裡要加上 async
       onTap: () async {
-        // ✨ 2. 顯示一個簡單的載入提示（可選），避免玩家以為沒點到
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('正在開啟角色檔案...'), duration: Duration(milliseconds: 500)));
         // ✨ 3. 使用 await 等待角色資料「變身」完成
         final targetCharacter = await Character.fromFirestoreAsync(doc);
         // ✨ 4. 變身完成後，再帶著完整的資料跳轉
@@ -143,13 +144,13 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: primaryColor.withOpacity(0.1)),
+            border: Border.all(color: primaryColor.withValues(alpha:0.1)),
             image: DecorationImage(
               image: NetworkImage(charData['avatar'] ?? charData['avatarPath'] ?? ''),
               fit: BoxFit.cover,
             ),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4)),
+              BoxShadow(color: Colors.black.withValues(alpha:0.1), blurRadius: 10, offset: const Offset(0, 4)),
             ],
           ),
           child: ClipRRect(
@@ -165,7 +166,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                        colors: [Colors.black.withValues(alpha:0.8), Colors.transparent],
                       ),
                     ),
                   ),
@@ -184,7 +185,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black.withValues(alpha:0.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -214,9 +215,10 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                       const SizedBox(height: 2),
                       Text(
                         (charData['occupation'] != null && charData['occupation'].toString().isNotEmpty)
-                            ? '${charData['age'] ?? '??'}歲 | ${charData['occupation']}'
-                            : '${charData['age'] ?? '??'}歲',
-                        style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                            ? l10n.character_info_full(charData['age']?.toString() ?? '??', charData['occupation'] ?? '')
+                        :l10n.character_info_age_only(charData['age']?.toString() ?? '??'
+                        ),
+                        style: TextStyle(color: Colors.white.withValues(alpha:0.9), fontSize: 12),
                       ),
                     ],
                   ),
@@ -278,6 +280,7 @@ class _AnimatedDanmuState extends State<AnimatedDanmu> with SingleTickerProvider
   }
 
   void _listenToEchoes() {
+    final l10n = AppLocalizations.of(context)!;
     FirebaseFirestore.instance
         .collection('artifacts')
         .doc(AppConfig.appId)
@@ -298,7 +301,7 @@ class _AnimatedDanmuState extends State<AnimatedDanmu> with SingleTickerProvider
 
         // 如果完全沒留言，就給一句預設的
         if (_echoMessages.isEmpty) {
-          _echoMessages = ["這裡還留存著時空的餘溫..."];
+          _echoMessages = [l10n.empty_state_warmth];
         }
       });
 
@@ -349,9 +352,9 @@ class _AnimatedDanmuState extends State<AnimatedDanmu> with SingleTickerProvider
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             constraints: const BoxConstraints(maxWidth: 120), // 限制寬度，避免太長超出卡片
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.55),
+              color: Colors.black.withValues(alpha:0.55),
               borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.white.withOpacity(0.15)),
+              border: Border.all(color: Colors.white.withValues(alpha:0.15)),
             ),
             child: Text(
               _echoMessages[_currentIndex],

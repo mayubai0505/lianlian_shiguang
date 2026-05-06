@@ -1501,5 +1501,22 @@
     "common_close": "Fermer",
     "@common_close": {
         "description": "Texte général du bouton de fermeture"
-    }
+    },
+    "search_companion_title": "Rechercher un compagnon ShiGuang",
+    "search_name_placeholder": "Entrez son nom...",
+    "search_no_match_hint": "Personnage introuvable, essayer un autre nom ? ✨",
+    "character_info_full": "{age} ans | {occupation}",
+    "@character_info_full": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "character_info_age_only": "{age} ans",
+    "@character_info_age_only": {
+        "placeholders": {
+            "age": { "type": "String" }
+        }
+    },
+    "empty_state_warmth": "La chaleur résiduelle de l'espace-temps subsiste encore ici..."
 }

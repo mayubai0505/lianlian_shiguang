@@ -1331,5 +1331,22 @@
     "common_close": "ปิด",
     "@common_close": {
         "description": "ข้อความปุ่มปิดทั่วไป"
-    }
+    },
+    "search_companion_title": "ค้นหาคู่หูสื่อกวง",
+    "search_name_placeholder": "กรอกชื่อของเขา...",
+    "search_no_match_hint": "ไม่พบตัวละคร ลองชื่ออื่นไหม? ✨",
+    "character_info_full": "อายุ {age} ปี | {occupation}",
+    "@character_info_full": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "character_info_age_only": "อายุ {age} ปี",
+    "@character_info_age_only": {
+        "placeholders": {
+            "age": { "type": "String" }
+        }
+    },
+    "empty_state_warmth": "ไออุ่นที่หลงเหลือของกาลเวลายังคงอยู่ที่นี่..."
 }

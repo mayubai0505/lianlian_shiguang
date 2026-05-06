@@ -3270,4 +3270,27 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get common_close => 'ปิด';
+
+  @override
+  String get search_companion_title => 'ค้นหาคู่หูสื่อกวง';
+
+  @override
+  String get search_name_placeholder => 'กรอกชื่อของเขา...';
+
+  @override
+  String get search_no_match_hint => 'ไม่พบตัวละคร ลองชื่ออื่นไหม? ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return 'อายุ $age ปี | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return 'อายุ $age ปี';
+  }
+
+  @override
+  String get empty_state_warmth =>
+      'ไออุ่นที่หลงเหลือของกาลเวลายังคงอยู่ที่นี่...';
 }

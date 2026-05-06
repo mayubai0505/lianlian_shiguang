@@ -3310,4 +3310,28 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get common_close => 'Đóng';
+
+  @override
+  String get search_companion_title => 'Tìm kiếm bạn đồng hành Thập Quang';
+
+  @override
+  String get search_name_placeholder => 'Nhập tên của anh ấy...';
+
+  @override
+  String get search_no_match_hint =>
+      'Không tìm thấy nhân vật, thử tên khác nhé? ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age tuổi | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age tuổi';
+  }
+
+  @override
+  String get empty_state_warmth =>
+      'Hơi ấm dư thừa của thời không vẫn còn lưu lại nơi đây...';
 }

@@ -1452,5 +1452,22 @@
   "common_close": "關閉",
   "@common_close": {
     "description": "通用關閉按鈕文字"
-  }
+  },
+  "search_companion_title": "搜尋拾光伴侶",
+  "search_name_placeholder": "輸入他的名字...",
+  "search_no_match_hint": "找不到角色，試試其他名字？ ✨",
+  "character_info_full": "{age}歲 | {occupation}",
+  "@character_info_full": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "character_info_age_only": "{age}歲",
+  "@character_info_age_only": {
+    "placeholders": {
+      "age": { "type": "String" }
+    }
+  },
+  "empty_state_warmth": "這裡還留存著時空的餘溫..."
 }

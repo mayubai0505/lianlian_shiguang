@@ -1544,5 +1544,21 @@
   "common_close": "Close",
   "@common_close": {
     "description": "General close button text"
-  }
+  },"search_companion_title": "Search ShiGuang Companion",
+  "search_name_placeholder": "Enter his name...",
+  "search_no_match_hint": "Character not found. Try another name? ✨",
+  "character_info_full": "{age} yrs | {occupation}",
+  "@character_info_full": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "character_info_age_only": "{age} yrs",
+  "@character_info_age_only": {
+    "placeholders": {
+      "age": { "type": "String" }
+    }
+  },
+  "empty_state_warmth": "The lingering warmth of time and space remains here..."
 }

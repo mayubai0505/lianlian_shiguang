@@ -3118,6 +3118,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get common_close => '關閉';
+
+  @override
+  String get search_companion_title => '搜尋拾光伴侶';
+
+  @override
+  String get search_name_placeholder => '輸入他的名字...';
+
+  @override
+  String get search_no_match_hint => '找不到角色，試試其他名字？ ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age歲 | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age歲';
+  }
+
+  @override
+  String get empty_state_warmth => '這裡還留存著時空的餘溫...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6234,6 +6256,28 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get common_close => '关闭';
+
+  @override
+  String get search_companion_title => '搜寻拾光伴侣';
+
+  @override
+  String get search_name_placeholder => '输入他的名字...';
+
+  @override
+  String get search_no_match_hint => '找不到角色，试试其他名字？ ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age岁 | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age岁';
+  }
+
+  @override
+  String get empty_state_warmth => '这里还留存着时空的余温...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9350,4 +9394,26 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get common_close => '關閉';
+
+  @override
+  String get search_companion_title => '搜尋拾光伴侶';
+
+  @override
+  String get search_name_placeholder => '輸入他的名字...';
+
+  @override
+  String get search_no_match_hint => '找不到角色，試試其他名字？ ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age歲 | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age歲';
+  }
+
+  @override
+  String get empty_state_warmth => '這裡還留存著時空的餘溫...';
 }

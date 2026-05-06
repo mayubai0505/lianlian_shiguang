@@ -3310,4 +3310,28 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get common_close => 'बंद करें';
+
+  @override
+  String get search_companion_title => 'शिगुआंग साथी खोजें';
+
+  @override
+  String get search_name_placeholder => 'उसका नाम दर्ज करें...';
+
+  @override
+  String get search_no_match_hint =>
+      'पात्र नहीं मिला, कोई दूसरा नाम आज़माएँ? ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age साल | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age साल';
+  }
+
+  @override
+  String get empty_state_warmth =>
+      'समय और स्थान की बची हुई गर्माहट अभी भी यहाँ है...';
 }

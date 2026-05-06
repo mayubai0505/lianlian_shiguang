@@ -3164,4 +3164,26 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get common_close => '닫기';
+
+  @override
+  String get search_companion_title => '시광 반려 검색';
+
+  @override
+  String get search_name_placeholder => '그의 이름을 입력하세요...';
+
+  @override
+  String get search_no_match_hint => '캐릭터를 찾을 수 없습니다. 다른 이름을 시도해 볼까요? ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age세 | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age세';
+  }
+
+  @override
+  String get empty_state_warmth => '시공간의 여열이 아직 이곳에 머물러 있습니다...';
 }

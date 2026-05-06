@@ -1331,5 +1331,22 @@
     "common_close": "Cerrar",
     "@common_close": {
         "description": "Texto general para el botón de cerrar"
-    }
+    },
+    "search_companion_title": "Buscar compañero ShiGuang",
+    "search_name_placeholder": "Introduce su nombre...",
+    "search_no_match_hint": "¿No se encuentra el personaje, pruebas con otro nombre? ✨",
+    "character_info_full": "{age} años | {occupation}",
+    "@character_info_full": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "character_info_age_only": "{age} años",
+    "@character_info_age_only": {
+        "placeholders": {
+            "age": { "type": "String" }
+        }
+    },
+    "empty_state_warmth": "El calor residual del tiempo y el espacio aún permanece aquí..."
 }

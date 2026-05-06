@@ -1331,5 +1331,22 @@
   "common_close": "Đóng",
   "@common_close": {
     "description": "Văn bản nút đóng chung"
-  }
+  },
+  "search_companion_title": "Tìm kiếm bạn đồng hành Thập Quang",
+  "search_name_placeholder": "Nhập tên của anh ấy...",
+  "search_no_match_hint": "Không tìm thấy nhân vật, thử tên khác nhé? ✨",
+  "character_info_full": "{age} tuổi | {occupation}",
+  "@character_info_full": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "character_info_age_only": "{age} tuổi",
+  "@character_info_age_only": {
+    "placeholders": {
+      "age": { "type": "String" }
+    }
+  },
+  "empty_state_warmth": "Hơi ấm dư thừa của thời không vẫn còn lưu lại nơi đây..."
 }

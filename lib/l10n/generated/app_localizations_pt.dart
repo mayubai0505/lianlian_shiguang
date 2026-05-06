@@ -3325,4 +3325,28 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get common_close => 'Fechar';
+
+  @override
+  String get search_companion_title => 'Buscar Companheiro ShiGuang';
+
+  @override
+  String get search_name_placeholder => 'Digite o nome dele...';
+
+  @override
+  String get search_no_match_hint =>
+      'Personagem não encontrado, tentar outro nome? ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age anos | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age anos';
+  }
+
+  @override
+  String get empty_state_warmth =>
+      'O calor residual do tempo e do espaço ainda permanece aqui...';
 }

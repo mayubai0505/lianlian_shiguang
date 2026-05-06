@@ -1331,5 +1331,22 @@
     "common_close": "बंद करें",
     "@common_close": {
         "description": "सामान्य बंद करें बटन टेक्स्ट"
-    }
+    },
+    "search_companion_title": "शिगुआंग साथी खोजें",
+    "search_name_placeholder": "उसका नाम दर्ज करें...",
+    "search_no_match_hint": "पात्र नहीं मिला, कोई दूसरा नाम आज़माएँ? ✨",
+    "character_info_full": "{age} साल | {occupation}",
+    "@character_info_full": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "character_info_age_only": "{age} साल",
+    "@character_info_age_only": {
+        "placeholders": {
+            "age": { "type": "String" }
+        }
+    },
+    "empty_state_warmth": "समय और स्थान की बची हुई गर्माहट अभी भी यहाँ है..."
 }

@@ -1331,5 +1331,22 @@
     "common_close": "Tutup",
     "@common_close": {
         "description": "Teks butang tutup umum"
-    }
+    },
+    "search_companion_title": "Cari Teman ShiGuang",
+    "search_name_placeholder": "Masukkan namanya...",
+    "search_no_match_hint": "Watak tidak dijumpai, cuba nama lain? ✨",
+    "character_info_full": "{age} thn | {occupation}",
+    "@character_info_full": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "character_info_age_only": "{age} thn",
+    "@character_info_age_only": {
+        "placeholders": {
+            "age": { "type": "String" }
+        }
+    },
+    "empty_state_warmth": "Sisa kehangatan masa dan ruang masih kekal di sini..."
 }

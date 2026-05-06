@@ -1330,5 +1330,22 @@
   "common_close": "닫기",
   "@common_close": {
     "description": "일반 닫기 버튼 텍스트"
-  }
+  },
+  "search_companion_title": "시광 반려 검색",
+  "search_name_placeholder": "그의 이름을 입력하세요...",
+  "search_no_match_hint": "캐릭터를 찾을 수 없습니다. 다른 이름을 시도해 볼까요? ✨",
+  "character_info_full": "{age}세 | {occupation}",
+  "@character_info_full": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "character_info_age_only": "{age}세",
+  "@character_info_age_only": {
+    "placeholders": {
+      "age": { "type": "String" }
+    }
+  },
+  "empty_state_warmth": "시공간의 여열이 아직 이곳에 머물러 있습니다..."
 }

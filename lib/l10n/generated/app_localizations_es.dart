@@ -3332,4 +3332,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get common_close => 'Cerrar';
+
+  @override
+  String get search_companion_title => 'Buscar compañero ShiGuang';
+
+  @override
+  String get search_name_placeholder => 'Introduce su nombre...';
+
+  @override
+  String get search_no_match_hint =>
+      '¿No se encuentra el personaje, pruebas con otro nombre? ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age años | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age años';
+  }
+
+  @override
+  String get empty_state_warmth =>
+      'El calor residual del tiempo y el espacio aún permanece aquí...';
 }

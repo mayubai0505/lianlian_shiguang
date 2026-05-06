@@ -3148,4 +3148,26 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get common_close => '閉じる';
+
+  @override
+  String get search_companion_title => '拾光伴侶を検索';
+
+  @override
+  String get search_name_placeholder => '名前を入力...';
+
+  @override
+  String get search_no_match_hint => 'キャラクターが見つかりません。別の名前を試しますか？ ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age歳 | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age歳';
+  }
+
+  @override
+  String get empty_state_warmth => '時空の余熱がまだここに残っています...';
 }

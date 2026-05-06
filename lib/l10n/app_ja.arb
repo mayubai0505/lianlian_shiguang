@@ -1331,5 +1331,22 @@
   "common_close": "閉じる",
   "@common_close": {
     "description": "共通の閉じるボタンのテキスト"
-  }
+  },
+  "search_companion_title": "拾光伴侶を検索",
+  "search_name_placeholder": "名前を入力...",
+  "search_no_match_hint": "キャラクターが見つかりません。別の名前を試しますか？ ✨",
+  "character_info_full": "{age}歳 | {occupation}",
+  "@character_info_full": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "character_info_age_only": "{age}歳",
+  "@character_info_age_only": {
+    "placeholders": {
+      "age": { "type": "String" }
+    }
+  },
+  "empty_state_warmth": "時空の余熱がまだここに残っています..."
 }

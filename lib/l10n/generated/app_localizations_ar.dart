@@ -3263,4 +3263,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get common_close => 'إغلاق';
+
+  @override
+  String get search_companion_title => 'البحث عن رفيق الزمن';
+
+  @override
+  String get search_name_placeholder => 'أدخل اسمه...';
+
+  @override
+  String get search_no_match_hint =>
+      'تعذر العثور على الشخصية، جرب اسماً آخر؟ ✨';
+
+  @override
+  String character_info_full(String age, String occupation) {
+    return '$age عاماً | $occupation';
+  }
+
+  @override
+  String character_info_age_only(String age) {
+    return '$age عاماً';
+  }
+
+  @override
+  String get empty_state_warmth =>
+      'لا يزال الدفء المتبقي من الزمان والمكان باقياً هنا...';
 }

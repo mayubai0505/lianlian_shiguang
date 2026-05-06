@@ -5835,6 +5835,42 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'關閉'**
   String get common_close;
+
+  /// No description provided for @search_companion_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'搜尋拾光伴侶'**
+  String get search_companion_title;
+
+  /// No description provided for @search_name_placeholder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'輸入他的名字...'**
+  String get search_name_placeholder;
+
+  /// No description provided for @search_no_match_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到角色，試試其他名字？ ✨'**
+  String get search_no_match_hint;
+
+  /// No description provided for @character_info_full.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{age}歲 | {occupation}'**
+  String character_info_full(String age, String occupation);
+
+  /// No description provided for @character_info_age_only.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{age}歲'**
+  String character_info_age_only(String age);
+
+  /// No description provided for @empty_state_warmth.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這裡還留存著時空的餘溫...'**
+  String get empty_state_warmth;
 }
 
 class _AppLocalizationsDelegate

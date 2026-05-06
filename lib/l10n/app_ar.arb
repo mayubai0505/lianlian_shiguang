@@ -1372,5 +1372,22 @@
     "common_close": "إغلاق",
     "@common_close": {
         "description": "نص زر الإغلاق العام"
-    }
+    },
+    "search_companion_title": "البحث عن رفيق الزمن",
+    "search_name_placeholder": "أدخل اسمه...",
+    "search_no_match_hint": "تعذر العثور على الشخصية، جرب اسماً آخر؟ ✨",
+    "character_info_full": "{age} عاماً | {occupation}",
+    "@character_info_full": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "character_info_age_only": "{age} عاماً",
+    "@character_info_age_only": {
+        "placeholders": {
+            "age": { "type": "String" }
+        }
+    },
+    "empty_state_warmth": "لا يزال الدفء المتبقي من الزمان والمكان باقياً هنا..."
 }
