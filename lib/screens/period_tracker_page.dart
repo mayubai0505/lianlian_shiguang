@@ -6,15 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/theme_notifier.dart';
 import 'character_model.dart';
-
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../services/theme_notifier.dart';
-import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 // ✨ PeriodRecord 模型 (確保資料格式正確)
@@ -162,7 +153,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                     margin: const EdgeInsets.all(16),
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: theme.cardColor.withOpacity(isDarkMode ? 0.7 : 0.4),
+                      color: theme.cardColor.withValues(alpha:isDarkMode ? 0.7 : 0.4),
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: TableCalendar(
@@ -196,7 +187,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                           if (_predictedDays.any((d) => isSameDay(d, date))) {
                             return Container(
                               margin: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(color: primaryColor.withOpacity(0.2), shape: BoxShape.circle),
+                              decoration: BoxDecoration(color: primaryColor.withValues(alpha:0.2), shape: BoxShape.circle),
                               child: Center(child: Text('${date.day}', style: TextStyle(color: primaryColor))),
                             );
                           }
@@ -204,13 +195,13 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                         },
                       ),
                       calendarStyle: CalendarStyle(
-                        rangeHighlightColor: primaryColor.withOpacity(0.2),
+                        rangeHighlightColor: primaryColor.withValues(alpha:0.2),
                         rangeStartDecoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
                         rangeEndDecoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
                         todayDecoration: BoxDecoration(
                             color: Colors.transparent,
                             shape: BoxShape.circle,
-                            border: Border.all(color: primaryColor.withOpacity(0.5))
+                            border: Border.all(color: primaryColor.withValues(alpha:0.5))
                         ),
                       ),
                     ),
@@ -234,7 +225,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                             padding: const EdgeInsets.all(10),
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
-                              color: _selectedMood == m ? theme.colorScheme.primary.withOpacity(0.3) : Colors.transparent,
+                              color: _selectedMood == m ? theme.colorScheme.primary.withValues(alpha:0.3) : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: Text(m, style: const TextStyle(fontSize: 26)), // 這裡字體可以設大一點，它會自動縮
@@ -272,7 +263,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                         decoration: BoxDecoration(
-                          color: theme.cardColor.withOpacity(isDarkMode ? 0.4 : 0.2),
+                          color: theme.cardColor.withValues(alpha:isDarkMode ? 0.4 : 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: ListTile(
