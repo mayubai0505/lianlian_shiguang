@@ -36,7 +36,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
       // 1. 同時從兩個地方抓取原始資料 (這部分您原本寫得很棒！)
       final responses = await Future.wait([
         _db.collection('artifacts').doc(AppConfig.appId).collection('public_characters').where('createdBy', isEqualTo: _userId).get(),
-        _db.collection('artifacts').doc(AppConfig.appId).collection('users').doc(_userId!).collection('private_characters').get(),
+        _db.collection('artifacts').doc(AppConfig.appId).collection('users').doc(_userId).collection('private_characters').get(),
       ]);
 
       // 2. ✨ 關鍵：使用 Future.wait 讓所有「預約單」同時去換回「角色實體」
@@ -103,7 +103,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
             }
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Center(
-                child: Text(l10n.no_characters_yet, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+                child: Text(l10n.no_characters_yet, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.5))),
               );
             }
 
@@ -118,11 +118,11 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
                   elevation: 0,
                   margin: const EdgeInsets.only(bottom: 12),
                   // ✅ 毛玻璃效果：根據主題亮度自動調整透明度
-                  color: theme.cardColor.withOpacity(isDarkMode ? 0.7 : 0.5),
+                  color: theme.cardColor.withValues(alpha: isDarkMode ? 0.7 : 0.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                     // ✨ 增加一個細微的邊框，讓卡片在漸層上更精緻
-                    side: BorderSide(color: primaryColor.withOpacity(0.1), width: 1),
+                    side: BorderSide(color: primaryColor.withValues(alpha: 0.1), width: 1),
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(12),
@@ -130,7 +130,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         // ✨ 頭像外圈的小光環，連動主題色
-                        border: Border.all(color: primaryColor.withOpacity(0.3), width: 2),
+                        border: Border.all(color: primaryColor.withValues(alpha: 0.3), width: 2),
                       ),
                       child: CircleAvatar(
                         radius: 28,
@@ -158,7 +158,7 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
                           const SizedBox(width: 4),
                           Text(
                             l10n.play_count_display(character.playCount),
-                            style: TextStyle(color: primaryColor.withOpacity(0.8), fontSize: 13),
+                            style: TextStyle(color: primaryColor.withValues(alpha: 0.8), fontSize: 13),
                           ),
                         ],
                       ),
@@ -188,9 +188,9 @@ class _MyCharactersListPageState extends State<MyCharactersListPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.5), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.5), width: 1),
       ),
       child: Text(
         isPublic ? l10n.visibility_public : l10n.visibility_private,
