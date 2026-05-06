@@ -1348,5 +1348,68 @@
       "age": { "type": "String" }
     }
   },
-  "empty_state_warmth": "Hơi ấm dư thừa của thời không vẫn còn lưu lại nơi đây..."
+  "empty_state_warmth": "Hơi ấm dư thừa của thời không vẫn còn lưu lại nơi đây...",
+  "error_login_required_add_friend": "Vui lòng đăng nhập trước để thêm bạn bè!",
+  "dialog_title_remove_friend": "Xác nhận xóa bạn bè",
+  "dialog_msg_remove_friend": "Bạn có chắc chắn muốn xóa {characterName} khỏi danh sách bạn bè không?",
+  "@dialog_msg_remove_friend": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove": "Xóa",
+  "snackbar_friend_removed": "Đã xóa {characterName} khỏi bạn bè",
+  "@snackbar_friend_removed": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove_friend": "Xóa bạn bè",
+  "dialog_title_block": "Xác nhận chặn",
+  "dialog_msg_block": "Sau khi chặn, bạn sẽ không còn thấy bất kỳ thông tin nào về {characterName} nữa. Bạn có chắc chắn muốn chặn không?",
+  "@dialog_msg_block": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "snackbar_blocked": "Đã chặn {characterName}",
+  "@snackbar_blocked": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_block_character": "Chặn nhân vật này",
+  "dialog_title_report": "Báo cáo {characterName}",
+  "@dialog_title_report": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "input_hint_report_reason": "Vui lòng nhập lý do báo cáo...",
+  "action_submit": "Gửi",
+  "snackbar_report_success": "Cảm ơn báo cáo của bạn, chúng tôi sẽ xem xét trong thời gian sớm nhất.",
+  "snackbar_report_fail": "Gửi thất bại, vui lòng thử lại sau",
+  "action_report_character": "Báo cáo nhân vật này",
+  "title_meet_him": "Gặp gỡ người ấy",
+  "text_character_count": "Số lượng nhân vật: {count}",
+  "@text_character_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "msg_no_more_encounters_today": "Cuộc gặp gỡ hôm nay đến đây là hết rồi!",
+  "msg_check_new_encounters": "Hãy xem lại thử có cuộc gặp gỡ nào mới không nhé!",
+  "action_refresh": "Làm mới",
+  "tab_friends": "Bạn bè",
+  "msg_mysterious_profile": "Người này rất bí ẩn, không để lại thông tin gì...",
+  "text_age_and_identities": "{age} tuổi | {identities}",
+  "@text_age_and_identities": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "identities": { "type": "String" }
+    }
+  },
+  "snackbar_operation_failed": "Thao tác thất bại, vui lòng thử lại sau",
+  "action_view_translation": "Xem bản dịch",
+  "label_translation_result": "Kết quả dịch:"
 }

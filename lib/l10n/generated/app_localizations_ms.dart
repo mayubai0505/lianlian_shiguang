@@ -3333,4 +3333,104 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get empty_state_warmth =>
       'Sisa kehangatan masa dan ruang masih kekal di sini...';
+
+  @override
+  String get error_login_required_add_friend =>
+      'Sila log masuk dahulu untuk menambah rakan!';
+
+  @override
+  String get dialog_title_remove_friend => 'Sahkan Alih Keluar Rakan';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return 'Adakah awak pasti mahu mengalih keluar $characterName daripada senarai rakan awak?';
+  }
+
+  @override
+  String get action_remove => 'Alih Keluar';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return 'Telah mengalih keluar $characterName daripada rakan';
+  }
+
+  @override
+  String get action_remove_friend => 'Alih Keluar Rakan';
+
+  @override
+  String get dialog_title_block => 'Sahkan Sekat';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'Selepas disekat, awak tidak akan melihat sebarang maklumat mengenai $characterName lagi. Adakah awak pasti mahu menyekat?';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return 'Telah menyekat $characterName';
+  }
+
+  @override
+  String get action_block_character => 'Sekat watak ini';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return 'Laporkan $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason => 'Sila masukkan sebab laporan...';
+
+  @override
+  String get action_submit => 'Hantar';
+
+  @override
+  String get snackbar_report_success =>
+      'Terima kasih atas laporan awak, kami akan menyemaknya secepat mungkin.';
+
+  @override
+  String get snackbar_report_fail => 'Penghantaran gagal, sila cuba lagi nanti';
+
+  @override
+  String get action_report_character => 'Laporkan watak ini';
+
+  @override
+  String get title_meet_him => 'Temui si dia yang awak suka';
+
+  @override
+  String text_character_count(int count) {
+    return 'Jumlah watak: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today =>
+      'Pertemuan hari ini sampai di sini sahaja!';
+
+  @override
+  String get msg_check_new_encounters =>
+      'Mari kita lihat jika ada pertemuan baharu!';
+
+  @override
+  String get action_refresh => 'Segar semula';
+
+  @override
+  String get tab_friends => 'Rakan';
+
+  @override
+  String get msg_mysterious_profile =>
+      'Orang ini sangat misteri, tidak meninggalkan apa-apa pun...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age thn | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed => 'Operasi gagal, sila cuba lagi nanti';
+
+  @override
+  String get action_view_translation => 'Lihat Terjemahan';
+
+  @override
+  String get label_translation_result => 'Hasil Terjemahan:';
 }

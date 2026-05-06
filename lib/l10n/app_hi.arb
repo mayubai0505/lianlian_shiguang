@@ -1348,5 +1348,68 @@
             "age": { "type": "String" }
         }
     },
-    "empty_state_warmth": "समय और स्थान की बची हुई गर्माहट अभी भी यहाँ है..."
+    "empty_state_warmth": "समय और स्थान की बची हुई गर्माहट अभी भी यहाँ है...",
+    "error_login_required_add_friend": "दोस्त जोड़ने के लिए कृपया पहले लॉग इन करें!",
+    "dialog_title_remove_friend": "दोस्त को हटाने की पुष्टि करें",
+    "dialog_msg_remove_friend": "क्या आप वाकई {characterName} को अपनी मित्र सूची से हटाना चाहते हैं?",
+    "@dialog_msg_remove_friend": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_remove": "हटाएं",
+    "snackbar_friend_removed": "{characterName} को दोस्तों से हटा दिया गया है",
+    "@snackbar_friend_removed": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_remove_friend": "दोस्त हटाएं",
+    "dialog_title_block": "ब्लॉक की पुष्टि करें",
+    "dialog_msg_block": "ब्लॉक करने के बाद, आपको {characterName} के बारे में कोई जानकारी नहीं दिखाई देगी। क्या आप वाकई ब्लॉक करना चाहते हैं?",
+    "@dialog_msg_block": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "snackbar_blocked": "{characterName} को ब्लॉक कर दिया गया है",
+    "@snackbar_blocked": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_block_character": "इस पात्र को ब्लॉक करें",
+    "dialog_title_report": "{characterName} की रिपोर्ट करें",
+    "@dialog_title_report": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "input_hint_report_reason": "कृपया रिपोर्ट करने का कारण दर्ज करें...",
+    "action_submit": "जमा करें",
+    "snackbar_report_success": "आपकी रिपोर्ट के लिए धन्यवाद, हम जल्द से जल्द इसकी समीक्षा करेंगे।",
+    "snackbar_report_fail": "सबमिशन विफल रहा, कृपया बाद में पुनः प्रयास करें",
+    "action_report_character": "इस पात्र की रिपोर्ट करें",
+    "title_meet_him": "अपने क्रश से मिलें",
+    "text_character_count": "पात्रों की संख्या: {count}",
+    "@text_character_count": {
+        "placeholders": {
+            "count": { "type": "int" }
+        }
+    },
+    "msg_no_more_encounters_today": "आज की मुलाकातें यहीं समाप्त होती हैं!",
+    "msg_check_new_encounters": "यह देखने के लिए फिर से आएं कि क्या कोई नई मुलाकात है!",
+    "action_refresh": "रीफ्रेश करें",
+    "tab_friends": "दोस्त",
+    "msg_mysterious_profile": "यह व्यक्ति बहुत रहस्यमय है, कुछ भी पीछे नहीं छोड़ा...",
+    "text_age_and_identities": "{age} साल | {identities}",
+    "@text_age_and_identities": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "identities": { "type": "String" }
+        }
+    },
+    "snackbar_operation_failed": "ऑपरेशन विफल रहा, कृपया बाद में पुनः प्रयास करें",
+    "action_view_translation": "अनुवाद देखें",
+    "label_translation_result": "अनुवाद परिणाम:"
 }

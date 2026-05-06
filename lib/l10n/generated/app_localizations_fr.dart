@@ -3374,4 +3374,107 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get empty_state_warmth =>
       'La chaleur résiduelle de l\'espace-temps subsiste encore ici...';
+
+  @override
+  String get error_login_required_add_friend =>
+      'Veuillez vous connecter d\'abord pour ajouter des amis !';
+
+  @override
+  String get dialog_title_remove_friend => 'Confirmer la suppression';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return 'Êtes-vous sûre de vouloir supprimer $characterName de votre liste d\'amis ?';
+  }
+
+  @override
+  String get action_remove => 'Supprimer';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return '$characterName a été supprimé(e) de vos amis';
+  }
+
+  @override
+  String get action_remove_friend => 'Supprimer l\'ami';
+
+  @override
+  String get dialog_title_block => 'Confirmer le blocage';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'Une fois bloqué(e), vous ne verrez plus aucune information sur $characterName. Êtes-vous sûre de vouloir le/la bloquer ?';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return '$characterName a été bloqué(e)';
+  }
+
+  @override
+  String get action_block_character => 'Bloquer ce personnage';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return 'Signaler $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason =>
+      'Veuillez entrer le motif du signalement...';
+
+  @override
+  String get action_submit => 'Soumettre';
+
+  @override
+  String get snackbar_report_success =>
+      'Merci pour votre signalement, nous l\'examinerons dès que possible.';
+
+  @override
+  String get snackbar_report_fail =>
+      'Échec de la soumission, veuillez réessayer plus tard';
+
+  @override
+  String get action_report_character => 'Signaler ce personnage';
+
+  @override
+  String get title_meet_him => 'Rencontrez l\'élu de votre cœur';
+
+  @override
+  String text_character_count(int count) {
+    return 'Nombre de personnages : $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today =>
+      'C\'est tout pour les rencontres d\'aujourd\'hui !';
+
+  @override
+  String get msg_check_new_encounters =>
+      'Revenez vérifier s\'il y a de nouvelles rencontres !';
+
+  @override
+  String get action_refresh => 'Actualiser';
+
+  @override
+  String get tab_friends => 'Amis';
+
+  @override
+  String get msg_mysterious_profile =>
+      'Cette personne est très mystérieuse, elle n\'a rien laissé...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age ans | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed =>
+      'L\'opération a échoué, veuillez réessayer plus tard';
+
+  @override
+  String get action_view_translation => 'Voir la traduction';
+
+  @override
+  String get label_translation_result => 'Résultat de la traduction :';
 }

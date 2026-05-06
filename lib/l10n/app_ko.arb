@@ -1347,5 +1347,68 @@
       "age": { "type": "String" }
     }
   },
-  "empty_state_warmth": "시공간의 여열이 아직 이곳에 머물러 있습니다..."
+  "empty_state_warmth": "시공간의 여열이 아직 이곳에 머물러 있습니다...",
+  "error_login_required_add_friend": "친구를 추가하려면 먼저 로그인해 주세요!",
+  "dialog_title_remove_friend": "친구 삭제 확인",
+  "dialog_msg_remove_friend": "정말로 {characterName}님을 친구 목록에서 삭제하시겠습니까?",
+  "@dialog_msg_remove_friend": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove": "삭제",
+  "snackbar_friend_removed": "{characterName}님을 친구에서 삭제했습니다",
+  "@snackbar_friend_removed": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove_friend": "친구 삭제",
+  "dialog_title_block": "차단 확인",
+  "dialog_msg_block": "차단 후에는 {characterName}님의 어떤 정보도 볼 수 없게 됩니다. 정말 차단하시겠습니까?",
+  "@dialog_msg_block": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "snackbar_blocked": "{characterName}님을 차단했습니다",
+  "@snackbar_blocked": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_block_character": "이 캐릭터 차단",
+  "dialog_title_report": "{characterName} 신고",
+  "@dialog_title_report": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "input_hint_report_reason": "신고 사유를 입력해 주세요...",
+  "action_submit": "제출",
+  "snackbar_report_success": "제보해 주셔서 감사합니다. 최대한 빨리 검토하겠습니다.",
+  "snackbar_report_fail": "제출 실패, 나중에 다시 시도해 주세요",
+  "action_report_character": "이 캐릭터 신고",
+  "title_meet_him": "마음에 드는 그와 만나기",
+  "text_character_count": "캐릭터 수: {count}",
+  "@text_character_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "msg_no_more_encounters_today": "오늘의 만남은 여기까지예요!",
+  "msg_check_new_encounters": "새로운 만남이 있는지 다시 확인해 보세요!",
+  "action_refresh": "새로고침",
+  "tab_friends": "친구",
+  "msg_mysterious_profile": "이 사람은 아주 신비로워서, 아무것도 남기지 않았네요...",
+  "text_age_and_identities": "{age}세 | {identities}",
+  "@text_age_and_identities": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "identities": { "type": "String" }
+    }
+  },
+  "snackbar_operation_failed": "작업 실패, 나중에 다시 시도해 주세요",
+  "action_view_translation": "번역 보기",
+  "label_translation_result": "번역 결과:"
 }

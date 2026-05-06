@@ -1360,5 +1360,68 @@
       "age": { "type": "String" }
     }
   },
-  "empty_state_warmth": "这里还留存着时空的余温..."
+  "empty_state_warmth": "这里还留存着时空的余温...",
+  "error_login_required_add_friend": "请先登录才能添加好友！",
+  "dialog_title_remove_friend": "确认移除好友",
+  "dialog_msg_remove_friend": "您确定要将 {characterName} 从好友列表中移除吗？",
+  "@dialog_msg_remove_friend": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove": "移除",
+  "snackbar_friend_removed": "已将 {characterName} 移除好友",
+  "@snackbar_friend_removed": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove_friend": "移除好友",
+  "dialog_title_block": "确认封锁",
+  "dialog_msg_block": "封锁后，您将不会再看到 {characterName} 的任何信息。确定要封锁吗？",
+  "@dialog_msg_block": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "snackbar_blocked": "已封锁 {characterName}",
+  "@snackbar_blocked": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_block_character": "封锁此角色",
+  "dialog_title_report": "举报 {characterName}",
+  "@dialog_title_report": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "input_hint_report_reason": "请输入举报原因...",
+  "action_submit": "提交",
+  "snackbar_report_success": "感谢您的回报，我们将会尽快审核。",
+  "snackbar_report_fail": "提交失败，请稍后再试",
+  "action_report_character": "举报此角色",
+  "title_meet_him": "遇见心仪的他",
+  "text_character_count": "角色数量: {count}",
+  "@text_character_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "msg_no_more_encounters_today": "今天的邂逅就到这里啰！",
+  "msg_check_new_encounters": "再来看看有没有新的相遇吧！",
+  "action_refresh": "刷新",
+  "tab_friends": "好友",
+  "msg_mysterious_profile": "这个人很神秘，什么都没留下...",
+  "text_age_and_identities": "{age}岁 | {identities}",
+  "@text_age_and_identities": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "identities": { "type": "String" }
+    }
+  },
+  "snackbar_operation_failed": "操作失败，请稍后再试",
+  "action_view_translation": "查看翻译",
+  "label_translation_result": "翻译结果:"
 }

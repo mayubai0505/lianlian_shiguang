@@ -3334,4 +3334,105 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get empty_state_warmth =>
       'Hơi ấm dư thừa của thời không vẫn còn lưu lại nơi đây...';
+
+  @override
+  String get error_login_required_add_friend =>
+      'Vui lòng đăng nhập trước để thêm bạn bè!';
+
+  @override
+  String get dialog_title_remove_friend => 'Xác nhận xóa bạn bè';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return 'Bạn có chắc chắn muốn xóa $characterName khỏi danh sách bạn bè không?';
+  }
+
+  @override
+  String get action_remove => 'Xóa';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return 'Đã xóa $characterName khỏi bạn bè';
+  }
+
+  @override
+  String get action_remove_friend => 'Xóa bạn bè';
+
+  @override
+  String get dialog_title_block => 'Xác nhận chặn';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'Sau khi chặn, bạn sẽ không còn thấy bất kỳ thông tin nào về $characterName nữa. Bạn có chắc chắn muốn chặn không?';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return 'Đã chặn $characterName';
+  }
+
+  @override
+  String get action_block_character => 'Chặn nhân vật này';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return 'Báo cáo $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason => 'Vui lòng nhập lý do báo cáo...';
+
+  @override
+  String get action_submit => 'Gửi';
+
+  @override
+  String get snackbar_report_success =>
+      'Cảm ơn báo cáo của bạn, chúng tôi sẽ xem xét trong thời gian sớm nhất.';
+
+  @override
+  String get snackbar_report_fail => 'Gửi thất bại, vui lòng thử lại sau';
+
+  @override
+  String get action_report_character => 'Báo cáo nhân vật này';
+
+  @override
+  String get title_meet_him => 'Gặp gỡ người ấy';
+
+  @override
+  String text_character_count(int count) {
+    return 'Số lượng nhân vật: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today =>
+      'Cuộc gặp gỡ hôm nay đến đây là hết rồi!';
+
+  @override
+  String get msg_check_new_encounters =>
+      'Hãy xem lại thử có cuộc gặp gỡ nào mới không nhé!';
+
+  @override
+  String get action_refresh => 'Làm mới';
+
+  @override
+  String get tab_friends => 'Bạn bè';
+
+  @override
+  String get msg_mysterious_profile =>
+      'Người này rất bí ẩn, không để lại thông tin gì...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age tuổi | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed =>
+      'Thao tác thất bại, vui lòng thử lại sau';
+
+  @override
+  String get action_view_translation => 'Xem bản dịch';
+
+  @override
+  String get label_translation_result => 'Kết quả dịch:';
 }

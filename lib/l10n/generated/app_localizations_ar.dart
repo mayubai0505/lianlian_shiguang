@@ -3287,4 +3287,102 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get empty_state_warmth =>
       'لا يزال الدفء المتبقي من الزمان والمكان باقياً هنا...';
+
+  @override
+  String get error_login_required_add_friend =>
+      'الرجاء تسجيل الدخول أولاً لإضافة أصدقاء!';
+
+  @override
+  String get dialog_title_remove_friend => 'تأكيد إزالة الصديق';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return 'هل أنت متأكد من إزالة $characterName من قائمة الأصدقاء؟';
+  }
+
+  @override
+  String get action_remove => 'إزالة';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return 'تمت إزالة $characterName من الأصدقاء';
+  }
+
+  @override
+  String get action_remove_friend => 'إزالة الصديق';
+
+  @override
+  String get dialog_title_block => 'تأكيد الحظر';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'بعد الحظر، لن ترى أي معلومات عن $characterName مرة أخرى. هل أنت متأكد من الحظر؟';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return 'تم حظر $characterName';
+  }
+
+  @override
+  String get action_block_character => 'حظر هذه الشخصية';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return 'الإبلاغ عن $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason => 'الرجاء إدخال سبب الإبلاغ...';
+
+  @override
+  String get action_submit => 'إرسال';
+
+  @override
+  String get snackbar_report_success =>
+      'شكراً لإبلاغك، سنقوم بمراجعته في أقرب وقت ممكن.';
+
+  @override
+  String get snackbar_report_fail => 'فشل الإرسال، يرجى المحاولة لاحقاً';
+
+  @override
+  String get action_report_character => 'الإبلاغ عن هذه الشخصية';
+
+  @override
+  String get title_meet_him => 'التقي بمن يعجبك';
+
+  @override
+  String text_character_count(int count) {
+    return 'عدد الشخصيات: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today => 'هذا كل شيء للقاءات اليوم!';
+
+  @override
+  String get msg_check_new_encounters =>
+      'تحققي مرة أخرى لترين إن كانت هناك لقاءات جديدة!';
+
+  @override
+  String get action_refresh => 'تحديث';
+
+  @override
+  String get tab_friends => 'الأصدقاء';
+
+  @override
+  String get msg_mysterious_profile => 'هذا الشخص غامض جداً، لم يترك أي شيء...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age عاماً | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed => 'فشلت العملية، يرجى المحاولة لاحقاً';
+
+  @override
+  String get action_view_translation => 'عرض الترجمة';
+
+  @override
+  String get label_translation_result => 'نتيجة الترجمة:';
 }

@@ -5871,6 +5871,168 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'這裡還留存著時空的餘溫...'**
   String get empty_state_warmth;
+
+  /// No description provided for @error_login_required_add_friend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入才能添加好友！'**
+  String get error_login_required_add_friend;
+
+  /// No description provided for @dialog_title_remove_friend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認移除好友'**
+  String get dialog_title_remove_friend;
+
+  /// No description provided for @dialog_msg_remove_friend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您確定要將 {characterName} 從好友列表中移除嗎？'**
+  String dialog_msg_remove_friend(String characterName);
+
+  /// No description provided for @action_remove.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'移除'**
+  String get action_remove;
+
+  /// No description provided for @snackbar_friend_removed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已將 {characterName} 移除好友'**
+  String snackbar_friend_removed(String characterName);
+
+  /// No description provided for @action_remove_friend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'移除好友'**
+  String get action_remove_friend;
+
+  /// No description provided for @dialog_title_block.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認封鎖'**
+  String get dialog_title_block;
+
+  /// No description provided for @dialog_msg_block.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖後，您將不會再看到 {characterName} 的任何資訊。確定要封鎖嗎？'**
+  String dialog_msg_block(String characterName);
+
+  /// No description provided for @snackbar_blocked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已封鎖 {characterName}'**
+  String snackbar_blocked(String characterName);
+
+  /// No description provided for @action_block_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖此角色'**
+  String get action_block_character;
+
+  /// No description provided for @dialog_title_report.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉 {characterName}'**
+  String dialog_title_report(String characterName);
+
+  /// No description provided for @input_hint_report_reason.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請輸入檢舉原因...'**
+  String get input_hint_report_reason;
+
+  /// No description provided for @action_submit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'提交'**
+  String get action_submit;
+
+  /// No description provided for @snackbar_report_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'感謝您的回報，我們將會盡快審核。'**
+  String get snackbar_report_success;
+
+  /// No description provided for @snackbar_report_fail.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'提交失敗，請稍後再試'**
+  String get snackbar_report_fail;
+
+  /// No description provided for @action_report_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉此角色'**
+  String get action_report_character;
+
+  /// No description provided for @title_meet_him.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'遇見心儀的他'**
+  String get title_meet_him;
+
+  /// No description provided for @text_character_count.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色數量: {count}'**
+  String text_character_count(int count);
+
+  /// No description provided for @msg_no_more_encounters_today.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天的邂逅就到這裡囉！'**
+  String get msg_no_more_encounters_today;
+
+  /// No description provided for @msg_check_new_encounters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'再來看看有沒有新的相遇吧！'**
+  String get msg_check_new_encounters;
+
+  /// No description provided for @action_refresh.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新整理'**
+  String get action_refresh;
+
+  /// No description provided for @tab_friends.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好友'**
+  String get tab_friends;
+
+  /// No description provided for @msg_mysterious_profile.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個人很神秘，什麼都沒留下...'**
+  String get msg_mysterious_profile;
+
+  /// No description provided for @text_age_and_identities.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{age}歲 | {identities}'**
+  String text_age_and_identities(String age, String identities);
+
+  /// No description provided for @snackbar_operation_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'操作失敗，請稍後再試'**
+  String get snackbar_operation_failed;
+
+  /// No description provided for @action_view_translation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'查看翻譯'**
+  String get action_view_translation;
+
+  /// No description provided for @label_translation_result.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'翻譯結果:'**
+  String get label_translation_result;
 }
 
 class _AppLocalizationsDelegate

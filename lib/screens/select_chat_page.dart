@@ -9,9 +9,8 @@ import 'character_model.dart';
 import 'character_profile_page.dart';
 import 'search_character_page.dart';
 import '../widgets/character_image_carousel.dart';
-import 'package:cloud_functions/cloud_functions.dart'; //
-import '../services/locale_notifier.dart'; // ✨ 翻譯的
-import 'dart:math';
+import 'package:cloud_functions/cloud_functions.dart';
+
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -30,10 +29,8 @@ class _SelectChatPageState extends State<SelectChatPage> {
   String? _userId;
   Future<List<Character>>? _charactersFuture;
   Set<String> _friendIds = {};
-
   // ✨ 新增一個 Set 來記錄被封鎖的角色 ID
   Set<String> _blockedCharacterIds = {};
-
   // ✨ 2. 用這個乾淨的版本，替換你舊的 initState ✨
   @override
   void initState() {
@@ -62,13 +59,10 @@ class _SelectChatPageState extends State<SelectChatPage> {
       }
       return; // 提前結束函式
     }
-
-    // 使用 Future.wait 平行處理，速度更快
     await Future.wait([
       _loadFriendIds(),
       _loadBlockedCharacterIds(),
     ]);
-
     // 最後才載入角色，因為它需要用到封鎖列表
     if (mounted) {
       setState(() {
@@ -159,10 +153,11 @@ class _SelectChatPageState extends State<SelectChatPage> {
   }
   // ✨ 請把這個新函式加到 _SelectChatPageState 裡面
   Future<void> _addFriend(Character character) async {
+    final l10n = AppLocalizations.of(context)!;
     // 防呆機制：確認使用者已登入
     if (_userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('請先登入才能添加好友！')),
+        SnackBar(content: Text(l10n.error_login_required_add_friend)),
       );
       return;
     }
@@ -186,8 +181,6 @@ class _SelectChatPageState extends State<SelectChatPage> {
       print('角色 ${character.name} 已成功寫入 Firestore！');
 
       // 步驟 2: 即時更新本地 UI
-      // 為了讓玩家立刻看到按鈕的變化，我們在資料庫寫入成功後，
-      // 立刻呼叫 setState()，把這個角色的 ID 加到我們本地的 _friendIds 列表裡。
       if (mounted) {
         setState(() {
           _friendIds.add(character.id);
@@ -208,21 +201,19 @@ class _SelectChatPageState extends State<SelectChatPage> {
 
   Future<void> _deleteFriend(Character character) async {
     final l10n = AppLocalizations.of(context)!;
-
     if (_userId == null) return;
     final bool? confirm = await showDialog<bool>(
         context: context,
         builder: (context) =>
             AlertDialog(
-              title: Text('確認移除好友'),
-              content: Text('您確定要將 ${character.name} 從好友列表中移除嗎？'),
+              title: Text(l10n.dialog_title_remove_friend),
+              content: Text(l10n.dialog_msg_remove_friend(character.name)),
               actions: [
                 TextButton(onPressed: () => Navigator.of(context).pop(false),
                     child: Text(l10n.cancelButton
                     )),
                 TextButton(onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text(
-                        '移除', style: TextStyle(color: Colors.red))),
+                    child:  Text(l10n.action_remove, style: TextStyle(color: Colors.red))),
               ],
             )
     );
@@ -235,11 +226,11 @@ class _SelectChatPageState extends State<SelectChatPage> {
             _friendIds.remove(character.id);
           });
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('已將 ${character.name} 移除好友')));
+              SnackBar(content: Text(l10n.snackbar_friend_removed(character.name))));
         }
       } catch (e) {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('操作失敗，請稍後再試')));
+            SnackBar(content: Text(l10n.snackbar_operation_failed)));
       }
     }
   }
@@ -251,15 +242,13 @@ class _SelectChatPageState extends State<SelectChatPage> {
         context: context,
         builder: (context) =>
             AlertDialog(
-              title: Text('確認封鎖'),
-              content: Text('封鎖後，您將不會再看到 ${character
-                  .name} 的任何資訊。確定要封鎖嗎？'),
+              title: Text(l10n.dialog_title_block),
+              content: Text(l10n.dialog_msg_block(character.name)),
               actions: [
                 TextButton(onPressed: () => Navigator.of(context).pop(false),
                     child: Text(l10n.cancel)),
                 TextButton(onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text(
-                        '封鎖', style: TextStyle(color: Colors.red))),
+                    child:  Text(l10n.block, style: TextStyle(color: Colors.red))),
               ],
             )
     );
@@ -282,11 +271,11 @@ class _SelectChatPageState extends State<SelectChatPage> {
         _refreshAllData();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('已封鎖 ${character.name}')));
+              SnackBar(content: Text(l10n.snackbar_blocked(character.name))));
         }
       } catch (e) {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('操作失敗，請稍後再試')));
+             SnackBar(content: Text(l10n.snackbar_operation_failed)));
       }
     }
   }
@@ -300,11 +289,11 @@ class _SelectChatPageState extends State<SelectChatPage> {
         context: context,
         builder: (context) =>
             AlertDialog(
-              title: Text('檢舉 ${character.name}'),
+              title: Text(l10n.dialog_title_report(character.name)),
               content: TextField(
                 controller: reasonController,
-                decoration: const InputDecoration(
-                    hintText: '請輸入檢舉原因...'),
+                decoration:  InputDecoration(
+                    hintText: l10n.input_hint_report_reason),
                 maxLines: 3,
               ),
               actions: [
@@ -312,7 +301,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                     child: Text(l10n.cancelButton
                     )),
                 ElevatedButton(onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text('提交')),
+                    child: Text(l10n.action_submit)),
               ],
             )
     );
@@ -331,11 +320,11 @@ class _SelectChatPageState extends State<SelectChatPage> {
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('感謝您的回報，我們將會盡快審核。')));
+               SnackBar(content: Text(l10n.snackbar_report_success)));
         }
       } catch (e) {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('提交失敗，請稍後再試')));
+            SnackBar(content: Text(l10n.snackbar_report_fail)));
       }
     }
   }
@@ -343,6 +332,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
 
   // ✨ 這是新的「更多選項」選單
   void _showMoreOptions(Character character, bool isFriend) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -354,8 +344,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                 ListTile(
                   leading: const Icon(
                       Icons.person_remove_outlined, color: Colors.red),
-                  title: const Text(
-                      '移除好友', style: TextStyle(color: Colors.red)),
+                  title:  Text(l10n.action_remove_friend, style: TextStyle(color: Colors.red)),
                   onTap: () {
                     Navigator.pop(context);
                     _deleteFriend(character);
@@ -363,7 +352,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                 ),
               ListTile(
                 leading: const Icon(Icons.flag_outlined),
-                title: const Text('檢舉此角色'),
+                title:Text(l10n.action_report_character),
                 onTap: () {
                   Navigator.pop(context);
                   _reportCharacter(character);
@@ -371,8 +360,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.block, color: Colors.orange),
-                title: const Text(
-                    '封鎖此角色', style: TextStyle(color: Colors.orange)),
+                title:  Text(l10n.action_block_character, style: TextStyle(color: Colors.orange)),
                 onTap: () {
                   Navigator.pop(context);
                   _blockCharacter(character);
@@ -403,15 +391,16 @@ class _SelectChatPageState extends State<SelectChatPage> {
     // --- ✨ 在這裡定義 theme，讓整個 build 方法都能使用 ---
     final theme = Theme.of(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('遇見心儀的他'),
+        title:  Text(l10n.title_meet_him),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        foregroundColor: theme.colorScheme.onBackground,
+        foregroundColor: theme.colorScheme.onSurface,
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -442,8 +431,8 @@ class _SelectChatPageState extends State<SelectChatPage> {
                 child: Row(
                   children: [
                     Text(
-                      '角色數量: ${characters.length}',
-                      style: TextStyle(color: theme.colorScheme.onBackground),
+                      l10n.text_character_count(characters.length),
+                      style: TextStyle(color: theme.colorScheme.onSurface),
                     ),
                   ],
                 ),
@@ -506,6 +495,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
 
   // --- ✨ 核心修改 #1: 讓函式接收 ThemeNotifier ---
   Widget _buildEndCard(ThemeData theme, ThemeNotifier themeNotifier) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       width: MediaQuery
           .of(context)
@@ -535,25 +525,25 @@ class _SelectChatPageState extends State<SelectChatPage> {
                     color: theme.colorScheme.primary),
                 const SizedBox(height: 24),
                 Text(
-                  '今天的邂逅就到這裡囉！',
+                  l10n.msg_no_more_encounters_today,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '再來看看有沒有新的相遇吧！',
+                  l10n.msg_check_new_encounters,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7)
+                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha:0.7)
                   ),
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton.icon(
                   onPressed: _refreshCharacters,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('重新整理', style: TextStyle(fontSize: 16)),
+                  label:  Text(l10n.action_refresh, style: TextStyle(fontSize: 16)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.8),
+                    backgroundColor: theme.colorScheme.primary.withValues(alpha:0.8),
                     foregroundColor: theme.colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
@@ -565,149 +555,6 @@ class _SelectChatPageState extends State<SelectChatPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // --- ✨ 修改 #2: 使用 Card Widget 來確保圓角 ---
-
-  Widget _buildCharacterCard(ThemeData theme, Character character) {
-    final bool isFriend = _friendIds.contains(character.id);
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      elevation: 8,
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          CharacterImageCarousel(imagePaths: character.galleryPaths),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 220,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
-                ),
-              ),
-            ),
-          ),
-
-          // ✨✨✨ 新增的右上角「更多選項」按鈕 ✨✨✨
-          Positioned(
-            top: 8,
-            right: 8,
-            child: IconButton(
-              icon: const Icon(Icons.more_vert),
-              // 垂直的三個點
-              color: Colors.white,
-              // 增加一個半透明背景，讓按鈕在任何圖片上都清晰可見
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.black.withOpacity(0.3),
-              ),
-              tooltip: '更多選項',
-              // 按下後，呼叫我們即將建立的新選單函式
-              onPressed: () => _showMoreOptions(character, isFriend),
-            ),
-          ),
-
-          Positioned(
-            bottom: 25,
-            left: 25,
-            right: 25,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(character.name,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(blurRadius: 5.0, color: Colors.black87)
-                            ]),
-                        overflow: TextOverflow.ellipsis),
-                    const SizedBox(width: 12),
-                    Flexible(
-                      child: Text(
-                          '${character.age} | ${character.occupation}',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w300,
-                              shadows: [Shadow(blurRadius: 3.0,
-                                  color: Colors.black87)
-                              ]),
-                          overflow: TextOverflow.ellipsis),
-                    ),
-                    const Spacer(),
-                    // ✨ 這裡的邏輯不變，但是為了避免擁擠，我把它換成了更小的版本
-                    isFriend
-                        ? Chip(
-                      avatar: Icon(Icons.check, size: 16),
-                      label: const Text('好友'),
-                      visualDensity: VisualDensity.compact,
-                    )
-                        : ElevatedButton.icon(
-                      onPressed: () => _addFriend(character),
-                      icon: const Icon(Icons.add, size: 16),
-                      label: const Text('好友'),
-                      style: ElevatedButton.styleFrom(
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                // ... 以下你的 Text 和 Wrap 都維持原樣 ...
-                Text(
-                  character.storySummary.isEmpty
-                      ? '這個人很神秘，什麼都沒留下...'
-                      : character.storySummary,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      height: 1.4,
-                      shadows: [
-                        Shadow(blurRadius: 3.0, color: Colors.black87)
-                      ]),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 12),
-                if (character.personalityTags.isNotEmpty)
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 8.0,
-                    children: character.personalityTags.take(3).map((tag) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                                color: Colors.white.withOpacity(0.5),
-                                width: 0.5)),
-                        child: Text('#$tag',
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12)),
-                      );
-                    }).toList(),
-                  ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -738,7 +585,6 @@ class _SelectChatPageState extends State<SelectChatPage> {
       List<String>? _translatedTags;
 
       // 在 _CharacterCardState 類別裡
-
       Future<void> _translateSummary(String targetLang) async {
         if (widget.character.storySummary.isEmpty && widget.character.personalityTags.isEmpty) return;
 
@@ -805,16 +651,15 @@ class _SelectChatPageState extends State<SelectChatPage> {
             .languageCode;
         final String contentLang = widget.character.contentLanguage ?? 'zh';
         final sharedTranslation = widget.character.translations?[currentAppLang];
+        final l10n = AppLocalizations.of(context)!;
 
         // 優先序：本地翻譯 > 共享翻譯 > 原文
-        final displaySummary = _translatedSummary ?? sharedTranslation?['storySummary'] ?? widget.character.storySummary;
-        final displayTags = _translatedTags ?? (sharedTranslation?['personalityTags'] as List?)?.cast<String>() ?? widget.character.personalityTags;
+        final displaySummary = _translatedSummary ?? (sharedTranslation?['storySummary'] as String?) ?? widget.character.storySummary;        final displayTags = _translatedTags ?? (sharedTranslation?['personalityTags'] as List?)?.cast<String>() ?? widget.character.personalityTags;
         final String displayIdentities = (widget.character.identities != null && widget.character.identities!.isNotEmpty)
             ? widget.character.identities!.join(' / ')
-            : (widget.character.occupation ?? '神秘身分');
-        // 是否要顯示翻譯按鈕：
-        // 1. 語言不同 2. 本地還沒翻 3. 雲端也還沒人翻過
-        final bool showTranslateButton = (currentAppLang != (widget.character.contentLanguage ?? 'zh')) &&
+            : (widget.character.occupation);
+        // 是否要顯示翻譯按鈕：1. 語言不同 2. 本地還沒翻 3. 雲端也還沒人翻過
+        final bool showTranslateButton = (currentAppLang != contentLang) &&
             (_translatedSummary == null && sharedTranslation == null);
 
         Widget cardWidget = Card(
@@ -837,7 +682,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.85)
+                        Colors.black.withValues(alpha:0.85)
                       ],
                     ),
                   ),
@@ -850,7 +695,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                 child: IconButton(
                   icon: const Icon(Icons.more_vert, color: Colors.white),
                   style: IconButton.styleFrom(
-                      backgroundColor: Colors.black.withOpacity(0.3)),
+                      backgroundColor: Colors.black.withValues(alpha:0.3)),
                   onPressed: () =>
                       widget.onShowOptions(widget.character, widget.isFriend),
                 ),
@@ -881,7 +726,10 @@ class _SelectChatPageState extends State<SelectChatPage> {
                               ),
                               const SizedBox(height: 4), // 👈 名字跟職業之間的微小上下間距
                               Text(
-                                '${widget.character.age}歲| $displayIdentities',
+                                l10n.text_age_and_identities(
+                                    widget.character.age.toString(),
+                                    displayIdentities
+                                ),
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
@@ -896,16 +744,16 @@ class _SelectChatPageState extends State<SelectChatPage> {
                         // 👇 2. 好友按鈕乖乖待在右邊
                         widget.isFriend
                             ? Chip(
-                          backgroundColor: primaryColor.withOpacity(0.2),
-                          side: BorderSide(color: primaryColor.withOpacity(0.5)),
+                          backgroundColor: primaryColor.withValues(alpha:0.2),
+                          side: BorderSide(color: primaryColor.withValues(alpha:0.5)),
                           avatar: Icon(Icons.check, size: 16, color: primaryColor),
-                          label: Text('好友', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                          label: Text(l10n.tab_friends, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
                           visualDensity: VisualDensity.compact,
                         )
                             : ElevatedButton.icon(
                           onPressed: widget.onAddFriend,
                           icon: const Icon(Icons.add, size: 16),
-                          label: const Text('好友'),
+                          label:  Text(l10n.tab_friends),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryColor,
                             foregroundColor: theme.colorScheme.onPrimary,
@@ -922,11 +770,10 @@ class _SelectChatPageState extends State<SelectChatPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.character.storySummary.isEmpty
-                              ? '這個人很神秘...'
-                              : widget.character.storySummary,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 15, height: 1.5),
+                          displaySummary.isEmpty
+                              ? l10n.msg_mysterious_profile
+                              : displaySummary,
+                          style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.5),
                           maxLines: _translatedSummary != null ? 1 : 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -940,9 +787,9 @@ class _SelectChatPageState extends State<SelectChatPage> {
                                   height: 16,
                                   child: CircularProgressIndicator(
                                       strokeWidth: 2, color: primaryColor))
-                                  : Text('查看翻譯',
+                                  : Text(l10n.action_view_translation,
                                   style: TextStyle(
-                                      color: primaryColor.withOpacity(0.9),
+                                      color: primaryColor.withValues(alpha:0.9),
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold)),
                             ),
@@ -953,7 +800,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
+                              color: Colors.white.withValues(alpha:0.1),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.white12),
                             ),
@@ -964,7 +811,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                                   Icon(Icons.translate, size: 12,
                                       color: primaryColor),
                                   const SizedBox(width: 6),
-                                  const Text("翻譯結果:", style: TextStyle(
+                                   Text(l10n.label_translation_result, style: TextStyle(
                                       color: Colors.white54, fontSize: 10))
                                 ]),
                                 const SizedBox(height: 4),
@@ -986,7 +833,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           // ✨ 判斷：用 _translatedTags (翻譯版)，如果沒有才用原本的
-                          children: (_translatedTags ?? widget.character.personalityTags)
+                          children: displayTags
                               .take(3)
                               .map((tag) {
                             return Container(
@@ -994,7 +841,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 5),
                               decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
+                                  color: Colors.white.withValues(alpha:0.15),
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
                                       color: Colors.white24, width: 0.5)),

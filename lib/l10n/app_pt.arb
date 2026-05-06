@@ -1349,5 +1349,68 @@
          "age": { "type": "String" }
       }
    },
-   "empty_state_warmth": "O calor residual do tempo e do espaço ainda permanece aqui..."
+   "empty_state_warmth": "O calor residual do tempo e do espaço ainda permanece aqui...",
+   "error_login_required_add_friend": "Por favor, faça login primeiro para adicionar amigos!",
+   "dialog_title_remove_friend": "Confirmar Remoção de Amigo",
+   "dialog_msg_remove_friend": "Tem certeza de que deseja remover {characterName} da sua lista de amigos?",
+   "@dialog_msg_remove_friend": {
+      "placeholders": {
+         "characterName": { "type": "String" }
+      }
+   },
+   "action_remove": "Remover",
+   "snackbar_friend_removed": "{characterName} removido(a) dos amigos",
+   "@snackbar_friend_removed": {
+      "placeholders": {
+         "characterName": { "type": "String" }
+      }
+   },
+   "action_remove_friend": "Remover Amigo",
+   "dialog_title_block": "Confirmar Bloqueio",
+   "dialog_msg_block": "Após bloquear, você não verá mais nenhuma informação sobre {characterName}. Tem certeza de que deseja bloquear?",
+   "@dialog_msg_block": {
+      "placeholders": {
+         "characterName": { "type": "String" }
+      }
+   },
+   "snackbar_blocked": "{characterName} foi bloqueado(a)",
+   "@snackbar_blocked": {
+      "placeholders": {
+         "characterName": { "type": "String" }
+      }
+   },
+   "action_block_character": "Bloquear este personagem",
+   "dialog_title_report": "Denunciar {characterName}",
+   "@dialog_title_report": {
+      "placeholders": {
+         "characterName": { "type": "String" }
+      }
+   },
+   "input_hint_report_reason": "Por favor, insira o motivo da denúncia...",
+   "action_submit": "Enviar",
+   "snackbar_report_success": "Obrigado pela sua denúncia, vamos analisá-la o mais rápido possível.",
+   "snackbar_report_fail": "Falha ao enviar, tente novamente mais tarde",
+   "action_report_character": "Denunciar este personagem",
+   "title_meet_him": "Encontre seu crush",
+   "text_character_count": "Quantidade de personagens: {count}",
+   "@text_character_count": {
+      "placeholders": {
+         "count": { "type": "int" }
+      }
+   },
+   "msg_no_more_encounters_today": "Por hoje é só de encontros!",
+   "msg_check_new_encounters": "Volte para ver se há novos encontros!",
+   "action_refresh": "Atualizar",
+   "tab_friends": "Amigos",
+   "msg_mysterious_profile": "Esta pessoa é muito misteriosa, não deixou nada...",
+   "text_age_and_identities": "{age} anos | {identities}",
+   "@text_age_and_identities": {
+      "placeholders": {
+         "age": { "type": "String" },
+         "identities": { "type": "String" }
+      }
+   },
+   "snackbar_operation_failed": "A operação falhou, tente novamente mais tarde",
+   "action_view_translation": "Ver Tradução",
+   "label_translation_result": "Resultado da Tradução:"
 }

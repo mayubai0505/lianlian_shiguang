@@ -1560,5 +1560,68 @@
       "age": { "type": "String" }
     }
   },
-  "empty_state_warmth": "The lingering warmth of time and space remains here..."
+  "empty_state_warmth": "The lingering warmth of time and space remains here...",
+  "error_login_required_add_friend": "Please log in first to add friends!",
+  "dialog_title_remove_friend": "Confirm Remove Friend",
+  "dialog_msg_remove_friend": "Are you sure you want to remove {characterName} from your friend list?",
+  "@dialog_msg_remove_friend": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove": "Remove",
+  "snackbar_friend_removed": "Removed {characterName} from friends",
+  "@snackbar_friend_removed": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove_friend": "Remove Friend",
+  "dialog_title_block": "Confirm Block",
+  "dialog_msg_block": "Once blocked, you will no longer see any information about {characterName}. Are you sure you want to block them?",
+  "@dialog_msg_block": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "snackbar_blocked": "Blocked {characterName}",
+  "@snackbar_blocked": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_block_character": "Block this character",
+  "dialog_title_report": "Report {characterName}",
+  "@dialog_title_report": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "input_hint_report_reason": "Please enter the reason for reporting...",
+  "action_submit": "Submit",
+  "snackbar_report_success": "Thank you for your report, we will review it as soon as possible.",
+  "snackbar_report_fail": "Submission failed, please try again later",
+  "action_report_character": "Report this character",
+  "title_meet_him": "Meet Your Crush",
+  "text_character_count": "Character count: {count}",
+  "@text_character_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "msg_no_more_encounters_today": "That's all for today's encounters!",
+  "msg_check_new_encounters": "Check back to see if there are new encounters!",
+  "action_refresh": "Refresh",
+  "tab_friends": "Friends",
+  "msg_mysterious_profile": "This person is very mysterious and left nothing behind...",
+  "text_age_and_identities": "{age} yrs | {identities}",
+  "@text_age_and_identities": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "identities": { "type": "String" }
+    }
+  },
+  "snackbar_operation_failed": "Operation failed, please try again later",
+  "action_view_translation": "View Translation",
+  "label_translation_result": "Translation Result:"
 }

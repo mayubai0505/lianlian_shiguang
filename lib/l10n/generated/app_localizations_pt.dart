@@ -3349,4 +3349,106 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get empty_state_warmth =>
       'O calor residual do tempo e do espaço ainda permanece aqui...';
+
+  @override
+  String get error_login_required_add_friend =>
+      'Por favor, faça login primeiro para adicionar amigos!';
+
+  @override
+  String get dialog_title_remove_friend => 'Confirmar Remoção de Amigo';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return 'Tem certeza de que deseja remover $characterName da sua lista de amigos?';
+  }
+
+  @override
+  String get action_remove => 'Remover';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return '$characterName removido(a) dos amigos';
+  }
+
+  @override
+  String get action_remove_friend => 'Remover Amigo';
+
+  @override
+  String get dialog_title_block => 'Confirmar Bloqueio';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'Após bloquear, você não verá mais nenhuma informação sobre $characterName. Tem certeza de que deseja bloquear?';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return '$characterName foi bloqueado(a)';
+  }
+
+  @override
+  String get action_block_character => 'Bloquear este personagem';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return 'Denunciar $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason =>
+      'Por favor, insira o motivo da denúncia...';
+
+  @override
+  String get action_submit => 'Enviar';
+
+  @override
+  String get snackbar_report_success =>
+      'Obrigado pela sua denúncia, vamos analisá-la o mais rápido possível.';
+
+  @override
+  String get snackbar_report_fail =>
+      'Falha ao enviar, tente novamente mais tarde';
+
+  @override
+  String get action_report_character => 'Denunciar este personagem';
+
+  @override
+  String get title_meet_him => 'Encontre seu crush';
+
+  @override
+  String text_character_count(int count) {
+    return 'Quantidade de personagens: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today => 'Por hoje é só de encontros!';
+
+  @override
+  String get msg_check_new_encounters =>
+      'Volte para ver se há novos encontros!';
+
+  @override
+  String get action_refresh => 'Atualizar';
+
+  @override
+  String get tab_friends => 'Amigos';
+
+  @override
+  String get msg_mysterious_profile =>
+      'Esta pessoa é muito misteriosa, não deixou nada...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age anos | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed =>
+      'A operação falhou, tente novamente mais tarde';
+
+  @override
+  String get action_view_translation => 'Ver Tradução';
+
+  @override
+  String get label_translation_result => 'Resultado da Tradução:';
 }

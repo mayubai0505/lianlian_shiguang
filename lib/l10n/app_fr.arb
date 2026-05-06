@@ -1518,5 +1518,68 @@
             "age": { "type": "String" }
         }
     },
-    "empty_state_warmth": "La chaleur résiduelle de l'espace-temps subsiste encore ici..."
+    "empty_state_warmth": "La chaleur résiduelle de l'espace-temps subsiste encore ici...",
+    "error_login_required_add_friend": "Veuillez vous connecter d'abord pour ajouter des amis !",
+    "dialog_title_remove_friend": "Confirmer la suppression",
+    "dialog_msg_remove_friend": "Êtes-vous sûre de vouloir supprimer {characterName} de votre liste d'amis ?",
+    "@dialog_msg_remove_friend": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_remove": "Supprimer",
+    "snackbar_friend_removed": "{characterName} a été supprimé(e) de vos amis",
+    "@snackbar_friend_removed": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_remove_friend": "Supprimer l'ami",
+    "dialog_title_block": "Confirmer le blocage",
+    "dialog_msg_block": "Une fois bloqué(e), vous ne verrez plus aucune information sur {characterName}. Êtes-vous sûre de vouloir le/la bloquer ?",
+    "@dialog_msg_block": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "snackbar_blocked": "{characterName} a été bloqué(e)",
+    "@snackbar_blocked": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_block_character": "Bloquer ce personnage",
+    "dialog_title_report": "Signaler {characterName}",
+    "@dialog_title_report": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "input_hint_report_reason": "Veuillez entrer le motif du signalement...",
+    "action_submit": "Soumettre",
+    "snackbar_report_success": "Merci pour votre signalement, nous l'examinerons dès que possible.",
+    "snackbar_report_fail": "Échec de la soumission, veuillez réessayer plus tard",
+    "action_report_character": "Signaler ce personnage",
+    "title_meet_him": "Rencontrez l'élu de votre cœur",
+    "text_character_count": "Nombre de personnages : {count}",
+    "@text_character_count": {
+        "placeholders": {
+            "count": { "type": "int" }
+        }
+    },
+    "msg_no_more_encounters_today": "C'est tout pour les rencontres d'aujourd'hui !",
+    "msg_check_new_encounters": "Revenez vérifier s'il y a de nouvelles rencontres !",
+    "action_refresh": "Actualiser",
+    "tab_friends": "Amis",
+    "msg_mysterious_profile": "Cette personne est très mystérieuse, elle n'a rien laissé...",
+    "text_age_and_identities": "{age} ans | {identities}",
+    "@text_age_and_identities": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "identities": { "type": "String" }
+        }
+    },
+    "snackbar_operation_failed": "L'opération a échoué, veuillez réessayer plus tard",
+    "action_view_translation": "Voir la traduction",
+    "label_translation_result": "Résultat de la traduction :"
 }

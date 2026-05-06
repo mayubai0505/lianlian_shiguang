@@ -3293,4 +3293,103 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get empty_state_warmth =>
       'ไออุ่นที่หลงเหลือของกาลเวลายังคงอยู่ที่นี่...';
+
+  @override
+  String get error_login_required_add_friend =>
+      'โปรดเข้าสู่ระบบก่อนเพื่อเพิ่มเพื่อน!';
+
+  @override
+  String get dialog_title_remove_friend => 'ยืนยันการลบเพื่อน';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return 'คุณแน่ใจหรือไม่ว่าต้องการลบ $characterName ออกจากรายชื่อเพื่อน?';
+  }
+
+  @override
+  String get action_remove => 'ลบ';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return 'ลบ $characterName ออกจากเพื่อนแล้ว';
+  }
+
+  @override
+  String get action_remove_friend => 'ลบเพื่อน';
+
+  @override
+  String get dialog_title_block => 'ยืนยันการบล็อก';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'เมื่อบล็อกแล้ว คุณจะไม่เห็นข้อมูลใดๆ เกี่ยวกับ $characterName อีก ยืนยันที่จะบล็อกหรือไม่?';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return 'บล็อก $characterName แล้ว';
+  }
+
+  @override
+  String get action_block_character => 'บล็อกตัวละครนี้';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return 'รายงาน $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason => 'โปรดระบุเหตุผลในการรายงาน...';
+
+  @override
+  String get action_submit => 'ส่ง';
+
+  @override
+  String get snackbar_report_success =>
+      'ขอบคุณสำหรับการรายงาน เราจะตรวจสอบโดยเร็วที่สุด';
+
+  @override
+  String get snackbar_report_fail => 'การส่งล้มเหลว โปรดลองอีกครั้งในภายหลัง';
+
+  @override
+  String get action_report_character => 'รายงานตัวละครนี้';
+
+  @override
+  String get title_meet_him => 'พบกับคนที่คุณถูกใจ';
+
+  @override
+  String text_character_count(int count) {
+    return 'จำนวนตัวละคร: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today => 'การพบกันวันนี้มีแค่นี้นะ!';
+
+  @override
+  String get msg_check_new_encounters =>
+      'มาดูกันเถอะว่ามีการพบกันใหม่ๆ บ้างไหม!';
+
+  @override
+  String get action_refresh => 'รีเฟรช';
+
+  @override
+  String get tab_friends => 'เพื่อน';
+
+  @override
+  String get msg_mysterious_profile => 'คนนี้ลึกลับมาก ไม่ทิ้งอะไรไว้เลย...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return 'อายุ $age ปี | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed =>
+      'การดำเนินการล้มเหลว โปรดลองอีกครั้งในภายหลัง';
+
+  @override
+  String get action_view_translation => 'ดูคำแปล';
+
+  @override
+  String get label_translation_result => 'ผลการแปล:';
 }

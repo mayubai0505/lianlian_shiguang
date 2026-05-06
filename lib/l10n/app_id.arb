@@ -1348,5 +1348,68 @@
             "age": { "type": "String" }
         }
     },
-    "empty_state_warmth": "Sisa kehangatan ruang dan waktu masih tertinggal di sini..."
+    "empty_state_warmth": "Sisa kehangatan ruang dan waktu masih tertinggal di sini...",
+    "error_login_required_add_friend": "Silakan masuk terlebih dahulu untuk menambahkan teman!",
+    "dialog_title_remove_friend": "Konfirmasi Hapus Teman",
+    "dialog_msg_remove_friend": "Apakah Anda yakin ingin menghapus {characterName} dari daftar teman Anda?",
+    "@dialog_msg_remove_friend": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_remove": "Hapus",
+    "snackbar_friend_removed": "Telah menghapus {characterName} dari teman",
+    "@snackbar_friend_removed": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_remove_friend": "Hapus Teman",
+    "dialog_title_block": "Konfirmasi Blokir",
+    "dialog_msg_block": "Setelah diblokir, Anda tidak akan melihat informasi apa pun tentang {characterName} lagi. Anda yakin ingin memblokir?",
+    "@dialog_msg_block": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "snackbar_blocked": "Telah memblokir {characterName}",
+    "@snackbar_blocked": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_block_character": "Blokir karakter ini",
+    "dialog_title_report": "Laporkan {characterName}",
+    "@dialog_title_report": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "input_hint_report_reason": "Silakan masukkan alasan laporan...",
+    "action_submit": "Kirim",
+    "snackbar_report_success": "Terima kasih atas laporan Anda, kami akan segera meninjaunya.",
+    "snackbar_report_fail": "Gagal mengirim, silakan coba lagi nanti",
+    "action_report_character": "Laporkan karakter ini",
+    "title_meet_him": "Temui pujaan hatimu",
+    "text_character_count": "Jumlah karakter: {count}",
+    "@text_character_count": {
+        "placeholders": {
+            "count": { "type": "int" }
+        }
+    },
+    "msg_no_more_encounters_today": "Pertemuan hari ini sampai di sini dulu!",
+    "msg_check_new_encounters": "Mari kita lihat apakah ada pertemuan baru!",
+    "action_refresh": "Segarkan",
+    "tab_friends": "Teman",
+    "msg_mysterious_profile": "Orang ini sangat misterius, tidak meninggalkan apa pun...",
+    "text_age_and_identities": "{age} साल | {identities}",
+    "@text_age_and_identities": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "identities": { "type": "String" }
+        }
+    },
+    "snackbar_operation_failed": "ऑपरेशन विफल रहा, कृपया बाद में पुनः प्रयास करें",
+    "action_view_translation": "Lihat Terjemahan",
+    "label_translation_result": "Hasil Terjemahan:"
 }

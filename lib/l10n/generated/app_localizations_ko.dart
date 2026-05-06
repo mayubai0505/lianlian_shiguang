@@ -3186,4 +3186,99 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get empty_state_warmth => '시공간의 여열이 아직 이곳에 머물러 있습니다...';
+
+  @override
+  String get error_login_required_add_friend => '친구를 추가하려면 먼저 로그인해 주세요!';
+
+  @override
+  String get dialog_title_remove_friend => '친구 삭제 확인';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return '정말로 $characterName님을 친구 목록에서 삭제하시겠습니까?';
+  }
+
+  @override
+  String get action_remove => '삭제';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return '$characterName님을 친구에서 삭제했습니다';
+  }
+
+  @override
+  String get action_remove_friend => '친구 삭제';
+
+  @override
+  String get dialog_title_block => '차단 확인';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return '차단 후에는 $characterName님의 어떤 정보도 볼 수 없게 됩니다. 정말 차단하시겠습니까?';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return '$characterName님을 차단했습니다';
+  }
+
+  @override
+  String get action_block_character => '이 캐릭터 차단';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return '$characterName 신고';
+  }
+
+  @override
+  String get input_hint_report_reason => '신고 사유를 입력해 주세요...';
+
+  @override
+  String get action_submit => '제출';
+
+  @override
+  String get snackbar_report_success => '제보해 주셔서 감사합니다. 최대한 빨리 검토하겠습니다.';
+
+  @override
+  String get snackbar_report_fail => '제출 실패, 나중에 다시 시도해 주세요';
+
+  @override
+  String get action_report_character => '이 캐릭터 신고';
+
+  @override
+  String get title_meet_him => '마음에 드는 그와 만나기';
+
+  @override
+  String text_character_count(int count) {
+    return '캐릭터 수: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today => '오늘의 만남은 여기까지예요!';
+
+  @override
+  String get msg_check_new_encounters => '새로운 만남이 있는지 다시 확인해 보세요!';
+
+  @override
+  String get action_refresh => '새로고침';
+
+  @override
+  String get tab_friends => '친구';
+
+  @override
+  String get msg_mysterious_profile => '이 사람은 아주 신비로워서, 아무것도 남기지 않았네요...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age세 | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed => '작업 실패, 나중에 다시 시도해 주세요';
+
+  @override
+  String get action_view_translation => '번역 보기';
+
+  @override
+  String get label_translation_result => '번역 결과:';
 }

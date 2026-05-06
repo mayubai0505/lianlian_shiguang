@@ -3140,6 +3140,101 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get empty_state_warmth => '這裡還留存著時空的餘溫...';
+
+  @override
+  String get error_login_required_add_friend => '請先登入才能添加好友！';
+
+  @override
+  String get dialog_title_remove_friend => '確認移除好友';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return '您確定要將 $characterName 從好友列表中移除嗎？';
+  }
+
+  @override
+  String get action_remove => '移除';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return '已將 $characterName 移除好友';
+  }
+
+  @override
+  String get action_remove_friend => '移除好友';
+
+  @override
+  String get dialog_title_block => '確認封鎖';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return '封鎖後，您將不會再看到 $characterName 的任何資訊。確定要封鎖嗎？';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return '已封鎖 $characterName';
+  }
+
+  @override
+  String get action_block_character => '封鎖此角色';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return '檢舉 $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason => '請輸入檢舉原因...';
+
+  @override
+  String get action_submit => '提交';
+
+  @override
+  String get snackbar_report_success => '感謝您的回報，我們將會盡快審核。';
+
+  @override
+  String get snackbar_report_fail => '提交失敗，請稍後再試';
+
+  @override
+  String get action_report_character => '檢舉此角色';
+
+  @override
+  String get title_meet_him => '遇見心儀的他';
+
+  @override
+  String text_character_count(int count) {
+    return '角色數量: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today => '今天的邂逅就到這裡囉！';
+
+  @override
+  String get msg_check_new_encounters => '再來看看有沒有新的相遇吧！';
+
+  @override
+  String get action_refresh => '重新整理';
+
+  @override
+  String get tab_friends => '好友';
+
+  @override
+  String get msg_mysterious_profile => '這個人很神秘，什麼都沒留下...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age歲 | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed => '操作失敗，請稍後再試';
+
+  @override
+  String get action_view_translation => '查看翻譯';
+
+  @override
+  String get label_translation_result => '翻譯結果:';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6278,6 +6373,101 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get empty_state_warmth => '这里还留存着时空的余温...';
+
+  @override
+  String get error_login_required_add_friend => '请先登录才能添加好友！';
+
+  @override
+  String get dialog_title_remove_friend => '确认移除好友';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return '您确定要将 $characterName 从好友列表中移除吗？';
+  }
+
+  @override
+  String get action_remove => '移除';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return '已将 $characterName 移除好友';
+  }
+
+  @override
+  String get action_remove_friend => '移除好友';
+
+  @override
+  String get dialog_title_block => '确认封锁';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return '封锁后，您将不会再看到 $characterName 的任何信息。确定要封锁吗？';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return '已封锁 $characterName';
+  }
+
+  @override
+  String get action_block_character => '封锁此角色';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return '举报 $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason => '请输入举报原因...';
+
+  @override
+  String get action_submit => '提交';
+
+  @override
+  String get snackbar_report_success => '感谢您的回报，我们将会尽快审核。';
+
+  @override
+  String get snackbar_report_fail => '提交失败，请稍后再试';
+
+  @override
+  String get action_report_character => '举报此角色';
+
+  @override
+  String get title_meet_him => '遇见心仪的他';
+
+  @override
+  String text_character_count(int count) {
+    return '角色数量: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today => '今天的邂逅就到这里啰！';
+
+  @override
+  String get msg_check_new_encounters => '再来看看有没有新的相遇吧！';
+
+  @override
+  String get action_refresh => '刷新';
+
+  @override
+  String get tab_friends => '好友';
+
+  @override
+  String get msg_mysterious_profile => '这个人很神秘，什么都没留下...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age岁 | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed => '操作失败，请稍后再试';
+
+  @override
+  String get action_view_translation => '查看翻译';
+
+  @override
+  String get label_translation_result => '翻译结果:';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9416,4 +9606,99 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get empty_state_warmth => '這裡還留存著時空的餘溫...';
+
+  @override
+  String get error_login_required_add_friend => '請先登入才能添加好友！';
+
+  @override
+  String get dialog_title_remove_friend => '確認移除好友';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return '您確定要將 $characterName 從好友列表中移除嗎？';
+  }
+
+  @override
+  String get action_remove => '移除';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return '已將 $characterName 移除好友';
+  }
+
+  @override
+  String get action_remove_friend => '移除好友';
+
+  @override
+  String get dialog_title_block => '確認封鎖';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return '封鎖後，您將不會再看到 $characterName 的任何資訊。確定要封鎖嗎？';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return '已封鎖 $characterName';
+  }
+
+  @override
+  String get action_block_character => '封鎖此角色';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return '檢舉 $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason => '請輸入檢舉原因...';
+
+  @override
+  String get action_submit => '提交';
+
+  @override
+  String get snackbar_report_success => '感謝您的回報，我們將會盡快審核。';
+
+  @override
+  String get snackbar_report_fail => '提交失敗，請稍後再試';
+
+  @override
+  String get action_report_character => '檢舉此角色';
+
+  @override
+  String get title_meet_him => '遇見心儀的他';
+
+  @override
+  String text_character_count(int count) {
+    return '角色數量: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today => '今天的邂逅就到這裡囉！';
+
+  @override
+  String get msg_check_new_encounters => '再來看看有沒有新的相遇吧！';
+
+  @override
+  String get action_refresh => '重新整理';
+
+  @override
+  String get tab_friends => '好友';
+
+  @override
+  String get msg_mysterious_profile => '這個人很神秘，什麼都沒留下...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age歲 | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed => '操作失敗，請稍後再試';
+
+  @override
+  String get action_view_translation => '查看翻譯';
+
+  @override
+  String get label_translation_result => '翻譯結果:';
 }

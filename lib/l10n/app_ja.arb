@@ -1348,5 +1348,68 @@
       "age": { "type": "String" }
     }
   },
-  "empty_state_warmth": "時空の余熱がまだここに残っています..."
+  "empty_state_warmth": "時空の余熱がまだここに残っています...",
+  "error_login_required_add_friend": "フレンドを追加するには、まずログインしてください！",
+  "dialog_title_remove_friend": "フレンド削除の確認",
+  "dialog_msg_remove_friend": "本当に {characterName} をフレンドリストから削除しますか？",
+  "@dialog_msg_remove_friend": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove": "削除",
+  "snackbar_friend_removed": "{characterName} をフレンドから削除しました",
+  "@snackbar_friend_removed": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_remove_friend": "フレンドを削除",
+  "dialog_title_block": "ブロックの確認",
+  "dialog_msg_block": "ブロックすると、{characterName} の情報はいっさい表示されなくなります。本当にブロックしますか？",
+  "@dialog_msg_block": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "snackbar_blocked": "{characterName} をブロックしました",
+  "@snackbar_blocked": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "action_block_character": "このキャラクターをブロック",
+  "dialog_title_report": "{characterName} を報告",
+  "@dialog_title_report": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "input_hint_report_reason": "報告の理由を入力してください...",
+  "action_submit": "送信",
+  "snackbar_report_success": "ご報告ありがとうございます。できるだけ早く確認いたします。",
+  "snackbar_report_fail": "送信に失敗しました。後でもう一度お試しください。",
+  "action_report_character": "このキャラクターを報告",
+  "title_meet_him": "気になる彼との出会い",
+  "text_character_count": "キャラクター数: {count}",
+  "@text_character_count": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "msg_no_more_encounters_today": "今日の出会いはここまで！",
+  "msg_check_new_encounters": "新しい出会いがあるか確認してみましょう！",
+  "action_refresh": "更新",
+  "tab_friends": "フレンド",
+  "msg_mysterious_profile": "この人はとてもミステリアスで、何も残していません...",
+  "text_age_and_identities": "{age}歳 | {identities}",
+  "@text_age_and_identities": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "identities": { "type": "String" }
+    }
+  },
+  "snackbar_operation_failed": "操作に失敗しました。後でもう一度お試しください",
+  "action_view_translation": "翻訳を見る",
+  "label_translation_result": "翻訳結果:"
 }

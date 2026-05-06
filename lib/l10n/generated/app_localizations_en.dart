@@ -3303,4 +3303,107 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get empty_state_warmth =>
       'The lingering warmth of time and space remains here...';
+
+  @override
+  String get error_login_required_add_friend =>
+      'Please log in first to add friends!';
+
+  @override
+  String get dialog_title_remove_friend => 'Confirm Remove Friend';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return 'Are you sure you want to remove $characterName from your friend list?';
+  }
+
+  @override
+  String get action_remove => 'Remove';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return 'Removed $characterName from friends';
+  }
+
+  @override
+  String get action_remove_friend => 'Remove Friend';
+
+  @override
+  String get dialog_title_block => 'Confirm Block';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'Once blocked, you will no longer see any information about $characterName. Are you sure you want to block them?';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return 'Blocked $characterName';
+  }
+
+  @override
+  String get action_block_character => 'Block this character';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return 'Report $characterName';
+  }
+
+  @override
+  String get input_hint_report_reason =>
+      'Please enter the reason for reporting...';
+
+  @override
+  String get action_submit => 'Submit';
+
+  @override
+  String get snackbar_report_success =>
+      'Thank you for your report, we will review it as soon as possible.';
+
+  @override
+  String get snackbar_report_fail =>
+      'Submission failed, please try again later';
+
+  @override
+  String get action_report_character => 'Report this character';
+
+  @override
+  String get title_meet_him => 'Meet Your Crush';
+
+  @override
+  String text_character_count(int count) {
+    return 'Character count: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today =>
+      'That\'s all for today\'s encounters!';
+
+  @override
+  String get msg_check_new_encounters =>
+      'Check back to see if there are new encounters!';
+
+  @override
+  String get action_refresh => 'Refresh';
+
+  @override
+  String get tab_friends => 'Friends';
+
+  @override
+  String get msg_mysterious_profile =>
+      'This person is very mysterious and left nothing behind...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age yrs | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed =>
+      'Operation failed, please try again later';
+
+  @override
+  String get action_view_translation => 'View Translation';
+
+  @override
+  String get label_translation_result => 'Translation Result:';
 }

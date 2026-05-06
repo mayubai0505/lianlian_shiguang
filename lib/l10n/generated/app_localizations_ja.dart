@@ -3170,4 +3170,99 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get empty_state_warmth => '時空の余熱がまだここに残っています...';
+
+  @override
+  String get error_login_required_add_friend => 'フレンドを追加するには、まずログインしてください！';
+
+  @override
+  String get dialog_title_remove_friend => 'フレンド削除の確認';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return '本当に $characterName をフレンドリストから削除しますか？';
+  }
+
+  @override
+  String get action_remove => '削除';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return '$characterName をフレンドから削除しました';
+  }
+
+  @override
+  String get action_remove_friend => 'フレンドを削除';
+
+  @override
+  String get dialog_title_block => 'ブロックの確認';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'ブロックすると、$characterName の情報はいっさい表示されなくなります。本当にブロックしますか？';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return '$characterName をブロックしました';
+  }
+
+  @override
+  String get action_block_character => 'このキャラクターをブロック';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return '$characterName を報告';
+  }
+
+  @override
+  String get input_hint_report_reason => '報告の理由を入力してください...';
+
+  @override
+  String get action_submit => '送信';
+
+  @override
+  String get snackbar_report_success => 'ご報告ありがとうございます。できるだけ早く確認いたします。';
+
+  @override
+  String get snackbar_report_fail => '送信に失敗しました。後でもう一度お試しください。';
+
+  @override
+  String get action_report_character => 'このキャラクターを報告';
+
+  @override
+  String get title_meet_him => '気になる彼との出会い';
+
+  @override
+  String text_character_count(int count) {
+    return 'キャラクター数: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today => '今日の出会いはここまで！';
+
+  @override
+  String get msg_check_new_encounters => '新しい出会いがあるか確認してみましょう！';
+
+  @override
+  String get action_refresh => '更新';
+
+  @override
+  String get tab_friends => 'フレンド';
+
+  @override
+  String get msg_mysterious_profile => 'この人はとてもミステリアスで、何も残していません...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age歳 | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed => '操作に失敗しました。後でもう一度お試しください';
+
+  @override
+  String get action_view_translation => '翻訳を見る';
+
+  @override
+  String get label_translation_result => '翻訳結果:';
 }

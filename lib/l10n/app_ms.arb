@@ -1348,5 +1348,68 @@
             "age": { "type": "String" }
         }
     },
-    "empty_state_warmth": "Sisa kehangatan masa dan ruang masih kekal di sini..."
+    "empty_state_warmth": "Sisa kehangatan masa dan ruang masih kekal di sini...",
+    "error_login_required_add_friend": "Sila log masuk dahulu untuk menambah rakan!",
+    "dialog_title_remove_friend": "Sahkan Alih Keluar Rakan",
+    "dialog_msg_remove_friend": "Adakah awak pasti mahu mengalih keluar {characterName} daripada senarai rakan awak?",
+    "@dialog_msg_remove_friend": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_remove": "Alih Keluar",
+    "snackbar_friend_removed": "Telah mengalih keluar {characterName} daripada rakan",
+    "@snackbar_friend_removed": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_remove_friend": "Alih Keluar Rakan",
+    "dialog_title_block": "Sahkan Sekat",
+    "dialog_msg_block": "Selepas disekat, awak tidak akan melihat sebarang maklumat mengenai {characterName} lagi. Adakah awak pasti mahu menyekat?",
+    "@dialog_msg_block": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "snackbar_blocked": "Telah menyekat {characterName}",
+    "@snackbar_blocked": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "action_block_character": "Sekat watak ini",
+    "dialog_title_report": "Laporkan {characterName}",
+    "@dialog_title_report": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "input_hint_report_reason": "Sila masukkan sebab laporan...",
+    "action_submit": "Hantar",
+    "snackbar_report_success": "Terima kasih atas laporan awak, kami akan menyemaknya secepat mungkin.",
+    "snackbar_report_fail": "Penghantaran gagal, sila cuba lagi nanti",
+    "action_report_character": "Laporkan watak ini",
+    "title_meet_him": "Temui si dia yang awak suka",
+    "text_character_count": "Jumlah watak: {count}",
+    "@text_character_count": {
+        "placeholders": {
+            "count": { "type": "int" }
+        }
+    },
+    "msg_no_more_encounters_today": "Pertemuan hari ini sampai di sini sahaja!",
+    "msg_check_new_encounters": "Mari kita lihat jika ada pertemuan baharu!",
+    "action_refresh": "Segar semula",
+    "tab_friends": "Rakan",
+    "msg_mysterious_profile": "Orang ini sangat misteri, tidak meninggalkan apa-apa pun...",
+    "text_age_and_identities": "{age} thn | {identities}",
+    "@text_age_and_identities": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "identities": { "type": "String" }
+        }
+    },
+    "snackbar_operation_failed": "Operasi gagal, sila cuba lagi nanti",
+    "action_view_translation": "Lihat Terjemahan",
+    "label_translation_result": "Hasil Terjemahan:"
 }

@@ -3334,4 +3334,107 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get empty_state_warmth =>
       'समय और स्थान की बची हुई गर्माहट अभी भी यहाँ है...';
+
+  @override
+  String get error_login_required_add_friend =>
+      'दोस्त जोड़ने के लिए कृपया पहले लॉग इन करें!';
+
+  @override
+  String get dialog_title_remove_friend => 'दोस्त को हटाने की पुष्टि करें';
+
+  @override
+  String dialog_msg_remove_friend(String characterName) {
+    return 'क्या आप वाकई $characterName को अपनी मित्र सूची से हटाना चाहते हैं?';
+  }
+
+  @override
+  String get action_remove => 'हटाएं';
+
+  @override
+  String snackbar_friend_removed(String characterName) {
+    return '$characterName को दोस्तों से हटा दिया गया है';
+  }
+
+  @override
+  String get action_remove_friend => 'दोस्त हटाएं';
+
+  @override
+  String get dialog_title_block => 'ब्लॉक की पुष्टि करें';
+
+  @override
+  String dialog_msg_block(String characterName) {
+    return 'ब्लॉक करने के बाद, आपको $characterName के बारे में कोई जानकारी नहीं दिखाई देगी। क्या आप वाकई ब्लॉक करना चाहते हैं?';
+  }
+
+  @override
+  String snackbar_blocked(String characterName) {
+    return '$characterName को ब्लॉक कर दिया गया है';
+  }
+
+  @override
+  String get action_block_character => 'इस पात्र को ब्लॉक करें';
+
+  @override
+  String dialog_title_report(String characterName) {
+    return '$characterName की रिपोर्ट करें';
+  }
+
+  @override
+  String get input_hint_report_reason =>
+      'कृपया रिपोर्ट करने का कारण दर्ज करें...';
+
+  @override
+  String get action_submit => 'जमा करें';
+
+  @override
+  String get snackbar_report_success =>
+      'आपकी रिपोर्ट के लिए धन्यवाद, हम जल्द से जल्द इसकी समीक्षा करेंगे।';
+
+  @override
+  String get snackbar_report_fail =>
+      'सबमिशन विफल रहा, कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get action_report_character => 'इस पात्र की रिपोर्ट करें';
+
+  @override
+  String get title_meet_him => 'अपने क्रश से मिलें';
+
+  @override
+  String text_character_count(int count) {
+    return 'पात्रों की संख्या: $count';
+  }
+
+  @override
+  String get msg_no_more_encounters_today =>
+      'आज की मुलाकातें यहीं समाप्त होती हैं!';
+
+  @override
+  String get msg_check_new_encounters =>
+      'यह देखने के लिए फिर से आएं कि क्या कोई नई मुलाकात है!';
+
+  @override
+  String get action_refresh => 'रीफ्रेश करें';
+
+  @override
+  String get tab_friends => 'दोस्त';
+
+  @override
+  String get msg_mysterious_profile =>
+      'यह व्यक्ति बहुत रहस्यमय है, कुछ भी पीछे नहीं छोड़ा...';
+
+  @override
+  String text_age_and_identities(String age, String identities) {
+    return '$age साल | $identities';
+  }
+
+  @override
+  String get snackbar_operation_failed =>
+      'ऑपरेशन विफल रहा, कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get action_view_translation => 'अनुवाद देखें';
+
+  @override
+  String get label_translation_result => 'अनुवाद परिणाम:';
 }
