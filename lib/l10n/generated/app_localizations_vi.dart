@@ -3065,4 +3065,104 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get action_add_image => 'Thêm hình ảnh';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname cảm thấy bài viết của bạn rất tuyệt! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname thấy $authorName rất quyến rũ nên đã nhấn thích! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete =>
+      '✨ Hoàn thành nhiệm vụ dạo quanh mạng xã hội! Đừng quên nhận hoa nhé! 🌸';
+
+  @override
+  String get wall_title_shiguang => 'Tường Thập Quang';
+
+  @override
+  String get wall_tab_explore => '🌍 Khám phá';
+
+  @override
+  String get wall_tab_exclusive => '🔒 Độc quyền';
+
+  @override
+  String get more_options => 'Tùy chọn khác';
+
+  @override
+  String get delete_warning =>
+      'Sau khi xóa, bài viết sẽ không thể lấy lại được';
+
+  @override
+  String get delete_success => 'Xóa thành công';
+
+  @override
+  String get notification_new_comment => 'Bình luận mới! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName đã thích bài viết của bạn!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      'Hiện tại đang trống rỗng,\nhãy đi đăng bài viết công khai đầu tiên nhé! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'Vòng bạn bè vẫn chưa có khoảnh khắc nào,\nhãy đi tạo kỷ niệm cùng anh ấy nhé! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'Hồ sơ linh hồn này đã được người sáng tạo lưu trữ, đặt ở chế độ riêng tư, hoặc đã tan biến trong dòng chảy thời gian...\n\nCó lẽ ở một vũ trụ song song nào đó, bạn vẫn có cơ hội gặp lại họ. ✨';
+
+  @override
+  String get leave_silently => 'Lặng lẽ rời đi';
+
+  @override
+  String get character_post_schedule => 'Lịch đăng bài của nhân vật';
+
+  @override
+  String get creator_self => 'Chính người sáng tạo';
+
+  @override
+  String get post_identity_prompt =>
+      'Hôm nay bạn muốn đăng bài với tư cách ai?';
+
+  @override
+  String get identity_creator => '✨ Tư cách Người sáng tạo';
+
+  @override
+  String get identity_character => 'Tư cách Nhân vật';
+
+  @override
+  String get decide_post_time_prompt =>
+      'Giúp họ quyết định thời gian đăng bài nhé!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'Sau khi bật, các bài đăng hàng ngày sẽ được đăng tự động vào thời gian đã chỉ định\n(💡 Gợi ý: Hãy đặt thời gian lẻ để trông giống người thật hơn nhé!)';
+
+  @override
+  String get no_characters_created_yet =>
+      'Bạn vẫn chưa tạo bất kỳ nhân vật nào!';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour giờ';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute phút';
+  }
+
+  @override
+  String get empty_public_moments_short => 'Hiện chưa có bài đăng công khai 🌍';
+
+  @override
+  String get empty_private_moments_short => 'Vòng bạn bè vẫn đang im lìm ✨';
 }

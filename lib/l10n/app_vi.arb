@@ -1199,5 +1199,58 @@
     }
   },
   "msg_birthdate_immutable": "Sinh nhật sau khi thiết lập sẽ không thể thay đổi ✨",
-  "action_start_journey": "Bắt đầu hành trình"
+  "action_start_journey": "Bắt đầu hành trình",
+  "moment_like_self": "{nickname} cảm thấy bài viết của bạn rất tuyệt! 💖",
+  "@moment_like_self": {
+    "placeholders": {
+      "nickname": { "type": "String" }
+    }
+  },
+  "moment_like_other": "{nickname} thấy {authorName} rất quyến rũ nên đã nhấn thích! ✨",
+  "@moment_like_other": {
+    "placeholders": {
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
+    }
+  },
+  "task_social_tour_complete": "✨ Hoàn thành nhiệm vụ dạo quanh mạng xã hội! Đừng quên nhận hoa nhé! 🌸",
+  "wall_title_shiguang": "Tường Thập Quang",
+  "wall_tab_explore": "🌍 Khám phá",
+  "wall_tab_exclusive": "🔒 Độc quyền",
+  "more_options": "Tùy chọn khác",
+  "delete_warning": "Sau khi xóa, bài viết sẽ không thể lấy lại được",
+  "delete_success": "Xóa thành công",
+  "notification_new_comment": "Bình luận mới! 💬",
+  "notification_like_from_sender": "{senderName} đã thích bài viết của bạn!",
+  "@notification_like_from_sender": {
+    "placeholders": {
+      "senderName": { "type": "String" }
+    }
+  },
+  "empty_public_moments_prompt": "Hiện tại đang trống rỗng,\nhãy đi đăng bài viết công khai đầu tiên nhé! 🌍",
+  "empty_private_moments_prompt": "Vòng bạn bè vẫn chưa có khoảnh khắc nào,\nhãy đi tạo kỷ niệm cùng anh ấy nhé! ✨",
+  "profile_archived_or_deleted_message": "Hồ sơ linh hồn này đã được người sáng tạo lưu trữ, đặt ở chế độ riêng tư, hoặc đã tan biến trong dòng chảy thời gian...\n\nCó lẽ ở một vũ trụ song song nào đó, bạn vẫn có cơ hội gặp lại họ. ✨",
+  "leave_silently": "Lặng lẽ rời đi",
+  "character_post_schedule": "Lịch đăng bài của nhân vật",
+  "creator_self": "Chính người sáng tạo",
+  "post_identity_prompt": "Hôm nay bạn muốn đăng bài với tư cách ai?",
+  "identity_creator": "✨ Tư cách Người sáng tạo",
+  "identity_character": "Tư cách Nhân vật",
+  "decide_post_time_prompt": "Giúp họ quyết định thời gian đăng bài nhé!",
+  "auto_post_schedule_hint": "Sau khi bật, các bài đăng hàng ngày sẽ được đăng tự động vào thời gian đã chỉ định\n(💡 Gợi ý: Hãy đặt thời gian lẻ để trông giống người thật hơn nhé!)",
+  "no_characters_created_yet": "Bạn vẫn chưa tạo bất kỳ nhân vật nào!",
+  "time_hour": "{hour} giờ",
+  "@time_hour": {
+    "placeholders": {
+      "hour": { "type": "String" }
+    }
+  },
+  "time_minute": "{minute} phút",
+  "@time_minute": {
+    "placeholders": {
+      "minute": { "type": "String" }
+    }
+  },
+  "empty_public_moments_short": "Hiện chưa có bài đăng công khai 🌍",
+  "empty_private_moments_short": "Vòng bạn bè vẫn đang im lìm ✨"
 }

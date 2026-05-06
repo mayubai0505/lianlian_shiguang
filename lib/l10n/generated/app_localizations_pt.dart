@@ -3079,4 +3079,105 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get action_add_image => 'Adicionar imagem';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname curtiu sua publicação! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname acha que $authorName é charmoso(a) e deixou uma curtida! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete =>
+      '✨ Missão de Tour Social concluída! Lembre-se de resgatar suas flores! 🌸';
+
+  @override
+  String get wall_title_shiguang => 'Mural ShiGuang';
+
+  @override
+  String get wall_tab_explore => '🌍 Explorar';
+
+  @override
+  String get wall_tab_exclusive => '🔒 Exclusivo';
+
+  @override
+  String get more_options => 'Mais Opções';
+
+  @override
+  String get delete_warning =>
+      'Após a exclusão, a postagem não poderá ser recuperada';
+
+  @override
+  String get delete_success => 'Excluído com sucesso';
+
+  @override
+  String get notification_new_comment => 'Novo comentário! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName curtiu sua publicação!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      'Atualmente está vazio,\nvá publicar sua primeira postagem pública! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'Ainda não há momentos no círculo de amigos,\nvá criar memórias com ele! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'Este arquivo de alma foi arquivado pelo criador, definido como privado ou desapareceu no fluxo do tempo...\n\nTalvez em um universo paralelo, vocês tenham a chance de se encontrar novamente. ✨';
+
+  @override
+  String get leave_silently => 'Sair silenciosamente';
+
+  @override
+  String get character_post_schedule =>
+      'Agendamento de Postagens de Personagens';
+
+  @override
+  String get creator_self => 'Criador(a) próprio(a)';
+
+  @override
+  String get post_identity_prompt => 'Com qual identidade você postará hoje?';
+
+  @override
+  String get identity_creator => '✨ Identidade de Criador';
+
+  @override
+  String get identity_character => 'Identidade de Personagem';
+
+  @override
+  String get decide_post_time_prompt =>
+      'Ajude-os a decidir o horário da postagem!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'Quando ativado, as postagens diárias serão publicadas automaticamente no horário especificado\n(💡 Dica: Defina horários quebrados para parecer mais humano!)';
+
+  @override
+  String get no_characters_created_yet =>
+      'Você ainda não criou nenhum personagem!';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour horas';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute minutos';
+  }
+
+  @override
+  String get empty_public_moments_short => 'Ainda não há postagens públicas 🌍';
+
+  @override
+  String get empty_private_moments_short =>
+      'O círculo de amigos ainda está silencioso ✨';
 }

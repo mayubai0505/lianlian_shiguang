@@ -1320,5 +1320,58 @@
 
   "msg_birthdate_immutable": "生日設定後不可更改 ✨",
   "action_start_journey": "開啟時光旅程",
-  "action_add_image": "新增圖片"
+  "action_add_image": "新增圖片",
+  "moment_like_self": "{nickname}覺得妳的動態很讚喔！💖",
+  "@moment_like_self": {
+    "placeholders": {
+      "nickname": { "type": "String" }
+    }
+  },
+  "moment_like_other": "{nickname}覺得{authorName}很有魅力，點了個讚！✨",
+  "@moment_like_other": {
+    "placeholders": {
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
+    }
+  },
+  "task_social_tour_complete": "✨ 達成社群巡禮任務！記得領取花花喔！🌸",
+  "wall_title_shiguang": "拾光牆",
+  "wall_tab_explore": "🌍 探索",
+  "wall_tab_exclusive": "🔒 專屬",
+  "more_options": "更多選項",
+  "delete_warning": "刪除後，貼文將無法找回",
+  "delete_success": "刪除成功",
+  "notification_new_comment": "新留言！💬",
+  "notification_like_from_sender": "{senderName} 對妳的動態點了個讚！",
+  "@notification_like_from_sender": {
+    "placeholders": {
+      "senderName": { "type": "String" }
+    }
+  },
+  "empty_public_moments_prompt": "目前空空如也，\n快去發布第一篇公開動態吧！🌍",
+  "empty_private_moments_prompt": "朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！✨",
+  "profile_archived_or_deleted_message": "這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。✨",
+  "leave_silently": "默默離開",
+  "character_post_schedule": "角色發文排程",
+  "creator_self": "創作者本人",
+  "post_identity_prompt": "今天要用誰的身分發文？",
+  "identity_creator": "✨ 創作者身分",
+  "identity_character": "角色身分",
+  "decide_post_time_prompt": "幫他們決定發文時間吧！",
+  "auto_post_schedule_hint": "開啟後，將會在指定時間自動發布日常動態\n(💡 建議設定非整點，看起來更像真人喔！)",
+  "no_characters_created_yet": "妳還沒有創建任何角色喔！",
+  "time_hour": "{hour} 點",
+  "@time_hour": {
+    "placeholders": {
+      "hour": { "type": "String" }
+    }
+  },
+  "time_minute": "{minute} 分",
+  "@time_minute": {
+    "placeholders": {
+      "minute": { "type": "String" }
+    }
+  },
+  "empty_public_moments_short": "目前還沒有公開動態 🌍",
+  "empty_private_moments_short": "朋友圈還靜悄悄的 ✨"
 }

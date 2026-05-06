@@ -2931,4 +2931,99 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get action_add_image => '이미지 추가';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname님이 당신의 포스트를 좋아합니다! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname님이 $authorName님이 매력적이라며 좋아요를 눌렀어요! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete => '✨ 소셜 투어 미션 달성! 꽃을 잊지 말고 받으세요! 🌸';
+
+  @override
+  String get wall_title_shiguang => '시광의 벽';
+
+  @override
+  String get wall_tab_explore => '🌍 탐색';
+
+  @override
+  String get wall_tab_exclusive => '🔒 전용';
+
+  @override
+  String get more_options => '추가 옵션';
+
+  @override
+  String get delete_warning => '삭제하면 포스트를 복구할 수 없습니다';
+
+  @override
+  String get delete_success => '삭제 성공';
+
+  @override
+  String get notification_new_comment => '새로운 댓글! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName님이 당신의 포스트를 좋아합니다!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      '현재 비어 있습니다.\n첫 번째 공개 포스트를 게시해 보세요! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      '모먼트에 아직 기록이 없네요.\n그와 함께 추억을 만들어 보세요! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      '이 영혼의 기록은 창작자에 의해 보관되었거나, 비공개로 설정되었거나, 혹은 시간의 흐름 속에 사라졌습니다...\n\n어쩌면 다른 평행 우주에서 다시 만날 기회가 있을지도 모릅니다. ✨';
+
+  @override
+  String get leave_silently => '조용히 나가기';
+
+  @override
+  String get character_post_schedule => '캐릭터 포스트 일정';
+
+  @override
+  String get creator_self => '창작자 본인';
+
+  @override
+  String get post_identity_prompt => '오늘은 누구의 신분으로 포스트를 올릴까요?';
+
+  @override
+  String get identity_creator => '✨ 창작자 신분';
+
+  @override
+  String get identity_character => '캐릭터 신분';
+
+  @override
+  String get decide_post_time_prompt => '포스트 게시 시간을 결정해 주세요!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      '활성화하면 지정된 시간에 일상 포스트가 자동으로 게시됩니다\n(💡 팁: 정각이 아닌 시간으로 설정하면 더 사람처럼 보여요!)';
+
+  @override
+  String get no_characters_created_yet => '아직 생성된 캐릭터가 없습니다!';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour시';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute분';
+  }
+
+  @override
+  String get empty_public_moments_short => '현재 공개 포스트가 없습니다 🌍';
+
+  @override
+  String get empty_private_moments_short => '모먼트가 아직 조용하네요 ✨';
 }

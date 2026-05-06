@@ -3067,4 +3067,103 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get action_add_image => 'छवि जोड़ें';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname को आपकी पोस्ट बहुत पसंद आई! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname को लगता है कि $authorName बहुत आकर्षक है, और उन्होंने लाइक किया! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete =>
+      '✨ सोशल टूर कार्य पूरा हुआ! अपने फूल लेना न भूलें! 🌸';
+
+  @override
+  String get wall_title_shiguang => 'शिगुआंग वॉल';
+
+  @override
+  String get wall_tab_explore => '🌍 एक्सप्लोर करें';
+
+  @override
+  String get wall_tab_exclusive => '🔒 विशेष';
+
+  @override
+  String get more_options => 'अधिक विकल्प';
+
+  @override
+  String get delete_warning => 'हटाने के बाद, पोस्ट वापस नहीं पाई जा सकती';
+
+  @override
+  String get delete_success => 'सफलतापूर्वक हटाया गया';
+
+  @override
+  String get notification_new_comment => 'नया कमेंट! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName ने आपकी पोस्ट को लाइक किया!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      'अभी यहाँ कुछ नहीं है,\nजाएँ और अपनी पहली सार्वजनिक पोस्ट करें! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'सर्कल में अभी तक कोई पल नहीं हैं,\nजाएँ और उसके साथ यादें बनाएँ! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'यह आत्मा फ़ाइल निर्माता द्वारा संग्रहीत, निजी सेट की गई है, या समय की धारा में खो गई है...\n\nशायद किसी समानांतर ब्रह्मांड में, आपको फिर से मिलने का मौका मिले। ✨';
+
+  @override
+  String get leave_silently => 'खामोशी से निकलें';
+
+  @override
+  String get character_post_schedule => 'पात्र पोस्ट शेड्यूल';
+
+  @override
+  String get creator_self => 'निर्माता स्वयं';
+
+  @override
+  String get post_identity_prompt => 'आज आप किस पहचान के रूप में पोस्ट करेंगे?';
+
+  @override
+  String get identity_creator => '✨ निर्माता की पहचान';
+
+  @override
+  String get identity_character => 'पात्र की पहचान';
+
+  @override
+  String get decide_post_time_prompt =>
+      'उन्हें पोस्ट करने का समय तय करने में मदद करें!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'सक्षम होने पर, दैनिक पोस्ट निर्दिष्ट समय पर स्वचालित रूप से प्रकाशित हो जाएँगी\n(💡 संकेत: इसे अधिक मानवीय बनाने के लिए विषम समय सेट करें!)';
+
+  @override
+  String get no_characters_created_yet =>
+      'आपने अभी तक कोई पात्र नहीं बनाया है!';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour बजे';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute मिनट';
+  }
+
+  @override
+  String get empty_public_moments_short =>
+      'अभी तक कोई सार्वजनिक पोस्ट नहीं है 🌍';
+
+  @override
+  String get empty_private_moments_short => 'सर्कल अभी बहुत शांत है ✨';
 }

@@ -3067,4 +3067,105 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get action_add_image => 'Tambah gambar';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname menyukai postinganmu! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname merasa $authorName sangat menawan dan memberikan suka! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete =>
+      '✨ Tugas Wisata Sosial selesai! Jangan lupa ambil bunganya! 🌸';
+
+  @override
+  String get wall_title_shiguang => 'Dinding ShiGuang';
+
+  @override
+  String get wall_tab_explore => '🌍 Jelajah';
+
+  @override
+  String get wall_tab_exclusive => '🔒 Eksklusif';
+
+  @override
+  String get more_options => 'Opsi Lainnya';
+
+  @override
+  String get delete_warning =>
+      'Setelah dihapus, postingan tidak dapat dikembalikan';
+
+  @override
+  String get delete_success => 'Berhasil dihapus';
+
+  @override
+  String get notification_new_comment => 'Komentar baru! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName menyukai postinganmu!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      'Saat ini kosong melompong,\nayo buat postingan publik pertamamu! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'Belum ada momen di lingkaran pertemanan,\nayo buat kenangan dengannya! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'Arsip jiwa ini telah disimpan oleh penciptanya, disetel ke pribadi, atau telah lenyap dalam aliran waktu...\n\nMungkin di semesta paralel, kalian punya kesempatan untuk bertemu lagi. ✨';
+
+  @override
+  String get leave_silently => 'Pergi diam-diam';
+
+  @override
+  String get character_post_schedule => 'Jadwal Postingan Karakter';
+
+  @override
+  String get creator_self => 'Pencipta (Diri Sendiri)';
+
+  @override
+  String get post_identity_prompt =>
+      'Hari ini ingin memposting dengan identitas siapa?';
+
+  @override
+  String get identity_creator => '✨ Identitas Pencipta';
+
+  @override
+  String get identity_character => 'Identitas Karakter';
+
+  @override
+  String get decide_post_time_prompt =>
+      'Bantu mereka menentukan waktu posting!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'Setelah diaktifkan, postingan rutin akan dipublikasikan otomatis pada waktu yang ditentukan\n(💡 Saran: Gunakan waktu yang tidak bulat agar terlihat lebih nyata!)';
+
+  @override
+  String get no_characters_created_yet =>
+      'Kamu belum membuat karakter apa pun!';
+
+  @override
+  String time_hour(String hour) {
+    return 'Jam $hour';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute menit';
+  }
+
+  @override
+  String get empty_public_moments_short => 'Belum ada postingan publik 🌍';
+
+  @override
+  String get empty_private_moments_short =>
+      'Lingkaran pertemanan masih sunyi ✨';
 }

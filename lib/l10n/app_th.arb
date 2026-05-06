@@ -1199,5 +1199,58 @@
         }
     },
     "msg_birthdate_immutable": "ตั้งวันเกิดแล้วแก้ไขไม่ได้นะ ✨",
-    "action_start_journey": "เริ่มการเดินทาง"
+    "action_start_journey": "เริ่มการเดินทาง",
+    "moment_like_self": "{nickname} ถูกใจโพสต์ของคุณนะ! 💖",
+    "@moment_like_self": {
+        "placeholders": {
+            "nickname": { "type": "String" }
+        }
+    },
+    "moment_like_other": "{nickname} คิดว่า {authorName} มีเสน่ห์มาก เลยกดถูกใจให้! ✨",
+    "@moment_like_other": {
+        "placeholders": {
+            "nickname": { "type": "String" },
+            "authorName": { "type": "String" }
+        }
+    },
+    "task_social_tour_complete": "✨ ภารกิจทัวร์โซเชียลสำเร็จ! อย่าลืมรับดอกไม้ล่ะ! 🌸",
+    "wall_title_shiguang": "กำแพงสื่อกวง",
+    "wall_tab_explore": "🌍 สำรวจ",
+    "wall_tab_exclusive": "🔒 พิเศษ",
+    "more_options": "ตัวเลือกเพิ่มเติม",
+    "delete_warning": "หลังการลบ โพสต์จะไม่สามารถกู้คืนได้",
+    "delete_success": "ลบสำเร็จเรียบร้อย",
+    "notification_new_comment": "ความคิดเห็นใหม่! 💬",
+    "notification_like_from_sender": "{senderName} ถูกใจโพสต์ของคุณ!",
+    "@notification_like_from_sender": {
+        "placeholders": {
+            "senderName": { "type": "String" }
+        }
+    },
+    "empty_public_moments_prompt": "ตอนนี้ยังว่างเปล่าอยู่เลย\nลองไปโพสต์ข้อความสาธารณะแรกดูสิ! 🌍",
+    "empty_private_moments_prompt": "ยังไม่มีความทรงจำในโมเมนต์เลย\nไปสร้างความทรงจำร่วมกับเขากันเถอะ! ✨",
+    "profile_archived_or_deleted_message": "ไฟล์วิญญาณนี้ถูกผู้สร้างจัดเก็บไว้ เป็นส่วนตัว หรือสูญหายไปตามกาลเวลาแล้ว...\n\nบางทีในจักรวาลคู่ขนาน คุณอาจมีโอกาสพบกันอีกครั้ง ✨",
+    "leave_silently": "จากไปอย่างเงียบๆ",
+    "character_post_schedule": "กำหนดการโพสต์ของตัวละคร",
+    "creator_self": "ตัวผู้สร้างเอง",
+    "post_identity_prompt": "วันนี้จะใช้ตัวตนไหนในการโพสต์ดีนะ?",
+    "identity_creator": "✨ ตัวตนผู้สร้าง",
+    "identity_character": "ตัวตนตัวละคร",
+    "decide_post_time_prompt": "ช่วยพวกเขากำหนดเวลาโพสต์หน่อยสิ!",
+    "auto_post_schedule_hint": "เมื่อเปิดใช้งาน จะมีการโพสต์อัตโนมัติในเวลาที่กำหนด\n(💡 แนะนำ: ตั้งเวลาที่ไม่ใช่เลขกลมๆ จะดูเหมือนคนจริงๆ มากขึ้นนะ!)",
+    "no_characters_created_yet": "คุณยังไม่ได้สร้างตัวละครใดๆ เลย!",
+    "time_hour": "{hour} นาฬิกา",
+    "@time_hour": {
+        "placeholders": {
+            "hour": { "type": "String" }
+        }
+    },
+    "time_minute": "{minute} นาที",
+    "@time_minute": {
+        "placeholders": {
+            "minute": { "type": "String" }
+        }
+    },
+    "empty_public_moments_short": "ยังไม่มีโพสต์สาธารณะ 🌍",
+    "empty_private_moments_short": "โมเมนต์ยังเงียบเชียบอยู่เลย ✨"
 }

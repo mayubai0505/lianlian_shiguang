@@ -1211,5 +1211,58 @@
     }
   },
   "msg_birthdate_immutable": "生日设定后不可更改 ✨",
-  "action_start_journey": "开启时光旅程"
+  "action_start_journey": "开启时光旅程",
+  "moment_like_self": "{nickname}觉得妳的动态很赞喔！💖",
+  "@moment_like_self": {
+    "placeholders": {
+      "nickname": { "type": "String" }
+    }
+  },
+  "moment_like_other": "{nickname}觉得{authorName}很有魅力，点了个赞！✨",
+  "@moment_like_other": {
+    "placeholders": {
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
+    }
+  },
+  "task_social_tour_complete": "✨ 达成社群巡礼任务！记得领取花花喔！🌸",
+  "wall_title_shiguang": "拾光墙",
+  "wall_tab_explore": "🌍 探索",
+  "wall_tab_exclusive": "🔒 专属",
+  "more_options": "更多选项",
+  "delete_warning": "删除后，贴文将无法找回",
+  "delete_success": "删除成功",
+  "notification_new_comment": "新留言！💬",
+  "notification_like_from_sender": "{senderName} 对妳的动态点了个赞！",
+  "@notification_like_from_sender": {
+    "placeholders": {
+      "senderName": { "type": "String" }
+    }
+  },
+  "empty_public_moments_prompt": "目前空空如也，\n快去发布第一篇公开动态吧！🌍",
+  "empty_private_moments_prompt": "朋友圈还没有留下的瞬间，\n快去与他创造回忆吧！✨",
+  "profile_archived_or_deleted_message": "这份灵魂档案已被创作者封存、设为私人，或是已经消散在时空的洪流中...\n\n或许在某个平行宇宙，你们还有再次相遇的机会。✨",
+  "leave_silently": "默默离开",
+  "character_post_schedule": "角色发文排程",
+  "creator_self": "创作者本人",
+  "post_identity_prompt": "今天要用谁的身分发文？",
+  "identity_creator": "✨ 创作者身分",
+  "identity_character": "角色身分",
+  "decide_post_time_prompt": "帮他们决定发文时间吧！",
+  "auto_post_schedule_hint": "开启后，将会在指定時間自动发布日常动态\n(💡 建议设定非整点，看起来更像真人喔！)",
+  "no_characters_created_yet": "妳还没有创建任何角色喔！",
+  "time_hour": "{hour} 点",
+  "@time_hour": {
+    "placeholders": {
+      "hour": { "type": "String" }
+    }
+  },
+  "time_minute": "{minute} 分",
+  "@time_minute": {
+    "placeholders": {
+      "minute": { "type": "String" }
+    }
+  },
+  "empty_public_moments_short": "目前还没有公开动态 🌍",
+  "empty_private_moments_short": "朋友圈还静悄悄的 ✨"
 }

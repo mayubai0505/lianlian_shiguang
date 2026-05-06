@@ -1199,5 +1199,58 @@
         }
     },
     "msg_birthdate_immutable": "सेट होने के बाद जन्मदिन नहीं बदला जा सकता ✨",
-    "action_start_journey": "यात्रा शुरू करें"
+    "action_start_journey": "यात्रा शुरू करें",
+    "moment_like_self": "{nickname} को आपकी पोस्ट बहुत पसंद आई! 💖",
+    "@moment_like_self": {
+        "placeholders": {
+            "nickname": { "type": "String" }
+        }
+    },
+    "moment_like_other": "{nickname} को लगता है कि {authorName} बहुत आकर्षक है, और उन्होंने लाइक किया! ✨",
+    "@moment_like_other": {
+        "placeholders": {
+            "nickname": { "type": "String" },
+            "authorName": { "type": "String" }
+        }
+    },
+    "task_social_tour_complete": "✨ सोशल टूर कार्य पूरा हुआ! अपने फूल लेना न भूलें! 🌸",
+    "wall_title_shiguang": "शिगुआंग वॉल",
+    "wall_tab_explore": "🌍 एक्सप्लोर करें",
+    "wall_tab_exclusive": "🔒 विशेष",
+    "more_options": "अधिक विकल्प",
+    "delete_warning": "हटाने के बाद, पोस्ट वापस नहीं पाई जा सकती",
+    "delete_success": "सफलतापूर्वक हटाया गया",
+    "notification_new_comment": "नया कमेंट! 💬",
+    "notification_like_from_sender": "{senderName} ने आपकी पोस्ट को लाइक किया!",
+    "@notification_like_from_sender": {
+        "placeholders": {
+            "senderName": { "type": "String" }
+        }
+    },
+    "empty_public_moments_prompt": "अभी यहाँ कुछ नहीं है,\nजाएँ और अपनी पहली सार्वजनिक पोस्ट करें! 🌍",
+    "empty_private_moments_prompt": "सर्कल में अभी तक कोई पल नहीं हैं,\nजाएँ और उसके साथ यादें बनाएँ! ✨",
+    "profile_archived_or_deleted_message": "यह आत्मा फ़ाइल निर्माता द्वारा संग्रहीत, निजी सेट की गई है, या समय की धारा में खो गई है...\n\nशायद किसी समानांतर ब्रह्मांड में, आपको फिर से मिलने का मौका मिले। ✨",
+    "leave_silently": "खामोशी से निकलें",
+    "character_post_schedule": "पात्र पोस्ट शेड्यूल",
+    "creator_self": "निर्माता स्वयं",
+    "post_identity_prompt": "आज आप किस पहचान के रूप में पोस्ट करेंगे?",
+    "identity_creator": "✨ निर्माता की पहचान",
+    "identity_character": "पात्र की पहचान",
+    "decide_post_time_prompt": "उन्हें पोस्ट करने का समय तय करने में मदद करें!",
+    "auto_post_schedule_hint": "सक्षम होने पर, दैनिक पोस्ट निर्दिष्ट समय पर स्वचालित रूप से प्रकाशित हो जाएँगी\n(💡 संकेत: इसे अधिक मानवीय बनाने के लिए विषम समय सेट करें!)",
+    "no_characters_created_yet": "आपने अभी तक कोई पात्र नहीं बनाया है!",
+    "time_hour": "{hour} बजे",
+    "@time_hour": {
+        "placeholders": {
+            "hour": { "type": "String" }
+        }
+    },
+    "time_minute": "{minute} मिनट",
+    "@time_minute": {
+        "placeholders": {
+            "minute": { "type": "String" }
+        }
+    },
+    "empty_public_moments_short": "अभी तक कोई सार्वजनिक पोस्ट नहीं है 🌍",
+    "empty_private_moments_short": "सर्कल अभी बहुत शांत है ✨"
 }

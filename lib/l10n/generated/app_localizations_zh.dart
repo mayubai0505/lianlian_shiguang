@@ -2887,6 +2887,99 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get action_add_image => '新增圖片';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname覺得妳的動態很讚喔！💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname覺得$authorName很有魅力，點了個讚！✨';
+  }
+
+  @override
+  String get task_social_tour_complete => '✨ 達成社群巡禮任務！記得領取花花喔！🌸';
+
+  @override
+  String get wall_title_shiguang => '拾光牆';
+
+  @override
+  String get wall_tab_explore => '🌍 探索';
+
+  @override
+  String get wall_tab_exclusive => '🔒 專屬';
+
+  @override
+  String get more_options => '更多選項';
+
+  @override
+  String get delete_warning => '刪除後，貼文將無法找回';
+
+  @override
+  String get delete_success => '刪除成功';
+
+  @override
+  String get notification_new_comment => '新留言！💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName 對妳的動態點了個讚！';
+  }
+
+  @override
+  String get empty_public_moments_prompt => '目前空空如也，\n快去發布第一篇公開動態吧！🌍';
+
+  @override
+  String get empty_private_moments_prompt => '朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      '這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。✨';
+
+  @override
+  String get leave_silently => '默默離開';
+
+  @override
+  String get character_post_schedule => '角色發文排程';
+
+  @override
+  String get creator_self => '創作者本人';
+
+  @override
+  String get post_identity_prompt => '今天要用誰的身分發文？';
+
+  @override
+  String get identity_creator => '✨ 創作者身分';
+
+  @override
+  String get identity_character => '角色身分';
+
+  @override
+  String get decide_post_time_prompt => '幫他們決定發文時間吧！';
+
+  @override
+  String get auto_post_schedule_hint =>
+      '開啟後，將會在指定時間自動發布日常動態\n(💡 建議設定非整點，看起來更像真人喔！)';
+
+  @override
+  String get no_characters_created_yet => '妳還沒有創建任何角色喔！';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour 點';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute 分';
+  }
+
+  @override
+  String get empty_public_moments_short => '目前還沒有公開動態 🌍';
+
+  @override
+  String get empty_private_moments_short => '朋友圈還靜悄悄的 ✨';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5772,6 +5865,99 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get action_add_image => '新增图片';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname觉得妳的动态很赞喔！💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname觉得$authorName很有魅力，点了个赞！✨';
+  }
+
+  @override
+  String get task_social_tour_complete => '✨ 达成社群巡礼任务！记得领取花花喔！🌸';
+
+  @override
+  String get wall_title_shiguang => '拾光墙';
+
+  @override
+  String get wall_tab_explore => '🌍 探索';
+
+  @override
+  String get wall_tab_exclusive => '🔒 专属';
+
+  @override
+  String get more_options => '更多选项';
+
+  @override
+  String get delete_warning => '删除后，贴文将无法找回';
+
+  @override
+  String get delete_success => '删除成功';
+
+  @override
+  String get notification_new_comment => '新留言！💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName 对妳的动态点了个赞！';
+  }
+
+  @override
+  String get empty_public_moments_prompt => '目前空空如也，\n快去发布第一篇公开动态吧！🌍';
+
+  @override
+  String get empty_private_moments_prompt => '朋友圈还没有留下的瞬间，\n快去与他创造回忆吧！✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      '这份灵魂档案已被创作者封存、设为私人，或是已经消散在时空的洪流中...\n\n或许在某个平行宇宙，你们还有再次相遇的机会。✨';
+
+  @override
+  String get leave_silently => '默默离开';
+
+  @override
+  String get character_post_schedule => '角色发文排程';
+
+  @override
+  String get creator_self => '创作者本人';
+
+  @override
+  String get post_identity_prompt => '今天要用谁的身分发文？';
+
+  @override
+  String get identity_creator => '✨ 创作者身分';
+
+  @override
+  String get identity_character => '角色身分';
+
+  @override
+  String get decide_post_time_prompt => '帮他们决定发文时间吧！';
+
+  @override
+  String get auto_post_schedule_hint =>
+      '开启后，将会在指定時間自动发布日常动态\n(💡 建议设定非整点，看起来更像真人喔！)';
+
+  @override
+  String get no_characters_created_yet => '妳还没有创建任何角色喔！';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour 点';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute 分';
+  }
+
+  @override
+  String get empty_public_moments_short => '目前还没有公开动态 🌍';
+
+  @override
+  String get empty_private_moments_short => '朋友圈还静悄悄的 ✨';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8657,4 +8843,97 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get action_add_image => '新增圖片';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname覺得妳的動態很讚喔！💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname覺得$authorName很有魅力，點了個讚！✨';
+  }
+
+  @override
+  String get task_social_tour_complete => '✨ 達成社群巡禮任務！記得領取花花喔！🌸';
+
+  @override
+  String get wall_title_shiguang => '拾光牆';
+
+  @override
+  String get wall_tab_explore => '🌍 探索';
+
+  @override
+  String get wall_tab_exclusive => '🔒 專屬';
+
+  @override
+  String get more_options => '更多選項';
+
+  @override
+  String get delete_warning => '刪除後，貼文將無法找回';
+
+  @override
+  String get delete_success => '刪除成功';
+
+  @override
+  String get notification_new_comment => '新留言！💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName 對妳的動態點了個讚！';
+  }
+
+  @override
+  String get empty_public_moments_prompt => '目前空空如也，\n快去發布第一篇公開動態吧！🌍';
+
+  @override
+  String get empty_private_moments_prompt => '朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      '這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。✨';
+
+  @override
+  String get leave_silently => '默默離開';
+
+  @override
+  String get character_post_schedule => '角色發文排程';
+
+  @override
+  String get creator_self => '創作者本人';
+
+  @override
+  String get post_identity_prompt => '今天要用誰的身分發文？';
+
+  @override
+  String get identity_creator => '✨ 創作者身分';
+
+  @override
+  String get identity_character => '角色身分';
+
+  @override
+  String get decide_post_time_prompt => '幫他們決定發文時間吧！';
+
+  @override
+  String get auto_post_schedule_hint =>
+      '開啟後，將會在指定時間自動發布日常動態\n(💡 建議設定非整點，看起來更像真人喔！)';
+
+  @override
+  String get no_characters_created_yet => '妳還沒有創建任何角色喔！';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour 點';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute 分';
+  }
+
+  @override
+  String get empty_public_moments_short => '目前還沒有公開動態 🌍';
+
+  @override
+  String get empty_private_moments_short => '朋友圈還靜悄悄的 ✨';
 }

@@ -43,6 +43,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
 
   Future<void> _handleLikeTaskProgress(Moment moment) async {
+    final l10n = AppLocalizations.of(context)!;
     if (_userId == null) return;
     setState(() {
       _likeProgress++;
@@ -63,18 +64,18 @@ class _MomentsPageState extends State<MomentsPage> {
           String mailBody;
           if (moment.isCreatorPost) {
             // 💡 狀況 A：對方按讚的是妳本人發的動態
-            mailBody = '${_nickname ?? "某位朋友"}覺得妳的動態很讚喔！💖';
+            mailBody = l10n.moment_like_self(_nickname ?? "某位朋友");
           } else {
             // 💡 狀況 B：對方按讚的是妳創造的「角色」動態
             // 這裡會抓取 moment.authorName (例如：程宇)
-            mailBody = '${_nickname ?? "某位朋友"}覺得${moment.authorName}很有魅力，點了個讚！✨';
+            mailBody = l10n.moment_like_other(_nickname ?? "某位朋友", moment.authorName);
           }
 
           await _sendNotificationLetter(
             recipientId: recipientId,
             postId: moment.id,
             type: 'like',
-            senderName: _nickname ?? '某位朋友',
+            senderName: _nickname ?? l10n.friend_unknown,
             body: mailBody,
           );
         }
@@ -84,8 +85,8 @@ class _MomentsPageState extends State<MomentsPage> {
       if (_likeProgress == 3 && !_isLikeClaimed) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("✨ 達成社群巡禮任務！記得領取花花喔！🌸"),
+            SnackBar(
+              content: Text(l10n.task_social_tour_complete),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 3),
               behavior: SnackBarBehavior.floating,
@@ -119,6 +120,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     return DefaultTabController(
       length: 2,
@@ -128,7 +130,7 @@ class _MomentsPageState extends State<MomentsPage> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                title: const Text('拾光牆'),
+                title:Text(l10n.wall_title_shiguang),
                 pinned: true,
                 floating: true,
                 snap: true,
@@ -139,16 +141,16 @@ class _MomentsPageState extends State<MomentsPage> {
                   indicatorColor: Theme.of(context).colorScheme.primary,
                   labelColor: Theme.of(context).colorScheme.primary,
                   unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
-                  tabs: const [
-                    Tab(text: '🌍 探索'),
-                    Tab(text: '🔒 專屬'),
+                  tabs: [
+                    Tab(text: l10n.wall_tab_explore),
+                    Tab(text: l10n.wall_tab_exclusive),
                   ],
                 ),
                 // ✨ 三條線選單
                 actions: [
                   IconButton(
                     icon: const Icon(Icons.menu, size: 28), // 🍔 三條線圖示
-                    tooltip: '更多選項',
+                    tooltip: l10n.more_options,
                     onPressed: () => _showMoreMenuSheet(context),
                   ),
                 ],
@@ -164,7 +166,8 @@ class _MomentsPageState extends State<MomentsPage> {
 
   // ✨ 負責抓取好友名單，並顯示兩個分頁的內容
   Widget _buildBodyWithFriendsStream() {
-    if (_userId == null) return const Center(child: Text("請先登入"));
+    final l10n = AppLocalizations.of(context)!;
+    if (_userId == null) return Center(child: Text(l10n.please_login_first));
 
     return StreamBuilder<QuerySnapshot>(
       stream: _db.collection('users').doc(_userId!).collection('friends').snapshots(),
@@ -205,18 +208,19 @@ class _MomentsPageState extends State<MomentsPage> {
 
   // 🗑️ 刪除動態的執行邏輯
   Future<void> _deleteMoment(String momentId) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       // 彈出確認視窗，防止手滑
       bool confirm = await showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('確定要刪除這則動態嗎？'),
-          content: const Text('刪除後，貼文將無法找回'),
+          title: Text(l10n.moment_delete_confirm_title),
+          content:  Text(l10n.delete_warning),
           actions: [
             TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('取消')),
             TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('確定刪除', style: TextStyle(color: Colors.red))
+                child: Text(l10n.action_confirm_delete, style: TextStyle(color: Colors.red))
             ),
           ],
         ),
@@ -229,9 +233,8 @@ class _MomentsPageState extends State<MomentsPage> {
             .collection('moments')
             .doc(momentId)
             .delete();
-
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('刪除成功'))
+            SnackBar(content: Text(l10n.delete_success))
         );
       }
     } catch (e) {
@@ -247,6 +250,7 @@ class _MomentsPageState extends State<MomentsPage> {
     required String senderName,
     String? body,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -255,8 +259,8 @@ class _MomentsPageState extends State<MomentsPage> {
           .add({
         'type': type,
         'fromId': _userId,
-        'title': type == 'like' ? '新點讚！💖' : '新留言！💬',
-        'body': body ?? '$senderName 對妳的動態點了個讚！',
+        'title': type == 'like' ? l10n.moment_notification_new_like : l10n.notification_new_comment,
+        'body': body ?? l10n.notification_like_from_sender(senderName),
         'postId': postId,
         'createdAt': FieldValue.serverTimestamp(),
         'isRead': false,
@@ -331,6 +335,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
   // 小優化：根據不同頁面顯示不同的空白提示
   Widget _buildEmptyState(bool isPublicTab) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -338,7 +343,7 @@ class _MomentsPageState extends State<MomentsPage> {
           Icon(isPublicTab ? Icons.public : Icons.people_alt, size: 50, color: Colors.grey.withOpacity(0.5)),
           const SizedBox(height: 16),
           Text(
-            isPublicTab ? '目前空空如也，\n快去發布第一篇公開動態吧！🌍' : '朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！✨',
+            isPublicTab ? l10n.empty_public_moments_prompt : l10n.empty_private_moments_prompt,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.grey, fontSize: 16),
           ),
@@ -382,6 +387,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
   // ✨ 總裁專屬：跳轉至角色檔案卡 (含私人/刪除防呆邏輯)
   Future<void> _navigateToCharacterProfile(Moment moment) async {
+    final l10n = AppLocalizations.of(context)!;
     // 1. 如果是創作者本人發的文，目前沒有檔案頁，直接跳過
     if (moment.isCreatorPost) return;
 
@@ -422,18 +428,17 @@ class _MomentsPageState extends State<MomentsPage> {
           );
         }
       } else {
-        // 🔒🔒🔒 狀況 B：找不到角色 (轉私人或已刪除)
-        // 直接在這裡彈出一個「機密檔案」的絕美彈窗卡片！
+        // 🔒🔒🔒 狀況 B：找不到角色 (轉私人或已刪除),直接在這裡彈出一個「機密檔案」的絕美彈窗卡片！
         if (mounted) {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               title: Row(
-                children: const [
+                children:  [
                   Icon(Icons.lock_outline, color: Colors.grey),
                   SizedBox(width: 8),
-                  Text('機密檔案', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(l10n.chat_secret_file_title, style: TextStyle(fontWeight: FontWeight.bold)),
                 ],
               ),
               content: Column(
@@ -457,8 +462,8 @@ class _MomentsPageState extends State<MomentsPage> {
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    '這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。✨',
+                   Text(
+                    l10n.profile_archived_or_deleted_message,
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey, height: 1.5),
                   ),
@@ -467,7 +472,7 @@ class _MomentsPageState extends State<MomentsPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('默默離開', style: TextStyle(color: Colors.grey)),
+                  child:Text(l10n.leave_silently, style: TextStyle(color: Colors.grey)),
                 ),
               ],
             ),
@@ -482,6 +487,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
     // ✨ 新增：大廳右上角的三條線綜合選單
     void _showMoreMenuSheet(BuildContext context) {
+      final l10n = AppLocalizations.of(context)!;
       showModalBottomSheet(
         context: context,
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -496,16 +502,16 @@ class _MomentsPageState extends State<MomentsPage> {
                   height: 4, width: 40,
                   decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2)),
                 ),
-                const Padding(
+                 Padding(
                   padding: EdgeInsets.only(bottom: 8.0),
-                  child: Text('更多選項', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(l10n.more_options, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
                 const Divider(height: 1),
 
                 // 📝 選項 1：發布新動態 (最常用，放最上面)
                 ListTile(
                   leading: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
-                  title: const Text('發布新動態', style: TextStyle(fontWeight: FontWeight.w500)),
+                  title: Text(l10n.moment_create_title, style: TextStyle(fontWeight: FontWeight.w500)),
                   onTap: () {
                     Navigator.pop(context); // 先關閉選單
                     _showAuthorSelectionSheet(); // 呼叫妳原本的發文選單
@@ -515,7 +521,7 @@ class _MomentsPageState extends State<MomentsPage> {
                 // ⏰ 選項 2：排程管家
                 ListTile(
                   leading: const Icon(Icons.access_alarm, color: Colors.pinkAccent),
-                  title: const Text('角色發文排程'),
+                  title:Text(l10n.character_post_schedule),
                   onTap: () {
                     Navigator.pop(context);
                     _showAutoPostManager(context); // 呼叫妳原本的排程管家
@@ -527,7 +533,7 @@ class _MomentsPageState extends State<MomentsPage> {
                 // ❤️ 選項 3：按讚過的內容
                 ListTile(
                   leading: const Icon(Icons.favorite_border, color: Colors.redAccent),
-                  title: const Text('按讚過的內容'),
+                  title: Text(l10n.liked_content),
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                   onTap: () {
                     Navigator.pop(context); // 關閉底部選單
@@ -541,7 +547,7 @@ class _MomentsPageState extends State<MomentsPage> {
                 // 🔖 選項 4：收藏內容
                 ListTile(
                   leading: const Icon(Icons.bookmark_border, color: Colors.orangeAccent),
-                  title: const Text('我的收藏'),
+                  title:Text(l10n.my_favorites),
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                   onTap: () {
                     Navigator.pop(context); // 關閉底部選單
@@ -561,10 +567,10 @@ class _MomentsPageState extends State<MomentsPage> {
 
   // ✨✨✨ 升級版：身分選擇選單 (加入創作者選項)
   Future<void> _showAuthorSelectionSheet() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_userId == null) return;
-
     // 1. 先去資料庫抓「創作者本人」的暱稱和頭像
-    String creatorName = '創作者本人';
+    String creatorName = l10n.creator_self;
     String creatorAvatar = '';
     try {
       final doc = await _db.collection('users').doc(_userId).get();
@@ -589,7 +595,7 @@ class _MomentsPageState extends State<MomentsPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text('今天要用誰的身分發文？', style: Theme.of(context).textTheme.titleLarge),
+                child: Text(l10n.post_identity_prompt, style: Theme.of(context).textTheme.titleLarge),
               ),
               const Divider(height: 1),
               Flexible(
@@ -605,7 +611,7 @@ class _MomentsPageState extends State<MomentsPage> {
                         backgroundColor: Colors.blue[100],
                       ),
                       title: Text(creatorName, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-                      subtitle: const Text('✨ 創作者身分'),
+                      subtitle:Text(l10n.identity_creator),
                       trailing: const Icon(Icons.edit_document, color: Colors.blue),
                       onTap: () {
                         Navigator.pop(context);
@@ -627,7 +633,7 @@ class _MomentsPageState extends State<MomentsPage> {
                           backgroundImage: getAvatarImageProvider(character.avatarPath), // 確認妳有這個 helper 函式
                         ),
                         title: Text(character.name),
-                        subtitle: const Text('角色身分'),
+                        subtitle: Text(l10n.identity_character),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(context, MaterialPageRoute(
@@ -653,6 +659,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
   // ⏰✨✨ 新增：排程管家底部選單
   void _showAutoPostManager(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final String _appId = AppConfig.appId;
     if (_userId == null) return;
 
@@ -666,9 +673,9 @@ class _MomentsPageState extends State<MomentsPage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              const Text('幫他們決定發文時間吧！ ⏰', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+               Text(l10n.decide_post_time_prompt, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text('開啟後，AI 將會在指定時間自動發布日常動態\n(💡 建議設定非整點，看起來更像真人喔！)',
+              Text(l10n.auto_post_schedule_hint,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: Colors.grey[600])),
               const Divider(height: 20),
@@ -687,7 +694,7 @@ class _MomentsPageState extends State<MomentsPage> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(child: Text('妳還沒有創建任何角色喔！'));
+                      return Center(child: Text(l10n.no_characters_created_yet));
                     }
 
                     final characters = snapshot.data!.docs;
@@ -697,7 +704,7 @@ class _MomentsPageState extends State<MomentsPage> {
                       itemBuilder: (context, index) {
                         final doc = characters[index];
                         final data = doc.data() as Map<String, dynamic>;
-                        final String name = data['name'] ?? '未知角色';
+                        final String name = data['name'] ?? l10n.unknownCharacter;
                         final String avatar = data['avatarPath'] ?? 'assets/images/blank_avatar.png';
 
                         final bool isEnabled = data['autoPostEnabled'] ?? false;
@@ -734,7 +741,7 @@ class _MomentsPageState extends State<MomentsPage> {
                                               items: List.generate(24, (i) {
                                                 return DropdownMenuItem(
                                                   value: i,
-                                                  child: Text('${i.toString().padLeft(2, '0')} 點', style: const TextStyle(fontSize: 13)),
+                                                  child: Text(l10n.time_hour(i.toString().padLeft(2, '0')), style: const TextStyle(fontSize: 13)),
                                                 );
                                               }),
                                               onChanged: isEnabled ? (newHour) {
@@ -746,7 +753,6 @@ class _MomentsPageState extends State<MomentsPage> {
                                             padding: EdgeInsets.symmetric(horizontal: 4.0),
                                             child: Text(':', style: TextStyle(fontWeight: FontWeight.bold)),
                                           ),
-                                          // 🕒 分鐘選單
                                           // 🕒 分鐘選單 (優化版：每 5 分鐘一跳)
                                           DropdownButtonHideUnderline(
                                             child: DropdownButton<int>(
@@ -757,7 +763,7 @@ class _MomentsPageState extends State<MomentsPage> {
                                                 int minuteValue = index * 5;
                                                 return DropdownMenuItem(
                                                   value: minuteValue,
-                                                  child: Text('${minuteValue.toString().padLeft(2, '0')} 分', style: const TextStyle(fontSize: 13)),
+                                                  child: Text(l10n.time_minute(minuteValue.toString().padLeft(2, '0')), style: const TextStyle(fontSize: 13)),
                                                 );
                                               }),
                                               onChanged: isEnabled ? (newMinute) {
@@ -819,9 +825,7 @@ class PersistentFeed extends StatefulWidget {
   @override
   State<PersistentFeed> createState() => _PersistentFeedState();
 }
-
 class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAliveClientMixin {
-
   @override
   bool get wantKeepAlive => true; // 🌟 保命符：確保切換分頁或退回時不重刷
 
@@ -885,6 +889,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
   }
 
   Widget _buildEmpty() {
-    return Center(child: Text(widget.isPublicTab ? "目前還沒有公開動態 🌍" : "朋友圈還靜悄悄的 ✨"));
+    final l10n = AppLocalizations.of(context)!;
+    return Center(child: Text(widget.isPublicTab ? l10n.empty_public_moments_short : l10n.empty_private_moments_short));
   }
 }

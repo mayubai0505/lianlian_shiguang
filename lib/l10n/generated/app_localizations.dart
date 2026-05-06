@@ -5421,6 +5421,168 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'新增圖片'**
   String get action_add_image;
+
+  /// No description provided for @moment_like_self.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{nickname}覺得妳的動態很讚喔！💖'**
+  String moment_like_self(String nickname);
+
+  /// No description provided for @moment_like_other.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{nickname}覺得{authorName}很有魅力，點了個讚！✨'**
+  String moment_like_other(String nickname, String authorName);
+
+  /// No description provided for @task_social_tour_complete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 達成社群巡禮任務！記得領取花花喔！🌸'**
+  String get task_social_tour_complete;
+
+  /// No description provided for @wall_title_shiguang.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'拾光牆'**
+  String get wall_title_shiguang;
+
+  /// No description provided for @wall_tab_explore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🌍 探索'**
+  String get wall_tab_explore;
+
+  /// No description provided for @wall_tab_exclusive.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🔒 專屬'**
+  String get wall_tab_exclusive;
+
+  /// No description provided for @more_options.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更多選項'**
+  String get more_options;
+
+  /// No description provided for @delete_warning.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除後，貼文將無法找回'**
+  String get delete_warning;
+
+  /// No description provided for @delete_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除成功'**
+  String get delete_success;
+
+  /// No description provided for @notification_new_comment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新留言！💬'**
+  String get notification_new_comment;
+
+  /// No description provided for @notification_like_from_sender.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{senderName} 對妳的動態點了個讚！'**
+  String notification_like_from_sender(String senderName);
+
+  /// No description provided for @empty_public_moments_prompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前空空如也，\n快去發布第一篇公開動態吧！🌍'**
+  String get empty_public_moments_prompt;
+
+  /// No description provided for @empty_private_moments_prompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'朋友圈還沒有留下的瞬間，\n快去與他創造回憶吧！✨'**
+  String get empty_private_moments_prompt;
+
+  /// No description provided for @profile_archived_or_deleted_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這份靈魂檔案已被創作者封存、設為私人，或是已經消散在時空的洪流中...\n\n或許在某個平行宇宙，你們還有再次相遇的機會。✨'**
+  String get profile_archived_or_deleted_message;
+
+  /// No description provided for @leave_silently.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'默默離開'**
+  String get leave_silently;
+
+  /// No description provided for @character_post_schedule.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色發文排程'**
+  String get character_post_schedule;
+
+  /// No description provided for @creator_self.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者本人'**
+  String get creator_self;
+
+  /// No description provided for @post_identity_prompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天要用誰的身分發文？'**
+  String get post_identity_prompt;
+
+  /// No description provided for @identity_creator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 創作者身分'**
+  String get identity_creator;
+
+  /// No description provided for @identity_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色身分'**
+  String get identity_character;
+
+  /// No description provided for @decide_post_time_prompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'幫他們決定發文時間吧！'**
+  String get decide_post_time_prompt;
+
+  /// No description provided for @auto_post_schedule_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開啟後，將會在指定時間自動發布日常動態\n(💡 建議設定非整點，看起來更像真人喔！)'**
+  String get auto_post_schedule_hint;
+
+  /// No description provided for @no_characters_created_yet.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'妳還沒有創建任何角色喔！'**
+  String get no_characters_created_yet;
+
+  /// No description provided for @time_hour.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{hour} 點'**
+  String time_hour(String hour);
+
+  /// No description provided for @time_minute.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{minute} 分'**
+  String time_minute(String minute);
+
+  /// No description provided for @empty_public_moments_short.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有公開動態 🌍'**
+  String get empty_public_moments_short;
+
+  /// No description provided for @empty_private_moments_short.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'朋友圈還靜悄悄的 ✨'**
+  String get empty_private_moments_short;
 }
 
 class _AppLocalizationsDelegate

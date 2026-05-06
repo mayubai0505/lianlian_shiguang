@@ -1200,5 +1200,58 @@
       }
    },
    "msg_birthdate_immutable": "O aniversário não pode ser alterado depois de definido ✨",
-   "action_start_journey": "Iniciar a jornada"
+   "action_start_journey": "Iniciar a jornada",
+   "moment_like_self": "{nickname} curtiu sua publicação! 💖",
+   "@moment_like_self": {
+      "placeholders": {
+         "nickname": { "type": "String" }
+      }
+   },
+   "moment_like_other": "{nickname} acha que {authorName} é charmoso(a) e deixou uma curtida! ✨",
+   "@moment_like_other": {
+      "placeholders": {
+         "nickname": { "type": "String" },
+         "authorName": { "type": "String" }
+      }
+   },
+   "task_social_tour_complete": "✨ Missão de Tour Social concluída! Lembre-se de resgatar suas flores! 🌸",
+   "wall_title_shiguang": "Mural ShiGuang",
+   "wall_tab_explore": "🌍 Explorar",
+   "wall_tab_exclusive": "🔒 Exclusivo",
+   "more_options": "Mais Opções",
+   "delete_warning": "Após a exclusão, a postagem não poderá ser recuperada",
+   "delete_success": "Excluído com sucesso",
+   "notification_new_comment": "Novo comentário! 💬",
+   "notification_like_from_sender": "{senderName} curtiu sua publicação!",
+   "@notification_like_from_sender": {
+      "placeholders": {
+         "senderName": { "type": "String" }
+      }
+   },
+   "empty_public_moments_prompt": "Atualmente está vazio,\nvá publicar sua primeira postagem pública! 🌍",
+   "empty_private_moments_prompt": "Ainda não há momentos no círculo de amigos,\nvá criar memórias com ele! ✨",
+   "profile_archived_or_deleted_message": "Este arquivo de alma foi arquivado pelo criador, definido como privado ou desapareceu no fluxo do tempo...\n\nTalvez em um universo paralelo, vocês tenham a chance de se encontrar novamente. ✨",
+   "leave_silently": "Sair silenciosamente",
+   "character_post_schedule": "Agendamento de Postagens de Personagens",
+   "creator_self": "Criador(a) próprio(a)",
+   "post_identity_prompt": "Com qual identidade você postará hoje?",
+   "identity_creator": "✨ Identidade de Criador",
+   "identity_character": "Identidade de Personagem",
+   "decide_post_time_prompt": "Ajude-os a decidir o horário da postagem!",
+   "auto_post_schedule_hint": "Quando ativado, as postagens diárias serão publicadas automaticamente no horário especificado\n(💡 Dica: Defina horários quebrados para parecer mais humano!)",
+   "no_characters_created_yet": "Você ainda não criou nenhum personagem!",
+   "time_hour": "{hour} horas",
+   "@time_hour": {
+      "placeholders": {
+         "hour": { "type": "String" }
+      }
+   },
+   "time_minute": "{minute} minutos",
+   "@time_minute": {
+      "placeholders": {
+         "minute": { "type": "String" }
+      }
+   },
+   "empty_public_moments_short": "Ainda não há postagens públicas 🌍",
+   "empty_private_moments_short": "O círculo de amigos ainda está silencioso ✨"
 }

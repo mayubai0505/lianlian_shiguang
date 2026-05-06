@@ -3041,4 +3041,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get action_add_image => 'Add image';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname liked your post! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname thinks $authorName is charming and left a like! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete =>
+      '✨ Social Tour task completed! Remember to claim your flowers! 🌸';
+
+  @override
+  String get wall_title_shiguang => 'ShiGuang Wall';
+
+  @override
+  String get wall_tab_explore => '🌍 Explore';
+
+  @override
+  String get wall_tab_exclusive => '🔒 Exclusive';
+
+  @override
+  String get more_options => 'More Options';
+
+  @override
+  String get delete_warning => 'Once deleted, the post cannot be recovered';
+
+  @override
+  String get delete_success => 'Deleted successfully';
+
+  @override
+  String get notification_new_comment => 'New Comment! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName liked your post!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      'It\'s empty here right now,\ngo publish your first public post! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'No moments in your circle yet,\ngo create memories with him! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'This soul file has been archived by the creator, set to private, or has vanished into the torrent of time...\n\nPerhaps in a parallel universe, you will have the chance to meet again. ✨';
+
+  @override
+  String get leave_silently => 'Leave silently';
+
+  @override
+  String get character_post_schedule => 'Character Post Schedule';
+
+  @override
+  String get creator_self => 'Creator (Self)';
+
+  @override
+  String get post_identity_prompt => 'Which identity are you posting as today?';
+
+  @override
+  String get identity_creator => '✨ Creator Identity';
+
+  @override
+  String get identity_character => 'Character Identity';
+
+  @override
+  String get decide_post_time_prompt => 'Help them decide the posting time!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'Once enabled, daily posts will be published automatically at the specified time\n(💡 Pro-tip: Set non-hourly times to make it look more human!)';
+
+  @override
+  String get no_characters_created_yet =>
+      'You haven\'t created any characters yet!';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour o\'clock';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute min';
+  }
+
+  @override
+  String get empty_public_moments_short => 'No public posts yet 🌍';
+
+  @override
+  String get empty_private_moments_short => 'The circle is still quiet ✨';
 }

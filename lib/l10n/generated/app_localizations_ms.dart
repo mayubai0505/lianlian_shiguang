@@ -3068,4 +3068,103 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get action_add_image => 'Tambah gambar';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname suka siaran awak! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname rasa $authorName sangat menawan dan meninggalkan suka! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete =>
+      '✨ Tugasan Jelajah Sosial selesai! Jangan lupa tuntut bunga! 🌸';
+
+  @override
+  String get wall_title_shiguang => 'Dinding ShiGuang';
+
+  @override
+  String get wall_tab_explore => '🌍 Teroka';
+
+  @override
+  String get wall_tab_exclusive => '🔒 Eksklusif';
+
+  @override
+  String get more_options => 'Lebih Pilihan';
+
+  @override
+  String get delete_warning =>
+      'Selepas dipadam, siaran tidak boleh dikembalikan';
+
+  @override
+  String get delete_success => 'Berjaya dipadam';
+
+  @override
+  String get notification_new_comment => 'Komen baru! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName suka siaran awak!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      'Buat masa ini kosong,\npergi siarkan siaran awam pertama awak! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'Belum ada saat dalam bulatan rakan,\npergi cipta memori dengan dia! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'Fail jiwa ini telah diarkibkan oleh pencipta, ditetapkan sebagai peribadi, atau telah lenyap dalam aliran masa...\n\nMungkin dalam alam semesta selari, awak mempunyai peluang untuk bertemu lagi. ✨';
+
+  @override
+  String get leave_silently => 'Pergi secara diam-diam';
+
+  @override
+  String get character_post_schedule => 'Jadual Siaran Watak';
+
+  @override
+  String get creator_self => 'Pencipta sendiri';
+
+  @override
+  String get post_identity_prompt =>
+      'Hari ini mahu guna identiti siapa untuk siaran?';
+
+  @override
+  String get identity_creator => '✨ Identiti Pencipta';
+
+  @override
+  String get identity_character => 'Identiti Watak';
+
+  @override
+  String get decide_post_time_prompt => 'Bantu mereka tentukan masa siaran!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'Selepas diaktifkan, siaran harian akan disiarkan secara automatik pada masa yang ditetapkan\n(💡 Tip: Tetapkan masa bukan pada waktu genap untuk nampak lebih seperti manusia!)';
+
+  @override
+  String get no_characters_created_yet =>
+      'Awak belum mencipta sebarang watak lagi!';
+
+  @override
+  String time_hour(String hour) {
+    return 'Pukul $hour';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute minit';
+  }
+
+  @override
+  String get empty_public_moments_short => 'Belum ada siaran awam 🌍';
+
+  @override
+  String get empty_private_moments_short => 'Bulatan rakan masih sunyi ✨';
 }

@@ -3032,4 +3032,100 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get action_add_image => 'เพิ่มรูปภาพ';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname ถูกใจโพสต์ของคุณนะ! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname คิดว่า $authorName มีเสน่ห์มาก เลยกดถูกใจให้! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete =>
+      '✨ ภารกิจทัวร์โซเชียลสำเร็จ! อย่าลืมรับดอกไม้ล่ะ! 🌸';
+
+  @override
+  String get wall_title_shiguang => 'กำแพงสื่อกวง';
+
+  @override
+  String get wall_tab_explore => '🌍 สำรวจ';
+
+  @override
+  String get wall_tab_exclusive => '🔒 พิเศษ';
+
+  @override
+  String get more_options => 'ตัวเลือกเพิ่มเติม';
+
+  @override
+  String get delete_warning => 'หลังการลบ โพสต์จะไม่สามารถกู้คืนได้';
+
+  @override
+  String get delete_success => 'ลบสำเร็จเรียบร้อย';
+
+  @override
+  String get notification_new_comment => 'ความคิดเห็นใหม่! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName ถูกใจโพสต์ของคุณ!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      'ตอนนี้ยังว่างเปล่าอยู่เลย\nลองไปโพสต์ข้อความสาธารณะแรกดูสิ! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'ยังไม่มีความทรงจำในโมเมนต์เลย\nไปสร้างความทรงจำร่วมกับเขากันเถอะ! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'ไฟล์วิญญาณนี้ถูกผู้สร้างจัดเก็บไว้ เป็นส่วนตัว หรือสูญหายไปตามกาลเวลาแล้ว...\n\nบางทีในจักรวาลคู่ขนาน คุณอาจมีโอกาสพบกันอีกครั้ง ✨';
+
+  @override
+  String get leave_silently => 'จากไปอย่างเงียบๆ';
+
+  @override
+  String get character_post_schedule => 'กำหนดการโพสต์ของตัวละคร';
+
+  @override
+  String get creator_self => 'ตัวผู้สร้างเอง';
+
+  @override
+  String get post_identity_prompt => 'วันนี้จะใช้ตัวตนไหนในการโพสต์ดีนะ?';
+
+  @override
+  String get identity_creator => '✨ ตัวตนผู้สร้าง';
+
+  @override
+  String get identity_character => 'ตัวตนตัวละคร';
+
+  @override
+  String get decide_post_time_prompt => 'ช่วยพวกเขากำหนดเวลาโพสต์หน่อยสิ!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'เมื่อเปิดใช้งาน จะมีการโพสต์อัตโนมัติในเวลาที่กำหนด\n(💡 แนะนำ: ตั้งเวลาที่ไม่ใช่เลขกลมๆ จะดูเหมือนคนจริงๆ มากขึ้นนะ!)';
+
+  @override
+  String get no_characters_created_yet => 'คุณยังไม่ได้สร้างตัวละครใดๆ เลย!';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour นาฬิกา';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute นาที';
+  }
+
+  @override
+  String get empty_public_moments_short => 'ยังไม่มีโพสต์สาธารณะ 🌍';
+
+  @override
+  String get empty_private_moments_short => 'โมเมนต์ยังเงียบเชียบอยู่เลย ✨';
 }

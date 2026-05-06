@@ -1412,5 +1412,58 @@
     }
   },
   "msg_birthdate_immutable": "Birthday cannot be changed once set ✨",
-  "action_start_journey": "Start the journey"
+  "action_start_journey": "Start the journey",
+  "moment_like_self": "{nickname} liked your post! 💖",
+  "@moment_like_self": {
+    "placeholders": {
+      "nickname": { "type": "String" }
+    }
+  },
+  "moment_like_other": "{nickname} thinks {authorName} is charming and left a like! ✨",
+  "@moment_like_other": {
+    "placeholders": {
+      "nickname": { "type": "String" },
+      "authorName": { "type": "String" }
+    }
+  },
+  "task_social_tour_complete": "✨ Social Tour task completed! Remember to claim your flowers! 🌸",
+  "wall_title_shiguang": "ShiGuang Wall",
+  "wall_tab_explore": "🌍 Explore",
+  "wall_tab_exclusive": "🔒 Exclusive",
+  "more_options": "More Options",
+  "delete_warning": "Once deleted, the post cannot be recovered",
+  "delete_success": "Deleted successfully",
+  "notification_new_comment": "New Comment! 💬",
+  "notification_like_from_sender": "{senderName} liked your post!",
+  "@notification_like_from_sender": {
+    "placeholders": {
+      "senderName": { "type": "String" }
+    }
+  },
+  "empty_public_moments_prompt": "It's empty here right now,\ngo publish your first public post! 🌍",
+  "empty_private_moments_prompt": "No moments in your circle yet,\ngo create memories with him! ✨",
+  "profile_archived_or_deleted_message": "This soul file has been archived by the creator, set to private, or has vanished into the torrent of time...\n\nPerhaps in a parallel universe, you will have the chance to meet again. ✨",
+  "leave_silently": "Leave silently",
+  "character_post_schedule": "Character Post Schedule",
+  "creator_self": "Creator (Self)",
+  "post_identity_prompt": "Which identity are you posting as today?",
+  "identity_creator": "✨ Creator Identity",
+  "identity_character": "Character Identity",
+  "decide_post_time_prompt": "Help them decide the posting time!",
+  "auto_post_schedule_hint": "Once enabled, daily posts will be published automatically at the specified time\n(💡 Pro-tip: Set non-hourly times to make it look more human!)",
+  "no_characters_created_yet": "You haven't created any characters yet!",
+  "time_hour": "{hour} o'clock",
+  "@time_hour": {
+    "placeholders": {
+      "hour": { "type": "String" }
+    }
+  },
+  "time_minute": "{minute} min",
+  "@time_minute": {
+    "placeholders": {
+      "minute": { "type": "String" }
+    }
+  },
+  "empty_public_moments_short": "No public posts yet 🌍",
+  "empty_private_moments_short": "The circle is still quiet ✨"
 }

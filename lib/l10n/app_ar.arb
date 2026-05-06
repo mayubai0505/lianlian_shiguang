@@ -1240,5 +1240,58 @@
         }
     },
     "msg_birthdate_immutable": "لا يمكن تغيير يوم الميلاد بعد تعيينه ✨",
-    "action_start_journey": "بدء رحلة الزمن"
+    "action_start_journey": "بدء رحلة الزمن",
+    "moment_like_self": "يعتقد {nickname} أن منشوركِ رائع جداً! 💖",
+    "@moment_like_self": {
+        "placeholders": {
+            "nickname": { "type": "String" }
+        }
+    },
+    "moment_like_other": "يعتقد {nickname} أن {authorName} ساحر جداً، وقد وضع إعجاباً! ✨",
+    "@moment_like_other": {
+        "placeholders": {
+            "nickname": { "type": "String" },
+            "authorName": { "type": "String" }
+        }
+    },
+    "task_social_tour_complete": "✨ اكتملت مهمة الجولة الاجتماعية! تذكر استلام الزهور! 🌸",
+    "wall_title_shiguang": "جدار شياو غوانغ",
+    "wall_tab_explore": "🌍 استكشاف",
+    "wall_tab_exclusive": "🔒 حصري",
+    "more_options": "المزيد من الخيارات",
+    "delete_warning": "بعد الحذف، لن يمكن استعادة المنشور",
+    "delete_success": "تم الحذف بنجاح",
+    "notification_new_comment": "تعليق جديد! 💬",
+    "notification_like_from_sender": "قام {senderName} بالإعجاب بمنشوركِ!",
+    "@notification_like_from_sender": {
+        "placeholders": {
+            "senderName": { "type": "String" }
+        }
+    },
+    "empty_public_moments_prompt": "المكان فارغ حالياً،\nانشري أول منشور عام لكِ! 🌍",
+    "empty_private_moments_prompt": "لا توجد لحظات في دائرة الأصدقاء بعد،\nاذهبي واصنعي ذكريات معه! ✨",
+    "profile_archived_or_deleted_message": "تم أرشفة ملف الروح هذا من قبل المبدع، أو جعله خاصاً، أو تلاشى في تيار الزمن...\n\nربما في كون موازٍ، ستتاح لكما فرصة اللقاء مرة أخرى. ✨",
+    "leave_silently": "غادري بصمت",
+    "character_post_schedule": "جدولة منشورات الشخصية",
+    "creator_self": "المبدع نفسه",
+    "post_identity_prompt": "بأي هوية ستنشرين اليوم؟",
+    "identity_creator": "✨ هوية المبدع",
+    "identity_character": "هوية الشخصية",
+    "decide_post_time_prompt": "ساعديهم في تحديد وقت النشر!",
+    "auto_post_schedule_hint": "عند التفعيل، سيتم نشر المنشورات اليومية تلقائياً في الوقت المحدد\n(💡 نصيحة: حددي أوقاتاً غير دقيقة لتظهر وكأنها من شخص حقيقي!)",
+    "no_characters_created_yet": "لم تقومي بإنشاء أي شخصية بعد!",
+    "time_hour": "الساعة {hour}",
+    "@time_hour": {
+        "placeholders": {
+            "hour": { "type": "String" }
+        }
+    },
+    "time_minute": "الدقيقة {minute}",
+    "@time_minute": {
+        "placeholders": {
+            "minute": { "type": "String" }
+        }
+    },
+    "empty_public_moments_short": "لا توجد منشورات عامة حالياً 🌍",
+    "empty_private_moments_short": "دائرة الأصدقاء هادئة حالياً ✨"
 }

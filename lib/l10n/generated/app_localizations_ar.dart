@@ -3026,4 +3026,100 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get action_add_image => 'إضافة صورة';
+
+  @override
+  String moment_like_self(String nickname) {
+    return 'يعتقد $nickname أن منشوركِ رائع جداً! 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return 'يعتقد $nickname أن $authorName ساحر جداً، وقد وضع إعجاباً! ✨';
+  }
+
+  @override
+  String get task_social_tour_complete =>
+      '✨ اكتملت مهمة الجولة الاجتماعية! تذكر استلام الزهور! 🌸';
+
+  @override
+  String get wall_title_shiguang => 'جدار شياو غوانغ';
+
+  @override
+  String get wall_tab_explore => '🌍 استكشاف';
+
+  @override
+  String get wall_tab_exclusive => '🔒 حصري';
+
+  @override
+  String get more_options => 'المزيد من الخيارات';
+
+  @override
+  String get delete_warning => 'بعد الحذف، لن يمكن استعادة المنشور';
+
+  @override
+  String get delete_success => 'تم الحذف بنجاح';
+
+  @override
+  String get notification_new_comment => 'تعليق جديد! 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return 'قام $senderName بالإعجاب بمنشوركِ!';
+  }
+
+  @override
+  String get empty_public_moments_prompt =>
+      'المكان فارغ حالياً،\nانشري أول منشور عام لكِ! 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'لا توجد لحظات في دائرة الأصدقاء بعد،\nاذهبي واصنعي ذكريات معه! ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'تم أرشفة ملف الروح هذا من قبل المبدع، أو جعله خاصاً، أو تلاشى في تيار الزمن...\n\nربما في كون موازٍ، ستتاح لكما فرصة اللقاء مرة أخرى. ✨';
+
+  @override
+  String get leave_silently => 'غادري بصمت';
+
+  @override
+  String get character_post_schedule => 'جدولة منشورات الشخصية';
+
+  @override
+  String get creator_self => 'المبدع نفسه';
+
+  @override
+  String get post_identity_prompt => 'بأي هوية ستنشرين اليوم؟';
+
+  @override
+  String get identity_creator => '✨ هوية المبدع';
+
+  @override
+  String get identity_character => 'هوية الشخصية';
+
+  @override
+  String get decide_post_time_prompt => 'ساعديهم في تحديد وقت النشر!';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'عند التفعيل، سيتم نشر المنشورات اليومية تلقائياً في الوقت المحدد\n(💡 نصيحة: حددي أوقاتاً غير دقيقة لتظهر وكأنها من شخص حقيقي!)';
+
+  @override
+  String get no_characters_created_yet => 'لم تقومي بإنشاء أي شخصية بعد!';
+
+  @override
+  String time_hour(String hour) {
+    return 'الساعة $hour';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return 'الدقيقة $minute';
+  }
+
+  @override
+  String get empty_public_moments_short => 'لا توجد منشورات عامة حالياً 🌍';
+
+  @override
+  String get empty_private_moments_short => 'دائرة الأصدقاء هادئة حالياً ✨';
 }

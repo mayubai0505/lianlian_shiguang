@@ -2916,4 +2916,98 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get action_add_image => '画像を追加';
+
+  @override
+  String moment_like_self(String nickname) {
+    return '$nickname があなたの投稿に「いいね」しました！ 💖';
+  }
+
+  @override
+  String moment_like_other(String nickname, String authorName) {
+    return '$nickname は $authorName がとても魅力的だと思い、「いいね」をしました！ ✨';
+  }
+
+  @override
+  String get task_social_tour_complete => '✨ コミュニティ巡回タスク達成！お花を受け取るのを忘れないでね！ 🌸';
+
+  @override
+  String get wall_title_shiguang => '拾光の壁';
+
+  @override
+  String get wall_tab_explore => '🌍 探索';
+
+  @override
+  String get wall_tab_exclusive => '🔒 専用';
+
+  @override
+  String get more_options => 'その他のオプション';
+
+  @override
+  String get delete_warning => '削除すると、投稿は元に戻せません';
+
+  @override
+  String get delete_success => '削除に成功しました';
+
+  @override
+  String get notification_new_comment => '新着コメント！ 💬';
+
+  @override
+  String notification_like_from_sender(String senderName) {
+    return '$senderName があなたの投稿に「いいね」しました！';
+  }
+
+  @override
+  String get empty_public_moments_prompt => 'まだ何もありません。\n最初の公開投稿をしてみましょう！ 🌍';
+
+  @override
+  String get empty_private_moments_prompt =>
+      'タイムラインにはまだ思い出がありません。\n彼との思い出を作りに行きましょう！ ✨';
+
+  @override
+  String get profile_archived_or_deleted_message =>
+      'この魂のファイルはクリエイターによってアーカイブされたか、非公開にされたか、あるいは時の流れの中に消えてしまいました...\n\nもしかしたら並行世界で、また会えるチャンスがあるかもしれません。 ✨';
+
+  @override
+  String get leave_silently => 'そっと立ち去る';
+
+  @override
+  String get character_post_schedule => 'キャラクター投稿スケジュール';
+
+  @override
+  String get creator_self => 'クリエイター本人';
+
+  @override
+  String get post_identity_prompt => '今日は誰の身分で投稿しますか？';
+
+  @override
+  String get identity_creator => '✨ クリエイターとして';
+
+  @override
+  String get identity_character => 'キャラクターとして';
+
+  @override
+  String get decide_post_time_prompt => '彼らの投稿時間を決めてあげましょう！';
+
+  @override
+  String get auto_post_schedule_hint =>
+      'オンにすると、指定した時間に日常の投稿が自動的に行われます\n(💡 ヒント：正時以外に設定すると、より人間らしく見えますよ！)';
+
+  @override
+  String get no_characters_created_yet => 'まだキャラクターを作成していません！';
+
+  @override
+  String time_hour(String hour) {
+    return '$hour 時';
+  }
+
+  @override
+  String time_minute(String minute) {
+    return '$minute 分';
+  }
+
+  @override
+  String get empty_public_moments_short => '現在、公開投稿はありません 🌍';
+
+  @override
+  String get empty_private_moments_short => 'タイムラインはまだ静かです ✨';
 }
