@@ -124,7 +124,6 @@ class NotificationListPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 8),
-                        // 顯示總裁寫的專屬台詞 (傳入 l10n 翻譯官)
                         Text(_getAffectionQuote(score, l10n), style: TextStyle(color: Colors.grey[800], fontStyle: FontStyle.italic)),
                         const SizedBox(height: 12),
                         // 顯示花花獎勵

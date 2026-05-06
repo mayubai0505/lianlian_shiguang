@@ -3197,4 +3197,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String play_count_display(int count) {
     return 'Veces jugado: $count';
   }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return 'Calendario de cuidados de $characterName';
+  }
+
+  @override
+  String get care_calendar_greeting => '¿Cómo te sientes hoy?';
+
+  @override
+  String get care_calendar_save_btn =>
+      'Guarda el registro, deja que él te cuide';
+
+  @override
+  String get care_calendar_delete_confirm => '¿Quieres eliminar este registro?';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName: \"Lo he anotado todo. Han sido días difíciles para ti, pero siempre estaré a tu lado.\"';
+  }
 }

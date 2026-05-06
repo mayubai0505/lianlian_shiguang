@@ -1433,5 +1433,20 @@
                 "example": "10"
             }
         }
+    },
+    "care_calendar_title": "Calendrier de soins de {characterName}",
+    "@care_calendar_title": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "care_calendar_greeting": "Comment vous sentez-vous aujourd'hui ?",
+    "care_calendar_save_btn": "Enregistrez, laissez-le prendre soin de vous",
+    "care_calendar_delete_confirm": "Voulez-vous supprimer cet enregistrement ?",
+    "care_calendar_save_success": "{characterName} : \"J'ai tout noté. Ça a été dur pour toi ces derniers jours, mais je serai toujours à tes côtés.\"",
+    "@care_calendar_save_success": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
     }
 }

@@ -1383,5 +1383,20 @@
         "example": "10"
       }
     }
+  },
+  "care_calendar_title": "{characterName} 的關心日曆",
+  "@care_calendar_title": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "care_calendar_greeting": "今天的心情如何？",
+  "care_calendar_save_btn": "儲存紀錄，讓他照顧妳",
+  "care_calendar_delete_confirm": "要刪除這筆紀錄嗎？",
+  "care_calendar_save_success": "{characterName}：「我都記下來了，這幾天辛苦妳了，我會一直在妳身邊的。」",
+  "@care_calendar_save_success": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
   }
 }

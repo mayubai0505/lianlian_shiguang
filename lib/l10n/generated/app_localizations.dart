@@ -5601,6 +5601,36 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'遊玩次數: {count}'**
   String play_count_display(int count);
+
+  /// No description provided for @care_calendar_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{characterName} 的關心日曆'**
+  String care_calendar_title(String characterName);
+
+  /// No description provided for @care_calendar_greeting.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天的心情如何？'**
+  String get care_calendar_greeting;
+
+  /// No description provided for @care_calendar_save_btn.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存紀錄，讓他照顧妳'**
+  String get care_calendar_save_btn;
+
+  /// No description provided for @care_calendar_delete_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'要刪除這筆紀錄嗎？'**
+  String get care_calendar_delete_confirm;
+
+  /// No description provided for @care_calendar_save_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{characterName}：「我都記下來了，這幾天辛苦妳了，我會一直在妳身邊的。」'**
+  String care_calendar_save_success(String characterName);
 }
 
 class _AppLocalizationsDelegate

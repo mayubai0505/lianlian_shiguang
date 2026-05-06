@@ -1262,5 +1262,20 @@
         "example": "10"
       }
     }
+  },
+  "care_calendar_title": "{characterName}의 케어 캘린더",
+  "@care_calendar_title": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "care_calendar_greeting": "오늘 기분은 어때요?",
+  "care_calendar_save_btn": "기록을 저장하고, 그에게 보살핌을 받으세요",
+  "care_calendar_delete_confirm": "이 기록을 삭제하시겠습니까?",
+  "care_calendar_save_success": "{characterName}: \"다 적어뒀어. 며칠 동안 힘들었지, 내가 항상 네 곁에 있을게.\"",
+  "@care_calendar_save_success": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
   }
 }

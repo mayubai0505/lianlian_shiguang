@@ -1275,5 +1275,20 @@
         "example": "10"
       }
     }
+  },
+  "care_calendar_title": "{characterName} 的关心日历",
+  "@care_calendar_title": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "care_calendar_greeting": "今天的心情如何？",
+  "care_calendar_save_btn": "保存记录，让他照顾妳",
+  "care_calendar_delete_confirm": "要删除这笔记录吗？",
+  "care_calendar_save_success": "{characterName}：「我都记下来了，这几天辛苦妳了，我会一直在妳身边的。」",
+  "@care_calendar_save_success": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
   }
 }

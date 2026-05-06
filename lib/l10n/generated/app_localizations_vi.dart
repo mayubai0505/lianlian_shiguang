@@ -3176,4 +3176,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String play_count_display(int count) {
     return 'Số lần chơi: $count';
   }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return 'Lịch quan tâm của $characterName';
+  }
+
+  @override
+  String get care_calendar_greeting => 'Tâm trạng hôm nay của bạn thế nào?';
+
+  @override
+  String get care_calendar_save_btn => 'Lưu lại, để anh ấy chăm sóc bạn';
+
+  @override
+  String get care_calendar_delete_confirm =>
+      'Bạn có muốn xóa bản ghi này không?';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName: \"Anh đều ghi lại hết rồi, mấy ngày nay em vất vả rồi, anh sẽ luôn ở bên cạnh em.\"';
+  }
 }

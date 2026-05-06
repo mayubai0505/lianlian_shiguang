@@ -2991,6 +2991,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String play_count_display(int count) {
     return '遊玩次數: $count';
   }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return '$characterName 的關心日曆';
+  }
+
+  @override
+  String get care_calendar_greeting => '今天的心情如何？';
+
+  @override
+  String get care_calendar_save_btn => '儲存紀錄，讓他照顧妳';
+
+  @override
+  String get care_calendar_delete_confirm => '要刪除這筆紀錄嗎？';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName：「我都記下來了，這幾天辛苦妳了，我會一直在妳身邊的。」';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5980,6 +5999,25 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String play_count_display(int count) {
     return '游玩次数: $count';
   }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return '$characterName 的关心日历';
+  }
+
+  @override
+  String get care_calendar_greeting => '今天的心情如何？';
+
+  @override
+  String get care_calendar_save_btn => '保存记录，让他照顾妳';
+
+  @override
+  String get care_calendar_delete_confirm => '要删除这笔记录吗？';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName：「我都记下来了，这几天辛苦妳了，我会一直在妳身边的。」';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8968,5 +9006,24 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String play_count_display(int count) {
     return '遊玩次數: $count';
+  }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return '$characterName 的關心日曆';
+  }
+
+  @override
+  String get care_calendar_greeting => '今天的心情如何？';
+
+  @override
+  String get care_calendar_save_btn => '儲存紀錄，讓他照顧妳';
+
+  @override
+  String get care_calendar_delete_confirm => '要刪除這筆紀錄嗎？';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName：「我都記下來了，這幾天辛苦妳了，我會一直在妳身邊的。」';
   }
 }

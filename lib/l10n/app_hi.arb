@@ -1263,5 +1263,20 @@
                 "example": "10"
             }
         }
+    },
+    "care_calendar_title": "{characterName} का केयर कैलेंडर",
+    "@care_calendar_title": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "care_calendar_greeting": "आज आपका मूड कैसा है?",
+    "care_calendar_save_btn": "रिकॉर्ड सहेजें, उसे आपकी देखभाल करने दें",
+    "care_calendar_delete_confirm": "क्या आप यह रिकॉर्ड हटाना चाहते हैं?",
+    "care_calendar_save_success": "{characterName}: \"मैंने सब लिख लिया है। तुम्हारे लिए ये कुछ दिन कठिन रहे हैं, मैं हमेशा तुम्हारे साथ रहूँगा।\"",
+    "@care_calendar_save_success": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
     }
 }

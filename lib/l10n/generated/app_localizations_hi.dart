@@ -3177,4 +3177,25 @@ class AppLocalizationsHi extends AppLocalizations {
   String play_count_display(int count) {
     return 'खेलने की संख्या: $count';
   }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return '$characterName का केयर कैलेंडर';
+  }
+
+  @override
+  String get care_calendar_greeting => 'आज आपका मूड कैसा है?';
+
+  @override
+  String get care_calendar_save_btn =>
+      'रिकॉर्ड सहेजें, उसे आपकी देखभाल करने दें';
+
+  @override
+  String get care_calendar_delete_confirm =>
+      'क्या आप यह रिकॉर्ड हटाना चाहते हैं?';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName: \"मैंने सब लिख लिया है। तुम्हारे लिए ये कुछ दिन कठिन रहे हैं, मैं हमेशा तुम्हारे साथ रहूँगा।\"';
+  }
 }

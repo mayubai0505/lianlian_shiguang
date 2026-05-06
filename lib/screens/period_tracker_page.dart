@@ -89,6 +89,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
   // ✨ 儲存紀錄邏輯
   Future<void> _saveRecord() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_selectedStartDay == null || _selectedEndDay == null) return;
     final startDate = _selectedStartDay!.isBefore(_selectedEndDay!) ? _selectedStartDay! : _selectedEndDay!;
     final endDate = _selectedStartDay!.isAfter(_selectedEndDay!) ? _selectedStartDay! : _selectedEndDay!;
@@ -100,7 +101,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     setState(() { _selectedStartDay = null; _selectedEndDay = null; });
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('${widget.character.name}：「我都記下來了，這幾天辛苦妳了，我會一直在妳身邊的。」'),
+        content: Text(l10n.care_calendar_save_success(widget.character.name)),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ));
     }
@@ -114,7 +115,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('要刪除這筆紀錄嗎？'),
+        title: Text(l10n.care_calendar_delete_confirm),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child:Text(l10n.cancelButton
           )),
@@ -127,6 +128,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final primaryColor = theme.colorScheme.primary;
@@ -137,7 +139,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('${widget.character.name} 的關心日曆'),
+          title: Text(l10n.care_calendar_title(widget.character.name)),
           backgroundColor: Colors.transparent,
           elevation: 0,
           foregroundColor: theme.colorScheme.onSurface,
@@ -215,7 +217,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                   ),
 
                   // --- 心情區 (全自動縮放版) ---
-                  const Text('今天的心情如何？', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(l10n.care_calendar_greeting, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
 
 // ✨ FittedBox 是自動偵測的神器
@@ -247,7 +249,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                     padding: const EdgeInsets.all(24.0),
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.favorite_border),
-                      label: const Text('儲存紀錄，讓他照顧妳'),
+                      label: Text(l10n.care_calendar_save_btn),
                       onPressed: (_selectedStartDay != null && _selectedEndDay != null) ? _saveRecord : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,

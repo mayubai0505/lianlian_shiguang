@@ -3133,4 +3133,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String play_count_display(int count) {
     return 'عدد مرات اللعب: $count';
   }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return 'تقويم اهتمام $characterName';
+  }
+
+  @override
+  String get care_calendar_greeting => 'كيف حال مزاجك اليوم؟';
+
+  @override
+  String get care_calendar_save_btn => 'احفظي السجل، ودعيه يعتني بكِ';
+
+  @override
+  String get care_calendar_delete_confirm => 'هل تريدين حذف هذا السجل؟';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName: \"لقد سجلت كل شيء، لقد مررتِ بأيام صعبة، سأكون بجانبكِ دائماً.\"';
+  }
 }

@@ -1476,5 +1476,20 @@
         "example": "10"
       }
     }
+  },
+  "care_calendar_title": "{characterName}'s Care Calendar",
+  "@care_calendar_title": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "care_calendar_greeting": "How are you feeling today?",
+  "care_calendar_save_btn": "Save record, let him care for you",
+  "care_calendar_delete_confirm": "Delete this record?",
+  "care_calendar_save_success": "{characterName}: \"I've noted it down. It's been tough for you lately. I will always be right here by your side.\"",
+  "@care_calendar_save_success": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
   }
 }

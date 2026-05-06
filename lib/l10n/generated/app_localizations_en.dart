@@ -3149,4 +3149,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String play_count_display(int count) {
     return 'Play count: $count';
   }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return '$characterName\'s Care Calendar';
+  }
+
+  @override
+  String get care_calendar_greeting => 'How are you feeling today?';
+
+  @override
+  String get care_calendar_save_btn => 'Save record, let him care for you';
+
+  @override
+  String get care_calendar_delete_confirm => 'Delete this record?';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName: \"I\'ve noted it down. It\'s been tough for you lately. I will always be right here by your side.\"';
+  }
 }

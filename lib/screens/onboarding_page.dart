@@ -95,7 +95,6 @@ class OnboardingPage extends StatelessWidget {
                         ),
 
                         const SizedBox(height: 24),
-                        // ✅ 修改為 50 個花花
                         Text(
                           l10n.onboarding_gift_title,
                           style: TextStyle(
@@ -112,9 +111,7 @@ class OnboardingPage extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 40),
-
                   // ✨ 4. 進入遊戲按鈕
                   ElevatedButton(
                     onPressed: () {
@@ -198,7 +195,7 @@ class OnboardingPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                ], // ✅ 這裡乾淨俐落收尾 Column
+                ],
               ),
             ),
           ),

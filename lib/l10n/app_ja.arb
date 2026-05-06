@@ -1263,5 +1263,20 @@
         "example": "10"
       }
     }
+  },
+  "care_calendar_title": "{characterName}のケアカレンダー",
+  "@care_calendar_title": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "care_calendar_greeting": "今日の気分はどう？",
+  "care_calendar_save_btn": "記録を保存して、彼にケアしてもらう",
+  "care_calendar_delete_confirm": "この記録を削除しますか？",
+  "care_calendar_save_success": "{characterName}：「全部メモしたよ。ここ数日辛かったね、俺はずっと君のそばにいるから。」",
+  "@care_calendar_save_success": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
   }
 }

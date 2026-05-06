@@ -1263,5 +1263,20 @@
                 "example": "10"
             }
         }
+    },
+    "care_calendar_title": "Kalendar Prihatin {characterName}",
+    "@care_calendar_title": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "care_calendar_greeting": "Bagaimana perasaan awak hari ini?",
+    "care_calendar_save_btn": "Simpan rekod, biarkan dia menjaga awak",
+    "care_calendar_delete_confirm": "Adakah awak mahu memadam rekod ini?",
+    "care_calendar_save_success": "{characterName}: \"Saya dah catatkan semuanya. Awak telah melalui hari yang sukar, saya akan sentiasa berada di sisi awak.\"",
+    "@care_calendar_save_success": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
     }
 }

@@ -1263,5 +1263,20 @@
         "example": "10"
       }
     }
+  },
+  "care_calendar_title": "Lịch quan tâm của {characterName}",
+  "@care_calendar_title": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
+  },
+  "care_calendar_greeting": "Tâm trạng hôm nay của bạn thế nào?",
+  "care_calendar_save_btn": "Lưu lại, để anh ấy chăm sóc bạn",
+  "care_calendar_delete_confirm": "Bạn có muốn xóa bản ghi này không?",
+  "care_calendar_save_success": "{characterName}: \"Anh đều ghi lại hết rồi, mấy ngày nay em vất vả rồi, anh sẽ luôn ở bên cạnh em.\"",
+  "@care_calendar_save_success": {
+    "placeholders": {
+      "characterName": { "type": "String" }
+    }
   }
 }

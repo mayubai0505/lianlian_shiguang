@@ -3037,4 +3037,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String play_count_display(int count) {
     return '플레이 횟수: $count';
   }
+
+  @override
+  String care_calendar_title(String characterName) {
+    return '$characterName의 케어 캘린더';
+  }
+
+  @override
+  String get care_calendar_greeting => '오늘 기분은 어때요?';
+
+  @override
+  String get care_calendar_save_btn => '기록을 저장하고, 그에게 보살핌을 받으세요';
+
+  @override
+  String get care_calendar_delete_confirm => '이 기록을 삭제하시겠습니까?';
+
+  @override
+  String care_calendar_save_success(String characterName) {
+    return '$characterName: \"다 적어뒀어. 며칠 동안 힘들었지, 내가 항상 네 곁에 있을게.\"';
+  }
 }

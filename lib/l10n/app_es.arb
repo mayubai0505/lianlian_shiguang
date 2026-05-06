@@ -1263,5 +1263,20 @@
                 "example": "10"
             }
         }
+    },
+    "care_calendar_title": "Calendario de cuidados de {characterName}",
+    "@care_calendar_title": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "care_calendar_greeting": "¿Cómo te sientes hoy?",
+    "care_calendar_save_btn": "Guarda el registro, deja que él te cuide",
+    "care_calendar_delete_confirm": "¿Quieres eliminar este registro?",
+    "care_calendar_save_success": "{characterName}: \"Lo he anotado todo. Han sido días difíciles para ti, pero siempre estaré a tu lado.\"",
+    "@care_calendar_save_success": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
     }
 }

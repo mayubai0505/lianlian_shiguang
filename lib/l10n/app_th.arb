@@ -1263,5 +1263,20 @@
                 "example": "10"
             }
         }
+    },
+    "care_calendar_title": "ปฏิทินแห่งความห่วงใยของ {characterName}",
+    "@care_calendar_title": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "care_calendar_greeting": "วันนี้อารมณ์เป็นยังไงบ้าง?",
+    "care_calendar_save_btn": "บันทึกข้อมูล เพื่อให้เขาดูแลคุณ",
+    "care_calendar_delete_confirm": "ต้องการลบบันทึกนี้หรือไม่?",
+    "care_calendar_save_success": "{characterName}: \"ฉันจดไว้หมดแล้ว ช่วงนี้เธอเหนื่อยหน่อยนะ แต่ฉันจะอยู่เคียงข้างเธอเสมอ\"",
+    "@care_calendar_save_success": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
     }
 }

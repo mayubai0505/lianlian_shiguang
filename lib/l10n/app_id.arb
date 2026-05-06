@@ -1263,5 +1263,20 @@
                 "example": "10"
             }
         }
+    },
+    "care_calendar_title": "Kalender Perhatian {characterName}",
+    "@care_calendar_title": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "care_calendar_greeting": "Bagaimana suasana hatimu hari ini?",
+    "care_calendar_save_btn": "Simpan catatan, biarkan dia menjagamu",
+    "care_calendar_delete_confirm": "Ingin menghapus catatan ini?",
+    "care_calendar_save_success": "{characterName}: \"Aku sudah mencatatnya. Beberapa hari ini berat untukmu, aku akan selalu ada di sisimu.\"",
+    "@care_calendar_save_success": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
     }
 }

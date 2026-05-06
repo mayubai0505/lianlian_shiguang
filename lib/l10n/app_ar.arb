@@ -1304,5 +1304,20 @@
                 "example": "10"
             }
         }
+    },
+    "care_calendar_title": "تقويم اهتمام {characterName}",
+    "@care_calendar_title": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
+    },
+    "care_calendar_greeting": "كيف حال مزاجك اليوم؟",
+    "care_calendar_save_btn": "احفظي السجل، ودعيه يعتني بكِ",
+    "care_calendar_delete_confirm": "هل تريدين حذف هذا السجل؟",
+    "care_calendar_save_success": "{characterName}: \"لقد سجلت كل شيء، لقد مررتِ بأيام صعبة، سأكون بجانبكِ دائماً.\"",
+    "@care_calendar_save_success": {
+        "placeholders": {
+            "characterName": { "type": "String" }
+        }
     }
 }
