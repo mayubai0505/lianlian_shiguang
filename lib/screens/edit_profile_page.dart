@@ -10,13 +10,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lianlian_shiguang/models/player_profile.dart';
 import 'package:provider/provider.dart';      // 這一行是為了讓檔案認識 Provider
 import '../services/theme_notifier.dart'; // 這一行是為了讓檔案認識你自訂的 ThemeNotifier
-import '../utils/image_utils.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart'; // ✅ 就是這行，讓程式認識 DateFormat
 import 'package:image_cropper/image_cropper.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import 'package:flutter/foundation.dart'; // 為了使用 kIsWeb 來判斷是不是網頁版
 import 'package:firebase_storage/firebase_storage.dart'; // 雲端硬碟總管
 import 'package:http/http.dart' as http; // 專門用來破解網頁版 blob 網址的工具
 
@@ -35,11 +32,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // --- Controllers ---
   final _nicknameController = TextEditingController();
   final _playerIDController = TextEditingController();
-  String? _selectedAvatarPath;
-
   // ✨ 請確保您有在 class 的頂部加上這一行 ✨
-  PlayerProfile? _currentProfile;
-
   // --- 狀態變數 ---
   String _gender = '未選擇';
   DateTime? _birthDate;
@@ -382,14 +375,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   ...List.generate(13, (i) {
                     final index = i + 1;
+                    final path = 'assets/images/avatar$index.png'; // 先定義路徑
                     return ListTile(
                       leading: CircleAvatar(
-                          backgroundImage: AssetImage(
-                              'assets/images/avatar$index.png')),
+                          backgroundImage: AssetImage(path)),
                       title: Text('頭像 $index'),
                       onTap: () {
                         setState(() {
-                          _avatarPath = 'assets/images/avatar$index.png';
+                          // ⚡ 存入妳在 Class 頂部定義的那個變數，警告就會消失！
+                          _avatarPath = path;
                         });
                         Navigator.pop(context);
                       },
@@ -553,29 +547,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             // 2. 頭像區
             Center(
-              child: GestureDetector(
-                onTap: _showAvatarSelectionDialog,
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: primaryColor.withValues(alpha:0.5), width: 2),
-                      ),
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 55, // 這裡可以調成妳喜歡的大小，55 比原本的 50 再大一點點
+                    backgroundColor: Colors.grey[200],
+                    // ⚡ 這裡請注意：確認妳用的變數是 _avatarPath 還是 _selectedAvatarPath
+                    backgroundImage: _avatarPath.startsWith('assets')
+                        ? AssetImage(_avatarPath) as ImageProvider
+                        : FileImage(File(_avatarPath)),
+                  ),
+                  // 編輯按鈕 (相機圖示)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: _showAvatarSelectionDialog, // 點擊觸發選單
                       child: CircleAvatar(
-                        radius: 55,
-                        backgroundImage: getAvatarImageProvider(_avatarPath),
+                        backgroundColor: primaryColor,
+                        radius: 18,
+                        child: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
                       ),
                     ),
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: primaryColor,
-                      child: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
@@ -602,7 +597,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             const SizedBox(height: 20),
 
             DropdownButtonFormField<String>(
-      value: _gender,
+              initialValue: _gender,
               dropdownColor: theme.cardColor,
               style: TextStyle(color: onSurface),
               decoration: customInputDecoration(l10n.charGenderLabel),
@@ -613,7 +608,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 DropdownMenuItem(value: '女', child: Text(l10n.genderFemale)),
                 DropdownMenuItem(value: '其他', child: Text(l10n.genderOther)),
               ],
-              onChanged: (String? newValue) => setState(() => _gender = newValue ?? l10n.genderNotSelected),
+              onChanged: (String? newValue) => setState(() => _gender = newValue ?? '未選擇'),
             ),
             const SizedBox(height: 20),
 
