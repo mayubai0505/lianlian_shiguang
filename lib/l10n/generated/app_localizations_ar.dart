@@ -3152,4 +3152,112 @@ class AppLocalizationsAr extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName: \"لقد سجلت كل شيء، لقد مررتِ بأيام صعبة، سأكون بجانبكِ دائماً.\"';
   }
+
+  @override
+  String get daily_gift_success => 'تم استلام الهدية اليومية بنجاح! 🌸';
+
+  @override
+  String get check_in_fail_network =>
+      'فشل تسجيل الدخول، يرجى التحقق من اتصال الشبكة 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return 'تم إنجاز المهمة: $taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return 'تم بنجاح استلام $rewardAmount زهرة من «$taskName»!';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return 'فشل الاستلام: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => 'مذكرات نبض القلب';
+
+  @override
+  String get tab_daily_chit_chat => 'دردشة يومية';
+
+  @override
+  String get task_desc_chat_3_times => 'قم بإجراء 3 محادثات يومية مع الشخصية';
+
+  @override
+  String get tab_story_progression => 'تقدم القصة';
+
+  @override
+  String get task_desc_story_1_time => 'أكمل تفاعل واحد في وضع القصة';
+
+  @override
+  String get tab_social_tour => 'جولة اجتماعية';
+
+  @override
+  String get task_desc_like_3_moments => 'سجل إعجابك بـ 3 منشورات في اللحظات';
+
+  @override
+  String get btn_claimed => 'تم الاستلام';
+
+  @override
+  String get btn_claim => 'استلام';
+
+  @override
+  String get btn_incomplete => 'غير مكتمل';
+
+  @override
+  String get network_unstable_retry =>
+      'اتصال الشبكة غير مستقر، يرجى المحاولة لاحقاً 🍃';
+
+  @override
+  String get title_time_travel => 'السفر عبر الزمن';
+
+  @override
+  String get select_chat_mode => 'اختر وضع الدردشة';
+
+  @override
+  String get mode_chat => 'دردشة';
+
+  @override
+  String get mode_daily_desc => 'دردشة غير رسمية للحفاظ على الرابطة';
+
+  @override
+  String get mode_story_desc => 'تعمق في القصة لتجربة غامرة';
+
+  @override
+  String get greeting_hello => 'مرحباً!';
+
+  @override
+  String get greeting_default_daily => 'هل تبحث عني؟';
+
+  @override
+  String get title_personal_homepage => 'الصفحة الشخصية';
+
+  @override
+  String get title_time_letters => 'رسائل الزمن';
+
+  @override
+  String get status_signed_in_today => 'تم تسجيل الدخول اليوم';
+
+  @override
+  String get status_signing_in => 'جارٍ تسجيل الدخول...';
+
+  @override
+  String get status_daily_sign_in => 'تسجيل الدخول اليومي (+10 زهور)';
+
+  @override
+  String get toast_id_copied => 'تم نسخ المعرّف!';
+
+  @override
+  String get hint_click_avatar_to_edit =>
+      'انقر على الصورة الرمزية لتعديل الملف الشخصي';
+
+  @override
+  String get title_my_friends => 'أصدقائي';
+
+  @override
+  String get action_show_all => 'عرض الكل';
+
+  @override
+  String get empty_no_characters_created => 'لم تقم بإنشاء أي شخصية بعد.';
 }

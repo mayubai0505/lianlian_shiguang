@@ -1278,5 +1278,54 @@
         "placeholders": {
             "characterName": { "type": "String" }
         }
-    }
+    },
+    "daily_gift_success": "Berhasil mengambil hadiah harian! 🌸",
+    "check_in_fail_network": "Gagal absen, silakan periksa koneksi jaringan Anda 🍃",
+    "task_completed": "Tugas selesai: {taskName}",
+    "@task_completed": {
+        "placeholders": {
+            "taskName": { "type": "String" }
+        }
+    },
+    "task_reward_claimed": "Berhasil mengambil {rewardAmount} Bunga dari \"{taskName}\"!",
+    "@task_reward_claimed": {
+        "placeholders": {
+            "taskName": { "type": "String" },
+            "rewardAmount": { "type": "String" }
+        }
+    },
+    "claim_failed_error": "Gagal mengambil: {e}",
+    "@claim_failed_error": {
+        "placeholders": {
+            "e": { "type": "String" }
+        }
+    },
+    "tab_heartbeat_diary": "Buku Harian Debaran Hati",
+    "tab_daily_chit_chat": "Obrolan Santai Harian",
+    "task_desc_chat_3_times": "Lakukan 3 obrolan harian dengan karakter",
+    "tab_story_progression": "Kemajuan Cerita",
+    "task_desc_story_1_time": "Selesaikan 1 interaksi mode cerita",
+    "tab_social_tour": "Tur Sosial",
+    "task_desc_like_3_moments": "Sukai 3 postingan Momen",
+    "btn_claimed": "Diklaim",
+    "btn_claim": "Klaim",
+    "btn_incomplete": "Belum Selesai",
+    "network_unstable_retry": "Koneksi jaringan tidak stabil, silakan coba lagi nanti 🍃",
+    "title_time_travel": "Perjalanan Waktu",
+    "select_chat_mode": "Pilih Mode Obrolan",
+    "mode_chat": "Obrolan",
+    "mode_daily_desc": "Obrolan santai untuk menjaga ikatan",
+    "mode_story_desc": "Selami cerita untuk pengalaman yang imersif",
+    "greeting_hello": "Halo!",
+    "greeting_default_daily": "Mencariku?",
+    "title_personal_homepage": "Beranda Pribadi",
+    "title_time_letters": "Surat Waktu",
+    "status_signed_in_today": "Sudah absen hari ini",
+    "status_signing_in": "Sedang absen...",
+    "status_daily_sign_in": "Absen Harian (+10 Bunga)",
+    "toast_id_copied": "ID telah disalin!",
+    "hint_click_avatar_to_edit": "Klik avatar untuk mengedit profil",
+    "title_my_friends": "Teman-temanku",
+    "action_show_all": "Tampilkan Semua",
+    "empty_no_characters_created": "Anda belum membuat karakter apa pun."
 }

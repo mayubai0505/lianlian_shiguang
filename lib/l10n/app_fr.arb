@@ -1448,5 +1448,54 @@
         "placeholders": {
             "characterName": { "type": "String" }
         }
-    }
+    },
+    "daily_gift_success": "Cadeau quotidien récupéré avec succès ! 🌸",
+    "check_in_fail_network": "Échec de l'enregistrement, veuillez vérifier votre connexion réseau 🍃",
+    "task_completed": "Mission accomplie : {taskName}",
+    "@task_completed": {
+        "placeholders": {
+            "taskName": { "type": "String" }
+        }
+    },
+    "task_reward_claimed": "{rewardAmount} fleurs de « {taskName} » récupérées avec succès !",
+    "@task_reward_claimed": {
+        "placeholders": {
+            "taskName": { "type": "String" },
+            "rewardAmount": { "type": "String" }
+        }
+    },
+    "claim_failed_error": "Échec de la récupération : {e}",
+    "@claim_failed_error": {
+        "placeholders": {
+            "e": { "type": "String" }
+        }
+    },
+    "tab_heartbeat_diary": "Journal des battements",
+    "tab_daily_chit_chat": "Bavardage quotidien",
+    "task_desc_chat_3_times": "Discutez 3 fois avec un personnage",
+    "tab_story_progression": "Progression de l'histoire",
+    "task_desc_story_1_time": "Terminez 1 interaction en mode histoire",
+    "tab_social_tour": "Tournée sociale",
+    "task_desc_like_3_moments": "Aimez 3 publications des Moments",
+    "btn_claimed": "Récupéré",
+    "btn_claim": "Récupérer",
+    "btn_incomplete": "Incomplet",
+    "network_unstable_retry": "Connexion instable, veuillez réessayer plus tard 🍃",
+    "title_time_travel": "Voyage dans le temps",
+    "select_chat_mode": "Sélectionner le mode de discussion",
+    "mode_chat": "Discussion",
+    "mode_daily_desc": "Discussion détendue pour maintenir le lien",
+    "mode_story_desc": "Plongez dans l'histoire pour une expérience immersive",
+    "greeting_hello": "Bonjour !",
+    "greeting_default_daily": "Tu as besoin de moi ?",
+    "title_personal_homepage": "Page personnelle",
+    "title_time_letters": "Lettres du temps",
+    "status_signed_in_today": "Enregistré aujourd'hui",
+    "status_signing_in": "Enregistrement en cours...",
+    "status_daily_sign_in": "Enregistrement quotidien (+10 fleurs)",
+    "toast_id_copied": "ID copié !",
+    "hint_click_avatar_to_edit": "Cliquez sur l'avatar pour modifier le profil",
+    "title_my_friends": "Mes amis",
+    "action_show_all": "Tout afficher",
+    "empty_no_characters_created": "Vous n'avez pas encore créé de personnage."
 }

@@ -1319,5 +1319,54 @@
         "placeholders": {
             "characterName": { "type": "String" }
         }
-    }
+    },
+    "daily_gift_success": "تم استلام الهدية اليومية بنجاح! 🌸",
+    "check_in_fail_network": "فشل تسجيل الدخول، يرجى التحقق من اتصال الشبكة 🍃",
+    "task_completed": "تم إنجاز المهمة: {taskName}",
+    "@task_completed": {
+        "placeholders": {
+            "taskName": { "type": "String" }
+        }
+    },
+    "task_reward_claimed": "تم بنجاح استلام {rewardAmount} زهرة من «{taskName}»!",
+    "@task_reward_claimed": {
+        "placeholders": {
+            "taskName": { "type": "String" },
+            "rewardAmount": { "type": "String" }
+        }
+    },
+    "claim_failed_error": "فشل الاستلام: {e}",
+    "@claim_failed_error": {
+        "placeholders": {
+            "e": { "type": "String" }
+        }
+    },
+    "tab_heartbeat_diary": "مذكرات نبض القلب",
+    "tab_daily_chit_chat": "دردشة يومية",
+    "task_desc_chat_3_times": "قم بإجراء 3 محادثات يومية مع الشخصية",
+    "tab_story_progression": "تقدم القصة",
+    "task_desc_story_1_time": "أكمل تفاعل واحد في وضع القصة",
+    "tab_social_tour": "جولة اجتماعية",
+    "task_desc_like_3_moments": "سجل إعجابك بـ 3 منشورات في اللحظات",
+    "btn_claimed": "تم الاستلام",
+    "btn_claim": "استلام",
+    "btn_incomplete": "غير مكتمل",
+    "network_unstable_retry": "اتصال الشبكة غير مستقر، يرجى المحاولة لاحقاً 🍃",
+    "title_time_travel": "السفر عبر الزمن",
+    "select_chat_mode": "اختر وضع الدردشة",
+    "mode_chat": "دردشة",
+    "mode_daily_desc": "دردشة غير رسمية للحفاظ على الرابطة",
+    "mode_story_desc": "تعمق في القصة لتجربة غامرة",
+    "greeting_hello": "مرحباً!",
+    "greeting_default_daily": "هل تبحث عني؟",
+    "title_personal_homepage": "الصفحة الشخصية",
+    "title_time_letters": "رسائل الزمن",
+    "status_signed_in_today": "تم تسجيل الدخول اليوم",
+    "status_signing_in": "جارٍ تسجيل الدخول...",
+    "status_daily_sign_in": "تسجيل الدخول اليومي (+10 زهور)",
+    "toast_id_copied": "تم نسخ المعرّف!",
+    "hint_click_avatar_to_edit": "انقر على الصورة الرمزية لتعديل الملف الشخصي",
+    "title_my_friends": "أصدقائي",
+    "action_show_all": "عرض الكل",
+    "empty_no_characters_created": "لم تقم بإنشاء أي شخصية بعد."
 }

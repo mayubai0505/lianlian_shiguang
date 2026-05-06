@@ -1398,5 +1398,54 @@
     "placeholders": {
       "characterName": { "type": "String" }
     }
-  }
+  },
+  "daily_gift_success": "成功領取每日贈禮！🌸",
+  "check_in_fail_network": "簽到失敗，請檢查網路連線 🍃",
+  "task_completed": "完成任務：{taskName}",
+  "@task_completed": {
+    "placeholders": {
+      "taskName": { "type": "String" }
+    }
+  },
+  "task_reward_claimed": "成功領取「{taskName}」的 {rewardAmount} 點花花！",
+  "@task_reward_claimed": {
+    "placeholders": {
+      "taskName": { "type": "String" },
+      "rewardAmount": { "type": "String" }
+    }
+  },
+  "claim_failed_error": "領取失敗: {e}",
+  "@claim_failed_error": {
+    "placeholders": {
+      "e": { "type": "String" }
+    }
+  },
+  "tab_heartbeat_diary": "心動日記",
+  "tab_daily_chit_chat": "閒話家常",
+  "task_desc_chat_3_times": "與角色進行 3 次日常聊天",
+  "tab_story_progression": "劇情推進",
+  "task_desc_story_1_time": "完成 1 次劇情模式互動",
+  "tab_social_tour": "社群巡禮",
+  "task_desc_like_3_moments": "為 3 則朋友圈動態按讚",
+  "btn_claimed": "已領取",
+  "btn_claim": "領取",
+  "btn_incomplete": "未完成",
+  "network_unstable_retry": "網路連線不穩，請稍後再試🍃",
+  "title_time_travel": "時光旅行",
+  "select_chat_mode": "選擇聊天模式",
+  "mode_chat": "聊天",
+  "mode_daily_desc": "輕鬆閒聊，維持羈絆",
+  "mode_story_desc": "深入故事，體驗沉浸感",
+  "greeting_hello": "你好！",
+  "greeting_default_daily": "找我有事嗎？",
+  "title_personal_homepage": "個人主頁",
+  "title_time_letters": "時光信件",
+  "status_signed_in_today": "今日已簽到",
+  "status_signing_in": "簽到中...",
+  "status_daily_sign_in": "每日簽到 (+10 花花)",
+  "toast_id_copied": "ID 已複製！",
+  "hint_click_avatar_to_edit": "點擊頭像進行個人檔案編輯",
+  "title_my_friends": "我的好友",
+  "action_show_all": "顯示全部",
+  "empty_no_characters_created": "您尚未創建任何角色。"
 }

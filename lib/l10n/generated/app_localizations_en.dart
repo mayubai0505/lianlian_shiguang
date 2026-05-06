@@ -3168,4 +3168,113 @@ class AppLocalizationsEn extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName: \"I\'ve noted it down. It\'s been tough for you lately. I will always be right here by your side.\"';
   }
+
+  @override
+  String get daily_gift_success => 'Successfully claimed daily gift! 🌸';
+
+  @override
+  String get check_in_fail_network =>
+      'Check-in failed, please check your network connection 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return 'Task completed: $taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return 'Successfully claimed $rewardAmount Flowers for \"$taskName\"!';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return 'Claim failed: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => 'Heartbeat Diary';
+
+  @override
+  String get tab_daily_chit_chat => 'Daily Chit Chat';
+
+  @override
+  String get task_desc_chat_3_times => 'Have 3 daily chats with a character';
+
+  @override
+  String get tab_story_progression => 'Story Progression';
+
+  @override
+  String get task_desc_story_1_time => 'Complete 1 story mode interaction';
+
+  @override
+  String get tab_social_tour => 'Social Tour';
+
+  @override
+  String get task_desc_like_3_moments => 'Like 3 Moments posts';
+
+  @override
+  String get btn_claimed => 'Claimed';
+
+  @override
+  String get btn_claim => 'Claim';
+
+  @override
+  String get btn_incomplete => 'Incomplete';
+
+  @override
+  String get network_unstable_retry =>
+      'Unstable network connection, please try again later 🍃';
+
+  @override
+  String get title_time_travel => 'Time Travel';
+
+  @override
+  String get select_chat_mode => 'Select Chat Mode';
+
+  @override
+  String get mode_chat => 'Chat';
+
+  @override
+  String get mode_daily_desc => 'Casual chat to maintain your bond';
+
+  @override
+  String get mode_story_desc =>
+      'Dive deep into the story for an immersive experience';
+
+  @override
+  String get greeting_hello => 'Hello!';
+
+  @override
+  String get greeting_default_daily => 'Looking for me?';
+
+  @override
+  String get title_personal_homepage => 'Personal Homepage';
+
+  @override
+  String get title_time_letters => 'Time Letters';
+
+  @override
+  String get status_signed_in_today => 'Signed in today';
+
+  @override
+  String get status_signing_in => 'Signing in...';
+
+  @override
+  String get status_daily_sign_in => 'Daily Sign-in (+10 Flowers)';
+
+  @override
+  String get toast_id_copied => 'ID copied!';
+
+  @override
+  String get hint_click_avatar_to_edit => 'Click avatar to edit profile';
+
+  @override
+  String get title_my_friends => 'My Friends';
+
+  @override
+  String get action_show_all => 'Show All';
+
+  @override
+  String get empty_no_characters_created =>
+      'You haven\'t created any characters yet.';
 }

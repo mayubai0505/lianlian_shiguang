@@ -1277,5 +1277,54 @@
     "placeholders": {
       "characterName": { "type": "String" }
     }
-  }
+  },
+  "daily_gift_success": "매일 선물 수령 성공! 🌸",
+  "check_in_fail_network": "출석 실패, 네트워크 연결을 확인해 주세요 🍃",
+  "task_completed": "미션 완료: {taskName}",
+  "@task_completed": {
+    "placeholders": {
+      "taskName": { "type": "String" }
+    }
+  },
+  "task_reward_claimed": "「{taskName}」의 꽃 {rewardAmount}송이 수령 성공!",
+  "@task_reward_claimed": {
+    "placeholders": {
+      "taskName": { "type": "String" },
+      "rewardAmount": { "type": "String" }
+    }
+  },
+  "claim_failed_error": "수령 실패: {e}",
+  "@claim_failed_error": {
+    "placeholders": {
+      "e": { "type": "String" }
+    }
+  },
+  "tab_heartbeat_diary": "설렘 일기",
+  "tab_daily_chit_chat": "소소한 일상 대화",
+  "task_desc_chat_3_times": "캐릭터와 3번의 일상 대화 나누기",
+  "tab_story_progression": "스토리 진행",
+  "task_desc_story_1_time": "스토리 모드 상호작용 1회 완료",
+  "tab_social_tour": "소셜 투어",
+  "task_desc_like_3_moments": "모먼트 포스트 3개에 좋아요 누르기",
+  "btn_claimed": "수령 완료",
+  "btn_claim": "수령",
+  "btn_incomplete": "미완료",
+  "network_unstable_retry": "네트워크 연결이 불안정합니다. 나중에 다시 시도해 주세요 🍃",
+  "title_time_travel": "시간 여행",
+  "select_chat_mode": "채팅 모드 선택",
+  "mode_chat": "채팅",
+  "mode_daily_desc": "가벼운 대화로 유대감 유지",
+  "mode_story_desc": "스토리 깊숙이 들어가 몰입감 경험하기",
+  "greeting_hello": "안녕!",
+  "greeting_default_daily": "나한테 볼일 있어?",
+  "title_personal_homepage": "개인 홈페이지",
+  "title_time_letters": "시광의 편지",
+  "status_signed_in_today": "오늘 출석 완료",
+  "status_signing_in": "출석 중...",
+  "status_daily_sign_in": "일일 출석 (+10 꽃)",
+  "toast_id_copied": "ID가 복사되었습니다!",
+  "hint_click_avatar_to_edit": "프로필을 편집하려면 아바타를 클릭하세요",
+  "title_my_friends": "내 친구들",
+  "action_show_all": "모두 보기",
+  "empty_no_characters_created": "아직 생성된 캐릭터가 없습니다."
 }

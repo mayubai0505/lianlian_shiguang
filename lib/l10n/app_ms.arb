@@ -1278,5 +1278,54 @@
         "placeholders": {
             "characterName": { "type": "String" }
         }
-    }
+    },
+    "daily_gift_success": "Berjaya menuntut hadiah harian! 🌸",
+    "check_in_fail_network": "Daftar masuk gagal, sila periksa sambungan rangkaian 🍃",
+    "task_completed": "Tugasan selesai: {taskName}",
+    "@task_completed": {
+        "placeholders": {
+            "taskName": { "type": "String" }
+        }
+    },
+    "task_reward_claimed": "Berjaya menuntut {rewardAmount} Bunga untuk \"{taskName}\"!",
+    "@task_reward_claimed": {
+        "placeholders": {
+            "taskName": { "type": "String" },
+            "rewardAmount": { "type": "String" }
+        }
+    },
+    "claim_failed_error": "Tuntutan gagal: {e}",
+    "@claim_failed_error": {
+        "placeholders": {
+            "e": { "type": "String" }
+        }
+    },
+    "tab_heartbeat_diary": "Diari Debaran Hati",
+    "tab_daily_chit_chat": "Sembang Harian",
+    "task_desc_chat_3_times": "Lakukan 3 sembang harian dengan watak",
+    "tab_story_progression": "Kemajuan Cerita",
+    "task_desc_story_1_time": "Selesaikan 1 interaksi mod cerita",
+    "tab_social_tour": "Jelajah Sosial",
+    "task_desc_like_3_moments": "Suka 3 siaran Momen",
+    "btn_claimed": "Dituntut",
+    "btn_claim": "Tuntut",
+    "btn_incomplete": "Tidak Lengkap",
+    "network_unstable_retry": "Sambungan rangkaian tidak stabil, sila cuba lagi nanti 🍃",
+    "title_time_travel": "Perjalanan Masa",
+    "select_chat_mode": "Pilih Mod Sembang",
+    "mode_chat": "Sembang",
+    "mode_daily_desc": "Sembang santai untuk mengekalkan ikatan",
+    "mode_story_desc": "Selami cerita untuk pengalaman yang mengasyikkan",
+    "greeting_hello": "Helo!",
+    "greeting_default_daily": "Cari saya ke?",
+    "title_personal_homepage": "Halaman Utama Peribadi",
+    "title_time_letters": "Surat Masa",
+    "status_signed_in_today": "Telah mendaftar masuk hari ini",
+    "status_signing_in": "Mendaftar masuk...",
+    "status_daily_sign_in": "Daftar Masuk Harian (+10 Bunga)",
+    "toast_id_copied": "ID telah disalin!",
+    "hint_click_avatar_to_edit": "Klik avatar untuk mengedit profil",
+    "title_my_friends": "Kawan-kawan Saya",
+    "action_show_all": "Tunjukkan Semua",
+    "empty_no_characters_created": "Awak belum mencipta sebarang watak lagi."
 }

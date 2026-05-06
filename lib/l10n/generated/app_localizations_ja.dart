@@ -3040,4 +3040,109 @@ class AppLocalizationsJa extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName：「全部メモしたよ。ここ数日辛かったね、俺はずっと君のそばにいるから。」';
   }
+
+  @override
+  String get daily_gift_success => 'デイリーギフトの受け取りに成功しました！🌸';
+
+  @override
+  String get check_in_fail_network => 'チェックインに失敗しました。ネットワーク接続を確認してください 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return 'タスク完了：$taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return '「$taskName」から $rewardAmount 個のお花を受け取りました！';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return '受け取り失敗: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => 'ときめき日記';
+
+  @override
+  String get tab_daily_chit_chat => '日常の雑談';
+
+  @override
+  String get task_desc_chat_3_times => 'キャラクターと日常チャットを3回行う';
+
+  @override
+  String get tab_story_progression => 'ストーリー進行';
+
+  @override
+  String get task_desc_story_1_time => 'ストーリーモードでの交流を1回完了する';
+
+  @override
+  String get tab_social_tour => 'コミュニティ巡回';
+
+  @override
+  String get task_desc_like_3_moments => 'タイムラインの投稿に3回「いいね」する';
+
+  @override
+  String get btn_claimed => '受け取り済み';
+
+  @override
+  String get btn_claim => '受け取る';
+
+  @override
+  String get btn_incomplete => '未完了';
+
+  @override
+  String get network_unstable_retry => 'ネットワークが不安定です。後でもう一度お試しください 🍃';
+
+  @override
+  String get title_time_travel => 'タイムトラベル';
+
+  @override
+  String get select_chat_mode => 'チャットモードを選択';
+
+  @override
+  String get mode_chat => 'チャット';
+
+  @override
+  String get mode_daily_desc => '気軽な雑談で絆を深める';
+
+  @override
+  String get mode_story_desc => 'ストーリーの奥深くに入り込み、没入感を体験';
+
+  @override
+  String get greeting_hello => 'こんにちは！';
+
+  @override
+  String get greeting_default_daily => '私に用事？';
+
+  @override
+  String get title_personal_homepage => 'マイページ';
+
+  @override
+  String get title_time_letters => '時光の手紙';
+
+  @override
+  String get status_signed_in_today => '本日サインイン済み';
+
+  @override
+  String get status_signing_in => 'サインイン中...';
+
+  @override
+  String get status_daily_sign_in => '毎日サインイン（+10 お花）';
+
+  @override
+  String get toast_id_copied => 'ID をコピーしました！';
+
+  @override
+  String get hint_click_avatar_to_edit => 'アバターをタップしてプロフィールを編集';
+
+  @override
+  String get title_my_friends => '私のフレンド';
+
+  @override
+  String get action_show_all => 'すべて表示';
+
+  @override
+  String get empty_no_characters_created => 'まだキャラクターを作成していません。';
 }

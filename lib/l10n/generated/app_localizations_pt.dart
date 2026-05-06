@@ -3211,4 +3211,115 @@ class AppLocalizationsPt extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName: \"Eu anotei tudo. Estes dias foram difíceis para você, mas eu sempre estarei ao seu lado.\"';
   }
+
+  @override
+  String get daily_gift_success => 'Presente diário resgatado com sucesso! 🌸';
+
+  @override
+  String get check_in_fail_network =>
+      'Falha no check-in, verifique sua conexão de rede 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return 'Tarefa concluída: $taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return 'Resgatou $rewardAmount Flores de \"$taskName\" com sucesso!';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return 'Falha no resgate: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => 'Diário de Batimentos';
+
+  @override
+  String get tab_daily_chit_chat => 'Bate-papo Diário';
+
+  @override
+  String get task_desc_chat_3_times =>
+      'Tenha 3 conversas diárias com um personagem';
+
+  @override
+  String get tab_story_progression => 'Progressão da História';
+
+  @override
+  String get task_desc_story_1_time => 'Conclua 1 interação no modo história';
+
+  @override
+  String get tab_social_tour => 'Tour Social';
+
+  @override
+  String get task_desc_like_3_moments => 'Curta 3 postagens nos Momentos';
+
+  @override
+  String get btn_claimed => 'Resgatado';
+
+  @override
+  String get btn_claim => 'Resgatar';
+
+  @override
+  String get btn_incomplete => 'Incompleto';
+
+  @override
+  String get network_unstable_retry =>
+      'Conexão de rede instável, tente novamente mais tarde 🍃';
+
+  @override
+  String get title_time_travel => 'Viagem no Tempo';
+
+  @override
+  String get select_chat_mode => 'Selecionar Modo de Chat';
+
+  @override
+  String get mode_chat => 'Chat';
+
+  @override
+  String get mode_daily_desc => 'Bate-papo casual para manter o vínculo';
+
+  @override
+  String get mode_story_desc =>
+      'Mergulhe na história para uma experiência imersiva';
+
+  @override
+  String get greeting_hello => 'Olá!';
+
+  @override
+  String get greeting_default_daily => 'Está me procurando?';
+
+  @override
+  String get title_personal_homepage => 'Página Pessoal';
+
+  @override
+  String get title_time_letters => 'Cartas do Tempo';
+
+  @override
+  String get status_signed_in_today => 'Check-in feito hoje';
+
+  @override
+  String get status_signing_in => 'Fazendo check-in...';
+
+  @override
+  String get status_daily_sign_in => 'Check-in Diário (+10 Flores)';
+
+  @override
+  String get toast_id_copied => 'ID copiado!';
+
+  @override
+  String get hint_click_avatar_to_edit =>
+      'Clique no avatar para editar o perfil';
+
+  @override
+  String get title_my_friends => 'Meus Amigos';
+
+  @override
+  String get action_show_all => 'Mostrar Tudo';
+
+  @override
+  String get empty_no_characters_created =>
+      'Você ainda não criou nenhum personagem.';
 }

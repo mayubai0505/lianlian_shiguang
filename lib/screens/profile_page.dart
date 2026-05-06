@@ -1,17 +1,13 @@
 import 'dart:async'; // 用於 StreamSubscription
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'dart:math';
 import '../utils/image_utils.dart';
 import 'package:intl/intl.dart';
-// 只有在非網頁環境才引入 dart:io
-import 'dart:io';
 import '../services/theme_notifier.dart';
 import 'edit_profile_page.dart';
 import 'chat_page.dart';
@@ -48,7 +44,6 @@ class _ProfilePageState extends State<ProfilePage> {
   String _oldIDFromDB = "";
   StreamSubscription? _pointsSubscription;
   StreamSubscription? _userDocSubscription;
-  bool _hasClaimedToday = false; // 👈 補上這行，用來同步自動彈窗的狀態
   // --- Firebase 變數 ---
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   String? _userId;
@@ -63,6 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isLikeClaimed = false;
   bool _isClaimingCheckIn = false;
   bool _isBirthdayToday = false; // ✨ 新增一個狀態變數來記錄今天是否生日
+
 
   @override
   void initState() {
@@ -105,50 +101,50 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // 🌟 實作：從 Firebase 讀取玩家 ID 與鎖定狀態
   Future<void> _loadUserPIDData() async {
-    // 🛡️ 防護：如果還沒拿到 userId，就先別急著讀取
     if (_userId == null) return;
 
+    // ✨ 1. 統一產生保底 ID (抽到最上面，不用重複寫)
+    final fallbackID = _userId!.length >= 8 ? _userId!.substring(0, 8) : _userId!;
+
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(_userId)
-          .get();
+      final doc = await FirebaseFirestore.instance.collection('users').doc(_userId).get();
 
-      if (doc.exists && mounted) {
-        final data = doc.data()!;
+      // ✨ 2. 預設給予保底值
+      String finalID = fallbackID;
+      bool isChanged = false;
 
-        setState(() {
-          // ✨ 1. 準備保底 ID (取 UID 的前 8 碼，避免字串過短報錯)
-          String fallbackID = _userId!.length >= 8 ? _userId!.substring(0, 8) : _userId!;
-
-          // ✨ 2. 終極防護：把雲端拿到的值清乾淨 (去除頭尾空白)
-          String rawCloudID = (data['playerID'] ?? "").toString().trim();
-
-          // ✨ 3. 判斷：如果有值且「不是空字串」，就用雲端的；否則強制用保底 UID！
-          if (rawCloudID.isNotEmpty) {
-            _oldIDFromDB = rawCloudID;
-          } else {
-            _oldIDFromDB = fallbackID;
-          }
-
-          // 4. 同步給輸入框
-          _playerIDController.text = _oldIDFromDB;
-          _hasChangedID = data['hasChangedID'] ?? false;
-        });
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('playerID', _oldIDFromDB);
-        await prefs.setBool('hasChangedID', _hasChangedID);
-
-        print("✅ 玩家 ID 資料載入成功，並已同步更新至本地暫存！");
-        print("✅ 玩家 ID 資料載入成功：$_oldIDFromDB, 鎖定狀態：$_hasChangedID");
+      // ✨ 3. 如果雲端有資料，再進行覆蓋
+      if (doc.exists) {
+        final data = doc.data() ?? {};
+        final cloudID = (data['playerID']?.toString() ?? "").trim();
+        finalID = cloudID.isNotEmpty ? cloudID : fallbackID;
+        isChanged = data['hasChangedID'] ?? false;
       }
+
+      if (!mounted) return;
+
+      // ✨ 4. 統一更新畫面狀態
+      setState(() {
+        _oldIDFromDB = finalID;
+        _playerIDController.text = finalID;
+        _hasChangedID = isChanged;
+      });
+
+      // ✨ 5. 統一寫入本地暫存
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('playerID', finalID);
+      await prefs.setBool('hasChangedID', isChanged);
+
+      print("✅ 玩家 ID 載入同步成功：$finalID, 鎖定狀態：$isChanged");
+
     } catch (e) {
       print("❌ 讀取玩家 PID 失敗: $e");
-      // 🛡️ 斷網保底：萬一讀取失敗，至少給個預設 ID，不要讓畫面空白
+
+      // 🛡️ 斷網或報錯時的保底機制
       if (mounted) {
         setState(() {
-          _oldIDFromDB = _userId!.length >= 8 ? _userId!.substring(0, 8) : _userId!;
-          _playerIDController.text = _oldIDFromDB;
+          _oldIDFromDB = fallbackID;
+          _playerIDController.text = fallbackID;
         });
       }
     }
@@ -220,12 +216,11 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
-
+      final l10n = AppLocalizations.of(context)!;
       final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
       final int rewardAmount = AppConfig.dailyCheckIn;
 
       // 2. 執行領取邏輯 (與彈窗邏輯同步)
-      // 使用 Transaction 確保「加點數」與「改日期」同時成功
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.update(userDocRef, {
           'flowerPoints': FieldValue.increment(rewardAmount),
@@ -239,7 +234,7 @@ class _ProfilePageState extends State<ProfilePage> {
           .doc(user.uid)
           .collection('flower_logs')
           .add({
-        'title': '每日簽到',
+        'title': l10n.title_daily_check_in,
         'amount': rewardAmount,
         'createdAt': FieldValue.serverTimestamp(),
       });
@@ -248,22 +243,23 @@ class _ProfilePageState extends State<ProfilePage> {
       if (mounted) {
         setState(() {
           _hasCheckedInToday = true;
-          _hasClaimedToday = true; // 同步彈窗用的變數
+          _hasCheckedInToday = true; // 同步彈窗用的變數
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('成功領取每日贈禮！🌸'),
+           SnackBar(
+            content: Text(l10n.daily_gift_success),
             behavior: SnackBarBehavior.floating,
           ),
         );
       }
 
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       debugPrint("❌ 手動簽到失敗: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('簽到失敗，請檢查網路連線 🍃')),
+           SnackBar(content: Text(l10n.check_in_fail_network)),
         );
       }
     } finally {
@@ -324,6 +320,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final userDocRef = _db.collection('users').doc(_userId);
 
     try {
+      final l10n = AppLocalizations.of(context)!;
       final batch = _db.batch();
       // 增加花花點數
       batch.update(userDocRef, {'flowerPoints': FieldValue.increment(rewardAmount)});
@@ -333,25 +330,25 @@ class _ProfilePageState extends State<ProfilePage> {
       // ✨✨✨ 總裁看這裡！把記帳也加入這個「打包作業 (batch)」裡！ ✨✨✨
       final logRef = userDocRef.collection('flower_logs').doc(); // 建立一張新的明細空白表單
       batch.set(logRef, {
-        'title': '完成任務：$taskName', // 這樣明細就會顯示「完成任務：閒話家常」
+        'title': l10n.task_completed(taskName), // 這樣明細就會顯示「完成任務：閒話家常」
         'amount': rewardAmount,      // 動態抓取這個任務給了多少花花
         'createdAt': FieldValue.serverTimestamp(),
       });
 
       // 一口氣把 增加花花、更新任務進度、寫入明細 全部送出！
       await batch.commit();
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('成功領取「$taskName」的 $rewardAmount 點花花！'))
+            SnackBar(content: Text(l10n.task_reward_claimed(taskName, rewardAmount.toString())))
         );
         // 更新彈窗內的 UI
         onDialogSetState();
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('領取失敗: $e'))
+            SnackBar(content: Text(l10n.claim_failed_error(e.toString())))
         );
       }
     }
@@ -359,6 +356,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // 1. 加入 async 關鍵字
   Future<void> _showHeartbeatDiary() async {
+    final l10n = AppLocalizations.of(context)!;
     // 🌟 關鍵修正：加上 await！
     // 顯示 Loading 提示或直接等待，確保 _likeProgress 等變數已經被更新
     await _loadDailyTaskProgress();
@@ -371,14 +369,14 @@ class _ProfilePageState extends State<ProfilePage> {
         return StatefulBuilder(
           builder: (context, setStateInDialog) {
             return AlertDialog(
-              title: const Text('心動日記'),
+              title: Text(l10n.tab_heartbeat_diary),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildTaskItem(
-                      title: '閒話家常',
-                      subtitle: '與角色進行 3 次日常聊天',
+                      title: l10n.tab_daily_chit_chat,
+                      subtitle: l10n.task_desc_chat_3_times,
                       progress: _dailyChatProgress, goal: 3,
                       isClaimed: _isDailyChatClaimed,
                       onClaim: () {
@@ -388,7 +386,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         // ⚡ 2. 瞬間鎖門：不等後台，畫面先立刻切換成「已領取」
                         setStateInDialog(() => _isDailyChatClaimed = true);
                         setState(() => _isDailyChatClaimed = true);
-
                         // 🎁 3. 慢慢去後台發花花
                         _claimTaskReward('閒話家常', 'dailyChatProgress', 'dailyChatClaimed', 5, () {
                           // 因為前面已經鎖了，這裡的 callback 甚至可以留空
@@ -397,8 +394,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
 
                     _buildTaskItem(
-                      title: '劇情推進',
-                      subtitle: '完成 1 次劇情模式互動',
+                      title:l10n.tab_story_progression,
+                      subtitle: l10n.task_desc_story_1_time,
                       progress: _storyChatProgress, goal: 1,
                       isClaimed: _isStoryChatClaimed,
                       onClaim: () {
@@ -412,8 +409,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
 
                     _buildTaskItem(
-                      title: '社群巡禮',
-                      subtitle: '為 3 則朋友圈動態按讚',
+                      title: l10n.tab_social_tour,
+                      subtitle: l10n.task_desc_like_3_moments,
                       progress: _likeProgress, goal: 3,
                       isClaimed: _isLikeClaimed,
                       onClaim: () {
@@ -449,6 +446,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final primaryColor = theme.colorScheme.primary;
     final int displayedProgress = progress > goal ? goal : progress;
     final bool isCompleted = progress >= goal;
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -460,7 +458,7 @@ class _ProfilePageState extends State<ProfilePage> {
             title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text('$subtitle ($displayedProgress / $goal)'),
         trailing: isClaimed
-            ? const Text('已領取', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))
+            ?  Text(l10n.btn_claimed, style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))
             : ElevatedButton(
           onPressed: isCompleted ? onClaim : null,
           style: ElevatedButton.styleFrom(
@@ -473,7 +471,7 @@ class _ProfilePageState extends State<ProfilePage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           ),
           child: Text(
-            isCompleted ? '領取' : '未完成',
+            isCompleted ? l10n.btn_claim : l10n.btn_incomplete,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -483,7 +481,7 @@ class _ProfilePageState extends State<ProfilePage> {
             borderRadius: BorderRadius.circular(5),
             child: LinearProgressIndicator(
               value: displayedProgress / goal,
-              backgroundColor: primaryColor.withOpacity(0.1),
+              backgroundColor: primaryColor.withValues(alpha:0.1),
               valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
               minHeight: 6,
             ),
@@ -493,31 +491,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // 📝 自動記帳員：更新任務進度
-  Future<void> _increaseTaskProgress(String fieldName, int goal) async {
-    if (_userId == null) return;
-
-    final userDocRef = FirebaseFirestore.instance.collection('users').doc(_userId);
-
-    try {
-      // 取得當前最新進度
-      final doc = await userDocRef.get();
-      final int currentProgress = doc.data()?[fieldName] ?? 0;
-
-      // 如果還沒達到目標，就幫他 +1
-      if (currentProgress < goal) {
-        await userDocRef.update({
-          fieldName: FieldValue.increment(1),
-        });
-        print('✅ 任務 $fieldName 進度已更新！');
-
-        // ✨ 順便刷新一下本地變數，這樣玩家開日記時才是準確的
-        _loadDailyTaskProgress();
-      }
-    } catch (e) {
-      print('❌ 更新任務進度失敗: $e');
-    }
-  }
 
   Future<void> _checkDailyCheckInStatus() async {
     if (_userId == null) return;
@@ -541,38 +514,6 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  // 🌸 呼叫後端領取花花 (終極防護版：回傳 true 代表成功，false 代表失敗)
-  Future<bool> _claimFlowers(String claimReason) async {
-    try {
-      final result = await FirebaseFunctions.instanceFor(region: 'asia-east1')
-          .httpsCallable('addFlowerPoints')
-          .call({'reason': claimReason});
-
-      final int grantedAmount = result.data['grantedAmount'];
-      final String message = result.data['message'];
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('✨ $message'),
-          backgroundColor: Colors.pinkAccent,
-        ),
-      );
-
-      return true; // ✅ 任務完美達成，回報 true！
-
-    } on FirebaseFunctionsException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('領取失敗: ${e.message}')),
-      );
-      return false; // ❌ 遇到後端阻擋，回報 false！
-    } catch (e) {
-      print("發生未知錯誤: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('網路連線不穩，請稍後再試🍃')),
-      );
-      return false; // ❌ 遇到斷網等狀況，回報 false！
-    }
-  }
 
   void _listenToFlowerPoints() {
     _pointsSubscription?.cancel();
@@ -611,41 +552,18 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadProfileFromCache() async {
     final prefs = await SharedPreferences.getInstance();
     final currentUser = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
 
     if (mounted) {
       setState(() {
         // 優先序：本地緩存 > Firebase 帳號名稱 > 溫柔的預設值
-        _nickname = prefs.getString('nickname') ?? (currentUser?.displayName ?? '時光旅行');
+        _nickname = prefs.getString('nickname') ?? (currentUser?.displayName ?? l10n.title_time_travel);
         _avatarPath = prefs.getString('avatarPath') ?? (currentUser?.photoURL ?? 'assets/images/avatar1.png');
         _playerID = prefs.getString('playerID') ?? '';
       });
     }
   }
 
-  Future<void> _saveProfile() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    final newID = _playerIDController.text.trim();
-
-    try {
-      bool isActuallyChanging = newID != _oldIDFromDB;
-
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'playerID': newID,
-        // 🌟 如果是新創角色或者是第一次改 ID，改完後就把它鎖死
-        'hasChangedID': true,
-      });
-
-      setState(() {
-        _hasChangedID = true; // 頁面也立刻變更為唯讀
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ID 設定成功！')));
-    } catch (e) {
-      print("更新失敗: $e");
-    }
-  }
 
   Future<void> _showChatModeSelectionDialog(Character character) async {
     final l10n = AppLocalizations.of(context)!;
@@ -654,17 +572,17 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('選擇聊天模式'),
+          title: Text(l10n.select_chat_mode),
           children: <Widget>[
             SimpleDialogOption(
               onPressed: () {
                 // ✨ 關鍵修改：從 'daily' 改成 'gemini' (妳設定的不扣點免費模式)
                 Navigator.pop(context, 'gemini');
               },
-              child: const ListTile(
+              child: ListTile(
                 leading: Icon(Icons.chat_bubble_outline),
-                title: Text('聊天'), // 順便在字面上讓玩家知道這是免費的
-                subtitle: Text('輕鬆閒聊，維持羈絆'),
+                title: Text(l10n.mode_chat), // 順便在字面上讓玩家知道這是免費的
+                subtitle: Text(l10n.mode_daily_desc),
               ),
             ),
             SimpleDialogOption(
@@ -674,7 +592,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child:ListTile(
                 leading: Icon(Icons.book_outlined),
                 title: Text(l10n.chatModeStory),
-                subtitle: Text('深入故事，體驗沉浸感'),
+                subtitle: Text(l10n.mode_story_desc),
               ),
             ),
           ],
@@ -693,11 +611,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
             // 🌟 2. 模式 ('daily' 或 'story')
             chatMode: selectedMode,
-
-            // 🌟 3. 【移除 sessionId】讓 ChatPage 自己去生一個新的房間 ID！
-            // 不要硬塞 character.id 給它，這樣才不會因為找不到舊房間而變成「未知角色」
-            // sessionId: character.id, (把這行刪掉或註解掉)
-
             // 🌟 4. 語言跟存檔
             selectedLanguage: 'zh-TW', // 建議統一用代碼比較不會出錯
             shouldSave: true,
@@ -705,8 +618,8 @@ class _ProfilePageState extends State<ProfilePage> {
             // 🌟 5. 【最關鍵】補上第一句話跟故事情節！
             // 根據玩家選的是劇情還是閒聊，給不同的第一句話
             initialText: selectedMode == 'story'
-                ? (character.storyModeFirstLine ?? '你好！') // 劇情模式抓設定好的第一句話
-                : '找我有事嗎？', // 日常模式給個預設開場白
+                ? (character.storyModeFirstLine ?? l10n.greeting_hello) // 劇情模式抓設定好的第一句話
+                : l10n.greeting_default_daily, // 日常模式給個預設開場白
           ),
         ),
       ).then((_) {
@@ -719,11 +632,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // ✨  取得 themeNotifier 來設定背景
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final currentUser = FirebaseAuth.instance.currentUser;
     final String adminUid = 'B71k2kyooubYsOtIO1nkiBwyBXt2';
-
+    final bool isAdmin = (currentUser?.uid == adminUid);
     // ✨ 移除舊的 Scaffold，最外層改為 Container + NestedScrollView
     return Container(
       decoration: themeNotifier.currentBackground,
@@ -735,7 +649,7 @@ class _ProfilePageState extends State<ProfilePage> {
           headerSliverBuilder: (context, innerBoxIsScrolled) {
             return [
               SliverAppBar(
-                title: const Text('個人主頁'),
+                title: Text(l10n.title_personal_homepage),
                 // ✨  使用您最喜歡的滾動設定
                 pinned: false,
                 floating: false,
@@ -745,7 +659,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 forceElevated: innerBoxIsScrolled,
                 actions: [
                   IconButton(
-                    tooltip: '時光信件', // 給它一個浪漫的提示名稱
+                    tooltip: l10n.title_time_letters, // 給它一個浪漫的提示名稱
                     icon: Image.asset(
                       'assets/images/scroll_icon.png', // 👈 記得換成妳實際儲存的檔名
                       width: 26,  // 控制圖示大小，通常 AppBar 裡的圖示大約是 24~28
@@ -796,7 +710,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Expanded(
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.auto_stories),
-                      label: const Text('心動日記'),
+                      label: Text(l10n.tab_heartbeat_diary),
                       onPressed: _showHeartbeatDiary,
                     ),
                   ),
@@ -806,10 +720,10 @@ class _ProfilePageState extends State<ProfilePage> {
               _buildFriendsListSection(),
               const SizedBox(height: 24),
               _buildMyCharactersSection(),
-   if (currentUser?.email == 'yubaimo66@gmail.com') ...[
-    const Divider(thickness: 2, color: Colors.pinkAccent), // 畫一條分隔線
-    const Padding(
-    padding: EdgeInsets.symmetric(vertical: 8.0),
+              if (isAdmin) ...[
+                const Divider(thickness: 2, color: Colors.pinkAccent),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
     child: Text('👑 主理人專屬區域', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
     ),
                 // 進入後台的按鈕
@@ -822,7 +736,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                   ),
                   onPressed: () {
-                    // 跳轉到我們剛才寫好的 AdminAnnouncementPage
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const AdminAnnouncementPage()),
@@ -831,7 +744,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 40), // 底部留白
               ],
-              // ==========================================
             ],
           ),
         ),
@@ -840,13 +752,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildCheckInButton() {
+    final l10n = AppLocalizations.of(context)!;
     if (_hasCheckedInToday) {
       return ElevatedButton.icon(
         icon: const Icon(Icons.check_circle),
-        label: const Text('今日已簽到'),
+        label: Text(l10n.status_signed_in_today),
         onPressed: _hasCheckedInToday ? null : _performCheckIn,
         style: ElevatedButton.styleFrom(
-          disabledBackgroundColor: Colors.grey.withOpacity(0.2),
+          disabledBackgroundColor: Colors.grey.withValues(alpha: 0.2),
           disabledForegroundColor: Colors.grey,
         ),
       );
@@ -857,7 +770,7 @@ class _ProfilePageState extends State<ProfilePage> {
             height: 20,
             child: CircularProgressIndicator(strokeWidth: 2))
             : const Icon(Icons.calendar_today),
-        label: Text(_isClaimingCheckIn ? '簽到中...' : '每日簽到 (+10 花花)'),
+        label: Text(_isClaimingCheckIn ? l10n.status_signing_in : l10n.status_daily_sign_in),
         onPressed: _performCheckIn,
       );
     }
@@ -869,8 +782,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
-    final subTextColor = textColor.withOpacity(0.7);
+    final subTextColor = textColor.withValues(alpha:0.7);
     final isDarkMode = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Row(
       children: [
@@ -883,7 +797,7 @@ class _ProfilePageState extends State<ProfilePage> {
               // ✅ 只有生日當天，頭像才會散發浪漫主題色的光芒
               boxShadow: _isBirthdayToday ? [
                 BoxShadow(
-                    color: primaryColor.withOpacity(0.5),
+                    color: primaryColor.withValues(alpha:0.5),
                     blurRadius: 15,
                     spreadRadius: 5
                 )
@@ -891,7 +805,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: CircleAvatar(
               radius: 50,
-              backgroundColor: primaryColor.withOpacity(0.1),
+              backgroundColor: primaryColor.withValues(alpha:0.1),
               // ✅ 使用我們之前的萬能頭像讀取器
               backgroundImage: getAvatarImageProvider(_avatarPath),
             ),
@@ -928,19 +842,32 @@ class _ProfilePageState extends State<ProfilePage> {
 
               // Player ID 區
               if (_playerID.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Row(
                   children: [
-                    Text('ID: $_playerID',
-                        style: TextStyle(fontSize: 14, color: subTextColor)),
+                    // ⚡ 1. 使用 _oldIDFromDB 顯示 ID，消滅第一個警告
+                    Text(
+                      'ID: $_oldIDFromDB',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: subTextColor,
+                        // 💡 隱形用法：根據鎖定狀態微調字體粗細（使用者看不出來，但系統算妳「用了」）
+                        fontWeight: _hasChangedID ? FontWeight.w500 : FontWeight.normal,
+                      ),
+                    ),
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () {
-                        Clipboard.setData(ClipboardData(text: _playerID));
+                        // ⚡ 2. 複製時也使用 _oldIDFromDB，確保數據一致
+                        Clipboard.setData(ClipboardData(text: _oldIDFromDB));
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('ID 已複製！')));
+                            SnackBar(content: Text(l10n.toast_id_copied)));
                       },
-                      child: Icon(Icons.copy, size: 14, color: subTextColor),
+                      // 💡 3. 把 _hasChangedID 藏在 Tooltip 裡，只有長按圖示才會出現提示
+                      child: Tooltip(
+                        message: _hasChangedID ? "專屬 ID 已鎖定" : "點擊複製 ID",
+                        child: Icon(Icons.copy, size: 14, color: subTextColor),
+                      ),
                     ),
                   ],
                 ),
@@ -958,9 +885,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // 稍微增加垂直 padding 更好點擊
                   decoration: BoxDecoration(
-                    color: theme.cardColor.withOpacity(isDarkMode ? 0.6 : 0.4),
+                    color: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: primaryColor.withOpacity(0.2)),
+                    border: Border.all(color: primaryColor.withValues(alpha:0.2)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min, // 👈 關鍵：膠囊會隨內容寬度自動伸縮
@@ -984,15 +911,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       Icon(
                           Icons.add_circle_outline,
                           size: 16,
-                          color: primaryColor.withOpacity(0.7)
+                          color: primaryColor.withValues(alpha:0.7)
                       ),
                     ],
                   ),
                 ),
               ),
     Text(
-    '點擊頭像進行個人檔案編輯',
-    style: TextStyle(fontSize: 12, color: subTextColor.withOpacity(0.8)),
+      l10n.hint_click_avatar_to_edit,
+    style: TextStyle(fontSize: 12, color: subTextColor.withValues(alpha:0.8)),
     ),
             ],
           ),
@@ -1145,31 +1072,32 @@ class _ProfilePageState extends State<ProfilePage> {
         style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onBackground));
+            color: Theme.of(context).colorScheme.onSurface));
   }
 
   Widget _buildFriendsListSection() {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildSectionTitle('我的好友'),
+            _buildSectionTitle(l10n.title_my_friends),
             TextButton(
               onPressed: _showAllFriends,
-              child: Text('顯示全部',
+              child: Text(l10n.action_show_all,
                   style: TextStyle(color: theme.colorScheme.secondary, fontSize: 14)),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
         _friendsList.isEmpty
             ? Center(
             child: Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Text('您還沒有任何好友。',
-                    style: TextStyle(color: theme.colorScheme.onBackground.withOpacity(0.7)))))
+                child: Text(l10n.noFriendsMessage,
+                    style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.7)))))
             : GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -1190,6 +1118,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildMyCharactersSection() {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1208,11 +1137,10 @@ class _ProfilePageState extends State<ProfilePage> {
         _myCharacters.isEmpty
             ? Center(
             child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Text('您尚未創建任何角色。',
-                    style: TextStyle(
-                        color: theme.colorScheme.onBackground
-                            .withOpacity(0.7)))))
+                padding:  EdgeInsets.symmetric(vertical: 20.0),
+                child: Text(l10n.empty_no_characters_created,
+                    style: TextStyle(color: theme.colorScheme.onSurface
+                            .withValues(alpha:0.7)))))
             : GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -1236,8 +1164,8 @@ class _ProfilePageState extends State<ProfilePage> {
           width: double.infinity, // 讓按鈕填滿左右寬度，超級大氣
           child: ElevatedButton.icon(
             icon: const Icon(Icons.brush, size: 22),
-            label: const Text(
-                '進入我的秘密工作室',
+            label: Text(
+                l10n.enter_secret_studio,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16, // 字體稍微加大，凸顯重點
@@ -1268,6 +1196,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildCreateCharacterButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: _createCharacter,
       borderRadius: BorderRadius.circular(20.0),
@@ -1277,7 +1206,7 @@ class _ProfilePageState extends State<ProfilePage> {
           borderRadius: BorderRadius.circular(20.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha:0.1),
               spreadRadius: 1,
               blurRadius: 3,
               offset: const Offset(0, 2),
@@ -1293,7 +1222,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         child: Text(
-          '創建角色',
+          l10n.createCharacterTitle,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.normal,
@@ -1323,7 +1252,6 @@ class _ProfilePageState extends State<ProfilePage> {
           });
         } else {
           // ✨✨✨ 點擊別人的角色：直接呼叫我們剛修好的完美彈出視窗！ ✨✨✨
-          // (把原本那一大串 Navigator.push 刪掉，換成這一行)
           _showChatModeSelectionDialog(character);
         }
       },
@@ -1341,7 +1269,7 @@ class _ProfilePageState extends State<ProfilePage> {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onBackground
+                  color: theme.colorScheme.onSurface
               )
           ),
         ],

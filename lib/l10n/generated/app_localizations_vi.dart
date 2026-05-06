@@ -3196,4 +3196,115 @@ class AppLocalizationsVi extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName: \"Anh đều ghi lại hết rồi, mấy ngày nay em vất vả rồi, anh sẽ luôn ở bên cạnh em.\"';
   }
+
+  @override
+  String get daily_gift_success => 'Nhận quà tặng mỗi ngày thành công! 🌸';
+
+  @override
+  String get check_in_fail_network =>
+      'Điểm danh thất bại, vui lòng kiểm tra kết nối mạng 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return 'Hoàn thành nhiệm vụ: $taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return 'Nhận thành công $rewardAmount Hoa từ \"$taskName\"!';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return 'Nhận thất bại: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => 'Nhật ký rung động';
+
+  @override
+  String get tab_daily_chit_chat => 'Trò chuyện hàng ngày';
+
+  @override
+  String get task_desc_chat_3_times =>
+      'Thực hiện 3 cuộc trò chuyện hàng ngày với nhân vật';
+
+  @override
+  String get tab_story_progression => 'Tiến triển cốt truyện';
+
+  @override
+  String get task_desc_story_1_time =>
+      'Hoàn thành 1 lần tương tác chế độ cốt truyện';
+
+  @override
+  String get tab_social_tour => 'Dạo quanh mạng xã hội';
+
+  @override
+  String get task_desc_like_3_moments => 'Thích 3 bài viết trên Vòng bạn bè';
+
+  @override
+  String get btn_claimed => 'Đã nhận';
+
+  @override
+  String get btn_claim => 'Nhận';
+
+  @override
+  String get btn_incomplete => 'Chưa hoàn thành';
+
+  @override
+  String get network_unstable_retry =>
+      'Kết nối mạng không ổn định, vui lòng thử lại sau 🍃';
+
+  @override
+  String get title_time_travel => 'Du hành thời gian';
+
+  @override
+  String get select_chat_mode => 'Chọn chế độ trò chuyện';
+
+  @override
+  String get mode_chat => 'Trò chuyện';
+
+  @override
+  String get mode_daily_desc => 'Trò chuyện thư giãn, duy trì sự gắn kết';
+
+  @override
+  String get mode_story_desc =>
+      'Đi sâu vào câu chuyện, trải nghiệm cảm giác đắm chìm';
+
+  @override
+  String get greeting_hello => 'Xin chào!';
+
+  @override
+  String get greeting_default_daily => 'Tìm tôi có việc gì không?';
+
+  @override
+  String get title_personal_homepage => 'Trang cá nhân';
+
+  @override
+  String get title_time_letters => 'Thư thời gian';
+
+  @override
+  String get status_signed_in_today => 'Hôm nay đã điểm danh';
+
+  @override
+  String get status_signing_in => 'Đang điểm danh...';
+
+  @override
+  String get status_daily_sign_in => 'Điểm danh mỗi ngày (+10 Hoa)';
+
+  @override
+  String get toast_id_copied => 'Đã sao chép ID!';
+
+  @override
+  String get hint_click_avatar_to_edit =>
+      'Nhấn vào ảnh đại diện để chỉnh sửa hồ sơ';
+
+  @override
+  String get title_my_friends => 'Bạn bè của tôi';
+
+  @override
+  String get action_show_all => 'Hiển thị tất cả';
+
+  @override
+  String get empty_no_characters_created => 'Bạn chưa tạo nhân vật nào.';
 }

@@ -3198,4 +3198,113 @@ class AppLocalizationsHi extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName: \"मैंने सब लिख लिया है। तुम्हारे लिए ये कुछ दिन कठिन रहे हैं, मैं हमेशा तुम्हारे साथ रहूँगा।\"';
   }
+
+  @override
+  String get daily_gift_success => 'दैनिक उपहार सफलतापूर्वक प्राप्त किया! 🌸';
+
+  @override
+  String get check_in_fail_network =>
+      'चेक-इन विफल, कृपया अपने नेटवर्क कनेक्शन की जाँच करें 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return 'कार्य पूरा हुआ: $taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return '«$taskName» के लिए $rewardAmount फूल सफलतापूर्वक प्राप्त किए!';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return 'प्राप्त करना विफल रहा: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => 'हार्टबीट डायरी';
+
+  @override
+  String get tab_daily_chit_chat => 'दैनिक बातचीत';
+
+  @override
+  String get task_desc_chat_3_times => 'किसी पात्र के साथ 3 बार दैनिक चैट करें';
+
+  @override
+  String get tab_story_progression => 'कहानी की प्रगति';
+
+  @override
+  String get task_desc_story_1_time => '1 कहानी मोड इंटरेक्शन पूरा करें';
+
+  @override
+  String get tab_social_tour => 'सोशल टूर';
+
+  @override
+  String get task_desc_like_3_moments => '3 मोमेंट्स पोस्ट को लाइक करें';
+
+  @override
+  String get btn_claimed => 'प्राप्त किया';
+
+  @override
+  String get btn_claim => 'प्राप्त करें';
+
+  @override
+  String get btn_incomplete => 'अपूर्ण';
+
+  @override
+  String get network_unstable_retry =>
+      'अस्थिर नेटवर्क कनेक्शन, कृपया बाद में पुनः प्रयास करें 🍃';
+
+  @override
+  String get title_time_travel => 'समय यात्रा';
+
+  @override
+  String get select_chat_mode => 'चैट मोड चुनें';
+
+  @override
+  String get mode_chat => 'चैट';
+
+  @override
+  String get mode_daily_desc => 'अपना बंधन बनाए रखने के लिए अनौपचारिक चैट करें';
+
+  @override
+  String get mode_story_desc => 'गहन अनुभव के लिए कहानी में गहराई तक उतरें';
+
+  @override
+  String get greeting_hello => 'नमस्ते!';
+
+  @override
+  String get greeting_default_daily => 'मुझे ढूंढ रहे थे?';
+
+  @override
+  String get title_personal_homepage => 'व्यक्तिगत मुखपृष्ठ';
+
+  @override
+  String get title_time_letters => 'समय के पत्र';
+
+  @override
+  String get status_signed_in_today => 'आज साइन इन किया';
+
+  @override
+  String get status_signing_in => 'साइन इन हो रहा है...';
+
+  @override
+  String get status_daily_sign_in => 'दैनिक साइन-इन (+10 फूल)';
+
+  @override
+  String get toast_id_copied => 'आईडी कॉपी हो गई!';
+
+  @override
+  String get hint_click_avatar_to_edit =>
+      'प्रोफ़ाइल संपादित करने के लिए अवतार पर क्लिक करें';
+
+  @override
+  String get title_my_friends => 'मेरे दोस्त';
+
+  @override
+  String get action_show_all => 'सभी दिखाएं';
+
+  @override
+  String get empty_no_characters_created =>
+      'आपने अभी तक कोई पात्र नहीं बनाया है।';
 }

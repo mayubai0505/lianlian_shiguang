@@ -5631,6 +5631,204 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'{characterName}：「我都記下來了，這幾天辛苦妳了，我會一直在妳身邊的。」'**
   String care_calendar_save_success(String characterName);
+
+  /// No description provided for @daily_gift_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'成功領取每日贈禮！🌸'**
+  String get daily_gift_success;
+
+  /// No description provided for @check_in_fail_network.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'簽到失敗，請檢查網路連線 🍃'**
+  String get check_in_fail_network;
+
+  /// No description provided for @task_completed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完成任務：{taskName}'**
+  String task_completed(String taskName);
+
+  /// No description provided for @task_reward_claimed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'成功領取「{taskName}」的 {rewardAmount} 點花花！'**
+  String task_reward_claimed(String taskName, String rewardAmount);
+
+  /// No description provided for @claim_failed_error.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'領取失敗: {e}'**
+  String claim_failed_error(String e);
+
+  /// No description provided for @tab_heartbeat_diary.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'心動日記'**
+  String get tab_heartbeat_diary;
+
+  /// No description provided for @tab_daily_chit_chat.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'閒話家常'**
+  String get tab_daily_chit_chat;
+
+  /// No description provided for @task_desc_chat_3_times.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與角色進行 3 次日常聊天'**
+  String get task_desc_chat_3_times;
+
+  /// No description provided for @tab_story_progression.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'劇情推進'**
+  String get tab_story_progression;
+
+  /// No description provided for @task_desc_story_1_time.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完成 1 次劇情模式互動'**
+  String get task_desc_story_1_time;
+
+  /// No description provided for @tab_social_tour.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'社群巡禮'**
+  String get tab_social_tour;
+
+  /// No description provided for @task_desc_like_3_moments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'為 3 則朋友圈動態按讚'**
+  String get task_desc_like_3_moments;
+
+  /// No description provided for @btn_claimed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已領取'**
+  String get btn_claimed;
+
+  /// No description provided for @btn_claim.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'領取'**
+  String get btn_claim;
+
+  /// No description provided for @btn_incomplete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未完成'**
+  String get btn_incomplete;
+
+  /// No description provided for @network_unstable_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'網路連線不穩，請稍後再試🍃'**
+  String get network_unstable_retry;
+
+  /// No description provided for @title_time_travel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'時光旅行'**
+  String get title_time_travel;
+
+  /// No description provided for @select_chat_mode.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇聊天模式'**
+  String get select_chat_mode;
+
+  /// No description provided for @mode_chat.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聊天'**
+  String get mode_chat;
+
+  /// No description provided for @mode_daily_desc.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'輕鬆閒聊，維持羈絆'**
+  String get mode_daily_desc;
+
+  /// No description provided for @mode_story_desc.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'深入故事，體驗沉浸感'**
+  String get mode_story_desc;
+
+  /// No description provided for @greeting_hello.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'你好！'**
+  String get greeting_hello;
+
+  /// No description provided for @greeting_default_daily.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找我有事嗎？'**
+  String get greeting_default_daily;
+
+  /// No description provided for @title_personal_homepage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'個人主頁'**
+  String get title_personal_homepage;
+
+  /// No description provided for @title_time_letters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'時光信件'**
+  String get title_time_letters;
+
+  /// No description provided for @status_signed_in_today.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日已簽到'**
+  String get status_signed_in_today;
+
+  /// No description provided for @status_signing_in.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'簽到中...'**
+  String get status_signing_in;
+
+  /// No description provided for @status_daily_sign_in.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每日簽到 (+10 花花)'**
+  String get status_daily_sign_in;
+
+  /// No description provided for @toast_id_copied.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'ID 已複製！'**
+  String get toast_id_copied;
+
+  /// No description provided for @hint_click_avatar_to_edit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊頭像進行個人檔案編輯'**
+  String get hint_click_avatar_to_edit;
+
+  /// No description provided for @title_my_friends.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的好友'**
+  String get title_my_friends;
+
+  /// No description provided for @action_show_all.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'顯示全部'**
+  String get action_show_all;
+
+  /// No description provided for @empty_no_characters_created.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您尚未創建任何角色。'**
+  String get empty_no_characters_created;
 }
 
 class _AppLocalizationsDelegate

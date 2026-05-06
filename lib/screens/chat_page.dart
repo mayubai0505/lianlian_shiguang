@@ -731,6 +731,15 @@ class _ChatPageState extends State<ChatPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('chat_draft_${widget.sessionId}');
 
+    if (_currentMode != ChatMode.gemini) { // 假設 gemini 模式不算進度
+      if (_currentMode == ChatMode.story) { // 如果妳的劇情模式叫做 story
+        _increaseTaskProgress('storyChatProgress', 1);
+      } else {
+        // 其他當作日常聊天
+        _increaseTaskProgress('dailyChatProgress', 3);
+      }
+    }
+
     dynamic triggeredEgg; // 這裡用 dynamic 或 妳的 EasterEgg 類別
 
     // ✨ 1. 彩蛋雷達掃描 (加入防重複觸發機制！)
@@ -772,6 +781,31 @@ class _ChatPageState extends State<ChatPage> {
           audioPath: audioPath,
           secretPrompt: secretPrompt
       );
+    }
+  }
+
+  Future<void> _increaseTaskProgress(String fieldName, int goal) async {
+    if (_userId == null) return;
+
+    final userDocRef = FirebaseFirestore.instance.collection('users').doc(_userId);
+
+    try {
+      // 取得當前最新進度
+      final doc = await userDocRef.get();
+      final int currentProgress = doc.data()?[fieldName] ?? 0;
+
+      // 如果還沒達到目標，就幫他 +1
+      if (currentProgress < goal) {
+        await userDocRef.update({
+          fieldName: FieldValue.increment(1),
+        });
+        print('✅ 任務 $fieldName 進度已更新！');
+
+        // ✨ 順便刷新一下本地變數，這樣玩家開日記時才是準確的
+        _loadDailyTaskProgress();
+      }
+    } catch (e) {
+      print('❌ 更新任務進度失敗: $e');
     }
   }
 

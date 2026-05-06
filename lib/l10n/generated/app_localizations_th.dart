@@ -3158,4 +3158,113 @@ class AppLocalizationsTh extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName: \"ฉันจดไว้หมดแล้ว ช่วงนี้เธอเหนื่อยหน่อยนะ แต่ฉันจะอยู่เคียงข้างเธอเสมอ\"';
   }
+
+  @override
+  String get daily_gift_success => 'รับของขวัญประจำวันสำเร็จ! 🌸';
+
+  @override
+  String get check_in_fail_network =>
+      'เช็คอินล้มเหลว โปรดตรวจสอบการเชื่อมต่อเครือข่าย 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return 'ทำภารกิจสำเร็จ: $taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return 'รับดอกไม้ $rewardAmount ดอก จาก \"$taskName\" สำเร็จ!';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return 'การรับล้มเหลว: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => 'ไดอารี่ใจเต้น';
+
+  @override
+  String get tab_daily_chit_chat => 'คุยเล่นทั่วไป';
+
+  @override
+  String get task_desc_chat_3_times => 'แชทคุยเล่นกับตัวละคร 3 ครั้ง';
+
+  @override
+  String get tab_story_progression => 'การดำเนินเนื้อเรื่อง';
+
+  @override
+  String get task_desc_story_1_time => 'โต้ตอบในโหมดเนื้อเรื่อง 1 ครั้ง';
+
+  @override
+  String get tab_social_tour => 'ทัวร์โซเชียล';
+
+  @override
+  String get task_desc_like_3_moments => 'กดถูกใจโพสต์ในโมเมนต์ 3 ครั้ง';
+
+  @override
+  String get btn_claimed => 'รับแล้ว';
+
+  @override
+  String get btn_claim => 'รับ';
+
+  @override
+  String get btn_incomplete => 'ยังไม่เสร็จ';
+
+  @override
+  String get network_unstable_retry =>
+      'การเชื่อมต่อเครือข่ายไม่เสถียร โปรดลองอีกครั้งในภายหลัง 🍃';
+
+  @override
+  String get title_time_travel => 'ข้ามเวลา';
+
+  @override
+  String get select_chat_mode => 'เลือกโหมดการแชท';
+
+  @override
+  String get mode_chat => 'แชท';
+
+  @override
+  String get mode_daily_desc => 'คุยเล่นสบายๆ เพื่อรักษาความผูกพัน';
+
+  @override
+  String get mode_story_desc =>
+      'ดำดิ่งสู่เรื่องราวเพื่อสัมผัสประสบการณ์ที่สมจริง';
+
+  @override
+  String get greeting_hello => 'สวัสดี!';
+
+  @override
+  String get greeting_default_daily => 'มีธุระกับฉันเหรอ?';
+
+  @override
+  String get title_personal_homepage => 'หน้าแรกส่วนตัว';
+
+  @override
+  String get title_time_letters => 'จดหมายแห่งเวลา';
+
+  @override
+  String get status_signed_in_today => 'เช็คอินวันนี้แล้ว';
+
+  @override
+  String get status_signing_in => 'กำลังเช็คอิน...';
+
+  @override
+  String get status_daily_sign_in => 'เช็คอินรายวัน (+10 ดอกไม้)';
+
+  @override
+  String get toast_id_copied => 'คัดลอก ID แล้ว!';
+
+  @override
+  String get hint_click_avatar_to_edit =>
+      'คลิกที่รูปโปรไฟล์เพื่อแก้ไขข้อมูลส่วนตัว';
+
+  @override
+  String get title_my_friends => 'เพื่อนของฉัน';
+
+  @override
+  String get action_show_all => 'แสดงทั้งหมด';
+
+  @override
+  String get empty_no_characters_created => 'คุณยังไม่ได้สร้างตัวละครใดๆ';
 }

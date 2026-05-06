@@ -1278,5 +1278,54 @@
         "placeholders": {
             "characterName": { "type": "String" }
         }
-    }
+    },
+    "daily_gift_success": "¡Regalo diario reclamado con éxito! 🌸",
+    "check_in_fail_network": "Fallo al registrar, comprueba tu conexión de red 🍃",
+    "task_completed": "Misión completada: {taskName}",
+    "@task_completed": {
+        "placeholders": {
+            "taskName": { "type": "String" }
+        }
+    },
+    "task_reward_claimed": "¡Reclamaste con éxito {rewardAmount} flores de \"{taskName}\"!",
+    "@task_reward_claimed": {
+        "placeholders": {
+            "taskName": { "type": "String" },
+            "rewardAmount": { "type": "String" }
+        }
+    },
+    "claim_failed_error": "Error al reclamar: {e}",
+    "@claim_failed_error": {
+        "placeholders": {
+            "e": { "type": "String" }
+        }
+    },
+    "tab_heartbeat_diary": "Diario de latidos",
+    "tab_daily_chit_chat": "Charla diaria",
+    "task_desc_chat_3_times": "Chatea 3 veces con un personaje",
+    "tab_story_progression": "Progreso de la historia",
+    "task_desc_story_1_time": "Completa 1 interacción en el modo historia",
+    "tab_social_tour": "Tour social",
+    "task_desc_like_3_moments": "Dale me gusta a 3 publicaciones de Momentos",
+    "btn_claimed": "Reclamado",
+    "btn_claim": "Reclamar",
+    "btn_incomplete": "Incompleto",
+    "network_unstable_retry": "Conexión inestable, inténtalo de nuevo más tarde 🍃",
+    "title_time_travel": "Viaje en el tiempo",
+    "select_chat_mode": "Seleccionar modo de chat",
+    "mode_chat": "Chat",
+    "mode_daily_desc": "Charla informal para mantener el vínculo",
+    "mode_story_desc": "Sumérgete en la historia para una experiencia inmersiva",
+    "greeting_hello": "¡Hola!",
+    "greeting_default_daily": "¿Me buscabas?",
+    "title_personal_homepage": "Página personal",
+    "title_time_letters": "Cartas del tiempo",
+    "status_signed_in_today": "Registrado hoy",
+    "status_signing_in": "Registrando...",
+    "status_daily_sign_in": "Registro diario (+10 flores)",
+    "toast_id_copied": "¡ID copiado!",
+    "hint_click_avatar_to_edit": "Haz clic en el avatar para editar el perfil",
+    "title_my_friends": "Mis amigos",
+    "action_show_all": "Mostrar todo",
+    "empty_no_characters_created": "Aún no has creado ningún personaje."
 }

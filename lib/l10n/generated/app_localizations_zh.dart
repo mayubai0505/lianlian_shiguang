@@ -3010,6 +3010,111 @@ class AppLocalizationsZh extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName：「我都記下來了，這幾天辛苦妳了，我會一直在妳身邊的。」';
   }
+
+  @override
+  String get daily_gift_success => '成功領取每日贈禮！🌸';
+
+  @override
+  String get check_in_fail_network => '簽到失敗，請檢查網路連線 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return '完成任務：$taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return '成功領取「$taskName」的 $rewardAmount 點花花！';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return '領取失敗: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => '心動日記';
+
+  @override
+  String get tab_daily_chit_chat => '閒話家常';
+
+  @override
+  String get task_desc_chat_3_times => '與角色進行 3 次日常聊天';
+
+  @override
+  String get tab_story_progression => '劇情推進';
+
+  @override
+  String get task_desc_story_1_time => '完成 1 次劇情模式互動';
+
+  @override
+  String get tab_social_tour => '社群巡禮';
+
+  @override
+  String get task_desc_like_3_moments => '為 3 則朋友圈動態按讚';
+
+  @override
+  String get btn_claimed => '已領取';
+
+  @override
+  String get btn_claim => '領取';
+
+  @override
+  String get btn_incomplete => '未完成';
+
+  @override
+  String get network_unstable_retry => '網路連線不穩，請稍後再試🍃';
+
+  @override
+  String get title_time_travel => '時光旅行';
+
+  @override
+  String get select_chat_mode => '選擇聊天模式';
+
+  @override
+  String get mode_chat => '聊天';
+
+  @override
+  String get mode_daily_desc => '輕鬆閒聊，維持羈絆';
+
+  @override
+  String get mode_story_desc => '深入故事，體驗沉浸感';
+
+  @override
+  String get greeting_hello => '你好！';
+
+  @override
+  String get greeting_default_daily => '找我有事嗎？';
+
+  @override
+  String get title_personal_homepage => '個人主頁';
+
+  @override
+  String get title_time_letters => '時光信件';
+
+  @override
+  String get status_signed_in_today => '今日已簽到';
+
+  @override
+  String get status_signing_in => '簽到中...';
+
+  @override
+  String get status_daily_sign_in => '每日簽到 (+10 花花)';
+
+  @override
+  String get toast_id_copied => 'ID 已複製！';
+
+  @override
+  String get hint_click_avatar_to_edit => '點擊頭像進行個人檔案編輯';
+
+  @override
+  String get title_my_friends => '我的好友';
+
+  @override
+  String get action_show_all => '顯示全部';
+
+  @override
+  String get empty_no_characters_created => '您尚未創建任何角色。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6018,6 +6123,111 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String care_calendar_save_success(String characterName) {
     return '$characterName：「我都记下来了，这几天辛苦妳了，我会一直在妳身边的。」';
   }
+
+  @override
+  String get daily_gift_success => '成功领取每日赠礼！🌸';
+
+  @override
+  String get check_in_fail_network => '签到失败，请检查网络连线 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return '完成任务：$taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return '成功领取「$taskName」的 $rewardAmount 点花花！';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return '领取失败: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => '心动日记';
+
+  @override
+  String get tab_daily_chit_chat => '闲话家常';
+
+  @override
+  String get task_desc_chat_3_times => '与角色进行 3 次日常聊天';
+
+  @override
+  String get tab_story_progression => '剧情推进';
+
+  @override
+  String get task_desc_story_1_time => '完成 1 次剧情模式互动';
+
+  @override
+  String get tab_social_tour => '社群巡礼';
+
+  @override
+  String get task_desc_like_3_moments => '为 3 则朋友圈动态按赞';
+
+  @override
+  String get btn_claimed => '已领取';
+
+  @override
+  String get btn_claim => '领取';
+
+  @override
+  String get btn_incomplete => '未完成';
+
+  @override
+  String get network_unstable_retry => '网络连线不稳，请稍后再试🍃';
+
+  @override
+  String get title_time_travel => '时光旅行';
+
+  @override
+  String get select_chat_mode => '选择聊天模式';
+
+  @override
+  String get mode_chat => '聊天';
+
+  @override
+  String get mode_daily_desc => '轻松闲聊，维持羁绊';
+
+  @override
+  String get mode_story_desc => '深入故事，体验沉浸感';
+
+  @override
+  String get greeting_hello => '你好！';
+
+  @override
+  String get greeting_default_daily => '找我有事吗？';
+
+  @override
+  String get title_personal_homepage => '个人主页';
+
+  @override
+  String get title_time_letters => '时光信件';
+
+  @override
+  String get status_signed_in_today => '今日已签到';
+
+  @override
+  String get status_signing_in => '签到中...';
+
+  @override
+  String get status_daily_sign_in => '每日签到 (+10 花花)';
+
+  @override
+  String get toast_id_copied => 'ID 已复制！';
+
+  @override
+  String get hint_click_avatar_to_edit => '点击头像进行个人档案编辑';
+
+  @override
+  String get title_my_friends => '我的好友';
+
+  @override
+  String get action_show_all => '显示全部';
+
+  @override
+  String get empty_no_characters_created => '您尚未创建任何角色。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9026,4 +9236,109 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String care_calendar_save_success(String characterName) {
     return '$characterName：「我都記下來了，這幾天辛苦妳了，我會一直在妳身邊的。」';
   }
+
+  @override
+  String get daily_gift_success => '成功領取每日贈禮！🌸';
+
+  @override
+  String get check_in_fail_network => '簽到失敗，請檢查網路連線 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return '完成任務：$taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return '成功領取「$taskName」的 $rewardAmount 點花花！';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return '領取失敗: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => '心動日記';
+
+  @override
+  String get tab_daily_chit_chat => '閒話家常';
+
+  @override
+  String get task_desc_chat_3_times => '與角色進行 3 次日常聊天';
+
+  @override
+  String get tab_story_progression => '劇情推進';
+
+  @override
+  String get task_desc_story_1_time => '完成 1 次劇情模式互動';
+
+  @override
+  String get tab_social_tour => '社群巡禮';
+
+  @override
+  String get task_desc_like_3_moments => '為 3 則朋友圈動態按讚';
+
+  @override
+  String get btn_claimed => '已領取';
+
+  @override
+  String get btn_claim => '領取';
+
+  @override
+  String get btn_incomplete => '未完成';
+
+  @override
+  String get network_unstable_retry => '網路連線不穩，請稍後再試🍃';
+
+  @override
+  String get title_time_travel => '時光旅行';
+
+  @override
+  String get select_chat_mode => '選擇聊天模式';
+
+  @override
+  String get mode_chat => '聊天';
+
+  @override
+  String get mode_daily_desc => '輕鬆閒聊，維持羈絆';
+
+  @override
+  String get mode_story_desc => '深入故事，體驗沉浸感';
+
+  @override
+  String get greeting_hello => '你好！';
+
+  @override
+  String get greeting_default_daily => '找我有事嗎？';
+
+  @override
+  String get title_personal_homepage => '個人主頁';
+
+  @override
+  String get title_time_letters => '時光信件';
+
+  @override
+  String get status_signed_in_today => '今日已簽到';
+
+  @override
+  String get status_signing_in => '簽到中...';
+
+  @override
+  String get status_daily_sign_in => '每日簽到 (+10 花花)';
+
+  @override
+  String get toast_id_copied => 'ID 已複製！';
+
+  @override
+  String get hint_click_avatar_to_edit => '點擊頭像進行個人檔案編輯';
+
+  @override
+  String get title_my_friends => '我的好友';
+
+  @override
+  String get action_show_all => '顯示全部';
+
+  @override
+  String get empty_no_characters_created => '您尚未創建任何角色。';
 }

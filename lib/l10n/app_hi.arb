@@ -1278,5 +1278,54 @@
         "placeholders": {
             "characterName": { "type": "String" }
         }
-    }
+    },
+    "daily_gift_success": "दैनिक उपहार सफलतापूर्वक प्राप्त किया! 🌸",
+    "check_in_fail_network": "चेक-इन विफल, कृपया अपने नेटवर्क कनेक्शन की जाँच करें 🍃",
+    "task_completed": "कार्य पूरा हुआ: {taskName}",
+    "@task_completed": {
+        "placeholders": {
+            "taskName": { "type": "String" }
+        }
+    },
+    "task_reward_claimed": "«{taskName}» के लिए {rewardAmount} फूल सफलतापूर्वक प्राप्त किए!",
+    "@task_reward_claimed": {
+        "placeholders": {
+            "taskName": { "type": "String" },
+            "rewardAmount": { "type": "String" }
+        }
+    },
+    "claim_failed_error": "प्राप्त करना विफल रहा: {e}",
+    "@claim_failed_error": {
+        "placeholders": {
+            "e": { "type": "String" }
+        }
+    },
+    "tab_heartbeat_diary": "हार्टबीट डायरी",
+    "tab_daily_chit_chat": "दैनिक बातचीत",
+    "task_desc_chat_3_times": "किसी पात्र के साथ 3 बार दैनिक चैट करें",
+    "tab_story_progression": "कहानी की प्रगति",
+    "task_desc_story_1_time": "1 कहानी मोड इंटरेक्शन पूरा करें",
+    "tab_social_tour": "सोशल टूर",
+    "task_desc_like_3_moments": "3 मोमेंट्स पोस्ट को लाइक करें",
+    "btn_claimed": "प्राप्त किया",
+    "btn_claim": "प्राप्त करें",
+    "btn_incomplete": "अपूर्ण",
+    "network_unstable_retry": "अस्थिर नेटवर्क कनेक्शन, कृपया बाद में पुनः प्रयास करें 🍃",
+    "title_time_travel": "समय यात्रा",
+    "select_chat_mode": "चैट मोड चुनें",
+    "mode_chat": "चैट",
+    "mode_daily_desc": "अपना बंधन बनाए रखने के लिए अनौपचारिक चैट करें",
+    "mode_story_desc": "गहन अनुभव के लिए कहानी में गहराई तक उतरें",
+    "greeting_hello": "नमस्ते!",
+    "greeting_default_daily": "मुझे ढूंढ रहे थे?",
+    "title_personal_homepage": "व्यक्तिगत मुखपृष्ठ",
+    "title_time_letters": "समय के पत्र",
+    "status_signed_in_today": "आज साइन इन किया",
+    "status_signing_in": "साइन इन हो रहा है...",
+    "status_daily_sign_in": "दैनिक साइन-इन (+10 फूल)",
+    "toast_id_copied": "आईडी कॉपी हो गई!",
+    "hint_click_avatar_to_edit": "प्रोफ़ाइल संपादित करने के लिए अवतार पर क्लिक करें",
+    "title_my_friends": "मेरे दोस्त",
+    "action_show_all": "सभी दिखाएं",
+    "empty_no_characters_created": "आपने अभी तक कोई पात्र नहीं बनाया है।"
 }

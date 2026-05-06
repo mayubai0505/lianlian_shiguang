@@ -1278,5 +1278,54 @@
     "placeholders": {
       "characterName": { "type": "String" }
     }
-  }
+  },
+  "daily_gift_success": "デイリーギフトの受け取りに成功しました！🌸",
+  "check_in_fail_network": "チェックインに失敗しました。ネットワーク接続を確認してください 🍃",
+  "task_completed": "タスク完了：{taskName}",
+  "@task_completed": {
+    "placeholders": {
+      "taskName": { "type": "String" }
+    }
+  },
+  "task_reward_claimed": "「{taskName}」から {rewardAmount} 個のお花を受け取りました！",
+  "@task_reward_claimed": {
+    "placeholders": {
+      "taskName": { "type": "String" },
+      "rewardAmount": { "type": "String" }
+    }
+  },
+  "claim_failed_error": "受け取り失敗: {e}",
+  "@claim_failed_error": {
+    "placeholders": {
+      "e": { "type": "String" }
+    }
+  },
+  "tab_heartbeat_diary": "ときめき日記",
+  "tab_daily_chit_chat": "日常の雑談",
+  "task_desc_chat_3_times": "キャラクターと日常チャットを3回行う",
+  "tab_story_progression": "ストーリー進行",
+  "task_desc_story_1_time": "ストーリーモードでの交流を1回完了する",
+  "tab_social_tour": "コミュニティ巡回",
+  "task_desc_like_3_moments": "タイムラインの投稿に3回「いいね」する",
+  "btn_claimed": "受け取り済み",
+  "btn_claim": "受け取る",
+  "btn_incomplete": "未完了",
+  "network_unstable_retry": "ネットワークが不安定です。後でもう一度お試しください 🍃",
+  "title_time_travel": "タイムトラベル",
+  "select_chat_mode": "チャットモードを選択",
+  "mode_chat": "チャット",
+  "mode_daily_desc": "気軽な雑談で絆を深める",
+  "mode_story_desc": "ストーリーの奥深くに入り込み、没入感を体験",
+  "greeting_hello": "こんにちは！",
+  "greeting_default_daily": "私に用事？",
+  "title_personal_homepage": "マイページ",
+  "title_time_letters": "時光の手紙",
+  "status_signed_in_today": "本日サインイン済み",
+  "status_signing_in": "サインイン中...",
+  "status_daily_sign_in": "毎日サインイン（+10 お花）",
+  "toast_id_copied": "ID をコピーしました！",
+  "hint_click_avatar_to_edit": "アバターをタップしてプロフィールを編集",
+  "title_my_friends": "私のフレンド",
+  "action_show_all": "すべて表示",
+  "empty_no_characters_created": "まだキャラクターを作成していません。"
 }

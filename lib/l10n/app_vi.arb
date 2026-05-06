@@ -1278,5 +1278,54 @@
     "placeholders": {
       "characterName": { "type": "String" }
     }
-  }
+  },
+  "daily_gift_success": "Nhận quà tặng mỗi ngày thành công! 🌸",
+  "check_in_fail_network": "Điểm danh thất bại, vui lòng kiểm tra kết nối mạng 🍃",
+  "task_completed": "Hoàn thành nhiệm vụ: {taskName}",
+  "@task_completed": {
+    "placeholders": {
+      "taskName": { "type": "String" }
+    }
+  },
+  "task_reward_claimed": "Nhận thành công {rewardAmount} Hoa từ \"{taskName}\"!",
+  "@task_reward_claimed": {
+    "placeholders": {
+      "taskName": { "type": "String" },
+      "rewardAmount": { "type": "String" }
+    }
+  },
+  "claim_failed_error": "Nhận thất bại: {e}",
+  "@claim_failed_error": {
+    "placeholders": {
+      "e": { "type": "String" }
+    }
+  },
+  "tab_heartbeat_diary": "Nhật ký rung động",
+  "tab_daily_chit_chat": "Trò chuyện hàng ngày",
+  "task_desc_chat_3_times": "Thực hiện 3 cuộc trò chuyện hàng ngày với nhân vật",
+  "tab_story_progression": "Tiến triển cốt truyện",
+  "task_desc_story_1_time": "Hoàn thành 1 lần tương tác chế độ cốt truyện",
+  "tab_social_tour": "Dạo quanh mạng xã hội",
+  "task_desc_like_3_moments": "Thích 3 bài viết trên Vòng bạn bè",
+  "btn_claimed": "Đã nhận",
+  "btn_claim": "Nhận",
+  "btn_incomplete": "Chưa hoàn thành",
+  "network_unstable_retry": "Kết nối mạng không ổn định, vui lòng thử lại sau 🍃",
+  "title_time_travel": "Du hành thời gian",
+  "select_chat_mode": "Chọn chế độ trò chuyện",
+  "mode_chat": "Trò chuyện",
+  "mode_daily_desc": "Trò chuyện thư giãn, duy trì sự gắn kết",
+  "mode_story_desc": "Đi sâu vào câu chuyện, trải nghiệm cảm giác đắm chìm",
+  "greeting_hello": "Xin chào!",
+  "greeting_default_daily": "Tìm tôi có việc gì không?",
+  "title_personal_homepage": "Trang cá nhân",
+  "title_time_letters": "Thư thời gian",
+  "status_signed_in_today": "Hôm nay đã điểm danh",
+  "status_signing_in": "Đang điểm danh...",
+  "status_daily_sign_in": "Điểm danh mỗi ngày (+10 Hoa)",
+  "toast_id_copied": "Đã sao chép ID!",
+  "hint_click_avatar_to_edit": "Nhấn vào ảnh đại diện để chỉnh sửa hồ sơ",
+  "title_my_friends": "Bạn bè của tôi",
+  "action_show_all": "Hiển thị tất cả",
+  "empty_no_characters_created": "Bạn chưa tạo nhân vật nào."
 }

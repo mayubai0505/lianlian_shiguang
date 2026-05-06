@@ -1279,5 +1279,54 @@
       "placeholders": {
          "characterName": { "type": "String" }
       }
-   }
+   },
+   "daily_gift_success": "Presente diário resgatado com sucesso! 🌸",
+   "check_in_fail_network": "Falha no check-in, verifique sua conexão de rede 🍃",
+   "task_completed": "Tarefa concluída: {taskName}",
+   "@task_completed": {
+      "placeholders": {
+         "taskName": { "type": "String" }
+      }
+   },
+   "task_reward_claimed": "Resgatou {rewardAmount} Flores de \"{taskName}\" com sucesso!",
+   "@task_reward_claimed": {
+      "placeholders": {
+         "taskName": { "type": "String" },
+         "rewardAmount": { "type": "String" }
+      }
+   },
+   "claim_failed_error": "Falha no resgate: {e}",
+   "@claim_failed_error": {
+      "placeholders": {
+         "e": { "type": "String" }
+      }
+   },
+   "tab_heartbeat_diary": "Diário de Batimentos",
+   "tab_daily_chit_chat": "Bate-papo Diário",
+   "task_desc_chat_3_times": "Tenha 3 conversas diárias com um personagem",
+   "tab_story_progression": "Progressão da História",
+   "task_desc_story_1_time": "Conclua 1 interação no modo história",
+   "tab_social_tour": "Tour Social",
+   "task_desc_like_3_moments": "Curta 3 postagens nos Momentos",
+   "btn_claimed": "Resgatado",
+   "btn_claim": "Resgatar",
+   "btn_incomplete": "Incompleto",
+   "network_unstable_retry": "Conexão de rede instável, tente novamente mais tarde 🍃",
+   "title_time_travel": "Viagem no Tempo",
+   "select_chat_mode": "Selecionar Modo de Chat",
+   "mode_chat": "Chat",
+   "mode_daily_desc": "Bate-papo casual para manter o vínculo",
+   "mode_story_desc": "Mergulhe na história para uma experiência imersiva",
+   "greeting_hello": "Olá!",
+   "greeting_default_daily": "Está me procurando?",
+   "title_personal_homepage": "Página Pessoal",
+   "title_time_letters": "Cartas do Tempo",
+   "status_signed_in_today": "Check-in feito hoje",
+   "status_signing_in": "Fazendo check-in...",
+   "status_daily_sign_in": "Check-in Diário (+10 Flores)",
+   "toast_id_copied": "ID copiado!",
+   "hint_click_avatar_to_edit": "Clique no avatar para editar o perfil",
+   "title_my_friends": "Meus Amigos",
+   "action_show_all": "Mostrar Tudo",
+   "empty_no_characters_created": "Você ainda não criou nenhum personagem."
 }

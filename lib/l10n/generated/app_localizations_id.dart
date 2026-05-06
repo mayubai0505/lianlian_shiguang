@@ -3198,4 +3198,113 @@ class AppLocalizationsId extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName: \"Aku sudah mencatatnya. Beberapa hari ini berat untukmu, aku akan selalu ada di sisimu.\"';
   }
+
+  @override
+  String get daily_gift_success => 'Berhasil mengambil hadiah harian! 🌸';
+
+  @override
+  String get check_in_fail_network =>
+      'Gagal absen, silakan periksa koneksi jaringan Anda 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return 'Tugas selesai: $taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return 'Berhasil mengambil $rewardAmount Bunga dari \"$taskName\"!';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return 'Gagal mengambil: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => 'Buku Harian Debaran Hati';
+
+  @override
+  String get tab_daily_chit_chat => 'Obrolan Santai Harian';
+
+  @override
+  String get task_desc_chat_3_times =>
+      'Lakukan 3 obrolan harian dengan karakter';
+
+  @override
+  String get tab_story_progression => 'Kemajuan Cerita';
+
+  @override
+  String get task_desc_story_1_time => 'Selesaikan 1 interaksi mode cerita';
+
+  @override
+  String get tab_social_tour => 'Tur Sosial';
+
+  @override
+  String get task_desc_like_3_moments => 'Sukai 3 postingan Momen';
+
+  @override
+  String get btn_claimed => 'Diklaim';
+
+  @override
+  String get btn_claim => 'Klaim';
+
+  @override
+  String get btn_incomplete => 'Belum Selesai';
+
+  @override
+  String get network_unstable_retry =>
+      'Koneksi jaringan tidak stabil, silakan coba lagi nanti 🍃';
+
+  @override
+  String get title_time_travel => 'Perjalanan Waktu';
+
+  @override
+  String get select_chat_mode => 'Pilih Mode Obrolan';
+
+  @override
+  String get mode_chat => 'Obrolan';
+
+  @override
+  String get mode_daily_desc => 'Obrolan santai untuk menjaga ikatan';
+
+  @override
+  String get mode_story_desc => 'Selami cerita untuk pengalaman yang imersif';
+
+  @override
+  String get greeting_hello => 'Halo!';
+
+  @override
+  String get greeting_default_daily => 'Mencariku?';
+
+  @override
+  String get title_personal_homepage => 'Beranda Pribadi';
+
+  @override
+  String get title_time_letters => 'Surat Waktu';
+
+  @override
+  String get status_signed_in_today => 'Sudah absen hari ini';
+
+  @override
+  String get status_signing_in => 'Sedang absen...';
+
+  @override
+  String get status_daily_sign_in => 'Absen Harian (+10 Bunga)';
+
+  @override
+  String get toast_id_copied => 'ID telah disalin!';
+
+  @override
+  String get hint_click_avatar_to_edit => 'Klik avatar untuk mengedit profil';
+
+  @override
+  String get title_my_friends => 'Teman-temanku';
+
+  @override
+  String get action_show_all => 'Tampilkan Semua';
+
+  @override
+  String get empty_no_characters_created =>
+      'Anda belum membuat karakter apa pun.';
 }

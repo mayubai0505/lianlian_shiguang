@@ -1278,5 +1278,54 @@
         "placeholders": {
             "characterName": { "type": "String" }
         }
-    }
+    },
+    "daily_gift_success": "รับของขวัญประจำวันสำเร็จ! 🌸",
+    "check_in_fail_network": "เช็คอินล้มเหลว โปรดตรวจสอบการเชื่อมต่อเครือข่าย 🍃",
+    "task_completed": "ทำภารกิจสำเร็จ: {taskName}",
+    "@task_completed": {
+        "placeholders": {
+            "taskName": { "type": "String" }
+        }
+    },
+    "task_reward_claimed": "รับดอกไม้ {rewardAmount} ดอก จาก \"{taskName}\" สำเร็จ!",
+    "@task_reward_claimed": {
+        "placeholders": {
+            "taskName": { "type": "String" },
+            "rewardAmount": { "type": "String" }
+        }
+    },
+    "claim_failed_error": "การรับล้มเหลว: {e}",
+    "@claim_failed_error": {
+        "placeholders": {
+            "e": { "type": "String" }
+        }
+    },
+    "tab_heartbeat_diary": "ไดอารี่ใจเต้น",
+    "tab_daily_chit_chat": "คุยเล่นทั่วไป",
+    "task_desc_chat_3_times": "แชทคุยเล่นกับตัวละคร 3 ครั้ง",
+    "tab_story_progression": "การดำเนินเนื้อเรื่อง",
+    "task_desc_story_1_time": "โต้ตอบในโหมดเนื้อเรื่อง 1 ครั้ง",
+    "tab_social_tour": "ทัวร์โซเชียล",
+    "task_desc_like_3_moments": "กดถูกใจโพสต์ในโมเมนต์ 3 ครั้ง",
+    "btn_claimed": "รับแล้ว",
+    "btn_claim": "รับ",
+    "btn_incomplete": "ยังไม่เสร็จ",
+    "network_unstable_retry": "การเชื่อมต่อเครือข่ายไม่เสถียร โปรดลองอีกครั้งในภายหลัง 🍃",
+    "title_time_travel": "ข้ามเวลา",
+    "select_chat_mode": "เลือกโหมดการแชท",
+    "mode_chat": "แชท",
+    "mode_daily_desc": "คุยเล่นสบายๆ เพื่อรักษาความผูกพัน",
+    "mode_story_desc": "ดำดิ่งสู่เรื่องราวเพื่อสัมผัสประสบการณ์ที่สมจริง",
+    "greeting_hello": "สวัสดี!",
+    "greeting_default_daily": "มีธุระกับฉันเหรอ?",
+    "title_personal_homepage": "หน้าแรกส่วนตัว",
+    "title_time_letters": "จดหมายแห่งเวลา",
+    "status_signed_in_today": "เช็คอินวันนี้แล้ว",
+    "status_signing_in": "กำลังเช็คอิน...",
+    "status_daily_sign_in": "เช็คอินรายวัน (+10 ดอกไม้)",
+    "toast_id_copied": "คัดลอก ID แล้ว!",
+    "hint_click_avatar_to_edit": "คลิกที่รูปโปรไฟล์เพื่อแก้ไขข้อมูลส่วนตัว",
+    "title_my_friends": "เพื่อนของฉัน",
+    "action_show_all": "แสดงทั้งหมด",
+    "empty_no_characters_created": "คุณยังไม่ได้สร้างตัวละครใดๆ"
 }

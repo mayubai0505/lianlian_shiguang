@@ -3056,4 +3056,109 @@ class AppLocalizationsKo extends AppLocalizations {
   String care_calendar_save_success(String characterName) {
     return '$characterName: \"다 적어뒀어. 며칠 동안 힘들었지, 내가 항상 네 곁에 있을게.\"';
   }
+
+  @override
+  String get daily_gift_success => '매일 선물 수령 성공! 🌸';
+
+  @override
+  String get check_in_fail_network => '출석 실패, 네트워크 연결을 확인해 주세요 🍃';
+
+  @override
+  String task_completed(String taskName) {
+    return '미션 완료: $taskName';
+  }
+
+  @override
+  String task_reward_claimed(String taskName, String rewardAmount) {
+    return '「$taskName」의 꽃 $rewardAmount송이 수령 성공!';
+  }
+
+  @override
+  String claim_failed_error(String e) {
+    return '수령 실패: $e';
+  }
+
+  @override
+  String get tab_heartbeat_diary => '설렘 일기';
+
+  @override
+  String get tab_daily_chit_chat => '소소한 일상 대화';
+
+  @override
+  String get task_desc_chat_3_times => '캐릭터와 3번의 일상 대화 나누기';
+
+  @override
+  String get tab_story_progression => '스토리 진행';
+
+  @override
+  String get task_desc_story_1_time => '스토리 모드 상호작용 1회 완료';
+
+  @override
+  String get tab_social_tour => '소셜 투어';
+
+  @override
+  String get task_desc_like_3_moments => '모먼트 포스트 3개에 좋아요 누르기';
+
+  @override
+  String get btn_claimed => '수령 완료';
+
+  @override
+  String get btn_claim => '수령';
+
+  @override
+  String get btn_incomplete => '미완료';
+
+  @override
+  String get network_unstable_retry => '네트워크 연결이 불안정합니다. 나중에 다시 시도해 주세요 🍃';
+
+  @override
+  String get title_time_travel => '시간 여행';
+
+  @override
+  String get select_chat_mode => '채팅 모드 선택';
+
+  @override
+  String get mode_chat => '채팅';
+
+  @override
+  String get mode_daily_desc => '가벼운 대화로 유대감 유지';
+
+  @override
+  String get mode_story_desc => '스토리 깊숙이 들어가 몰입감 경험하기';
+
+  @override
+  String get greeting_hello => '안녕!';
+
+  @override
+  String get greeting_default_daily => '나한테 볼일 있어?';
+
+  @override
+  String get title_personal_homepage => '개인 홈페이지';
+
+  @override
+  String get title_time_letters => '시광의 편지';
+
+  @override
+  String get status_signed_in_today => '오늘 출석 완료';
+
+  @override
+  String get status_signing_in => '출석 중...';
+
+  @override
+  String get status_daily_sign_in => '일일 출석 (+10 꽃)';
+
+  @override
+  String get toast_id_copied => 'ID가 복사되었습니다!';
+
+  @override
+  String get hint_click_avatar_to_edit => '프로필을 편집하려면 아바타를 클릭하세요';
+
+  @override
+  String get title_my_friends => '내 친구들';
+
+  @override
+  String get action_show_all => '모두 보기';
+
+  @override
+  String get empty_no_characters_created => '아직 생성된 캐릭터가 없습니다.';
 }

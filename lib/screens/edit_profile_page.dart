@@ -662,7 +662,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   // 主要儲存按鈕
                   ElevatedButton(
-                    onPressed: _saveProfile,
+                    onPressed: _hasChangedID ? null : _saveProfile,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
                       foregroundColor: theme.colorScheme.onPrimary,

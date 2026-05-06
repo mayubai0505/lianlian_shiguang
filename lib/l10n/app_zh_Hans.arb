@@ -1290,5 +1290,54 @@
     "placeholders": {
       "characterName": { "type": "String" }
     }
-  }
+  },
+  "daily_gift_success": "成功领取每日赠礼！🌸",
+  "check_in_fail_network": "签到失败，请检查网络连线 🍃",
+  "task_completed": "完成任务：{taskName}",
+  "@task_completed": {
+    "placeholders": {
+      "taskName": { "type": "String" }
+    }
+  },
+  "task_reward_claimed": "成功领取「{taskName}」的 {rewardAmount} 点花花！",
+  "@task_reward_claimed": {
+    "placeholders": {
+      "taskName": { "type": "String" },
+      "rewardAmount": { "type": "String" }
+    }
+  },
+  "claim_failed_error": "领取失败: {e}",
+  "@claim_failed_error": {
+    "placeholders": {
+      "e": { "type": "String" }
+    }
+  },
+  "tab_heartbeat_diary": "心动日记",
+  "tab_daily_chit_chat": "闲话家常",
+  "task_desc_chat_3_times": "与角色进行 3 次日常聊天",
+  "tab_story_progression": "剧情推进",
+  "task_desc_story_1_time": "完成 1 次剧情模式互动",
+  "tab_social_tour": "社群巡礼",
+  "task_desc_like_3_moments": "为 3 则朋友圈动态按赞",
+  "btn_claimed": "已领取",
+  "btn_claim": "领取",
+  "btn_incomplete": "未完成",
+  "network_unstable_retry": "网络连线不稳，请稍后再试🍃",
+  "title_time_travel": "时光旅行",
+  "select_chat_mode": "选择聊天模式",
+  "mode_chat": "聊天",
+  "mode_daily_desc": "轻松闲聊，维持羁绊",
+  "mode_story_desc": "深入故事，体验沉浸感",
+  "greeting_hello": "你好！",
+  "greeting_default_daily": "找我有事吗？",
+  "title_personal_homepage": "个人主页",
+  "title_time_letters": "时光信件",
+  "status_signed_in_today": "今日已签到",
+  "status_signing_in": "签到中...",
+  "status_daily_sign_in": "每日签到 (+10 花花)",
+  "toast_id_copied": "ID 已复制！",
+  "hint_click_avatar_to_edit": "点击头像进行个人档案编辑",
+  "title_my_friends": "我的好友",
+  "action_show_all": "显示全部",
+  "empty_no_characters_created": "您尚未创建任何角色。"
 }
