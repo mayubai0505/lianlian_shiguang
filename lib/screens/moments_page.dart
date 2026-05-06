@@ -8,7 +8,6 @@ import 'character_model.dart';
 import 'create_moment_page.dart';
 import 'moment_card.dart';
 import '../utils/image_utils.dart';
-import 'package:intl/intl.dart';
 import '../page/interaction_history_page.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
@@ -278,7 +277,7 @@ class _MomentsPageState extends State<MomentsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(isPublicTab ? Icons.public : Icons.people_alt, size: 50, color: Colors.grey.withOpacity(0.5)),
+          Icon(isPublicTab ? Icons.public : Icons.people_alt, size: 50, color: Colors.grey.withValues(alpha:0.5)),
           const SizedBox(height: 16),
           Text(
             isPublicTab ? l10n.empty_public_moments_prompt : l10n.empty_private_moments_prompt,
@@ -390,7 +389,7 @@ class _MomentsPageState extends State<MomentsPage> {
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.black.withOpacity(0.5), // 神秘的暗色遮罩
+                        color: Colors.black.withValues(alpha:0.5), // 神秘的暗色遮罩
                       ),
                     ),
                   ),
@@ -717,7 +716,7 @@ class _MomentsPageState extends State<MomentsPage> {
                                 // 開關
                                 Switch(
                                   value: isEnabled,
-                                  activeColor: Colors.pinkAccent,
+                                  activeThumbColor: Colors.pinkAccent,
                                   onChanged: (bool newValue) {
                                     doc.reference.update({'autoPostEnabled': newValue});
                                   },
