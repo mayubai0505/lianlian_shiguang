@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
-// --- FIXED: Corrected the import paths to match your file structure ---
-import 'onboarding_page.dart';
-import 'main_page.dart'; // This should be your main page with the bottom navigation bar
-import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'main_page.dart';
+
 
 // 啟動畫面,檢查是否為第一次啟動
 class SplashScreen extends StatefulWidget {
