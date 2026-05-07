@@ -3475,4 +3475,25 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       'Membangkitkan alam semesta \'Lianlian ShiGuang\'...';
+
+  @override
+  String get shop_title => 'Kedai Bunga';
+
+  @override
+  String get shop_current_points_label => 'Mata Bunga semasa';
+
+  @override
+  String get shop_tab_top_up => 'Tambah Nilai Mata';
+
+  @override
+  String get shop_tab_history => 'Sejarah Transaksi';
+
+  @override
+  String get shop_empty_history => 'Belum ada rekod Bunga lagi! 🌸';
+
+  @override
+  String get shop_unknown_item => 'Item tidak diketahui';
+
+  @override
+  String get shop_first_purchase_bonus => 'Berganda untuk pembelian pertama!';
 }

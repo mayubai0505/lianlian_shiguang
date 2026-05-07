@@ -3476,4 +3476,25 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       'Đang đánh thức vũ trụ của 《Luyến Luyến Thập Quang》...';
+
+  @override
+  String get shop_title => 'Cửa hàng Hoa';
+
+  @override
+  String get shop_current_points_label => 'Điểm Hoa hiện đang sở hữu';
+
+  @override
+  String get shop_tab_top_up => 'Nạp điểm';
+
+  @override
+  String get shop_tab_history => 'Lịch sử giao dịch';
+
+  @override
+  String get shop_empty_history => 'Hiện chưa có lịch sử nạp Hoa nào! 🌸';
+
+  @override
+  String get shop_unknown_item => 'Mục không xác định';
+
+  @override
+  String get shop_first_purchase_bonus => 'Nhân đôi cho lần mua đầu!';
 }

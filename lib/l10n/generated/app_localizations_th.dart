@@ -3433,4 +3433,25 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       'กำลังปลุกจักรวาลของ \'Lianlian ShiGuang\'...';
+
+  @override
+  String get shop_title => 'ร้านค้าดอกไม้';
+
+  @override
+  String get shop_current_points_label => 'คะแนนดอกไม้ที่มีในปัจจุบัน';
+
+  @override
+  String get shop_tab_top_up => 'เติมคะแนน';
+
+  @override
+  String get shop_tab_history => 'ประวัติการทำรายการ';
+
+  @override
+  String get shop_empty_history => 'ยังไม่มีประวัติดอกไม้เลย! 🌸';
+
+  @override
+  String get shop_unknown_item => 'ไอเท็มที่ไม่รู้จัก';
+
+  @override
+  String get shop_first_purchase_bonus => 'ซื้อครั้งแรกรับสองเท่า!';
 }

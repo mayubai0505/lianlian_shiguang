@@ -1423,5 +1423,12 @@
     "contactDescription": "Kongsi apa-apa sahaja pendapat awak atau laporkan pepijat kepada kami",
     "vibrationHapticTitle": "Getaran Debaran Hati",
     "vibrationHapticDescription": "Mencetuskan getaran telefon apabila tahap kasih sayang berubah dengan ketara",
-    "splash_loading_universe": "Membangkitkan alam semesta 'Lianlian ShiGuang'..."
+    "splash_loading_universe": "Membangkitkan alam semesta 'Lianlian ShiGuang'...",
+    "shop_title": "Kedai Bunga",
+    "shop_current_points_label": "Mata Bunga semasa",
+    "shop_tab_top_up": "Tambah Nilai Mata",
+    "shop_tab_history": "Sejarah Transaksi",
+    "shop_empty_history": "Belum ada rekod Bunga lagi! 🌸",
+    "shop_unknown_item": "Item tidak diketahui",
+    "shop_first_purchase_bonus": "Berganda untuk pembelian pertama!"
 }

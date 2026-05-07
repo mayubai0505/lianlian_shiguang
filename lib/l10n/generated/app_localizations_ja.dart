@@ -3301,4 +3301,25 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get splash_loading_universe => '『恋恋拾光』の宇宙を呼び覚ましています...';
+
+  @override
+  String get shop_title => 'お花ショップ';
+
+  @override
+  String get shop_current_points_label => '現在所持しているお花ポイント';
+
+  @override
+  String get shop_tab_top_up => 'ポイントチャージ';
+
+  @override
+  String get shop_tab_history => '取引履歴';
+
+  @override
+  String get shop_empty_history => 'まだお花の履歴はありません！🌸';
+
+  @override
+  String get shop_unknown_item => '不明なアイテム';
+
+  @override
+  String get shop_first_purchase_bonus => '初回購入2倍！';
 }

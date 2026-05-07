@@ -3479,4 +3479,25 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       '\'Lianlian ShiGuang\' के ब्रह्मांड को जगाया जा रहा है...';
+
+  @override
+  String get shop_title => 'फ्लावर शॉप';
+
+  @override
+  String get shop_current_points_label => 'वर्तमान में मौजूद फ्लावर पॉइंट्स';
+
+  @override
+  String get shop_tab_top_up => 'पॉइंट्स टॉप-अप';
+
+  @override
+  String get shop_tab_history => 'लेन-देन का इतिहास';
+
+  @override
+  String get shop_empty_history => 'अभी तक कोई फ्लावर रिकॉर्ड नहीं है! 🌸';
+
+  @override
+  String get shop_unknown_item => 'अज्ञात आइटम';
+
+  @override
+  String get shop_first_purchase_bonus => 'पहली खरीदारी पर दोगुना!';
 }

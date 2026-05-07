@@ -20,27 +20,24 @@ class StorePage extends StatefulWidget {
 class _StorePageState extends State<StorePage> {
   @override
   Widget build(BuildContext context) {
-    // 假設妳有使用 ThemeNotifier，如果報錯請依照妳原本的寫法調整
-    // final themeNotifier = Provider.of<ThemeNotifier>(context);
     final purchaseService = Provider.of<PurchaseService>(context);
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
 
     return DefaultTabController(
       length: 2, // ✨ 雙分頁設定
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: const Text('花花小舖', style: TextStyle(fontWeight: FontWeight.bold)),
+          title:  Text(l10n.shop_title, style: TextStyle(fontWeight: FontWeight.bold)),
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           foregroundColor: theme.colorScheme.onSurface,
         ),
-        // 如果有背景圖可以包在 Container 裡
         body: Container(
-          // decoration: themeNotifier.currentBackground,
           child: Column(
             children: [
               // --- 1. 上方固定區塊：餘額顯示卡片 ---
@@ -72,7 +69,7 @@ class _StorePageState extends State<StorePage> {
                       ),
                       child: Column(
                         children: [
-                          Text('目前持有的花花點數',
+                          Text(l10n.shop_current_points_label,
                               style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 14)),
                           const SizedBox(height: 16),
                           Row(
@@ -115,12 +112,11 @@ class _StorePageState extends State<StorePage> {
                 unselectedLabelColor: Colors.grey,
                 indicatorColor: theme.colorScheme.primary,
                 indicatorWeight: 3,
-                tabs: const [
-                  Tab(text: '點數儲值'),
-                  Tab(text: '收支明細'),
+                tabs: [
+                  Tab(text: l10n.shop_tab_top_up),
+                  Tab(text: l10n.shop_tab_history),
                 ],
               ),
-
               // --- 3. 下方滑動區塊：分頁內容 (TabBarView) ---
               Expanded(
                 child: TabBarView(
@@ -218,6 +214,7 @@ class _StorePageState extends State<StorePage> {
   // 第二頁：收支明細列表邏輯
   // ==========================================
   Widget _buildHistoryList() {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const SizedBox.shrink();
 
@@ -235,7 +232,7 @@ class _StorePageState extends State<StorePage> {
 
         final docs = snapshot.data?.docs ?? [];
         if (docs.isEmpty) {
-          return const Center(child: Text('目前還沒有花花紀錄喔！🌸', style: TextStyle(color: Colors.grey)));
+          return Center(child: Text(l10n.shop_empty_history, style: TextStyle(color: Colors.grey)));
         }
 
         return ListView.builder(
@@ -243,7 +240,7 @@ class _StorePageState extends State<StorePage> {
           itemCount: docs.length,
           itemBuilder: (context, index) {
             final data = docs[index].data() as Map<String, dynamic>;
-            final String title = data['title'] ?? '未知項目';
+            final String title = data['title'] ?? l10n.shop_unknown_item;
             final int amount = data['amount'] ?? 0;
             final Timestamp? timestamp = data['createdAt'] as Timestamp?;
 
@@ -302,7 +299,7 @@ class _StorePageState extends State<StorePage> {
 // ✨ 獨立組件區：月卡橫幅
 // ==========================================
 class MonthlyCardBanner extends StatelessWidget {
-  final dynamic productWrapper; // 根據妳的型別定義 (ProductDetailsWrapper)
+  final dynamic productWrapper;
   const MonthlyCardBanner({super.key, required this.productWrapper});
 
   @override
@@ -329,7 +326,6 @@ class MonthlyCardBanner extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () async {
-            // ✨ 只要這兩行！直接呼叫真金流！剩下的交給 PurchaseService 處理！
             final purchaseService = Provider.of<PurchaseService>(context, listen: false);
             await purchaseService.buyProduct(productWrapper.productDetails);
           },
@@ -381,6 +377,7 @@ class ProductCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final primaryColor = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       elevation: 0,
@@ -392,7 +389,6 @@ class ProductCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () async {
-          // ✨ 沒錯，也是只要這兩行！
           final purchaseService = Provider.of<PurchaseService>(context, listen: false);
           await purchaseService.buyProduct(productWrapper.productDetails);
         },
@@ -413,7 +409,7 @@ class ProductCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
-                  child: const Text('首購雙倍！', style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
+                  child:Text(l10n.shop_first_purchase_bonus, style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
                 ),
               const Spacer(),
               Container(

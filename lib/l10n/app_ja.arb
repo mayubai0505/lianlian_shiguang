@@ -1423,5 +1423,12 @@
   "contactDescription": "ご意見やバグ報告など、何でもお気軽にお知らせください",
   "vibrationHapticTitle": "ときめき振動検知",
   "vibrationHapticDescription": "好感度が大きく変化した時にスマホが振動します",
-  "splash_loading_universe": "『恋恋拾光』の宇宙を呼び覚ましています..."
+  "splash_loading_universe": "『恋恋拾光』の宇宙を呼び覚ましています...",
+  "shop_title": "お花ショップ",
+  "shop_current_points_label": "現在所持しているお花ポイント",
+  "shop_tab_top_up": "ポイントチャージ",
+  "shop_tab_history": "取引履歴",
+  "shop_empty_history": "まだお花の履歴はありません！🌸",
+  "shop_unknown_item": "不明なアイテム",
+  "shop_first_purchase_bonus": "初回購入2倍！"
 }

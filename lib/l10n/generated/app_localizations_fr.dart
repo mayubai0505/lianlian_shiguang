@@ -3519,4 +3519,26 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       'Éveil de l\'univers de \'Lianlian ShiGuang\'...';
+
+  @override
+  String get shop_title => 'Boutique de Fleurs';
+
+  @override
+  String get shop_current_points_label => 'Points de fleurs actuels';
+
+  @override
+  String get shop_tab_top_up => 'Recharger des points';
+
+  @override
+  String get shop_tab_history => 'Historique des transactions';
+
+  @override
+  String get shop_empty_history =>
+      'Aucun registre de fleurs pour l\'instant ! 🌸';
+
+  @override
+  String get shop_unknown_item => 'Article inconnu';
+
+  @override
+  String get shop_first_purchase_bonus => 'Double pour le premier achat !';
 }

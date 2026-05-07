@@ -1464,5 +1464,12 @@
     "contactDescription": "أخبرنا بأي أفكار لديك أو أبلغنا عن أي أخطاء",
     "vibrationHapticTitle": "اهتزاز نبض القلب",
     "vibrationHapticDescription": "تشغيل اهتزاز الهاتف عند تغير مستوى الإعجاب بشكل كبير",
-    "splash_loading_universe": "جارٍ إيقاظ عالم 'Lianlian ShiGuang'..."
+    "splash_loading_universe": "جارٍ إيقاظ عالم 'Lianlian ShiGuang'...",
+    "shop_title": "متجر الزهور",
+    "shop_current_points_label": "نقاط الزهور المملوكة حالياً",
+    "shop_tab_top_up": "شحن النقاط",
+    "shop_tab_history": "سجل المعاملات",
+    "shop_empty_history": "لا توجد سجلات للزهور حتى الآن! 🌸",
+    "shop_unknown_item": "عنصر غير معروف",
+    "shop_first_purchase_bonus": "مضاعفة الشراء الأول!"
 }

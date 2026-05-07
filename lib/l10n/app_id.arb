@@ -1423,5 +1423,12 @@
     "contactDescription": "Jangan ragu untuk membagikan pemikiran Anda atau melaporkan bug",
     "vibrationHapticTitle": "Getaran Detak Jantung",
     "vibrationHapticDescription": "Memicu getaran ponsel ketika tingkat afeksi berubah secara signifikan",
-    "splash_loading_universe": "Membangunkan alam semesta 'Lianlian ShiGuang'..."
+    "splash_loading_universe": "Membangunkan alam semesta 'Lianlian ShiGuang'...",
+    "shop_title": "Toko Bunga",
+    "shop_current_points_label": "Poin Bunga yang dimiliki saat ini",
+    "shop_tab_top_up": "Isi Ulang Poin",
+    "shop_tab_history": "Riwayat Transaksi",
+    "shop_empty_history": "Belum ada riwayat Bunga saat ini! 🌸",
+    "shop_unknown_item": "Item tidak diketahui",
+    "shop_first_purchase_bonus": "Ganda untuk pembelian pertama!"
 }

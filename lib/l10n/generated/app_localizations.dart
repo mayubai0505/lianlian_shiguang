@@ -6105,6 +6105,48 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'正在喚醒《戀戀拾光》的宇宙...'**
   String get splash_loading_universe;
+
+  /// No description provided for @shop_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'花花小舖'**
+  String get shop_title;
+
+  /// No description provided for @shop_current_points_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前持有的花花點數'**
+  String get shop_current_points_label;
+
+  /// No description provided for @shop_tab_top_up.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點數儲值'**
+  String get shop_tab_top_up;
+
+  /// No description provided for @shop_tab_history.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收支明細'**
+  String get shop_tab_history;
+
+  /// No description provided for @shop_empty_history.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有花花紀錄喔！🌸'**
+  String get shop_empty_history;
+
+  /// No description provided for @shop_unknown_item.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未知項目'**
+  String get shop_unknown_item;
+
+  /// No description provided for @shop_first_purchase_bonus.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'首購雙倍！'**
+  String get shop_first_purchase_bonus;
 }
 
 class _AppLocalizationsDelegate

@@ -1593,5 +1593,12 @@
     "contactDescription": "N'hésitez pas à partager vos pensées ou à signaler des bugs",
     "vibrationHapticTitle": "Vibration de battement de cœur",
     "vibrationHapticDescription": "Déclenche la vibration du téléphone lorsque le niveau d'affection change considérablement",
-    "splash_loading_universe": "Éveil de l'univers de 'Lianlian ShiGuang'..."
+    "splash_loading_universe": "Éveil de l'univers de 'Lianlian ShiGuang'...",
+    "shop_title": "Boutique de Fleurs",
+    "shop_current_points_label": "Points de fleurs actuels",
+    "shop_tab_top_up": "Recharger des points",
+    "shop_tab_history": "Historique des transactions",
+    "shop_empty_history": "Aucun registre de fleurs pour l'instant ! 🌸",
+    "shop_unknown_item": "Article inconnu",
+    "shop_first_purchase_bonus": "Double pour le premier achat !"
 }

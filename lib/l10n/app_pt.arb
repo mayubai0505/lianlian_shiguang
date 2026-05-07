@@ -1424,5 +1424,12 @@
    "contactDescription": "Sinta-se à vontade para compartilhar seus pensamentos ou relatar bugs",
    "vibrationHapticTitle": "Vibração de Batimentos",
    "vibrationHapticDescription": "Aciona a vibração do telefone quando o nível de afeto muda significativamente",
-   "splash_loading_universe": "Despertando o universo de 'Lianlian ShiGuang'..."
+   "splash_loading_universe": "Despertando o universo de 'Lianlian ShiGuang'...",
+   "shop_title": "Loja de Flores",
+   "shop_current_points_label": "Pontos de Flores atuais",
+   "shop_tab_top_up": "Recarregar Pontos",
+   "shop_tab_history": "Histórico de Transações",
+   "shop_empty_history": "Ainda não há registros de flores! 🌸",
+   "shop_unknown_item": "Item desconhecido",
+   "shop_first_purchase_bonus": "Dobro na primeira compra!"
 }

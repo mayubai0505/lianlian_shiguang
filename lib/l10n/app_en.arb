@@ -1635,5 +1635,12 @@
   "contactDescription": "Feel free to share your thoughts or report any bugs",
   "vibrationHapticTitle": "Heartbeat Haptic Feedback",
   "vibrationHapticDescription": "Triggers phone vibration when affection level changes significantly",
-  "splash_loading_universe": "Awakening the universe of Love in Time..."
+  "splash_loading_universe": "Awakening the universe of Love in Time...",
+  "shop_title": "Flower Shop",
+  "shop_current_points_label": "Current Flower Points",
+  "shop_tab_top_up": "Top Up Points",
+  "shop_tab_history": "Transaction History",
+  "shop_empty_history": "No flower records yet! 🌸",
+  "shop_unknown_item": "Unknown Item",
+  "shop_first_purchase_bonus": "First Purchase Double!"
 }

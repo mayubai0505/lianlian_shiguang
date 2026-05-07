@@ -3493,4 +3493,25 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       'Despertando o universo de \'Lianlian ShiGuang\'...';
+
+  @override
+  String get shop_title => 'Loja de Flores';
+
+  @override
+  String get shop_current_points_label => 'Pontos de Flores atuais';
+
+  @override
+  String get shop_tab_top_up => 'Recarregar Pontos';
+
+  @override
+  String get shop_tab_history => 'Histórico de Transações';
+
+  @override
+  String get shop_empty_history => 'Ainda não há registros de flores! 🌸';
+
+  @override
+  String get shop_unknown_item => 'Item desconhecido';
+
+  @override
+  String get shop_first_purchase_bonus => 'Dobro na primeira compra!';
 }

@@ -1423,5 +1423,12 @@
   "contactDescription": "Đừng ngại chia sẻ suy nghĩ hoặc báo cáo lỗi cho chúng tôi nhé",
   "vibrationHapticTitle": "Phản hồi rung động",
   "vibrationHapticDescription": "Kích hoạt rung điện thoại khi mức độ hảo cảm thay đổi đáng kể",
-  "splash_loading_universe": "Đang đánh thức vũ trụ của 《Luyến Luyến Thập Quang》..."
+  "splash_loading_universe": "Đang đánh thức vũ trụ của 《Luyến Luyến Thập Quang》...",
+  "shop_title": "Cửa hàng Hoa",
+  "shop_current_points_label": "Điểm Hoa hiện đang sở hữu",
+  "shop_tab_top_up": "Nạp điểm",
+  "shop_tab_history": "Lịch sử giao dịch",
+  "shop_empty_history": "Hiện chưa có lịch sử nạp Hoa nào! 🌸",
+  "shop_unknown_item": "Mục không xác định",
+  "shop_first_purchase_bonus": "Nhân đôi cho lần mua đầu!"
 }

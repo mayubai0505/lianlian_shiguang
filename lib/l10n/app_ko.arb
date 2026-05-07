@@ -1422,5 +1422,12 @@
   "contactDescription": "여러분의 생각이나 버그를 편하게 알려주세요",
   "vibrationHapticTitle": "설렘 진동 피드백",
   "vibrationHapticDescription": "호감도가 크게 변할 때 스마트폰 진동 발생",
-  "splash_loading_universe": "《Lianlian ShiGuang》의 우주를 깨우는 중..."
+  "splash_loading_universe": "《Lianlian ShiGuang》의 우주를 깨우는 중...",
+  "shop_title": "꽃 상점",
+  "shop_current_points_label": "현재 보유한 꽃 포인트",
+  "shop_tab_top_up": "포인트 충전",
+  "shop_tab_history": "거래 내역",
+  "shop_empty_history": "아직 꽃 기록이 없어요! 🌸",
+  "shop_unknown_item": "알 수 없는 항목",
+  "shop_first_purchase_bonus": "첫 구매 두 배!"
 }

@@ -3477,4 +3477,25 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       'Membangunkan alam semesta \'Lianlian ShiGuang\'...';
+
+  @override
+  String get shop_title => 'Toko Bunga';
+
+  @override
+  String get shop_current_points_label => 'Poin Bunga yang dimiliki saat ini';
+
+  @override
+  String get shop_tab_top_up => 'Isi Ulang Poin';
+
+  @override
+  String get shop_tab_history => 'Riwayat Transaksi';
+
+  @override
+  String get shop_empty_history => 'Belum ada riwayat Bunga saat ini! 🌸';
+
+  @override
+  String get shop_unknown_item => 'Item tidak diketahui';
+
+  @override
+  String get shop_first_purchase_bonus => 'Ganda untuk pembelian pertama!';
 }

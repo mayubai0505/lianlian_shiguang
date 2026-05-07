@@ -3448,4 +3448,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       'Awakening the universe of Love in Time...';
+
+  @override
+  String get shop_title => 'Flower Shop';
+
+  @override
+  String get shop_current_points_label => 'Current Flower Points';
+
+  @override
+  String get shop_tab_top_up => 'Top Up Points';
+
+  @override
+  String get shop_tab_history => 'Transaction History';
+
+  @override
+  String get shop_empty_history => 'No flower records yet! 🌸';
+
+  @override
+  String get shop_unknown_item => 'Unknown Item';
+
+  @override
+  String get shop_first_purchase_bonus => 'First Purchase Double!';
 }

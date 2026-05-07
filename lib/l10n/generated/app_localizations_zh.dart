@@ -3271,6 +3271,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get splash_loading_universe => '正在喚醒《戀戀拾光》的宇宙...';
+
+  @override
+  String get shop_title => '花花小舖';
+
+  @override
+  String get shop_current_points_label => '目前持有的花花點數';
+
+  @override
+  String get shop_tab_top_up => '點數儲值';
+
+  @override
+  String get shop_tab_history => '收支明細';
+
+  @override
+  String get shop_empty_history => '目前還沒有花花紀錄喔！🌸';
+
+  @override
+  String get shop_unknown_item => '未知項目';
+
+  @override
+  String get shop_first_purchase_bonus => '首購雙倍！';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6540,6 +6561,27 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get splash_loading_universe => '正在唤醒《恋恋拾光》的宇宙...';
+
+  @override
+  String get shop_title => '花花小铺';
+
+  @override
+  String get shop_current_points_label => '目前持有的花花点数';
+
+  @override
+  String get shop_tab_top_up => '点数充值';
+
+  @override
+  String get shop_tab_history => '收支明细';
+
+  @override
+  String get shop_empty_history => '目前还没有花花纪录喔！🌸';
+
+  @override
+  String get shop_unknown_item => '未知项目';
+
+  @override
+  String get shop_first_purchase_bonus => '首购双倍！';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9809,4 +9851,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get splash_loading_universe => '正在喚醒《戀戀拾光》的宇宙...';
+
+  @override
+  String get shop_title => '花花小舖';
+
+  @override
+  String get shop_current_points_label => '目前持有的花花點數';
+
+  @override
+  String get shop_tab_top_up => '點數儲值';
+
+  @override
+  String get shop_tab_history => '收支明細';
+
+  @override
+  String get shop_empty_history => '目前還沒有花花紀錄喔！🌸';
+
+  @override
+  String get shop_unknown_item => '未知項目';
+
+  @override
+  String get shop_first_purchase_bonus => '首購雙倍！';
 }

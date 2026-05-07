@@ -3317,4 +3317,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get splash_loading_universe => '《Lianlian ShiGuang》의 우주를 깨우는 중...';
+
+  @override
+  String get shop_title => '꽃 상점';
+
+  @override
+  String get shop_current_points_label => '현재 보유한 꽃 포인트';
+
+  @override
+  String get shop_tab_top_up => '포인트 충전';
+
+  @override
+  String get shop_tab_history => '거래 내역';
+
+  @override
+  String get shop_empty_history => '아직 꽃 기록이 없어요! 🌸';
+
+  @override
+  String get shop_unknown_item => '알 수 없는 항목';
+
+  @override
+  String get shop_first_purchase_bonus => '첫 구매 두 배!';
 }

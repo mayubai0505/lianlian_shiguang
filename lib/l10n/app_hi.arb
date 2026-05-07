@@ -1423,5 +1423,12 @@
     "contactDescription": "अपने विचार साझा करने या किसी बग की रिपोर्ट करने के लिए स्वतंत्र महसूस करें",
     "vibrationHapticTitle": "हार्टबीट हैप्टिक फीडबैक",
     "vibrationHapticDescription": "स्नेह स्तर में महत्वपूर्ण बदलाव होने पर फ़ोन कंपन ट्रिगर होता है",
-    "splash_loading_universe": "'Lianlian ShiGuang' के ब्रह्मांड को जगाया जा रहा है..."
+    "splash_loading_universe": "'Lianlian ShiGuang' के ब्रह्मांड को जगाया जा रहा है...",
+    "shop_title": "फ्लावर शॉप",
+    "shop_current_points_label": "वर्तमान में मौजूद फ्लावर पॉइंट्स",
+    "shop_tab_top_up": "पॉइंट्स टॉप-अप",
+    "shop_tab_history": "लेन-देन का इतिहास",
+    "shop_empty_history": "अभी तक कोई फ्लावर रिकॉर्ड नहीं है! 🌸",
+    "shop_unknown_item": "अज्ञात आइटम",
+    "shop_first_purchase_bonus": "पहली खरीदारी पर दोगुना!"
 }

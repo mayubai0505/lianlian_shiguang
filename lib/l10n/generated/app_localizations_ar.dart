@@ -3426,4 +3426,25 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get splash_loading_universe =>
       'جارٍ إيقاظ عالم \'Lianlian ShiGuang\'...';
+
+  @override
+  String get shop_title => 'متجر الزهور';
+
+  @override
+  String get shop_current_points_label => 'نقاط الزهور المملوكة حالياً';
+
+  @override
+  String get shop_tab_top_up => 'شحن النقاط';
+
+  @override
+  String get shop_tab_history => 'سجل المعاملات';
+
+  @override
+  String get shop_empty_history => 'لا توجد سجلات للزهور حتى الآن! 🌸';
+
+  @override
+  String get shop_unknown_item => 'عنصر غير معروف';
+
+  @override
+  String get shop_first_purchase_bonus => 'مضاعفة الشراء الأول!';
 }

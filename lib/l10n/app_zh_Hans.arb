@@ -1435,5 +1435,12 @@
   "contactDescription": "有任何心里话或 Bug 都能告诉我们",
   "vibrationHapticTitle": "心动震动感应",
   "vibrationHapticDescription": "好感度大幅变动时触发手机震动",
-  "splash_loading_universe": "正在唤醒《恋恋拾光》的宇宙..."
+  "splash_loading_universe": "正在唤醒《恋恋拾光》的宇宙...",
+  "shop_title": "花花小铺",
+  "shop_current_points_label": "目前持有的花花点数",
+  "shop_tab_top_up": "点数充值",
+  "shop_tab_history": "收支明细",
+  "shop_empty_history": "目前还没有花花纪录喔！🌸",
+  "shop_unknown_item": "未知项目",
+  "shop_first_purchase_bonus": "首购双倍！"
 }
