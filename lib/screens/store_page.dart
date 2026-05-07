@@ -1,13 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// 請確保以下 import 路徑正確
 import '../services/purchase_service.dart';
-import '../services/theme_notifier.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class StorePage extends StatefulWidget {
@@ -60,17 +56,17 @@ class _StorePageState extends State<StorePage> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
                       decoration: BoxDecoration(
-                        color: theme.cardColor.withOpacity(0.85),
+                        color: theme.cardColor.withValues(alpha:0.85),
                         borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: theme.dividerColor.withOpacity(0.1)),
+                        border: Border.all(color: theme.dividerColor.withValues(alpha:0.1)),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10))
+                          BoxShadow(color: Colors.black.withValues(alpha:.05), blurRadius: 20, offset: const Offset(0, 10))
                         ],
                       ),
                       child: Column(
                         children: [
                           Text(l10n.shop_current_points_label,
-                              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 14)),
+                              style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 14)),
                           const SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -259,9 +255,9 @@ class _StorePageState extends State<StorePage> {
               decoration: BoxDecoration(
                 color: theme.cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.dividerColor.withOpacity(0.05)),
+                border: Border.all(color: theme.dividerColor.withValues(alpha:0.05)),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 8, offset: const Offset(0, 4))
+                  BoxShadow(color: Colors.black.withValues(alpha:0.02), blurRadius: 8, offset: const Offset(0, 4))
                 ],
               ),
               child: Row(
@@ -313,12 +309,12 @@ class MonthlyCardBanner extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: [primaryColor, theme.colorScheme.secondary.withOpacity(0.8)],
+          colors: [primaryColor, theme.colorScheme.secondary.withValues(alpha:0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
-          BoxShadow(color: primaryColor.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 6))
+          BoxShadow(color: primaryColor.withValues(alpha:0.3), blurRadius: 12, offset: const Offset(0, 6))
         ],
       ),
       child: Material(
@@ -341,7 +337,7 @@ class MonthlyCardBanner extends StatelessWidget {
                     children: [
                       Text('星光契約 (月卡)', style: TextStyle(color: onPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Text('立即得 250 花花，每日領 10 花花', style: TextStyle(color: onPrimary.withOpacity(0.85), fontSize: 13)),
+                      Text('立即得 250 花花，每日領 10 花花', style: TextStyle(color: onPrimary.withValues(alpha:0.85), fontSize: 13)),
                     ],
                   ),
                 ),
@@ -381,10 +377,10 @@ class ProductCard extends StatelessWidget {
 
     return Card(
       elevation: 0,
-      color: theme.cardColor.withOpacity(isDarkMode ? 0.4 : 0.8),
+      color: theme.cardColor.withValues(alpha:isDarkMode ? 0.4 : 0.8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: primaryColor.withOpacity(0.2)),
+        side: BorderSide(color: primaryColor.withValues(alpha:0.2)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
@@ -408,14 +404,14 @@ class ProductCard extends StatelessWidget {
               if (isFirstPurchase)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                  decoration: BoxDecoration(color: Colors.red.withValues(alpha:0.1), borderRadius: BorderRadius.circular(6)),
                   child:Text(l10n.shop_first_purchase_bonus, style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
                 ),
               const Spacer(),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: primaryColor.withValues(alpha:0.1), borderRadius: BorderRadius.circular(12)),
                 child: Text(productWrapper.productDetails.price, textAlign: TextAlign.center, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
               ),
             ],
