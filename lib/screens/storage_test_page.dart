@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
 import 'dart:async'; // ✨ 加上這個 import 就可以了！
-import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 //圖片上傳
 
@@ -20,7 +18,6 @@ class _StorageTestPageState extends State<StorageTestPage> {
   final ImagePicker _picker = ImagePicker();
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  XFile? _selectedImage;
   Uint8List? _imageBytes;
   String _status = '請先選擇一張圖片';
   String? _downloadUrl;
@@ -29,7 +26,6 @@ class _StorageTestPageState extends State<StorageTestPage> {
   Future<void> _pickImage() async {
     setState(() {
       _status = '正在選擇圖片...';
-      _selectedImage = null;
       _imageBytes = null;
       _downloadUrl = null;
     });
@@ -44,7 +40,6 @@ class _StorageTestPageState extends State<StorageTestPage> {
       final bytes = await image.readAsBytes();
       setState(() {
         _status = '圖片已選擇！路徑: ${image.path}';
-        _selectedImage = image;
         _imageBytes = bytes;
       });
     } else {
@@ -120,7 +115,7 @@ class _StorageTestPageState extends State<StorageTestPage> {
       appBar: AppBar(
         title: const Text('Firebase Storage 測試'),
         // AppBar 會自動抓取主題，但我們確保背景色跟隨主題
-        backgroundColor: colorScheme.surfaceVariant.withOpacity(0.5),
+        backgroundColor: colorScheme.surfaceContainerHighest.withValues(alpha:0.5),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -132,7 +127,7 @@ class _StorageTestPageState extends State<StorageTestPage> {
                 height: 250,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceVariant, // 跟隨主題的次要背景色
+                  color: colorScheme.surfaceContainerHighest, // 跟隨主題的次要背景色
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(color: colorScheme.outlineVariant),
                 ),
@@ -144,14 +139,13 @@ class _StorageTestPageState extends State<StorageTestPage> {
                     : Icon(Icons.image, size: 80, color: colorScheme.outline),
               ),
               const SizedBox(height: 20),
-
               // 📊 狀態顯示：使用主題的 PrimaryContainer
               Card(
                 elevation: 0,
-                color: colorScheme.primaryContainer.withOpacity(0.3),
+                color: colorScheme.primaryContainer.withValues(alpha:0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: colorScheme.primary.withOpacity(0.2)),
+                  side: BorderSide(color: colorScheme.primary.withValues(alpha:0.2)),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -225,7 +219,7 @@ class _StorageTestPageState extends State<StorageTestPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceVariant.withOpacity(0.3),
+                    color: colorScheme.surfaceContainerHighest.withValues(alpha:0.3),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: SelectableText(
