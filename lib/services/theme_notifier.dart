@@ -29,8 +29,8 @@ final ThemeData _pinkGradientTheme = ThemeData(
     secondary: Color(0xFFF48FB1),
     secondaryContainer: Color(0xFFF8BBD0),
     onPrimary: Colors.white,
-    background: Colors.transparent,
-    onBackground: Colors.black87,
+    surface: Colors.transparent,
+    onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFFFFD5E3),
@@ -53,8 +53,8 @@ final ThemeData _blueGradientTheme = ThemeData(
     secondaryContainer: Color(0xFF81C784),
     onPrimary: Colors.white,
     onSecondaryContainer: Colors.white,
-    background: Colors.transparent,
-    onBackground: Colors.black87,
+    surface: Colors.transparent,
+    onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFFD5E3FF),
@@ -74,8 +74,8 @@ final ThemeData _orangeGradientTheme = ThemeData(
     primary: Colors.orange,
     onPrimary: Colors.white,
     secondary: Colors.deepOrangeAccent,
-    background: Colors.transparent,
-    onBackground: Colors.black87,
+    surface: Colors.transparent,
+    onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFFFFE9D5),
@@ -95,8 +95,8 @@ final ThemeData _yellowGradientTheme = ThemeData(
     primary: Colors.yellow,
     onPrimary: Colors.black,
     secondary: Colors.amber,
-    background: Colors.transparent,
-    onBackground: Colors.black87,
+    surface: Colors.transparent,
+    onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFFFFF9D5),
@@ -116,8 +116,8 @@ final ThemeData _greenGradientTheme = ThemeData(
     primary: Colors.green,
     onPrimary: Colors.white,
     secondary: Colors.teal,
-    background: Colors.transparent,
-    onBackground: Colors.black87,
+    surface: Colors.transparent,
+    onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFFD5FFD6),
@@ -187,13 +187,13 @@ class ThemeNotifier extends ChangeNotifier {
   ThemeData _buildCustomTheme(Color color) {
     return ThemeData(
       primaryColor: color,
-      scaffoldBackgroundColor: color.withOpacity(0.1),
+      scaffoldBackgroundColor: color.withValues(alpha:0.1),
       colorScheme: ColorScheme.light(
         primary: color,
         secondary: color.withBlue(200),
-        background: Colors.transparent,
+        surface: Colors.transparent,
       ),
-      appBarTheme: AppBarTheme(backgroundColor: color.withOpacity(0.2), elevation: 0),
+      appBarTheme: AppBarTheme(backgroundColor: color.withValues(alpha:0.2), elevation: 0),
     );
   }
 
@@ -222,7 +222,7 @@ class ThemeNotifier extends ChangeNotifier {
             image: FileImage(File(_backgroundImagePath!)),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(0.2), // 淡淡遮罩避免照片太亮
+              Colors.black.withValues(alpha:0.2), // 淡淡遮罩避免照片太亮
               BlendMode.darken,
             ),
           ),
@@ -233,7 +233,7 @@ class ThemeNotifier extends ChangeNotifier {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [_customColor.withOpacity(0.3), Colors.white],
+          colors: [_customColor.withValues(alpha:0.3), Colors.white],
         ),
       );
     }
@@ -306,7 +306,7 @@ class ThemeNotifier extends ChangeNotifier {
     _currentThemeEnum = AppTheme.custom;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('custom_color_value', color.value);
+    await prefs.setInt('custom_color_value', color.toARGB32());
     await prefs.setString('app_theme', AppTheme.custom.name);
   }
 
