@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'main_page.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 
 // 啟動畫面,檢查是否為第一次啟動
@@ -47,6 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -75,8 +77,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
-                '戀戀拾光',
+              Text(
+                l10n.app_name,
                 style: TextStyle(
                   fontSize: 24,
                   color: Colors.black87,
