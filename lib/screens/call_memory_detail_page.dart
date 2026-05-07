@@ -1,13 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:typed_data';
 import 'package:audioplayers/audioplayers.dart';
-import 'dart:convert'; // 🌟 用來轉換 Base64
 import 'package:flutter/foundation.dart'; // 🌟 用來判斷是不是網頁版 (kIsWeb)
 
 // 🌟 回放室：需要動態狀態來播放音樂
@@ -34,11 +30,9 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
   // 🎧 初始化播放器
   Future<void> _initAudioPlayer() async {
     _audioPlayer = AudioPlayer();
-    await _audioPlayer!.dispose();
+    await _audioPlayer.dispose();
     _isPlayerInitialized = true;
   }
-
-  static const Map<String, dynamic> defaultVoiceSetting = {'stability': 0.33, 'style': 0.75};
 
   // 🎙️ 核心功能：呼叫 ElevenLabs 重新播放男神的聲音！
   Future<void> _playVoice(String text) async {
@@ -169,7 +163,7 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isMe ? theme.colorScheme.surfaceVariant.withOpacity(0.5) : theme.colorScheme.primary.withOpacity(0.1),
+                color: isMe ? theme.colorScheme.surfaceContainerHighest.withValues(alpha:0.5) : theme.colorScheme.primary.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(16),
                 border: isPlaying ? Border.all(color: theme.colorScheme.primary, width: 2) : null,
               ),

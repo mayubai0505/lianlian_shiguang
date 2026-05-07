@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/theme_notifier.dart';
 import 'package:provider/provider.dart';
 import 'character_model.dart';
-import 'package:intl/intl.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -208,10 +207,10 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
       onTap: () => _navigateToChat(friend),
       child: Container(
         decoration: BoxDecoration(
-          color: theme.cardColor.withOpacity(0.8),
+          color: theme.cardColor.withValues(alpha:0.8),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5, offset: const Offset(0, 2))
+            BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 5, offset: const Offset(0, 2))
           ],
         ),
         child: Column(

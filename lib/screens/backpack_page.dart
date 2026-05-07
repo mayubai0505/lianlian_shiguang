@@ -36,7 +36,7 @@ class BackpackPage extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(l10n.char_exclusive_memory(character.name)),
-        backgroundColor: theme.appBarTheme.backgroundColor?.withOpacity(0.8) ?? theme.colorScheme.surface,
+        backgroundColor: theme.appBarTheme.backgroundColor?.withValues(alpha:0.8) ?? theme.colorScheme.surface,
         elevation: 0,
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -52,11 +52,11 @@ class BackpackPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.auto_awesome_mosaic_outlined, size: 80, color: theme.colorScheme.primary.withOpacity(0.3)),
+                  Icon(Icons.auto_awesome_mosaic_outlined, size: 80, color: theme.colorScheme.primary.withValues(alpha:0.3)),
                   const SizedBox(height: 16),
                   Text(l10n.empty_treasure_box,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5), height: 1.5, fontSize: 16),
+                    style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5), height: 1.5, fontSize: 16),
                   ),
                 ],
               ),
@@ -77,12 +77,12 @@ class BackpackPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      color: theme.colorScheme.primary.withValues(alpha:0.1),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     )
                   ],
-                  border: Border.all(color: theme.colorScheme.primary.withOpacity(0.2), width: 1),
+                  border: Border.all(color: theme.colorScheme.primary.withValues(alpha:0.2), width: 1),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -104,7 +104,7 @@ class BackpackPage extends StatelessWidget {
                       const SizedBox(height: 12),
                       Text(
                         eggData['teaser'] ?? '',
-                        style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.8), height: 1.4),
+                        style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.8), height: 1.4),
                       ),
                       const SizedBox(height: 20),
                       SizedBox(

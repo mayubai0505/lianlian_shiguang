@@ -13,13 +13,11 @@ import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import 'character_model.dart';
 import 'package:http/http.dart' as http; // ✨ 負責跟後端連線
-import 'dart:convert'; // ✨ 負責把資料轉成 JSON 格式
-import 'package:audioplayers/audioplayers.dart'; // 記得匯入
+ import 'package:audioplayers/audioplayers.dart'; // 記得匯入
 import '../services/app_constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 // ✨ 這是一個既能「創建」也能「編輯」的萬能頁面
 class CharacterEditPage extends StatefulWidget {
@@ -56,8 +54,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         return key;
     }
   }
-  bool _isSavingDraft = false; // 控制儲存時的載入狀態
   bool _isGeneratingVoice = false;
+  bool _isInit = false; // ✨ 專屬防護旗標
   bool _isTestingSettings = false;
   final String _apiKey = "sk_ac547721d8ff700babefd42c96ae76e4eb685ce2d313f87f";
   Map<String, String> _relationships = {};
@@ -66,7 +64,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   List<Character> _myCharacters = [];
   String? _generatedVoiceId;
   String? _selectedVoiceId;    // 存聲音 ID
-  String? _voicePreviewUrl;   // 存試聽網址
   static const String genderIdMale = 'male';
   static const String genderIdFemale = 'female';
   static const String genderIdOther = 'other';
@@ -120,7 +117,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   List<CharacterPhoto> _galleryPhotos = [];
   String? _selectedRelationship;
   List<EasterEgg> _easterEggs = [];//彩蛋
-  String? _previewUrl;
   // 🌟 變數升級為列表
   // --- Services ---
   final ImagePicker _picker = ImagePicker();
@@ -130,7 +126,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   bool get isEditing => widget.character != null;
   @override
   void initState() {
-    final l10n = AppLocalizations.of(context)!;
     super.initState();
     // 1. 初始化播放器
     _audioPlayer = AudioPlayer();
@@ -164,7 +159,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _dislikesController.text = char.dislikes;
       _secretsController.text = char.secrets;
       _appearanceController.text = char.appearance ?? '';
-      _gender = char.gender ?? '';
       _dialogueExamplesController.text = char.dialogueExamples;
       // -- 陣列與清單 (保留妳的安全寫法) --
       _personalityTags = List.from(char.personalityTags);
@@ -178,12 +172,21 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _stageAcquaintanceController.text = mapData['stageAcquaintance'] ?? '';
       _stageIntimateController.text = mapData['stageIntimate'] ?? '';
       _socialInteractionController.text = mapData['socialInteraction'] ?? '';
-      // -- 照片畫廊 --
+      String savedGender1 = char.gender ?? '';
+      if (savedGender1 == '男') {
+        _gender = 'male';
+      } else if (savedGender1 == '女') {
+        _gender = 'female';
+      } else if (savedGender1 == '其他') {
+        _gender = 'other';
+      } else {
+        _gender = savedGender1;
+      }      // -- 照片畫廊 --
       if (char.gallery != null) {
         _galleryPhotos = List.from(char.gallery!);
       } else {
         _galleryPhotos = char.galleryPaths.map((url) =>
-            CharacterPhoto(imageUrl: url, requiredAffection: 0, description: l10n.default_photo_desc)
+            CharacterPhoto(imageUrl: url, requiredAffection: 0, description: '')
         ).toList();
       }
       // -- 關係設定 --
@@ -203,7 +206,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       // -- 語音與音色設定 (統一整理在這裡) --
       _generatedVoiceId = char.voiceId;
       _selectedVoiceId = char.voiceId;
-      _voicePreviewUrl = char.voicePreviewUrl;
       _finalVoicePreviewUrl = char.voicePreviewUrl;
       _voiceStability = char.voiceStability ?? 0.33;
       _voiceStyle = char.voiceStyle ?? 0.75;
@@ -211,87 +213,117 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     } else if (widget.draftDoc != null) {
       // ✨✨✨ 路線二：從秘密工作室點擊草稿進來 ✨✨✨
       final data = widget.draftDoc!.data() as Map<String, dynamic>;
-      _previewUrl = data['avatarPath'];
+
+      // 1. 【基本欄位對齊】
       _nameController.text = data['name'] ?? '';
-      _ageController.text = data['age'] ?? '';
+      _ageController.text = data['age']?.toString() ?? '';
       _occupationController.text = data['occupation'] ?? '';
       _birthdayController.text = data['birthday'] ?? '';
-      _heightController.text = data['height'] ?? '';
+      _heightController.text = data['height']?.toString() ?? '';
+      _appearanceController.text = data['appearance'] ?? '';
       _backgroundController.text = data['background'] ?? '';
       _storySummaryController.text = data['storySummary'] ?? '';
       _storyController.text = data['story'] ?? '';
       _firstLineController.text = data['storyModeFirstLine'] ?? '';
       _toneController.text = data['toneAndStyle'] ?? '';
-      _detailedPersonalityController.text = data['detailedPersonality'] ?? '';
-      _likesController.text = data['likes'] ?? '';
-      _dislikesController.text = data['dislikes'] ?? '';
-      _secretsController.text = data['secrets'] ?? '';
-      _appearanceController.text = data['appearance'] ?? '';
-      _gender = data['gender'] ?? '';
-      _selectedRelationship = data['initialRelationship'] != '' ? data['initialRelationship'] : null;
+
+      // 2. 【性別攔截】
+      String savedGender = data['gender'] ?? '';
+      if (savedGender == 'male' || savedGender == '男') _gender = 'male';
+      else if (savedGender == 'female' || savedGender == '女') _gender = 'female';
+      else if (savedGender == 'other' || savedGender == '其他') _gender = 'other';
+      else _gender = savedGender;
+
+      // 3. 【社交與演變】(這就是妳說沒跑出來的社交資料)
       _playerIdentityController.text = data['playerIdentity'] ?? '';
+      _detailedPersonalityController.text = data['detailedPersonality'] ?? '';
       _stageStrangerController.text = data['stageStranger'] ?? '';
       _stageAcquaintanceController.text = data['stageAcquaintance'] ?? '';
       _stageIntimateController.text = data['stageIntimate'] ?? '';
       _socialInteractionController.text = data['socialInteraction'] ?? '';
+
+      // 4. 【專屬語音】(修正為資料庫的下底線格式：voice_id)
+      _generatedVoiceId = data['voice_id'];
+      _selectedVoiceId = data['voice_id'];
+      _finalVoicePreviewUrl = data['voice_preview_url'];
+      // 數值轉換，防止 Firebase 的 double/int 混用噴錯
+      _voiceStability = (data['voiceStability'] is num) ? data['voiceStability'].toDouble() : 0.33;
+      _voiceStyle = (data['voiceStyle'] is num) ? data['voiceStyle'].toDouble() : 0.75;
+
+      // 5. 【照片合併：對齊 url/req/desc】
+      List<CharacterPhoto> tempGallery = [];
       if (data['gallery'] != null) {
         var rawGallery = data['gallery'] as List<dynamic>;
-        _galleryPhotos = rawGallery.map((item) {
+        tempGallery = rawGallery.map((item) {
           final photoData = item as Map<String, dynamic>;
           return CharacterPhoto(
-              imageUrl: photoData['imageUrl'] ?? '',
-              requiredAffection: photoData['requiredAffection'] ?? 0,
-              description: photoData['description'] ?? l10n.draft_photo_desc
+              imageUrl: photoData['url'] ?? '', // ✨ 對齊妳資料庫裡的 'url'
+              requiredAffection: photoData['req'] ?? 0, // ✨ 對齊 'req'
+              description: photoData['desc'] ?? ''  // ✨ 對齊 'desc'
           );
-        }).toList();
-      } else if (data['galleryPaths'] != null) {
-        var paths = data['galleryPaths'] as List<dynamic>;
-        _galleryPhotos = paths.map((url) =>
-            CharacterPhoto(imageUrl: url, requiredAffection: 0, description: '預設照片')
-        ).toList();
+        }).where((photo) => photo.imageUrl.trim().isNotEmpty).toList();
       }
-      // 3. 補上妳上面沒列到的其他清單 (如果有用到的話)
-      if (data['personalityTags'] != null) {
-        _personalityTags = List<String>.from(data['personalityTags']);
+
+      String? mainAvatar = data['avatarPath'];
+      if (mainAvatar != null && mainAvatar.isNotEmpty) {
+        bool alreadyIn = tempGallery.any((p) => p.imageUrl == mainAvatar);
+        if (!alreadyIn) {
+          tempGallery.insert(0, CharacterPhoto(imageUrl: mainAvatar, requiredAffection: 0, description: ''));
+        }
       }
-      // 🥚 3. 救回彩蛋 (將 Map 解壓縮成 EasterEgg 物件)
-      if (data['easterEggs'] != null) {
-        var rawEggs = data['easterEggs'] as List<dynamic>;
-        _easterEggs = rawEggs.map((item) {
-          final eggData = item as Map<String, dynamic>;
-          return EasterEgg(
-            // 💡 完全照著編譯器要求的參數名稱放進去！
-            id: eggData['id'] ?? '',
-            keyword: eggData['keyword'] ?? '',
-            title: eggData['title'] ?? '',
-            teaser: eggData['teaser'] ?? '',
-            contentPrompt: eggData['contentPrompt'] ?? '',
-          );
-        }).toList();
-      }
-      // ✨ 2. 初始關係精準判斷
+      _galleryPhotos = tempGallery;
+
+      // 1. 【初始關係：翻譯轉換】
+      // 解決顯示 "relationship_other" 或 "relationship_childhood_friend" 的問題
       final savedRel = data['initialRelationship'] ?? '';
-      // 總裁專屬的關係名單
-      const builtInRelationships = [
+      const builtInKeys = [
         'relationship_childhood_friend',
         'relationship_senior_junior',
         'relationship_bickering_couple',
         'relationship_colleagues'
       ];
 
-      if (savedRel.isEmpty) {
+      if (savedRel == '' || savedRel == null) {
         _selectedRelationship = null;
-      } else if (builtInRelationships.contains(savedRel)) {
-        // 如果是這四個內建選項，直接讓選單選中它
+        _customRelationshipController.clear();
+      } else if (builtInKeys.contains(savedRel)) {
+        // 它是內建英文 Key，我們把它指派給選單變數，Dropdown 會自己變中文
         _selectedRelationship = savedRel;
+        _customRelationshipController.clear();
       } else {
-        // 如果不是空值，又不在名單內，代表是玩家手寫的「自定義內容」！
-        _selectedRelationship = 'relationship_other'; // 切換到「其他」
-        _customRelationshipController.text = savedRel; // 把字填進輸入框
+        // 如果存的是 "relationship_other" 或者是玩家寫的「中文」
+        _selectedRelationship = 'relationship_other';
+        if (savedRel == 'relationship_other') {
+          _customRelationshipController.clear(); // 如果只是 "其他" 這個選項，就清空輸入框
+        } else {
+          _customRelationshipController.text = savedRel; // 顯示玩家寫的「鄰居」、「前任」等
+        }
       }
-      // 草稿如果有 extraInfo 也可以在這裡讀取
-      if (data['extraInfoItems'] != null) {
-        _extraInfoItems = List<String>.from(data['extraInfoItems']);
+
+      // 2. 【身分設定】
+      _playerIdentityController.text = data['playerIdentity'] ?? '';
+
+      // 3. 【社交圈：與其他角色的關係 (Tab 3)】
+      // 總裁，重點來了！妳剛才的 debugPrint 裡「真的沒有」relationships 這個欄位！
+      // 我們嘗試抓看看妳可能存錯的名字
+      var relData = data['relationships'] ?? data['character_relationships'] ?? data['related_characters'];
+      if (relData != null) {
+        _relationships = Map<String, String>.from(relData);
+      } else {
+        _relationships = {}; // 真的沒抓到，就只能給空的
+      }
+      // 8. 【標籤與彩蛋】
+      if (data['personalityTags'] != null) _personalityTags = List<String>.from(data['personalityTags']);
+      if (data['extraInfoItems'] != null) _extraInfoItems = List<String>.from(data['extraInfoItems']);
+      if (data['easterEggs'] != null) {
+        var rawEggs = data['easterEggs'] as List<dynamic>;
+        _easterEggs = rawEggs.map((eggData) => EasterEgg(
+          id: eggData['id'] ?? '',
+          keyword: eggData['keyword'] ?? '',
+          title: eggData['title'] ?? '',
+          teaser: eggData['teaser'] ?? '',
+          contentPrompt: eggData['contentPrompt'] ?? '',
+        )).toList();
       }
 
       _currentDraftId = widget.draftDoc!.id;
@@ -300,6 +332,31 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadDraftData();
       });
+    }
+  }
+  // ✨✨✨ 完美的翻譯與初始化區塊 ✨✨✨
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // 🛡️ 啟動防護罩：確保只在剛進頁面時翻譯一次！
+    if (!_isInit) {
+      // 這裡可以安全地取得翻譯字典
+      final l10n = AppLocalizations.of(context)!;
+
+      // 掃描所有的照片，幫空字串補上翻譯
+      for (int i = 0; i < _galleryPhotos.length; i++) {
+        if (_galleryPhotos[i].description.isEmpty) {
+          // 💡 總裁小知識：在 didChangeDependencies 裡面直接改值就好，
+          // 不需要寫 setState，因為系統執行完這裡，本來就會緊接著去跑 build() 更新畫面！
+          _galleryPhotos[i].description = isEditing
+              ? l10n.default_photo_desc
+              : l10n.draft_photo_desc;
+        }
+      }
+
+      // 事情做完後，把大門鎖上！
+      _isInit = true;
     }
   }
   @override
@@ -363,7 +420,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     if (user == null) return;
     // ✨ 1. 聰明判斷玩家要存哪個聲音 ID
     final String finalVoiceIdToSave = _generatedVoiceId ?? _selectedVoiceId ?? '';
-    setState(() => _isSavingDraft = true);
     try {
       List<String> identitiesArray = _occupationController.text.trim().isEmpty
           ? []
@@ -431,6 +487,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voiceStyle': _voiceStyle,
         'lastEditTime': FieldValue.serverTimestamp(),
         'isCompleted': false,
+        'relationships': _relationships, // 🌟 補上這行，Tab 3 的關係就不會消失了！
       };
 
       // 🌟 5. 寫入 Firestore 的草稿區 (draft_characters)
@@ -450,7 +507,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       }
     } finally {
       if (mounted) {
-        setState(() => _isSavingDraft = false);
       }
     }
   }
@@ -1576,7 +1632,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   child: Container(
                     padding: const EdgeInsets.all(16.0),
                     width: double.infinity,
-                    color: theme.scaffoldBackgroundColor.withOpacity(0.95),
+                    color: theme.scaffoldBackgroundColor.withValues(alpha:0.95),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
@@ -1663,14 +1719,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSectionTitle(l10n.section_story_identity, theme),
-                  Text(l10n.story_identity_desc, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
+                  Text(l10n.story_identity_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
                   const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer.withOpacity(0.4),
+                      color: theme.colorScheme.primaryContainer.withValues(alpha:0.4),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+                      border: Border.all(color: theme.colorScheme.primary.withValues(alpha:0.3)),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1798,7 +1854,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                       hintText: l10n.detailed_personality_hint
                   ),
                   const SizedBox(height: 16),
-                  Text(l10n.affection_evo_desc, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6), fontSize: 12)),
+                  Text(l10n.affection_evo_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
                   const SizedBox(height: 12),
                   _buildBoxedTextField(_stageStrangerController, l10n.stage_1_label, maxLength: 400, hintText: l10n.stage_1_hint),
                   const SizedBox(height: 12),
@@ -1866,7 +1922,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                       final egg = _easterEggs[index];
                       return Card(
                         elevation: 1,
-                        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                        color: theme.colorScheme.surfaceVariant.withValues(alpha:0.5),
                         child: ListTile(
                           leading: const Icon(Icons.card_giftcard, color: Colors.purple),
                           title: Text(egg.keyword, style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -1917,7 +1973,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           _buildPublicPrivateToggle(theme),
         ],
       ),
-    // --- 懸浮儲存按鈕 ---
     );
   }
   Widget _buildTab2_Voice(ThemeData theme) {
@@ -1973,7 +2028,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                             },
                             child: Card(
                               elevation: isSelected ? 4 : 1,
-                              color: isSelected ? theme.colorScheme.primaryContainer.withOpacity(0.3) : null,
+                              color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha:0.3) : null,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 side: BorderSide(
@@ -2039,7 +2094,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                                   _voiceSamples = [];
                                   _selectedSampleIndex = null;
                                   _playingSampleIndex = null;
-                                  _audioPlayer?.stop();
+                                  _audioPlayer.stop();
                                 }),
                                 child:Text(l10n.voice_retry),
                               ),
@@ -2060,9 +2115,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.1),
+                          color: Colors.green.withValues(alpha:0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.green.withOpacity(0.5)),
+                          border: Border.all(color: Colors.green.withValues(alpha:0.5)),
                         ),
                         child: Row(
                           children: [
@@ -2115,7 +2170,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha:0.1),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(
@@ -2223,7 +2278,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
                     return Card(
                       margin: const EdgeInsets.only(top: 8),
-                      color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                      color: theme.colorScheme.surfaceVariant.withValues(alpha:0.5),
 
                       // ✨ 派尋人小精靈去查名字！
                       child: FutureBuilder<DocumentSnapshot>(
@@ -2365,60 +2420,104 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     );
   }
 
+  void _showEditPhotoDialog(int index) {
+    final photo = _galleryPhotos[index];
+    final TextEditingController descController = TextEditingController(text: photo.description);
+    final TextEditingController reqController = TextEditingController(text: photo.requiredAffection.toString());
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('編輯照片設定'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: descController,
+              decoration: const InputDecoration(labelText: '照片名稱/描述'),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: reqController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: '解鎖好感度 (設為 0 會變成大頭貼)'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _galleryPhotos[index] = CharacterPhoto(
+                  imageUrl: photo.imageUrl,
+                  localFile: photo.localFile,
+                  description: descController.text,
+                  requiredAffection: int.tryParse(reqController.text) ?? 0,
+                );
+              });
+              Navigator.pop(context);
+            },
+            child: const Text('儲存'),
+          ),
+        ],
+      ),
+    );
+  }
+
   // --- 全新相簿 UI (抓蟲升級版：Web CORS 防護版) ---
   Widget _buildImageGallery() {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+
+    // 🕵️‍♀️ 總裁邏輯：尋找「好感度 0」的照片作為主圖。如果找不到，就拿第一張。
+    CharacterPhoto? mainPhoto;
+    if (_galleryPhotos.isNotEmpty) {
+      mainPhoto = _galleryPhotos.firstWhere(
+            (p) => p.requiredAffection == 0,
+        orElse: () => _galleryPhotos.first,
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(l10n.charAlbumTitle, style: theme.textTheme.titleLarge),
         const SizedBox(height: 10),
-        // 🖼️ 上方：主大頭貼
+
+        // 🖼️ 上方：智慧大頭貼
         Container(
           height: 250,
           width: double.infinity,
           decoration: BoxDecoration(
             color: Colors.grey[100],
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade300), // 加上邊框，空白時比較好看
+            border: Border.all(color: Colors.grey.shade300),
           ),
-          child: _galleryPhotos.isNotEmpty
+          child: mainPhoto != null && (mainPhoto.imageUrl.isNotEmpty || mainPhoto.localFile != null)
               ? ClipRRect(
             borderRadius: BorderRadius.circular(12.0),
             child: Image(
               image: _getImageProvider(
-                  _galleryPhotos.first.localFile ??
-                      (_galleryPhotos.first.imageUrl.isNotEmpty ? _galleryPhotos.first.imageUrl : null)
+                  mainPhoto.localFile ?? (mainPhoto.imageUrl.isNotEmpty ? mainPhoto.imageUrl : null)
               ),
               fit: BoxFit.contain,
-              // ✨【關鍵修正 1】：破圖偵測器
               errorBuilder: (context, error, stackTrace) {
-                debugPrint("主圖片載入失敗: $error");
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(l10n.gallery_load_failed,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.red, fontSize: 12)
-                    ),
-                  ),
-                );
+                return Center(child: Text(l10n.gallery_load_failed, style: const TextStyle(color: Colors.red, fontSize: 12)));
               },
             ),
           )
               : const Center(child: Icon(Icons.photo_camera_back_outlined, size: 60, color: Colors.grey)),
         ),
         const SizedBox(height: 10),
-        // 🎞️ 下方：橫向縮圖與設定
+
+        // 🎞️ 下方：橫向縮圖 (點擊可編輯)
         SizedBox(
-          height: 100, // 稍微加高一點放文字
+          height: 110, // 稍微加高一點
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: _galleryPhotos.length + 1,
             itemBuilder: (context, index) {
-              // 最後一個按鈕是「新增照片」
               if (index == _galleryPhotos.length) {
                 return _buildAddImageButton();
               }
@@ -2426,47 +2525,52 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               return Stack(
                 alignment: Alignment.topRight,
                 children: [
-                  Container(
-                    width: 80,
-                    margin: const EdgeInsets.only(right: 10, top: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200], // 給個底色
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300), // 加上邊框
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image(
-                          image: _getImageProvider(
-                              photo.localFile ??
-                                  (photo.imageUrl.isNotEmpty ? photo.imageUrl : null)
-                          ),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
+                  // 🚀 包裹 GestureDetector，點擊觸發編輯彈窗
+                  GestureDetector(
+                    onTap: () => _showEditPhotoDialog(index),
+                    child: Container(
+                      width: 80,
+                      margin: const EdgeInsets.only(right: 10, top: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          // 🌟 如果它是大頭貼 (好感度0)，給它一個亮色的邊框標示
+                          color: photo.requiredAffection == 0 ? theme.colorScheme.primary : Colors.grey.shade300,
+                          width: photo.requiredAffection == 0 ? 2 : 1,
                         ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            width: double.infinity,
-                            color: Colors.black.withOpacity(0.6),
-                            padding: const EdgeInsets.symmetric(vertical: 2),
-                            child: Text(
-                              l10n.gallery_affection_req(photo.requiredAffection),
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.white, fontSize: 10),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image(
+                            image: _getImageProvider(photo.localFile ?? (photo.imageUrl.isNotEmpty ? photo.imageUrl : null)),
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              width: double.infinity,
+                              color: Colors.black.withValues(alpha: 0.6),
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              child: Text(
+                                // 顯示描述或好感度
+                                photo.requiredAffection == 0 ? "大頭貼" : "LV.${photo.requiredAffection}",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.white, fontSize: 10),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   // 刪除按鈕
                   GestureDetector(
                     onTap: () => setState(() => _galleryPhotos.removeAt(index)),
                     child: Container(
-                      margin: const EdgeInsets.only(right: 4),
                       decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
                       child: const Icon(Icons.close, color: Colors.white, size: 18),
                     ),
@@ -2665,7 +2769,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle:TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
+          labelStyle:TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.7)),
           enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: theme.dividerColor)),
           focusedBorder: UnderlineInputBorder(
@@ -2687,8 +2791,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
-        hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.4), fontSize: 13),
-        labelStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
+        hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.4), fontSize: 13),
+        labelStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.7)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(color: theme.dividerColor),

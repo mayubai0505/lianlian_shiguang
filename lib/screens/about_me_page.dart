@@ -205,7 +205,7 @@ class _AboutMePageState extends State<AboutMePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.char_notebook_title(widget.character.name)),
-        backgroundColor: theme.appBarTheme.backgroundColor?.withOpacity(0.8),
+        backgroundColor: theme.appBarTheme.backgroundColor?.withValues(alpha:0.8),
         elevation: 0,
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -226,12 +226,12 @@ class _AboutMePageState extends State<AboutMePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.auto_stories, size: 80, color: Colors.grey.withOpacity(0.3)),
+                  Icon(Icons.auto_stories, size: 80, color: Colors.grey.withValues(alpha:0.3)),
                   SizedBox(height: 16),
                   Text(
                     l10n.empty_notebook_msg,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5), fontSize: 16, height: 1.5),
+                    style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5), fontSize: 16, height: 1.5),
                   ),
                 ],
               ),
@@ -269,7 +269,7 @@ class _AboutMePageState extends State<AboutMePage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha:0.5),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
@@ -296,7 +296,7 @@ class _AboutMePageState extends State<AboutMePage> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha:0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

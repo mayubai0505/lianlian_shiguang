@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../main.dart';
@@ -16,8 +13,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:http/http.dart' as http;
 
 // 通話介面
 
@@ -70,7 +65,6 @@ class _CallOverlayState extends State<CallOverlay> {
   bool _isChatMode = false;
   final TextEditingController _chatController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final ScrollController _menuScrollController = ScrollController();
   final List<Map<String, dynamic>> _inCallMessages = [];
 
   @override
@@ -242,7 +236,7 @@ class _CallOverlayState extends State<CallOverlay> {
         .listen((snapshot) {
       if (snapshot.docs.isEmpty) return;
 
-      final latestMsg = snapshot.docs.first.data() as Map<String, dynamic>;
+      final latestMsg = snapshot.docs.first.data();
       final String text = latestMsg['text'] ?? '';
       final bool isMe = latestMsg['isMe'] ?? false;
       final bool isSystemMessage = latestMsg['isSystem'] == true || latestMsg['type'] == 'system' || text.startsWith('📞');
@@ -284,7 +278,6 @@ class _CallOverlayState extends State<CallOverlay> {
     final sfxPlayer = AudioPlayer();
     sfxPlayer.play(AssetSource('audio/pickup.mp3'));
 
-    final aiReply = await _fetchAIResponse("", isFirstGreeting: true);
 
     int timeLeft = 5000 - stopwatch.elapsedMilliseconds;
     if (timeLeft > 0) {
@@ -499,7 +492,7 @@ class _CallOverlayState extends State<CallOverlay> {
           Image(image: _callBackgroundImage, fit: BoxFit.cover),
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-            child: Container(color: Colors.black.withOpacity(0.6)),
+            child: Container(color: Colors.black.withValues(alpha:0.6)),
           ),
           if (!_isChatMode)
             _buildCallUI(context)
@@ -525,20 +518,20 @@ class _CallOverlayState extends State<CallOverlay> {
               width: 120, height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withOpacity(0.4), width: 2),
+                border: Border.all(color: Colors.white.withValues(alpha:0.4), width: 2),
                 image: DecorationImage(image: _callBackgroundImage, fit: BoxFit.cover),
               ),
             ),
             const SizedBox(height: 20),
             Text(widget.character.name, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            Text('$minutesStr:$secondsStr', style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 20, letterSpacing: 2)),
+            Text('$minutesStr:$secondsStr', style: TextStyle(color: Colors.white.withValues(alpha:0.9), fontSize: 20, letterSpacing: 2)),
             const SizedBox(height: 60),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(16)),
+                decoration: BoxDecoration(color: Colors.white.withValues(alpha:0.15), borderRadius: BorderRadius.circular(16)),
                 child: Text(_sttText ?? l10n.press_mic_to_speak, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16)), // ✨ 替換：請按下麥克風開始說話
               ),
             ),
@@ -548,7 +541,7 @@ class _CallOverlayState extends State<CallOverlay> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildControlButton(icon: Icons.chat_bubble_rounded, color: Colors.white.withOpacity(0.2), onTap: () => setState(() => _isChatMode = true)),
+                  _buildControlButton(icon: Icons.chat_bubble_rounded, color: Colors.white.withValues(alpha:0.2), onTap: () => setState(() => _isChatMode = true)),
                   GestureDetector(
                     onTapDown: (_) => _listen(),
                     onTapUp: (_) => _listen(),
@@ -558,7 +551,7 @@ class _CallOverlayState extends State<CallOverlay> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: _isListening ? Colors.redAccent : theme.colorScheme.primary,
-                        boxShadow: [if (_isListening) BoxShadow(color: Colors.redAccent.withOpacity(0.6), blurRadius: 15, spreadRadius: 5)],
+                        boxShadow: [if (_isListening) BoxShadow(color: Colors.redAccent.withValues(alpha:0.6), blurRadius: 15, spreadRadius: 5)],
                       ),
                       child: Icon(_isListening ? Icons.mic : Icons.mic_none, color: Colors.white, size: 28),
                     ),
@@ -608,7 +601,7 @@ class _CallOverlayState extends State<CallOverlay> {
               ],
             ),
           ),
-          Divider(color: Colors.white.withOpacity(0.2), height: 1),
+          Divider(color: Colors.white.withValues(alpha:0.2), height: 1),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -633,7 +626,7 @@ class _CallOverlayState extends State<CallOverlay> {
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      color: isMe ? theme.colorScheme.primary : Colors.white.withOpacity(0.2),
+                      color: isMe ? theme.colorScheme.primary : Colors.white.withValues(alpha:0.2),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(msg['text'], style: const TextStyle(color: Colors.white, fontSize: 16)),
@@ -644,7 +637,7 @@ class _CallOverlayState extends State<CallOverlay> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
+            decoration: BoxDecoration(color: Colors.black.withValues(alpha:0.4)),
             child: Row(
               children: [
                 Expanded(
@@ -653,9 +646,9 @@ class _CallOverlayState extends State<CallOverlay> {
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: l10n.type_message_hint, // ✨ 替換：輸入文字...
-                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                      hintStyle: TextStyle(color: Colors.white.withValues(alpha:0.5)),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: Colors.white.withValues(alpha:0.1),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     ),

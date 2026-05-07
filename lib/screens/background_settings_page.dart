@@ -5,7 +5,6 @@ import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // 🌟 解決 QuerySnapshot 和 FirebaseFirestore
 import '../services/app_constants.dart';             // 🌟 解決 AppConfig (請根據妳的檔案路徑調整)
-import 'character_model.dart';
 // 專屬相簿背景
 
 class BackgroundSettingsPage extends StatelessWidget {
@@ -111,7 +110,7 @@ class BackgroundSettingsPage extends StatelessWidget {
                       // --- 未解鎖遮罩 ---
                       if (!isUnlocked)
                         Container(
-                          color: Colors.black.withOpacity(0.6),
+                          color: Colors.black.withValues(alpha:0.6),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -134,7 +133,7 @@ class BackgroundSettingsPage extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
-                              colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                              colors: [Colors.black.withValues(alpha:0.8), Colors.transparent],
                             ),
                           ),
                           child: Text(

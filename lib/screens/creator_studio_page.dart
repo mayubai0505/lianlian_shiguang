@@ -13,20 +13,22 @@ class CreatorStudioPage extends StatelessWidget {
   // ✨ 總裁專屬：刪除草稿與清理雲端圖片的邏輯
   Future<void> _deleteDraft(BuildContext context, String docId, String? avatarUrl) async {
     final l10n = AppLocalizations.of(context)!;
+
+    // 1. 彈出確認視窗
     final bool confirm = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.delete_draft_title),
-        content:Text(l10n.confirm_delete_draft_msg),
+        content: Text(l10n.confirm_delete_draft_msg),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child:  Text(l10n.cancelButton, style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancelButton, style: const TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             onPressed: () => Navigator.pop(context, true),
-            child:  Text(l10n.confirm_delete_title, style: TextStyle(color: Colors.white)),
+            child: Text(l10n.confirm_delete_title, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -35,26 +37,29 @@ class CreatorStudioPage extends StatelessWidget {
     if (!confirm) return;
 
     try {
-      // 1. 如果有雲端照片，先去把 Storage 裡的照片刪掉，省錢！
-      if (avatarUrl != null && avatarUrl.startsWith('http')) {
-        try {
-          final storageRef = FirebaseStorage.instance.refFromURL(avatarUrl);
-          await storageRef.delete();
-          print("♻️ 已回收草稿專用的雲端圖片！");
-        } catch (e) {
-          print("⚠️ 圖片刪除失敗 (可能已被刪除): $e");
-        }
-      }
-      // 2. 刪除 Firestore 裡的文件
-      await FirebaseFirestore.instance.collection('draft_characters').doc(docId).delete();
+      // 🛑 【重要手術】：我們移除了原本刪除 Firebase Storage 圖片的代碼。
+      // 理由：避免因為草稿被刪除，導致正式版或其他引用此圖片的角色出現 404 破圖。
+      // 雖然會佔用一點雲端空間，但保證了圖片的安全性。
+
+      // 2. 直接刪除 Firestore 裡的草稿文件
+      await FirebaseFirestore.instance
+          .collection('draft_characters')
+          .doc(docId)
+          .delete();
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text(l10n.draft_cleared_success)),
+          SnackBar(content: Text(l10n.draft_cleared_success)),
         );
       }
+
+      debugPrint("♻️ 草稿文件已移除，雲端圖片已安全留存。");
+
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('刪除失敗: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('刪除失敗: $e')),
+        );
       }
     }
   }

@@ -111,6 +111,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  bool _isInit = false;
   bool _hasTriggeredCheck = false;
   final FocusNode _focusNode = FocusNode(); // ✨ 控制鍵盤的遙控器
   final TextEditingController _heightController = TextEditingController();
@@ -174,7 +175,6 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
-    final l10n = AppLocalizations.of(context)!;
     super.initState();
     _checkFirstTimeEntry();
     _currentCharacter = widget.character;
@@ -208,15 +208,30 @@ class _ChatPageState extends State<ChatPage> {
     }
     _loadDraft();
     _initHardware();
+  }
 
-    if (widget.character.name == l10n.chat_loading_status) {
-      _loadCharacterDataById(widget.character.id);
-    } else {
-      _currentCharacter = widget.character;
-      _finishInitialization();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // 3. 檢查是不是第一次進來
+    if (!_isInit) {
+      // 現在可以安全地拿翻譯字典了
+      final l10n = AppLocalizations.of(context)!;
+
+      // 把妳的判斷式放進來
+      if (widget.character.name == l10n.chat_loading_status) {
+        _loadCharacterDataById(widget.character.id);
+      } else {
+        _currentCharacter = widget.character;
+        _finishInitialization();
+      }
+      _loadExistingProfile();
+      _loadUnlockedEggs();
+      // 4. 事情做完後，把旗標鎖上 (設為 true)！
+      // 這樣下次鍵盤彈出或畫面變化時，就不會再重複撈資料了。
+      _isInit = true;
     }
-    _loadExistingProfile();
-    _loadUnlockedEggs();
   }
 
   @override
