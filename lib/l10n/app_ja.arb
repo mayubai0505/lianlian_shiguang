@@ -1430,5 +1430,16 @@
   "shop_tab_history": "取引履歴",
   "shop_empty_history": "まだお花の履歴はありません！🌸",
   "shop_unknown_item": "不明なアイテム",
-  "shop_first_purchase_bonus": "初回購入2倍！"
+  "shop_first_purchase_bonus": "初回購入2倍！",
+  "story_summary_title": "二人の物語",
+  "story_summary_empty_content": "要約内容が空です。",
+  "story_summary_deleted_toast": "この思い出を削除しました",
+  "story_summary_empty_list": "二人の物語はまだ始まっていません...\nもっとたくさん話して、{name} に \n最初の思い出を綴ってもらいましょう！ ✨",
+  "@story_summary_empty_list": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

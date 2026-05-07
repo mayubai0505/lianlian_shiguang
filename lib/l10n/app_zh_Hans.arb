@@ -1442,5 +1442,16 @@
   "shop_tab_history": "收支明细",
   "shop_empty_history": "目前还没有花花纪录喔！🌸",
   "shop_unknown_item": "未知项目",
-  "shop_first_purchase_bonus": "首购双倍！"
+  "shop_first_purchase_bonus": "首购双倍！",
+  "story_summary_title": "我们的故事",
+  "story_summary_empty_content": "摘要内容为空。",
+  "story_summary_deleted_toast": "已移除这段回忆",
+  "story_summary_empty_list": "你们的故事还没有开始...\n多聊聊天，让 {name} \n为你们写下第一篇回忆吧！ ✨",
+  "@story_summary_empty_list": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

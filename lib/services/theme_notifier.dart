@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
-
 //主題切換
 
 enum AppTheme {
@@ -180,7 +179,6 @@ class ThemeNotifier extends ChangeNotifier {
   Color _customColor = Colors.purple;
   String? _backgroundImagePath; // 📸 私藏背景路徑
   String? _activeCharacterBackground;
-
   AppTheme get currentThemeEnum => _currentThemeEnum;
   Color get customColor => _customColor;
   String? get backgroundImagePath => _backgroundImagePath;
@@ -284,8 +282,6 @@ class ThemeNotifier extends ChangeNotifier {
     _activeCharacterBackground = prefs.getString('bg_$characterName');
     notifyListeners(); // 通知畫面更新
   }
-
-
   // ✨ 4. 給聊天室用的「超智慧背景產生器」
   BoxDecoration get characterChatBackground {
     // 如果這個角色有專屬背景，就顯示專屬的！
@@ -300,9 +296,7 @@ class ThemeNotifier extends ChangeNotifier {
         ),
       );
     }
-
     // 如果他沒有專屬背景，就退回顯示「全域預設背景」
-    // 💡 注意：請把 currentBackground 換成總裁原本用來顯示背景的那個變數/Getter 名稱！
     return currentBackground;
   }
 
@@ -320,13 +314,9 @@ class ThemeNotifier extends ChangeNotifier {
   void setTheme(AppTheme theme) {
     _currentThemeEnum = theme;
     // 如果切換回預設主題，通常會清空照片路徑的顯示(看個人設計)
-    // _backgroundImagePath = null;
     notifyListeners();
     _saveTheme(theme);
   }
-
-  // --- 持久化儲存 ---
-
   ThemeNotifier() {
     loadTheme();
   }
@@ -337,15 +327,12 @@ class ThemeNotifier extends ChangeNotifier {
     _currentThemeEnum = AppTheme.blueGradient; // 或者您想預設為 light
     _backgroundImagePath = null;
     _customColor = Colors.purple; // 恢復預設自定義色
-
     notifyListeners(); // 通知所有頁面變色
-
     // 2. 清除本地儲存紀錄
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('background_image_path');
     await prefs.remove('custom_color_value');
     await prefs.setString('app_theme', _currentThemeEnum.name);
-
     // 給一個成功的震動回饋
     HapticFeedback.vibrate();
   }
@@ -354,17 +341,13 @@ class ThemeNotifier extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('app_theme', theme.name);
   }
-
   Future<void> loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
-
     // 載入照片
     _backgroundImagePath = prefs.getString('background_image_path');
-
     // 載入顏色
     final colorValue = prefs.getInt('custom_color_value');
     if (colorValue != null) _customColor = Color(colorValue);
-
     // 載入主題類型
     final themeName = prefs.getString('app_theme') ?? AppTheme.light.name;
     _currentThemeEnum = AppTheme.values.firstWhere(

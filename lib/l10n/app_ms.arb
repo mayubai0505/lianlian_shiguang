@@ -1430,5 +1430,16 @@
     "shop_tab_history": "Sejarah Transaksi",
     "shop_empty_history": "Belum ada rekod Bunga lagi! 🌸",
     "shop_unknown_item": "Item tidak diketahui",
-    "shop_first_purchase_bonus": "Berganda untuk pembelian pertama!"
+    "shop_first_purchase_bonus": "Berganda untuk pembelian pertama!",
+    "story_summary_title": "Kisah Kita",
+    "story_summary_empty_content": "Kandungan ringkasan adalah kosong.",
+    "story_summary_deleted_toast": "Telah membuang memori ini",
+    "story_summary_empty_list": "Kisah korang belum bermula lagi...\nBanyakkan bersembang dan biarkan {name} \nmenulis memori pertama korang! ✨",
+    "@story_summary_empty_list": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    }
 }

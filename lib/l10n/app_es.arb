@@ -1430,5 +1430,16 @@
     "shop_tab_history": "Historial de transacciones",
     "shop_empty_history": "¡Aún no hay registros de flores! 🌸",
     "shop_unknown_item": "Artículo desconocido",
-    "shop_first_purchase_bonus": "¡Doble en la primera compra!"
+    "shop_first_purchase_bonus": "¡Doble en la primera compra!",
+    "story_summary_title": "Nuestra historia",
+    "story_summary_empty_content": "El contenido del resumen está vacío.",
+    "story_summary_deleted_toast": "Recuerdo eliminado",
+    "story_summary_empty_list": "Vuestra historia aún no ha comenzado...\n¡Chatea más y deja que {name} \nescriba vuestro primer recuerdo! ✨",
+    "@story_summary_empty_list": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    }
 }

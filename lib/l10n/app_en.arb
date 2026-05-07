@@ -1642,5 +1642,16 @@
   "shop_tab_history": "Transaction History",
   "shop_empty_history": "No flower records yet! 🌸",
   "shop_unknown_item": "Unknown Item",
-  "shop_first_purchase_bonus": "First Purchase Double!"
+  "shop_first_purchase_bonus": "First Purchase Double!",
+  "story_summary_title": "Our Story",
+  "story_summary_empty_content": "Summary content is empty.",
+  "story_summary_deleted_toast": "Removed this memory",
+  "story_summary_empty_list": "Your story hasn't started yet...\nChat more and let {name} \nwrite down your first memory! ✨",
+  "@story_summary_empty_list": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

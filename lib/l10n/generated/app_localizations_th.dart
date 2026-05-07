@@ -3454,4 +3454,18 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get shop_first_purchase_bonus => 'ซื้อครั้งแรกรับสองเท่า!';
+
+  @override
+  String get story_summary_title => 'เรื่องราวของเรา';
+
+  @override
+  String get story_summary_empty_content => 'เนื้อหาบทสรุปว่างเปล่า';
+
+  @override
+  String get story_summary_deleted_toast => 'ลบความทรงจำนี้แล้ว';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return 'เรื่องราวของคุณยังไม่เริ่มขึ้นเลย...\nมาคุยกันให้มากขึ้น แล้วให้ $name \nเขียนความทรงจำแรกของคุณนะ! ✨';
+  }
 }

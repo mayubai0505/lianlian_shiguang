@@ -1430,5 +1430,16 @@
     "shop_tab_history": "ประวัติการทำรายการ",
     "shop_empty_history": "ยังไม่มีประวัติดอกไม้เลย! 🌸",
     "shop_unknown_item": "ไอเท็มที่ไม่รู้จัก",
-    "shop_first_purchase_bonus": "ซื้อครั้งแรกรับสองเท่า!"
+    "shop_first_purchase_bonus": "ซื้อครั้งแรกรับสองเท่า!",
+    "story_summary_title": "เรื่องราวของเรา",
+    "story_summary_empty_content": "เนื้อหาบทสรุปว่างเปล่า",
+    "story_summary_deleted_toast": "ลบความทรงจำนี้แล้ว",
+    "story_summary_empty_list": "เรื่องราวของคุณยังไม่เริ่มขึ้นเลย...\nมาคุยกันให้มากขึ้น แล้วให้ {name} \nเขียนความทรงจำแรกของคุณนะ! ✨",
+    "@story_summary_empty_list": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    }
 }

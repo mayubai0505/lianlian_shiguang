@@ -17,7 +17,6 @@ class StorySummary {
     required this.content,
     required this.createdAt,
   });
-
   factory StorySummary.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data() as Map<String, dynamic>;
     return StorySummary(
@@ -43,7 +42,6 @@ class StorySummaryPage extends StatefulWidget {  // <--- 名稱 A
   // 2. 這裡要對應到 State 類別
   State<StorySummaryPage> createState() => _StorySummaryPageState();
 }
-
 class _StorySummaryPageState extends State<StorySummaryPage> {
   // ✨ 新增 #1: 用於控制動畫列表的 Key
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
@@ -74,7 +72,7 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
     await _summariesCollection.doc(id).delete();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('已移除這段回憶')),
+         SnackBar(content: Text(AppLocalizations.of(context)!.story_summary_deleted_toast)),
       );
     }
   }
@@ -83,11 +81,12 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       // 🔹 修正：既然 body 已經有顏色，這裡就不需要透明和 extendBody
       appBar: AppBar(
-        title: const Text('我們的故事'),
+        title:Text(l10n.story_summary_title),
         centerTitle: true,
       ),
       body: Container(
@@ -107,14 +106,12 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.auto_stories_outlined, size: 80,
-                        color: colorScheme.outline.withOpacity(0.5)),
-                    const SizedBox(height: 16),
-                    Text(
-                      '你們的故事還沒有開始...\n多聊聊天，讓 ${widget.character
-                          .name} \n為你們寫下第一篇回憶吧！',
+                        color: colorScheme.outline.withValues(alpha:0.5)),
+                    SizedBox(height: 16),
+                    Text(l10n.story_summary_empty_list(widget.character.name),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurface.withOpacity(0.6),
+                        color: colorScheme.onSurface.withValues(alpha:0.6),
                         height: 1.6,
                       ),
                     ),
@@ -238,9 +235,9 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                       side: BorderSide(
-                          color: colorScheme.outlineVariant.withOpacity(0.5)),
+                          color: colorScheme.outlineVariant.withValues(alpha:0.5)),
                     ),
-                    color: colorScheme.surfaceVariant.withOpacity(0.3),
+                    color: colorScheme.surfaceContainerHighest.withValues(alpha:0.3),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(

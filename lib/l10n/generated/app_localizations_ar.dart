@@ -3447,4 +3447,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get shop_first_purchase_bonus => 'مضاعفة الشراء الأول!';
+
+  @override
+  String get story_summary_title => 'قصتنا';
+
+  @override
+  String get story_summary_empty_content => 'محتوى الملخص فارغ.';
+
+  @override
+  String get story_summary_deleted_toast => 'تم إزالة هذه الذكرى';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return 'قصتكم لم تبدأ بعد...\nتحدثوا أكثر، ودعي $name \nيكتب أول فصل من ذكرياتكم! ✨';
+  }
 }

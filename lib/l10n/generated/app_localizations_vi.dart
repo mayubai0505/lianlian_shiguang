@@ -3497,4 +3497,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get shop_first_purchase_bonus => 'Nhân đôi cho lần mua đầu!';
+
+  @override
+  String get story_summary_title => 'Câu chuyện của chúng ta';
+
+  @override
+  String get story_summary_empty_content => 'Nội dung tóm tắt đang trống.';
+
+  @override
+  String get story_summary_deleted_toast => 'Đã xóa ký ức này';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return 'Câu chuyện của hai bạn vẫn chưa bắt đầu...\nHãy trò chuyện nhiều hơn để $name \nviết nên những hồi ức đầu tiên nhé! ✨';
+  }
 }

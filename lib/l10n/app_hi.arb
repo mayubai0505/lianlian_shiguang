@@ -1430,5 +1430,16 @@
     "shop_tab_history": "लेन-देन का इतिहास",
     "shop_empty_history": "अभी तक कोई फ्लावर रिकॉर्ड नहीं है! 🌸",
     "shop_unknown_item": "अज्ञात आइटम",
-    "shop_first_purchase_bonus": "पहली खरीदारी पर दोगुना!"
+    "shop_first_purchase_bonus": "पहली खरीदारी पर दोगुना!",
+    "story_summary_title": "हमारी कहानी",
+    "story_summary_empty_content": "सारांश सामग्री खाली है।",
+    "story_summary_deleted_toast": "इस याद को हटा दिया गया है",
+    "story_summary_empty_list": "आपकी कहानी अभी शुरू नहीं हुई है...\nअधिक बात करें और {name} को \nअपनी पहली याद लिखने दें! ✨",
+    "@story_summary_empty_list": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    }
 }

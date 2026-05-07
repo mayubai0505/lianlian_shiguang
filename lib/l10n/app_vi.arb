@@ -1430,5 +1430,16 @@
   "shop_tab_history": "Lịch sử giao dịch",
   "shop_empty_history": "Hiện chưa có lịch sử nạp Hoa nào! 🌸",
   "shop_unknown_item": "Mục không xác định",
-  "shop_first_purchase_bonus": "Nhân đôi cho lần mua đầu!"
+  "shop_first_purchase_bonus": "Nhân đôi cho lần mua đầu!",
+  "story_summary_title": "Câu chuyện của chúng ta",
+  "story_summary_empty_content": "Nội dung tóm tắt đang trống.",
+  "story_summary_deleted_toast": "Đã xóa ký ức này",
+  "story_summary_empty_list": "Câu chuyện của hai bạn vẫn chưa bắt đầu...\nHãy trò chuyện nhiều hơn để {name} \nviết nên những hồi ức đầu tiên nhé! ✨",
+  "@story_summary_empty_list": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

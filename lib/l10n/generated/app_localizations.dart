@@ -6147,6 +6147,30 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'首購雙倍！'**
   String get shop_first_purchase_bonus;
+
+  /// No description provided for @story_summary_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我們的故事'**
+  String get story_summary_title;
+
+  /// No description provided for @story_summary_empty_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'摘要內容為空。'**
+  String get story_summary_empty_content;
+
+  /// No description provided for @story_summary_deleted_toast.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已移除這段回憶'**
+  String get story_summary_deleted_toast;
+
+  /// No description provided for @story_summary_empty_list.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'你們的故事還沒有開始...\n多聊聊天，讓 {name} \n為你們寫下第一篇回憶吧！'**
+  String story_summary_empty_list(String name);
 }
 
 class _AppLocalizationsDelegate

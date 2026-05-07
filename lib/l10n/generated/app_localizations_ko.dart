@@ -3338,4 +3338,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get shop_first_purchase_bonus => '첫 구매 두 배!';
+
+  @override
+  String get story_summary_title => '우리의 이야기';
+
+  @override
+  String get story_summary_empty_content => '요약 내용이 비어 있습니다.';
+
+  @override
+  String get story_summary_deleted_toast => '이 추억을 삭제했습니다';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return '여러분의 이야기가 아직 시작되지 않았어요...\n더 많이 대화해서 $name님이 \n첫 번째 추억을 기록하게 해주세요! ✨';
+  }
 }

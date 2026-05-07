@@ -3500,4 +3500,18 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get shop_first_purchase_bonus => 'पहली खरीदारी पर दोगुना!';
+
+  @override
+  String get story_summary_title => 'हमारी कहानी';
+
+  @override
+  String get story_summary_empty_content => 'सारांश सामग्री खाली है।';
+
+  @override
+  String get story_summary_deleted_toast => 'इस याद को हटा दिया गया है';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return 'आपकी कहानी अभी शुरू नहीं हुई है...\nअधिक बात करें और $name को \nअपनी पहली याद लिखने दें! ✨';
+  }
 }

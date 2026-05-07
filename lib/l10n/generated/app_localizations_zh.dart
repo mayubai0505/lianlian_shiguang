@@ -3292,6 +3292,20 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shop_first_purchase_bonus => '首購雙倍！';
+
+  @override
+  String get story_summary_title => '我們的故事';
+
+  @override
+  String get story_summary_empty_content => '摘要內容為空。';
+
+  @override
+  String get story_summary_deleted_toast => '已移除這段回憶';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return '你們的故事還沒有開始...\n多聊聊天，讓 $name \n為你們寫下第一篇回憶吧！';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6582,6 +6596,20 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get shop_first_purchase_bonus => '首购双倍！';
+
+  @override
+  String get story_summary_title => '我们的故事';
+
+  @override
+  String get story_summary_empty_content => '摘要内容为空。';
+
+  @override
+  String get story_summary_deleted_toast => '已移除这段回忆';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return '你们的故事还没有开始...\n多聊聊天，让 $name \n为你们写下第一篇回忆吧！ ✨';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9872,4 +9900,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get shop_first_purchase_bonus => '首購雙倍！';
+
+  @override
+  String get story_summary_title => '我們的故事';
+
+  @override
+  String get story_summary_empty_content => '摘要內容為空。';
+
+  @override
+  String get story_summary_deleted_toast => '已移除這段回憶';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return '你們的故事還沒有開始...\n多聊聊天，讓 $name \n為你們寫下第一篇回憶吧！';
+  }
 }

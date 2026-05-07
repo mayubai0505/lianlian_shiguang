@@ -3322,4 +3322,18 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shop_first_purchase_bonus => '初回購入2倍！';
+
+  @override
+  String get story_summary_title => '二人の物語';
+
+  @override
+  String get story_summary_empty_content => '要約内容が空です。';
+
+  @override
+  String get story_summary_deleted_toast => 'この思い出を削除しました';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return '二人の物語はまだ始まっていません...\nもっとたくさん話して、$name に \n最初の思い出を綴ってもらいましょう！ ✨';
+  }
 }

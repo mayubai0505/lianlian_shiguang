@@ -3496,4 +3496,19 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get shop_first_purchase_bonus => 'Berganda untuk pembelian pertama!';
+
+  @override
+  String get story_summary_title => 'Kisah Kita';
+
+  @override
+  String get story_summary_empty_content =>
+      'Kandungan ringkasan adalah kosong.';
+
+  @override
+  String get story_summary_deleted_toast => 'Telah membuang memori ini';
+
+  @override
+  String story_summary_empty_list(String name) {
+    return 'Kisah korang belum bermula lagi...\nBanyakkan bersembang dan biarkan $name \nmenulis memori pertama korang! ✨';
+  }
 }

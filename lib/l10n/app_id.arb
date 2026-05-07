@@ -1430,5 +1430,16 @@
     "shop_tab_history": "Riwayat Transaksi",
     "shop_empty_history": "Belum ada riwayat Bunga saat ini! 🌸",
     "shop_unknown_item": "Item tidak diketahui",
-    "shop_first_purchase_bonus": "Ganda untuk pembelian pertama!"
+    "shop_first_purchase_bonus": "Ganda untuk pembelian pertama!",
+    "story_summary_title": "Cerita Kita",
+    "story_summary_empty_content": "Konten ringkasan kosong.",
+    "story_summary_deleted_toast": "Kenangan ini telah dihapus",
+    "story_summary_empty_list": "Cerita kalian belum dimulai...\nSeringlah mengobrol dan biarkan {name} \nmenuliskan kenangan pertama kalian! ✨",
+    "@story_summary_empty_list": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    }
 }
