@@ -1411,5 +1411,16 @@
   },
   "snackbar_operation_failed": "操作に失敗しました。後でもう一度お試しください",
   "action_view_translation": "翻訳を見る",
-  "label_translation_result": "翻訳結果:"
+  "label_translation_result": "翻訳結果:",
+  "errorWebPageUnavailable": "一時的にウェブページを開くことができません。後でもう一度お試しください",
+  "resetAppearanceTitle": "外観をリセットしますか？",
+  "resetAppearanceWarning": "せっかく選んだ背景画像や色が削除されてしまいます！",
+  "appearanceRestored": "デフォルトの外観を復元しました",
+  "confirmReset": "リセットを確認",
+  "resetToDefaultAppearance": "デフォルトの外観を復元",
+  "clearCustomSettings": "カスタムカラーと背景画像をすべてクリア",
+  "contactUs": "お問い合わせ",
+  "contactDescription": "ご意見やバグ報告など、何でもお気軽にお知らせください",
+  "vibrationHapticTitle": "ときめき振動検知",
+  "vibrationHapticDescription": "好感度が大きく変化した時にスマホが振動します"
 }

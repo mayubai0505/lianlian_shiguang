@@ -3437,4 +3437,42 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get label_translation_result => 'अनुवाद परिणाम:';
+
+  @override
+  String get errorWebPageUnavailable =>
+      'अस्थायी रूप से वेबपेज खोलने में असमर्थ, कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get resetAppearanceTitle => 'क्या रूप-रंग रीसेट करें?';
+
+  @override
+  String get resetAppearanceWarning =>
+      'यह आपकी सावधानी से चुनी गई पृष्ठभूमि छवि और रंगों को हटा देगा!';
+
+  @override
+  String get appearanceRestored => 'डिफ़ॉल्ट रूप-रंग बहाल किया गया';
+
+  @override
+  String get confirmReset => 'रीसेट की पुष्टि करें';
+
+  @override
+  String get resetToDefaultAppearance => 'डिफ़ॉल्ट रूप-रंग बहाल करें';
+
+  @override
+  String get clearCustomSettings =>
+      'सभी कस्टम रंग और पृष्ठभूमि छवियां साफ़ करें';
+
+  @override
+  String get contactUs => 'हमसे संपर्क करें';
+
+  @override
+  String get contactDescription =>
+      'अपने विचार साझा करने या किसी बग की रिपोर्ट करने के लिए स्वतंत्र महसूस करें';
+
+  @override
+  String get vibrationHapticTitle => 'हार्टबीट हैप्टिक फीडबैक';
+
+  @override
+  String get vibrationHapticDescription =>
+      'स्नेह स्तर में महत्वपूर्ण बदलाव होने पर फ़ोन कंपन ट्रिगर होता है';
 }

@@ -3477,4 +3477,42 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get label_translation_result => 'Résultat de la traduction :';
+
+  @override
+  String get errorWebPageUnavailable =>
+      'Impossible d\'ouvrir la page Web pour le moment, veuillez réessayer plus tard';
+
+  @override
+  String get resetAppearanceTitle => 'Réinitialiser l\'apparence ?';
+
+  @override
+  String get resetAppearanceWarning =>
+      'Cela supprimera l\'image d\'arrière-plan et les couleurs que vous avez soigneusement choisies !';
+
+  @override
+  String get appearanceRestored => 'Apparence par défaut restaurée';
+
+  @override
+  String get confirmReset => 'Confirmer la réinitialisation';
+
+  @override
+  String get resetToDefaultAppearance => 'Restaurer l\'apparence par défaut';
+
+  @override
+  String get clearCustomSettings =>
+      'Effacer toutes les couleurs et images d\'arrière-plan personnalisées';
+
+  @override
+  String get contactUs => 'Nous contacter';
+
+  @override
+  String get contactDescription =>
+      'N\'hésitez pas à partager vos pensées ou à signaler des bugs';
+
+  @override
+  String get vibrationHapticTitle => 'Vibration de battement de cœur';
+
+  @override
+  String get vibrationHapticDescription =>
+      'Déclenche la vibration du téléphone lorsque le niveau d\'affection change considérablement';
 }

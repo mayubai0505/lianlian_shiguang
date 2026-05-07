@@ -1623,5 +1623,16 @@
   },
   "snackbar_operation_failed": "Operation failed, please try again later",
   "action_view_translation": "View Translation",
-  "label_translation_result": "Translation Result:"
+  "label_translation_result": "Translation Result:",
+  "errorWebPageUnavailable": "Temporarily unable to open the webpage, please try again later",
+  "resetAppearanceTitle": "Reset appearance?",
+  "resetAppearanceWarning": "This will remove your carefully selected background image and colors!",
+  "appearanceRestored": "Restored to default appearance",
+  "confirmReset": "Confirm Reset",
+  "resetToDefaultAppearance": "Restore default appearance",
+  "clearCustomSettings": "Clear all custom colors and background images",
+  "contactUs": "Contact Us",
+  "contactDescription": "Feel free to share your thoughts or report any bugs",
+  "vibrationHapticTitle": "Heartbeat Haptic Feedback",
+  "vibrationHapticDescription": "Triggers phone vibration when affection level changes significantly"
 }

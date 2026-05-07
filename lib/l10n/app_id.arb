@@ -1411,5 +1411,16 @@
     },
     "snackbar_operation_failed": "ऑपरेशन विफल रहा, कृपया बाद में पुनः प्रयास करें",
     "action_view_translation": "Lihat Terjemahan",
-    "label_translation_result": "Hasil Terjemahan:"
+    "label_translation_result": "Hasil Terjemahan:",
+    "errorWebPageUnavailable": "Untuk sementara tidak dapat membuka halaman web, silakan coba lagi nanti",
+    "resetAppearanceTitle": "Reset tampilan?",
+    "resetAppearanceWarning": "Ini akan menghapus gambar latar belakang dan warna yang telah Anda pilih dengan cermat!",
+    "appearanceRestored": "Tampilan default dipulihkan",
+    "confirmReset": "Konfirmasi Reset",
+    "resetToDefaultAppearance": "Pulihkan tampilan default",
+    "clearCustomSettings": "Hapus semua warna dan gambar latar belakang kustom",
+    "contactUs": "Hubungi Kami",
+    "contactDescription": "Jangan ragu untuk membagikan pemikiran Anda atau melaporkan bug",
+    "vibrationHapticTitle": "Getaran Detak Jantung",
+    "vibrationHapticDescription": "Memicu getaran ponsel ketika tingkat afeksi berubah secara signifikan"
 }

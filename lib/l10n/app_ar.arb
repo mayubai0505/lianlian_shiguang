@@ -1452,5 +1452,16 @@
     },
     "snackbar_operation_failed": "فشلت العملية، يرجى المحاولة لاحقاً",
     "action_view_translation": "عرض الترجمة",
-    "label_translation_result": "نتيجة الترجمة:"
+    "label_translation_result": "نتيجة الترجمة:",
+    "errorWebPageUnavailable": "يتعذر فتح صفحة الويب مؤقتاً، يرجى المحاولة لاحقاً",
+    "resetAppearanceTitle": "هل تريد إعادة تعيين المظهر؟",
+    "resetAppearanceWarning": "سيؤدي هذا إلى إزالة صورة الخلفية والألوان التي اخترتها بعناية!",
+    "appearanceRestored": "تمت استعادة المظهر الافتراضي",
+    "confirmReset": "تأكيد إعادة التعيين",
+    "resetToDefaultAppearance": "استعادة المظهر الافتراضي",
+    "clearCustomSettings": "مسح جميع الألوان وصور الخلفية المخصصة",
+    "contactUs": "اتصل بنا",
+    "contactDescription": "أخبرنا بأي أفكار لديك أو أبلغنا عن أي أخطاء",
+    "vibrationHapticTitle": "اهتزاز نبض القلب",
+    "vibrationHapticDescription": "تشغيل اهتزاز الهاتف عند تغير مستوى الإعجاب بشكل كبير"
 }

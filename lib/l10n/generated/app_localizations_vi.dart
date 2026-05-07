@@ -3435,4 +3435,41 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get label_translation_result => 'Kết quả dịch:';
+
+  @override
+  String get errorWebPageUnavailable =>
+      'Tạm thời không thể mở trang web, vui lòng thử lại sau';
+
+  @override
+  String get resetAppearanceTitle => 'Đặt lại giao diện?';
+
+  @override
+  String get resetAppearanceWarning =>
+      'Thao tác này sẽ xóa hình nền và màu sắc mà bạn đã cẩn thận lựa chọn đấy!';
+
+  @override
+  String get appearanceRestored => 'Đã khôi phục giao diện mặc định';
+
+  @override
+  String get confirmReset => 'Xác nhận đặt lại';
+
+  @override
+  String get resetToDefaultAppearance => 'Khôi phục giao diện mặc định';
+
+  @override
+  String get clearCustomSettings => 'Xóa tất cả màu và hình nền tùy chỉnh';
+
+  @override
+  String get contactUs => 'Liên hệ với chúng tôi';
+
+  @override
+  String get contactDescription =>
+      'Đừng ngại chia sẻ suy nghĩ hoặc báo cáo lỗi cho chúng tôi nhé';
+
+  @override
+  String get vibrationHapticTitle => 'Phản hồi rung động';
+
+  @override
+  String get vibrationHapticDescription =>
+      'Kích hoạt rung điện thoại khi mức độ hảo cảm thay đổi đáng kể';
 }

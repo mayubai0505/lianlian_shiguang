@@ -3235,6 +3235,39 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get label_translation_result => '翻譯結果:';
+
+  @override
+  String get errorWebPageUnavailable => '暫時無法開啟網頁，請稍後再試';
+
+  @override
+  String get resetAppearanceTitle => '要重置外觀嗎？';
+
+  @override
+  String get resetAppearanceWarning => '這將會移除您精心挑選的背景圖與顏色喔！';
+
+  @override
+  String get appearanceRestored => '已恢復預設外觀';
+
+  @override
+  String get confirmReset => '確定重置';
+
+  @override
+  String get resetToDefaultAppearance => '恢復預設外觀';
+
+  @override
+  String get clearCustomSettings => '清除所有自定義顏色與背景圖';
+
+  @override
+  String get contactUs => '聯絡我們';
+
+  @override
+  String get contactDescription => '有任何心裡話或 Bug 都能告訴我們';
+
+  @override
+  String get vibrationHapticTitle => '心動震動感應';
+
+  @override
+  String get vibrationHapticDescription => '好感度大幅變動時觸發手機震動';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6468,6 +6501,39 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get label_translation_result => '翻译结果:';
+
+  @override
+  String get errorWebPageUnavailable => '暂时无法打开网页，请稍后再试';
+
+  @override
+  String get resetAppearanceTitle => '要重置外观吗？';
+
+  @override
+  String get resetAppearanceWarning => '这将会移除您精心挑选的背景图与颜色喔！';
+
+  @override
+  String get appearanceRestored => '已恢复默认外观';
+
+  @override
+  String get confirmReset => '确定重置';
+
+  @override
+  String get resetToDefaultAppearance => '恢复默认外观';
+
+  @override
+  String get clearCustomSettings => '清除所有自定义颜色与背景图';
+
+  @override
+  String get contactUs => '联系我们';
+
+  @override
+  String get contactDescription => '有任何心里话或 Bug 都能告诉我们';
+
+  @override
+  String get vibrationHapticTitle => '心动震动感应';
+
+  @override
+  String get vibrationHapticDescription => '好感度大幅变动时触发手机震动';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9701,4 +9767,37 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get label_translation_result => '翻譯結果:';
+
+  @override
+  String get errorWebPageUnavailable => '暫時無法開啟網頁，請稍後再試';
+
+  @override
+  String get resetAppearanceTitle => '要重置外觀嗎？';
+
+  @override
+  String get resetAppearanceWarning => '這將會移除您精心挑選的背景圖與顏色喔！';
+
+  @override
+  String get appearanceRestored => '已恢復預設外觀';
+
+  @override
+  String get confirmReset => '確定重置';
+
+  @override
+  String get resetToDefaultAppearance => '恢復預設外觀';
+
+  @override
+  String get clearCustomSettings => '清除所有自定義顏色與背景圖';
+
+  @override
+  String get contactUs => '聯絡我們';
+
+  @override
+  String get contactDescription => '有任何心裡話或 Bug 都能告訴我們';
+
+  @override
+  String get vibrationHapticTitle => '心動震動感應';
+
+  @override
+  String get vibrationHapticDescription => '好感度大幅變動時觸發手機震動';
 }

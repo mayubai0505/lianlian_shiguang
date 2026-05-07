@@ -1411,5 +1411,16 @@
   },
   "snackbar_operation_failed": "Thao tác thất bại, vui lòng thử lại sau",
   "action_view_translation": "Xem bản dịch",
-  "label_translation_result": "Kết quả dịch:"
+  "label_translation_result": "Kết quả dịch:",
+  "errorWebPageUnavailable": "Tạm thời không thể mở trang web, vui lòng thử lại sau",
+  "resetAppearanceTitle": "Đặt lại giao diện?",
+  "resetAppearanceWarning": "Thao tác này sẽ xóa hình nền và màu sắc mà bạn đã cẩn thận lựa chọn đấy!",
+  "appearanceRestored": "Đã khôi phục giao diện mặc định",
+  "confirmReset": "Xác nhận đặt lại",
+  "resetToDefaultAppearance": "Khôi phục giao diện mặc định",
+  "clearCustomSettings": "Xóa tất cả màu và hình nền tùy chỉnh",
+  "contactUs": "Liên hệ với chúng tôi",
+  "contactDescription": "Đừng ngại chia sẻ suy nghĩ hoặc báo cáo lỗi cho chúng tôi nhé",
+  "vibrationHapticTitle": "Phản hồi rung động",
+  "vibrationHapticDescription": "Kích hoạt rung điện thoại khi mức độ hảo cảm thay đổi đáng kể"
 }

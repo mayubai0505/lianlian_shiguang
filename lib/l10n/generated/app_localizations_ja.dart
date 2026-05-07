@@ -3265,4 +3265,37 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get label_translation_result => '翻訳結果:';
+
+  @override
+  String get errorWebPageUnavailable => '一時的にウェブページを開くことができません。後でもう一度お試しください';
+
+  @override
+  String get resetAppearanceTitle => '外観をリセットしますか？';
+
+  @override
+  String get resetAppearanceWarning => 'せっかく選んだ背景画像や色が削除されてしまいます！';
+
+  @override
+  String get appearanceRestored => 'デフォルトの外観を復元しました';
+
+  @override
+  String get confirmReset => 'リセットを確認';
+
+  @override
+  String get resetToDefaultAppearance => 'デフォルトの外観を復元';
+
+  @override
+  String get clearCustomSettings => 'カスタムカラーと背景画像をすべてクリア';
+
+  @override
+  String get contactUs => 'お問い合わせ';
+
+  @override
+  String get contactDescription => 'ご意見やバグ報告など、何でもお気軽にお知らせください';
+
+  @override
+  String get vibrationHapticTitle => 'ときめき振動検知';
+
+  @override
+  String get vibrationHapticDescription => '好感度が大きく変化した時にスマホが振動します';
 }

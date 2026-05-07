@@ -3281,4 +3281,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get label_translation_result => '번역 결과:';
+
+  @override
+  String get errorWebPageUnavailable => '일시적으로 웹페이지를 열 수 없습니다. 나중에 다시 시도해 주세요';
+
+  @override
+  String get resetAppearanceTitle => '외형을 초기화하시겠습니까?';
+
+  @override
+  String get resetAppearanceWarning => '정성껏 고른 배경 이미지와 색상이 삭제됩니다!';
+
+  @override
+  String get appearanceRestored => '기본 외형으로 복구되었습니다';
+
+  @override
+  String get confirmReset => '초기화 확인';
+
+  @override
+  String get resetToDefaultAppearance => '기본 외형으로 복구';
+
+  @override
+  String get clearCustomSettings => '모든 사용자 지정 색상 및 배경 이미지 지우기';
+
+  @override
+  String get contactUs => '문의하기';
+
+  @override
+  String get contactDescription => '여러분의 생각이나 버그를 편하게 알려주세요';
+
+  @override
+  String get vibrationHapticTitle => '설렘 진동 피드백';
+
+  @override
+  String get vibrationHapticDescription => '호감도가 크게 변할 때 스마트폰 진동 발생';
 }

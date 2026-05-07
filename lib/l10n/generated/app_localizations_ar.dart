@@ -3385,4 +3385,41 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get label_translation_result => 'نتيجة الترجمة:';
+
+  @override
+  String get errorWebPageUnavailable =>
+      'يتعذر فتح صفحة الويب مؤقتاً، يرجى المحاولة لاحقاً';
+
+  @override
+  String get resetAppearanceTitle => 'هل تريد إعادة تعيين المظهر؟';
+
+  @override
+  String get resetAppearanceWarning =>
+      'سيؤدي هذا إلى إزالة صورة الخلفية والألوان التي اخترتها بعناية!';
+
+  @override
+  String get appearanceRestored => 'تمت استعادة المظهر الافتراضي';
+
+  @override
+  String get confirmReset => 'تأكيد إعادة التعيين';
+
+  @override
+  String get resetToDefaultAppearance => 'استعادة المظهر الافتراضي';
+
+  @override
+  String get clearCustomSettings => 'مسح جميع الألوان وصور الخلفية المخصصة';
+
+  @override
+  String get contactUs => 'اتصل بنا';
+
+  @override
+  String get contactDescription =>
+      'أخبرنا بأي أفكار لديك أو أبلغنا عن أي أخطاء';
+
+  @override
+  String get vibrationHapticTitle => 'اهتزاز نبض القلب';
+
+  @override
+  String get vibrationHapticDescription =>
+      'تشغيل اهتزاز الهاتف عند تغير مستوى الإعجاب بشكل كبير';
 }

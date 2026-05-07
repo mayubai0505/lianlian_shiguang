@@ -3433,4 +3433,42 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get label_translation_result => 'Hasil Terjemahan:';
+
+  @override
+  String get errorWebPageUnavailable =>
+      'Tidak dapat membuka halaman web buat sementara waktu, sila cuba lagi nanti';
+
+  @override
+  String get resetAppearanceTitle => 'Tetapkan semula penampilan?';
+
+  @override
+  String get resetAppearanceWarning =>
+      'Ini akan memadamkan imej latar belakang dan warna yang telah awak pilih dengan teliti!';
+
+  @override
+  String get appearanceRestored => 'Penampilan lalai dipulihkan';
+
+  @override
+  String get confirmReset => 'Sahkan Tetap Semula';
+
+  @override
+  String get resetToDefaultAppearance => 'Pulihkan penampilan lalai';
+
+  @override
+  String get clearCustomSettings =>
+      'Padamkan semua warna dan imej latar belakang tersuai';
+
+  @override
+  String get contactUs => 'Hubungi Kami';
+
+  @override
+  String get contactDescription =>
+      'Kongsi apa-apa sahaja pendapat awak atau laporkan pepijat kepada kami';
+
+  @override
+  String get vibrationHapticTitle => 'Getaran Debaran Hati';
+
+  @override
+  String get vibrationHapticDescription =>
+      'Mencetuskan getaran telefon apabila tahap kasih sayang berubah dengan ketara';
 }

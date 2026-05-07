@@ -1411,5 +1411,16 @@
     },
     "snackbar_operation_failed": "การดำเนินการล้มเหลว โปรดลองอีกครั้งในภายหลัง",
     "action_view_translation": "ดูคำแปล",
-    "label_translation_result": "ผลการแปล:"
+    "label_translation_result": "ผลการแปล:",
+    "errorWebPageUnavailable": "ไม่สามารถเปิดหน้าเว็บได้ชั่วคราว โปรดลองอีกครั้งในภายหลัง",
+    "resetAppearanceTitle": "ต้องการรีเซ็ตรูปลักษณ์หรือไม่?",
+    "resetAppearanceWarning": "การทำเช่นนี้จะลบภาพพื้นหลังและสีที่คุณเลือกไว้อย่างตั้งใจนะ!",
+    "appearanceRestored": "กู้คืนรูปลักษณ์เริ่มต้นแล้ว",
+    "confirmReset": "ยืนยันการรีเซ็ต",
+    "resetToDefaultAppearance": "กู้คืนรูปลักษณ์เริ่มต้น",
+    "clearCustomSettings": "ล้างสีและภาพพื้นหลังที่กำหนดเองทั้งหมด",
+    "contactUs": "ติดต่อเรา",
+    "contactDescription": "แบ่งปันความคิดเห็นหรือรายงานข้อผิดพลาดกับเราได้เลย",
+    "vibrationHapticTitle": "การสั่นเตือนใจเต้น",
+    "vibrationHapticDescription": "ทำให้โทรศัพท์สั่นเมื่อระดับความชอบเปลี่ยนแปลงไปอย่างมาก"
 }

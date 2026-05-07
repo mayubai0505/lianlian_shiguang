@@ -1539,5 +1539,16 @@
   "snackbar_operation_failed": "操作失敗，請稍後再試",
 
   "action_view_translation": "查看翻譯",
-  "label_translation_result": "翻譯結果:"
+  "label_translation_result": "翻譯結果:",
+  "errorWebPageUnavailable": "暫時無法開啟網頁，請稍後再試",
+  "resetAppearanceTitle": "要重置外觀嗎？",
+  "resetAppearanceWarning": "這將會移除您精心挑選的背景圖與顏色喔！",
+  "appearanceRestored": "已恢復預設外觀",
+  "confirmReset": "確定重置",
+  "resetToDefaultAppearance": "恢復預設外觀",
+  "clearCustomSettings": "清除所有自定義顏色與背景圖",
+  "contactUs": "聯絡我們",
+  "contactDescription": "有任何心裡話或 Bug 都能告訴我們",
+  "vibrationHapticTitle": "心動震動感應",
+  "vibrationHapticDescription": "好感度大幅變動時觸發手機震動"
 }

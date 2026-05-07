@@ -9,7 +9,6 @@ import 'services/purchase_service.dart';
 import 'screens/login_page.dart';
 import 'screens/main_page.dart';
 import 'screens/chat_page.dart';
-import 'services/auth_service.dart';
 import 'services/theme_notifier.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
@@ -20,15 +19,12 @@ import 'package:flutter/foundation.dart';
 import 'screens/splash_loading_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'screens/character_edit_page.dart';
-import 'screens/character_profile_page.dart';
 // 🌟 修改這裡：只保留一個數據來源，並給它一個別名
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'dart:async';
 import 'screens/character_model.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart'; // 🌟 記得先 add 這個套件
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import 'screens/character_profile_page.dart';
 
 
 // 🌟 用來記住玩家現在正在跟誰講電話/聊天

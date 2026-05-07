@@ -3435,4 +3435,42 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get label_translation_result => 'Hasil Terjemahan:';
+
+  @override
+  String get errorWebPageUnavailable =>
+      'Untuk sementara tidak dapat membuka halaman web, silakan coba lagi nanti';
+
+  @override
+  String get resetAppearanceTitle => 'Reset tampilan?';
+
+  @override
+  String get resetAppearanceWarning =>
+      'Ini akan menghapus gambar latar belakang dan warna yang telah Anda pilih dengan cermat!';
+
+  @override
+  String get appearanceRestored => 'Tampilan default dipulihkan';
+
+  @override
+  String get confirmReset => 'Konfirmasi Reset';
+
+  @override
+  String get resetToDefaultAppearance => 'Pulihkan tampilan default';
+
+  @override
+  String get clearCustomSettings =>
+      'Hapus semua warna dan gambar latar belakang kustom';
+
+  @override
+  String get contactUs => 'Hubungi Kami';
+
+  @override
+  String get contactDescription =>
+      'Jangan ragu untuk membagikan pemikiran Anda atau melaporkan bug';
+
+  @override
+  String get vibrationHapticTitle => 'Getaran Detak Jantung';
+
+  @override
+  String get vibrationHapticDescription =>
+      'Memicu getaran ponsel ketika tingkat afeksi berubah secara signifikan';
 }

@@ -6033,6 +6033,72 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'翻譯結果:'**
   String get label_translation_result;
+
+  /// No description provided for @errorWebPageUnavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'暫時無法開啟網頁，請稍後再試'**
+  String get errorWebPageUnavailable;
+
+  /// No description provided for @resetAppearanceTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'要重置外觀嗎？'**
+  String get resetAppearanceTitle;
+
+  /// No description provided for @resetAppearanceWarning.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這將會移除您精心挑選的背景圖與顏色喔！'**
+  String get resetAppearanceWarning;
+
+  /// No description provided for @appearanceRestored.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已恢復預設外觀'**
+  String get appearanceRestored;
+
+  /// No description provided for @confirmReset.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定重置'**
+  String get confirmReset;
+
+  /// No description provided for @resetToDefaultAppearance.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'恢復預設外觀'**
+  String get resetToDefaultAppearance;
+
+  /// No description provided for @clearCustomSettings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'清除所有自定義顏色與背景圖'**
+  String get clearCustomSettings;
+
+  /// No description provided for @contactUs.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聯絡我們'**
+  String get contactUs;
+
+  /// No description provided for @contactDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'有任何心裡話或 Bug 都能告訴我們'**
+  String get contactDescription;
+
+  /// No description provided for @vibrationHapticTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'心動震動感應'**
+  String get vibrationHapticTitle;
+
+  /// No description provided for @vibrationHapticDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好感度大幅變動時觸發手機震動'**
+  String get vibrationHapticDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -3406,4 +3406,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get label_translation_result => 'Translation Result:';
+
+  @override
+  String get errorWebPageUnavailable =>
+      'Temporarily unable to open the webpage, please try again later';
+
+  @override
+  String get resetAppearanceTitle => 'Reset appearance?';
+
+  @override
+  String get resetAppearanceWarning =>
+      'This will remove your carefully selected background image and colors!';
+
+  @override
+  String get appearanceRestored => 'Restored to default appearance';
+
+  @override
+  String get confirmReset => 'Confirm Reset';
+
+  @override
+  String get resetToDefaultAppearance => 'Restore default appearance';
+
+  @override
+  String get clearCustomSettings =>
+      'Clear all custom colors and background images';
+
+  @override
+  String get contactUs => 'Contact Us';
+
+  @override
+  String get contactDescription =>
+      'Feel free to share your thoughts or report any bugs';
+
+  @override
+  String get vibrationHapticTitle => 'Heartbeat Haptic Feedback';
+
+  @override
+  String get vibrationHapticDescription =>
+      'Triggers phone vibration when affection level changes significantly';
 }

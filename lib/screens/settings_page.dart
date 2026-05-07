@@ -9,9 +9,7 @@ import 'language_selection_page.dart'; // ✨ 引入語言選擇頁面
 import 'package:shared_preferences/shared_preferences.dart';
 import '../page/theme_selection_page.dart';
 import '../page/character_management_page.dart';
-import 'package:url_launcher/url_launcher.dart'; // 🚀 負責處理跳轉網頁的專員
 import '../page/app_texts.dart';
-import '../page/law_pages.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'login_page.dart';
 
@@ -56,6 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _showErrorDialog(String title, String content) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -64,7 +63,7 @@ class _SettingsPageState extends State<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('好的'),
+            child: Text(l10n.ok_button),
           ),
         ],
       ),
@@ -79,18 +78,6 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  // ✨ 處理法律條款跳轉
-  Future<void> _launchUrl(String urlString) async {
-    final Uri url = Uri.parse(urlString);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      // 萬一打不開的回饋
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('暫時無法開啟網頁，請稍後再試')),
-        );
-      }
-    }
-  }
 
   // ✨ 2. 順便幫總裁補上「登出確認彈窗」的邏輯，避免下一個報錯
   void _showLogoutDialog(BuildContext context, AppLocalizations l10n, AuthService authService) {
@@ -101,17 +88,16 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          // 🌟 防呆：如果 l10n 抓不到，就先顯示寫死的字，確保能動
-          title: Text(l10n.logoutButton ?? "確認登出"),
+          title: Text(l10n.logoutButton ),
           content: Text(l10n.logoutDialogTitle),
           actions: [
             TextButton(
-              child: Text(l10n.logoutDialogActionCancel ?? "取消"),
+              child: Text(l10n.logoutDialogActionCancel ),
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
             TextButton(
               child: Text(
-                l10n.logoutDialogActionConfirm, // 改回純 l10n
+                l10n.logoutDialogActionConfirm,
                 style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
               ),
               onPressed: () async {
@@ -129,7 +115,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         const CircularProgressIndicator(), // 轉圈圈
                         const SizedBox(height: 20),
                         Text(
-                          l10n.logoutSuccessSnackbar, // 🌟 這裡要記得補上原本漏掉的括號
+                          l10n.logoutSuccessSnackbar,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ), // 🌟 這裡結尾
@@ -140,8 +126,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 // 3. 執行正式登出 (給它一點緩衝時間，讓玩家看清楚妳的話)
                 await Future.delayed(const Duration(seconds: 1)); // 🌟 故意延遲 1 秒，不然跑太快看不清
                 await authService.signOut(context);
-                // 注意：因為妳的 authService.signOut 裡面已經有跳轉到 LoginPage 的代碼，
-                // 所以這裡不需要手動關閉 Loading 視窗，跳頁時它會自動消失。
               },
             ),
           ],
@@ -153,15 +137,14 @@ class _SettingsPageState extends State<SettingsPage> {
   // ✨ 3. 重置外觀的確認彈窗
   void _showResetDialog(BuildContext context, ThemeNotifier themeNotifier) {
     final l10n = AppLocalizations.of(context)!;
-
     showDialog(
       context: context,
       builder: (dialogContext) =>
           AlertDialog(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20)),
-            title: const Text("要重置外觀嗎？"),
-            content: const Text("這將會移除您精心挑選的背景圖與顏色喔！"),
+            title:  Text(l10n.resetAppearanceTitle),
+            content: Text(l10n.resetAppearanceWarning),
             actions: [
               TextButton(onPressed: () => Navigator.pop(dialogContext),
                   child:  Text(l10n.cancelButton
@@ -171,10 +154,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   themeNotifier.resetToDefault();
                   Navigator.pop(dialogContext);
                   ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("已恢復預設外觀")));
+                       SnackBar(content: Text(l10n.appearanceRestored)));
                 },
-                child: const Text(
-                    "確定重置", style: TextStyle(color: Colors.red)),
+                child:Text(l10n.confirmReset, style: TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -203,10 +185,8 @@ class _SettingsPageState extends State<SettingsPage> {
             onPressed: () async {
               // 1. 先關掉彈窗
               Navigator.of(dialogContext).pop();
-
               // 2. 執行刪除動作
               final String? errorMessage = await authService.deleteAccount();
-
               if (context.mounted) {
                 if (errorMessage == null) {
                   // ✅ 成功：顯示成功訊息
@@ -221,7 +201,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 } else {
                   // ❌ 失敗：顯示錯誤原因（例如需重新登入）
-                  _showErrorDialog('發生錯誤', errorMessage ?? '未知錯誤');
+                  _showErrorDialog('發生錯誤', errorMessage);
                 }
               }
             },
@@ -248,9 +228,9 @@ class _SettingsPageState extends State<SettingsPage> {
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       decoration: BoxDecoration(
         // ✅ 毛玻璃效果：根據主題自動調整透明度
-        color: theme.cardColor.withOpacity(isDarkMode ? 0.6 : 0.4),
+        color: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: primaryColor.withOpacity(0.05)), // 極淡的邊框感
+        border: Border.all(color: primaryColor.withValues(alpha:0.05)), // 極淡的邊框感
       ),
       child: ListTile(
         leading: Icon(icon, color: iconColor ?? primaryColor),
@@ -260,10 +240,10 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         subtitle: subtitle != null
             ? Text(subtitle, style: TextStyle(
-            color: theme.colorScheme.onSurface.withOpacity(0.6)))
+            color: theme.colorScheme.onSurface.withValues(alpha:0.6)))
             : null,
         trailing: trailing ?? Icon(Icons.chevron_right,
-            color: theme.colorScheme.onSurface.withOpacity(0.3)),
+            color: theme.colorScheme.onSurface.withValues(alpha:0.3)),
         onTap: onTap,
       ),
     );
@@ -271,15 +251,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 1. 準備變色龍變數
+    // 準備變色龍變數
     final l10n = AppLocalizations.of(context)!;
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
     final isDarkMode = theme.brightness == Brightness.dark;
-
-    // 2. 取得綁定方式
     final String providerId = currentUser?.providerData.first.providerId ??
         "unknown";
     final String authMethod = providerId == 'google.com'
@@ -320,16 +298,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildSettingsTile(
                     icon: Icons.restore,
                     iconColor: Colors.orangeAccent,
-                    title: "恢復預設外觀",
-                    subtitle: "清除所有自定義顏色與背景圖",
+                    title: l10n.resetToDefaultAppearance,
+                    subtitle: l10n.clearCustomSettings,
                     onTap: () => _showResetDialog(context, themeNotifier),
                     theme: theme,
                   ),
 
                   _buildSettingsTile(
                     icon: Icons.contact_support_outlined,
-                    title: "聯絡我們",
-                    subtitle: "有任何心裡話或 Bug 都能告訴我們",
+                    title: l10n.contactUs,
+                    subtitle: l10n.contactDescription,
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(
@@ -370,17 +348,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     decoration: BoxDecoration(
-                      color: theme.cardColor.withOpacity(
+                      color: theme.cardColor.withValues(alpha:
                           isDarkMode ? 0.6 : 0.4),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: SwitchListTile(
                       secondary: Icon(Icons.vibration, color: primaryColor),
-                      title: const Text("心動震動感應",
+                      title:  Text(l10n.vibrationHapticTitle,
                           style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: const Text("好感度大幅變動時觸發手機震動"),
+                      subtitle:  Text(l10n.vibrationHapticDescription),
                       value: _vibrationEnabled,
-                      activeColor: primaryColor,
+                      activeThumbColor: primaryColor,
                       onChanged: (bool value) async {
                         setState(() => _vibrationEnabled = value);
                         final prefs = await SharedPreferences.getInstance();
@@ -433,10 +411,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                     },
                   ),
-                ], // 保持您原本結尾的括號
+                ],
               ),
             ),
-
             // --- 下半部：登出與刪除按鈕 (放在同一個 Column 下方) ---
             Padding(
               padding: const EdgeInsets.all(20.0),
@@ -473,14 +450,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   Text(
                     l10n.appDisclaimer,
                     style: TextStyle(
-                        fontSize: 11, color: onSurface.withOpacity(0.4)),
+                        fontSize: 11, color: onSurface.withValues(alpha:0.4)),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     l10n.appVersion('1.0.0'),
                     style: TextStyle(
-                        fontSize: 11, color: onSurface.withOpacity(0.4)),
+                        fontSize: 11, color: onSurface.withValues(alpha:0.4)),
                   ),
                 ],
               ),

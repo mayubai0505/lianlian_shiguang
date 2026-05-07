@@ -1412,5 +1412,16 @@
    },
    "snackbar_operation_failed": "A operação falhou, tente novamente mais tarde",
    "action_view_translation": "Ver Tradução",
-   "label_translation_result": "Resultado da Tradução:"
+   "label_translation_result": "Resultado da Tradução:",
+   "errorWebPageUnavailable": "Incapaz de abrir a página da web temporariamente, tente novamente mais tarde",
+   "resetAppearanceTitle": "Redefinir aparência?",
+   "resetAppearanceWarning": "Isso removerá a imagem de fundo e as cores que você escolheu cuidadosamente!",
+   "appearanceRestored": "Aparência padrão restaurada",
+   "confirmReset": "Confirmar Redefinição",
+   "resetToDefaultAppearance": "Restaurar aparência padrão",
+   "clearCustomSettings": "Limpar todas as cores e imagens de fundo personalizadas",
+   "contactUs": "Fale Conosco",
+   "contactDescription": "Sinta-se à vontade para compartilhar seus pensamentos ou relatar bugs",
+   "vibrationHapticTitle": "Vibração de Batimentos",
+   "vibrationHapticDescription": "Aciona a vibração do telefone quando o nível de afeto muda significativamente"
 }

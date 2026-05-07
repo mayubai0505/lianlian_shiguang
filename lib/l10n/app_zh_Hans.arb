@@ -1423,5 +1423,16 @@
   },
   "snackbar_operation_failed": "操作失败，请稍后再试",
   "action_view_translation": "查看翻译",
-  "label_translation_result": "翻译结果:"
+  "label_translation_result": "翻译结果:",
+  "errorWebPageUnavailable": "暂时无法打开网页，请稍后再试",
+  "resetAppearanceTitle": "要重置外观吗？",
+  "resetAppearanceWarning": "这将会移除您精心挑选的背景图与颜色喔！",
+  "appearanceRestored": "已恢复默认外观",
+  "confirmReset": "确定重置",
+  "resetToDefaultAppearance": "恢复默认外观",
+  "clearCustomSettings": "清除所有自定义颜色与背景图",
+  "contactUs": "联系我们",
+  "contactDescription": "有任何心里话或 Bug 都能告诉我们",
+  "vibrationHapticTitle": "心动震动感应",
+  "vibrationHapticDescription": "好感度大幅变动时触发手机震动"
 }

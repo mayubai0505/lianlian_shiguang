@@ -1410,5 +1410,16 @@
   },
   "snackbar_operation_failed": "작업 실패, 나중에 다시 시도해 주세요",
   "action_view_translation": "번역 보기",
-  "label_translation_result": "번역 결과:"
+  "label_translation_result": "번역 결과:",
+  "errorWebPageUnavailable": "일시적으로 웹페이지를 열 수 없습니다. 나중에 다시 시도해 주세요",
+  "resetAppearanceTitle": "외형을 초기화하시겠습니까?",
+  "resetAppearanceWarning": "정성껏 고른 배경 이미지와 색상이 삭제됩니다!",
+  "appearanceRestored": "기본 외형으로 복구되었습니다",
+  "confirmReset": "초기화 확인",
+  "resetToDefaultAppearance": "기본 외형으로 복구",
+  "clearCustomSettings": "모든 사용자 지정 색상 및 배경 이미지 지우기",
+  "contactUs": "문의하기",
+  "contactDescription": "여러분의 생각이나 버그를 편하게 알려주세요",
+  "vibrationHapticTitle": "설렘 진동 피드백",
+  "vibrationHapticDescription": "호감도가 크게 변할 때 스마트폰 진동 발생"
 }
