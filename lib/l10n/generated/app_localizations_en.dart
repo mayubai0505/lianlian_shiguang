@@ -3444,4 +3444,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get vibrationHapticDescription =>
       'Triggers phone vibration when affection level changes significantly';
+
+  @override
+  String get splash_loading_universe =>
+      'Awakening the universe of Love in Time...';
 }

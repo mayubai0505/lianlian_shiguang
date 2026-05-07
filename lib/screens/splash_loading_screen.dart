@@ -11,6 +11,7 @@ class SplashLoadingScreen extends StatelessWidget {
     // 取得當前主題，確保載入頁也符合深淺色模式
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       // 使用漸層背景，讓等待的過程也很有質感
@@ -36,10 +37,10 @@ class SplashLoadingScreen extends StatelessWidget {
               height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: theme.colorScheme.primary.withOpacity(0.1),
+                color: theme.colorScheme.primary.withValues(alpha:0.1),
                 boxShadow: [
                   BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    color: theme.colorScheme.primary.withValues(alpha:0.2),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -60,11 +61,11 @@ class SplashLoadingScreen extends StatelessWidget {
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  "正在喚醒《戀戀拾光》的宇宙...",
+                  l10n.splash_loading_universe,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface.withOpacity(0.8),
+                    color: theme.colorScheme.onSurface.withValues(alpha:0.8),
                     letterSpacing: 2.0, // 字距拉開一點比較有呼吸感
                   ),
                 ),
@@ -79,7 +80,7 @@ class SplashLoadingScreen extends StatelessWidget {
               child: CircularProgressIndicator(
                 strokeWidth: 3,
                 valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+                backgroundColor: theme.colorScheme.primary.withValues(alpha:0.2),
               ),
             ),
           ],

@@ -1422,5 +1422,6 @@
     "contactUs": "Contáctanos",
     "contactDescription": "Cuéntanos cualquier idea que tengas o infórmanos de errores",
     "vibrationHapticTitle": "Vibración de latido",
-    "vibrationHapticDescription": "Activa la vibración del teléfono cuando el nivel de afecto cambia significativamente"
+    "vibrationHapticDescription": "Activa la vibración del teléfono cuando el nivel de afecto cambia significativamente",
+    "splash_loading_universe": "Despertando el universo de 'Lianlian ShiGuang'..."
 }

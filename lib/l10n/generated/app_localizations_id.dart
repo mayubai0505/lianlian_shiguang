@@ -3473,4 +3473,8 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get vibrationHapticDescription =>
       'Memicu getaran ponsel ketika tingkat afeksi berubah secara signifikan';
+
+  @override
+  String get splash_loading_universe =>
+      'Membangunkan alam semesta \'Lianlian ShiGuang\'...';
 }

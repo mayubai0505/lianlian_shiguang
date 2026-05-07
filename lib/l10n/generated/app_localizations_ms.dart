@@ -3471,4 +3471,8 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get vibrationHapticDescription =>
       'Mencetuskan getaran telefon apabila tahap kasih sayang berubah dengan ketara';
+
+  @override
+  String get splash_loading_universe =>
+      'Membangkitkan alam semesta \'Lianlian ShiGuang\'...';
 }

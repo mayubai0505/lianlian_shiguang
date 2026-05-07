@@ -3298,4 +3298,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get vibrationHapticDescription => '好感度が大きく変化した時にスマホが振動します';
+
+  @override
+  String get splash_loading_universe => '『恋恋拾光』の宇宙を呼び覚ましています...';
 }

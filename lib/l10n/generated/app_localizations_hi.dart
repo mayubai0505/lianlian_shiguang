@@ -3475,4 +3475,8 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get vibrationHapticDescription =>
       'स्नेह स्तर में महत्वपूर्ण बदलाव होने पर फ़ोन कंपन ट्रिगर होता है';
+
+  @override
+  String get splash_loading_universe =>
+      '\'Lianlian ShiGuang\' के ब्रह्मांड को जगाया जा रहा है...';
 }

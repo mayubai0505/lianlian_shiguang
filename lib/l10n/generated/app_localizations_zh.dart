@@ -3268,6 +3268,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vibrationHapticDescription => '好感度大幅變動時觸發手機震動';
+
+  @override
+  String get splash_loading_universe => '正在喚醒《戀戀拾光》的宇宙...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6534,6 +6537,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get vibrationHapticDescription => '好感度大幅变动时触发手机震动';
+
+  @override
+  String get splash_loading_universe => '正在唤醒《恋恋拾光》的宇宙...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9800,4 +9806,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get vibrationHapticDescription => '好感度大幅變動時觸發手機震動';
+
+  @override
+  String get splash_loading_universe => '正在喚醒《戀戀拾光》的宇宙...';
 }

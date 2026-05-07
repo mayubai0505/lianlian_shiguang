@@ -1551,5 +1551,6 @@
   "contactUs": "聯絡我們",
   "contactDescription": "有任何心裡話或 Bug 都能告訴我們",
   "vibrationHapticTitle": "心動震動感應",
-  "vibrationHapticDescription": "好感度大幅變動時觸發手機震動"
+  "vibrationHapticDescription": "好感度大幅變動時觸發手機震動",
+  "splash_loading_universe": "正在喚醒《戀戀拾光》的宇宙..."
 }

@@ -3429,4 +3429,8 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get vibrationHapticDescription =>
       'ทำให้โทรศัพท์สั่นเมื่อระดับความชอบเปลี่ยนแปลงไปอย่างมาก';
+
+  @override
+  String get splash_loading_universe =>
+      'กำลังปลุกจักรวาลของ \'Lianlian ShiGuang\'...';
 }

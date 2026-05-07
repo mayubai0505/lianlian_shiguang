@@ -3422,4 +3422,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get vibrationHapticDescription =>
       'تشغيل اهتزاز الهاتف عند تغير مستوى الإعجاب بشكل كبير';
+
+  @override
+  String get splash_loading_universe =>
+      'جارٍ إيقاظ عالم \'Lianlian ShiGuang\'...';
 }

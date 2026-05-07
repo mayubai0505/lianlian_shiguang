@@ -3489,4 +3489,8 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get vibrationHapticDescription =>
       'Aciona a vibração do telefone quando o nível de afeto muda significativamente';
+
+  @override
+  String get splash_loading_universe =>
+      'Despertando o universo de \'Lianlian ShiGuang\'...';
 }

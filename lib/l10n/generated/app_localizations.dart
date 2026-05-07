@@ -6099,6 +6099,12 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'好感度大幅變動時觸發手機震動'**
   String get vibrationHapticDescription;
+
+  /// No description provided for @splash_loading_universe.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在喚醒《戀戀拾光》的宇宙...'**
+  String get splash_loading_universe;
 }
 
 class _AppLocalizationsDelegate

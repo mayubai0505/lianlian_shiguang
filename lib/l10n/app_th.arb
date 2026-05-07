@@ -1422,5 +1422,6 @@
     "contactUs": "ติดต่อเรา",
     "contactDescription": "แบ่งปันความคิดเห็นหรือรายงานข้อผิดพลาดกับเราได้เลย",
     "vibrationHapticTitle": "การสั่นเตือนใจเต้น",
-    "vibrationHapticDescription": "ทำให้โทรศัพท์สั่นเมื่อระดับความชอบเปลี่ยนแปลงไปอย่างมาก"
+    "vibrationHapticDescription": "ทำให้โทรศัพท์สั่นเมื่อระดับความชอบเปลี่ยนแปลงไปอย่างมาก",
+    "splash_loading_universe": "กำลังปลุกจักรวาลของ 'Lianlian ShiGuang'..."
 }

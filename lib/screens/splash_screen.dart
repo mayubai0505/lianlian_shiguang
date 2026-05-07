@@ -26,38 +26,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkFirstLaunch() async {
     print('SplashScreen: _checkFirstLaunch started.');
     try {
-      // --- DEVELOPMENT MODE: The original logic is commented out below ---
-      /*
-      final prefs = await SharedPreferences.getInstance();
-      bool isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
-      print('SplashScreen: isFirstLaunch = $isFirstLaunch');
-
-      if (!mounted) {
-        print('SplashScreen: Widget no longer mounted, aborting navigation.');
-        return;
-      }
-      
-      if (isFirstLaunch) {
-        print('SplashScreen: First launch, navigating to OnboardingPage.');
-        await prefs.setBool('isFirstLaunch', false);
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const OnboardingPage()),
-          );
-        }
-      } else {
-        print('SplashScreen: Not first launch, navigating to MainPage.');
-        await Future.delayed(const Duration(seconds: 2)); 
-        if (!mounted) {
-          return;
-        }
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainPage()),
-        );
-      }
-      */
-
-      // --- DIRECT NAVIGATION: Skip onboarding and go straight to the main page ---
       print('SplashScreen: Development mode, skipping onboarding.');
       await Future.delayed(const Duration(
           seconds: 2)); // Keep the splash screen visible for a moment

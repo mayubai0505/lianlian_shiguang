@@ -3472,4 +3472,8 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get vibrationHapticDescription =>
       'Kích hoạt rung điện thoại khi mức độ hảo cảm thay đổi đáng kể';
+
+  @override
+  String get splash_loading_universe =>
+      'Đang đánh thức vũ trụ của 《Luyến Luyến Thập Quang》...';
 }

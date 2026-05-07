@@ -3314,4 +3314,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get vibrationHapticDescription => '호감도가 크게 변할 때 스마트폰 진동 발생';
+
+  @override
+  String get splash_loading_universe => '《Lianlian ShiGuang》의 우주를 깨우는 중...';
 }

@@ -1422,5 +1422,6 @@
   "contactUs": "お問い合わせ",
   "contactDescription": "ご意見やバグ報告など、何でもお気軽にお知らせください",
   "vibrationHapticTitle": "ときめき振動検知",
-  "vibrationHapticDescription": "好感度が大きく変化した時にスマホが振動します"
+  "vibrationHapticDescription": "好感度が大きく変化した時にスマホが振動します",
+  "splash_loading_universe": "『恋恋拾光』の宇宙を呼び覚ましています..."
 }
