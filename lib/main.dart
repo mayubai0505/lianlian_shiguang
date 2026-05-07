@@ -12,7 +12,6 @@ import 'screens/chat_page.dart';
 import 'services/theme_notifier.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
-import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart'; // <-- 加上這一行
 import 'package:flutter/foundation.dart';
@@ -59,9 +58,9 @@ Future<void> main() async {
   } else {
     try {
       await FirebaseAppCheck.instance.activate(
-        webProvider: ReCaptchaV3Provider('6LfGqrYsAAAAAJfkhg30_VdjJmfDIWo40I9-izIO'),
-        androidProvider: kReleaseMode ? AndroidProvider.playIntegrity : AndroidProvider.debug,
-        appleProvider: (kReleaseMode ? AppleProvider.deviceCheck : AppleProvider.debug) as AppleProvider,
+        providerWeb: ReCaptchaV3Provider('6LfGqrYsAAAAAJfkhg30_VdjJmfDIWo40I9-izIO'),
+        providerAndroid: kReleaseMode ? AndroidPlayIntegrityProvider() : AndroidDebugProvider(),
+        providerApple: kReleaseMode ? AppleDeviceCheckProvider() : AppleDebugProvider(),
       );
     } catch (e) {
       debugPrint("App Check 啟動失敗: $e");
