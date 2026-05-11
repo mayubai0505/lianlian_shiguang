@@ -147,8 +147,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _nameController.text = char.name;
       _ageController.text = char.age;
       _occupationController.text = char.occupation;
-      _birthdayController.text = char.birthday ?? '';
-      _heightController.text = char.height ?? '';
+      _birthdayController.text = char.birthday  ;
+      _heightController.text = char.height ;
       _backgroundController.text = char.background;
       _storySummaryController.text = char.storySummary;
       _storyController.text = char.initialStory;
@@ -158,12 +158,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _likesController.text = char.likes;
       _dislikesController.text = char.dislikes;
       _secretsController.text = char.secrets;
-      _appearanceController.text = char.appearance ?? '';
+      _appearanceController.text = char.appearance ;
       _dialogueExamplesController.text = char.dialogueExamples;
       // -- 陣列與清單 (保留妳的安全寫法) --
       _personalityTags = List.from(char.personalityTags);
       _easterEggs = List.from(char.easterEggs);
-      _extraInfoItems = List<String>.from(char.extraInfoItems ?? []); // 👈 統一留這個最安全的！
+      _extraInfoItems = List<String>.from(char.extraInfoItems ); // 👈 統一留這個最安全的！
       // -- 權限 --
       _isPublic = char.isPublic;
       // -- 新增的進階設定欄位 --
@@ -172,7 +172,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _stageAcquaintanceController.text = mapData['stageAcquaintance'] ?? '';
       _stageIntimateController.text = mapData['stageIntimate'] ?? '';
       _socialInteractionController.text = mapData['socialInteraction'] ?? '';
-      String savedGender1 = char.gender ?? '';
+      String savedGender1 = char.gender;
       if (savedGender1 == '男') {
         _gender = 'male';
       } else if (savedGender1 == '女') {
@@ -195,8 +195,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         _relationships = Map<String, String>.from(char.relationships!);
       }
       String? oldRelation = char.initialRelationship;
-      if (oldRelation != null && oldRelation.isNotEmpty) {
-        // 假設妳有一個 relationshipKeys 的常數 List
+      if (oldRelation.isNotEmpty) {        // 假設妳有一個 relationshipKeys 的常數 List
         if (relationshipKeys.contains(oldRelation)) {
           _selectedRelationship = oldRelation;
         } else {

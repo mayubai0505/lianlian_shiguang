@@ -1,11 +1,9 @@
 ﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/foundation.dart';
-import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../screens/login_page.dart';
 import 'package:flutter/material.dart'; // 🌟 加入這一行，紅字就會消失！
 import 'package:flutter/foundation.dart' show kIsWeb; // 確保判斷網頁版的工具也在

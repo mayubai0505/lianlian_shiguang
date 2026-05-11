@@ -5,7 +5,6 @@ import 'onboarding_page.dart'; // ✅ 確保導入導航頁面
 import 'main_page.dart'; // ✅ 確保導入主頁面
 import 'email_login_page.dart'; // ✅ 確保導入 Email 登入頁面
 import 'dart:async';
-import 'package:video_player/video_player.dart';
 import '../services/butterfly_loading_view.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -47,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
               // 加一點點細微的陰影，讓它浮起來更有立體感
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha:0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -261,7 +260,7 @@ class _LoginPageState extends State<LoginPage> {
           minimumSize: const Size(double.infinity, 54),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(27)),
         ),
-        onPressed: onPressed,
+        onPressed: _isLoginLoading ? null : onPressed,
         child: Stack(
           alignment: Alignment.centerLeft,
           children: [

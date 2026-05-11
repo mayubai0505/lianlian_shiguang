@@ -6,17 +6,14 @@ import 'chat_page.dart';
 import 'character_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/character_service.dart';
-import 'dart:math';
 import 'package:cloud_functions/cloud_functions.dart'; // ✨ 就是這一行！
 import '../services/translationService.dart';
 import 'creator_profile_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:ui'; // 🌟 為了 ImageFilter
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 //角色卡片內容
 
 class CharacterProfilePage extends StatefulWidget {
@@ -1027,12 +1024,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               SliverAppBar(
                 expandedHeight: 400.0,
                 pinned: true,
-                backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.9),
+                backgroundColor: theme.scaffoldBackgroundColor.withValues(alpha:0.9),
                 elevation: 0,
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CircleAvatar(
-                    backgroundColor: Colors.black.withOpacity(0.4),
+                    backgroundColor: Colors.black.withValues(alpha:0.4),
                     child: IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () => Navigator.pop(context),
@@ -1043,7 +1040,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
-                      backgroundColor: Colors.black.withOpacity(0.4),
+                      backgroundColor: Colors.black.withValues(alpha:0.4),
                       child: PopupMenuButton<String>(
                         icon: const Icon(Icons.more_vert, color: Colors.white),
                         onSelected: (v) {
@@ -1147,7 +1144,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   end: Alignment.topCenter,
                   colors: [
                     theme.scaffoldBackgroundColor,
-                    theme.scaffoldBackgroundColor.withOpacity(0.0)
+                    theme.scaffoldBackgroundColor.withValues(alpha:0.0)
                   ]
               ),
             ),
@@ -1310,11 +1307,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                    color: _hasLiked ? Colors.pink.withOpacity(0.1) : theme
-                        .colorScheme.surfaceVariant.withOpacity(0.5),
+                    color: _hasLiked ? Colors.pink.withValues(alpha:0.1) : theme
+                        .colorScheme.surfaceVariant.withValues(alpha:0.5),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                        color: _hasLiked ? Colors.pink.withOpacity(0.5) : Colors
+                        color: _hasLiked ? Colors.pink.withValues(alpha:0.5) : Colors
                             .transparent)),
                 child: Row(children: [
                   Icon(_hasLiked ? Icons.favorite : Icons.favorite_border,
@@ -1334,7 +1331,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                    color: theme.colorScheme.surfaceVariant.withValues(alpha:0.5),
                     borderRadius: BorderRadius.circular(20)),
                 child: Row(children: [
                   Icon(Icons.thumb_down_off_alt, size: 20,
@@ -1407,7 +1404,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   Chip(
                       label: Text(t, style: const TextStyle(fontSize: 12)),
                       backgroundColor: theme.colorScheme.surfaceVariant
-                          .withOpacity(0.5),
+                          .withValues(alpha:0.5),
                       side: BorderSide.none,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)))
@@ -1419,9 +1416,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         if (displayLikes.isNotEmpty || displayDislikes.isNotEmpty) ...[
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: theme.cardColor.withOpacity(0.5),
+            decoration: BoxDecoration(color: theme.cardColor.withValues(alpha:0.5),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.dividerColor.withOpacity(0.5))),
+                border: Border.all(color: theme.dividerColor.withValues(alpha:0.5))),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1647,11 +1644,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   margin: const EdgeInsets.only(bottom: 12),
                   elevation: 1,
                   color: isHidden
-                      ? theme.disabledColor.withOpacity(0.05)
+                      ? theme.disabledColor.withValues(alpha:0.05)
                       : null,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: theme.dividerColor.withOpacity(
+                    side: BorderSide(color: theme.dividerColor.withValues(alpha:
                         0.3)),
                   ),
                   child: ListTile(
@@ -1753,7 +1750,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   color: modalTheme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: modalTheme.dividerColor.withOpacity(0.5)),
+                      color: modalTheme.dividerColor.withValues(alpha:0.5)),
                 ),
                 child: SingleChildScrollView(
                   child: Column(
@@ -1852,7 +1849,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         child: Column(
           children: [
             Icon(Icons.mail_outline, size: 60,
-                color: Colors.grey.withOpacity(0.5)),
+                color: Colors.grey.withValues(alpha:0.5)),
             SizedBox(height: 16),
             Text(_isCreator
                 ? l10n.lore_write_first(_pronoun)
@@ -1895,7 +1892,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.cardColor.withOpacity(0.8),
+                color: theme.cardColor.withValues(alpha:0.8),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -2067,25 +2064,25 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
                 // 便條貼主題判斷
                 if (themeType == 'butterfly') {
-                  borderColor = Colors.purpleAccent.withOpacity(0.5);
+                  borderColor = Colors.purpleAccent.withValues(alpha:0.5);
                   themeIconWidget =
                   const Text('🦋', style: TextStyle(fontSize: 14));
-                  bgColor = Colors.purple.withOpacity(0.05);
+                  bgColor = Colors.purple.withValues(alpha:0.05);
                 } else if (themeType == 'sprout') {
-                  borderColor = Colors.green.withOpacity(0.5);
+                  borderColor = Colors.green.withValues(alpha:0.5);
                   themeIconWidget = Icon(
-                      Icons.eco, size: 16, color: borderColor.withOpacity(0.8));
-                  bgColor = Colors.green.withOpacity(0.05);
+                      Icons.eco, size: 16, color: borderColor.withValues(alpha:0.8));
+                  bgColor = Colors.green.withValues(alpha:0.05);
                 } else if (themeType == 'star') {
-                  borderColor = Colors.blue.withOpacity(0.5);
+                  borderColor = Colors.blue.withValues(alpha:0.5);
                   themeIconWidget = Icon(Icons.star_border, size: 16,
-                      color: borderColor.withOpacity(0.8));
-                  bgColor = Colors.blue.withOpacity(0.05);
+                      color: borderColor.withValues(alpha:0.8));
+                  bgColor = Colors.blue.withValues(alpha:0.05);
                 } else if (themeType == 'planet') {
-                  borderColor = Colors.orange.withOpacity(0.5);
+                  borderColor = Colors.orange.withValues(alpha:0.5);
                   themeIconWidget = Icon(Icons.public, size: 16,
-                      color: borderColor.withOpacity(0.8));
-                  bgColor = Colors.orange.withOpacity(0.05);
+                      color: borderColor.withValues(alpha:0.8));
+                  bgColor = Colors.orange.withValues(alpha:0.05);
                 }
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
@@ -2398,7 +2395,7 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
             // --- 接下來是原本的鎖頭和打勾邏輯，維持不變 ---
             if (!isUnlocked)
               Container(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha:0.3),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
