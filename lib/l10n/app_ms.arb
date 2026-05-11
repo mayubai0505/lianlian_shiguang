@@ -1441,5 +1441,36 @@
                 "type": "String"
             }
         }
+    },
+    "gallery_photo_edit_title": "Edit Tetapan Foto",
+    "gallery_photo_edit_desc": "Nama/Penerangan Foto",
+    "gallery_photo_edit_req": "Buka Tahap Kasih Sayang (Tetapkan ke 0 untuk menjadikannya foto profil)",
+    "reset_to_default": "Tetapkan semula ke Lalai",
+    "reset_bg_title": "Pulihkan Latar Belakang Lalai",
+    "reset_bg_content": "Adakah awak pasti mahu membatalkan foto eksklusif dan kembali ke latar belakang tema lalai?",
+    "reset_bg_success": "Telah dipulihkan ke latar belakang lalai ✨",
+    "confirm_reset": "Sahkan Pulihkan",
+    "selectedMessagesCount": "{count} dipilih",
+    "@selectedMessagesCount": {
+        "placeholders": {
+            "count": { "type": "int" }
+        }
+    },
+    "screenshotShare": "Kongsi tangkapan skrin",
+    "exclusiveMomentsWith": "Momen eksklusif bersama {name}",
+    "@exclusiveMomentsWith": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
+    },
+    "downloadToUnlock": "Muat turun 'Lianlian ShiGuang' untuk membuka kunci romantik eksklusif",
+    "exclusiveMomentsGenerated": "Momen eksklusif telah dijana ✨",
+    "selectAgain": "Pilih lagi",
+    "downloadAndShare": "Muat turun dan kongsi",
+    "inviteToMeet": "Jom temui {name} anda di 'Lianlian ShiGuang'!",
+    "@inviteToMeet": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
     }
 }

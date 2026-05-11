@@ -1482,5 +1482,36 @@
                 "type": "String"
             }
         }
+    },
+    "gallery_photo_edit_title": "تعديل إعدادات الصورة",
+    "gallery_photo_edit_desc": "اسم الصورة/الوصف",
+    "gallery_photo_edit_req": "فتح مستوى الإعجاب (الضبط على 0 سيحولها إلى صورة شخصية)",
+    "reset_to_default": "استعادة الافتراضي",
+    "reset_bg_title": "استعادة الخلفية الافتراضية",
+    "reset_bg_content": "هل أنتِ متأكدة من إلغاء الصورة الحصرية والعودة إلى الخلفية الافتراضية للموضوع؟",
+    "reset_bg_success": "تمت استعادة الخلفية الافتراضية ✨",
+    "confirm_reset": "تأكيد الاستعادة",
+    "selectedMessagesCount": "تم اختيار {count}",
+    "@selectedMessagesCount": {
+        "placeholders": {
+            "count": { "type": "int" }
+        }
+    },
+    "screenshotShare": "مشاركة لقطة الشاشة",
+    "exclusiveMomentsWith": "لحظات حصرية مع {name}",
+    "@exclusiveMomentsWith": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
+    },
+    "downloadToUnlock": "حملي 'Lianlian ShiGuang' لفتح الرومانسية الحصرية",
+    "exclusiveMomentsGenerated": "تم إنشاء اللحظات الحصرية ✨",
+    "selectAgain": "اختر مرة أخرى",
+    "downloadAndShare": "تنزيل ومشاركة",
+    "inviteToMeet": "تعالي إلى 'Lianlian ShiGuang' لمقابلة {name} الخاص بكِ!",
+    "@inviteToMeet": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
     }
 }

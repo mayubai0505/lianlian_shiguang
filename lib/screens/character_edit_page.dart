@@ -189,6 +189,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
             CharacterPhoto(imageUrl: url, requiredAffection: 0, description: '')
         ).toList();
       }
+      _galleryPhotos.sort((a, b) => a.requiredAffection.compareTo(b.requiredAffection));
       // -- 關係設定 --
       if (char.relationships != null) {
         _relationships = Map<String, String>.from(char.relationships!);
@@ -272,7 +273,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         }
       }
       _galleryPhotos = tempGallery;
-
+      _galleryPhotos.sort((a, b) => a.requiredAffection.compareTo(b.requiredAffection));
       // 1. 【初始關係：翻譯轉換】
       // 解決顯示 "relationship_other" 或 "relationship_childhood_friend" 的問題
       final savedRel = data['initialRelationship'] ?? '';
@@ -429,6 +430,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           : _selectedRelationship ?? '';
 
       // 🌟 2. 確保在草稿模式下，如果還沒上傳，優先抓取本機路徑 (localFile.path)
+      _galleryPhotos.sort((a, b) => a.requiredAffection.compareTo(b.requiredAffection));
       List<String> galleryPathsOnly = _galleryPhotos
           .map((p) {
         if (p.imageUrl.isNotEmpty) return p.imageUrl;
@@ -2424,28 +2426,29 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     final photo = _galleryPhotos[index];
     final TextEditingController descController = TextEditingController(text: photo.description);
     final TextEditingController reqController = TextEditingController(text: photo.requiredAffection.toString());
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('編輯照片設定'),
+        title: Text(l10n.gallery_photo_edit_title),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: descController,
-              decoration: const InputDecoration(labelText: '照片名稱/描述'),
+              decoration:  InputDecoration(labelText: l10n.gallery_photo_edit_desc),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: reqController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: '解鎖好感度 (設為 0 會變成大頭貼)'),
+              decoration: InputDecoration(labelText: l10n.gallery_photo_edit_req),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(context), child:  Text(l10n.cancelButton)),
           ElevatedButton(
             onPressed: () {
               setState(() {
@@ -2455,10 +2458,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   description: descController.text,
                   requiredAffection: int.tryParse(reqController.text) ?? 0,
                 );
+                _galleryPhotos.sort((a, b) => a.requiredAffection.compareTo(b.requiredAffection));
               });
               Navigator.pop(context);
             },
-            child: const Text('儲存'),
+            child: Text(l10n.saveButton),
           ),
         ],
       ),

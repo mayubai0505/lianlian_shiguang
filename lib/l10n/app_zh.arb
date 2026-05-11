@@ -1569,5 +1569,36 @@
         "type": "String"
       }
     }
+  },
+  "gallery_photo_edit_title": "編輯照片設定",
+  "gallery_photo_edit_desc": "照片名稱/描述",
+  "gallery_photo_edit_req": "解鎖好感度 (設為 0 會變成大頭貼)",
+  "reset_to_default": "恢復預設",
+  "reset_bg_title": "恢復預設背景",
+  "reset_bg_content": "確定要取消專屬照片，恢復成預設的主題背景嗎？",
+  "reset_bg_success": "已恢復為預設背景 ✨",
+  "confirm_reset": "確定恢復",
+  "selectedMessagesCount": "已選擇 {count} 則",
+  "@selectedMessagesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "screenshotShare": "截圖分享",
+  "exclusiveMomentsWith": "與 {name} 的專屬拾光",
+  "@exclusiveMomentsWith": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "downloadToUnlock": "下載《戀戀拾光》，解鎖專屬浪漫",
+  "exclusiveMomentsGenerated": "專屬拾光已生成 ✨",
+  "selectAgain": "再選一次",
+  "downloadAndShare": "下載並分享",
+  "inviteToMeet": "快來《戀戀拾光》遇見妳的 {name}！",
+  "@inviteToMeet": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
   }
 }

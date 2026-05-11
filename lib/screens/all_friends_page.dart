@@ -115,6 +115,68 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
     );
   }
 
+  Future<void> addFriendWithUniqueEncounter(Character character) async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final String userId = user.uid;
+    final String charId = character.id;
+
+    // 1. 取得該角色的「唯一邂逅紀錄」路徑
+    final encounterRef = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('public_characters')
+        .doc(charId)
+        .collection('unique_encounters')
+        .doc(userId);
+
+    final charDocRef = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('public_characters')
+        .doc(charId);
+
+    try {
+      // ✨ 關鍵動作：使用 Transaction (事務) 確保數據一致性
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final encounterDoc = await transaction.get(encounterRef);
+
+        // 檢查玩家是否「從未邂逅過」這個角色
+        if (!encounterDoc.exists) {
+          // A. 在全域角色文件裡將 playCount +1
+          transaction.update(charDocRef, {
+            'playCount': FieldValue.increment(1),
+          });
+
+          // B. 留下這名玩家的邂逅紀錄，標記「此玩家已貢獻過次數」
+          transaction.set(encounterRef, {
+            'encounteredAt': FieldValue.serverTimestamp(),
+            'playerName': user.displayName ?? 'Unknown',
+          });
+
+          debugPrint("✨ 恭喜！這是該玩家與 ${character.name} 的初次邂逅，次數已增加。");
+        } else {
+          debugPrint("♻️ 玩家之前已邂逅過此角色，不再重複計算次數。");
+        }
+
+        // C. 將角色加入玩家個人的好友清單 (原本的邏輯)
+        final myFriendRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('friends')
+            .doc(charId);
+
+        transaction.set(myFriendRef, {
+          'addedAt': FieldValue.serverTimestamp(),
+        });
+      });
+
+    } catch (e) {
+      print("同步邂逅數據失敗: $e");
+    }
+  }
+
   ImageProvider _getAvatarProvider(String path) {
     if (path.startsWith('http')) return NetworkImage(path);
     return AssetImage(path);

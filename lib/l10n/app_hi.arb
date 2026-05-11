@@ -1441,5 +1441,36 @@
                 "type": "String"
             }
         }
+    },
+    "gallery_photo_edit_title": "फोटो सेटिंग्स संपादित करें",
+    "gallery_photo_edit_desc": "फोटो का नाम/विवरण",
+    "gallery_photo_edit_req": "स्नेह स्तर अनलॉक करें (अवतार बनाने के लिए 0 पर सेट करें)",
+    "reset_to_default": "डिफ़ॉल्ट पर सेट करें",
+    "reset_bg_title": "डिफ़ॉल्ट बैकग्राउंड बहाल करें",
+    "reset_bg_content": "क्या आप वाकई विशेष फोटो को हटाकर डिफ़ॉल्ट थीम बैकग्राउंड पर वापस जाना चाहती हैं?",
+    "reset_bg_success": "डिफ़ॉल्ट बैकग्राउंड बहाल कर दिया गया है ✨",
+    "confirm_reset": "पुष्टि करें",
+    "selectedMessagesCount": "{count} चयनित",
+    "@selectedMessagesCount": {
+        "placeholders": {
+            "count": { "type": "int" }
+        }
+    },
+    "screenshotShare": "स्क्रीनशॉट साझा करें",
+    "exclusiveMomentsWith": "{name} के साथ विशेष क्षण",
+    "@exclusiveMomentsWith": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
+    },
+    "downloadToUnlock": "विशेष रोमांस अनलॉक करने के लिए 'Lianlian ShiGuang' डाउनलोड करें",
+    "exclusiveMomentsGenerated": "विशेष क्षण उत्पन्न हुए ✨",
+    "selectAgain": "फिर से चुनें",
+    "downloadAndShare": "डाउनलोड करें और साझा करें",
+    "inviteToMeet": "'Lianlian ShiGuang' पर आएं और अपने {name} से मिलें!",
+    "@inviteToMeet": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
     }
 }

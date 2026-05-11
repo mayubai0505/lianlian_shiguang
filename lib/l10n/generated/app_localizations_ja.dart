@@ -3336,4 +3336,58 @@ class AppLocalizationsJa extends AppLocalizations {
   String story_summary_empty_list(String name) {
     return '二人の物語はまだ始まっていません...\nもっとたくさん話して、$name に \n最初の思い出を綴ってもらいましょう！ ✨';
   }
+
+  @override
+  String get gallery_photo_edit_title => '写真設定の編集';
+
+  @override
+  String get gallery_photo_edit_desc => '写真の名前/説明';
+
+  @override
+  String get gallery_photo_edit_req => '解放する好感度 (0に設定するとプロフィール写真になります)';
+
+  @override
+  String get reset_to_default => 'デフォルトに戻す';
+
+  @override
+  String get reset_bg_title => '背景をデフォルトに戻す';
+
+  @override
+  String get reset_bg_content => '専用写真を解除して、デフォルトのテーマ背景に戻してもよろしいですか？';
+
+  @override
+  String get reset_bg_success => 'デフォルトの背景に戻しました ✨';
+
+  @override
+  String get confirm_reset => '元に戻す';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return '$count件選択済み';
+  }
+
+  @override
+  String get screenshotShare => 'スクリーンショット共有';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return '$nameとの専屬拾光';
+  }
+
+  @override
+  String get downloadToUnlock => '『恋恋拾光』をダウンロードして、専屬のロマンスを解禁';
+
+  @override
+  String get exclusiveMomentsGenerated => '専屬拾光が生成されました ✨';
+
+  @override
+  String get selectAgain => 'もう一度選ぶ';
+
+  @override
+  String get downloadAndShare => '保存して共有';
+
+  @override
+  String inviteToMeet(String name) {
+    return '『恋恋拾光』であなたの $name に会いましょう！';
+  }
 }

@@ -3468,4 +3468,61 @@ class AppLocalizationsTh extends AppLocalizations {
   String story_summary_empty_list(String name) {
     return 'เรื่องราวของคุณยังไม่เริ่มขึ้นเลย...\nมาคุยกันให้มากขึ้น แล้วให้ $name \nเขียนความทรงจำแรกของคุณนะ! ✨';
   }
+
+  @override
+  String get gallery_photo_edit_title => 'แก้ไขการตั้งค่ารูปภาพ';
+
+  @override
+  String get gallery_photo_edit_desc => 'ชื่อรูปภาพ/คำอธิบาย';
+
+  @override
+  String get gallery_photo_edit_req =>
+      'ปลดล็อกระดับความชอบ (ตั้งเป็น 0 เพื่อใช้เป็นรูปโปรไฟล์)';
+
+  @override
+  String get reset_to_default => 'คืนค่าเริ่มต้น';
+
+  @override
+  String get reset_bg_title => 'คืนค่าพื้นหลังเริ่มต้น';
+
+  @override
+  String get reset_bg_content =>
+      'แน่ใจหรือไม่ว่าต้องการยกเลิกรูปภาพพิเศษ และกลับไปใช้พื้นหลังธีมเริ่มต้น?';
+
+  @override
+  String get reset_bg_success => 'กู้คืนเป็นพื้นหลังเริ่มต้นแล้ว ✨';
+
+  @override
+  String get confirm_reset => 'ยืนยันการคืนค่า';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return 'เลือกแล้ว $count รายการ';
+  }
+
+  @override
+  String get screenshotShare => 'แชร์ภาพหน้าจอ';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return 'ช่วงเวลาพิเศษกับ $name';
+  }
+
+  @override
+  String get downloadToUnlock =>
+      'ดาวน์โหลด \'Lianlian ShiGuang\' เพื่อปลดล็อกความโรแมนติกสุดพิเศษ';
+
+  @override
+  String get exclusiveMomentsGenerated => 'สร้างช่วงเวลาพิเศษแล้ว ✨';
+
+  @override
+  String get selectAgain => 'เลือกอีกครั้ง';
+
+  @override
+  String get downloadAndShare => 'ดาวน์โหลดและแชร์';
+
+  @override
+  String inviteToMeet(String name) {
+    return 'มาพบกับ $name ของคุณใน \'Lianlian ShiGuang\' สิ!';
+  }
 }

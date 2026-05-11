@@ -221,14 +221,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   @override
+  // 在 AuthWrapper 的 build 裡面
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: _authStream, // ✨ 3. 使用鎖好的變數，不會再重新檢查了！
+      stream: _authStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.hasData) {
+            // 👇 🌟 總裁，加上這行列印！
+            print("🏠 守衛認出妳了！歡迎回來: ${snapshot.data?.displayName}");
             return const MainPage();
           }
+          print("🚪 守衛沒看到人，請去登入頁面");
           return const LoginPage();
         }
         return const SplashLoadingScreen();

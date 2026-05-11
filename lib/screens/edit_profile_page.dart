@@ -464,16 +464,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   ImageProvider getAvatarImageProvider(String path) {
-    // 🏠 1. 內建預設頭像 (assets/ 開頭)
+    // ☁️ 1. 雲端真實網址 (Firebase Storage)
+    if (path.startsWith('http') || path.startsWith('https')) {
+      return NetworkImage(path);
+    }
+    // 🏠 2. 內建預設頭像 (assets/ 開頭)
     if (path.startsWith('assets/')) {
       return AssetImage(path);
     }
-    // 🌐 2. 網頁版頭像 (Chrome 模擬器選出來的 blob: 網址)
+    // 🌐 3. 網頁版頭像 (Chrome 模擬器選出來的 blob: 網址)
     if (kIsWeb) {
-      // 💡 關鍵：網頁版的 blob 雖然長得像路徑，但對 Flutter 來說它是網路資源
       return NetworkImage(path);
     }
-    // 📱 3. 手機版頭像 (iOS/Android 的真實路徑)
+    // 📱 4. 手機版剛裁切好的本地端頭像
     return FileImage(File(path));
   }
 
@@ -552,9 +555,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     radius: 55, // 這裡可以調成妳喜歡的大小，55 比原本的 50 再大一點點
                     backgroundColor: Colors.grey[200],
                     // ⚡ 這裡請注意：確認妳用的變數是 _avatarPath 還是 _selectedAvatarPath
-                    backgroundImage: _avatarPath.startsWith('assets')
-                        ? AssetImage(_avatarPath) as ImageProvider
-                        : FileImage(File(_avatarPath)),
+                    backgroundImage: getAvatarImageProvider(_avatarPath),
                   ),
                   // 編輯按鈕 (相機圖示)
                   Positioned(

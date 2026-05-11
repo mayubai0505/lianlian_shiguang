@@ -5,6 +5,7 @@ import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // 🌟 解決 QuerySnapshot 和 FirebaseFirestore
 import '../services/app_constants.dart';             // 🌟 解決 AppConfig (請根據妳的檔案路徑調整)
+import 'dart:ui'; // ✨ 記得加這行！
 // 專屬相簿背景
 
 class BackgroundSettingsPage extends StatelessWidget {
@@ -26,8 +27,53 @@ class BackgroundSettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.char_exclusive_memory(character.name)),
+        // 👇 🌟 總裁，重置按鈕加在這裡！放在標題的右邊
+        actions: [
+          TextButton.icon(
+            icon: const Icon(Icons.layers_clear, color: Colors.redAccent, size: 20),
+            label: Text(
+                l10n.reset_to_default,
+                style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)
+            ),
+            onPressed: () {
+              // 彈出確認視窗
+              showDialog(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title:  Text(l10n.reset_bg_title),
+                  content: Text(l10n.reset_bg_content),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext),
+                      child: Text(l10n.cancelButton, style: const TextStyle(color: Colors.grey)),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                      onPressed: () {
+                        // 1. 呼叫我們寫好的重置魔法！
+                        Provider.of<ThemeNotifier>(context, listen: false)
+                            .resetCharacterBackground(character.name);
+
+                        // 2. 關掉確認對話框
+                        Navigator.pop(dialogContext);
+
+                        // 3. 彈出成功提示
+                        ScaffoldMessenger.of(context).showSnackBar(
+                           SnackBar(
+                            content: Text(l10n.reset_bg_success),
+                            backgroundColor: Colors.grey,
+                          ),
+                        );
+                      },
+                      child:  Text(l10n.confirm_reset, style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
-      // 🌟 1. body 裡面只放一個 StreamBuilder
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('artifacts')
@@ -38,28 +84,31 @@ class BackgroundSettingsPage extends StatelessWidget {
             .orderBy('requiredAffection')
             .snapshots(),
         builder: (context, snapshot) {
-          // 2. 檢查連線狀態
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // 3. 準備 cgList
           List<CharacterPhoto> cgList;
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          // ✨✨✨ 修正後的智慧讀取邏輯 ✨✨✨
+          // 1. 如果子集合有資料，用子集合的
+          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+            cgList = snapshot.data!.docs.map((doc) => CharacterPhoto.fromFirestore(doc)).toList();
+          }
+          // 2. 如果子集合沒資料，但 character 裡面有原本存的 gallery，用原本的
+          else if (character.gallery != null && character.gallery!.isNotEmpty) {
+            cgList = character.gallery!;
+          }
+          // 3. 真的都沒資料，才用大頭貼保底
+          else {
             cgList = [
               CharacterPhoto(
                 imageUrl: character.avatarPath,
                 requiredAffection: 0,
-                description: l10n.first_encounter, // ✨ 完美換上翻譯
+                description: l10n.first_encounter,
               )
             ];
-          } else {
-            cgList = snapshot.data!.docs.map((doc) {
-              return CharacterPhoto.fromFirestore(doc);
-            }).toList();
           }
 
-          // ✨ 🌟 4. 重點：GridView 必須在 builder 的 return 裡面！
           return GridView.builder(
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -91,26 +140,32 @@ class BackgroundSettingsPage extends StatelessWidget {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      // --- 底層圖片 ---
+                      // --- 1. 底層圖片 (加入毛玻璃) ---
                       Container(
                         color: Colors.grey[300],
-                        child: cg.imageUrl.startsWith('http')
-                            ? Image.network(
-                          cg.imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.broken_image, color: Colors.grey, size: 50),
-                        )
-                            : Image.asset(
-                          cg.imageUrl,
-                          fit: BoxFit.cover,
-                        ),
+                        child: Builder(builder: (context) {
+                          Widget imageWidget = cg.imageUrl.startsWith('http')
+                              ? Image.network(
+                            cg.imageUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.broken_image, color: Colors.grey, size: 50),
+                          )
+                              : Image.asset(cg.imageUrl, fit: BoxFit.cover);
+
+                          return isUnlocked
+                              ? imageWidget
+                              : ImageFiltered(
+                            imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                            child: imageWidget,
+                          );
+                        }),
                       ),
 
-                      // --- 未解鎖遮罩 ---
+                      // --- 2. 未解鎖遮罩 (0.4 透明度) ---
                       if (!isUnlocked)
                         Container(
-                          color: Colors.black.withValues(alpha:0.6),
+                          color: Colors.black.withValues(alpha: 0.4),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -124,7 +179,7 @@ class BackgroundSettingsPage extends StatelessWidget {
                           ),
                         ),
 
-                      // --- 圖片標題 ---
+                      // --- 3. 圖片標題 (漸層) ---
                       Positioned(
                         bottom: 0, left: 0, right: 0,
                         child: Container(
@@ -133,7 +188,7 @@ class BackgroundSettingsPage extends StatelessWidget {
                             gradient: LinearGradient(
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
-                              colors: [Colors.black.withValues(alpha:0.8), Colors.transparent],
+                              colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
                             ),
                           ),
                           child: Text(
@@ -158,10 +213,14 @@ class BackgroundSettingsPage extends StatelessWidget {
   void _showConfirmDialog(BuildContext context, CharacterPhoto cg) {
     final l10n = AppLocalizations.of(context)!;
 
+    // 🚩 總裁攻略：先捕捉 Messenger，避免 pop 之後 context 找不到家
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.change_chat_bg),
+        // 這裡妳原本就寫對了，繼續延用
         content: Text(l10n.confirm_change_chat_bg(cg.description, character.name)),
         actions: [
           TextButton(
@@ -170,16 +229,20 @@ class BackgroundSettingsPage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
+              // 1. 執行背景更換邏輯
               Provider.of<ThemeNotifier>(context, listen: false)
                   .setCharacterBackground(character.name, cg.imageUrl);
 
+              // 2. 關閉對話框
               Navigator.pop(context);
+              // 3. 關閉相簿頁面 (回到聊天室)
               Navigator.pop(context);
 
-              ScaffoldMessenger.of(context).showSnackBar(
+              // 4. 顯示成功 SnackBar
+              // 🚩 這裡改用妳現有的 gallery_unlocked_msg，並把照片描述傳進去
+              scaffoldMessenger.showSnackBar(
                 SnackBar(
-                  // ✨ 修復了這裡的語法錯誤：使用字串拼貼
-                  content: Text('${l10n.bg_changed_to} ✨'),
+                  content: Text(l10n.gallery_unlocked_msg(cg.description)),
                   backgroundColor: Colors.purple,
                 ),
               );

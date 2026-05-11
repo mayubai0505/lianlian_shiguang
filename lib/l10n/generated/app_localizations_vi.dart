@@ -3511,4 +3511,61 @@ class AppLocalizationsVi extends AppLocalizations {
   String story_summary_empty_list(String name) {
     return 'Câu chuyện của hai bạn vẫn chưa bắt đầu...\nHãy trò chuyện nhiều hơn để $name \nviết nên những hồi ức đầu tiên nhé! ✨';
   }
+
+  @override
+  String get gallery_photo_edit_title => 'Chỉnh sửa cài đặt ảnh';
+
+  @override
+  String get gallery_photo_edit_desc => 'Tên ảnh/Mô tả';
+
+  @override
+  String get gallery_photo_edit_req =>
+      'Mở khóa mức độ hảo cảm (Đặt là 0 sẽ trở thành ảnh đại diện)';
+
+  @override
+  String get reset_to_default => 'Khôi phục mặc định';
+
+  @override
+  String get reset_bg_title => 'Khôi phục hình nền mặc định';
+
+  @override
+  String get reset_bg_content =>
+      'Bạn có chắc chắn muốn hủy ảnh độc quyền và quay lại hình nền chủ đề mặc định không?';
+
+  @override
+  String get reset_bg_success => 'Đã khôi phục về hình nền mặc định ✨';
+
+  @override
+  String get confirm_reset => 'Xác nhận khôi phục';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return 'Đã chọn $count mục';
+  }
+
+  @override
+  String get screenshotShare => 'Chia sẻ ảnh chụp màn hình';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return 'Khoảnh khắc độc quyền cùng $name';
+  }
+
+  @override
+  String get downloadToUnlock =>
+      'Tải 《Luyến Luyến Thập Quang》 để mở khóa lãng mạn độc quyền';
+
+  @override
+  String get exclusiveMomentsGenerated => 'Đã tạo khoảnh khắc độc quyền ✨';
+
+  @override
+  String get selectAgain => 'Chọn lại lần nữa';
+
+  @override
+  String get downloadAndShare => 'Tải về và chia sẻ';
+
+  @override
+  String inviteToMeet(String name) {
+    return 'Hãy đến 《Luyến Luyến Thập Quang》 gặp gỡ $name của bạn nhé!';
+  }
 }

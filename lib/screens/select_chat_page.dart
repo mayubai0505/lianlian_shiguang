@@ -151,7 +151,6 @@ class _SelectChatPageState extends State<SelectChatPage> {
       return [];
     }
   }
-  // ✨ 請把這個新函式加到 _SelectChatPageState 裡面
   Future<void> _addFriend(Character character) async {
     final l10n = AppLocalizations.of(context)!;
     // 防呆機制：確認使用者已登入
@@ -163,24 +162,62 @@ class _SelectChatPageState extends State<SelectChatPage> {
     }
 
     try {
-      // 步驟 1: 更新雲端資料庫 (Firestore)
-      print('正在將角色 ${character.name} (ID: ${character
-          .id}) 添加到好友列表...');
-      // ✨ 步驟 1 升級版：把對方的「門面」一起存進去
-      await _db
-          .collection('users')
-          .doc(_userId!)
-          .collection('friends')
-          .doc(character.id)
-          .set({
-        'characterId': character.id,
-        'name': character.name,           // 🌟 存入名字
-        'avatarPath': character.avatarPath, // 🌟 存入頭像
-        'addedAt': FieldValue.serverTimestamp(),
-      });
-      print('角色 ${character.name} 已成功寫入 Firestore！');
+      print('正在將角色 ${character.name} (ID: ${character.id}) 添加到好友列表...');
 
-      // 步驟 2: 即時更新本地 UI
+      final String charId = character.id;
+      final String userId = _userId!;
+
+      // 1. 📍 定義三個關鍵的路徑
+      final encounterRef = _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('public_characters')
+          .doc(charId)
+          .collection('unique_encounters') // 專門記名單的本子
+          .doc(userId); // 用玩家的 ID 當簽名檔
+
+      final charDocRef = _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('public_characters')
+          .doc(charId);
+
+      final myFriendRef = _db
+          .collection('users')
+          .doc(userId)
+          .collection('friends')
+          .doc(charId);
+
+      // 2. ⚡ 執行「事務交易」(Transaction)，保證資料絕對同步！
+      await _db.runTransaction((transaction) async {
+
+        // A. 先翻翻看名單，這個玩家以前有沒有加過？
+        final encounterDoc = await transaction.get(encounterRef);
+
+        // 如果沒加過，我們就幫角色的總邂逅次數 +1
+        if (!encounterDoc.exists) {
+          transaction.update(charDocRef, {
+            'playCount': FieldValue.increment(1),
+          });
+
+          // 在名單上簽名，代表「這玩家貢獻過次數了」，下次就算刪除再加，也不會重複算
+          transaction.set(encounterRef, {
+            'encounteredAt': FieldValue.serverTimestamp(),
+          });
+        }
+
+        // B. 將角色存入玩家個人的好友清單 (保留妳原本完美的「門面」資料！)
+        transaction.set(myFriendRef, {
+          'characterId': character.id,
+          'name': character.name,           // 🌟 存入名字
+          'avatarPath': character.avatarPath, // 🌟 存入頭像
+          'addedAt': FieldValue.serverTimestamp(),
+        });
+      });
+
+      print('✨ 角色 ${character.name} 已成功寫入 Firestore 且完成邂逅結算！');
+
+      // 步驟 3: 即時更新本地 UI
       if (mounted) {
         setState(() {
           _friendIds.add(character.id);
@@ -190,7 +227,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
         );
       }
     } catch (e) {
-      print('添加好友失敗: $e');
+      print('❌ 添加好友失敗: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('添加好友失敗，請稍後再試。')),

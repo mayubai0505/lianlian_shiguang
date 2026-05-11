@@ -3537,4 +3537,61 @@ class AppLocalizationsEs extends AppLocalizations {
   String story_summary_empty_list(String name) {
     return 'Vuestra historia aún no ha comenzado...\n¡Chatea más y deja que $name \nescriba vuestro primer recuerdo! ✨';
   }
+
+  @override
+  String get gallery_photo_edit_title => 'Editar ajustes de foto';
+
+  @override
+  String get gallery_photo_edit_desc => 'Nombre/Descripción de la foto';
+
+  @override
+  String get gallery_photo_edit_req =>
+      'Desbloquear nivel de afecto (Ajustar a 0 para convertir en avatar)';
+
+  @override
+  String get reset_to_default => 'Restablecer';
+
+  @override
+  String get reset_bg_title => 'Restaurar fondo predeterminado';
+
+  @override
+  String get reset_bg_content =>
+      '¿Estás segura de que quieres cancelar la foto exclusiva y volver al fondo de pantalla predeterminado?';
+
+  @override
+  String get reset_bg_success => 'Fondo predeterminado restaurado ✨';
+
+  @override
+  String get confirm_reset => 'Confirmar';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return 'Seleccionados: $count';
+  }
+
+  @override
+  String get screenshotShare => 'Compartir captura';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return 'Momentos exclusivos con $name';
+  }
+
+  @override
+  String get downloadToUnlock =>
+      'Descarga \'Lianlian ShiGuang\' para desbloquear el romance exclusivo';
+
+  @override
+  String get exclusiveMomentsGenerated => 'Momentos exclusivos generados ✨';
+
+  @override
+  String get selectAgain => 'Elegir de nuevo';
+
+  @override
+  String get downloadAndShare => 'Descargar y compartir';
+
+  @override
+  String inviteToMeet(String name) {
+    return '¡Ven a \'Lianlian ShiGuang\' y encuentra a tu $name!';
+  }
 }

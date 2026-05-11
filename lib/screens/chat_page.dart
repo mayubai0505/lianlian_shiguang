@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:convert'; // ✨✨✨ 加上這行！專門處理 JSON 和 utf8 的內建工具箱
-// ✨ 這樣寫只會拿我們要的「模糊效果」，不會跟別人吵架
 import 'dart:ui' show ImageFilter;
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +20,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'call_screen.dart';
 import 'user_profile_popup.dart';
-// 把 'your_project_name' 換成妳專案真正的名字
 import 'package:lianlian_shiguang/main.dart';
 import '../services/theme_notifier.dart';
 import 'package:audioplayers/audioplayers.dart'; // 🌟 讓這個頁面認識 UrlSource 和 AudioPlayer
@@ -37,9 +36,12 @@ import 'background_settings_page.dart';
 import '../widgets/dice_duel_overlay.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'character_profile_page.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive , gemini}
@@ -111,6 +113,11 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  // ✨ 截圖模式專用變數
+  bool _isScreenshotMode = false;      // 是否正在截圖模式中？
+  Set<String> _selectedMessageIds = {}; // 裝著被玩家「打勾勾」的對話 ID
+  final ScreenshotController _screenshotController = ScreenshotController();
+  bool _hasShownAffectionCard = false;
   bool _isInit = false;
   bool _hasTriggeredCheck = false;
   final FocusNode _focusNode = FocusNode(); // ✨ 控制鍵盤的遙控器
@@ -134,8 +141,6 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _chatScrollController = ScrollController();
   final ScrollController _menuScrollController = ScrollController();
-  // ✨ 宣告 Gemini 模型 (請確保您有 import firebase_vertex_ai 或 google_generative_ai)
-  // 確保名稱完全一致（大小寫要注意喔！）
   // 🚀 請確保您是這樣宣告的：
   ChatMode? _currentMode;
   int _currentFriendship = 0;
@@ -178,6 +183,13 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     _checkFirstTimeEntry();
     _currentCharacter = widget.character;
+    // 在頁面渲染後立刻去尋找這個角色的專屬照片
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<ThemeNotifier>(context, listen: false)
+            .loadCharacterBackground(_currentCharacter.name);
+      }
+    });
     // 1. 準備硬體設備 (維持原樣)
     _audioPlayer = AudioPlayer();
     _recorder = FlutterSoundRecorder();
@@ -363,7 +375,7 @@ class _ChatPageState extends State<ChatPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(milliseconds: 1500),
-          backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.9), // 跟隨主題色
+          backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha:0.9), // 跟隨主題色
           behavior: SnackBarBehavior.floating, // ✨ 漂浮在上面，更有質感
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           margin: EdgeInsets.only(
@@ -623,6 +635,7 @@ class _ChatPageState extends State<ChatPage> {
               builder: (context) => CharacterProfilePage(
                 character: characterData,
                 characterId: charId,
+                sessionId: _sessionId,
               ),
             ),
           );
@@ -1147,7 +1160,7 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.chat_call_btn_cancel, style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+              child: Text(l10n.chat_call_btn_cancel, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5))),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
@@ -1199,7 +1212,7 @@ class _ChatPageState extends State<ChatPage> {
         Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.05),
+            color: theme.colorScheme.primary.withValues(alpha:0.05),
             borderRadius: BorderRadius.circular(16),
           ),
           child: SwitchListTile(
@@ -1222,7 +1235,7 @@ class _ChatPageState extends State<ChatPage> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(l10n.cancelButton
-                  , style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.5))),
+                  , style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5))),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
@@ -1246,9 +1259,9 @@ class _ChatPageState extends State<ChatPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: theme.colorScheme.surfaceVariant.withValues(alpha:0.3),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+        border: Border.all(color: theme.colorScheme.primary.withValues(alpha:0.3)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -1273,7 +1286,7 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.85), height: 1.4),
+              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.85), height: 1.4),
             ),
           ),
         ],
@@ -1468,6 +1481,32 @@ class _ChatPageState extends State<ChatPage> {
           'path': storagePath ?? '',
           'timestamp': FieldValue.serverTimestamp(),
         });
+
+        final userCharRef = _db
+            .collection('users')
+            .doc(userId)
+            .collection('characters')
+            .doc(characterId);
+
+        // ⚡ 使用 Transaction 確保「只有變高才更新」
+        await _db.runTransaction((transaction) async {
+          final snapshot = await transaction.get(userCharRef);
+          int currentGlobalAffection = 0;
+
+          if (snapshot.exists) {
+            currentGlobalAffection = snapshot.data()?['affection'] ?? 0;
+          }
+
+          // 🏆 只有當前聊天室分數 > 總存摺分數時，才更新最高紀錄
+          if (_currentFriendship > currentGlobalAffection) {
+            transaction.set(userCharRef, {
+              'affection': _currentFriendship,
+              'characterName': _currentCharacter.name,
+              'lastUpdate': FieldValue.serverTimestamp(),
+            }, SetOptions(merge: true));
+            debugPrint("📈 全域最高好感度已同步更新：$_currentFriendship");
+          }
+        });
       } else {
         setState(() {
           _testMessages.insert(0, ChatMessage(
@@ -1658,9 +1697,25 @@ class _ChatPageState extends State<ChatPage> {
                 // 🌟 好感度邏輯
                 if (finalAffectionChange != 0) {
                   int oldScore = _currentFriendship;
-                  setState(() => _currentFriendship += finalAffectionChange);
+
+                  setState(() {
+                    _currentFriendship += finalAffectionChange;
+                  });
+
+                  // 升級檢查（這個可以每次都跑，因為升級比較稀有）
                   _checkForLevelUp(oldScore, _currentFriendship);
-                  if (finalAffectionChange.abs() >= 5) _showAffectionAnimation(finalAffectionChange);
+
+                  // 🚩 總裁護身符：限制卡片/動畫跳出的次數
+                  // 原本是每次 >= 5 就跳，現在加上了 !_hasShownAffectionCard 的判斷
+                  if (finalAffectionChange > 0 && !_hasShownAffectionCard) {
+                    // 只有好感度增加，且這場聊天「還沒跳過」時才執行
+                    _showAffectionAnimation(finalAffectionChange); // 這裡可能是妳跳出卡片的 function
+
+                    // 🔒 執行完立刻鎖起來，這場聊天就不會再跳了
+                    _hasShownAffectionCard = true;
+
+                    print("✅ 這場聊天的驚喜卡片已跳過，系統已自動進入沉浸鎖定模式。");
+                  }
                 }
 
                 // 🌟 寫入 AI 回覆
@@ -1676,6 +1731,34 @@ class _ChatPageState extends State<ChatPage> {
                     'lastMessage': finalDisplayText,
                     'lastActivity': FieldValue.serverTimestamp(),
                   });
+
+                  try {
+                    final userCharRef = FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(userId)
+                        .collection('characters')
+                        .doc(characterId);
+
+                    await FirebaseFirestore.instance.runTransaction((transaction) async {
+                      final snapshot = await transaction.get(userCharRef);
+                      int currentGlobalAffection = 0;
+                      if (snapshot.exists) {
+                        currentGlobalAffection = snapshot.data()?['affection'] ?? 0;
+                      }
+
+                      // 🏆 只有當前分數更猛時，才更新最高紀錄
+                      if (_currentFriendship > currentGlobalAffection) {
+                        transaction.set(userCharRef, {
+                          'affection': _currentFriendship,
+                          'characterName': _currentCharacter.name,
+                          'lastUpdate': FieldValue.serverTimestamp(),
+                        }, SetOptions(merge: true));
+                        print("📈 全域存摺已同步最高分：$_currentFriendship");
+                      }
+                    });
+                  } catch (e) {
+                    print("❌ 同步總存摺失敗: $e");
+                  }
 
                   if (!_currentCharacter.isPublic) {
                     try {
@@ -1878,7 +1961,7 @@ class _ChatPageState extends State<ChatPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: const Duration(milliseconds: 1500),
-        backgroundColor: Colors.white.withOpacity(0.95),
+        backgroundColor: Colors.white.withValues(alpha:0.95),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
@@ -2028,6 +2111,25 @@ class _ChatPageState extends State<ChatPage> {
       builder: (context) {
         return SafeArea(child: Wrap(
           children: <Widget>[
+            // 📸 🌟 總裁推薦：新增「截圖分享」選項
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined, color: Colors.purple),
+              title: const Text('截圖分享'), // 之後記得補進 l10n 喔！
+              onTap: () {
+                Navigator.pop(context); // 先關掉選單
+
+                // 🚩 啟動截圖模式魔法
+                setState(() {
+                  _isScreenshotMode = true;
+                  _selectedMessageIds.clear(); // 先清空舊的
+                  _selectedMessageIds.add(message.id); // 把目前長按的這句勾起來
+                });
+
+                HapticFeedback.mediumImpact(); // 給玩家一個俐落的震動回饋
+              },
+            ),
+
+            const Divider(), // 加條細線區隔功能區
             // 👇 1. 新增：複製內容按鈕 (放在最上面比較順手)
             ListTile(
               leading: const Icon(Icons.copy),
@@ -2093,40 +2195,41 @@ class _ChatPageState extends State<ChatPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:Text(l10n.chat_report_title),
+          title: Text(l10n.chat_report_title),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // 1. 語言問題
               ListTile(
-                leading: const Icon(Icons.language, color: Colors.grey),
-                title:Text(l10n.chat_report_lang),
+                title: Text(l10n.chat_report_lang),
                 onTap: () {
                   Navigator.pop(context);
-                  _submitReport(context,l10n.chat_report_lang, reportedMessage); // 🌟 一起帶走
+                  _submitReport(context, l10n.chat_report_lang, reportedMessage);
                 },
               ),
+              // 2. 內容不當
               ListTile(
-                leading: const Icon(Icons.warning_amber_rounded, color: Colors.grey),
-                title:Text(l10n.chat_report_inapp),
+                title: Text(l10n.chat_report_inapp),
                 onTap: () {
                   Navigator.pop(context);
-                  _submitReport(context,l10n.chat_report_inapp, reportedMessage);
+                  _submitReport(context, l10n.chat_report_inapp, reportedMessage);
                 },
               ),
+              // 3. 邏輯/內容錯誤
               ListTile(
-                leading: const Icon(Icons.broken_image_outlined, color: Colors.grey),
                 title: Text(l10n.chat_report_context),
                 onTap: () {
                   Navigator.pop(context);
-                  _submitReport(context,l10n.chat_report_context, reportedMessage);
+                  _submitReport(context, l10n.chat_report_context, reportedMessage);
                 },
               ),
+              // 4. 其他原因 - 🌟 保留圖示並換成更有質感的
               ListTile(
-                leading: const Icon(Icons.more_horiz, color: Colors.grey),
-                title:  Text(l10n.chat_report_other),
+                leading: const Icon(Icons.more_horiz, color: Colors.grey), // 推薦換成這個更像「填寫原因」的圖示
+                title: Text(l10n.chat_report_other),
                 onTap: () {
                   Navigator.pop(context);
-                  _showOtherReasonDialog(context, reportedMessage); // 🌟 交接給下一個視窗
+                  _showOtherReasonDialog(context, reportedMessage);
                 },
               ),
             ],
@@ -2821,7 +2924,7 @@ class _ChatPageState extends State<ChatPage> {
             child: Text(
              l10n.chat_typing_indicator,
               style: TextStyle(
-                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha:0.7),
                   fontStyle: FontStyle.italic
               ),
             ),
@@ -2897,7 +3000,7 @@ class _ChatPageState extends State<ChatPage> {
         return SimpleDialog(
           title: Text(l10n.chat_switch_mode_title, textAlign: TextAlign.center),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          backgroundColor: theme.cardColor.withOpacity(0.95),
+          backgroundColor: theme.cardColor.withValues(alpha:0.95),
           children:<Widget>[
           ...modeDetails.map((info) {
             final mode = info['mode'] as ChatMode;
@@ -2924,8 +3027,8 @@ class _ChatPageState extends State<ChatPage> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isSelected ? (info['color'] as Color).withOpacity(0.1) : Colors.transparent,
-                  border: isSelected ? Border.all(color: info['color'] as Color, width: 2) : Border.all(color: Colors.grey.withOpacity(0.3)),
+                  color: isSelected ? (info['color'] as Color).withValues(alpha:0.1) : Colors.transparent,
+                  border: isSelected ? Border.all(color: info['color'] as Color, width: 2) : Border.all(color: Colors.grey.withValues(alpha:0.3)),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -2959,7 +3062,7 @@ class _ChatPageState extends State<ChatPage> {
                           const SizedBox(height: 4),
                           Text(
                             info['desc'] as String,
-                            style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.6)),
+                            style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withValues(alpha:0.6)),
                           ),
                         ],
                       ),
@@ -2972,7 +3075,7 @@ class _ChatPageState extends State<ChatPage> {
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-            child: Divider(color: theme.dividerColor.withOpacity(0.5)),
+            child: Divider(color: theme.dividerColor.withValues(alpha:0.5)),
           ),
 
           // ☎️ 3. 專屬的「通話」按鈕登場！
@@ -3027,8 +3130,8 @@ class _ChatPageState extends State<ChatPage> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.05),
-                  border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3), width: 1),
+                  color: theme.colorScheme.primary.withValues(alpha:0.05),
+                  border: Border.all(color: theme.colorScheme.primary.withValues(alpha:0.3), width: 1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -3206,16 +3309,16 @@ class _ChatPageState extends State<ChatPage> {
             width: 320, // 靈魂伴侶視窗稍微寬一點，更有份量
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.95),
+              color: Colors.white.withValues(alpha:0.95),
               borderRadius: BorderRadius.circular(30),
               // ✨ 邊框發光特效
               border: isSoulmate
                   ? Border.all(color: Colors.amberAccent, width: 3) // 靈魂伴侶專屬金邊
-                  : Border.all(color: newScore.titleColor.withOpacity(0.3), width: 1),
+                  : Border.all(color: newScore.titleColor.withValues(alpha:0.3), width: 1),
               boxShadow: [
                 // 基礎陰影
                 BoxShadow(
-                    color: newScore.titleColor.withOpacity(0.3),
+                    color: newScore.titleColor.withValues(alpha:0.3),
                     blurRadius: 20,
                     spreadRadius: 2
                 ),
@@ -3250,8 +3353,8 @@ class _ChatPageState extends State<ChatPage> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isSoulmate
-                          ? [Colors.amber.withOpacity(0.4), Colors.orangeAccent.withOpacity(0.2)]
-                          : [newScore.titleColor.withOpacity(0.2), newScore.titleColor.withOpacity(0.05)],
+                          ? [Colors.amber.withValues(alpha:0.4), Colors.orangeAccent.withValues(alpha:0.2)]
+                          : [newScore.titleColor.withValues(alpha:0.2), newScore.titleColor.withValues(alpha:0.05)],
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -3394,7 +3497,7 @@ class _ChatPageState extends State<ChatPage> {
     await showDialog(
       context: context,
       barrierDismissible: false, // 必須等動畫完，不能點旁邊關閉
-      barrierColor: Colors.black.withOpacity(0.5), // ✨ 把名字換成 barrierColor！
+      barrierColor: Colors.black.withValues(alpha:0.5), // ✨ 把名字換成 barrierColor！
       builder: (context) {
         return DiceDuelOverlay(
           playerName: playerName,
@@ -3514,8 +3617,8 @@ class _ChatPageState extends State<ChatPage> {
                               style: const TextStyle(fontSize: 11),
                               overflow: TextOverflow.ellipsis,
                             ),
-                            backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.5),
-                            side: BorderSide(color: Colors.grey.withOpacity(0.1)),
+                            backgroundColor: theme.scaffoldBackgroundColor.withValues(alpha:0.5),
+                            side: BorderSide(color: Colors.grey.withValues(alpha:0.1)),
                             onPressed: () => _handleSendGift(gift),
                           );
                         },
@@ -3559,13 +3662,270 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  // ✨ 截圖專用的底部按鈕列
+  Widget _buildScreenshotBottomBar() {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        // ✅ 支援最新 Flutter 語法
+        color: theme.cardColor.withValues(alpha: 0.9),
+        boxShadow: const [BoxShadow(blurRadius: 4, offset: Offset(0, -1), color: Colors.black12)],
+      ),
+      child: SafeArea(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _isScreenshotMode = false;
+                  _selectedMessageIds.clear();
+                });
+              },
+              child: Text(l10n.cancel, style: TextStyle(color: Colors.grey, fontSize: 16)),
+            ),
+            Text(
+              l10n.selectedMessagesCount(_selectedMessageIds.length),
+              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.share, size: 18),
+              label: Text(l10n.screenshotShare),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _selectedMessageIds.isEmpty ? Colors.grey : Colors.purple,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              ),
+              onPressed: _selectedMessageIds.isEmpty ? null : _generateAndShareImage,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// 📸 2. 在幕後畫一張美美的長圖畫布 (防爆裝甲與括弧校正版)
+  Widget _buildScreenshotCanvas(List<ChatMessage> selectedMsgs) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    return MediaQuery(
+      data: const MediaQueryData(),
+      child: Directionality(
+        textDirection: ui.TextDirection.ltr,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: 400,
+            alignment: Alignment.topCenter,
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 12), // 🌟 底部 padding 縮小到 12，切得更緊！
+            decoration: BoxDecoration(
+              // 🌟 背景根據主題抓取：使用 primaryContainer 做漸層起始
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  theme.colorScheme.primaryContainer.withValues(alpha:0.3), // 抓主題淡紫色
+                  Colors.white, // 漸層到純白，看起來最乾淨
+                ],
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 🏆 頂部標題
+                Text(
+                  l10n.exclusiveMomentsWith(_currentCharacter.name),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+                ),
+                const SizedBox(height: 24),
+
+                // 💬 渲染對話
+                ...selectedMsgs.map((msg) {
+                  final isUser = msg.sender == 'user';
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Row(
+                      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!isUser) ...[
+                          CircleAvatar(
+                            backgroundImage: _getAvatarProvider(_currentCharacter.avatarPath),
+                            radius: 16,
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: isUser ? theme.colorScheme.primary : Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+                            ),
+                            child: Text(
+                              msg.text,
+                              style: TextStyle(color: isUser ? Colors.white : Colors.black87, fontSize: 15),
+                              softWrap: true,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+
+                const SizedBox(height: 16),
+                const Divider(color: Colors.black12, height: 1), // 極細分割線
+                const SizedBox(height: 12),
+
+                // 🦋 底部浮水印：總裁親筆蝴蝶 SVG (確保路徑正確)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/butterfly_icon.svg',
+                      height: 20,
+                      colorFilter: ColorFilter.mode(
+                        theme.colorScheme.primary.withValues(alpha: 0.8), // 跟隨主題色
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.downloadToUnlock,
+                      style: TextStyle(
+                        fontSize: 11,
+                        // 讓文字顏色也自動抓取主題色，看起來才是一套的
+                        color: theme.colorScheme.primary.withValues(alpha: 0.6),
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+// 📸 3. 喀嚓！正式拍照、預覽並分享
+  Future<void> _generateAndShareImage() async {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator())
+    );
+
+    try {
+      final msgsToExport = _localMessages
+          .where((m) => _selectedMessageIds.contains(m.id))
+          .toList()
+        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+      // 🚀專屬 Hack：字數與換行【極致緊緻版】演算法！
+      double canvasHeight = 150.0; // 基礎高度 (標題 + 頂部間距)
+      for (var msg in msgsToExport) {
+        canvasHeight += 45.0; // 每則訊息的頭像與氣泡基礎開銷
+        // 文字精算：寬度 400 的畫布，扣掉邊距後，一行約 18-20 個中文字
+        // 每行高度抓 28 像素 (含行距)
+        List<String> paragraphs = msg.text.split('\n');
+        for (var p in paragraphs) {
+          int lines = (p.length / 18).ceil();
+          if (lines == 0) lines = 1;
+          canvasHeight += (lines * 28.0);
+        }
+        canvasHeight += 12.0; // 訊息間的額外間距
+      }
+
+      canvasHeight += 80.0; // 底部浮水印與最後的緩衝空間
+
+      // 📸 拍照！關鍵在於：不要讓內容被螢幕高度限制住
+      final Uint8List imageBytes = await _screenshotController.captureFromWidget(
+        // 🌟 核心修正：加上 UnconstrainedBox，讓畫布可以無限向下延伸，徹底消滅黃黑線！
+        UnconstrainedBox(
+          clipBehavior: Clip.hardEdge,
+          child: _buildScreenshotCanvas(msgsToExport),
+        ),
+        delay: const Duration(milliseconds: 200),
+        targetSize: Size(400, canvasHeight),
+      );
+
+      if (mounted) Navigator.pop(context); // 關閉 Loading
+
+      // 🌟 預覽視窗
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title:  Text(l10n.exclusiveMomentsGenerated, style: TextStyle(fontWeight: FontWeight.bold)),
+              content: SizedBox(
+                width: 400,
+                child: SingleChildScrollView(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.memory(imageBytes),
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(l10n.selectAgain, style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.download, size: 18),
+                  label: Text(l10n.downloadAndShare),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(dialogContext);
+
+                    final xFile = XFile.fromData(
+                      imageBytes,
+                      mimeType: 'image/png',
+                      name: 'lianlian_screenshot.png',
+                    );
+
+                    await Share.shareXFiles(
+                        [xFile],
+                        text: l10n.inviteToMeet(_currentCharacter.name)
+                    );
+
+                    setState(() {
+                      _isScreenshotMode = false;
+                      _selectedMessageIds.clear();
+                    });
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      if (mounted) Navigator.pop(context);
+      print("❌ 截圖失敗: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // 🚨 只有極端情況（例如點擊推播進來，連角色資料都還沒抓到時），才給全螢幕載入
+    // 🚨 只有極端情況才給全螢幕載入
     if (widget.character.name == l10n.chat_loading_status) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final theme = Theme.of(context);
     final int nextStageThreshold = _getNextStageThreshold(_currentFriendship);
@@ -3574,148 +3934,147 @@ class _ChatPageState extends State<ChatPage> {
       onTap: () {
         FocusScope.of(context).unfocus(); // 👈 鍵盤消失術！
       },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(_currentCharacter.name),
-          backgroundColor: theme.appBarTheme.backgroundColor?.withOpacity(0.8),
-          elevation: 0,
-          foregroundColor: theme.colorScheme.onBackground,
-          // 👇 🌟 總裁，三條線選單就是要加在這裡！ 🌟 👇
-          actions: [
-            PopupMenuButton<String>(
-              icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.onSurface),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              offset: const Offset(0, 50),
-              color: theme.cardColor.withOpacity(0.95),
-
-              onSelected: (value) async {
-                switch (value) {
-                  case 'search':
-                    final String? selectedMessageId = await showSearch<String>(
-                      context: context,
-                      delegate: ChatHistorySearchDelegate(_localMessages),
-                    );
-                    if (selectedMessageId != null) {
-                      _jumpToMessage(selectedMessageId);
-                    }
-                    break;
-                  case 'gallery':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BackgroundSettingsPage(
-                          character: _currentCharacter,
-                          characterId: _currentCharacter.id,
-                          currentFriendship: _currentFriendship,
+      // 👇 🌟 總裁，魔法 Container 包在最外面 👇
+      child: Container(
+        decoration: themeNotifier.characterChatBackground, // 📸 這裡負責顯示專屬照片或預設漸層
+        child: Scaffold(
+          backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
+          appBar: AppBar(
+            title: Text(_currentCharacter.name),
+            backgroundColor: theme.appBarTheme.backgroundColor?.withValues(alpha:0.5), // 半透明 AppBar
+            elevation: 0,
+            foregroundColor: theme.colorScheme.onBackground,
+            actions: [
+              PopupMenuButton<String>(
+                icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.onSurface),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                offset: const Offset(0, 50),
+                color: theme.cardColor.withValues(alpha:0.95),
+                onSelected: (value) async {
+                  switch (value) {
+                    case 'search':
+                      final String? selectedMessageId = await showSearch<String>(
+                        context: context,
+                        delegate: ChatHistorySearchDelegate(_localMessages),
+                      );
+                      if (selectedMessageId != null) {
+                        _jumpToMessage(selectedMessageId);
+                      }
+                      break;
+                    case 'gallery':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BackgroundSettingsPage(
+                            character: _currentCharacter,
+                            characterId: _currentCharacter.id,
+                            currentFriendship: _currentFriendship,
+                          ),
                         ),
-                      ),
-                    );
-                    break;
-                  case 'about_me':
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => AboutMePage(character: _currentCharacter)));
-                    break;
-                  case 'memo':
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MemoPage(character: _currentCharacter)));
-                    break;
-                  case 'period':
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => PeriodTrackerPage(character: _currentCharacter)));
-                    break;
-                  case 'reset':
-                    _resetChat();
-                    break;
-                }
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                PopupMenuItem<String>(
-                  value: 'search',
-                  child: ListTile(
-                    leading: Icon(Icons.search),
-                    title: Text(l10n.chat_menu_search),
-                    contentPadding: EdgeInsets.zero,
+                      );
+                      break;
+                    case 'about_me':
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AboutMePage(character: _currentCharacter)));
+                      break;
+                    case 'memo':
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => MemoPage(character: _currentCharacter)));
+                      break;
+                    case 'period':
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => PeriodTrackerPage(character: _currentCharacter)));
+                      break;
+                    case 'reset':
+                      _resetChat();
+                      break;
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'search',
+                    child: ListTile(
+                      leading: const Icon(Icons.search),
+                      title: Text(l10n.chat_menu_search),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                ),
-                const PopupMenuDivider(),
-                 PopupMenuItem<String>(
-                  value: 'gallery',
-                  child: ListTile(
-                    leading: Icon(Icons.wallpaper, color: Colors.purple),
-                    title: Text(l10n.chat_menu_gallery),
-                    contentPadding: EdgeInsets.zero,
+                  const PopupMenuDivider(),
+                  PopupMenuItem<String>(
+                    value: 'gallery',
+                    child: ListTile(
+                      leading: const Icon(Icons.wallpaper, color: Colors.purple),
+                      title: Text(l10n.chat_menu_gallery),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                ),
-                const PopupMenuDivider(),
-                PopupMenuItem<String>(
-                  value: 'about_me',
-                  child: ListTile(
-                    leading: Icon(Icons.face_retouching_natural, color: Colors.pinkAccent),
-                    title: Text(l10n.chat_menu_aboutme),
-                    contentPadding: EdgeInsets.zero,
+                  const PopupMenuDivider(),
+                  PopupMenuItem<String>(
+                    value: 'about_me',
+                    child: ListTile(
+                      leading: const Icon(Icons.face_retouching_natural, color: Colors.pinkAccent),
+                      title: Text(l10n.chat_menu_aboutme),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'memo',
-                  child: ListTile(
-                    leading: Icon(Icons.note_alt_outlined, color: Colors.orange),
-                    title: Text(l10n.chat_menu_memo),
-                    contentPadding: EdgeInsets.zero,
+                  PopupMenuItem<String>(
+                    value: 'memo',
+                    child: ListTile(
+                      leading: const Icon(Icons.note_alt_outlined, color: Colors.orange),
+                      title: Text(l10n.chat_menu_memo),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'period',
-                  child: ListTile(
-                    leading: Icon(Icons.water_drop_outlined, color: Colors.redAccent),
-                    title: Text(l10n.chat_menu_period),
-                    contentPadding: EdgeInsets.zero,
+                  PopupMenuItem<String>(
+                    value: 'period',
+                    child: ListTile(
+                      leading: const Icon(Icons.water_drop_outlined, color: Colors.redAccent),
+                      title: Text(l10n.chat_menu_period),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                ),
-                const PopupMenuDivider(),
-                PopupMenuItem<String>(
-                  value: 'reset',
-                  child: ListTile(
-                    leading: Icon(Icons.restart_alt_rounded, color: Colors.red),
-                    title: Text(l10n.chat_menu_reset, style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-                    contentPadding: EdgeInsets.zero,
+                  const PopupMenuDivider(),
+                  PopupMenuItem<String>(
+                    value: 'reset',
+                    child: ListTile(
+                      leading: const Icon(Icons.restart_alt_rounded, color: Colors.red),
+                      title: Text(l10n.chat_menu_reset, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        body: Container(
-          decoration: themeNotifier.currentBackground,
-          child: Column(
+                ],
+              ),
+            ],
+          ),
+          // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
+          body: Column(
             children: [
               // ✨ 1. 頂部狀態欄 (好感度與模式)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 decoration: BoxDecoration(
-                  color: theme.cardColor.withOpacity(0.5),
+                  color: theme.cardColor.withValues(alpha:0.5),
                   border: Border(bottom: BorderSide(color: theme.dividerColor)),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween, // 左邊靠左，右邊靠右
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // 👈 【左半部：模式切換按鈕】 ✨ 加入了 _currentMode 為 null 的安全防護！
                     _currentMode == null
                         ? const SizedBox(
                       width: 24,
                       height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2), // 畫面剛開，還在讀取模式時轉小圈圈
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     )
                         : (_currentMode == ChatMode.gemini
                         ? Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surface.withOpacity(0.5),
+                        color: theme.colorScheme.surface.withValues(alpha:0.5),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                        border: Border.all(color: Colors.grey.withValues(alpha:0.3), width: 1),
                       ),
                       child: Text(
                         _getModeName(_currentMode!, l10n),
                         style: theme.textTheme.labelMedium?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            color: theme.colorScheme.onSurface.withValues(alpha:0.7),
                             fontWeight: FontWeight.bold),
                       ),
                     )
@@ -3725,9 +4084,9 @@ class _ChatPageState extends State<ChatPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withOpacity(0.5),
+                          color: theme.colorScheme.surface.withValues(alpha:0.5),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: theme.colorScheme.primary.withOpacity(0.5), width: 1),
+                          border: Border.all(color: theme.colorScheme.primary.withValues(alpha:0.5), width: 1),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -3744,8 +4103,6 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                       ),
                     )),
-
-                    // 👉 【右半部：好感度 ＋ 花花點數 並排】
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -3766,11 +4123,11 @@ class _ChatPageState extends State<ChatPage> {
                                 const SizedBox(width: 6),
                                 // 🌟 2. 文字顯示：這裡「不要鎖」，就是要讓玩家看到負數！
                                 Text(
-                                  "$_currentFriendship / $nextStageThreshold", // 👈 這裡會顯示 -10 / 100，超有感
+                                  "$_currentFriendship / $nextStageThreshold",
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: theme.colorScheme.onSurface.withOpacity(0.8),
+                                    color: theme.colorScheme.onSurface.withValues(alpha:0.8),
                                   ),
                                 ),
                               ],
@@ -3785,7 +4142,6 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                           ],
                         ),
-
                         const SizedBox(width: 16),
                         // 2. 🌹 花花點數
                         InkWell(
@@ -3819,21 +4175,16 @@ class _ChatPageState extends State<ChatPage> {
                   ],
                 ),
               ),
-
               // ✨ 2. 中間訊息列表
               Expanded(
                 child: _isLoading
                     ? const Center(child: CircularProgressIndicator())
-                // 👇 ✨ 雙重防護：不只檢查 _sessionId，也要確保 _messagesCollection 真的有裝東西！
                     : (_sessionId == null || _messagesCollection == null)
                     ? Center(child: Text(l10n.chat_loading_failed))
                     : widget.isTestMode
-                // 🧪 測試模式：不需要等雲端，直接畫出我們手寫的「_testMessages」紙條！
                     ? (_testMessages.isEmpty && !_isGenerating
                     ? Center(child: Text(l10n.chat_test_mode_msg))
                     : _buildMessageList(_testMessages))
-
-                // 🏠 正式模式：維持妳原本完美的 StreamBuilder 雲端監聽！
                     : StreamBuilder<QuerySnapshot>(
                   stream: _messagesCollection!.orderBy('timestamp', descending: true).snapshots(),
                   builder: (context, snapshot) {
@@ -3848,19 +4199,20 @@ class _ChatPageState extends State<ChatPage> {
                   },
                 ),
               ),
-
-              // ✨ 3. 底部()快捷鍵區 (✨ 加入了 _isLoading 防護)
+          if (_isScreenshotMode)
+        // 如果是截圖模式，就顯示專屬操作列
+        _buildScreenshotBottomBar()
+        else ...[
+              // ✨ 3. 底部()快捷鍵區
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                color: theme.cardColor.withOpacity(0.5),
+                color: theme.cardColor.withValues(alpha:0.5),
                 child: Row(
                   children: [
                     OutlinedButton(
-                      // 🌟 防呆機制保留
                       onPressed: (_isGenerating || _isLoading) ? null : () {
                         final text = _textController.text;
                         final selection = _textController.selection;
-                        // 抓出目前游標位置
                         int cursorPosition = selection.baseOffset;
                         if (cursorPosition == -1) {
                           cursorPosition = text.length;
@@ -3878,8 +4230,7 @@ class _ChatPageState extends State<ChatPage> {
                   ],
                 ),
               ),
-
-              // ✨ 4. 底部輸入框與發送區 (✨ 加入了 _isLoading 防護)
+              // ✨ 4. 底部輸入框與發送區
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 decoration: BoxDecoration(
@@ -3892,7 +4243,6 @@ class _ChatPageState extends State<ChatPage> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.cloud_outlined),
-                        // 🌟 還在載入時也不能開百寶箱
                         onPressed: (_isGenerating || _isLoading) ? null : _showToolbox,
                       ),
                       Expanded(
@@ -3917,20 +4267,17 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                             TextField(
                               controller: _textController,
-                              focusNode: _focusNode, // 🌟 升級 1：綁定不收鍵盤的遙控器！
+                              focusNode: _focusNode,
                               onChanged: (text) {
                                 _saveDraft(text);
                               },
-                              // 👇 這些總裁原本寫的完美設定，一字不漏全部保留！
                               readOnly: (_isGenerating || _isLoading),
                               minLines: 1,
                               maxLines: 4,
                               maxLength: 900,
                               keyboardType: TextInputType.multiline,
                               decoration: InputDecoration(
-                                // ✨ 升級 2：魔法括弧按鈕無縫安插在最前面！
-                                // 👇 下面也是總裁原本的完美 UI 設定！
-                                hintText: _isGenerating ? l10n.chat_ai_typing : (l10n?.chatInputHint ?? l10n.chat_input_hint_default),
+                                hintText: _isGenerating ? l10n.chat_ai_typing : l10n.chat_input_hint_default,
                                 border: InputBorder.none,
                                 counterText: "",
                                 contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
@@ -3951,6 +4298,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ),
             ],
+    ],
           ),
         ),
       ),
@@ -4000,13 +4348,14 @@ class _ChatPageState extends State<ChatPage> {
         final sender = message.sender;
         final type = message.type;
 
+        // 📸 🌟 截圖模式核心變數：判斷這句話有沒有被玩家打勾
+        final isSelected = _selectedMessageIds.contains(message.id);
+
         // ✨ 判斷要不要顯示「日期分界線」
         bool showDateHeader = false;
-        // 如果是最後一筆 (最舊的訊息)，一定要顯示日期
         if (messageIndex == messages.length - 1) {
           showDateHeader = true;
         } else {
-          // 如果這則訊息，跟比它「舊」的那則訊息 (在陣列裡的下一個) 不是同一天，就要顯示日期
           final olderMessage = messages[messageIndex + 1];
           if (!_isSameDay(message.timestamp, olderMessage.timestamp)) {
             showDateHeader = true;
@@ -4021,18 +4370,18 @@ class _ChatPageState extends State<ChatPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 48.0),
             decoration: BoxDecoration(
-              color: theme.cardColor.withOpacity(0.6),
+              color: theme.cardColor.withValues(alpha:0.6),
               borderRadius: BorderRadius.circular(12),
               border: _highlightedMessageId == message.id
                   ? Border.all(color: Colors.yellowAccent, width: 2.5) // 🌟 這裡加上邊框發光！
-                  : null, // 如果不是，就不會有邊框
+                  : null,
             ),
             child: Text(
               message.text,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontStyle: FontStyle.italic,
-                color: theme.colorScheme.onSurface.withOpacity(0.8),
+                color: theme.colorScheme.onSurface.withValues(alpha:0.8),
               ),
             ),
           );
@@ -4050,18 +4399,16 @@ class _ChatPageState extends State<ChatPage> {
           // 💬 根據型態畫出對話氣泡
           if (type == 'text') {
             final normalStyle = TextStyle(color: isUserMessage ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant);
-            final actionStyle = TextStyle(color: (isUserMessage ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant).withOpacity(0.7));
+            final actionStyle = TextStyle(color: (isUserMessage ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant).withValues(alpha:0.7));
             messageContent = Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isUserMessage ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant,
-                  borderRadius: BorderRadius.circular(16),
-
-                  // ✨ 🕵️‍♀️ 同樣的發光邊框：
-                  border: _highlightedMessageId == message.id
-                      ? Border.all(color: Colors.yellowAccent, width: 2.5) // 🌟 這裡也加上！
-                      : null,
-                ),
+              decoration: BoxDecoration(
+                color: isUserMessage ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant,
+                borderRadius: BorderRadius.circular(16),
+                border: _highlightedMessageId == message.id
+                    ? Border.all(color: Colors.yellowAccent, width: 2.5) // 🌟 這裡也加上發光！
+                    : null,
+              ),
               child: _buildRichTextMessage(message.text, normalStyle: normalStyle, actionStyle: actionStyle),
             );
           }
@@ -4070,7 +4417,6 @@ class _ChatPageState extends State<ChatPage> {
               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16.0),
-                // ✅ 神奇的跨平台寫法
                 child: kIsWeb
                     ? Image.network(message.path, fit: BoxFit.cover)
                     : Image.file(File(message.path), fit: BoxFit.cover),
@@ -4102,68 +4448,107 @@ class _ChatPageState extends State<ChatPage> {
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Text(
               _getTimeString(message.timestamp),
-              style: TextStyle(fontSize: 10, color: theme.colorScheme.onSurface.withOpacity(0.5)),
+              style: TextStyle(fontSize: 10, color: theme.colorScheme.onSurface.withValues(alpha:0.5)),
             ),
           );
 
           if (isUserMessage) {
-            finalMessageWidget = GestureDetector(
-              onLongPress: () => _showMessageOptions(message),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-                // 玩家：時間在左下，氣泡在右
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    timeWidget,
-                    Flexible(child: messageContent),
-                  ],
-                ),
+            // 🚩 這裡拿掉了原本的 GestureDetector，移到最外層統一管理
+            finalMessageWidget = Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  timeWidget,
+                  Flexible(child: messageContent),
+                ],
               ),
             );
           } else {
-            finalMessageWidget = GestureDetector(
-              onLongPress: () => _showMessageOptions(message),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
-                // AI：頭像在左上，氣泡在左，時間在右下
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ✨✨✨ 把原本孤單的 avatar 包裝起來，賦予點擊魔法！ ✨✨✨
-                    GestureDetector(
-                      onTap: () {
-                        // 💡 呼叫剛才寫好的跳轉函式
-                        // (請確認這裡的變數名稱，是否與妳聊天室上方宣告的變數名稱一致喔！)
-                        _navigateToProfileFromChat(
-                            widget.character.id,          // 👈 身分證字號
-                            widget.character.name,        // 👈 名字
-                            widget.character.avatarPath    // 👈 頭像路徑
-                        );
-                      },
-                      child: avatar,
+            // 🚩 這裡也拿掉了原本的 GestureDetector，移到最外層統一管理
+            finalMessageWidget = Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 頭像點擊功能保留
+                  GestureDetector(
+                    onTap: () {
+                      _navigateToProfileFromChat(
+                          widget.character.id,
+                          widget.character.name,
+                          widget.character.avatarPath
+                      );
+                    },
+                    child: avatar,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Flexible(child: messageContent),
+                        timeWidget,
+                      ],
                     ),
-                    // ✨✨✨ 包裝結束 ✨✨✨
-
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Flexible(child: messageContent),
-                          timeWidget,
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           }
         }
 
-        // ✨ 最終大組合：如果這則訊息是「新的一天」的第一句話，就在上面疊加灰色日期標籤！
+        // ✨✨✨ 終極包裝：截圖勾選外殼 ✨✨✨
+        final wrappedMessage = GestureDetector(
+          behavior: HitTestBehavior.translucent, // 確保點擊空白處也能感應到
+          onLongPress: () => _showMessageOptions(message), // 長按依然呼叫妳的底部選單
+          onTap: () {
+            // 🚩 短按：如果正在截圖模式，就執行勾選/取消
+            if (_isScreenshotMode) {
+              setState(() {
+                if (isSelected) {
+                  _selectedMessageIds.remove(message.id);
+                  // 如果全部取消了，就自動關閉截圖模式
+                  if (_selectedMessageIds.isEmpty) _isScreenshotMode = false;
+                } else {
+                  _selectedMessageIds.add(message.id);
+                }
+              });
+              HapticFeedback.lightImpact(); // 輕微震動回饋
+            }
+          },
+          child: Container(
+            // 勾選時的紫色背景遮罩
+            color: (_isScreenshotMode && isSelected)
+                ? theme.colorScheme.primary.withValues(alpha:0.15)
+                : Colors.transparent,
+            child: Row(
+              children: [
+                // 📸 截圖模式下的勾選按鈕
+                if (_isScreenshotMode)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12.0, right: 4.0),
+                    child: Icon(
+                      isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                      color: isSelected ? theme.colorScheme.primary : Colors.grey,
+                      size: 22,
+                    ),
+                  ),
+                // 右側放對話內容
+                Expanded(
+                  child: IgnorePointer(
+                    // 🚨 總裁防呆機制：在截圖模式下，暫停內部元件的點擊（如頭像或語音），專心選取對話
+                    ignoring: _isScreenshotMode,
+                    child: finalMessageWidget,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        // ✨ 最終大組合：把日期和對話組合起來
         if (showDateHeader) {
           return Column(
             children: [
@@ -4174,7 +4559,7 @@ class _ChatPageState extends State<ChatPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.2), // 半透明灰色
+                      color: Colors.black.withValues(alpha:0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -4184,14 +4569,13 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
-              // 下面接著畫原本的對話
-              finalMessageWidget,
+              // 下面接著畫剛才包裝好的對話
+              wrappedMessage,
             ],
           );
         }
 
-        // 如果不用顯示日期，就直接回傳對話
-        return finalMessageWidget;
+        return wrappedMessage;
       },
     );
   }

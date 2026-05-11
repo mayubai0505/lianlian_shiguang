@@ -1441,5 +1441,36 @@
                 "type": "String"
             }
         }
+    },
+    "gallery_photo_edit_title": "Editar ajustes de foto",
+    "gallery_photo_edit_desc": "Nombre/Descripción de la foto",
+    "gallery_photo_edit_req": "Desbloquear nivel de afecto (Ajustar a 0 para convertir en avatar)",
+    "reset_to_default": "Restablecer",
+    "reset_bg_title": "Restaurar fondo predeterminado",
+    "reset_bg_content": "¿Estás segura de que quieres cancelar la foto exclusiva y volver al fondo de pantalla predeterminado?",
+    "reset_bg_success": "Fondo predeterminado restaurado ✨",
+    "confirm_reset": "Confirmar",
+    "selectedMessagesCount": "Seleccionados: {count}",
+    "@selectedMessagesCount": {
+        "placeholders": {
+            "count": { "type": "int" }
+        }
+    },
+    "screenshotShare": "Compartir captura",
+    "exclusiveMomentsWith": "Momentos exclusivos con {name}",
+    "@exclusiveMomentsWith": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
+    },
+    "downloadToUnlock": "Descarga 'Lianlian ShiGuang' para desbloquear el romance exclusivo",
+    "exclusiveMomentsGenerated": "Momentos exclusivos generados ✨",
+    "selectAgain": "Elegir de nuevo",
+    "downloadAndShare": "Descargar y compartir",
+    "inviteToMeet": "¡Ven a 'Lianlian ShiGuang' y encuentra a tu {name}!",
+    "@inviteToMeet": {
+        "placeholders": {
+            "name": { "type": "String" }
+        }
     }
 }

@@ -3511,4 +3511,61 @@ class AppLocalizationsMs extends AppLocalizations {
   String story_summary_empty_list(String name) {
     return 'Kisah korang belum bermula lagi...\nBanyakkan bersembang dan biarkan $name \nmenulis memori pertama korang! ✨';
   }
+
+  @override
+  String get gallery_photo_edit_title => 'Edit Tetapan Foto';
+
+  @override
+  String get gallery_photo_edit_desc => 'Nama/Penerangan Foto';
+
+  @override
+  String get gallery_photo_edit_req =>
+      'Buka Tahap Kasih Sayang (Tetapkan ke 0 untuk menjadikannya foto profil)';
+
+  @override
+  String get reset_to_default => 'Tetapkan semula ke Lalai';
+
+  @override
+  String get reset_bg_title => 'Pulihkan Latar Belakang Lalai';
+
+  @override
+  String get reset_bg_content =>
+      'Adakah awak pasti mahu membatalkan foto eksklusif dan kembali ke latar belakang tema lalai?';
+
+  @override
+  String get reset_bg_success => 'Telah dipulihkan ke latar belakang lalai ✨';
+
+  @override
+  String get confirm_reset => 'Sahkan Pulihkan';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return '$count dipilih';
+  }
+
+  @override
+  String get screenshotShare => 'Kongsi tangkapan skrin';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return 'Momen eksklusif bersama $name';
+  }
+
+  @override
+  String get downloadToUnlock =>
+      'Muat turun \'Lianlian ShiGuang\' untuk membuka kunci romantik eksklusif';
+
+  @override
+  String get exclusiveMomentsGenerated => 'Momen eksklusif telah dijana ✨';
+
+  @override
+  String get selectAgain => 'Pilih lagi';
+
+  @override
+  String get downloadAndShare => 'Muat turun dan kongsi';
+
+  @override
+  String inviteToMeet(String name) {
+    return 'Jom temui $name anda di \'Lianlian ShiGuang\'!';
+  }
 }

@@ -20,9 +20,10 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 //角色卡片內容
 
 class CharacterProfilePage extends StatefulWidget {
+  final String? sessionId;
   final Character character;
   final String characterId;
-  const CharacterProfilePage({super.key, required this.character,required this.characterId,});
+  const CharacterProfilePage({super.key, required this.character,required this.characterId,this.sessionId,});
 
   @override
   State<CharacterProfilePage> createState() => _CharacterProfilePageState();
@@ -66,10 +67,20 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
   @override
   void initState() {
     super.initState();
-    _fetchCurrentPlayerName();
+
+    // 1. 同步的初始化（不牽涉 context 或 async 的）可以放外面
     _tabController = TabController(length: 3, vsync: this);
-    _autoRecordEncounter();
-    _checkIfLiked();
+
+    // 2. ✨ ✨ ✨ 魔法包裝：確保在第一幀畫面畫完後才執行
+    // 這能解決 dependOnInheritedWidget 的報錯（因為這時 context 已經準備好了）
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _fetchCurrentPlayerName();
+        _autoRecordEncounter();
+        _checkIfLiked();
+        _migrateLegacyAffection(); // 啟動搬家小精靈
+      }
+    });
   }
 
   @override
@@ -182,6 +193,57 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       }
     } catch (e) {
       print("檢查按讚狀態失敗: $e");
+    }
+  }
+
+  Future<void> _migrateLegacyAffection() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final String userId = user.uid;
+    final String charId = widget.character.id;
+
+    // 1. 先看總帳是不是已經有分數了
+    final globalRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('characters')
+        .doc(charId);
+
+    final globalDoc = await globalRef.get();
+    if (!mounted) return;
+    // 💡 如果已經有分數（大於 0），我們就不動它
+    if (globalDoc.exists && (globalDoc.data()?['affection'] ?? 0) > 0) return;
+
+    print("🕵️‍♀️ 正在為總裁掃描舊房間的高分紀錄...");
+
+    // 2. 去所有房間找這個角色的最高分
+    final sessionsSnapshot = await FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('chat_sessions')
+        .where('userId', isEqualTo: userId)
+        .where('characterId', isEqualTo: charId)
+        .get();
+    if (!mounted) return;
+    if (sessionsSnapshot.docs.isNotEmpty) {
+      // 找出所有房間裡最高的那個分數
+      int highest = 0;
+      for (var doc in sessionsSnapshot.docs) {
+        int score = doc.data()['friendshipScore'] ?? 0;
+        if (score > highest) highest = score;
+      }
+
+      if (highest > 0) {
+        // 3. 領出來，存進總帳！
+        await globalRef.set({
+          'affection': highest,
+          'characterName': widget.character.name,
+          'lastUpdate': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+
+        print("✅ 成功幫總裁追回舊好感度：$highest 分！");
+      }
     }
   }
 
@@ -1381,37 +1443,40 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
         // 背景故事 (✨ 換成使用 displayBg)
         Text(
-            displayBg.isEmpty ? '這個角色很神秘，還沒有背景故事...' : displayBg,
+            displayBg.isEmpty ? l10n.background_story_empty : displayBg,
             style: theme.textTheme.bodyMedium?.copyWith(height: 1.7)
         ),
         const SizedBox(height: 32), // 留一點呼吸空間
 
+        // 🌟 找到妳畫面上畫相簿/好感度的那個 StreamBuilder
         StreamBuilder<DocumentSnapshot>(
-          // 1. 牽起連向玩家保險箱的線路
-          stream: FirebaseAuth.instance.currentUser != null
+          // 1. ✨ 關鍵修正：路徑改指向這間聊天室 (sessionId)
+          stream: (FirebaseAuth.instance.currentUser != null && widget.sessionId != null)
               ? FirebaseFirestore.instance
-              .collection('users')
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .collection('characters')
-              .doc(widget.character.id)
+              .collection('artifacts')
+              .doc(AppConfig.appId)
+              .collection('chat_sessions') // 👈 改成去聊天室集合抓
+              .doc(widget.sessionId)        // 👈 用這間房的 ID，它才有最新的分數
               .snapshots()
-              : const Stream.empty(), // 萬一沒登入的安全防護
+              : const Stream.empty(),
+
           builder: (context, snapshot) {
-            // 2. 預設好感度為 0 (如果玩家是第一次遇到程安，保險箱還沒建資料時)
             int realAffection = 0;
 
-            // 3. 如果保險箱裡有資料，就把真實的好感度拿出來！
+            // 2. ✨ 如果聊天室資料存在，就把裡面的分數拿出來
             if (snapshot.hasData && snapshot.data!.exists) {
               final data = snapshot.data!.data() as Map<String, dynamic>?;
-              if (data != null && data.containsKey('affection')) {
-                realAffection = data['affection'] as int? ?? 0;
+              if (data != null) {
+                // 🌟 注意：在 chat_sessions 裡，妳存的名字叫 'friendshipScore'
+                realAffection = data['friendshipScore'] ?? 0;
               }
             }
-            // 4. 把真實的數字餵給相簿引擎！
+
+            // 3. 把真實的數字餵給相簿引擎
             return CharacterGalleryWidget(
               characterId: widget.characterId,
               character: widget.character,
-              currentAffection: realAffection,
+              currentAffection: realAffection, // ✅ 這下子數字就會跟著聊天跳動了！
             );
           },
         ),

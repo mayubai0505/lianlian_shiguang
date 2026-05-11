@@ -251,7 +251,7 @@ class _AnimatedDanmuState extends State<AnimatedDanmu> with SingleTickerProvider
   late AnimationController _controller;
   late Animation<double> _opacity;
   late Animation<Offset> _position;
-
+  bool _isInit = false; // ✨ 專屬防護旗標
   List<String> _echoMessages = []; // ✨ 這裡存放從 Firestore 抓到的留言
   int _currentIndex = 0;
   final Random _random = Random();
@@ -275,8 +275,6 @@ class _AnimatedDanmuState extends State<AnimatedDanmu> with SingleTickerProvider
       TweenSequenceItem(tween: ConstantTween(Offset.zero), weight: 80),
     ]).animate(_controller);
 
-    // 2. ✨ 開始監聽 Firestore 的「時空迴音」
-    _listenToEchoes();
   }
 
   void _listenToEchoes() {
@@ -329,6 +327,19 @@ class _AnimatedDanmuState extends State<AnimatedDanmu> with SingleTickerProvider
         Future.delayed(Duration(seconds: _random.nextInt(2) + 1), _startDanmuLoop);
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // 🛡️ 啟動防護罩：確保只在剛進頁面時執行一次
+    if (!_isInit) {
+      // ✅ 搬到這裡！這時候 context 已經完全準備好，拿翻譯絕對不會崩潰
+      _listenToEchoes();
+
+      _isInit = true; // 做完就把門鎖上
+    }
   }
 
   @override

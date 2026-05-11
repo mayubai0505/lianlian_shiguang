@@ -3514,4 +3514,61 @@ class AppLocalizationsHi extends AppLocalizations {
   String story_summary_empty_list(String name) {
     return 'आपकी कहानी अभी शुरू नहीं हुई है...\nअधिक बात करें और $name को \nअपनी पहली याद लिखने दें! ✨';
   }
+
+  @override
+  String get gallery_photo_edit_title => 'फोटो सेटिंग्स संपादित करें';
+
+  @override
+  String get gallery_photo_edit_desc => 'फोटो का नाम/विवरण';
+
+  @override
+  String get gallery_photo_edit_req =>
+      'स्नेह स्तर अनलॉक करें (अवतार बनाने के लिए 0 पर सेट करें)';
+
+  @override
+  String get reset_to_default => 'डिफ़ॉल्ट पर सेट करें';
+
+  @override
+  String get reset_bg_title => 'डिफ़ॉल्ट बैकग्राउंड बहाल करें';
+
+  @override
+  String get reset_bg_content =>
+      'क्या आप वाकई विशेष फोटो को हटाकर डिफ़ॉल्ट थीम बैकग्राउंड पर वापस जाना चाहती हैं?';
+
+  @override
+  String get reset_bg_success => 'डिफ़ॉल्ट बैकग्राउंड बहाल कर दिया गया है ✨';
+
+  @override
+  String get confirm_reset => 'पुष्टि करें';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return '$count चयनित';
+  }
+
+  @override
+  String get screenshotShare => 'स्क्रीनशॉट साझा करें';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return '$name के साथ विशेष क्षण';
+  }
+
+  @override
+  String get downloadToUnlock =>
+      'विशेष रोमांस अनलॉक करने के लिए \'Lianlian ShiGuang\' डाउनलोड करें';
+
+  @override
+  String get exclusiveMomentsGenerated => 'विशेष क्षण उत्पन्न हुए ✨';
+
+  @override
+  String get selectAgain => 'फिर से चुनें';
+
+  @override
+  String get downloadAndShare => 'डाउनलोड करें और साझा करें';
+
+  @override
+  String inviteToMeet(String name) {
+    return '\'Lianlian ShiGuang\' पर आएं और अपने $name से मिलें!';
+  }
 }

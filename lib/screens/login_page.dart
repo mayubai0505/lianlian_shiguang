@@ -98,17 +98,24 @@ class _LoginPageState extends State<LoginPage> {
       await Future.delayed(const Duration(milliseconds: 300));
 
       // ✨ 關鍵防護：在做任何跳轉或判斷前，先把蝴蝶視窗關掉！
-      if (_dialogContext != null && mounted) {
-        Navigator.pop(_dialogContext!);
-        _dialogContext = null; // 用完清空，保持乾淨
+      if (_dialogContext != null) {
+        // 建議用 _dialogContext 本身來 pop，最安全！
+        Navigator.of(_dialogContext!).pop();
+        _dialogContext = null;
       }
 
       // 3. 判斷跳轉
       if (result != null && mounted) {
         print("✅ [3. 成功] 拿到資料了，準備穿越時光隧道 (跳轉中)！");
         _handleLoginSuccess(result);
+
+      } else if (result != null && !mounted) {
+        // 🌟 總裁，這就是真相！
+        print("🚀 [超車提示] 登入其實成功了！資料也拿到了！");
+        print("只不過 Firebase 狀態監聽器動作太快，已經自動把畫面切換走了，所以 LoginPage 提早下班啦！");
+
       } else {
-        // 這裡通常是玩家點擊了「取消」
+        // 真正失敗或取消才會走到這
         print("🟡 [提示] 登入被取消或回傳為空值。");
       }
 
@@ -116,8 +123,8 @@ class _LoginPageState extends State<LoginPage> {
       print("🔴 [錯誤] 登入過程發生崩潰: $e");
 
       // ✨ 關鍵防護：如果發生錯誤掉進來，也一定要把蝴蝶關掉！
-      if (_dialogContext != null && mounted) {
-        Navigator.pop(_dialogContext!);
+      if (_dialogContext != null) {
+        Navigator.of(_dialogContext!).pop();
         _dialogContext = null;
       }
 

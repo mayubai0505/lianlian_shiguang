@@ -1453,5 +1453,36 @@
         "type": "String"
       }
     }
+  },
+  "gallery_photo_edit_title": "编辑照片设定",
+  "gallery_photo_edit_desc": "照片名称/描述",
+  "gallery_photo_edit_req": "解锁好感度 (设为 0 会变成头像)",
+  "reset_to_default": "恢复默认",
+  "reset_bg_title": "恢复默认背景",
+  "reset_bg_content": "确定要取消专属照片，恢复成默认的主题背景吗？",
+  "reset_bg_success": "已恢复为默认背景 ✨",
+  "confirm_reset": "确定恢复",
+  "selectedMessagesCount": "已选择 {count} 则",
+  "@selectedMessagesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "screenshotShare": "截屏分享",
+  "exclusiveMomentsWith": "与 {name} 的专属拾光",
+  "@exclusiveMomentsWith": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "downloadToUnlock": "下载《恋恋拾光》，解锁专属浪漫",
+  "exclusiveMomentsGenerated": "专属拾光已生成 ✨",
+  "selectAgain": "再选一次",
+  "downloadAndShare": "下载并分享",
+  "inviteToMeet": "快来《恋恋拾光》遇见妳的 {name}！",
+  "@inviteToMeet": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
   }
 }

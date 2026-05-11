@@ -1440,5 +1440,36 @@
         "type": "String"
       }
     }
+  },
+  "gallery_photo_edit_title": "사진 설정 편집",
+  "gallery_photo_edit_desc": "사진 이름/설명",
+  "gallery_photo_edit_req": "해제 호감도 (0으로 설정 시 프로필 사진으로 변경)",
+  "reset_to_default": "기본값으로 복구",
+  "reset_bg_title": "기본 배경으로 복구",
+  "reset_bg_content": "전용 사진을 취소하고 기본 테마 배경으로 복구하시겠습니까?",
+  "reset_bg_success": "기본 배경으로 복구되었습니다 ✨",
+  "confirm_reset": "복구 확인",
+  "selectedMessagesCount": "{count}개 선택됨",
+  "@selectedMessagesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "screenshotShare": "스크린샷 공유",
+  "exclusiveMomentsWith": "{name}님과의 전용 모먼트",
+  "@exclusiveMomentsWith": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "downloadToUnlock": "《Lianlian ShiGuang》을 다운로드하고 전용 로맨스를 확인하세요",
+  "exclusiveMomentsGenerated": "전용 모먼트가 생성되었습니다 ✨",
+  "selectAgain": "다시 선택하기",
+  "downloadAndShare": "다운로드 및 공유",
+  "inviteToMeet": "《Lianlian ShiGuang》에서 당신의 {name}님을 만나보세요!",
+  "@inviteToMeet": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
   }
 }

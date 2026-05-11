@@ -3352,4 +3352,58 @@ class AppLocalizationsKo extends AppLocalizations {
   String story_summary_empty_list(String name) {
     return '여러분의 이야기가 아직 시작되지 않았어요...\n더 많이 대화해서 $name님이 \n첫 번째 추억을 기록하게 해주세요! ✨';
   }
+
+  @override
+  String get gallery_photo_edit_title => '사진 설정 편집';
+
+  @override
+  String get gallery_photo_edit_desc => '사진 이름/설명';
+
+  @override
+  String get gallery_photo_edit_req => '해제 호감도 (0으로 설정 시 프로필 사진으로 변경)';
+
+  @override
+  String get reset_to_default => '기본값으로 복구';
+
+  @override
+  String get reset_bg_title => '기본 배경으로 복구';
+
+  @override
+  String get reset_bg_content => '전용 사진을 취소하고 기본 테마 배경으로 복구하시겠습니까?';
+
+  @override
+  String get reset_bg_success => '기본 배경으로 복구되었습니다 ✨';
+
+  @override
+  String get confirm_reset => '복구 확인';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return '$count개 선택됨';
+  }
+
+  @override
+  String get screenshotShare => '스크린샷 공유';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return '$name님과의 전용 모먼트';
+  }
+
+  @override
+  String get downloadToUnlock => '《Lianlian ShiGuang》을 다운로드하고 전용 로맨스를 확인하세요';
+
+  @override
+  String get exclusiveMomentsGenerated => '전용 모먼트가 생성되었습니다 ✨';
+
+  @override
+  String get selectAgain => '다시 선택하기';
+
+  @override
+  String get downloadAndShare => '다운로드 및 공유';
+
+  @override
+  String inviteToMeet(String name) {
+    return '《Lianlian ShiGuang》에서 당신의 $name님을 만나보세요!';
+  }
 }

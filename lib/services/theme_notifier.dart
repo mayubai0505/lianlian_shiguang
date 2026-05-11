@@ -182,6 +182,7 @@ class ThemeNotifier extends ChangeNotifier {
   AppTheme get currentThemeEnum => _currentThemeEnum;
   Color get customColor => _customColor;
   String? get backgroundImagePath => _backgroundImagePath;
+  String? get activeCharacterBackground => _activeCharacterBackground;
 
   // ✨ 動態生成自定義 ThemeData (按鈕、AppBar 的顏色)
   ThemeData _buildCustomTheme(Color color) {
@@ -251,7 +252,54 @@ class ThemeNotifier extends ChangeNotifier {
     }
   }
 
-  // --- 動作方法 ---
+  Future<void> setCharacterBackground(String characterName, String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    // 儲存到本地，鑰匙用角色名字
+    await prefs.setString('bg_$characterName', path);
+
+    // 🔥 重要：立刻更新當前變數並通知畫面刷新
+    _activeCharacterBackground = path;
+    notifyListeners();
+  }
+
+  // ✨ 2. 【新增】恢復預設背景功能
+  Future<void> resetCharacterBackground(String characterName) async {
+    final prefs = await SharedPreferences.getInstance();
+    // 移除該角色的背景紀錄
+    await prefs.remove('bg_$characterName');
+
+    // 🔥 重要：清空當前變數並通知畫面
+    _activeCharacterBackground = null;
+    notifyListeners();
+  }
+
+  // ✨ 3. 載入特定角色的背景 (進入聊天室時呼叫)
+  Future<void> loadCharacterBackground(String characterName) async {
+    final prefs = await SharedPreferences.getInstance();
+    _activeCharacterBackground = prefs.getString('bg_$characterName');
+    notifyListeners();
+  }
+
+  // ✨ 4. 智慧背景產生器 (修正顯示邏輯)
+  BoxDecoration get characterChatBackground {
+    if (_activeCharacterBackground != null) {
+      return BoxDecoration(
+        image: DecorationImage(
+          image: _activeCharacterBackground!.startsWith('http')
+              ? NetworkImage(_activeCharacterBackground!) as ImageProvider
+              : AssetImage(_activeCharacterBackground!),
+          fit: BoxFit.cover,
+          // 加上淡淡的暗色過濾，讓白色的字更好看
+          colorFilter: ColorFilter.mode(
+            Colors.black.withValues(alpha: 0.1),
+            BlendMode.darken,
+          ),
+        ),
+      );
+    }
+    // 沒專屬背景就用全域預設
+    return currentBackground;
+  }
 
   // 📸 設定背景圖
   Future<void> setBackgroundImage(String path) async {
@@ -263,41 +311,10 @@ class ThemeNotifier extends ChangeNotifier {
     await prefs.setString('app_theme', AppTheme.custom.name);
   }
 
-  // ✨ 3. 升級設定背景的功能 (換完背景立刻更新畫面)
-  Future<void> setCharacterBackground(String characterName, String path) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('bg_$characterName', path);
-    _activeCharacterBackground = path; // 立刻換上新的！
-    notifyListeners();
-  }
-
   // 🔍 【新增】讀取特定角色的專屬聊天背景
   Future<String?> getCharacterBackground(String characterId) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('bg_$characterId'); // 拿他專屬的鑰匙去開置物櫃
-  }
-
-  Future<void> loadCharacterBackground(String characterName) async {
-    final prefs = await SharedPreferences.getInstance();
-    _activeCharacterBackground = prefs.getString('bg_$characterName');
-    notifyListeners(); // 通知畫面更新
-  }
-  // ✨ 4. 給聊天室用的「超智慧背景產生器」
-  BoxDecoration get characterChatBackground {
-    // 如果這個角色有專屬背景，就顯示專屬的！
-    if (_activeCharacterBackground != null) {
-      return BoxDecoration(
-        image: DecorationImage(
-          // 智慧判斷：是網路圖片還是內建圖片
-          image: _activeCharacterBackground!.startsWith('http')
-              ? NetworkImage(_activeCharacterBackground!) as ImageProvider
-              : AssetImage(_activeCharacterBackground!),
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-    // 如果他沒有專屬背景，就退回顯示「全域預設背景」
-    return currentBackground;
   }
 
   // 🌈 設定自定義顏色

@@ -3306,6 +3306,60 @@ class AppLocalizationsZh extends AppLocalizations {
   String story_summary_empty_list(String name) {
     return '你們的故事還沒有開始...\n多聊聊天，讓 $name \n為你們寫下第一篇回憶吧！';
   }
+
+  @override
+  String get gallery_photo_edit_title => '編輯照片設定';
+
+  @override
+  String get gallery_photo_edit_desc => '照片名稱/描述';
+
+  @override
+  String get gallery_photo_edit_req => '解鎖好感度 (設為 0 會變成大頭貼)';
+
+  @override
+  String get reset_to_default => '恢復預設';
+
+  @override
+  String get reset_bg_title => '恢復預設背景';
+
+  @override
+  String get reset_bg_content => '確定要取消專屬照片，恢復成預設的主題背景嗎？';
+
+  @override
+  String get reset_bg_success => '已恢復為預設背景 ✨';
+
+  @override
+  String get confirm_reset => '確定恢復';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return '已選擇 $count 則';
+  }
+
+  @override
+  String get screenshotShare => '截圖分享';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return '與 $name 的專屬拾光';
+  }
+
+  @override
+  String get downloadToUnlock => '下載《戀戀拾光》，解鎖專屬浪漫';
+
+  @override
+  String get exclusiveMomentsGenerated => '專屬拾光已生成 ✨';
+
+  @override
+  String get selectAgain => '再選一次';
+
+  @override
+  String get downloadAndShare => '下載並分享';
+
+  @override
+  String inviteToMeet(String name) {
+    return '快來《戀戀拾光》遇見妳的 $name！';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6610,6 +6664,60 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String story_summary_empty_list(String name) {
     return '你们的故事还没有开始...\n多聊聊天，让 $name \n为你们写下第一篇回忆吧！ ✨';
   }
+
+  @override
+  String get gallery_photo_edit_title => '编辑照片设定';
+
+  @override
+  String get gallery_photo_edit_desc => '照片名称/描述';
+
+  @override
+  String get gallery_photo_edit_req => '解锁好感度 (设为 0 会变成头像)';
+
+  @override
+  String get reset_to_default => '恢复默认';
+
+  @override
+  String get reset_bg_title => '恢复默认背景';
+
+  @override
+  String get reset_bg_content => '确定要取消专属照片，恢复成默认的主题背景吗？';
+
+  @override
+  String get reset_bg_success => '已恢复为默认背景 ✨';
+
+  @override
+  String get confirm_reset => '确定恢复';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return '已选择 $count 则';
+  }
+
+  @override
+  String get screenshotShare => '截屏分享';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return '与 $name 的专属拾光';
+  }
+
+  @override
+  String get downloadToUnlock => '下载《恋恋拾光》，解锁专属浪漫';
+
+  @override
+  String get exclusiveMomentsGenerated => '专属拾光已生成 ✨';
+
+  @override
+  String get selectAgain => '再选一次';
+
+  @override
+  String get downloadAndShare => '下载并分享';
+
+  @override
+  String inviteToMeet(String name) {
+    return '快来《恋恋拾光》遇见妳的 $name！';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -9913,5 +10021,59 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String story_summary_empty_list(String name) {
     return '你們的故事還沒有開始...\n多聊聊天，讓 $name \n為你們寫下第一篇回憶吧！';
+  }
+
+  @override
+  String get gallery_photo_edit_title => '編輯照片設定';
+
+  @override
+  String get gallery_photo_edit_desc => '照片名稱/描述';
+
+  @override
+  String get gallery_photo_edit_req => '解鎖好感度 (設為 0 會變成大頭貼)';
+
+  @override
+  String get reset_to_default => '恢復預設';
+
+  @override
+  String get reset_bg_title => '恢復預設背景';
+
+  @override
+  String get reset_bg_content => '確定要取消專屬照片，恢復成預設的主題背景嗎？';
+
+  @override
+  String get reset_bg_success => '已恢復為預設背景 ✨';
+
+  @override
+  String get confirm_reset => '確定恢復';
+
+  @override
+  String selectedMessagesCount(int count) {
+    return '已選擇 $count 則';
+  }
+
+  @override
+  String get screenshotShare => '截圖分享';
+
+  @override
+  String exclusiveMomentsWith(String name) {
+    return '與 $name 的專屬拾光';
+  }
+
+  @override
+  String get downloadToUnlock => '下載《戀戀拾光》，解鎖專屬浪漫';
+
+  @override
+  String get exclusiveMomentsGenerated => '專屬拾光已生成 ✨';
+
+  @override
+  String get selectAgain => '再選一次';
+
+  @override
+  String get downloadAndShare => '下載並分享';
+
+  @override
+  String inviteToMeet(String name) {
+    return '快來《戀戀拾光》遇見妳的 $name！';
   }
 }

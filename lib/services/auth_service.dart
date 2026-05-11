@@ -230,9 +230,6 @@ Future<String?> deleteAccount() async {
   }
 }
 
-// ==========================================
-// --- 輔助功能 ---
-// ==========================================
 
 // 📡 監聽登入狀態變化 (讓 App 知道現在是誰在線)
 Stream<User?> get authStateChanges => _auth.authStateChanges();

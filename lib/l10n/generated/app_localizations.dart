@@ -6171,6 +6171,102 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'你們的故事還沒有開始...\n多聊聊天，讓 {name} \n為你們寫下第一篇回憶吧！'**
   String story_summary_empty_list(String name);
+
+  /// No description provided for @gallery_photo_edit_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯照片設定'**
+  String get gallery_photo_edit_title;
+
+  /// No description provided for @gallery_photo_edit_desc.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'照片名稱/描述'**
+  String get gallery_photo_edit_desc;
+
+  /// No description provided for @gallery_photo_edit_req.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解鎖好感度 (設為 0 會變成大頭貼)'**
+  String get gallery_photo_edit_req;
+
+  /// No description provided for @reset_to_default.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'恢復預設'**
+  String get reset_to_default;
+
+  /// No description provided for @reset_bg_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'恢復預設背景'**
+  String get reset_bg_title;
+
+  /// No description provided for @reset_bg_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要取消專屬照片，恢復成預設的主題背景嗎？'**
+  String get reset_bg_content;
+
+  /// No description provided for @reset_bg_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已恢復為預設背景 ✨'**
+  String get reset_bg_success;
+
+  /// No description provided for @confirm_reset.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定恢復'**
+  String get confirm_reset;
+
+  /// No description provided for @selectedMessagesCount.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已選擇 {count} 則'**
+  String selectedMessagesCount(int count);
+
+  /// No description provided for @screenshotShare.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'截圖分享'**
+  String get screenshotShare;
+
+  /// No description provided for @exclusiveMomentsWith.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與 {name} 的專屬拾光'**
+  String exclusiveMomentsWith(String name);
+
+  /// No description provided for @downloadToUnlock.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'下載《戀戀拾光》，解鎖專屬浪漫'**
+  String get downloadToUnlock;
+
+  /// No description provided for @exclusiveMomentsGenerated.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬拾光已生成 ✨'**
+  String get exclusiveMomentsGenerated;
+
+  /// No description provided for @selectAgain.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'再選一次'**
+  String get selectAgain;
+
+  /// No description provided for @downloadAndShare.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'下載並分享'**
+  String get downloadAndShare;
+
+  /// No description provided for @inviteToMeet.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'快來《戀戀拾光》遇見妳的 {name}！'**
+  String inviteToMeet(String name);
 }
 
 class _AppLocalizationsDelegate

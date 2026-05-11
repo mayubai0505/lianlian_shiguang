@@ -1441,5 +1441,36 @@
         "type": "String"
       }
     }
+  },
+  "gallery_photo_edit_title": "写真設定の編集",
+  "gallery_photo_edit_desc": "写真の名前/説明",
+  "gallery_photo_edit_req": "解放する好感度 (0に設定するとプロフィール写真になります)",
+  "reset_to_default": "デフォルトに戻す",
+  "reset_bg_title": "背景をデフォルトに戻す",
+  "reset_bg_content": "専用写真を解除して、デフォルトのテーマ背景に戻してもよろしいですか？",
+  "reset_bg_success": "デフォルトの背景に戻しました ✨",
+  "confirm_reset": "元に戻す",
+  "selectedMessagesCount": "{count}件選択済み",
+  "@selectedMessagesCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "screenshotShare": "スクリーンショット共有",
+  "exclusiveMomentsWith": "{name}との専屬拾光",
+  "@exclusiveMomentsWith": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "downloadToUnlock": "『恋恋拾光』をダウンロードして、専屬のロマンスを解禁",
+  "exclusiveMomentsGenerated": "専屬拾光が生成されました ✨",
+  "selectAgain": "もう一度選ぶ",
+  "downloadAndShare": "保存して共有",
+  "inviteToMeet": "『恋恋拾光』であなたの {name} に会いましょう！",
+  "@inviteToMeet": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
   }
 }
