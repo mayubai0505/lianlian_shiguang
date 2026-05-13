@@ -6267,6 +6267,60 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'快來《戀戀拾光》遇見妳的 {name}！'**
   String inviteToMeet(String name);
+
+  /// No description provided for @shop_log_monthly_card.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'啟動：星光契約 (月卡立即贈點) 🌙'**
+  String get shop_log_monthly_card;
+
+  /// No description provided for @shop_log_top_up_double.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲值：{points} 點 (含首購雙倍 🎁)'**
+  String shop_log_top_up_double(int points);
+
+  /// No description provided for @shop_log_top_up_normal.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲值：{points} 點'**
+  String shop_log_top_up_normal(int points);
+
+  /// No description provided for @shop_purchase_success_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'購買成功！'**
+  String get shop_purchase_success_title;
+
+  /// No description provided for @shop_purchase_success_body.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已為您加上 {points} 點花花。'**
+  String shop_purchase_success_body(int points);
+
+  /// No description provided for @shop_purchase_success_double_bonus.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 恭喜觸發首購雙倍獎勵！'**
+  String get shop_purchase_success_double_bonus;
+
+  /// No description provided for @shop_purchase_awesome.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'太棒了'**
+  String get shop_purchase_awesome;
+
+  /// No description provided for @shop_purchase_failed_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'購買取消或失敗'**
+  String get shop_purchase_failed_title;
+
+  /// No description provided for @shop_purchase_failed_body.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未扣款。\n\n(錯誤碼: {errorCode})'**
+  String shop_purchase_failed_body(String errorCode);
 }
 
 class _AppLocalizationsDelegate

@@ -1600,5 +1600,42 @@
     "placeholders": {
       "name": { "type": "String" }
     }
+  },
+  "shop_log_monthly_card": "啟動：星光契約 (月卡立即贈點) 🌙",
+  "shop_log_top_up_double": "儲值：{points} 點 (含首購雙倍 🎁)",
+  "@shop_log_top_up_double": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_log_top_up_normal": "儲值：{points} 點",
+  "@shop_log_top_up_normal": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_title": "購買成功！",
+  "shop_purchase_success_body": "已為您加上 {points} 點花花。",
+  "@shop_purchase_success_body": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_double_bonus": "✨ 恭喜觸發首購雙倍獎勵！",
+  "shop_purchase_awesome": "太棒了",
+  "shop_purchase_failed_title": "購買取消或失敗",
+  "shop_purchase_failed_body": "尚未扣款。\n\n(錯誤碼: {errorCode})",
+  "@shop_purchase_failed_body": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
   }
 }

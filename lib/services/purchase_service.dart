@@ -4,7 +4,6 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main.dart'; // 確保 navigatorKey 在這裡
-import '../data/store_data.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class ProductDetailsWrapper {
@@ -50,26 +49,38 @@ class PurchaseService extends ChangeNotifier {
   }
 
   Future<void> _loadProducts() async {
+    // ✨ 修改 1：換上總裁在 Google 後台設定的「真實暗號」
     const Set<String> productIds = {
-      'points_package_30', 'points_package_70', 'points_package_120',
-      'points_package_190', 'points_package_250', 'points_package_330',
-      'points_package_450', 'points_package_520', 'points_package_690',
-      'points_package_720', 'points_package_750', 'points_package_830',
-      'points_package_990', 'points_package_1050', 'points_package_1290',
-      'points_package_1314', 'points_package_1930', 'points_package_2990',
-      'monthly_subscription_star_contract',
+      'com_lianlian_monthly_card', // 星光契約月卡
+      'com.lianlian.points_90',    // 初見禮包
+      'com.lianlian.points_215',   // 曖昧禮包
+      'com.lianlian.points_370',   // 心動禮包
+      'com.lianlian.points_590',   // 熱戀禮包
+      'com.lianlian.points_780',   // 知己禮包
+      'com.lianlian.points_1030',  // 守候禮包
+      'com.lianlian.points_1420',  // 信賴禮包
+      'com.lianlian.points_1650',  // 我愛你禮包
+      'com.lianlian.points_2200',  // 蜜月禮包
+      'com.lianlian.points_2300',  // 承諾禮包
+      'com.lianlian.points_2400',  // 相伴禮包
+      'com.lianlian.points_2680',  // 深愛禮包
+      'com.lianlian.points_3200',  // 長久禮包
+      'com.lianlian.points_3400',  // 唯一禮包
+      'com.lianlian.points_4200',  // 摯愛禮包
+      'com.lianlian.points_4300',  // 一生一世包
+      'com.lianlian.points_6400',  // 誓約禮包
+      'com.lianlian.points_10000', // 永恆戀人包
     };
-
-    //如果你的禮包 ID 後面的數字，不等於實際要給的花花數量（例如：買 package_30 其實是給 100 點），記得要把那段改成用 switch (productId) 來一個一個設定喔
 
     final ProductDetailsResponse response = await _inAppPurchase.queryProductDetails(productIds);
 
     if (response.notFoundIDs.isNotEmpty) {
-      print("找不到以下商品ID: ${response.notFoundIDs}");
+      print("⚠️ 找不到以下商品ID (請檢查 Google Play 後台是否已啟用): ${response.notFoundIDs}");
     }
 
     products = response.productDetails.map((pd) => ProductDetailsWrapper(productDetails: pd)).toList();
 
+    // 依據價格由低到高排序
     products.sort((a, b) => a.productDetails.rawPrice.compareTo(b.productDetails.rawPrice));
 
     isLoading = false;
@@ -83,19 +94,16 @@ class PurchaseService extends ChangeNotifier {
 
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
 
-    // ✨ 修改 1：區分月卡(非消耗品)與花花(消耗品) ✨
-    if (productDetails.id == 'monthly_subscription_star_contract') {
+    // ✨ 修改 2：更新月卡的 ID 判斷
+    if (productDetails.id == 'com_lianlian_monthly_card') {
       _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
     } else {
       _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
     }
   }
 
-  // ✨ 修改 2：完整的購買狀態處理 ✨
   Future<void> _handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) async {
     for (var purchaseDetails in purchaseDetailsList) {
-
-      // 找到對應的商品，解除 Pending 狀態
       try {
         final wrapper = products.firstWhere((p) => p.productDetails.id == purchaseDetails.productID);
         if (purchaseDetails.status != PurchaseStatus.pending) {
@@ -105,19 +113,16 @@ class PurchaseService extends ChangeNotifier {
         print('找不到對應的 ProductDetailsWrapper');
       }
 
-      // 判斷交易狀態
       if (purchaseDetails.status == PurchaseStatus.pending) {
-        // 正在處理中，UI 已經有轉圈圈了，這裡不用特別做事
+        // 處理中...
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
           _handleError(purchaseDetails.error!);
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
-          // 購買成功或恢復購買！進行發貨
           await _deliverPurchase(purchaseDetails);
         }
 
-        // ✨ 極度重要：通知 Google Play 交易已完成 ✨
         if (purchaseDetails.pendingCompletePurchase) {
           await _inAppPurchase.completePurchase(purchaseDetails);
         }
@@ -126,7 +131,7 @@ class PurchaseService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ✨ 修改 3：真實寫入 Firebase Firestore (升級首購雙倍版) ✨
+  // ✨ 修改 3：完美對接新 ID 的首購雙倍發貨系統
   Future<void> _deliverPurchase(PurchaseDetails purchaseDetails) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -138,57 +143,49 @@ class PurchaseService extends ChangeNotifier {
     final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
     try {
-      // 1. 先從 Firebase 讀取玩家目前的資料 (翻開帳本)
       final docSnapshot = await docRef.get();
-      final data = docSnapshot.data() as Map<String, dynamic>? ?? {};
+      final data = docSnapshot.data() ?? {};
 
-      // 取得玩家的購買紀錄，如果沒有這個欄位，就當作空陣列 []
       List<dynamic> purchaseHistory = data['purchaseHistory'] ?? [];
-
-      // 2. 判斷是不是首購：如果帳本裡「沒有」這個商品 ID，就是首購！
       bool isFirstTime = !purchaseHistory.contains(productId);
 
       int pointsToAdd = 0;
-      Map<String, dynamic> updateData = {}; // 準備要寫入 Firebase 的資料包
+      Map<String, dynamic> updateData = {};
 
-      // 3. 判斷發放多少點數
-      if (productId == 'monthly_subscription_star_contract') {
-        pointsToAdd = 250; // 月卡首登送 250
+      if (productId == 'com_lianlian_monthly_card') {
+        pointsToAdd = 250;
         updateData['isMonthlySubscribed'] = true;
         updateData['monthlySubEndDate'] = DateTime.now().add(const Duration(days: 30)).toIso8601String();
-      } else if (productId.startsWith('points_package_')) {
-
-        int basePoints = storeProducts[productId]?.points ?? 0;
-
-        // ✨ 雙倍核心邏輯 ✨
+      } else if (productId.startsWith('com.lianlian.points_')) {
+        int basePoints = int.tryParse(productId.split('_').last) ?? 0;
         if (isFirstTime) {
           pointsToAdd = basePoints * 2;
-          print("觸發首購雙倍！原本 $basePoints 點，加倍為 $pointsToAdd 點");
         } else {
           pointsToAdd = basePoints;
-          print("非首購，正常發放 $basePoints 點");
         }
       }
 
-      // 4. 增加花花餘額並更新帳本
       if (pointsToAdd > 0) {
         updateData['flowerPoints'] = FieldValue.increment(pointsToAdd);
 
-        // 如果是首購，就把這個商品 ID 登記到帳本裡 (arrayUnion 會自動避免重複)
         if (isFirstTime) {
           updateData['purchaseHistory'] = FieldValue.arrayUnion([productId]);
         }
 
-        // 一次性把資料寫入 Firebase (發放花花)
         await docRef.set(updateData, SetOptions(merge: true));
 
-        // ✨✨✨ 總裁請在這裡補上：金流成功後的自動記帳系統 ✨✨✨
+        // 🌟 獲取全域 Context 與多國語系 (加上防呆機制)
+        final context = navigatorKey.currentContext;
+        final l10n = context != null ? AppLocalizations.of(context) : null;
+
         String logTitle = '';
-        if (productId == 'monthly_subscription_star_contract') {
-          logTitle = '啟動：星光契約 (月卡立即贈點) 🌙';
+        if (productId == 'com_lianlian_monthly_card') {
+          // 如果抓不到翻譯，就給預設中文
+          logTitle = l10n?.shop_log_monthly_card ?? '啟動：星光契約 (月卡立即贈點) 🌙';
         } else {
-          // 這裡的 pointsToAdd 已經算好首購雙倍的數字了，超級方便！
-          logTitle = isFirstTime ? '儲值：$pointsToAdd 點 (含首購雙倍 🎁)' : '儲值：$pointsToAdd 點';
+          logTitle = isFirstTime
+              ? (l10n?.shop_log_top_up_double(pointsToAdd) ?? '儲值：$pointsToAdd 點 (含首購雙倍 🎁)')
+              : (l10n?.shop_log_top_up_normal(pointsToAdd) ?? '儲值：$pointsToAdd 點');
         }
 
         await docRef.collection('flower_logs').add({
@@ -196,10 +193,9 @@ class PurchaseService extends ChangeNotifier {
           'amount': pointsToAdd,
           'createdAt': FieldValue.serverTimestamp(),
         });
-        // ✨✨✨ 記帳結束 ✨✨✨
 
         print("成功發放！商品ID: $productId，獲得 $pointsToAdd 點，並已寫入明細！");
-        _showSuccessDialog(pointsToAdd, isFirstTime); // 顯示成功提示
+        _showSuccessDialog(pointsToAdd, isFirstTime);
       }
 
     } catch (e) {
@@ -207,77 +203,70 @@ class PurchaseService extends ChangeNotifier {
     }
   }
 
-  // --- UI 提示輔助方法 (升級版) ---
+  // 🌟 彈出成功視窗 (多國語系版)
   void _showSuccessDialog(int points, bool isFirstTime) {
     final context = navigatorKey.currentContext;
     if (context == null) return;
+
+    // 取得語系包
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            const Text('購買成功！ '),
-            if (isFirstTime) const Text('🎉', style: TextStyle(fontSize: 24)),
+            Text(l10n.shop_purchase_success_title),
+            if (isFirstTime) const Text(' 🎉', style: TextStyle(fontSize: 24)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('已為您加上 $points 點花花。'),
+            Text(l10n.shop_purchase_success_body(points)),
             if (isFirstTime)
-              const Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: Text('✨ 恭喜觸發首購雙倍獎勵！', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                    l10n.shop_purchase_success_double_bonus,
+                    style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)
+                ),
               ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('太棒了'),
+            child: Text(l10n.shop_purchase_awesome),
           ),
         ],
       ),
     );
   }
 
+  // 🌟 彈出失敗視窗 (多國語系版)
   void _handleError(IAPError error) {
     final context = navigatorKey.currentContext;
     if (context == null) return;
+
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('購買取消或失敗'),
-        content: Text('尚未扣款。\n\n(錯誤碼: ${error.code})'),
+        title: Text(l10n.shop_purchase_failed_title),
+        content: Text(l10n.shop_purchase_failed_body(error.code)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('好的'),
+            child: const Text('OK'),
           ),
         ],
       ),
     );
   }
 
-  // ✨ 作弊專用方法：模擬購買成功 (測試完記得註解掉) ✨
-  Future<void> testFakePurchase(String testProductId) async {
-    final fakePurchase = PurchaseDetails(
-      productID: testProductId,
-      purchaseID: 'fake_test_${DateTime.now().millisecondsSinceEpoch}',
-      status: PurchaseStatus.purchased,
-      transactionDate: DateTime.now().millisecondsSinceEpoch.toString(),
-      verificationData: PurchaseVerificationData(
-          localVerificationData: 'fake_local_data',
-          serverVerificationData: 'fake_server_data',
-          source: 'google_play'
-      ),
-    );
-
-    // 直接呼叫發貨邏輯
-    await _deliverPurchase(fakePurchase);
-  }
 
   @override
   void dispose() {

@@ -3518,4 +3518,41 @@ class AppLocalizationsAr extends AppLocalizations {
   String inviteToMeet(String name) {
     return 'تعالي إلى \'Lianlian ShiGuang\' لمقابلة $name الخاص بكِ!';
   }
+
+  @override
+  String get shop_log_monthly_card =>
+      'تفعيل: عقد النجوم (نقاط فورية من البطاقة الشهرية) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return 'شحن: $points نقطة (تشمل مضاعفة الشراء الأول 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return 'شحن: $points نقطة';
+  }
+
+  @override
+  String get shop_purchase_success_title => 'تمت عملية الشراء بنجاح!';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return 'تم إضافة $points زهرة إلى حسابكِ.';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ تهانينا! تم تفعيل مكافأة مضاعفة الشراء الأول!';
+
+  @override
+  String get shop_purchase_awesome => 'رائع';
+
+  @override
+  String get shop_purchase_failed_title => 'فشلت عملية الشراء أو تم إلغاؤها';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return 'لم يتم خصم أي مبلغ.\n\n(رمز الخطأ: $errorCode)';
+  }
 }

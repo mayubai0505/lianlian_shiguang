@@ -3360,6 +3360,41 @@ class AppLocalizationsZh extends AppLocalizations {
   String inviteToMeet(String name) {
     return '快來《戀戀拾光》遇見妳的 $name！';
   }
+
+  @override
+  String get shop_log_monthly_card => '啟動：星光契約 (月卡立即贈點) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return '儲值：$points 點 (含首購雙倍 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return '儲值：$points 點';
+  }
+
+  @override
+  String get shop_purchase_success_title => '購買成功！';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '已為您加上 $points 點花花。';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus => '✨ 恭喜觸發首購雙倍獎勵！';
+
+  @override
+  String get shop_purchase_awesome => '太棒了';
+
+  @override
+  String get shop_purchase_failed_title => '購買取消或失敗';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return '尚未扣款。\n\n(錯誤碼: $errorCode)';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6718,6 +6753,41 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String inviteToMeet(String name) {
     return '快来《恋恋拾光》遇见妳的 $name！';
   }
+
+  @override
+  String get shop_log_monthly_card => '启动：星光契约 (月卡立即赠点) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return '充值：$points 点 (含首购双倍 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return '充值：$points 点';
+  }
+
+  @override
+  String get shop_purchase_success_title => '购买成功！';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '已为您加上 $points 点花花。';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus => '✨ 恭喜触发首购双倍奖励！';
+
+  @override
+  String get shop_purchase_awesome => '太棒了';
+
+  @override
+  String get shop_purchase_failed_title => '购买取消或失败';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return '尚未扣款。\n\n(错误码: $errorCode)';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10075,5 +10145,40 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String inviteToMeet(String name) {
     return '快來《戀戀拾光》遇見妳的 $name！';
+  }
+
+  @override
+  String get shop_log_monthly_card => '啟動：星光契約 (月卡立即贈點) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return '儲值：$points 點 (含首購雙倍 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return '儲值：$points 點';
+  }
+
+  @override
+  String get shop_purchase_success_title => '購買成功！';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '已為您加上 $points 點花花。';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus => '✨ 恭喜觸發首購雙倍獎勵！';
+
+  @override
+  String get shop_purchase_awesome => '太棒了';
+
+  @override
+  String get shop_purchase_failed_title => '購買取消或失敗';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return '尚未扣款。\n\n(錯誤碼: $errorCode)';
   }
 }

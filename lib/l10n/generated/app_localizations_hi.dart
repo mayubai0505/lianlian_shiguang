@@ -3571,4 +3571,41 @@ class AppLocalizationsHi extends AppLocalizations {
   String inviteToMeet(String name) {
     return '\'Lianlian ShiGuang\' पर आएं और अपने $name से मिलें!';
   }
+
+  @override
+  String get shop_log_monthly_card =>
+      'सक्रिय: स्टारलाईट कॉन्ट्रैक्ट (मासिक कार्ड इंस्टेंट पॉइंट्स) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return 'टॉप-अप: $points पॉइंट्स (पहली खरीदारी पर दोगुना शामिल है 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return 'टॉप-अप: $points पॉइंट्स';
+  }
+
+  @override
+  String get shop_purchase_success_title => 'खरीदारी सफल!';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '$points फ्लावर पॉइंट्स आपके खाते में जोड़ दिए गए हैं।';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ बधाई हो! पहली खरीदारी पर दोगुना बोनस मिला!';
+
+  @override
+  String get shop_purchase_awesome => 'बहुत बढ़िया';
+
+  @override
+  String get shop_purchase_failed_title => 'खरीदारी रद्द या विफल';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return 'कोई शुल्क नहीं लिया गया है।\n\n(त्रुटि कोड: $errorCode)';
+  }
 }

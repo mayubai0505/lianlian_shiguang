@@ -1472,5 +1472,42 @@
     "placeholders": {
       "name": { "type": "String" }
     }
+  },
+  "shop_log_monthly_card": "起動：星光の契約（月間カード即時贈呈ポイント） 🌙",
+  "shop_log_top_up_double": "チャージ：{points} ポイント（初回購入2倍特典含む 🎁）",
+  "@shop_log_top_up_double": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_log_top_up_normal": "チャージ：{points} ポイント",
+  "@shop_log_top_up_normal": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_title": "購入成功！",
+  "shop_purchase_success_body": "{points} ポイントのお花を追加しました。",
+  "@shop_purchase_success_body": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_double_bonus": "✨ おめでとうございます！初回購入2倍特典が適用されました！",
+  "shop_purchase_awesome": "最高！",
+  "shop_purchase_failed_title": "購入キャンセルまたは失敗",
+  "shop_purchase_failed_body": "支払いは発生していません。\n\n(エラーコード: {errorCode})",
+  "@shop_purchase_failed_body": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
   }
 }

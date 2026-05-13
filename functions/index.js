@@ -1,16 +1,15 @@
+const {setGlobalOptions} = require("firebase-functions");
 const logger = require("firebase-functions/logger");
 const { defineSecret } = require('firebase-functions/params');
 const cors = require('cors')({ origin: true });
 const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const OpenCC = require('opencc-js');
-const converter = OpenCC.Converter({ from: 'cn', to: 'tw' });
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const functions = require("firebase-functions");
-const { TranslationServiceClient } = require('@google-cloud/translate');
-const translateClient = new TranslationServiceClient();
 const axios = require('axios');
 const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { TranslationServiceClient } = require('@google-cloud/translate');
 
 if (admin.apps.length === 0) {
     admin.initializeApp();
@@ -21,6 +20,9 @@ if (admin.apps.length === 0) {
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const ELEVENLABS_API_KEY = "sk_ac547721d8ff700babefd42c96ae76e4eb685ce2d313f87f";
 const APP_ID = "lianlianshiguang";
+
+let converter = null;
+let translateClient = null;
 
 // --- 輔助函式：時間顯示格式化 ---
 const formatTimeDisplay = (date) => {
@@ -35,16 +37,22 @@ const formatTimeDisplay = (date) => {
 };
 
 exports.generateVoice = onRequest({
-    region: "asia-east1", // 🌟 統一搬到亞洲區，電話接通速度翻倍！
+    region: "asia-east1",
     memory: "512MiB",
-}, async (req, res, async) => {
-    // CORS 設定保持原樣，確保 Flutter 能順利連線
+    secrets: [openRouterApiKey], // 如果有用到 secret 要加上這行
+}, async (req, res) => { // 修正：把最後一個多餘的 async 參數刪掉
+    // 這裡處理 CORS
     res.set('Access-Control-Allow-Origin', '*');
     if (req.method === 'OPTIONS') {
         res.set('Access-Control-Allow-Methods', 'POST');
         res.set('Access-Control-Allow-Headers', 'Content-Type');
         return res.status(204).send('');
     }
+
+    // 當真的需要用到翻譯或轉換時，才在這裡初始化：
+    // if (!converter) converter = OpenCC.Converter({ from: 'cn', to: 'tw' });
+
+    res.status(200).send("Service is running!");
 });
 
 exports.getAiResponse = onRequest({
@@ -1087,5 +1095,71 @@ let relationContext = "";
                               } catch (error) {
                                   console.error("發放花花失敗:", error);
                                   throw new HttpsError("internal", "伺服器忙碌中，發放失敗");
+                              }
+                          });
+
+                          // ==========================================
+                          // 💌 男主傳訊自動推播接線生 (總裁客製版)
+                          // ==========================================
+                          exports.notifyPlayerNewMessage = onDocumentCreated({
+                              region: "asia-east1",
+                              document: "users/{userId}/chatMessages/{messageId}", // ⚠️ 確認：這是妳前端 _messagesCollection 的真實路徑嗎？
+                              timeoutSeconds: 60,
+                              memory: "256MiB"
+                          }, async (event) => {
+                              const snap = event.data;
+                              if (!snap) return;
+
+                              const messageData = snap.data();
+                              const userId = event.params.userId;
+
+                              // 🌟 1. 修正：對齊 Flutter 端的寫法，判斷 sender 是不是 ai
+                              if (messageData.sender !== "ai") {
+                                  return null; // 默默退下
+                              }
+
+                              try {
+                                  // 🌟 2. 去 users 資料表抓這個玩家的手機憑證 (Token)
+                                  const userDoc = await admin.firestore().collection("users").doc(userId).get();
+                                  if (!userDoc.exists) return null;
+
+                                  const fcmToken = userDoc.data().fcmToken;
+
+                                  if (!fcmToken) {
+                                      console.log(`玩家 ${userId} 沒有 Token，無法發送推播。`);
+                                      return null;
+                                  }
+
+                                  // 🌟 3. 修正：對齊 Flutter 端的寫法，讀取 text 欄位
+                                  let previewText = messageData.text || "妳收到了一則新訊息 ✨";
+                                  if (previewText.length > 40) {
+                                      previewText = previewText.substring(0, 40) + "...";
+                                  }
+
+                                  // 🌟 獲取角色 ID (跳轉必備！)
+                                  // 假設妳在 Flutter 存訊息時有順便存入 characterId，就從 messageData 拿。
+                                  // 如果沒有存，妳必須確保這裡能抓到對應的 charId！
+                                  const charId = messageData.characterId || "unknown_character";
+
+                                  // 🌟 4. 升級為 Firebase 最新推薦的發送格式
+                                  const payload = {
+                                      token: fcmToken,
+                                      notification: {
+                                          title: "戀戀拾光 💌", // 如果妳有把角色名字存進 messageData，這裡也可以寫 messageData.characterName
+                                          body: previewText,
+                                      },
+                                      data: {
+                                          type: 'chat',
+                                          characterId: String(charId), // 🔑 補上這把跳轉的鑰匙！
+                                          click_action: 'FLUTTER_NOTIFICATION_CLICK',
+                                      }
+                                  };
+
+                                  // 🌟 5. 發射！
+                                  console.log(`叮咚！準備發送推播給用戶: ${userId}`);
+                                  return await admin.messaging().send(payload);
+
+                              } catch (error) {
+                                  console.error("推播接線生發生錯誤:", error);
                               }
                           });

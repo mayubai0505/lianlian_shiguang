@@ -3612,4 +3612,41 @@ class AppLocalizationsFr extends AppLocalizations {
   String inviteToMeet(String name) {
     return 'Venez sur \'Lianlian ShiGuang\' pour rencontrer votre $name !';
   }
+
+  @override
+  String get shop_log_monthly_card =>
+      'Activé : Contrat Stellaire (Points immédiats de la carte mensuelle) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return 'Recharge : $points pts (Inclut le bonus double du premier achat 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return 'Recharge : $points pts';
+  }
+
+  @override
+  String get shop_purchase_success_title => 'Achat réussi !';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '$points fleurs ont été ajoutées à votre compte.';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ Félicitations ! Bonus double du premier achat activé !';
+
+  @override
+  String get shop_purchase_awesome => 'Génial';
+
+  @override
+  String get shop_purchase_failed_title => 'Achat annulé ou échoué';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return 'Aucun prélèvement n\'a été effectué.\n\n(Code d\'erreur : $errorCode)';
+  }
 }

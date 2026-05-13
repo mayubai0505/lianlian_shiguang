@@ -3569,4 +3569,41 @@ class AppLocalizationsId extends AppLocalizations {
   String inviteToMeet(String name) {
     return 'Ayo temui $name milikmu di \'Lianlian ShiGuang\'!';
   }
+
+  @override
+  String get shop_log_monthly_card =>
+      'Diaktifkan: Kontrak Cahaya Bintang (Poin Instan Kartu Bulanan) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return 'Top-up: $points poin (Termasuk bonus ganda pembelian pertama 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return 'Top-up: $points poin';
+  }
+
+  @override
+  String get shop_purchase_success_title => 'Pembelian Berhasil!';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '$points Bunga telah ditambahkan.';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ Selamat! Bonus ganda pembelian pertama telah diaktifkan!';
+
+  @override
+  String get shop_purchase_awesome => 'Luar biasa';
+
+  @override
+  String get shop_purchase_failed_title => 'Pembelian Dibatalkan atau Gagal';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return 'Tidak ada biaya yang dikenakan.\n\n(Kode kesalahan: $errorCode)';
+  }
 }

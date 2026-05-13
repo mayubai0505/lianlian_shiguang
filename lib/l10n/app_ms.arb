@@ -1472,5 +1472,42 @@
         "placeholders": {
             "name": { "type": "String" }
         }
+    },
+    "shop_log_monthly_card": "Diaktifkan: Kontrak Cahaya Bintang (Mata Ganjaran Kad Bulanan) 🌙",
+    "shop_log_top_up_double": "Tambah nilai: {points} mata (Termasuk bonus ganda pembelian pertama 🎁)",
+    "@shop_log_top_up_double": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_log_top_up_normal": "Tambah nilai: {points} mata",
+    "@shop_log_top_up_normal": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_purchase_success_title": "Pembelian Berjaya!",
+    "shop_purchase_success_body": "{points} Bunga telah ditambahkan.",
+    "@shop_purchase_success_body": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_purchase_success_double_bonus": "✨ Tahniah! Bonus ganda pembelian pertama telah diaktifkan!",
+    "shop_purchase_awesome": "Hebat",
+    "shop_purchase_failed_title": "Pembelian Dibatalkan atau Gagal",
+    "shop_purchase_failed_body": "Tiada bayaran dikenakan.\n\n(Kod ralat: {errorCode})",
+    "@shop_purchase_failed_body": {
+        "placeholders": {
+            "errorCode": {
+                "type": "String"
+            }
+        }
     }
 }

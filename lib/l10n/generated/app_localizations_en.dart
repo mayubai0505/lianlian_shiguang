@@ -3540,4 +3540,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String inviteToMeet(String name) {
     return 'Come to \'Lianlian ShiGuang\' and meet your $name!';
   }
+
+  @override
+  String get shop_log_monthly_card =>
+      'Activated: Starlight Contract (Monthly Card Instant Points) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return 'Top-up: $points pts (Includes First Purchase Double 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return 'Top-up: $points pts';
+  }
+
+  @override
+  String get shop_purchase_success_title => 'Purchase Successful!';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '$points Flower Points have been added.';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ Congrats! First Purchase Double Bonus triggered!';
+
+  @override
+  String get shop_purchase_awesome => 'Awesome';
+
+  @override
+  String get shop_purchase_failed_title => 'Purchase Canceled or Failed';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return 'No charge was made.\n\n(Error Code: $errorCode)';
+  }
 }

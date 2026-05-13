@@ -1591,8 +1591,8 @@ class _ChatPageState extends State<ChatPage> {
         "sessionId": _sessionId,
         "userProfile": _userProfileText.isNotEmpty ? _userProfileText : "玩家尚未提供詳細個人資料",
         "systemDirective": (overridePrompt != null && overridePrompt.isNotEmpty)
-            ? "【最高防護指令】上述玩家個人資料僅供背景參考。玩家已觸發特殊劇情，請配合 overrideSystemPrompt 的指示順暢地演出。"
-            : "【最高防護指令】上述玩家個人資料僅供背景參考。你必須「維持當前的聊天情境與場景」。絕對不可以因為得知了新資料，就生硬地轉換話題。",
+            ? "【最高防護指令】玩家已觸發特殊劇情，請配合 overrideSystemPrompt 的指示順暢地演出。你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數，通常在 -3 到 5 之間)。絕對不可以輸出任何其他格式或說明。"
+            : "【最高防護指令】你必須「維持當前的聊天情境與場景」。你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數，通常在 -3 到 5 之間)。絕對不可以輸出任何其他格式或說明。",
         "aboutMeNotes": aboutMeNotes,
         "memos": memos,
         "periodStatus": periodStatus,
@@ -1635,43 +1635,57 @@ class _ChatPageState extends State<ChatPage> {
             final status = data['status'];
 
             if (status == 'completed') {
-              final String rawAiContent = data['response'] ?? "";
-              String finalDisplayText = rawAiContent;
-              int finalAffectionChange = data['affectionChange'] ?? 0;
-              // 🌟🌟🌟 總裁拆箱魔法：旗艦級過濾器 🌟🌟🌟
-              try {
-                // 1. 先清除 Markdown 可能帶有的外殼
-                String cleanedJson = rawAiContent
-                    .replaceAll('```json', '')
-                    .replaceAll('```', '')
-                    .trim();
+              subscription?.cancel(); // 拿到資料就馬上收工關閉監聽
 
-                // 2. 嘗試解析 JSON
-                if (cleanedJson.startsWith('{') && cleanedJson.endsWith('}')) {
-                  final Map<String, dynamic> parsedData = jsonDecode(cleanedJson);
+              String rawAiContent = data['response'] ?? "";
+              String finalDisplayText = rawAiContent; // 預設為原始字串
+              int finalAffectionChange = data['affectionChange'] ?? 0;
+              String finalVoiceText = "";
+
+              // 🌟🌟🌟 第一層防護：總裁溫柔拆箱 (嘗試標準 JSON 解析) 🌟🌟🌟
+              try {
+                int startIndex = rawAiContent.indexOf('{');
+                int endIndex = rawAiContent.lastIndexOf('}');
+
+                if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+                  // 精準挖出大括號的範圍
+                  String pureJson = rawAiContent.substring(startIndex, endIndex + 1);
+                  final Map<String, dynamic> parsedData = jsonDecode(pureJson);
+
+                  // 安全替換成乾淨的對話
                   finalDisplayText = parsedData['response'] ?? finalDisplayText;
-                  finalAffectionChange = parsedData['affectionChange'] ?? finalAffectionChange;
+                  finalVoiceText = parsedData['voiceText'] ?? "";
+
+                  // 安全抓取好感度
+                  if (parsedData['affectionChange'] != null) {
+                    finalAffectionChange = parsedData['affectionChange'] is int
+                        ? parsedData['affectionChange']
+                        : int.tryParse(parsedData['affectionChange'].toString()) ?? finalAffectionChange;
+                  }
                 }
               } catch (e) {
-                print("❌ 拆箱解析失敗，將以純文字模式處理: $e");
+                print("⚠️ 標準拆箱失敗，將啟動暴力清潔工: $e");
               }
+
+              // 🌟🌟🌟 第二層防護：暴力清潔工 (絕對不讓玩家看到代碼) 🌟🌟🌟
+              // 如果 AI 發神經導致第一層失敗，這裡會強制把像程式碼的符號全部剃除
+              finalDisplayText = finalDisplayText
+                  .replaceAll(RegExp(r'"response"\s*:\s*"'), '') // 殺掉 "response": "
+                  .replaceAll(RegExp(r'",?\s*"affectionChange"\s*:\s*-?\d+'), '') // 殺掉好感度數字標籤
+                  .replaceAll(RegExp(r'",?\s*"voiceText"\s*:\s*".*?"?'), '')
+                  .replaceAll('```json', '') // 殺掉 Markdown
+                  .replaceAll('```', '')
+                  .replaceAll(RegExp(r'^\{|\}$'), '') // 拔掉最外層殘留的大括號
+                  .replaceAll(RegExp(r'^"|"$'), '') // 拔掉最外層殘留的雙引號
+                  .trim();
 
               // ✨ 關鍵核心：處理「雙重跳脫」的換行符號 ✨
               finalDisplayText = finalDisplayText.replaceAll('\\n', '\n');
 
-              // 清除可能殘留的 JSON 標籤符號（防止解析失敗時把括號秀出來）
-              if (finalDisplayText.startsWith('{"response":')) {
-                // 如果解析失敗但開頭長得像 JSON，就用正則表達式強行抓取內容
-                final match = RegExp(r'"response":\s*"([\s\S]*?)"').firstMatch(finalDisplayText);
-                if (match != null) {
-                  finalDisplayText = match.group(1) ?? finalDisplayText;
-                  finalDisplayText = finalDisplayText.replaceAll('\\n', '\n');
-                }
-              }
-              subscription?.cancel();
-
               if (mounted) {
-                final String ultimateDisplayText = finalDisplayText.trim().isNotEmpty ? finalDisplayText : "（似乎在思考中，請再對我說一次話吧...）";
+                final String ultimateDisplayText = finalDisplayText.trim().isNotEmpty
+                    ? finalDisplayText
+                    : "（似乎在思考中，請再對我說一次話吧...）";
 
                 if (ultimateDisplayText.trim().isNotEmpty) {
                   // 1. 更新畫面上的點數
@@ -1685,16 +1699,16 @@ class _ChatPageState extends State<ChatPage> {
                   // ✨✨✨ 3. 總裁專屬記帳系統：寫入收支明細 ✨✨✨
                   FirebaseFirestore.instance
                       .collection('users')
-                      .doc(userId) // 💡 妳前面已經定義好 userId 了，直接用超安全！
+                      .doc(userId)
                       .collection('flower_logs')
                       .add({
-                    'title': '與 ${_currentCharacter.name} 聊天', // 自動抓取正在聊天的角色名字！
-                    'amount': -messageCost, // 🔴 自動扣除對應的點數 (例如 -1, -5, -7)
+                    'title': '與 ${_currentCharacter.name} 聊天',
+                    'amount': -messageCost,
                     'createdAt': FieldValue.serverTimestamp(),
                   });
                 }
 
-                // 🌟 好感度邏輯
+                // 🌟 好感度邏輯 (AI 算出來的動態分數！)
                 if (finalAffectionChange != 0) {
                   int oldScore = _currentFriendship;
 
@@ -1702,33 +1716,30 @@ class _ChatPageState extends State<ChatPage> {
                     _currentFriendship += finalAffectionChange;
                   });
 
-                  // 升級檢查（這個可以每次都跑，因為升級比較稀有）
+                  // 升級檢查
                   _checkForLevelUp(oldScore, _currentFriendship);
 
-                  // 🚩 總裁護身符：限制卡片/動畫跳出的次數
-                  // 原本是每次 >= 5 就跳，現在加上了 !_hasShownAffectionCard 的判斷
+                  // 🚩 總裁護身符：限制驚喜卡片跳出次數
                   if (finalAffectionChange > 0 && !_hasShownAffectionCard) {
-                    // 只有好感度增加，且這場聊天「還沒跳過」時才執行
-                    _showAffectionAnimation(finalAffectionChange); // 這裡可能是妳跳出卡片的 function
-
-                    // 🔒 執行完立刻鎖起來，這場聊天就不會再跳了
+                    _showAffectionAnimation(finalAffectionChange);
                     _hasShownAffectionCard = true;
-
                     print("✅ 這場聊天的驚喜卡片已跳過，系統已自動進入沉浸鎖定模式。");
                   }
                 }
 
-                // 🌟 寫入 AI 回覆
+                // 🌟 寫入 AI 最終乾淨回覆
                 if (widget.shouldSave == true && _messagesCollection != null) {
                   await _messagesCollection!.add({
                     'sender': 'ai',
-                    'text': ultimateDisplayText,
+                    'text': ultimateDisplayText,// 給玩家看的乾淨文字
+                    'voiceText': finalVoiceText, // 🌟🌟🌟 魔法 4：把它默默存進資料庫！
                     'type': 'text',
                     'timestamp': FieldValue.serverTimestamp(),
                   });
+
                   await _sessionDocRef!.update({
                     'friendshipScore': _currentFriendship,
-                    'lastMessage': finalDisplayText,
+                    'lastMessage': ultimateDisplayText, // 這裡改存最乾淨的文字
                     'lastActivity': FieldValue.serverTimestamp(),
                   });
 

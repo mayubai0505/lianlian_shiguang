@@ -14,6 +14,9 @@
         <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
         <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
 
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <application
         android:label="戀戀拾光"
         android:name="${applicationName}"
@@ -25,6 +28,17 @@
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token" />
+
+        <!-- 加在 <application> 裡面喔！ -->
+        <!-- 1. 設定預設的通知圖示 (如果妳有透明白底的 icon 可以放這裡，沒有的話先用預設的) -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+
+        <!-- 2. 強制指定所有 Firebase 推播都走「最高權重」的頻道 -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_importance_channel" />
 
         <activity
             android:name=".MainActivity"

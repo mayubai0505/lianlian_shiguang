@@ -1472,5 +1472,42 @@
         "placeholders": {
             "name": { "type": "String" }
         }
+    },
+    "shop_log_monthly_card": "Activado: Contrato Estelar (Puntos instantáneos de la tarjeta mensual) 🌙",
+    "shop_log_top_up_double": "Recarga: {points} pts (Incluye el doble por primera compra 🎁)",
+    "@shop_log_top_up_double": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_log_top_up_normal": "Recarga: {points} pts",
+    "@shop_log_top_up_normal": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_purchase_success_title": "¡Compra realizada con éxito!",
+    "shop_purchase_success_body": "Se han añadido {points} puntos de flores.",
+    "@shop_purchase_success_body": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_purchase_success_double_bonus": "¡✨ Felicidades! ¡Se activó la bonificación doble por primera compra!",
+    "shop_purchase_awesome": "¡Genial!",
+    "shop_purchase_failed_title": "Compra cancelada o fallida",
+    "shop_purchase_failed_body": "No se ha realizado ningún cargo.\n\n(Código de error: {errorCode})",
+    "@shop_purchase_failed_body": {
+        "placeholders": {
+            "errorCode": {
+                "type": "String"
+            }
+        }
     }
 }

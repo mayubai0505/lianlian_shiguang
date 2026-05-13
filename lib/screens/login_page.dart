@@ -79,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
+  // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
   Future<void> _performLogin(Future<Map<String, dynamic>?> Function() loginMethod) async {
     // 1. 蝴蝶起飛 🦋
     setState(() => _isLoginLoading = true);
@@ -93,15 +94,15 @@ class _LoginPageState extends State<LoginPage> {
 
       print("🟢 [2. 接收] AuthService 執行完畢！");
 
-      // 給動畫一點點喘息時間 (300ms)，避免畫面切換太生硬
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // ✨ 關鍵防護：在做任何跳轉或判斷前，先把蝴蝶視窗關掉！
+      // ✨✨✨ 關鍵修正：拿到結果的「0.00001秒內」立刻關閉蝴蝶！ ✨✨✨
+      // 絕對不能先延遲！必須趕在 Firebase 自動切換畫面之前把視窗關掉！
       if (_dialogContext != null) {
-        // 建議用 _dialogContext 本身來 pop，最安全！
         Navigator.of(_dialogContext!).pop();
         _dialogContext = null;
       }
+
+      // 關掉蝴蝶後，我們再給動畫一點點喘息時間 (300ms)，讓畫面順暢
+      await Future.delayed(const Duration(milliseconds: 300));
 
       // 3. 判斷跳轉
       if (result != null && mounted) {
@@ -109,26 +110,22 @@ class _LoginPageState extends State<LoginPage> {
         _handleLoginSuccess(result);
 
       } else if (result != null && !mounted) {
-        // 🌟 總裁，這就是真相！
         print("🚀 [超車提示] 登入其實成功了！資料也拿到了！");
         print("只不過 Firebase 狀態監聽器動作太快，已經自動把畫面切換走了，所以 LoginPage 提早下班啦！");
-
       } else {
-        // 真正失敗或取消才會走到這
         print("🟡 [提示] 登入被取消或回傳為空值。");
       }
 
     } catch (e) {
       print("🔴 [錯誤] 登入過程發生崩潰: $e");
 
-      // ✨ 關鍵防護：如果發生錯誤掉進來，也一定要把蝴蝶關掉！
+      // ✨ 關鍵防護：如果發生錯誤，也一定要立刻把蝴蝶關掉！
       if (_dialogContext != null) {
         Navigator.of(_dialogContext!).pop();
         _dialogContext = null;
       }
 
       if (mounted) {
-        // 這裡記得替換成我們剛才設定的 l10n 多國語系喔！
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('連線異常，請稍後再試：$e'),
@@ -137,10 +134,10 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } finally {
-      // 4. ✅ 解除按鈕等其他的 Loading 狀態
+      // 4. ✅ 解除 Loading 狀態
       if (mounted) {
         setState(() => _isLoginLoading = false);
-        print("🏁 [4. 結束] 蝴蝶平安降落，Loading 狀態解除。");
+        print("🏁 [4. 結束] Loading 狀態解除。");
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       }
     }
@@ -224,8 +221,12 @@ class _LoginPageState extends State<LoginPage> {
                 // 專屬信箱登入
                 _buildLoginButton(
                   text: l10n.login_with_email,
-                  iconWidget: const Icon(Icons.email_outlined, color: Colors.white),
-                  backgroundColor: const Color(0xFFBA68C8), // 亮紫色按鈕
+                  // ✨ 在 Icon 外面包一層 Padding，往右推開 12 的距離
+                  iconWidget: const Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: Icon(Icons.email_outlined, color: Colors.white),
+                  ),
+                  backgroundColor: const Color(0xFFBA68C8),
                   textColor: Colors.white,
                   onPressed: () {
                     Navigator.push(

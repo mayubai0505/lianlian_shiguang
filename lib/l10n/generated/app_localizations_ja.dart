@@ -3390,4 +3390,40 @@ class AppLocalizationsJa extends AppLocalizations {
   String inviteToMeet(String name) {
     return '『恋恋拾光』であなたの $name に会いましょう！';
   }
+
+  @override
+  String get shop_log_monthly_card => '起動：星光の契約（月間カード即時贈呈ポイント） 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return 'チャージ：$points ポイント（初回購入2倍特典含む 🎁）';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return 'チャージ：$points ポイント';
+  }
+
+  @override
+  String get shop_purchase_success_title => '購入成功！';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '$points ポイントのお花を追加しました。';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ おめでとうございます！初回購入2倍特典が適用されました！';
+
+  @override
+  String get shop_purchase_awesome => '最高！';
+
+  @override
+  String get shop_purchase_failed_title => '購入キャンセルまたは失敗';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return '支払いは発生していません。\n\n(エラーコード: $errorCode)';
+  }
 }

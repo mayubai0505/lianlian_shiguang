@@ -1471,5 +1471,42 @@
     "placeholders": {
       "name": { "type": "String" }
     }
+  },
+  "shop_log_monthly_card": "활성화: 별빛 계약 (월간 카드 즉시 지급 포인트) 🌙",
+  "shop_log_top_up_double": "충전: {points} 포인트 (첫 구매 두 배 혜택 포함 🎁)",
+  "@shop_log_top_up_double": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_log_top_up_normal": "충전: {points} 포인트",
+  "@shop_log_top_up_normal": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_title": "구매 성공!",
+  "shop_purchase_success_body": "{points}송이의 꽃이 추가되었습니다.",
+  "@shop_purchase_success_body": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_double_bonus": "✨ 축하합니다! 첫 구매 두 배 보너스가 적용되었습니다!",
+  "shop_purchase_awesome": "최고예요",
+  "shop_purchase_failed_title": "구매 취소 또는 실패",
+  "shop_purchase_failed_body": "결제가 이루어지지 않았습니다.\n\n(에러 코드: {errorCode})",
+  "@shop_purchase_failed_body": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -1684,5 +1684,42 @@
     "placeholders": {
       "name": { "type": "String" }
     }
+  },
+  "shop_log_monthly_card": "Activated: Starlight Contract (Monthly Card Instant Points) 🌙",
+  "shop_log_top_up_double": "Top-up: {points} pts (Includes First Purchase Double 🎁)",
+  "@shop_log_top_up_double": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_log_top_up_normal": "Top-up: {points} pts",
+  "@shop_log_top_up_normal": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_title": "Purchase Successful!",
+  "shop_purchase_success_body": "{points} Flower Points have been added.",
+  "@shop_purchase_success_body": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_double_bonus": "✨ Congrats! First Purchase Double Bonus triggered!",
+  "shop_purchase_awesome": "Awesome",
+  "shop_purchase_failed_title": "Purchase Canceled or Failed",
+  "shop_purchase_failed_body": "No charge was made.\n\n(Error Code: {errorCode})",
+  "@shop_purchase_failed_body": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
   }
 }

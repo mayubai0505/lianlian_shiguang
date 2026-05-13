@@ -1472,5 +1472,42 @@
         "placeholders": {
             "name": { "type": "String" }
         }
+    },
+    "shop_log_monthly_card": "เปิดใช้งาน: สัญญาดวงดาว (แต้มแถมทันทีจากบัตรรายเดือน) 🌙",
+    "shop_log_top_up_double": "เติมเงิน: {points} แต้ม (รวมโบนัสสองเท่าจากการซื้อครั้งแรก 🎁)",
+    "@shop_log_top_up_double": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_log_top_up_normal": "เติมเงิน: {points} แต้ม",
+    "@shop_log_top_up_normal": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_purchase_success_title": "ซื้อสำเร็จแล้ว!",
+    "shop_purchase_success_body": "เพิ่มดอกไม้ให้คุณ {points} ดอกแล้วนะ",
+    "@shop_purchase_success_body": {
+        "placeholders": {
+            "points": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_purchase_success_double_bonus": "✨ ยินดีด้วย! คุณได้รับโบนัสสองเท่าจากการซื้อครั้งแรก!",
+    "shop_purchase_awesome": "สุดยอดเลย",
+    "shop_purchase_failed_title": "การซื้อถูกยกเลิกหรือล้มเหลว",
+    "shop_purchase_failed_body": "ยังไม่มีการหักเงิน\n\n(รหัสข้อผิดพลาด: {errorCode})",
+    "@shop_purchase_failed_body": {
+        "placeholders": {
+            "errorCode": {
+                "type": "String"
+            }
+        }
     }
 }

@@ -3568,4 +3568,41 @@ class AppLocalizationsVi extends AppLocalizations {
   String inviteToMeet(String name) {
     return 'Hãy đến 《Luyến Luyến Thập Quang》 gặp gỡ $name của bạn nhé!';
   }
+
+  @override
+  String get shop_log_monthly_card =>
+      'Kích hoạt: Khế ước Tinh quang (Tặng điểm tức thì từ thẻ tháng) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return 'Nạp: $points điểm (Bao gồm nhân đôi lần nạp đầu 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return 'Nạp: $points điểm';
+  }
+
+  @override
+  String get shop_purchase_success_title => 'Mua hàng thành công!';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return 'Đã thêm cho bạn $points Hoa.';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ Chúc mừng bạn đã kích hoạt phần thưởng nhân đôi lần mua đầu!';
+
+  @override
+  String get shop_purchase_awesome => 'Tuyệt quá';
+
+  @override
+  String get shop_purchase_failed_title => 'Mua hàng bị hủy hoặc thất bại';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return 'Chưa thực hiện khấu trừ tiền.\n\n(Mã lỗi: $errorCode)';
+  }
 }

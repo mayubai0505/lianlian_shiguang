@@ -3406,4 +3406,40 @@ class AppLocalizationsKo extends AppLocalizations {
   String inviteToMeet(String name) {
     return '《Lianlian ShiGuang》에서 당신의 $name님을 만나보세요!';
   }
+
+  @override
+  String get shop_log_monthly_card => '활성화: 별빛 계약 (월간 카드 즉시 지급 포인트) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return '충전: $points 포인트 (첫 구매 두 배 혜택 포함 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return '충전: $points 포인트';
+  }
+
+  @override
+  String get shop_purchase_success_title => '구매 성공!';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return '$points송이의 꽃이 추가되었습니다.';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ 축하합니다! 첫 구매 두 배 보너스가 적용되었습니다!';
+
+  @override
+  String get shop_purchase_awesome => '최고예요';
+
+  @override
+  String get shop_purchase_failed_title => '구매 취소 또는 실패';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return '결제가 이루어지지 않았습니다.\n\n(에러 코드: $errorCode)';
+  }
 }

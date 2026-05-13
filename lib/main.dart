@@ -13,7 +13,7 @@ import 'services/theme_notifier.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_native_timezone/flutter_native_timezone.dart'; // <-- 加上這一行
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'screens/splash_loading_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -24,12 +24,23 @@ import 'dart:async';
 import 'screens/character_model.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart'; // 🌟 記得先 add 這個套件
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
 // 🌟 用來記住玩家現在正在跟誰講電話/聊天
 String? globalActiveCharacterId;
 // 🌟 1. 全域鑰匙：導航員的萬能鑰匙
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+// 🌟🌟🌟 新增：推播頻道與本地通知外掛 🌟🌟🌟
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // 頻道 ID，必須跟 XML 裡一致
+  '聊天訊息通知', // 使用者在手機設定裡看到的頻道名稱
+  description: '用於接收角色的最新回覆與遊戲提醒。',
+  importance: Importance.max, // 🚀 關鍵：這就是讓通知變成橫幅彈出來的魔法！
+);
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 // ==========================================
 // 🚀 程式進入點
@@ -40,10 +51,11 @@ Future<void> main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // --- A. 時區初始化 (保留) ---
+  // 退一百步的無敵寫法
   tz_data.initializeTimeZones();
   try {
-    final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName));
+    final timeZoneName = await FlutterTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timeZoneName.toString())); // 強制轉字串
   } catch (e) {
     tz.setLocalLocation(tz.getLocation('Asia/Taipei'));
   }
@@ -259,7 +271,6 @@ void _handleNotificationClick(RemoteMessage message) {
     }
 
     debugPrint("✅ 成功抓到角色 ID: $charId，準備跳轉...");
-    // 確保 navigatorKey 已經定義在全局
     navigatorKey.currentState?.pushNamed('/chat', arguments: charId);
   }
 }
@@ -273,6 +284,19 @@ Future<void> setupPushNotifications() async {
 
   try {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // 🌟🌟🌟 新增：建立 Android 高權重頻道 🌟🌟🌟
+    // 這一步會告訴手機：「這個 App 的通知很重要，請給我彈出橫幅！」
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
+    // 🌟🌟🌟 新增：設定前景收到通知時的表現 🌟🌟🌟
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true, // 允許彈出橫幅
+      badge: true, // 允許顯示 APP 右上角紅點
+      sound: true, // 允許發出聲音
+    );
 
     // 1. 請求權限
     await messaging.requestPermission(alert: true, badge: true, sound: true);
@@ -295,19 +319,16 @@ Future<void> setupPushNotifications() async {
     // 4. 前台收到訊息
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       if (globalActiveCharacterId != null) {
-        print(
-            "🤫 正在跟 ${globalActiveCharacterId} 通話中，自動擋掉重複的推播通知。");
-        return; // 這裡直接 return，後面的顯示通知邏輯就不會執行
+        print("🤫 正在跟 $globalActiveCharacterId 通話中，自動擋掉重複的推播通知。");
+        return; // 在聊天室內就不彈 SnackBar 了
       }
 
-      // 如果是別人傳的，或者是系統通知，才正常彈出通知
+      // 如果不在聊天室，用 SnackBar 提示玩家 (這是在 App 內部的提示)
       final currentContext = navigatorKey.currentContext;
       if (currentContext != null) {
         ScaffoldMessenger.of(currentContext).showSnackBar(
           SnackBar(
-            content: Text(
-                '${message.notification?.title}: ${message.notification
-                    ?.body}'),
+            content: Text('${message.notification?.title}: ${message.notification?.body}'),
             action: SnackBarAction(
               label: '查看',
               onPressed: () => _handleNotificationClick(message),
@@ -317,9 +338,7 @@ Future<void> setupPushNotifications() async {
         );
       }
     });
-    // 🌟 2. 妳絕對不能漏掉這個 catch 區塊！
   } catch (e) {
-    // 如果初始化失敗（例如模擬器沒裝 Google Play），它會跑來這裡
     debugPrint("❌ 推播初始化發生錯誤: $e");
   }
 }

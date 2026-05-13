@@ -1472,5 +1472,42 @@
     "placeholders": {
       "name": { "type": "String" }
     }
+  },
+  "shop_log_monthly_card": "Kích hoạt: Khế ước Tinh quang (Tặng điểm tức thì từ thẻ tháng) 🌙",
+  "shop_log_top_up_double": "Nạp: {points} điểm (Bao gồm nhân đôi lần nạp đầu 🎁)",
+  "@shop_log_top_up_double": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_log_top_up_normal": "Nạp: {points} điểm",
+  "@shop_log_top_up_normal": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_title": "Mua hàng thành công!",
+  "shop_purchase_success_body": "Đã thêm cho bạn {points} Hoa.",
+  "@shop_purchase_success_body": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_purchase_success_double_bonus": "✨ Chúc mừng bạn đã kích hoạt phần thưởng nhân đôi lần mua đầu!",
+  "shop_purchase_awesome": "Tuyệt quá",
+  "shop_purchase_failed_title": "Mua hàng bị hủy hoặc thất bại",
+  "shop_purchase_failed_body": "Chưa thực hiện khấu trừ tiền.\n\n(Mã lỗi: {errorCode})",
+  "@shop_purchase_failed_body": {
+    "placeholders": {
+      "errorCode": {
+        "type": "String"
+      }
+    }
   }
 }

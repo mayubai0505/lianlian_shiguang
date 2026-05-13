@@ -3525,4 +3525,41 @@ class AppLocalizationsTh extends AppLocalizations {
   String inviteToMeet(String name) {
     return 'มาพบกับ $name ของคุณใน \'Lianlian ShiGuang\' สิ!';
   }
+
+  @override
+  String get shop_log_monthly_card =>
+      'เปิดใช้งาน: สัญญาดวงดาว (แต้มแถมทันทีจากบัตรรายเดือน) 🌙';
+
+  @override
+  String shop_log_top_up_double(int points) {
+    return 'เติมเงิน: $points แต้ม (รวมโบนัสสองเท่าจากการซื้อครั้งแรก 🎁)';
+  }
+
+  @override
+  String shop_log_top_up_normal(int points) {
+    return 'เติมเงิน: $points แต้ม';
+  }
+
+  @override
+  String get shop_purchase_success_title => 'ซื้อสำเร็จแล้ว!';
+
+  @override
+  String shop_purchase_success_body(int points) {
+    return 'เพิ่มดอกไม้ให้คุณ $points ดอกแล้วนะ';
+  }
+
+  @override
+  String get shop_purchase_success_double_bonus =>
+      '✨ ยินดีด้วย! คุณได้รับโบนัสสองเท่าจากการซื้อครั้งแรก!';
+
+  @override
+  String get shop_purchase_awesome => 'สุดยอดเลย';
+
+  @override
+  String get shop_purchase_failed_title => 'การซื้อถูกยกเลิกหรือล้มเหลว';
+
+  @override
+  String shop_purchase_failed_body(String errorCode) {
+    return 'ยังไม่มีการหักเงิน\n\n(รหัสข้อผิดพลาด: $errorCode)';
+  }
 }
