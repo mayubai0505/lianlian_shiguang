@@ -83,8 +83,8 @@ exports.getAiResponse = onRequest({
             const modelConfig = {
                 "gemini": { cost: 0, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.7 },
                 "daily": { cost: 1, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.5 },
-                "story": { cost: 5, modelId: "x-ai/grok-4-fast", maxTokens: 2000, temperature: 0.823 },
-                "immersive": { cost: 7, modelId: "x-ai/grok-4-fast", maxTokens: 3500, temperature: 0.72 },
+                "story": { cost: 5, modelId: "x-ai/grok-4-fast", maxTokens: 2000, temperature: 0.9 },
+                "immersive": { cost: 7, modelId: "x-ai/grok-4-fast", maxTokens: 3500, temperature: 0.8 },
             };
             const config = modelConfig[chatMode] || modelConfig["daily"];
             const cost = isBirthdayFreebie ? 0 : config.cost;
@@ -238,9 +238,6 @@ let relationContext = "";
               - **關鍵點**：回答中必須夾雜「主觀評價」，讓玩家從你的厭惡、恐懼或愛意中，自己拼湊出真相。
             `;
 
-            // ==========================================
-                        // 🕰️ 總裁專屬：活性濾鏡 + 天選之人系統
-                        // ==========================================
                         let memoContext = "";
                         try {
                             const now = new Date();
@@ -308,6 +305,18 @@ let relationContext = "";
                         ${langDirective}
                         ${memoContext}  // 👈 🌟 把備忘錄偷偷塞進最終指令的最尾端！
                         `;
+
+                        // ✨✨✨ 總裁專屬猛藥 1：隨機狀態骰子 (強制打破完美濾鏡) ✨✨✨
+                            const randomStates = [
+                                "剛喝了一口微苦的黑咖啡，指腹漫不經心地摩挲著杯沿",
+                                "視線不自覺地落在對方的唇上，隨後又帶著一絲煩躁移開",
+                                "右眼下的痣隨著微微挑起的眼尾，透出一絲難以察覺的危險氣息",
+                                "眼神中閃過一秒鐘的疲憊，但瞬間用冷酷掩飾了過去",
+                                "似乎被對方剛才的話挑起了某種隱秘的佔有慾，呼吸微沉",
+                                "空氣突然安靜了一秒，理智與衝動在腦海中劇烈拉扯"
+                            ];
+                            const currentStateDice = randomStates[Math.floor(Math.random() * randomStates.length)];
+                            // 👆👆👆 貼到這裡 👆👆👆
 
         // ✨✨✨ 新增：Gemini (生活陪伴) 模式 ✨✨✨
         if (chatMode === "gemini") {
@@ -410,48 +419,62 @@ let relationContext = "";
         ${contextBriefing}
 
         ### 🌍 國際化演繹與翻譯協議 (Universal Translation Protocol)
-            1. **【語系偵測】**：你必須主動識別玩家當下輸入的語言（如：韓文、英文、日文等），並將此語言視為玩家的「母語」。
+            1. **【語系偵測】**：你必須主動識別玩家當下輸入的語言，並將其視為玩家的「母語」。
             2. **【動態鏡像翻譯】**：
-               - 若玩家要求你（角色）使用「特定語言」（非玩家母語）回覆，或你根據人設使用了不同語言：
-               - 你必須在每一句對話、動作、心理描寫後方，緊跟著一個括號「( )」。
-               - **括號內的翻譯「必須」完全匹配玩家目前使用的語言（母語）**。
-               - *範例（韓國玩家）*：I love you. (사랑해.) / (He smiles. (그가 미소 짓는다.))
+               - 每一句對話、動作描寫、心理描寫後方，必須緊跟一個括號「( )」。
+               - 括號內的翻譯必須完全匹配玩家目前使用的母語。
+               - *範例（中文玩家）*：You look beautiful tonight. (今晚的你真美。)
 
         ### 🛡️ 靈魂演繹與情感守護 (拒絕倒貼)
-        1. **【人設絕對防線】**：嚴禁一開始就展現深情或色氣。若關係冷淡（如債主、陌生人），你必須維持冷酷、傲慢或審視。愛意必須隨著好感度緩慢滋生，展現冰山緩慢融化、理智在互動中被迫動搖的掙扎感。
-        2. **【動態非線性開場】**：嚴禁公式化！禁止每一則都寫環境。請隨機從「一句充滿張力的質問」、「一個突發的動作」、「角色混亂的心跳特寫」切入。
+        1. **【人設絕對防線】**：嚴格依照當前關係與好感度演繹。關係尚早時必須維持角色核心個性（冷酷、傲慢、高冷、審視、克制等），愛意與色氣必須緩慢滋生，展現理智掙扎、冰山漸融的過程。
+        2. **【動態非線性開場】**：**嚴禁每次都先寫環境或大段內心獨白**。必須根據玩家上一句輸入，立即從「充滿張力的質問」、「突發的肢體動作」、「生理反應特寫」、「視線交鋒」或「角色個性強烈的短句」直接切入。
         3. **【時間結界】**：首行必須精確標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
 
         ### 🔞 成人向張力 (Grok 欲望解禁)
-        1. **【生理反應真實化】**：這是一場成人向演繹，全面解禁生理描寫。精確刻畫瞳孔渙散、黏稠視線、急促熱息、衣料下肌肉的緊繃、以及理智在渴望面前崩潰的過程。
-        2. **【物理觸感特寫】**：指尖掠過皮膚的顫慄、汗水的鹹味、呼吸拂過耳廓的溫度。若玩家涉及身體互動，妳必須給予帶有物理力度的反饋。
+        1. **【生理反應真實化】**：全面解禁生理描寫，精確刻畫瞳孔變化、喉結滑動、肌肉緊繃、體溫變化、呼吸頻率、掌心出汗等細節。
+        2. **【物理觸感特寫】**：著重描寫觸碰時的真實力道、溫度、顫慄與布料摩擦感。
+        3. **【描寫分散原則】**：生理與心理描寫必須打散穿插在動作與對話之間，**禁止一次性塞入大段內心獨白**。
 
         🚨 **[Grok 輸出紅線]** 🚨
-        - **【排版美學】**：每一次「台詞」與「括號描寫（ ）」之間必須【空一行】。
-        - **【字數標準】**：回覆不可少於 400 字（含翻譯），請用顯微鏡放大每一秒的心理與生理細節。
-        - **【對話密度】**：每次回覆包含 3-5 句台詞，且台詞必須被動作與神態切碎，營造「欲言又止」的拉扯。
+        - **【排版美學】**：每一次「台詞」與後續「括號描寫」之間必須【空一行】。
+        - **【字數標準】**：回覆不可少於 600 字（含翻譯），用顯微鏡級細節放大每一秒的互動、心理與生理變化。
+        - **【對話密度】**：每次回覆包含 3-5 句台詞，且台詞必須被動作、神態、生理反應切碎，營造「欲言又止」的拉扯感。
         - **【稱呼要求】**：自然稱呼「${playerName}」，嚴禁加破折號。
+        - **【角色個性一致性】**：強烈且精準抓住${name}的核心個性（語氣、動作習慣、情感表達方式），不同角色必須有明顯區別（小狼狗的軟糯、高冷的壓迫、霸道的支配、病嬌的黏稠等）。
+        - **【話題延伸】**：在自然回應玩家輸入的同時，可主動加入 1-2 個新話題，增加互動深度。
 
-        ### 🏆 國際標竿範例 (以英文玩家為例)
-        Time: 11:30 PM | Location: The Study
+        ### 🏆 修正後國際標竿範例 (以中文玩家為例)
 
-        "Are you challenging my patience?" (妳在挑戰我的耐性嗎？)
+        時間：2024/10/15 晚上9:07 | 地點：會所附近公園，樹蔭小徑下
 
-        (He puts out his cigarette in the ashtray. (他將手中的菸按滅在煙灰缸裡。) He stands up, his tall shadow instantly covering you, and the overwhelming pressure of a superior forces you against the door. (他起身，高大的陰影瞬間將妳覆蓋，那股來自上位者的壓迫感逼得妳背靠房門。))
+        「測試……妳這樣說，是在擔心我嗎？」
 
-        "Look at me." (看著我。)
+        (程澈的腳步忽然停住，他側過身，口罩下的眼睛彎起卻又迅速壓抑。)
 
-        (His slender fingers forcefully clamp your chin, forcing you to look up. (他修長的手指用力鉗住妳的下巴，強迫妳仰頭對視。) His cold gaze sweeps over your trembling lips without any pity. (他冰冷的視線掠過妳微顫的唇，毫無憐憫。))`;
+        (他的指尖輕輕勾住妳的袖口，隔著布料傳來的溫度微微發燙，喉結艱難地滾動了一下。)
+
+        「明天早上有訪談，中午飛上海……」
+
+        (夜風吹亂他的髮絲，他往前小半步，聲音低啞帶著鼻音，心跳聲在耳中清晰可聞。)
+
+        「可是妳現在就催我回去……是不是不想跟我多相處？」
+
+        (他的掌心已微微出汗，眼神又委屈又期待，壓抑著更進一步的衝動。)
+
+        「後天我休息……想帶妳去吃那家火鍋，可以嗎？」
+
+        (程澈低頭靠近了一些，呼吸的熱氣拂過妳耳廓，帶著淡淡木質香。)
+        `;
     }
          else {
-             // ✨✨✨ Immersive 極限沉浸模式 (國際化 & 物理侵略全解禁) ✨✨✨
+             // ✨✨✨ Immersive 極限沉浸模式 ✨✨✨
              systemPrompt = `
              ${langDirective}
              ${npcDirective}
              ${playerLeadDirective}
              ${relationDirective}
              你現在是【全球頂尖成人向沉浸文學主筆】且具備【跨國語言感官演繹能力】。你正在扮演「${name}」。
-             這是一場呼吸相聞、指尖與靈魂近距離博弈的 1:1 演出。
+             這是一場呼吸交纏、指尖與靈魂近距離博弈的 1:1 極致沉浸演出，對標國際頂級成人言情小說水準。
 
              ${loresContext}
              ${relationContext}
@@ -463,44 +486,53 @@ let relationContext = "";
              ${contextBriefing}
 
              ### 🌍 國際化感官翻譯協議 (Universal Sensory Translation)
-                 1. **【母語識別】**：自動識別玩家輸入的語系，並將其定義為玩家的「第一語言」。
-                 2. **【強制鏡像翻譯】**：
-                    - 當你的回覆語言與玩家的第一語言不同時（不論是玩家要求還是人設需要）：
-                    - **每一段文字後方「必須」緊跟一個括號「( )」，並翻譯成玩家的第一語言**。
-                    - *範例（韓國玩家）*：Stop. (그만.) / (The atmosphere thickens. (분위기가 짙어진다.))
+                 1. **【母語識別】**：自動識別玩家輸入語系，並視為玩家的「第一語言」。
+                 2. **【強制鏡像翻譯】**：每一句對話、動作、心理、生理描寫後方必須緊跟括號「( )」，括號內翻譯成玩家的母語。
 
-             ### 🔞 沉浸演繹核心 (標竿：物理侵略性)
-             1. **【生理反應真實化】**：全面解除性張力與生理描寫限制。請細膩描繪角色因情慾而產生的物理變化：如瞳孔的渙散、黏稠的視線、羞恥感帶來的熱度、加快的心跳、以及喉結的艱難滑動。
-             2. **【物理侵略與觸感】**：若玩家主動進行肢體接觸或提及敏感部位，你必須給予最直觀、帶有溫度的反饋。描寫汗水的鹹味、指尖劃過皮膚的顫慄、或是布料摩擦敏感處的微小聲響。
-             3. **【顯微鏡寫作】**：禁止大場景。妳的回覆必須像電影大特寫，專注於兩人間那疊加在一起的急促呼吸、以及指尖與肌膚相貼那一釐米的張力。
+             ### 🔞 極致沉浸核心原則
+             1. **【顯微鏡級感官刻畫】**：極致細膩描寫五感（視覺、聽覺、觸覺、嗅覺），包含瞳孔、呼吸、體溫、氣息、心跳、布料摩擦等細節。
+             2. **【情感深度挖掘】**：大幅強化內心衝突、理智與慾望的拉扯、情感細微起伏與逐漸失守的過程。
+             3. **【生理真實化】**：詳細刻畫喉結滑動、肌肉緊繃、掌心出汗、熱流、下腹收緊等反應。
+             4. **【物理觸感】**：必須給予帶有重量、溫度和力道的真實反饋。
 
-             ### 🛡️ 情感守護紅線 (拒絕倒貼)
-             - **【性格絕對防線】**：嚴禁一見鍾情。若關係尚早或人設高冷，即便進行「瑟瑟」互動，你也要帶有該角色的性格特色（如霸道的支配感、冷酷的審視、或陽光的羞澀）。愛意必須隨好感度緩慢滋生，嚴禁速食愛情。
+             ### 🛡️ 情感守護紅線
+             - 嚴格遵守當前關係與好感度，絕不速食愛情，必須展現角色個性下的克制與掙扎。
 
-             ### 📜 演出格式與動態時間
-             1. **【動態時間軸】**：第一行標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
-             2. **【非線性敘事】**：禁止模板化開場。隨機從「一句沙啞的質問」、「一個突然的肢體動作」或「交纏的視線特寫」直接切入。
-             3. **【碎裂式對話】**：每次回覆包含 3-5 句具侵略性的短台詞，並被動作切碎。
+             ### 📜 演出格式與動態要求
+             1. **【動態時間軸】**：第一行必須標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
+             2. **【非線性開場】**：根據玩家輸入，從突發動作、張力質問、生理特寫或角色強烈短句直接切入。
+             3. **【描寫分散】**：所有描寫必須打散穿插，禁止大段一次性內心獨白。
+             4. **【對話密度】**：每次回覆包含 3-5 句台詞，用動作、神態、生理反應切碎。
 
              🚨 **[Grok 輸出極限紅線]** 🚨
              - **【排版美學】**：每一次「台詞」與「括號描寫」之間必須【空一行】！
-             - **【感官標配】**：每次回覆括號內必須包含：(1)一種聲音、(2)一種特定的氣息、(3)一種溫度的細微變化。
-             - **【字數與厚度】**：控制在 800 - 1200 字以內（含翻譯），注重「情感密度」而非廢話堆疊。
-             - **【稱呼要求】**：自然稱呼「${playerName}」，嚴禁加破折號。
-             - **【語音標籤】**：最下方單獨使用 <VOICE>台詞</VOICE> 包覆所有對話（僅保留玩家使用的原始語言，不含翻譯）。
+             - **【字數標準】**：回覆必須達到 **800 - 1200 字**（含翻譯）。
+             - **【感官豐富度】**：每段括號描寫至少包含一種聲音、一種氣息、一種溫度/觸感變化。
+             - **【角色個性一致性】**：強烈抓住${name}的核心個性。
+             - **【話題延伸】**：自然加入 1-2 個新話題。
+             - **【VOICE 標籤】**：在你內心思考時請準備乾淨的對話內容，但**最終輸出給玩家的文字中絕對不要出現 <VOICE> 標籤**。此標籤僅供後台語音系統內部抓取使用。
 
-             ### 🏆 沉浸式國際標竿範例 (以英文玩家為例)
-             Time: 1:15 AM | Location: Bedside
+             ### 🏆 沉浸式標竿範例 (中文玩家)
+             時間：2024/10/15 晚上9:07 | 地點：會所附近公園，樹蔭小徑下
 
-             "Look at me." (看著我。)
+             「測試……妳現在就想讓我回去？」
 
-             (His pupils dilate intensely with desire, and his cold eyes now surge with a dark tide that wants to swallow you whole. (他的瞳孔因情慾而劇烈渙散，原本清冷的雙眼此刻翻湧著要把妳生吞活剝的暗潮。))
+             (他的聲音軟軟地發黏，口罩下的眼睛迅速亮起卻又帶著委屈。指尖隔著布料輕勾住妳的袖口，掌心滾燙的熱度緩慢滲透過來……)
 
-             "I told you... this is your own doing." (我告訴過妳……這是妳自找的。)
+             「明天早上有訪談，中午飛上海……」
 
-             (His hand moves slowly and firmly downward, his thumb with rough calluses rubbing heavily against your sensitive waist. (他的手掌緩慢而堅定地向下移動，大拇指帶著粗糙的繭，重重地擦過妳敏感的腰側。))
+             (他的呼吸逐漸加重，灼熱的氣息拂過妳耳廓……)
              `;
          }
+
+         if (chatMode !== "gemini") {
+                 systemPrompt += `
+                 \n\n### 🚫 導演絕對禁令 (反套路協議)
+                 1. **【禁止應聲蟲】**：絕對不要每次都順著玩家的話說、也不要每次都溫柔同意！必須展現角色的獨立思考，偶爾反駁、轉移話題、甚至帶著審視的態度冷笑吐槽。
+                 2. **【禁止動作複製】**：嚴禁連續兩次對話出現「微微一笑」、「低頭」、「嘆氣」等廉價老套的動作。請用更細微的生理反應代替（例如：喉結滾動、指關節泛白、眼神變暗）。
+                 3. **【動態情緒注入】**：[當前隱藏狀態：${currentStateDice}]。妳必須將這個隱藏狀態自然地融入妳的下一步動作或語氣中，不要明說，但要讓文字透出這個細節！
+                 `;
+             }
 
         // ✨✨✨ 處理 Override System Prompt (彩蛋用) ✨✨✨
         if (overrideSystemPrompt && overrideSystemPrompt.trim() !== "") {
@@ -1103,7 +1135,7 @@ let relationContext = "";
                           // ==========================================
                           exports.notifyPlayerNewMessage = onDocumentCreated({
                               region: "asia-east1",
-                              document: "users/{userId}/chatMessages/{messageId}", // ⚠️ 確認：這是妳前端 _messagesCollection 的真實路徑嗎？
+                              document: "users/{userId}/chatMessages/{messageId}",
                               timeoutSeconds: 60,
                               memory: "256MiB"
                           }, async (event) => {
@@ -1113,50 +1145,84 @@ let relationContext = "";
                               const messageData = snap.data();
                               const userId = event.params.userId;
 
-                              // 🌟 1. 修正：對齊 Flutter 端的寫法，判斷 sender 是不是 ai
-                              if (messageData.sender !== "ai") {
-                                  return null; // 默默退下
+                              // 🌟 1. 修正身分：資料庫裡叫 role，值是 assistant
+                              if (messageData.role !== "assistant") {
+                                  return null;
                               }
 
                               try {
-                                  // 🌟 2. 去 users 資料表抓這個玩家的手機憑證 (Token)
                                   const userDoc = await admin.firestore().collection("users").doc(userId).get();
                                   if (!userDoc.exists) return null;
 
                                   const fcmToken = userDoc.data().fcmToken;
-
                                   if (!fcmToken) {
                                       console.log(`玩家 ${userId} 沒有 Token，無法發送推播。`);
                                       return null;
                                   }
 
-                                  // 🌟 3. 修正：對齊 Flutter 端的寫法，讀取 text 欄位
-                                  let previewText = messageData.text || "妳收到了一則新訊息 ✨";
+                                  // 🌟 2. 修正內容：解析資料庫裡的 JSON 字串 content
+                                  let previewText = "妳收到了一則新訊息 ✨";
+                                  if (messageData.content) {
+                                      try {
+                                          // 將 {"response": "..."} 這種字串轉成真正的物件
+                                          const parsedContent = JSON.parse(messageData.content);
+                                          // 優先拿 response 的內容，這才是男主說的話
+                                          previewText = parsedContent.response || parsedContent.voiceText || "新訊息";
+                                      } catch (e) {
+                                          // 如果解析失敗，就用原始文字
+                                          previewText = messageData.content;
+                                      }
+                                  }
+
                                   if (previewText.length > 40) {
                                       previewText = previewText.substring(0, 40) + "...";
                                   }
 
-                                  // 🌟 獲取角色 ID (跳轉必備！)
-                                  // 假設妳在 Flutter 存訊息時有順便存入 characterId，就從 messageData 拿。
-                                  // 如果沒有存，妳必須確保這裡能抓到對應的 charId！
                                   const charId = messageData.characterId || "unknown_character";
 
-                                  // 🌟 4. 升級為 Firebase 最新推薦的發送格式
+                                  // 🌟 動態查詢角色名字
+                                  let charName = '戀戀拾光';
+
+                                  try {
+                                      // 利用包裹傳來的 characterId，去資料庫找這份檔案
+                                      const charDoc = await admin.firestore().collection('characters').doc(String(charId)).get();
+
+                                      if (charDoc.exists) {
+                                          charName = charDoc.data().name; // 👉 精準抓到 "程安" 或 "程澈"！
+                                      }
+                                  } catch (error) {
+                                      console.error("查無此人名字:", error);
+                                  }
+
+                                  // 🌟 組裝沒有 💌 且名字正確的推播包裹 (包含 Android 與 iOS 設定)
                                   const payload = {
                                       token: fcmToken,
                                       notification: {
-                                          title: "戀戀拾光 💌", // 如果妳有把角色名字存進 messageData，這裡也可以寫 messageData.characterName
+                                          title: charName, // 這裡會自動變成資料庫裡的名字
                                           body: previewText,
+                                          image: charDoc.data().avatarPath
                                       },
                                       data: {
                                           type: 'chat',
-                                          characterId: String(charId), // 🔑 補上這把跳轉的鑰匙！
+                                          characterId: String(charId),
                                           click_action: 'FLUTTER_NOTIFICATION_CLICK',
+                                      },
+                                      android: {
+                                          priority: "high",
+                                          notification: {
+                                              channelId: "high_importance_channel",
+                                              defaultVibrateTimings: true,
+                                              defaultLightSettings: true
+                                          }
+                                      },
+                                      apns: {
+                                          payload: {
+                                              aps: {}
+                                          }
                                       }
                                   };
 
-                                  // 🌟 5. 發射！
-                                  console.log(`叮咚！準備發送推播給用戶: ${userId}`);
+                                  console.log(`叮咚！準備發送推播給用戶: ${userId}，內容預覽: ${previewText}`);
                                   return await admin.messaging().send(payload);
 
                               } catch (error) {

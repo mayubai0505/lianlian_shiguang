@@ -1732,9 +1732,13 @@ class _ChatPageState extends State<ChatPage> {
                   await _messagesCollection!.add({
                     'sender': 'ai',
                     'text': ultimateDisplayText,// 給玩家看的乾淨文字
-                    'voiceText': finalVoiceText, // 🌟🌟🌟 魔法 4：把它默默存進資料庫！
+                    'voiceText': finalVoiceText, // 🌟🌟🌟 把它默默存進資料庫！
                     'type': 'text',
                     'timestamp': FieldValue.serverTimestamp(),
+                    'characterId': characterId,              // 讓橫幅點擊後知道要跳去哪個男主的房間
+                    'characterName': _currentCharacter.name, // 讓橫幅標題顯示男主的名字
+                    'role': 'assistant',
+                    'content': rawAiContent,
                   });
 
                   await _sessionDocRef!.update({
@@ -3294,13 +3298,14 @@ class _ChatPageState extends State<ChatPage> {
         secretPrompt: aiSecretPrompt // 👈 AI 腦袋裡看這個
     );
   }
-  
+
   // 🕵️‍♀️ 稱號升級偵測器
   void _checkForLevelUp(int oldScore, int newScore) {
-    // 條件 1：稱號文字變了
-    // 條件 2：新分數必須「大於」舊分數 (這行就是只抓晉升的關鍵！✨)
-    if (oldScore.relationshipTitle != newScore.relationshipTitle && newScore > oldScore) {
-      _showLevelUpDialog(newScore, true); // 只有升級才會跳出華麗視窗
+    // ✨ 1. 請翻譯官進來
+    final l10n = AppLocalizations.of(context)!;
+    // ✨ 2. 加上 (l10n)，讓系統確實去比較「翻譯出來的文字」是不是真的變了！
+    if (oldScore.relationshipTitle(l10n) != newScore.relationshipTitle(l10n) && newScore > oldScore) {
+      _showLevelUpDialog(newScore, true); // 只有真正跨越階級時，才會跳出華麗視窗
     }
   }
 

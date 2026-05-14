@@ -145,14 +145,24 @@ class _StorePageState extends State<StorePage> {
     bool isTestingMode = displayProducts.isEmpty;
 
     // 如果抓不到真實商品，就用測試假商品展示 (🌟 已更新為總裁的真實 ID)
-    if (isTestingMode) {
-      displayProducts = [
-        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_monthly_card', price: 'NT\$ 250')),
-        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_points_90', price: 'NT\$ 30')),
-        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_points_215', price: 'NT\$ 70')),
-        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_points_370', price: 'NT\$ 120')),
-        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_points_4300', price: 'NT\$ 1314')),
-      ];
+    if (displayProducts.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 80),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.withValues(alpha: 0.5)),
+              const SizedBox(height: 16),
+              const Text(
+                "商店連線中，或貨架正在補貨... 📦\n\n(提示：請確認您已透過 Play 商店下載測試版\n並接受了測試人員邀請)",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: 16, height: 1.5),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     final monthlyCard = displayProducts.where((p) => p.productDetails.id == 'com_lianlian_monthly_card').firstOrNull ?? displayProducts.first;

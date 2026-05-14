@@ -247,6 +247,8 @@ class PurchaseService extends ChangeNotifier {
 
   // 🌟 彈出失敗視窗 (多國語系版)
   void _handleError(IAPError error) {
+    if (error.code == 'purchase_error') return; // 忽略「玩家取消」或「測試卡假報警」
+    if (error.code == 'canceled') return;       // 忽略 iOS/Android 常見的取消代碼
     final context = navigatorKey.currentContext;
     if (context == null) return;
 

@@ -42,6 +42,15 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
+// 🌟🌟🌟 第一道門：給背景小精靈發「免死金牌」 🌟🌟🌟
+// 注意：這個函數一定要放在 main 的外面，而且必須加上這行 pragma！
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // 確保 Firebase 在背景也能順利被喚醒
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print("👻 [背景小精靈] 成功攔截到背景通知: ${message.notification?.title}");
+}
+
 // ==========================================
 // 🚀 程式進入點
 // ==========================================
@@ -62,6 +71,8 @@ Future<void> main() async {
 
   // --- B. Firebase 初始化 (保留) ---
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // --- 💣 拆彈一：App Check 防護升級 ---
   // 🌟 策略：如果是網頁版 + 開發模式，我們先「放行」，避免 400 錯誤卡死妳
@@ -318,25 +329,9 @@ Future<void> setupPushNotifications() async {
 
     // 4. 前台收到訊息
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (globalActiveCharacterId != null) {
-        print("🤫 正在跟 $globalActiveCharacterId 通話中，自動擋掉重複的推播通知。");
-        return; // 在聊天室內就不彈 SnackBar 了
-      }
-
-      // 如果不在聊天室，用 SnackBar 提示玩家 (這是在 App 內部的提示)
-      final currentContext = navigatorKey.currentContext;
-      if (currentContext != null) {
-        ScaffoldMessenger.of(currentContext).showSnackBar(
-          SnackBar(
-            content: Text('${message.notification?.title}: ${message.notification?.body}'),
-            action: SnackBarAction(
-              label: '查看',
-              onPressed: () => _handleNotificationClick(message),
-            ),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      // 總裁下令：App 在前台打開時，完全不要顯示任何干擾畫面的通知！
+      // 所以這裡我們只要在終端機印出紀錄就好，什麼畫面都不彈。
+      print("🤫 收到前景推播，但總裁下令隱藏：${message.notification?.title}");
     });
   } catch (e) {
     debugPrint("❌ 推播初始化發生錯誤: $e");
