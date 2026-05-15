@@ -6321,6 +6321,30 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'尚未扣款。\n\n(錯誤碼: {errorCode})'**
   String shop_purchase_failed_body(String errorCode);
+
+  /// No description provided for @shop_monthly_card_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【戀戀拾光．星之契約】'**
+  String get shop_monthly_card_name;
+
+  /// No description provided for @shop_monthly_card_status_active.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'契約生效中：剩餘 {days} 天'**
+  String shop_monthly_card_status_active(int days);
+
+  /// No description provided for @shop_monthly_card_status_inactive.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'立即開啟 30 天星光加成獎勵'**
+  String get shop_monthly_card_status_inactive;
+
+  /// No description provided for @shop_monthly_card_limit_reached.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已達上限'**
+  String get shop_monthly_card_limit_reached;
 }
 
 class _AppLocalizationsDelegate

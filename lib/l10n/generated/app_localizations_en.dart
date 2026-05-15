@@ -3577,4 +3577,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return 'No charge was made.\n\n(Error Code: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【Lianlian ShiGuang: Star Contract】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return 'Contract active: $days days remaining';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive =>
+      'Activate 30-day Starlight bonus rewards now';
+
+  @override
+  String get shop_monthly_card_limit_reached => 'Limit reached';
 }

@@ -192,20 +192,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
           onGenerateRoute: (settings) {
             if (settings.name == '/chat') {
-              final String? charId = settings.arguments as String?;
+              // 🌟 解開剛才打包的 Map
+              final Map<String, dynamic>? args = settings.arguments as Map<String, dynamic>?;
+              final String charId = args?['characterId'] ?? "default_id";
+              final String sessionId = args?['sessionId'] ?? ""; // 👈 拿到真正的房間 ID
+
               return MaterialPageRoute(
-                builder: (context) => ChatPage(
-                  character: getCharacterById(charId ?? "default_id"),
-                  chatMode: "daily",
-                  sessionId: "session_$charId",
-                  selectedLanguage: '繁體中文',
-                  shouldSave: false,
+                builder: (context) => ChatLoaderWrapper(
+                  charId: charId,
+                  sessionId: sessionId.isNotEmpty ? sessionId : "session_$charId",
                 ),
               );
             }
             return null;
           },
-
           // 🏠 首頁判斷邏輯
           home: FutureBuilder(
             future: _appInitFuture, // ✨ 3. 這裡改用鎖好的變數，不再重複觸發！
@@ -216,6 +216,73 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               return const AuthWrapper();
             },
           ),
+        );
+      },
+    );
+  }
+}
+
+// 🌟 總裁專屬：推播導航緩衝區 (負責去 Firebase 查戶口)
+class ChatLoaderWrapper extends StatefulWidget {
+  final String charId;
+  final String sessionId;
+
+  const ChatLoaderWrapper({super.key, required this.charId, required this.sessionId});
+
+  @override
+  State<ChatLoaderWrapper> createState() => _ChatLoaderWrapperState();
+}
+
+class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
+  late Future<Character> _characterFuture; // 🌟 宣告一個固定的 Future
+
+  @override
+  void initState() {
+    super.initState();
+    // 🌟 只在初始化時查一次戶口，避免 Rebuild 時重複查詢
+    _characterFuture = _fetchCharacter();
+  }
+
+  Future<Character> _fetchCharacter() async {
+    final firestore = FirebaseFirestore.instance;
+    final appId = const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang');
+
+    var doc = await firestore.collection('artifacts').doc(appId).collection('public_characters').doc(widget.charId).get();
+
+    if (!doc.exists) {
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        doc = await firestore.collection('artifacts').doc(appId).collection('users').doc(userId).collection('private_characters').doc(widget.charId).get();
+      }
+    }
+
+    if (!doc.exists) throw Exception("真的找不到這個人😭");
+    return await Character.fromFirestoreAsync(doc);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Character>(
+      future: _characterFuture, // 🌟 使用固定好的 Future
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Scaffold(
+            body: Center(child: Text("讀取失敗：${snapshot.error}")),
+          );
+        }
+
+        return ChatPage(
+          character: snapshot.data!,
+          chatMode: "daily",
+          sessionId: widget.sessionId,
+          selectedLanguage: '繁體中文',
+          shouldSave: true,
         );
       },
     );
@@ -275,14 +342,24 @@ void _handleNotificationClick(RemoteMessage message) {
 
   if (data['type'] == 'chat') {
     final String charId = data['characterId']?.toString() ?? '';
+    final String sessionId = data['sessionId']?.toString() ?? '';
 
     if (charId.isEmpty) {
       debugPrint("❌ 嚴重錯誤：找不到有效的 characterId");
       return;
     }
 
-    debugPrint("✅ 成功抓到角色 ID: $charId，準備跳轉...");
-    navigatorKey.currentState?.pushNamed('/chat', arguments: charId);
+    debugPrint("✅ 成功抓到角色 ID: $charId, 房間 ID: $sessionId，執行清理式跳轉...");
+
+    // ✨✨✨ 總裁級導航：推開多餘頁面，只留這一個 ✨✨✨
+    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      '/chat',
+          (route) => route.isFirst, // 👈 關鍵：除了最底層的主畫面，中間擋路的所有頁面通通退場！
+      arguments: {
+        'characterId': charId,
+        'sessionId': sessionId,
+      },
+    );
   }
 }
 

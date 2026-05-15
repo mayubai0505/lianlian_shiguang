@@ -3605,4 +3605,19 @@ class AppLocalizationsMs extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return 'Tiada bayaran dikenakan.\n\n(Kod ralat: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【Lianlian ShiGuang: Kontrak Bintang】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return 'Kontrak aktif: baki $days hari';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive =>
+      'Aktifkan ganjaran bonus Cahaya Bintang 30 hari sekarang';
+
+  @override
+  String get shop_monthly_card_limit_reached => 'Sudah mencapai had';
 }

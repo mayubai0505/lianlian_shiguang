@@ -2604,6 +2604,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   }
 
   // --- 🌟 上傳圖片並彈出設定視窗的核心邏輯 ---
+  // --- 🌟 上傳圖片並彈出設定視窗的核心邏輯 (附掛全自動無感壓縮) ---
   Future<void> _addCharacterImage() async {
     final l10n = AppLocalizations.of(context)!;
     if (_galleryPhotos.length >= 10) {
@@ -2611,10 +2612,19 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       return;
     }
 
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 70, maxWidth: 800);
+    // 🌟 瘦身魔法陣：直接在源頭把圖片壓縮！
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50, // 👈 畫質壓到 50%
+      maxWidth: 600,    // 👈 限制寬度為 600px
+      maxHeight: 600,   // 👈 限制高度為 600px
+    );
+
     if (image == null || !mounted) return;
+
     final affController = TextEditingController(text: '0');
     final descController = TextEditingController(text: l10n.default_photo_desc);
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -2655,7 +2665,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               setState(() {
                 _galleryPhotos.add(CharacterPhoto(
                   imageUrl: '', // 尚未上傳，所以網址是空的
-                  localFile: image, // 存入本地檔案
+                  localFile: image, // 👈 存入本地檔案 (此時已經是被嚴重壓縮過的版本了！)
                   requiredAffection: int.tryParse(affController.text) ?? 0,
                   description: descController.text.isEmpty ?l10n.default_photo_desc : descController.text,
                 ));

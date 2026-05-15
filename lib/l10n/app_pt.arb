@@ -1510,5 +1510,16 @@
             "type": "String"
          }
       }
-   }
+   },
+   "shop_monthly_card_name": "【Lianlian ShiGuang: Contrato Estelar】",
+   "shop_monthly_card_status_active": "Contrato ativo: {days} dias restantes",
+   "@shop_monthly_card_status_active": {
+      "placeholders": {
+         "days": {
+            "type": "int"
+         }
+      }
+   },
+   "shop_monthly_card_status_inactive": "Ative os bônus de luz estelar de 30 dias agora",
+   "shop_monthly_card_limit_reached": "Limite atingido"
 }

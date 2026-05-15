@@ -1508,5 +1508,16 @@
         "type": "String"
       }
     }
-  }
+  },
+  "shop_monthly_card_name": "【Lianlian ShiGuang · 별의 계약】",
+  "shop_monthly_card_status_active": "계약 활성화 중: {days}일 남음",
+  "@shop_monthly_card_status_active": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_monthly_card_status_inactive": "지금 바로 30일 별빛 보너스 보상 활성화",
+  "shop_monthly_card_limit_reached": "한도 도달"
 }

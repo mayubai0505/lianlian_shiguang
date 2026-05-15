@@ -3426,4 +3426,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return '支払いは発生していません。\n\n(エラーコード: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【恋恋拾光・星の契約】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return '契約有効中：残り $days 日';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive => '今すぐ30日間の星光ボーナス特典を有効化';
+
+  @override
+  String get shop_monthly_card_limit_reached => '上限に達しました';
 }

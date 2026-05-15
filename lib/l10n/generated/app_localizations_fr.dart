@@ -3649,4 +3649,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return 'Aucun prélèvement n\'a été effectué.\n\n(Code d\'erreur : $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name =>
+      '【Lianlian ShiGuang : Contrat Stellaire】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return 'Contrat actif : $days jours restants';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive =>
+      'Activez les bonus de lumière stellaire de 30 jours maintenant';
+
+  @override
+  String get shop_monthly_card_limit_reached => 'Limite atteinte';
 }

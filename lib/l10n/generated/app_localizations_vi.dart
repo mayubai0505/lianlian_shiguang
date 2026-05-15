@@ -3605,4 +3605,20 @@ class AppLocalizationsVi extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return 'Chưa thực hiện khấu trừ tiền.\n\n(Mã lỗi: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name =>
+      '【Luyến Luyến Thập Quang · Tinh Chi Khế Ước】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return 'Khế ước đang hiệu lực: Còn lại $days ngày';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive =>
+      'Kích hoạt ngay phần thưởng tăng thêm Tinh quang 30 ngày';
+
+  @override
+  String get shop_monthly_card_limit_reached => 'Đã đạt giới hạn';
 }

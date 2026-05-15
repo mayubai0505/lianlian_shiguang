@@ -1509,5 +1509,16 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "shop_monthly_card_name": "【Lianlian ShiGuang: स्टार कॉन्ट्रैक्ट】",
+    "shop_monthly_card_status_active": "अनुबंध सक्रिय है: {days} दिन शेष",
+    "@shop_monthly_card_status_active": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_monthly_card_status_inactive": "अभी 30 दिनों का स्टारलाइट बोनस पुरस्कार सक्रिय करें",
+    "shop_monthly_card_limit_reached": "सीमा समाप्त"
 }

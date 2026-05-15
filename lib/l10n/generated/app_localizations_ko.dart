@@ -3442,4 +3442,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return '결제가 이루어지지 않았습니다.\n\n(에러 코드: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【Lianlian ShiGuang · 별의 계약】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return '계약 활성화 중: $days일 남음';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive => '지금 바로 30일 별빛 보너스 보상 활성화';
+
+  @override
+  String get shop_monthly_card_limit_reached => '한도 도달';
 }

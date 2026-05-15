@@ -1721,5 +1721,16 @@
         "type": "String"
       }
     }
-  }
+  },
+  "shop_monthly_card_name": "【Lianlian ShiGuang: Star Contract】",
+  "shop_monthly_card_status_active": "Contract active: {days} days remaining",
+  "@shop_monthly_card_status_active": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_monthly_card_status_inactive": "Activate 30-day Starlight bonus rewards now",
+  "shop_monthly_card_limit_reached": "Limit reached"
 }

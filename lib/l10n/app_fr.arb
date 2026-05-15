@@ -1679,5 +1679,16 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "shop_monthly_card_name": "【Lianlian ShiGuang : Contrat Stellaire】",
+    "shop_monthly_card_status_active": "Contrat actif : {days} jours restants",
+    "@shop_monthly_card_status_active": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_monthly_card_status_inactive": "Activez les bonus de lumière stellaire de 30 jours maintenant",
+    "shop_monthly_card_limit_reached": "Limite atteinte"
 }

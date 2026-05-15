@@ -1637,5 +1637,26 @@
         "type": "String"
       }
     }
-  }
+  },
+  "shop_monthly_card_name": "【戀戀拾光．星之契約】",
+
+  "shop_monthly_card_status_active": "契約生效中：剩餘 {days} 天",
+
+  "@shop_monthly_card_status_active": {
+
+    "placeholders": {
+
+      "days": {
+
+        "type": "int"
+
+      }
+
+    }
+
+  },
+
+  "shop_monthly_card_status_inactive": "立即開啟 30 天星光加成獎勵",
+
+  "shop_monthly_card_limit_reached": "已達上限"
 }

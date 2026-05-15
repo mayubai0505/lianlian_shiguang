@@ -3562,4 +3562,19 @@ class AppLocalizationsTh extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return 'ยังไม่มีการหักเงิน\n\n(รหัสข้อผิดพลาด: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【Lianlian ShiGuang: สัญญาแห่งดวงดาว】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return 'สัญญามีผลอยู่: เหลืออีก $days วัน';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive =>
+      'เปิดใช้งานรางวัลโบนัสดวงดาว 30 วันทันที';
+
+  @override
+  String get shop_monthly_card_limit_reached => 'ถึงขีดจำกัดแล้ว';
 }

@@ -287,7 +287,7 @@ class _ChatPageState extends State<ChatPage> {
       // 如果以前有填寫過 profile，就把資料拿出來塞進輸入框
       if (data != null && data.containsKey('profile')) {
         final profile = data['profile'];
-        setState(() {
+        if (mounted) setState(() {
           _heightController.text = profile['height'] ?? '';
           _appearanceController.text = profile['appearance'] ?? '';
           _occupationController.text = profile['occupation'] ?? '';
@@ -360,7 +360,7 @@ class _ChatPageState extends State<ChatPage> {
     final index = _localMessages.indexWhere((msg) => msg.id == messageId);
     if (index != -1) {
       // 🕵️‍♀️ 2. 視覺特效開關：標記這則訊息，讓它開始「發光」！
-      setState(() {
+      if (mounted) setState(() {
         _highlightedMessageId = messageId;
       });
       // 3. 計算大概的滾動位置 (ListView 為 reverse: true，估計一個氣泡高 100)
@@ -397,7 +397,7 @@ class _ChatPageState extends State<ChatPage> {
       // 🕵️‍♀️ 6. 時效設定：2 秒後自動「關燈」，把光芒消失，恢復正常
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
-          setState(() {
+          if (mounted) setState(() {
             _highlightedMessageId = null; // ✅ 關閉標記
           });
         }
@@ -421,7 +421,7 @@ class _ChatPageState extends State<ChatPage> {
     // 🌟 總裁補位：如果是測試模式，直接給它模式，不要去資料庫抓資料！
     if (widget.isTestMode) {
       final String modeName = widget.chatMode ?? 'daily';
-      setState(() {
+      if (mounted) setState(() {
         _currentMode = ChatMode.values.firstWhere(
                 (e) => e.name == modeName,
             orElse: () => ChatMode.daily
@@ -469,7 +469,7 @@ class _ChatPageState extends State<ChatPage> {
         await sessionDocRef.update({'unreadCount': 0});
 
         if (mounted) {
-          setState(() {
+          if (mounted) setState(() {
             _sessionId = sessionId;
             _currentFriendship = initialFriendship;
             _currentStoryTime = data['lastStoryTime'];
@@ -497,7 +497,7 @@ class _ChatPageState extends State<ChatPage> {
         _messagesCollection = sessionDocRef.collection('messages');
 
         if (mounted) {
-          setState(() {
+          if (mounted) setState(() {
             _sessionId = sessionId; // 保持原本帶進來的 ID
             _currentFriendship = 0;
             _isLoading = false; // 讓畫面停止轉圈圈，順利進入聊天室
@@ -581,7 +581,7 @@ class _ChatPageState extends State<ChatPage> {
       await batch.commit();
       // 5. 確保資料庫真的寫入成功後，才切換畫面狀態
       if (mounted) {
-        setState(() {
+        if (mounted) setState(() {
           _sessionId = newSessionRef.id;
           _sessionDocRef = newSessionRef;
           _messagesCollection = newSessionRef.collection('messages');
@@ -912,7 +912,7 @@ class _ChatPageState extends State<ChatPage> {
           .get();
 
       if (mounted) {
-        setState(() {
+        if (mounted) setState(() {
           for (var doc in snapshot.docs) {
             final data = doc.data();
             if (data['keyword'] != null) {
@@ -1507,7 +1507,7 @@ class _ChatPageState extends State<ChatPage> {
           }
         });
       } else {
-        setState(() {
+        if (mounted) setState(() {
           _testMessages.insert(0, ChatMessage(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             sender: 'user',
@@ -1605,7 +1605,7 @@ class _ChatPageState extends State<ChatPage> {
           "detailedPersonality": _currentCharacter.detailedPersonality?.replaceAll('{{玩家名字}}', _playerNickname) ?? "",
           "likes": _currentCharacter.likes?.replaceAll('{{玩家名字}}', _playerNickname) ?? "",
           "secrets": _currentCharacter.secrets?.replaceAll('{{玩家名字}}', _playerNickname) ?? "",
-          "gender": _currentCharacter.gender ?? "未知",
+          "gender": _currentCharacter.gender ,
           "relationship": dynamicRelationship,
           "socialRelationships": _currentCharacter.relationships != null
               ? jsonEncode(_currentCharacter.relationships).replaceAll('{{玩家名字}}', _playerNickname)
@@ -1631,7 +1631,7 @@ class _ChatPageState extends State<ChatPage> {
 
           if (mounted) {
             // 2. 扣除花花點數與記帳
-            setState(() {
+            if (mounted) setState(() {
               _flowerPoints = (_flowerPoints - messageCost).clamp(0, 999999);
             });
             FirebaseFirestore.instance.collection('users').doc(userId).update({'flowerPoints': FieldValue.increment(-messageCost)});
@@ -1644,7 +1644,7 @@ class _ChatPageState extends State<ChatPage> {
             // 3. 處理好感度與升級動畫
             if (finalAffectionChange != 0) {
               int oldScore = _currentFriendship;
-              setState(() {
+              if (mounted) setState(() {
                 _currentFriendship += finalAffectionChange;
               });
               _checkForLevelUp(oldScore, _currentFriendship);
@@ -1808,7 +1808,8 @@ class _ChatPageState extends State<ChatPage> {
     final doc = await _db.collection('users').doc(_userId).get();
     if (doc.exists) {
       final data = doc.data()?['dailyTasks'] ?? {};
-      setState(() {
+      if (mounted) {
+        setState(() {
         _dailyChatProgress = data['dailyChatProgress'] ?? 0;
         _storyChatProgress = data['storyChatProgress'] ?? 0;
         _likeProgress = data['likeProgress'] ?? 0;
@@ -1816,6 +1817,7 @@ class _ChatPageState extends State<ChatPage> {
         _isStoryChatClaimed = data['storyChatClaimed'] ?? false;
         _isLikeClaimed = data['likeClaimed'] ?? false;
       });
+    }
     }
   }
 
@@ -1828,7 +1830,7 @@ class _ChatPageState extends State<ChatPage> {
     _pointsSubscription = _db.collection('users').doc(userId).snapshots().listen((snapshot) {
       if (snapshot.exists && snapshot.data()!.containsKey('flowerPoints')) {
         if (mounted) {
-          setState(() {
+          if (mounted) setState(() {
             _flowerPoints = snapshot.data()!['flowerPoints'];
           });
         }
@@ -1845,7 +1847,7 @@ class _ChatPageState extends State<ChatPage> {
       // 🛑 直接切斷網路連線！雲端收到斷線通知，就會停止運算並退還點數！
       _httpClient!.close();
       _httpClient = null;
-      setState(() {
+      if (mounted) setState(() {
         _isGenerating = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1989,7 +1991,7 @@ class _ChatPageState extends State<ChatPage> {
             ? activeProfile['name']
             : nickname;
 
-        setState(() {
+        if (mounted) setState(() {
           _userProfileText = l10n.chat_profile_full(
               profileName,                     // {name}
               currentIdentityName,             // {identity}
@@ -2000,15 +2002,18 @@ class _ChatPageState extends State<ChatPage> {
               activeProfile!['intro'] ?? ''    // {intro}
           );
         });
+
       } else {
         // 🔒 尚未填寫的神秘狀態
-        setState(() {
+        if (mounted) {
+          setState(() {
           _userProfileText = l10n.chat_profile_locked(
               nickname, // {nickname}
               birthday  // {birthday}
           );
         });
       }
+        }
     } catch (e) {
       // 這裡屬於除錯訊息，不用翻譯喔！
       print("檢查玩家拾光檔案失敗: $e");
@@ -2032,7 +2037,7 @@ class _ChatPageState extends State<ChatPage> {
                 Navigator.pop(context); // 先關掉選單
 
                 // 🚩 啟動截圖模式魔法
-                setState(() {
+                if (mounted) setState(() {
                   _isScreenshotMode = true;
                   _selectedMessageIds.clear(); // 先清空舊的
                   _selectedMessageIds.add(message.id); // 把目前長按的這句勾起來
@@ -2357,7 +2362,7 @@ class _ChatPageState extends State<ChatPage> {
 
       await _sessionDocRef!.update(updateData);
 
-      setState(() {
+      if (mounted) setState(() {
         _currentStoryTime = null;
         _currentStoryLocation = null;
       });
@@ -2432,7 +2437,7 @@ class _ChatPageState extends State<ChatPage> {
                   maxLines: null, // 允許多行輸入
                   onChanged: (text) {
                     // ✨ 只要鍵盤有動靜，就馬上重算一次字數！
-                    setState(() {});
+                    if (mounted) setState(() {});
                   },
                   decoration: InputDecoration(
                     hintText: isAiMessage ? l10n.chat_edit_ai_hint : l10n.chat_edit_user_hint,
@@ -2573,7 +2578,7 @@ class _ChatPageState extends State<ChatPage> {
               // ✨ VIP 通道：如果是網頁版
               if (kIsWeb) {
                 await _recorder!.startRecorder(toFile: 'web_audio_record.webm', codec: Codec.opusWebM);
-                sheetSetState(() {
+                if (mounted) setState(() {
                   isCurrentlyRecording = true;
                   finalAudioPath = null;
                 });
@@ -2589,7 +2594,7 @@ class _ChatPageState extends State<ChatPage> {
               final tempDir = await getTemporaryDirectory();
               final path = '${tempDir.path}/flutter_sound_${DateTime.now().millisecondsSinceEpoch}.aac';
               await _recorder!.startRecorder(toFile: path, codec: Codec.aacADTS);
-              sheetSetState(() {
+              if (mounted) setState(() {
                 isCurrentlyRecording = true;
                 finalAudioPath = null;
               });
@@ -2598,10 +2603,12 @@ class _ChatPageState extends State<ChatPage> {
             Future<void> stopRecording() async {
               if (!isCurrentlyRecording) return;
               String? path = await _recorder!.stopRecorder();
-              sheetSetState(() {
-                isCurrentlyRecording = false;
-                finalAudioPath = path;
-              });
+              if (mounted) {
+                setState(() {
+                  isCurrentlyRecording = false;
+                  finalAudioPath = path;
+                });
+              }
               debugPrint("✅ 錄音結束，檔案位置: $finalAudioPath");
             }
 
@@ -2709,7 +2716,7 @@ class _ChatPageState extends State<ChatPage> {
                                 onUseEgg: (eggData) {
                                   if (eggData['setScene'] != null &&
                                       eggData['setScene'].toString().isNotEmpty) {
-                                    setState(() {
+                                    if (mounted) setState(() {
                                       _currentStoryLocation = eggData['setScene'];
                                     });
                                   }
@@ -2921,7 +2928,7 @@ class _ChatPageState extends State<ChatPage> {
             return SimpleDialogOption(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
               onPressed: () async {
-                setState(() {
+                if (mounted) setState(() {
                   _currentMode = mode;
                 });
                 if (_sessionId != null) {
@@ -3160,7 +3167,7 @@ class _ChatPageState extends State<ChatPage> {
 
     // 3. 🛡️ 啟動雲端同步！
     // 我們先扣除本地點數並加好感度 (讓玩家感覺「秒更新」)，同時非同步上傳 Firebase
-    setState(() {
+    if (mounted) setState(() {
       _flowerPoints -= gift['cost'] as int; // 扣除花花點數
       _currentFriendship += affectionChange; // 玩家畫面愛心數字立刻跳動
     });
@@ -3593,7 +3600,7 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             TextButton(
               onPressed: () {
-                setState(() {
+                if (mounted) setState(() {
                   _isScreenshotMode = false;
                   _selectedMessageIds.clear();
                 });
@@ -3815,7 +3822,7 @@ class _ChatPageState extends State<ChatPage> {
                         text: l10n.inviteToMeet(_currentCharacter.name)
                     );
 
-                    setState(() {
+                    if (mounted) setState(() {
                       _isScreenshotMode = false;
                       _selectedMessageIds.clear();
                     });
@@ -3848,10 +3855,22 @@ class _ChatPageState extends State<ChatPage> {
       onTap: () {
         FocusScope.of(context).unfocus(); // 👈 鍵盤消失術！
       },
-      // 👇 🌟 總裁，魔法 Container 包在最外面 👇
+      // 👇 🌟 魔法 Container 包在最外面 👇
       child: Container(
         decoration: themeNotifier.characterChatBackground, // 📸 這裡負責顯示專屬照片或預設漸層
-        child: Scaffold(
+        // ✨✨✨ 總裁修正：掛上「主題感」半透明濾鏡 ✨✨✨
+        child: Stack(
+            children: [
+              // 🌟 第一層：這塊布現在會轉色了！
+              Positioned.fill(
+                child: Container(
+                  // 這裡做個聰明的判斷,如果目前有照片背景，我們用深一點的顏色 (surface 0.6) 讓字體清晰,如果只是純色/漸層背景，我們用淡淡的主題色 (primary 0.25) 增加質感
+                  color: _currentCharacter.avatarPath.startsWith('http')
+                      ? theme.colorScheme.surface.withValues(alpha: 0.6) // 有照片：深色深邃
+                      : theme.colorScheme.primary.withValues(alpha: 0.25), // 沒照片：主題渲染
+                ),
+              ),
+    Scaffold(
           backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
           appBar: AppBar(
             title: Text(_currentCharacter.name),
@@ -4211,9 +4230,11 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
+          ],
             ],
-    ],
           ),
+    ),
+            ],
         ),
       ),
     );
@@ -4425,7 +4446,7 @@ class _ChatPageState extends State<ChatPage> {
           onTap: () {
             // 🚩 短按：如果正在截圖模式，就執行勾選/取消
             if (_isScreenshotMode) {
-              setState(() {
+              if (mounted) setState(() {
                 if (isSelected) {
                   _selectedMessageIds.remove(message.id);
                   // 如果全部取消了，就自動關閉截圖模式

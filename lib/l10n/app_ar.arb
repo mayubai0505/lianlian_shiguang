@@ -1550,5 +1550,16 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "shop_monthly_card_name": "【Lianlian ShiGuang: عقد النجوم】",
+    "shop_monthly_card_status_active": "عقد ساري المفعول: متبقي {days} يوم",
+    "@shop_monthly_card_status_active": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_monthly_card_status_inactive": "افتحي مكافأة زيادة النجوم لمدة 30 يوماً الآن",
+    "shop_monthly_card_limit_reached": "تم الوصول إلى الحد الأقصى"
 }

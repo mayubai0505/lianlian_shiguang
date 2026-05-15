@@ -3395,6 +3395,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return '尚未扣款。\n\n(錯誤碼: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【戀戀拾光．星之契約】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return '契約生效中：剩餘 $days 天';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive => '立即開啟 30 天星光加成獎勵';
+
+  @override
+  String get shop_monthly_card_limit_reached => '已達上限';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6788,6 +6802,20 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String shop_purchase_failed_body(String errorCode) {
     return '尚未扣款。\n\n(错误码: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【恋恋拾光．星之契约】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return '契约生效中：剩余 $days 天';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive => '立即开启 30 天星光加成奖励';
+
+  @override
+  String get shop_monthly_card_limit_reached => '已达上限';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10181,4 +10209,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String shop_purchase_failed_body(String errorCode) {
     return '尚未扣款。\n\n(錯誤碼: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【戀戀拾光．星之契約】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return '契約生效中：剩餘 $days 天';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive => '立即開啟 30 天星光加成獎勵';
+
+  @override
+  String get shop_monthly_card_limit_reached => '已達上限';
 }

@@ -3608,4 +3608,19 @@ class AppLocalizationsHi extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return 'कोई शुल्क नहीं लिया गया है।\n\n(त्रुटि कोड: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【Lianlian ShiGuang: स्टार कॉन्ट्रैक्ट】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return 'अनुबंध सक्रिय है: $days दिन शेष';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive =>
+      'अभी 30 दिनों का स्टारलाइट बोनस पुरस्कार सक्रिय करें';
+
+  @override
+  String get shop_monthly_card_limit_reached => 'सीमा समाप्त';
 }

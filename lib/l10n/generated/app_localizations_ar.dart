@@ -3555,4 +3555,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return 'لم يتم خصم أي مبلغ.\n\n(رمز الخطأ: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【Lianlian ShiGuang: عقد النجوم】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return 'عقد ساري المفعول: متبقي $days يوم';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive =>
+      'افتحي مكافأة زيادة النجوم لمدة 30 يوماً الآن';
+
+  @override
+  String get shop_monthly_card_limit_reached => 'تم الوصول إلى الحد الأقصى';
 }

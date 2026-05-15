@@ -1196,37 +1196,30 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
             return null;
         }
 
-        // ==========================================
-        // ✂️ 【修正 1：拆開 JSON 包裝紙，只拿乾淨台詞】
-        // ==========================================
-        // 在 notifyPlayerNewMessage 函式裡面
         let previewText = "妳收到了一則新訊息 ✨";
-        const rawContent = messageData.content || messageData.text || "";
+        // 🌟 優先從 cleanDisplayText (text 欄位) 拿資料，如果沒有才去解析 content
+        const rawContent = messageData.text || messageData.content || "";
 
         try {
-            // 🌟 總裁修正：不要用 JSON.parse，改用「吸塵器」Regex
+            // 🎯 使用正則表達式「吸塵器」，不管內容多亂，只吸 response 裡的對白
             const regex = /"response"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
             const matches = [...rawContent.matchAll(regex)];
 
             if (matches.length > 0) {
-                // 把所有片段吸出來並接在一起
+                // 把所有片段接在一起，並處理換行
                 previewText = matches.map(m => m[1]).join(" ")
                     .replace(/\\n/g, " ")
                     .replace(/\\"/g, '"');
             } else {
-                previewText = rawContent; // 真的吸不到才用原始內容
+                // 如果完全不含 JSON 格式，就直接用原始文字
+                previewText = rawContent;
             }
         } catch (e) {
-            previewText = rawContent;
+            previewText = "（發送了一則訊息）";
         }
 
-        // ... 剩下的通知發送邏輯 ...
-
-        // 清洗文字（去掉多餘引號、換行等），讓通知更美觀
-        previewText = previewText.replace(/\\n/g, " ").replace(/"/g, "").trim();
-        if (previewText.length > 40) {
-            previewText = previewText.substring(0, 40) + "...";
-        }
+        // 限制通知長度
+        if (previewText.length > 40) previewText = previewText.substring(0, 40) + "...";
 
         // ==========================================
         // 🔎 【修正 2：對準路徑抓角色姓名與頭像】

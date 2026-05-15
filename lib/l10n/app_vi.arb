@@ -1509,5 +1509,16 @@
         "type": "String"
       }
     }
-  }
+  },
+  "shop_monthly_card_name": "【Luyến Luyến Thập Quang · Tinh Chi Khế Ước】",
+  "shop_monthly_card_status_active": "Khế ước đang hiệu lực: Còn lại {days} ngày",
+  "@shop_monthly_card_status_active": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_monthly_card_status_inactive": "Kích hoạt ngay phần thưởng tăng thêm Tinh quang 30 ngày",
+  "shop_monthly_card_limit_reached": "Đã đạt giới hạn"
 }

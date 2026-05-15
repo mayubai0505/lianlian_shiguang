@@ -113,22 +113,128 @@ class _StorePageState extends State<StorePage> {
               ],
             ),
             // --- 3. 下方滑動區塊：分頁內容 (TabBarView) ---
+            // --- 3. 下方滑動區塊：分頁內容 (TabBarView) ---
             Expanded(
               child: TabBarView(
                 children: [
-                  // 第一頁：點數儲值商品列表
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: _buildProductList(context, purchaseService),
+                  // ✨ 第一頁：點數儲值商品列表 (注入月卡邏輯)
+                  StreamBuilder<DocumentSnapshot>(
+                    // 🌟 這裡持續監控玩家的資料，一買完月卡，秒數就會跳動
+                    stream: user != null
+                        ? FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots()
+                        : null,
+                    builder: (context, snapshot) {
+                      // 抓取當前玩家的資料包
+                      final userData = (snapshot.data?.data() as Map<String, dynamic>?) ?? {};
+
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            // 🏆 總裁的「星之契約」黃金展位，插在列表最上方
+                            _buildMonthlyCardSection(context, purchaseService, userData),
+
+                            // 📦 接續原本的點數商品列表
+                            _buildProductList(context, purchaseService),
+                          ],
+                        ),
+                      );
+                    },
                   ),
 
-                  // 第二頁：收支明細列表
+                  // 第二頁：收支明細列表 (維持不變)
                   _buildHistoryList(),
                 ],
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  int _calculateDaysRemaining(String? endDateStr) {
+    if (endDateStr == null) return 0;
+    try {
+      DateTime endDate = DateTime.parse(endDateStr);
+      DateTime now = DateTime.now();
+      if (endDate.isBefore(now)) return 0;
+      return endDate.difference(now).inDays;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  Widget _buildMonthlyCardSection(BuildContext context, PurchaseService purchaseService, Map<String, dynamic> userData) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    // 🌟 1. 計算剩餘天數
+    String? endDateStr = userData['monthlySubEndDate'];
+    int daysRemaining = _calculateDaysRemaining(endDateStr);
+
+    // 🌟 2. 總裁的半年封頂邏輯：如果剩餘天數 > 150 天，就不給再買 (因為再買 30 天就超過 180 了)
+    bool canPurchase = daysRemaining <= 150;
+
+    // 🌟 3. 找出月卡商品 (根據 ID 搜尋)
+    final monthlyCardWrapper = purchaseService.products.firstWhere(
+          (p) => p.productDetails.id == 'com_lianlian_monthly_card',
+      orElse: () => purchaseService.products.first, // 防呆
+    );
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        // ✨ 總裁，這張卡片要給它華麗的金色或流星質感
+        gradient: LinearGradient(
+          colors: [Colors.amber.shade300, Colors.orange.shade400],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.orange.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5))],
+      ),
+      child: Row(
+        children: [
+          // 左側：月卡圖示與標題
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 🌟 使用正式翻譯：【戀戀拾光．星之契約】
+                Text(
+                  l10n.shop_monthly_card_name,
+                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                // 🌟 動態切換：生效中(含天數) 或 立即開啟
+                Text(
+                  daysRemaining > 0
+                      ? l10n.shop_monthly_card_status_active(daysRemaining)
+                      : l10n.shop_monthly_card_status_inactive,
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          // 右側：按鈕
+          ElevatedButton(
+            onPressed: (canPurchase && !monthlyCardWrapper.isPending)
+                ? () => purchaseService.buyProduct(monthlyCardWrapper.productDetails)
+                : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.orange,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              disabledBackgroundColor: Colors.white.withValues(alpha: 0.5),
+            ),
+            child: monthlyCardWrapper.isPending
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+            // 🌟 按鈕文字：顯示價格 或 已達上限
+                : Text(canPurchase ? "\$250" : l10n.shop_monthly_card_limit_reached),
+          ),
+        ],
       ),
     );
   }

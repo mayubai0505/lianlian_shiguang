@@ -3631,4 +3631,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String shop_purchase_failed_body(String errorCode) {
     return 'No se ha realizado ningún cargo.\n\n(Código de error: $errorCode)';
   }
+
+  @override
+  String get shop_monthly_card_name => '【Lianlian ShiGuang: Contrato Estelar】';
+
+  @override
+  String shop_monthly_card_status_active(int days) {
+    return 'Contrato activo: $days días restantes';
+  }
+
+  @override
+  String get shop_monthly_card_status_inactive =>
+      'Activa las bonificaciones de luz estelar de 30 días ahora';
+
+  @override
+  String get shop_monthly_card_limit_reached => 'Límite alcanzado';
 }

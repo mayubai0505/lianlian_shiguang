@@ -1509,5 +1509,16 @@
                 "type": "String"
             }
         }
-    }
+    },
+    "shop_monthly_card_name": "【Lianlian ShiGuang: สัญญาแห่งดวงดาว】",
+    "shop_monthly_card_status_active": "สัญญามีผลอยู่: เหลืออีก {days} วัน",
+    "@shop_monthly_card_status_active": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_monthly_card_status_inactive": "เปิดใช้งานรางวัลโบนัสดวงดาว 30 วันทันที",
+    "shop_monthly_card_limit_reached": "ถึงขีดจำกัดแล้ว"
 }

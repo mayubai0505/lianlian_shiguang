@@ -48,6 +48,8 @@ class PurchaseService extends ChangeNotifier {
     }
   }
 
+
+
   Future<void> _loadProducts() async {
     // ✨ 修改 1：換上總裁在 Google 後台設定的「真實暗號」
     const Set<String> productIds = {
@@ -152,17 +154,31 @@ class PurchaseService extends ChangeNotifier {
       int pointsToAdd = 0;
       Map<String, dynamic> updateData = {};
 
+      // ✨ 修正後的 _deliverPurchase 片段
       if (productId == 'com_lianlian_monthly_card') {
         pointsToAdd = 250;
-        updateData['isMonthlySubscribed'] = true;
-        updateData['monthlySubEndDate'] = DateTime.now().add(const Duration(days: 30)).toIso8601String();
-      } else if (productId.startsWith('com.lianlian.points_')) {
-        int basePoints = int.tryParse(productId.split('_').last) ?? 0;
-        if (isFirstTime) {
-          pointsToAdd = basePoints * 2;
-        } else {
-          pointsToAdd = basePoints;
+
+        // 1. 抓出舊的到期日 (如果是第一次買，就以現在為準)
+        DateTime now = DateTime.now();
+        DateTime currentEndDate = data['monthlySubEndDate'] != null
+            ? DateTime.parse(data['monthlySubEndDate'])
+            : now;
+
+        // 2. 決定「起跳點」：如果已經過期了，從現在開始算；如果還沒過期，從舊到期日往後加
+        DateTime baseDate = currentEndDate.isBefore(now) ? now : currentEndDate;
+        DateTime newEndDate = baseDate.add(const Duration(days: 30));
+
+        // 3. 🌟 總裁的半年封頂條款 (180 天)
+        if (newEndDate.difference(now).inDays > 180) {
+          newEndDate = now.add(const Duration(days: 180));
+          print("⚠️ 已達半年上限，調整到期日為 180 天後");
         }
+
+        updateData['isMonthlySubscribed'] = true;
+        updateData['monthlySubEndDate'] = newEndDate.toIso8601String();
+
+        // 💡 小提醒：為了方便商店顯示，我們多存一個給前端看的欄位
+        updateData['monthlyCardStatus'] = 'active';
       }
 
       if (pointsToAdd > 0) {

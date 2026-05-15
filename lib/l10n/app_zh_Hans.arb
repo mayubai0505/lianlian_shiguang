@@ -1521,5 +1521,16 @@
         "type": "String"
       }
     }
-  }
+  },
+  "shop_monthly_card_name": "【恋恋拾光．星之契约】",
+  "shop_monthly_card_status_active": "契约生效中：剩余 {days} 天",
+  "@shop_monthly_card_status_active": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_monthly_card_status_inactive": "立即开启 30 天星光加成奖励",
+  "shop_monthly_card_limit_reached": "已达上限"
 }
