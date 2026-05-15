@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class ButterflyLoadingView extends StatefulWidget {
   const ButterflyLoadingView({super.key});
@@ -27,6 +26,7 @@ class _ButterflyLoadingViewState extends State<ButterflyLoadingView> {
 
   @override
   void dispose() {
+    _controller.pause();    // 先暫停影片
     _controller.dispose(); // 關掉對話框時，記得釋放記憶體
     super.dispose();
   }

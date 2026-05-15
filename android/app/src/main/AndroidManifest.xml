@@ -29,11 +29,6 @@
             android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token" />
 
-        <!-- 🌟 告訴系統：推播通知的預設小圖示用哪一張 -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_notification" />
-
 
         <!-- 2. 強制指定所有 Firebase 推播都走「最高權重」的頻道 -->
         <meta-data

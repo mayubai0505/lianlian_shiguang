@@ -316,7 +316,6 @@ let relationContext = "";
                                 "空氣突然安靜了一秒，理智與衝動在腦海中劇烈拉扯"
                             ];
                             const currentStateDice = randomStates[Math.floor(Math.random() * randomStates.length)];
-                            // 👆👆👆 貼到這裡 👆👆👆
 
         // ✨✨✨ 新增：Gemini (生活陪伴) 模式 ✨✨✨
         if (chatMode === "gemini") {
@@ -627,159 +626,171 @@ let relationContext = "";
                                           cost: cost, isBirthdayFreebie: isBirthdayFreebie
                                       });
 
-                                      return res.status(200).json({ status: "success", message: "回覆中...", requestId: requestDocRef.id });
-                                  } catch (error) {
-                                      console.error("大腦故障:", error);
-                                      if (!res.headersSent) res.status(500).json({ error: "服務暫時中斷" });
-                                  }
-                              });
-                          });
 
-
-                          exports.translateText = onCall({ region: "asia-east1" }, async (request) => {
-                              if (!request.auth) throw new HttpsError("unauthenticated", "請先登入。");
-                              const { text, targetLanguage } = request.data;
-                              try {
-                                  let [translations] = await translateClient.translate(text, targetLanguage);
-                                  return { translatedText: Array.isArray(translations) ? translations[0] : translations };
-                              } catch (error) {
-                                  throw new HttpsError("internal", "翻譯失敗");
-                              }
-                          });
                        // ==========================================
-                       // 🌟 幕後大腦總部：處理 AI 請求與惡鬼催稿
-                       // ==========================================
-                       exports.processAiRequest = onDocumentCreated({
-                           region: "asia-east1",
-                           secrets: [openRouterApiKey],
-                           document: "users/{userId}/aiRequests/{requestId}",
-                           timeoutSeconds: 300,
-                           memory: "1GiB"
-                       }, async (event) => {
-                           const snapshot = event.data;
-                           if (!snapshot) return;
+                                   // 🌟🌟🌟 啟動引擎：直通車變數初始化 🌟🌟🌟
+                                   // ==========================================
+                                   let finalResponseText = "";
+                                   let finalVoiceText = "";
+                                   let finalAffectionChange = 0;
+                                   let loopCount = 0;
 
-                           const data = snapshot.data();
+                                   // 🎯 智慧分流：根據模式決定字數與催稿次數
+                                   let TARGET_LENGTH = 50;
+                                   let MAX_LOOPS = 1;
 
-                           // 如果不是處理中的任務就跳過 (防呆機制)
-                           if (data.status !== "processing") return;
+                                   if (chatMode === "story" || chatMode === "immersive") {
+                                       TARGET_LENGTH = chatMode === "immersive" ? 500 : 350;
+                                       MAX_LOOPS = 2; // 給大模型兩次補字機會
+                                   }
 
-                           // ✨ 關鍵修復：從路徑參數中抓取 userId，否則後面不知道要把信寄給誰！
-                           const userId = event.params.userId;
+                                   // 準備對話紀錄
+                                   let currentMessages = [...trimmedHistory];
+                                   currentMessages.unshift({ role: "system", content: systemPrompt }); // 塞入大劇本
+                                   currentMessages.push({ role: "user", content: userMessage }); // 塞入玩家的話
 
-                           try {
-                               let TARGET_LENGTH = 0;
-                               let MAX_LOOPS = 1;
+                                   // ==========================================
+                                   // 🔄 總裁的惡鬼催稿迴圈 (直通車版)
+                                   // ==========================================
+                                   while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
+                                       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                                           method: "POST",
+                                           headers: {
+                                               "Authorization": `Bearer ${openRouterApiKey.value()}`,
+                                               "Content-Type": "application/json",
+                                           },
+                                           body: JSON.stringify({
+                                               model: config.modelId || "google/gemini-2.5-flash-lite",
+                                               messages: currentMessages,
+                                               max_tokens: config.maxTokens || 150,
+                                               temperature: config.temperature || 0.7,
+                                               response_format: { type: "json_object" }
+                                           })
+                                       });
 
-                               // ✨ 智慧分流：總裁的 Grok 專屬皮鞭機制
-                               if (data.chatMode === "story" || data.chatMode === "immersive") {
-                                   TARGET_LENGTH = data.chatMode === "immersive" ? 500 : 350;
+                                       const aiResult = await response.json();
 
-                                   // 已經換成 Grok，不需要再判斷 Hermes 了！
-                                   // 預設給 Grok 最多 2 次加班機會補齊字數 (如果總裁覺得 Grok 字數還是太少，可以改成 3)
-                                   MAX_LOOPS = 2;
+                                       if (!aiResult.choices || aiResult.choices.length === 0) {
+                                           throw new Error("AI 斷線或沒有回傳");
+                                       }
 
-                               } else {
-                                   TARGET_LENGTH = 50;  // 閒聊模式保持輕快，不加班
-                                   MAX_LOOPS = 1;
-                               }
+                                       const rawContent = aiResult.choices[0].message.content;
 
-                               let finalResponseText = "";
-                               let finalVoiceText = "";
-                               let finalAffectionChange = 0;
-                               let loopCount = 0;
+                                       let parsedData;
+                                       try {
+                                           parsedData = JSON.parse(rawContent.replace(/```json|```/g, "").trim());
+                                       } catch (e) {
+                                           console.error("JSON 壞掉了，啟動備用方案", rawContent);
+                                           parsedData = { response: rawContent, affectionChange: 0, voiceText: rawContent };
+                                       }
 
-                               let currentMessages = [
-                                   { role: "system", content: data.systemPrompt },
-                                   ...data.chatHistory,
-                                   { role: "user", content: data.finalUserMessage }
-                               ];
+                                       finalResponseText += parsedData.response + "\n\n";
+                                       if (parsedData.voiceText) {
+                                           finalVoiceText += parsedData.voiceText + "\n";
+                                       }
 
-                               // 🔄 總裁的惡鬼催稿迴圈
-                               while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
+                                       if (loopCount === 0) {
+                                           finalAffectionChange = parsedData.affectionChange || 0;
+                                       }
 
-                                   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                                       method: "POST",
-                                       headers: {
-                                           "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                                           "Content-Type": "application/json",
-                                       },
-                                       body: JSON.stringify({
-                                           model: data.modelId || "meta-llama/llama-3.1-8b-instruct",
-                                           messages: currentMessages,
-                                           max_tokens: data.maxTokens || 1000,
-                                           temperature: data.temperature || 0.7,
-                                           response_format: { type: "json_object" }
-                                       })
+                                       loopCount++;
+
+                                       if (finalResponseText.length >= TARGET_LENGTH || loopCount >= MAX_LOOPS) {
+                                           break;
+                                       }
+
+                                       console.log(`[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`);
+
+                                       currentMessages.push({ role: "assistant", content: parsedData.response });
+                                       currentMessages.push({
+                                           role: "user",
+                                           content: "（系統強制指令：字數嚴重不足！請保持 JSON 格式回傳，嚴格延續情緒繼續擴寫細節！）"
+                                       });
+                                   }
+
+                                   // ==========================================
+                                   // 🌟🌟🌟 總裁專屬：雲端代寫系統正式啟動 🌟🌟🌟
+                                   // ==========================================
+                                   if (sessionId) {
+                                                   try {
+                                                       // 🌟 總裁修正：脫殼手術
+                                                       // 我們要確保存入 text 的內容是「純對話」，不帶任何 JSON 符號
+                                                       let cleanDisplayText = finalResponseText;
+                                                       let cleanVoiceText = finalVoiceText;
+
+                                                       // 檢查內容是否還帶著 JSON 的殼
+                                                       if (cleanDisplayText.includes('"response":')) {
+                                                           try {
+                                                               // 嘗試抓取 "response":"..." 之間的內容
+                                                               // 使用正則表達式是最穩的，因為直通車迴圈可能會把多個 JSON 串在一起
+                                                               const matches = [...cleanDisplayText.matchAll(/"response"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
+                                                               if (matches.length > 0) {
+                                                                   // 把所有片段組合起來，並處理反斜槓轉義
+                                                                   cleanDisplayText = matches.map(m => m[1]).join("\n\n")
+                                                                       .replace(/\\n/g, "\n")
+                                                                       .replace(/\\"/g, '"');
+                                                               }
+                                                           } catch (e) {
+                                                               console.error("脫殼失敗，維持原樣", e);
+                                                           }
+                                                       }
+
+                                                       // 對語音文字也做同樣處理
+                                                       if (cleanVoiceText.includes('"voiceText":')) {
+                                                           const vMatches = [...cleanVoiceText.matchAll(/"voiceText"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
+                                                           if (vMatches.length > 0) {
+                                                               cleanVoiceText = vMatches.map(m => m[1]).join(" ")
+                                                                   .replace(/\\n/g, " ")
+                                                                   .replace(/\\"/g, '"');
+                                                           }
+                                                       }
+
+                                                       const appId = body.appId || "lianlianshiguang";
+                                                       const sessionRef = admin.firestore().collection('artifacts').doc(appId).collection('chat_sessions').doc(sessionId);
+
+                                                       // ☁️ 寫入資料庫 (這會觸發您的 notifyPlayerNewMessage 推播)
+                                                       await sessionRef.collection('messages').add({
+                                                           sender: 'ai',
+                                                           text: cleanDisplayText.trim(),      // 👈 這裡是給通知和聊天室看的「乾淨文字」
+                                                           voiceText: cleanVoiceText.trim(),
+                                                           type: 'text',
+                                                           timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                                                           characterId: characterProfile.id,
+                                                           characterName: name,
+                                                           role: 'assistant',
+                                                           content: finalResponseText          // 👈 這裡保留原始 JSON 做備份沒關係
+                                                       });
+
+                                                       // ☁️ 更新外層房間資料
+                                                       await sessionRef.update({
+                                                           lastMessage: cleanDisplayText.trim(), // 👈 房間列表也要顯示乾淨的文字
+                                                           lastActivity: admin.firestore.FieldValue.serverTimestamp(),
+                                                           friendshipScore: admin.firestore.FieldValue.increment(finalAffectionChange),
+                                                           unreadCount: admin.firestore.FieldValue.increment(1)
+                                                       });
+
+                                                       console.log(`✅ [雲端代寫成功] 已經存入乾淨的文字！`);
+                                                   } catch (dbError) {
+                                                       console.error("🔴 [雲端代寫崩潰]:", dbError);
+                                                   }
+                                               }
+
+                                   console.log(`✅ 任務完成！總字數: ${finalResponseText.length}，給了 ${finalAffectionChange} 分！`);
+
+                                   // 最後回傳給手機端 (這必須是整個 try 區塊的最後一行！)
+                                   return res.status(200).json({
+                                       status: "success",
+                                       response: finalResponseText,
+                                       voiceText: finalVoiceText,
+                                       affectionChange: finalAffectionChange
                                    });
 
-                                   const aiResult = await response.json();
-
-                                   if (!aiResult.choices || aiResult.choices.length === 0) {
-                                       throw new Error("AI 斷線或沒有回傳");
-                                   }
-
-                                   const rawContent = aiResult.choices[0].message.content;
-
-                                   let parsedData;
-                                   try {
-                                       parsedData = JSON.parse(rawContent.replace(/```json|```/g, "").trim());
-                                   } catch (e) {
-                                       console.error("JSON 壞掉了，啟動備用方案", rawContent);
-                                       parsedData = { response: rawContent, affectionChange: 0, voiceText: rawContent };
-                                   }
-
-                                   finalResponseText += parsedData.response + "\n\n";
-                                   if (parsedData.voiceText) {
-                                       finalVoiceText += parsedData.voiceText + "\n";
-                                   }
-
-                                   if (loopCount === 0) {
-                                       finalAffectionChange = parsedData.affectionChange || 0;
-                                   }
-
-                                   loopCount++;
-
-                                   if (finalResponseText.length >= TARGET_LENGTH || loopCount >= MAX_LOOPS) {
-                                       break;
-                                   }
-
-                                   console.log(`[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`);
-
-                                   currentMessages.push({ role: "assistant", content: parsedData.response });
-                                   currentMessages.push({
-                                       role: "user",
-                                       content: "（系統強制指令：字數嚴重不足！請保持 JSON 格式回傳，嚴格延續剛剛最後一秒的動作與情緒，繼續擴寫細節，直到畫面張力完整為止！）"
-                                   });
+                               } catch (error) {
+                                   console.error(`❌ 任務發生災難:`, error);
+                                   return res.status(500).json({ status: "error", errorMessage: error.message });
                                }
-
-                               // 1. 更新任務單狀態
-                               await snapshot.ref.update({
-                                   status: "completed",
-                                   response: finalResponseText.trim(),
-                                   affectionChange: finalAffectionChange,
-                                   voiceText: finalVoiceText.trim(),
-                                   completedAt: admin.firestore.FieldValue.serverTimestamp()
-                               });
-
-                               // 🌟🌟🌟 特務緊急修復：把信件真正投遞到聊天室裡！🌟🌟🌟
-                               await admin.firestore().collection("users").doc(userId).collection("chatMessages").add({
-                                   role: "assistant",
-                                   content: finalResponseText.trim(),
-                                   voiceText: finalVoiceText.trim(),
-                                   storyTime: data.newStoryTime || null,
-                                   storyLocation: data.newStoryLocation || null,
-                                   timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                                   isUnread: true
-                               });
-
-                               console.log(`✅ 任務完成！總字數: ${finalResponseText.length}，給了 ${finalAffectionChange} 分！`);
-
-                           } catch (error) {
-                               console.error(`❌ 任務發生災難:`, error);
-                               await snapshot.ref.update({ status: "error", errorMessage: error.message });
-                           }
-                       });
+                           }); // 👈 確保有這個 cors 的結尾
+                       }); // 👈 確保有這個 onRequest 的結尾
 
                           exports.onPostCreated = onDocumentCreated({
                               region: "asia-east1",
@@ -1130,102 +1141,155 @@ let relationContext = "";
                               }
                           });
 
-                          // ==========================================
-                          // 💌 男主傳訊自動推播接線生 (總裁客製版)
-                          // ==========================================
-                          exports.notifyPlayerNewMessage = onDocumentCreated({
-                              region: "asia-east1",
-                              document: "users/{userId}/chatMessages/{messageId}",
-                              timeoutSeconds: 60,
-                              memory: "256MiB"
-                          }, async (event) => {
-                              const snap = event.data;
-                              if (!snap) return;
-
-                              const messageData = snap.data();
-                              const userId = event.params.userId;
-
-                              // 🌟 1. 修正身分：資料庫裡叫 role，值是 assistant
-                              if (messageData.role !== "assistant") {
-                                  return null;
-                              }
-
+                          // 這個要獨立放在外面，不要被包在 getAiResponse 裡面
+                          exports.translateText = onCall({ region: "asia-east1" }, async (request) => {
+                              if (!request.auth) throw new HttpsError("unauthenticated", "請先登入。");
+                              if (!translateClient) {
+                                          translateClient = new TranslationServiceClient();
+                                      }
+                              const { text, targetLanguage } = request.data;
                               try {
-                                  const userDoc = await admin.firestore().collection("users").doc(userId).get();
-                                  if (!userDoc.exists) return null;
-
-                                  const fcmToken = userDoc.data().fcmToken;
-                                  if (!fcmToken) {
-                                      console.log(`玩家 ${userId} 沒有 Token，無法發送推播。`);
-                                      return null;
-                                  }
-
-                                  // 🌟 2. 修正內容：解析資料庫裡的 JSON 字串 content
-                                  let previewText = "妳收到了一則新訊息 ✨";
-                                  if (messageData.content) {
-                                      try {
-                                          // 將 {"response": "..."} 這種字串轉成真正的物件
-                                          const parsedContent = JSON.parse(messageData.content);
-                                          // 優先拿 response 的內容，這才是男主說的話
-                                          previewText = parsedContent.response || parsedContent.voiceText || "新訊息";
-                                      } catch (e) {
-                                          // 如果解析失敗，就用原始文字
-                                          previewText = messageData.content;
-                                      }
-                                  }
-
-                                  if (previewText.length > 40) {
-                                      previewText = previewText.substring(0, 40) + "...";
-                                  }
-
-                                  const charId = messageData.characterId || "unknown_character";
-
-                                  // 🌟 動態查詢角色名字
-                                  let charName = '戀戀拾光';
-
-                                  try {
-                                      // 利用包裹傳來的 characterId，去資料庫找這份檔案
-                                      const charDoc = await admin.firestore().collection('characters').doc(String(charId)).get();
-
-                                      if (charDoc.exists) {
-                                          charName = charDoc.data().name; // 👉 精準抓到 "程安" 或 "程澈"！
-                                      }
-                                  } catch (error) {
-                                      console.error("查無此人名字:", error);
-                                  }
-
-                                  // 🌟 組裝沒有 💌 且名字正確的推播包裹 (包含 Android 與 iOS 設定)
-                                  const payload = {
-                                      token: fcmToken,
-                                      notification: {
-                                          title: charName, // 這裡會自動變成資料庫裡的名字
-                                          body: previewText,
-                                          image: charDoc.data().avatarPath
-                                      },
-                                      data: {
-                                          type: 'chat',
-                                          characterId: String(charId),
-                                          click_action: 'FLUTTER_NOTIFICATION_CLICK',
-                                      },
-                                      android: {
-                                          priority: "high",
-                                          notification: {
-                                              channelId: "high_importance_channel",
-                                              defaultVibrateTimings: true,
-                                              defaultLightSettings: true
-                                          }
-                                      },
-                                      apns: {
-                                          payload: {
-                                              aps: {}
-                                          }
-                                      }
-                                  };
-
-                                  console.log(`叮咚！準備發送推播給用戶: ${userId}，內容預覽: ${previewText}`);
-                                  return await admin.messaging().send(payload);
-
+                                  // 這裡確保你有在檔案上方定義過 translateClient
+                                  let [translations] = await translateClient.translate(text, targetLanguage);
+                                  return { translatedText: Array.isArray(translations) ? translations[0] : translations };
                               } catch (error) {
-                                  console.error("推播接線生發生錯誤:", error);
+                                  console.error("翻譯失敗:", error);
+                                  throw new HttpsError("internal", "翻譯失敗");
                               }
                           });
+
+exports.notifyPlayerNewMessage = onDocumentCreated({
+    region: "asia-east1",
+    // 🌟 修正 1：對準真正的聊天室信箱路徑！（原本已正確）
+    document: "artifacts/lianlianshiguang/chat_sessions/{sessionId}/messages/{messageId}",
+    timeoutSeconds: 60,
+    memory: "256MiB"
+}, async (event) => {
+    const snap = event.data;
+    if (!snap) return;
+
+    const messageData = snap.data();
+    const sessionId = event.params.sessionId;
+
+    // 確定是 AI 說的話才發通知
+    if (messageData.sender !== "ai" && messageData.role !== "assistant") {
+        return null;
+    }
+
+    try {
+        // 1. 去 session 拿 userId
+        const sessionDoc = await admin.firestore()
+            .collection('artifacts').doc('lianlianshiguang')
+            .collection('chat_sessions').doc(sessionId).get();
+
+        if (!sessionDoc.exists) return null;
+        const sessionData = sessionDoc.data();
+        const userId = sessionData.userId;
+
+        // 2. 獲取玩家的 FCM Token
+        const userDoc = await admin.firestore().collection("users").doc(userId).get();
+        if (!userDoc.exists) return null;
+
+        const fcmToken = userDoc.data().fcmToken;
+        if (!fcmToken) {
+            console.log(`玩家 ${userId} 沒有 Token，無法發送推播。`);
+            return null;
+        }
+
+        // ==========================================
+        // ✂️ 【修正 1：拆開 JSON 包裝紙，只拿乾淨台詞】
+        // ==========================================
+        // 在 notifyPlayerNewMessage 函式裡面
+        let previewText = "妳收到了一則新訊息 ✨";
+        const rawContent = messageData.content || messageData.text || "";
+
+        try {
+            // 🌟 總裁修正：不要用 JSON.parse，改用「吸塵器」Regex
+            const regex = /"response"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+            const matches = [...rawContent.matchAll(regex)];
+
+            if (matches.length > 0) {
+                // 把所有片段吸出來並接在一起
+                previewText = matches.map(m => m[1]).join(" ")
+                    .replace(/\\n/g, " ")
+                    .replace(/\\"/g, '"');
+            } else {
+                previewText = rawContent; // 真的吸不到才用原始內容
+            }
+        } catch (e) {
+            previewText = rawContent;
+        }
+
+        // ... 剩下的通知發送邏輯 ...
+
+        // 清洗文字（去掉多餘引號、換行等），讓通知更美觀
+        previewText = previewText.replace(/\\n/g, " ").replace(/"/g, "").trim();
+        if (previewText.length > 40) {
+            previewText = previewText.substring(0, 40) + "...";
+        }
+
+        // ==========================================
+        // 🔎 【修正 2：對準路徑抓角色姓名與頭像】
+        // ==========================================
+        const charId = messageData.characterId || sessionData.characterId;
+
+        // 🌟 初始化安全的空箱子：預設名稱與空圖片
+        let charName = '妳的愛人';
+        let charAvatar = null;
+
+        try {
+            // ❌ 原本錯誤路徑：.collection('characters')
+            // ✅ 【關鍵修正】：對準真正的角色檔案大樓
+            const charDoc = await admin.firestore()
+                .collection('artifacts').doc('lianlianshiguang')
+                .collection('public_characters').doc(String(charId)).get();
+
+            if (charDoc.exists) {
+                const charData = charDoc.data();
+                // 🌟 【修正】：將抓到的真正名字和頭像路徑裝進箱子
+                charName = charData.name || charName;
+                charAvatar = charData.avatarPath;
+            }
+        } catch (error) {
+            console.error("查無此人資料:", error);
+        }
+
+        // ==========================================
+        // 🚀 【修正 3：將正確的名字與圖片塞入 Payload】
+        // ==========================================
+        const payload = {
+            token: fcmToken,
+            notification: {
+                title: charName,    // 👈 這裡現在會顯示「程安」或「霍君耀」
+                body: previewText,  // 👈 這裡現在會顯示「(視線從蛋糕移到妳...)」
+                image: charAvatar   // 👈 【修正】：推播右側會顯示角色的頭像
+            },
+            data: {
+                type: 'chat',
+                characterId: String(charId),
+                sessionId: String(sessionId),
+                click_action: 'FLUTTER_NOTIFICATION_CLICK',
+            },
+            android: {
+                priority: "high",
+                notification: {
+                    channelId: "high_importance_channel",
+                    sound: "default",
+                    defaultVibrateTimings: true,
+                    defaultLightSettings: true
+                }
+            },
+            apns: {
+                payload: {
+                    aps: { sound: "default" }
+                }
+            }
+        };
+
+        console.log(`叮咚！準備發送推播給用戶: ${userId}，來自角色的通知: ${charName}`);
+        return await admin.messaging().send(payload);
+
+    } catch (error) {
+        console.error("推播接線生發生錯誤:", error);
+    }
+});

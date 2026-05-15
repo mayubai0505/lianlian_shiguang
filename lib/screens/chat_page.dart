@@ -791,7 +791,6 @@ class _ChatPageState extends State<ChatPage> {
       // B. 把戰利品丟進玩家背包，並顯示精美橫幅
       await _dropEggToBackpack(triggeredEgg);
       // C. 偷偷把劇本塞給 AI (完美對接妳後端的 overrideSystemPrompt)
-      // 這裡我們把玩家的原文照發，但是加上了強大的 secretPrompt
       await _executeMessageSending(
         userText: text, // 玩家說的原文，例如：「把那個放到背包裡」
         imagePath: imagePath,
@@ -1622,194 +1621,93 @@ class _ChatPageState extends State<ChatPage> {
         body: jsonEncode(requestBody),
       );
 
-      // --- 🎯 E. 接收 API 秒回的收據，並派出狙擊手監聽 ---
+      // --- 🎯 E. 接收 API 的直接回覆 (告別舊版監聽器！) ---
       if (response.statusCode == 200) {
         final responseData = jsonDecode(utf8.decode(response.bodyBytes));
         if (responseData['status'] == 'success') {
-          final String requestId = responseData['requestId'];
-          StreamSubscription<DocumentSnapshot>? subscription;
 
-          subscription = FirebaseFirestore.instance.collection('users').doc(userId).collection('aiRequests').doc(requestId).snapshots().listen((snapshot) async {
-            if (!snapshot.exists) return;
-            final data = snapshot.data() as Map<String, dynamic>;
-            final status = data['status'];
+          // 1. 取得 AI 算出的好感度變化
+          int finalAffectionChange = responseData['affectionChange'] ?? 0;
 
-            if (status == 'completed') {
-              subscription?.cancel(); // 拿到資料就馬上收工關閉監聽
+          if (mounted) {
+            // 2. 扣除花花點數與記帳
+            setState(() {
+              _flowerPoints = (_flowerPoints - messageCost).clamp(0, 999999);
+            });
+            FirebaseFirestore.instance.collection('users').doc(userId).update({'flowerPoints': FieldValue.increment(-messageCost)});
+            FirebaseFirestore.instance.collection('users').doc(userId).collection('flower_logs').add({
+              'title': '與 ${_currentCharacter.name} 聊天',
+              'amount': -messageCost,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
 
-              String rawAiContent = data['response'] ?? "";
-              String finalDisplayText = rawAiContent; // 預設為原始字串
-              int finalAffectionChange = data['affectionChange'] ?? 0;
-              String finalVoiceText = "";
+            // 3. 處理好感度與升級動畫
+            if (finalAffectionChange != 0) {
+              int oldScore = _currentFriendship;
+              setState(() {
+                _currentFriendship += finalAffectionChange;
+              });
+              _checkForLevelUp(oldScore, _currentFriendship);
 
-              // 🌟🌟🌟 第一層防護：總裁溫柔拆箱 (嘗試標準 JSON 解析) 🌟🌟🌟
-              try {
-                int startIndex = rawAiContent.indexOf('{');
-                int endIndex = rawAiContent.lastIndexOf('}');
-
-                if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
-                  // 精準挖出大括號的範圍
-                  String pureJson = rawAiContent.substring(startIndex, endIndex + 1);
-                  final Map<String, dynamic> parsedData = jsonDecode(pureJson);
-
-                  // 安全替換成乾淨的對話
-                  finalDisplayText = parsedData['response'] ?? finalDisplayText;
-                  finalVoiceText = parsedData['voiceText'] ?? "";
-
-                  // 安全抓取好感度
-                  if (parsedData['affectionChange'] != null) {
-                    finalAffectionChange = parsedData['affectionChange'] is int
-                        ? parsedData['affectionChange']
-                        : int.tryParse(parsedData['affectionChange'].toString()) ?? finalAffectionChange;
-                  }
-                }
-              } catch (e) {
-                print("⚠️ 標準拆箱失敗，將啟動暴力清潔工: $e");
-              }
-
-              // 🌟🌟🌟 第二層防護：暴力清潔工 (絕對不讓玩家看到代碼) 🌟🌟🌟
-              // 如果 AI 發神經導致第一層失敗，這裡會強制把像程式碼的符號全部剃除
-              finalDisplayText = finalDisplayText
-                  .replaceAll(RegExp(r'"response"\s*:\s*"'), '') // 殺掉 "response": "
-                  .replaceAll(RegExp(r'",?\s*"affectionChange"\s*:\s*-?\d+'), '') // 殺掉好感度數字標籤
-                  .replaceAll(RegExp(r'",?\s*"voiceText"\s*:\s*".*?"?'), '')
-                  .replaceAll('```json', '') // 殺掉 Markdown
-                  .replaceAll('```', '')
-                  .replaceAll(RegExp(r'^\{|\}$'), '') // 拔掉最外層殘留的大括號
-                  .replaceAll(RegExp(r'^"|"$'), '') // 拔掉最外層殘留的雙引號
-                  .trim();
-
-              // ✨ 關鍵核心：處理「雙重跳脫」的換行符號 ✨
-              finalDisplayText = finalDisplayText.replaceAll('\\n', '\n');
-
-              if (mounted) {
-                final String ultimateDisplayText = finalDisplayText.trim().isNotEmpty
-                    ? finalDisplayText
-                    : "（似乎在思考中，請再對我說一次話吧...）";
-
-                if (ultimateDisplayText.trim().isNotEmpty) {
-                  // 1. 更新畫面上的點數
-                  setState(() {
-                    _flowerPoints = (_flowerPoints - messageCost).clamp(0, 999999);
-                  });
-
-                  // 2. 去資料庫扣款
-                  FirebaseFirestore.instance.collection('users').doc(userId).update({'flowerPoints': FieldValue.increment(-messageCost)});
-
-                  // ✨✨✨ 3. 總裁專屬記帳系統：寫入收支明細 ✨✨✨
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userId)
-                      .collection('flower_logs')
-                      .add({
-                    'title': '與 ${_currentCharacter.name} 聊天',
-                    'amount': -messageCost,
-                    'createdAt': FieldValue.serverTimestamp(),
-                  });
-                }
-
-                // 🌟 好感度邏輯 (AI 算出來的動態分數！)
-                if (finalAffectionChange != 0) {
-                  int oldScore = _currentFriendship;
-
-                  setState(() {
-                    _currentFriendship += finalAffectionChange;
-                  });
-
-                  // 升級檢查
-                  _checkForLevelUp(oldScore, _currentFriendship);
-
-                  // 🚩 總裁護身符：限制驚喜卡片跳出次數
-                  if (finalAffectionChange > 0 && !_hasShownAffectionCard) {
-                    _showAffectionAnimation(finalAffectionChange);
-                    _hasShownAffectionCard = true;
-                    print("✅ 這場聊天的驚喜卡片已跳過，系統已自動進入沉浸鎖定模式。");
-                  }
-                }
-
-                // 🌟 寫入 AI 最終乾淨回覆
-                if (widget.shouldSave == true && _messagesCollection != null) {
-                  await _messagesCollection!.add({
-                    'sender': 'ai',
-                    'text': ultimateDisplayText,// 給玩家看的乾淨文字
-                    'voiceText': finalVoiceText, // 🌟🌟🌟 把它默默存進資料庫！
-                    'type': 'text',
-                    'timestamp': FieldValue.serverTimestamp(),
-                    'characterId': characterId,              // 讓橫幅點擊後知道要跳去哪個男主的房間
-                    'characterName': _currentCharacter.name, // 讓橫幅標題顯示男主的名字
-                    'role': 'assistant',
-                    'content': rawAiContent,
-                  });
-
-                  await _sessionDocRef!.update({
-                    'friendshipScore': _currentFriendship,
-                    'lastMessage': ultimateDisplayText, // 這裡改存最乾淨的文字
-                    'lastActivity': FieldValue.serverTimestamp(),
-                  });
-
-                  try {
-                    final userCharRef = FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(userId)
-                        .collection('characters')
-                        .doc(characterId);
-
-                    await FirebaseFirestore.instance.runTransaction((transaction) async {
-                      final snapshot = await transaction.get(userCharRef);
-                      int currentGlobalAffection = 0;
-                      if (snapshot.exists) {
-                        currentGlobalAffection = snapshot.data()?['affection'] ?? 0;
-                      }
-
-                      // 🏆 只有當前分數更猛時，才更新最高紀錄
-                      if (_currentFriendship > currentGlobalAffection) {
-                        transaction.set(userCharRef, {
-                          'affection': _currentFriendship,
-                          'characterName': _currentCharacter.name,
-                          'lastUpdate': FieldValue.serverTimestamp(),
-                        }, SetOptions(merge: true));
-                        print("📈 全域存摺已同步最高分：$_currentFriendship");
-                      }
-                    });
-                  } catch (e) {
-                    print("❌ 同步總存摺失敗: $e");
-                  }
-
-                  if (!_currentCharacter.isPublic) {
-                    try {
-                      await FirebaseFirestore.instance.collection('artifacts').doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang')).collection('users').doc(userId).collection('private_characters').doc(characterId).update({'lastChatTime': FieldValue.serverTimestamp()});
-                    } catch (e) {
-                      print('更新私人角色時間失敗: $e');
-                    }
-                  }
-                } else {
-                  setState(() {
-                    _testMessages.insert(0, ChatMessage(
-                      id: requestId, sender: 'ai', text: ultimateDisplayText, type: 'text', path: '', timestamp: Timestamp.fromDate(DateTime.now()), isAI: true,
-                    ));
-                  });
-                }
-                setState(() => _isGenerating = false);
-              }
-            } else if (status == 'error') {
-              subscription?.cancel();
-              print("❌ 背景任務失敗: ${data['errorMessage']}");
-              if (mounted) {
-                setState(() => _isGenerating = false);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_network_unavailable)));
+              if (finalAffectionChange > 0 && !_hasShownAffectionCard) {
+                _showAffectionAnimation(finalAffectionChange);
+                _hasShownAffectionCard = true;
               }
             }
-          });
+
+            // ✨ 總裁遺漏的拼圖：同步更新全域最高好感度！(把成就存進保險箱)
+            if (widget.shouldSave == true) {
+              try {
+                final userCharRef = FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userId)
+                    .collection('characters')
+                    .doc(characterId);
+
+                await FirebaseFirestore.instance.runTransaction((transaction) async {
+                  final snapshot = await transaction.get(userCharRef);
+                  int currentGlobalAffection = 0;
+                  if (snapshot.exists) {
+                    currentGlobalAffection = snapshot.data()?['affection'] ?? 0;
+                  }
+
+                  // 🏆 只有當前分數更猛時，才更新最高紀錄
+                  if (_currentFriendship > currentGlobalAffection) {
+                    transaction.set(userCharRef, {
+                      'affection': _currentFriendship,
+                      'characterName': _currentCharacter.name,
+                      'lastUpdate': FieldValue.serverTimestamp(),
+                    }, SetOptions(merge: true));
+                    print("📈 全域存摺已同步最高分：$_currentFriendship");
+                  }
+                });
+              } catch (e) {
+                print("❌ 同步總存摺失敗: $e");
+              }
+
+              if (!_currentCharacter.isPublic) {
+                try {
+                  await FirebaseFirestore.instance.collection('artifacts').doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang')).collection('users').doc(userId).collection('private_characters').doc(characterId).update({'lastChatTime': FieldValue.serverTimestamp()});
+                } catch (e) {
+                  print('更新私人角色時間失敗: $e');
+                }
+              }
+            }
+
+            // 4. 關閉「對方正在輸入...」的轉圈圈
+            // (這時雲端早就把訊息寫進資料庫，StreamBuilder 會自動把它畫出來了！)
+            setState(() => _isGenerating = false);
+          }
         } else {
           if (mounted) {
             setState(() => _isGenerating = false);
-            ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(l10n.error_system_busy)));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_system_busy)));
           }
         }
       } else {
         if (mounted) {
           setState(() => _isGenerating = false);
-          ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(l10n.error_msg_send_failed)));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_msg_send_failed)));
         }
       }
     } catch (e, stack) {
@@ -4416,16 +4314,21 @@ class _ChatPageState extends State<ChatPage> {
           if (type == 'text') {
             final normalStyle = TextStyle(color: isUserMessage ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant);
             final actionStyle = TextStyle(color: (isUserMessage ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant).withValues(alpha:0.7));
+
+            // ✨✨✨ 總裁修正處：在這裡把殼脫掉！ ✨✨✨
+            final displayText = isUserMessage ? message.text : _getCleanAiMessage(message.text);
+
             messageContent = Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: isUserMessage ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant,
                 borderRadius: BorderRadius.circular(16),
                 border: _highlightedMessageId == message.id
-                    ? Border.all(color: Colors.yellowAccent, width: 2.5) // 🌟 這裡也加上發光！
+                    ? Border.all(color: Colors.yellowAccent, width: 2.5)
                     : null,
               ),
-              child: _buildRichTextMessage(message.text, normalStyle: normalStyle, actionStyle: actionStyle),
+              // 🌟 這裡原本是用 message.text，現在改用 displayText
+              child: _buildRichTextMessage(displayText, normalStyle: normalStyle, actionStyle: actionStyle),
             );
           }
           else if (type == 'image') {
@@ -4595,6 +4498,35 @@ class _ChatPageState extends State<ChatPage> {
       },
     );
   }
+}
+
+// 🌟 總裁專屬：高級去殼過濾器 (Flutter 端)
+String _getCleanAiMessage(String rawText) {
+  // 🌟 1. 先把可能存在的 Markdown 標籤拿掉，防止干擾
+  String processedText = rawText.replaceAll('```json', '').replaceAll('```', '').trim();
+
+  // 🌟 2. 檢查有沒有包含 JSON 關鍵字
+  if (processedText.contains('"response":')) {
+    try {
+      // 🌟 3. 用正則表達式把引號裡的台詞吸出來
+      final regex = RegExp(r'"response"\s*:\s*"((?:[^"\\]|\\.)*)"');
+      final matches = regex.allMatches(processedText);
+
+      if (matches.isNotEmpty) {
+        return matches.map((m) {
+          String content = m.group(1) ?? "";
+          // 把 \n 換成真正的換行，把 \" 換成真正的引號
+          return content.replaceAll(r'\n', '\n').replaceAll(r'\"', '"');
+        }).join('\n\n');
+      }
+    } catch (e) {
+      // 如果解析失敗，就回傳去掉標籤的文字
+      return processedText;
+    }
+  }
+
+  // 🌟 4. 如果本來就是乾淨的，直接回傳
+  return processedText;
 }
 
 // 🔍 這是 Flutter 內建的搜尋委託器，超好用！

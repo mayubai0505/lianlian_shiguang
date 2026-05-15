@@ -79,7 +79,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
-  // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
   Future<void> _performLogin(Future<Map<String, dynamic>?> Function() loginMethod) async {
     // 1. 蝴蝶起飛 🦋
     setState(() => _isLoginLoading = true);
@@ -141,6 +140,19 @@ class _LoginPageState extends State<LoginPage> {
         print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       }
     }
+  }
+
+  @override
+  void dispose() {
+    if (_dialogContext != null) {
+      try {
+        Navigator.of(_dialogContext!).pop();
+      } catch (e) {
+        print("強制關閉蝴蝶視窗時略過錯誤: $e");
+      }
+      _dialogContext = null;
+    }
+    super.dispose();
   }
 
   @override
