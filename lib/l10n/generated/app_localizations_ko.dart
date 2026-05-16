@@ -3456,4 +3456,29 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => '한도 도달';
+
+  @override
+  String get shop_monthly_card_promo_desc => '즉시 꽃 250송이 획득, 매일 꽃 10송이 지급';
+
+  @override
+  String get task_monthly_title => '별의 계약 · 일일 특권 🌙';
+
+  @override
+  String get task_monthly_locked => '미해제';
+
+  @override
+  String get task_monthly_subtitle_active => '월간 카드 전용 혜택 지급 (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      '【별의 계약】 월간 카드를 해제하여 이 미션 오픈 (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => '월간 카드 일일 특권';
+
+  @override
+  String get profile_id_locked => '전용 ID 잠금 완료';
+
+  @override
+  String get profile_copy_id => '클릭하여 ID 복사';
 }

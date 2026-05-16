@@ -3637,4 +3637,31 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => 'Limite atingido';
+
+  @override
+  String get shop_monthly_card_promo_desc =>
+      'Ganhe 250 Flores instantaneamente, resgate 10 Flores diariamente';
+
+  @override
+  String get task_monthly_title => 'Contrato Estelar: Privilegio Diário 🌙';
+
+  @override
+  String get task_monthly_locked => 'Bloqueado';
+
+  @override
+  String get task_monthly_subtitle_active =>
+      'Distribuição de benefícios exclusivos do Cartão Mensal (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      'Desbloqueie o Cartão Mensal 【Contrato Estelar】 para abrir esta missão (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => 'Privilégio Diário do Cartão Mensal';
+
+  @override
+  String get profile_id_locked => 'ID exclusivo bloqueado';
+
+  @override
+  String get profile_copy_id => 'Clique para copiar o ID';
 }

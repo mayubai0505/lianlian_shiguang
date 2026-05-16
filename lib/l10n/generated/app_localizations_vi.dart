@@ -3621,4 +3621,31 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => 'Đã đạt giới hạn';
+
+  @override
+  String get shop_monthly_card_promo_desc =>
+      'Nhận ngay 250 Hoa, mỗi ngày nhận 10 Hoa';
+
+  @override
+  String get task_monthly_title => 'Tinh Chi Khế Ước · Đặc quyền mỗi ngày 🌙';
+
+  @override
+  String get task_monthly_locked => 'Chưa mở khóa';
+
+  @override
+  String get task_monthly_subtitle_active =>
+      'Phát phúc lợi độc quyền thẻ tháng (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      'Mở khóa thẻ tháng 【Tinh Chi Khế Ước】 để mở nhiệm vụ này (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => 'Đặc quyền mỗi ngày thẻ tháng';
+
+  @override
+  String get profile_id_locked => 'Đã khóa ID độc quyền';
+
+  @override
+  String get profile_copy_id => 'Nhấn để sao chép ID';
 }

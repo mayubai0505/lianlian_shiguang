@@ -3570,4 +3570,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => 'تم الوصول إلى الحد الأقصى';
+
+  @override
+  String get shop_monthly_card_promo_desc =>
+      'احصلي على 250 زهرة فوراً، واجني 10 زهور يومياً';
+
+  @override
+  String get task_monthly_title => 'عقد النجوم: المزايا اليومية 🌙';
+
+  @override
+  String get task_monthly_locked => 'مغلق';
+
+  @override
+  String get task_monthly_subtitle_active =>
+      'توزيع مزايا البطاقة الشهرية الحصرية (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      'افتحي بطاقة 【عقد النجوم】 الشهرية لتفعيل هذه المهمة (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => 'المزايا اليومية للبطاقة الشهرية';
+
+  @override
+  String get profile_id_locked => 'تم قفل المعرّف الخاص';
+
+  @override
+  String get profile_copy_id => 'انقر لنسخ المعرّف';
 }

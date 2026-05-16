@@ -1649,5 +1649,13 @@
     }
   },
   "shop_monthly_card_status_inactive": "立即開啟 30 天星光加成獎勵",
-  "shop_monthly_card_limit_reached": "已達上限"
+  "shop_monthly_card_limit_reached": "已達上限",
+  "shop_monthly_card_promo_desc": "立即得 250 花花，每日領 10 花花",
+  "task_monthly_title": "星之契約．每日特權 🌙",
+  "task_monthly_locked": "未解鎖",
+  "task_monthly_subtitle_active": "月卡專屬福利發放 (1 / 1)",
+  "task_monthly_subtitle_inactive": "解鎖【星之契約】月卡開啟此任務 (0 / 1)",
+  "task_monthly_log_name": "月卡每日特權",
+  "profile_id_locked": "專屬 ID 已鎖定",
+  "profile_copy_id": "點擊複製 ID"
 }

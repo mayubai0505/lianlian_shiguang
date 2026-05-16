@@ -3646,4 +3646,31 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => 'Límite alcanzado';
+
+  @override
+  String get shop_monthly_card_promo_desc =>
+      'Consigue 250 flores al instante, reclama 10 flores al día';
+
+  @override
+  String get task_monthly_title => 'Contrato Estelar: Privilegio diario 🌙';
+
+  @override
+  String get task_monthly_locked => 'Bloqueado';
+
+  @override
+  String get task_monthly_subtitle_active =>
+      'Distribución de beneficios exclusivos de tarjeta mensual (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      'Desbloquea la tarjeta mensual 【Contrato Estelar】 para activar esta misión (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => 'Privilegio diario de tarjeta mensual';
+
+  @override
+  String get profile_id_locked => 'ID exclusivo bloqueado';
+
+  @override
+  String get profile_copy_id => 'Haz clic para copiar ID';
 }

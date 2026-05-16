@@ -58,6 +58,8 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isLikeClaimed = false;
   bool _isClaimingCheckIn = false;
   bool _isBirthdayToday = false; // ✨ 新增一個狀態變數來記錄今天是否生日
+  bool _hasActiveMonthlyCard = false;   // 是否持有有效月卡
+  bool _isMonthlyRewardClaimed = false; // 今日月卡任務是否已領取
 
 
   @override
@@ -280,6 +282,12 @@ class _ProfilePageState extends State<ProfilePage> {
     final data = doc.data()!;
     final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
+    DateTime now = DateTime.now();
+    bool isCardValid = false;
+    if (data['monthlySubEndDate'] != null) {
+      isCardValid = DateTime.parse(data['monthlySubEndDate']).isAfter(now);
+    }
+
     final lastResetTimestamp = data['lastTasksResetDate'] as Timestamp?;
     String lastResetDateString = '';
     if (lastResetTimestamp != null) {
@@ -292,6 +300,8 @@ class _ProfilePageState extends State<ProfilePage> {
         _dailyChatProgress = 0; _isDailyChatClaimed = false;
         _storyChatProgress = 0; _isStoryChatClaimed = false;
         _likeProgress = 0; _isLikeClaimed = false;
+        _hasActiveMonthlyCard = isCardValid; // 🌟 載入月卡身分
+        _isMonthlyRewardClaimed = false;     // 🌟 新的一天，月卡獎勵重置為未領取
       });
       return;
     }
@@ -305,6 +315,8 @@ class _ProfilePageState extends State<ProfilePage> {
       _isStoryChatClaimed = tasks['storyChatClaimed'] ?? false;
       _likeProgress = tasks['likeProgress'] ?? 0;
       _isLikeClaimed = tasks['likeClaimed'] ?? false;
+      _hasActiveMonthlyCard = isCardValid; // 🌟 載入月卡身分
+      _isMonthlyRewardClaimed = tasks['monthlyCardClaimed'] ?? false; // 🌟 載入今天領過沒
     });
   }
 
@@ -422,6 +434,27 @@ class _ProfilePageState extends State<ProfilePage> {
                         _claimTaskReward('社群巡禮', 'likeProgress', 'likeClaimed', 5, () {});
                       },
                     ),
+                    // 🏆 4. ✨✨✨ 第四個獨立任務（星之契約特權）- 全多國語系版 ✨✨✨
+                    _buildTaskItem(
+                      title: l10n.task_monthly_title,
+                      // 🌟  subtitle 動態切換翻譯
+                      subtitle: _hasActiveMonthlyCard
+                          ? l10n.task_monthly_subtitle_active
+                          : l10n.task_monthly_subtitle_inactive,
+                      progress: _hasActiveMonthlyCard ? 1 : 0,
+                      goal: 1,
+                      isClaimed: _isMonthlyRewardClaimed,
+                      customIncompleteText: l10n.task_monthly_locked,
+                      onClaim: () {
+                        if (!_hasActiveMonthlyCard || _isMonthlyRewardClaimed) return;
+
+                        setStateInDialog(() => _isMonthlyRewardClaimed = true);
+                        setState(() => _isMonthlyRewardClaimed = true);
+
+                        // 🌟 將第一個參數也換成 l10n.task_monthly_log_name
+                        _claimTaskReward(l10n.task_monthly_log_name, '', 'monthlyCardClaimed', 10, () {});
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -441,6 +474,7 @@ class _ProfilePageState extends State<ProfilePage> {
     required int goal,
     required bool isClaimed,
     required VoidCallback onClaim,
+    String? customIncompleteText,
   }) {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
@@ -865,7 +899,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       },
                       // 💡 3. 把 _hasChangedID 藏在 Tooltip 裡，只有長按圖示才會出現提示
                       child: Tooltip(
-                        message: _hasChangedID ? "專屬 ID 已鎖定" : "點擊複製 ID",
+                        message: _hasChangedID ? l10n.profile_id_locked : l10n.profile_copy_id,
                         child: Icon(Icons.copy, size: 14, color: subTextColor),
                       ),
                     ),

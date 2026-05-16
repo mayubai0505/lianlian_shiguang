@@ -131,9 +131,6 @@ class _StorePageState extends State<StorePage> {
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
-                            // 🏆 總裁的「星之契約」黃金展位，插在列表最上方
-                            _buildMonthlyCardSection(context, purchaseService, userData),
-
                             // 📦 接續原本的點數商品列表
                             _buildProductList(context, purchaseService),
                           ],
@@ -280,17 +277,25 @@ class _StorePageState extends State<StorePage> {
         stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
         builder: (context, snapshot) {
           List<dynamic> purchaseHistory = [];
+          // ✨ 1. 準備裝月卡資料的變數
+          String? endDateStr;
+
           if (snapshot.hasData && snapshot.data!.exists) {
-            purchaseHistory = (snapshot.data!.data() as Map<String, dynamic>?)?['purchaseHistory'] ?? [];
+            final userData = snapshot.data!.data() as Map<String, dynamic>?;
+            purchaseHistory = userData?['purchaseHistory'] ?? [];
+            // ✨ 2. 從資料庫抓出月卡到期日
+            endDateStr = userData?['monthlySubEndDate'];
           }
+
+          // ✨ 3. 呼叫我們寫好的小工具算天數
+          int daysRemaining = _calculateDaysRemaining(endDateStr);
+          bool isLimitReached = daysRemaining > 150; // 半年封頂線
 
           final screenWidth = MediaQuery.of(context).size.width;
           final bool isWideScreen = screenWidth > 600;
           final int columns = isWideScreen ? 3 : 2;
-          // 電腦版微調為 0.85 (不會太長也不會太扁)，手機維持 0.75
           final double cardRatio = isWideScreen ? 1.1 : 0.75;
 
-          // 🌟 終極魔法：加入 Center 和 ConstrainedBox
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 900),
@@ -302,10 +307,14 @@ class _StorePageState extends State<StorePage> {
                       child: Text('⚠️ 目前為商店預覽模式', style: TextStyle(color: Colors.grey, fontSize: 12)),
                     ),
 
-                  // 星光契約月卡
-                  MonthlyCardBanner(productWrapper: monthlyCard),
-                  const SizedBox(height: 20),
+                  // 🌟 第二步：把算好的天數跟封頂狀態，交給 MonthlyCardBanner！
+                  MonthlyCardBanner(
+                    productWrapper: monthlyCard,
+                    daysRemaining: daysRemaining,   // 👈 新增這行
+                    isLimitReached: isLimitReached, // 👈 新增這行
+                  ),
 
+                  const SizedBox(height: 20),
                   // 一般花花禮包
                   GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
@@ -421,13 +430,27 @@ class _StorePageState extends State<StorePage> {
 // ==========================================
 class MonthlyCardBanner extends StatelessWidget {
   final dynamic productWrapper;
-  const MonthlyCardBanner({super.key, required this.productWrapper});
+  // ✨ 1. 新增接收「天數」與「封頂狀態」的變數
+  final int daysRemaining;
+  final bool isLimitReached;
+
+  const MonthlyCardBanner({
+    super.key,
+    required this.productWrapper,
+    required this.daysRemaining,
+    required this.isLimitReached,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // 🌟 匯入多國語系
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final onPrimary = theme.colorScheme.onPrimary;
+
+    // ✨ 2. 判斷是否可以點擊購買 (沒達上限，且沒有正在轉圈圈)
+    bool canPurchase = !isLimitReached && !productWrapper.isPending;
 
     return Container(
       width: double.infinity,
@@ -446,10 +469,11 @@ class MonthlyCardBanner extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () async {
+          // ✨ 3. 封頂防護：如果已達上限，點擊事件直接設為 null (禁用)
+          onTap: canPurchase ? () async {
             final purchaseService = Provider.of<PurchaseService>(context, listen: false);
             await purchaseService.buyProduct(productWrapper.productDetails);
-          },
+          } : null,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -460,16 +484,36 @@ class MonthlyCardBanner extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('星光契約 (月卡)', style: TextStyle(color: onPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+                      // 🌟 換上正式的多國語系標題
+                      Text(l10n.shop_monthly_card_name, style: TextStyle(color: onPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Text('立即得 250 花花，每日領 10 花花', style: TextStyle(color: onPrimary.withValues(alpha:0.85), fontSize: 13)),
+                      // 🌟 動態顯示天數：如果有天數就顯示倒數，沒有就顯示促銷文案
+                      Text(
+                          daysRemaining > 0
+                              ? l10n.shop_monthly_card_status_active(daysRemaining)
+                              : l10n.shop_monthly_card_promo_desc,
+                          style: TextStyle(color: onPrimary.withValues(alpha:0.85), fontSize: 13)
+                      ),
                     ],
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(color: onPrimary, borderRadius: BorderRadius.circular(12)),
-                  child: Text(productWrapper.productDetails.price, style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor)),
+                  decoration: BoxDecoration(
+                    // ✨ 如果不能買了，按鈕底色稍微變暗
+                      color: canPurchase ? onPrimary : onPrimary.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(12)
+                  ),
+                  // ✨ 轉圈圈狀態與已達上限的文字切換
+                  child: productWrapper.isPending
+                      ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor))
+                      : Text(
+                      isLimitReached ? l10n.shop_monthly_card_limit_reached : productWrapper.productDetails.price,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: canPurchase ? primaryColor : Colors.grey.shade700 // 禁用時文字變灰
+                      )
+                  ),
                 ),
               ],
             ),

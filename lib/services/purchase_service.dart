@@ -48,8 +48,6 @@ class PurchaseService extends ChangeNotifier {
     }
   }
 
-
-
   Future<void> _loadProducts() async {
     // ✨ 修改 1：換上總裁在 Google 後台設定的「真實暗號」
     const Set<String> productIds = {
@@ -94,25 +92,26 @@ class PurchaseService extends ChangeNotifier {
     wrapper.isPending = true;
     notifyListeners();
 
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
-
-    // ✨ 修改 2：更新月卡的 ID 判斷
-    if (productDetails.id == 'com_lianlian_monthly_card') {
-      _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
-    } else {
+    try {
+      final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
+      // 🌟 依然使用 buyConsumable，讓玩家能無限疊加
       _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
+    } catch (e) {
+      // 🚨 如果呼叫 Google 結帳面板失敗 (例如被阻擋)，立刻關閉轉圈圈
+      debugPrint("❌ 呼叫購買面板失敗: $e");
+      wrapper.isPending = false;
+      notifyListeners();
     }
   }
 
   Future<void> _handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) async {
     for (var purchaseDetails in purchaseDetailsList) {
-      try {
-        final wrapper = products.firstWhere((p) => p.productDetails.id == purchaseDetails.productID);
-        if (purchaseDetails.status != PurchaseStatus.pending) {
+      // ✨ 1. 安全尋找商品：用 firstOrNull 溫柔尋找，找不到也不會噴紅字報錯
+      if (products.isNotEmpty) {
+        final wrapper = products.where((p) => p.productDetails.id == purchaseDetails.productID).firstOrNull;
+        if (wrapper != null && purchaseDetails.status != PurchaseStatus.pending) {
           wrapper.isPending = false;
         }
-      } catch (e) {
-        print('找不到對應的 ProductDetailsWrapper');
       }
 
       if (purchaseDetails.status == PurchaseStatus.pending) {
@@ -120,11 +119,17 @@ class PurchaseService extends ChangeNotifier {
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
           _handleError(purchaseDetails.error!);
-        } else if (purchaseDetails.status == PurchaseStatus.purchased ||
-            purchaseDetails.status == PurchaseStatus.restored) {
+        } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+          // 🌟 正常購買成功：發放點數與月卡天數！
           await _deliverPurchase(purchaseDetails);
+        } else if (purchaseDetails.status == PurchaseStatus.restored) {
+          // 🚨 總裁防護鎖：攔截恢復購買！
+          // 因為是一次性商品，如果玩家換手機重裝 App，Google 可能會重送舊收據。
+          // 這裡攔下來，不呼叫 _deliverPurchase，徹底封殺「無限白嫖 250 點」的漏洞！
+          debugPrint("🔄 偵測到歷史訂單恢復 (ID: ${purchaseDetails.productID})，不重複發放點數。");
         }
 
+        // 🌟 結案：告訴 Google Play 訂單已消化完畢，可以收工了
         if (purchaseDetails.pendingCompletePurchase) {
           await _inAppPurchase.completePurchase(purchaseDetails);
         }

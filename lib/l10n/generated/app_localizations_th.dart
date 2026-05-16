@@ -3577,4 +3577,31 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => 'ถึงขีดจำกัดแล้ว';
+
+  @override
+  String get shop_monthly_card_promo_desc =>
+      'รับ 250 ดอกไม้ทันที รับ 10 ดอกไม้ทุกวัน';
+
+  @override
+  String get task_monthly_title => 'สัญญาแห่งดวงดาว: สิทธิพิเศษรายวัน 🌙';
+
+  @override
+  String get task_monthly_locked => 'ยังไม่ปลดล็อก';
+
+  @override
+  String get task_monthly_subtitle_active =>
+      'แจกจ่ายสิทธิประโยชน์พิเศษจากบัตรรายเดือน (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      'ปลดล็อกบัตรรายเดือน 【สัญญาแห่งดวงดาว】 เพื่อเปิดใช้งานภารกิจนี้ (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => 'สิทธิพิเศษรายวันบัตรรายเดือน';
+
+  @override
+  String get profile_id_locked => 'ล็อก ID ส่วนตัวแล้ว';
+
+  @override
+  String get profile_copy_id => 'คลิกเพื่อคัดลอก ID';
 }

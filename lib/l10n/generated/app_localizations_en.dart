@@ -3592,4 +3592,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => 'Limit reached';
+
+  @override
+  String get shop_monthly_card_promo_desc =>
+      'Get 250 Flowers instantly, claim 10 Flowers daily';
+
+  @override
+  String get task_monthly_title => 'Star Contract: Daily Privilege 🌙';
+
+  @override
+  String get task_monthly_locked => 'Locked';
+
+  @override
+  String get task_monthly_subtitle_active =>
+      'Monthly Card exclusive benefits distributed (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      'Unlock 【Star Contract】 Monthly Card to open this task (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => 'Monthly Card Daily Privilege';
+
+  @override
+  String get profile_id_locked => 'Exclusive ID locked';
+
+  @override
+  String get profile_copy_id => 'Click to copy ID';
 }

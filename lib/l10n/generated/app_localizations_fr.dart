@@ -3665,4 +3665,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => 'Limite atteinte';
+
+  @override
+  String get shop_monthly_card_promo_desc =>
+      'Obtenez 250 fleurs instantanément, récupérez 10 fleurs par jour';
+
+  @override
+  String get task_monthly_title => 'Contrat Stellaire : Privilège quotidien 🌙';
+
+  @override
+  String get task_monthly_locked => 'Verrouillé';
+
+  @override
+  String get task_monthly_subtitle_active =>
+      'Distribution des avantages exclusifs de la carte mensuelle (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      'Débloquez la carte mensuelle 【Contrat Stellaire】 pour ouvrir cette mission (0 / 1)';
+
+  @override
+  String get task_monthly_log_name =>
+      'Privilège quotidien de la carte mensuelle';
+
+  @override
+  String get profile_id_locked => 'ID exclusif verrouillé';
+
+  @override
+  String get profile_copy_id => 'Cliquez pour copier l\'ID';
 }

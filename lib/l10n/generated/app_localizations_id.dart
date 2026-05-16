@@ -3621,4 +3621,31 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => 'Sudah mencapai batas';
+
+  @override
+  String get shop_monthly_card_promo_desc =>
+      'Dapatkan 250 Bunga instan, klaim 10 Bunga harian';
+
+  @override
+  String get task_monthly_title => 'Kontrak Bintang: Hak Istimewa Harian 🌙';
+
+  @override
+  String get task_monthly_locked => 'Terkunci';
+
+  @override
+  String get task_monthly_subtitle_active =>
+      'Distribusi keuntungan eksklusif Kartu Bulanan (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive =>
+      'Buka Kartu Bulanan 【Kontrak Bintang】 untuk membuka tugas ini (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => 'Hak Istimewa Harian Kartu Bulanan';
+
+  @override
+  String get profile_id_locked => 'ID eksklusif terkunci';
+
+  @override
+  String get profile_copy_id => 'Klik untuk menyalin ID';
 }

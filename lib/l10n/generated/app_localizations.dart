@@ -6345,6 +6345,54 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'已達上限'**
   String get shop_monthly_card_limit_reached;
+
+  /// No description provided for @shop_monthly_card_promo_desc.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'立即得 250 花花，每日領 10 花花'**
+  String get shop_monthly_card_promo_desc;
+
+  /// No description provided for @task_monthly_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星之契約．每日特權 🌙'**
+  String get task_monthly_title;
+
+  /// No description provided for @task_monthly_locked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未解鎖'**
+  String get task_monthly_locked;
+
+  /// No description provided for @task_monthly_subtitle_active.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'月卡專屬福利發放 (1 / 1)'**
+  String get task_monthly_subtitle_active;
+
+  /// No description provided for @task_monthly_subtitle_inactive.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解鎖【星之契約】月卡開啟此任務 (0 / 1)'**
+  String get task_monthly_subtitle_inactive;
+
+  /// No description provided for @task_monthly_log_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'月卡每日特權'**
+  String get task_monthly_log_name;
+
+  /// No description provided for @profile_id_locked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬 ID 已鎖定'**
+  String get profile_id_locked;
+
+  /// No description provided for @profile_copy_id.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊複製 ID'**
+  String get profile_copy_id;
 }
 
 class _AppLocalizationsDelegate

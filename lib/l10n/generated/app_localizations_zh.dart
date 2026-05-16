@@ -3409,6 +3409,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shop_monthly_card_limit_reached => '已達上限';
+
+  @override
+  String get shop_monthly_card_promo_desc => '立即得 250 花花，每日領 10 花花';
+
+  @override
+  String get task_monthly_title => '星之契約．每日特權 🌙';
+
+  @override
+  String get task_monthly_locked => '未解鎖';
+
+  @override
+  String get task_monthly_subtitle_active => '月卡專屬福利發放 (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive => '解鎖【星之契約】月卡開啟此任務 (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => '月卡每日特權';
+
+  @override
+  String get profile_id_locked => '專屬 ID 已鎖定';
+
+  @override
+  String get profile_copy_id => '點擊複製 ID';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6816,6 +6840,30 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get shop_monthly_card_limit_reached => '已达上限';
+
+  @override
+  String get shop_monthly_card_promo_desc => '立即得 250 花花，每日领 10 花花';
+
+  @override
+  String get task_monthly_title => '星之契约．每日特权 🌙';
+
+  @override
+  String get task_monthly_locked => '未解锁';
+
+  @override
+  String get task_monthly_subtitle_active => '月卡专属福利发放 (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive => '解锁【星之契约】月卡开启此任务 (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => '月卡每日特权';
+
+  @override
+  String get profile_id_locked => '专属 ID 已锁定';
+
+  @override
+  String get profile_copy_id => '点击复制 ID';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10223,4 +10271,28 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get shop_monthly_card_limit_reached => '已達上限';
+
+  @override
+  String get shop_monthly_card_promo_desc => '立即得 250 花花，每日領 10 花花';
+
+  @override
+  String get task_monthly_title => '星之契約．每日特權 🌙';
+
+  @override
+  String get task_monthly_locked => '未解鎖';
+
+  @override
+  String get task_monthly_subtitle_active => '月卡專屬福利發放 (1 / 1)';
+
+  @override
+  String get task_monthly_subtitle_inactive => '解鎖【星之契約】月卡開啟此任務 (0 / 1)';
+
+  @override
+  String get task_monthly_log_name => '月卡每日特權';
+
+  @override
+  String get profile_id_locked => '專屬 ID 已鎖定';
+
+  @override
+  String get profile_copy_id => '點擊複製 ID';
 }
