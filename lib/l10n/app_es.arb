@@ -118,8 +118,7 @@
     "deleteAccountDialogActionCancel": "No, no quiero eliminarla",
     "deleteAccountDialogActionConfirm": "Confirmar",
     "deleteAccountSuccessSnackbar": "La cuenta ha sido eliminada con éxito.",
-    "appDisclaimer": "Los personajes y escenas del juego son ficticios, ¡por favor no los aplique a la realidad! Si hay alguna similitud, es pura coincidencia.",
-    "appVersion": "Versión de la aplicación: {version}",
+    "appDisclaimer": "Los personajes y escenarios del juego son ficticios. ¡Por favor, no los traslades a la realidad!",    "appVersion": "Versión de la aplicación: {version}",
     "@appVersion": {
     "description": "Muestra el número de versión de la aplicación",
     "placeholders": {
@@ -1532,5 +1531,31 @@
     "referral_log_newbie_reward": "Invitación Estelar: Recompensa de nuevo usuario ✨",
     "referral_log_inviter_reward": "Invitación Estelar: Recompensa por meta de amigo 🎁",
     "referral_success_title": "¡Invitación Estelar desbloqueada!",
-    "referral_success_content": "¡Felicidades! ¡Has conversado profundamente con un personaje durante 15 líneas!\n\nLa 'Recompensa de nuevo usuario: 50 puntos' ha sido entregada en tu cuenta, ¡y tu amigo también ha recibido una recompensa de 50 puntos de forma simultánea! 🎁"
+    "referral_success_content": "¡Felicidades! ¡Has conversado profundamente con un personaje durante 15 líneas!\n\nLa 'Recompensa de nuevo usuario: 50 puntos' ha sido entregada en tu cuenta, ¡y tu amigo también ha recibido una recompensa de 50 puntos de forma simultánea! 🎁",
+    "profile_referral_title": "Invitación Estelar 🌟",
+    "profile_referral_hint": "Introduce el código de invitación de tu amigo",
+    "profile_referral_bind_btn": "Vincular",
+    "profile_referral_pending": "Has aceptado la invitación del jugador {id}\n¡Chatea con un personaje durante 15 líneas para desbloquear 50 puntos de flores!",
+    "profile_referral_err_self": "¡No puedes introducir tu propio código de invitación!",
+    "profile_referral_err_duplicate": "¡Ya has vinculado un código de invitación!",
+    "profile_referral_err_not_found": "Jugador no encontrado. ¡Por favor, verifica el código de invitación!",
+    "profile_referral_success": "¡Vinculado con éxito! ¡Ve a chatear con los personajes!",
+    "profile_referral_err_expired": "Lo sentimos, ¡el código de invitación para nuevos usuarios debe vincularse dentro de los 3 días posteriores al registro!",
+    "profile_share_message": "✨ ¡He comenzado un viaje emocionante con {character} en 'Lianlian ShiGuang'! Descarga la app ahora e introduce mi código de invitación estelar: 【{code}】 en tu página de perfil. ¡Ambos ganaremos 50 flores gratis! 🎁\n\n Enlace de descarga:\n https://yourgame.url/download",
+    "@profile_share_message": {
+        "placeholders": {
+            "character": { "type": "String" },
+            "code": { "type": "String" }
+        }
+    },
+    "chat_levelup_share_btn": "Presume de este momento emocionante a tus amigos ✨",
+    "profile_my_invite_code_with_char": "Mi código de invitación exclusivo (Favorito actual: {character})",
+    "@profile_my_invite_code_with_char": {
+        "placeholders": {
+            "character": { "type": "String" }
+        }
+    },
+    "profile_send_invite_btn": "Enviar Invitación Estelar a amigos",
+    "profile_fallback_character": "Personaje favorito",
+    "profile_copy_success": "✅ ¡Código de invitación copiado al portapapeles!"
 }

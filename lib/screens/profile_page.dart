@@ -1,5 +1,5 @@
-import 'dart:async'; // 用於 StreamSubscription
- import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +21,7 @@ import '../page/admin_announcement_page.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'creator_studio_page.dart';
+import 'package:share_plus/share_plus.dart';
 
 //個人主頁
 
@@ -47,6 +48,8 @@ class _ProfilePageState extends State<ProfilePage> {
   // --- Firebase 變數 ---
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   String? _userId;
+  final TextEditingController _inviteCodeController = TextEditingController();
+  bool _isBinding = false; // 控制綁定按鈕的載入狀態
 // 🌟 改成這樣：直接對齊妳在 AppConfig 裡設定的 appId
   final String _appId = AppConfig.appId;
   bool _hasCheckedInToday = false;
@@ -92,10 +95,11 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  // 🌟 別忘了！有開就要有關，這是好習慣
+// 🌟 別忘了！有開就要有關，這是好習慣
   @override
   void dispose() {
     _playerIDController.dispose(); // 釋放記憶體
+    _inviteCodeController.dispose(); // ✨ 新增：釋放邀請碼控制器的記憶體，避免漏水！
     _pointsSubscription?.cancel();
     _userDocSubscription?.cancel();
     super.dispose();
@@ -663,6 +667,215 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  // ==========================================
+  // 🔒 核心防線：輸入邀請碼的後端原子綁定邏輯
+  // ==========================================
+  Future<void> _bindInviteCode(String inviterId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final trimmedId = inviterId.trim();
+
+    if (trimmedId.isEmpty) return;
+
+    // 🌟 總裁防禦第一槍：嚴格審查註冊時間，超過 3 天（72小時）直接無情封殺！
+    final creationTime = user.metadata.creationTime ?? DateTime.now();
+    final int hoursSinceCreation = DateTime.now().difference(creationTime).inHours;
+    if (hoursSinceCreation > 72) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.profile_referral_err_expired)),
+        );
+      }
+      return;
+    }
+
+    // 🌟 總裁防禦第二槍：嚴禁自我崇拜（自己填自己）
+    if (trimmedId == user.uid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.profile_referral_err_self)),
+      );
+      return;
+    }
+
+    setState(() => _isBinding = true);
+
+    try {
+      final db = FirebaseFirestore.instance;
+      final userRef = db.collection('users').doc(user.uid);
+      final userDoc = await userRef.get();
+
+      // 🌟 總裁防禦第三槍：終身限綁一次，有過綁定紀錄者不准再點
+      if (userDoc.data()?['invitedBy'] != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.profile_referral_err_duplicate)),
+          );
+        }
+        return;
+      }
+
+      // 🌟 總裁防禦第四槍：虛擬代碼實體審查（檢查目標邀請人是否存在）
+      final inviterDoc = await db.collection('users').doc(trimmedId).get();
+      if (!inviterDoc.exists) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.profile_referral_err_not_found)),
+          );
+        }
+        return;
+      }
+
+      // 🏆 通過重重考驗，正式締結星之契約
+      await userRef.update({
+        'invitedBy': trimmedId,
+        'referralRewardClaimed': false, // 初始化狀態：已綁定，未達標
+        'totalChatMessages': 0,         // 新人計數器初始化歸零
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.profile_referral_success)),
+        );
+        _inviteCodeController.clear();
+      }
+    } catch (e) {
+      debugPrint("🚨 總裁，資料庫綁定發生非預期錯誤: $e");
+    } finally {
+      if (mounted) setState(() => _isBinding = false);
+    }
+  }
+  // ==========================================
+// 🎨 視覺演繹：星之邀約輸入橫幅 (極致微縮 32px 版)
+// ==========================================
+  Widget _buildReferralSection(Map<String, dynamic> userData) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const SizedBox.shrink();
+
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    String? invitedBy = userData['invitedBy'];
+    bool isClaimed = userData['referralRewardClaimed'] ?? false;
+
+    final creationTime = user.metadata.creationTime ?? DateTime.now();
+    final int hoursSinceCreation = DateTime.now().difference(creationTime).inHours;
+    final bool isNewbie = hoursSinceCreation <= 72;
+
+    // 測試期間強行現形：如需上線，解開下方註解即可
+     if ((invitedBy != null && isClaimed) || (invitedBy == null && !isNewbie)) {
+       return const SizedBox.shrink();
+     }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 4), // 左右再往內縮一點
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8), // 縮減上下白邊 (14 -> 8)
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(14), // 更秀氣的微圓角
+        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.06)), // 超細微邊框
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 小巧標題
+          Text(
+            l10n.profile_referral_title,
+            style: TextStyle(
+              fontSize: 12, // 縮小到 12 號字
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+          ),
+          const SizedBox(height: 6), // 緊湊間距
+
+          if (invitedBy != null && !isClaimed)
+          // 催促狀態同步縮小
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.mark_chat_read_outlined, color: Colors.amber, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.profile_referral_pending(
+                          invitedBy.length > 5 ? '${invitedBy.substring(0, 5)}...' : invitedBy
+                      ),
+                      style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.65)),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+          // 🌟 核心：極致扁平化的 32px 輸入列
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 32, // 🌟 降至 32 像素！極致纖薄
+                    child: TextField(
+                      controller: _inviteCodeController,
+                      style: const TextStyle(fontSize: 12),
+                      decoration: InputDecoration(
+                        hintText: l10n.profile_referral_hint,
+                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 11),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                        filled: true,
+                        fillColor: theme.disabledColor.withValues(alpha: 0.03),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.12)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // 🌟 高度同步 32px 的小鈕
+                SizedBox(
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: _isBinding
+                        ? null
+                        : () => _bindInviteCode(_inviteCodeController.text),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: _isBinding
+                        ? const SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(strokeWidth: 1.5, color: Colors.white),
+                    )
+                        : Text(l10n.profile_referral_bind_btn, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -751,6 +964,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 24),
+
+              // 🏆 簡化型即時監控區塊：現在只負責顯示輸入框
+              StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance.collection('users').doc(currentUser?.uid).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return const SizedBox.shrink();
+                  }
+
+                  final userData = snapshot.data!.data() as Map<String, dynamic>;
+
+                  // 🌟 直接回傳極致瘦身後的輸入框，中間的大箱子徹底消失！
+                  return _buildReferralSection(userData);
+                },
+              ),
+              const SizedBox(height: 12),
               _buildFriendsListSection(),
               const SizedBox(height: 24),
               _buildMyCharactersSection(),
@@ -876,34 +1105,89 @@ class _ProfilePageState extends State<ProfilePage> {
 
               // Player ID 區
               if (_playerID.isNotEmpty) ...[
-                SizedBox(height: 4),
-                Row(
-                  children: [
-                    // ⚡ 1. 使用 _oldIDFromDB 顯示 ID，消滅第一個警告
-                    Text(
-                      'ID: $_oldIDFromDB',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: subTextColor,
-                        // 💡 隱形用法：根據鎖定狀態微調字體粗細（使用者看不出來，但系統算妳「用了」）
-                        fontWeight: _hasChangedID ? FontWeight.w500 : FontWeight.normal,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        // ⚡ 2. 複製時也使用 _oldIDFromDB，確保數據一致
-                        Clipboard.setData(ClipboardData(text: _oldIDFromDB));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.toast_id_copied)));
-                      },
-                      // 💡 3. 把 _hasChangedID 藏在 Tooltip 裡，只有長按圖示才會出現提示
-                      child: Tooltip(
-                        message: _hasChangedID ? l10n.profile_id_locked : l10n.profile_copy_id,
-                        child: Icon(Icons.copy, size: 14, color: subTextColor),
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 4),
+
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).snapshots(),
+                  builder: (context, snapshot) {
+                    String displayID = _oldIDFromDB;
+                    String characterName = l10n.profile_fallback_character;
+
+                    if (snapshot.hasData && snapshot.data!.exists) {
+                      final userData = snapshot.data!.data() as Map<String, dynamic>;
+                      displayID = userData['playerID'] ?? _oldIDFromDB;
+                      characterName = userData['currentCharacter'] ?? l10n.profile_fallback_character;
+                    }
+
+                    // 🌟 核心改動：改用 Column 讓兩組資料上下排好，徹底解放橫向寬度限制！
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // 📑 第一列：ID 顯示與複製小夾子
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'ID: $displayID',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: subTextColor,
+                                fontWeight: _hasChangedID ? FontWeight.w500 : FontWeight.normal,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: displayID));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(l10n.toast_id_copied)));
+                              },
+                              child: Tooltip(
+                                message: _hasChangedID ? l10n.profile_id_locked : l10n.profile_copy_id,
+                                child: Icon(Icons.copy, size: 14, color: subTextColor),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 6), // 🌟 幫兩列中間留一點呼吸的微小間距
+
+                        // 🚀 第二列：總裁欽定「灰色文字導引 + 分享小核心」
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // 灰色導引文字
+                            Text(
+                              l10n.profile_send_invite_btn, // 字典檔的「發送星之邀約給好友」
+                              style: TextStyle(
+                                fontSize: 11, // 採用秀氣的 11 號字
+                                color: Colors.grey.shade500, // 優雅不搶戲的灰色
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const SizedBox(width: 6), // 文字與按鈕的精緻微調間距
+
+                            // 2026 最新規格分享按鈕
+                            GestureDetector(
+                              onTap: () async {
+                                final shareText = l10n.profile_share_message(characterName, displayID);
+                                await SharePlus.instance.share(
+                                  ShareParams(text: shareText),
+                                );
+                              },
+                              child: Icon(
+                                Icons.share_rounded,
+                                size: 13, // 微縮圖示，看起來更精緻
+                                color: Theme.of(context).colorScheme.primary, // 漂亮的品牌核心紫色
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
 
@@ -1161,7 +1445,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildSectionTitle('我創建的角色'),
+            _buildSectionTitle(l10n.my_created_characters),
             _buildCreateCharacterButton(context), // 原本的按鈕安全回歸！
           ],
         ),

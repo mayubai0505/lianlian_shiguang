@@ -124,7 +124,7 @@
   "deleteAccountDialogActionCancel": "沒有,我沒有要刪掉",
   "deleteAccountDialogActionConfirm": "確定",
   "deleteAccountSuccessSnackbar": "帳號已成功刪除。",
-  "appDisclaimer": "遊戲裡面的角色與場景皆為虛構,請勿帶入現實!如有雷同,純屬巧合",
+  "appDisclaimer": "遊戲裡面的角色與場景皆為虛構,請勿帶入現實!",
   "appVersion": "App 版本: {version}",
   "@appVersion": {
     "description": "顯示 App 版本號",
@@ -1661,5 +1661,39 @@
   "referral_log_newbie_reward": "星之邀約：新手報到獎勵 ✨",
   "referral_log_inviter_reward": "星之邀約：好友達標回饋 🎁",
   "referral_success_title": "星之邀約解鎖！",
-  "referral_success_content": "恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁"
+  "referral_success_content": "恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁",
+  "profile_referral_title": "星之邀約 🌟",
+
+  "profile_referral_hint": "輸入好友邀請碼",
+
+  "profile_referral_bind_btn": "綁定",
+
+  "profile_referral_pending": "已接受玩家 {id} 的邀請\n快去和角色聊滿 15 句解鎖 50 點花花！",
+
+  "profile_referral_err_self": "不能輸入自己的邀請碼喔！",
+
+  "profile_referral_err_duplicate": "您已經綁定過邀請碼囉！",
+
+  "profile_referral_err_not_found": "找不到這位玩家，請確認邀請碼！",
+
+  "profile_referral_success": "綁定成功！快去和角色聊天吧！",
+
+  "profile_referral_err_expired": "抱歉，新手邀請碼必須在註冊 3 天內綁定喔！",
+  "profile_share_message": "✨ 我在《戀戀拾光》與{character}展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【{code}】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://yourgame.url/download",
+  "@profile_share_message": {
+    "placeholders": {
+      "character": { "type": "String" },
+      "code": { "type": "String" }
+    }
+  },
+  "chat_levelup_share_btn": "向好友炫耀這份心動 ✨",
+  "profile_my_invite_code_with_char": "我的專屬邀請碼 (當前本命：{character})",
+  "@profile_my_invite_code_with_char": {
+    "placeholders": {
+      "character": { "type": "String" }
+    }
+  },
+  "profile_send_invite_btn": "發送星之邀約給好友",
+  "profile_fallback_character": "心動角色",
+  "profile_copy_success": "✅ 邀請碼已複製到剪貼簿！"
 }

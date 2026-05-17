@@ -3360,16 +3360,16 @@ class _ChatPageState extends State<ChatPage> {
             width: 320, // 靈魂伴侶視窗稍微寬一點，更有份量
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha:0.95),
+              color: Colors.white.withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(30),
               // ✨ 邊框發光特效
               border: isSoulmate
                   ? Border.all(color: Colors.amberAccent, width: 3) // 靈魂伴侶專屬金邊
-                  : Border.all(color: newScore.titleColor.withValues(alpha:0.3), width: 1),
+                  : Border.all(color: newScore.titleColor.withValues(alpha: 0.3), width: 1),
               boxShadow: [
                 // 基礎陰影
                 BoxShadow(
-                    color: newScore.titleColor.withValues(alpha:0.3),
+                    color: newScore.titleColor.withValues(alpha: 0.3),
                     blurRadius: 20,
                     spreadRadius: 2
                 ),
@@ -3404,8 +3404,8 @@ class _ChatPageState extends State<ChatPage> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isSoulmate
-                          ? [Colors.amber.withValues(alpha:0.4), Colors.orangeAccent.withValues(alpha:0.2)]
-                          : [newScore.titleColor.withValues(alpha:0.2), newScore.titleColor.withValues(alpha:0.05)],
+                          ? [Colors.amber.withValues(alpha: 0.4), Colors.orangeAccent.withValues(alpha: 0.2)]
+                          : [newScore.titleColor.withValues(alpha: 0.2), newScore.titleColor.withValues(alpha: 0.05)],
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -3431,22 +3431,52 @@ class _ChatPageState extends State<ChatPage> {
                       height: 1.6
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 32),
 
-                // 確定按鈕
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isSoulmate ? Colors.amber[700] : newScore.titleColor,
-                    foregroundColor: Colors.white,
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                      isSoulmate ? l10n.chat_levelup_btn_soulmate :l10n.chat_levelup_btn_normal,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
-                  ),
+                // 👑 總裁按鈕戰術群組：將單一按鈕升級為雙軌制
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 🚀 1. 主打炫耀按鈕：引導玩家扣下裂變板機
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.share_rounded, size: 18),
+                      label:  Text(l10n.chat_levelup_share_btn, style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isSoulmate ? Colors.amber[700] : newScore.titleColor,
+                        foregroundColor: Colors.white,
+                        elevation: 6,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                      ),
+                      onPressed: () async {
+                        // 🪄 自動抓取當前玩家身份作為邀請碼
+                        final user = FirebaseAuth.instance.currentUser;
+                        if (user == null) return;
+                        final displayCode = user.uid.substring(0, 8).toUpperCase();
+                        // 🪄 自動抓取當前聊天室內互動的角色名字
+                        final characterName = _currentCharacter.name;
+                        // 🪄 動態組裝千人千面的行銷文案
+                        final shareText = l10n.profile_share_message(characterName, displayCode);
+                        // ⚡ 喚起跨平台原生分享面板
+                        await Share.share(shareText);
+                        // 分享完畢後，貼心自動關閉視窗，讓體驗流暢無阻
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    // 🏳️ 2. 次要關閉按鈕：留給害羞不想分享的玩家，改為溫柔的 TextButton 降低搶眼度
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        isSoulmate ? l10n.chat_levelup_btn_soulmate : l10n.chat_levelup_btn_normal,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -4031,7 +4061,6 @@ class _ChatPageState extends State<ChatPage> {
                           builder: (context) => BackgroundSettingsPage(
                             character: _currentCharacter,
                             characterId: _currentCharacter.id,
-                            currentFriendship: _currentFriendship,
                           ),
                         ),
                       );

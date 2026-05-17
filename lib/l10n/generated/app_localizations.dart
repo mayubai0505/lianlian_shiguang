@@ -743,7 +743,7 @@ abstract class AppLocalizations {
   /// No description provided for @appDisclaimer.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'遊戲裡面的角色與場景皆為虛構,請勿帶入現實!如有雷同,純屬巧合'**
+  /// **'遊戲裡面的角色與場景皆為虛構,請勿帶入現實!'**
   String get appDisclaimer;
 
   /// 顯示 App 版本號
@@ -6417,6 +6417,96 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁'**
   String get referral_success_content;
+
+  /// No description provided for @profile_referral_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星之邀約 🌟'**
+  String get profile_referral_title;
+
+  /// No description provided for @profile_referral_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'輸入好友邀請碼'**
+  String get profile_referral_hint;
+
+  /// No description provided for @profile_referral_bind_btn.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'綁定'**
+  String get profile_referral_bind_btn;
+
+  /// No description provided for @profile_referral_pending.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已接受玩家 {id} 的邀請\n快去和角色聊滿 15 句解鎖 50 點花花！'**
+  String profile_referral_pending(Object id);
+
+  /// No description provided for @profile_referral_err_self.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'不能輸入自己的邀請碼喔！'**
+  String get profile_referral_err_self;
+
+  /// No description provided for @profile_referral_err_duplicate.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您已經綁定過邀請碼囉！'**
+  String get profile_referral_err_duplicate;
+
+  /// No description provided for @profile_referral_err_not_found.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到這位玩家，請確認邀請碼！'**
+  String get profile_referral_err_not_found;
+
+  /// No description provided for @profile_referral_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'綁定成功！快去和角色聊天吧！'**
+  String get profile_referral_success;
+
+  /// No description provided for @profile_referral_err_expired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'抱歉，新手邀請碼必須在註冊 3 天內綁定喔！'**
+  String get profile_referral_err_expired;
+
+  /// No description provided for @profile_share_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 我在《戀戀拾光》與{character}展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【{code}】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://yourgame.url/download'**
+  String profile_share_message(String character, String code);
+
+  /// No description provided for @chat_levelup_share_btn.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'向好友炫耀這份心動 ✨'**
+  String get chat_levelup_share_btn;
+
+  /// No description provided for @profile_my_invite_code_with_char.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的專屬邀請碼 (當前本命：{character})'**
+  String profile_my_invite_code_with_char(String character);
+
+  /// No description provided for @profile_send_invite_btn.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發送星之邀約給好友'**
+  String get profile_send_invite_btn;
+
+  /// No description provided for @profile_fallback_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'心動角色'**
+  String get profile_fallback_character;
+
+  /// No description provided for @profile_copy_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✅ 邀請碼已複製到剪貼簿！'**
+  String get profile_copy_success;
 }
 
 class _AppLocalizationsDelegate

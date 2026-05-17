@@ -337,7 +337,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'ตัวละครและฉากในเกมเป็นเพียงเรื่องสมมติ โปรดอย่าเชื่อมโยงกับความเป็นจริง! หากมีความคล้ายคลึงใด ๆ ถือเป็นเรื่องบังเอิญ';
+      'ตัวละครและฉากในเกมนี้เป็นเรื่องสมมติทั้งหมด โปรดอย่านำไปผูกโยงกับความเป็นจริง!';
 
   @override
   String appVersion(String version) {
@@ -3619,4 +3619,59 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get referral_success_content =>
       'ยินดีด้วย! คุณได้พูดคุยอย่างลึกซึ้งกับตัวละครครบ 15 ประโยคสำเร็จแล้ว!\n\n\'รางวัลผู้เล่นใหม่ 50 แต้ม\' ได้ถูกส่งไปยังบัญชีของคุณแล้ว และเพื่อนของคุณก็ได้รับรางวัล 50 แต้มไปพร้อมกันด้วย! 🎁';
+
+  @override
+  String get profile_referral_title => 'คำเชิญแห่งดวงดาว 🌟';
+
+  @override
+  String get profile_referral_hint => 'กรอกรหัสเชิญของเพื่อน';
+
+  @override
+  String get profile_referral_bind_btn => 'ผูกบัญชี';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'ยอมรับคำเชิญจากผู้เล่น $id แล้ว\nรีบไปคุยกับตัวละครให้ครบ 15 ประโยคเพื่อปลดล็อก 50 ดอกไม้นะ!';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      'ไม่สามารถกรอกรหัสเชิญของตัวเองได้นะ!';
+
+  @override
+  String get profile_referral_err_duplicate => 'คุณได้ผูกรหัสเชิญไปแล้วนะ!';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'ไม่พบผู้เล่นคนนี้ โปรดตรวจสอบรหัสเชิญอีกครั้ง!';
+
+  @override
+  String get profile_referral_success =>
+      'ผูกสำเร็จแล้ว! รีบไปคุยกับตัวละครกันเถอะ!';
+
+  @override
+  String get profile_referral_err_expired =>
+      'ขออภัย รหัสเชิญผู้เล่นใหม่ต้องผูกภายใน 3 วันหลังจากการลงทะเบียนนะ!';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ ฉันได้เริ่มการเดินทางที่น่าตื่นเต้นกับ $character ใน \'Lianlian ShiGuang\' แล้วนะ! ดาวน์โหลดแอปตอนนี้แล้วกรอกรหัสเชิญแห่งดวงดาวของฉัน: 【$code】 ในหน้าโปรไฟล์ของคุณ เราทั้งคู่จะได้รับดอกไม้ฟรี 50 ดอกเลยนะ! 🎁\n\n ลิงก์ดาวน์โหลด:\n https://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn => 'อวดช่วงเวลาใจเต้นนี้ให้เพื่อนๆ ดู ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'รหัสเชิญส่วนตัวของฉัน (เมนปัจจุบัน: $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => 'ส่งคำเชิญแห่งดวงดาวให้เพื่อน';
+
+  @override
+  String get profile_fallback_character => 'ตัวละครคนโปรด';
+
+  @override
+  String get profile_copy_success => '✅ คัดลอกรหัสเชิญไปยังคลิปบอร์ดแล้ว!';
 }

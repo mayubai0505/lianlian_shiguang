@@ -118,7 +118,7 @@
     "deleteAccountDialogActionCancel": "لا، لا أريد الحذف",
     "deleteAccountDialogActionConfirm": "تأكيد",
     "deleteAccountSuccessSnackbar": "تم حذف الحساب بنجاح.",
-    "appDisclaimer": "الشخصيات والمشاهد في اللعبة خيالية، يرجى عدم تطبيقها على الواقع! إذا كان هناك أي تشابه، فهو من قبيل الصدفة البحتة.",
+    "appDisclaimer": "الشخصيات والمشاهد في اللعبة خيالية تماماً، يرجى عدم إسقاطها على أرض الواقع!",
     "appVersion": "إصدار التطبيق: {version}",
     "@appVersion": {
     "description": "يعرض رقم إصدار التطبيق",
@@ -1573,5 +1573,30 @@
     "referral_log_newbie_reward": "دعوة النجوم: مكافأة تسجيل القادمين الجدد ✨",
     "referral_log_inviter_reward": "دعوة النجوم: مكافأة تحقيق الصديق للهدف 🎁",
     "referral_success_title": "تم فتح دعوة النجوم!",
-    "referral_success_content": "تهانينا! لقد نجحتِ في تبادل 15 جملة من الحوار العميق مع الشخصية!\n\nتم إرسال 'مكافأة تسجيل القادمين الجدد 50 نقطة' إلى حسابكِ، وحصل صديقكِ أيضاً على مكافأة 50 نقطة في نفس الوقت! 🎁"
+    "referral_success_content": "تهانينا! لقد نجحتِ في تبادل 15 جملة من الحوار العميق مع الشخصية!\n\nتم إرسال 'مكافأة تسجيل القادمين الجدد 50 نقطة' إلى حسابكِ، وحصل صديقكِ أيضاً على مكافأة 50 نقطة في نفس الوقت! 🎁",
+    "profile_referral_title": "دعوة النجوم 🌟",
+    "profile_referral_hint": "أدخلي رمز دعوة الصديق",
+    "profile_referral_bind_btn": "ربط",
+    "profile_referral_pending": "تم قبول دعوة اللاعب {id}\nاذهبي وتحدثي مع الشخصية لـ 15 جملة لفتح 50 زهرة!",
+    "profile_referral_err_self": "لا يمكنكِ إدخال رمز الدعوة الخاص بكِ!",
+    "profile_referral_err_duplicate": "لقد قمتِ بربط رمز الدعوة بالفعل!",
+    "profile_referral_err_not_found": "تعذر العثور على هذا اللاعب، يرجى التحقق من الرمز!",
+    "profile_referral_success": "تم الربط بنجاح! اذهبي وتحدثي مع الشخصية الآن!",
+    "profile_referral_err_expired": "عذراً، يجب ربط رمز دعوة المبتدئين في غغضون 3 أيام من التسجيل!",
+    "profile_share_message": "✨ لقد بدأتُ رحلة خفقان القلب مع {character} في 'Lianlian ShiGuang'! حمّلي التطبيق الآن وأدخلي رمز دعوة النجوم الخاص بي: 【{code}】 في الصفحة الشخصية، وسنحصل كلانا على 50 زهرة مجاناً! 🎁\n\nرابط التحميل:\nhttps://yourgame.url/download",    "@profile_share_message": {
+        "placeholders": {
+            "character": { "type": "String" },
+            "code": { "type": "String" }
+        }
+    },
+    "chat_levelup_share_btn": "تباهي بهذا الخفقان لأصدقائكِ ✨",
+    "profile_my_invite_code_with_char": "رمز الدعوة الحصري الخاص بي (المفضل الحالي: {character})",
+    "@profile_my_invite_code_with_char": {
+        "placeholders": {
+            "character": { "type": "String" }
+        }
+    },
+    "profile_send_invite_btn": "إرسال دعوة النجوم للأصدقاء",
+    "profile_fallback_character": "الشخصية المفضلة",
+    "profile_copy_success": "✅ تم نسخ رمز الدعوة إلى الحافظة!"
 }

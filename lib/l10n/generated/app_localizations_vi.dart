@@ -340,7 +340,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'Các nhân vật và bối cảnh trong trò chơi đều là hư cấu, vui lòng không áp dụng vào đời thực! Nếu có điểm tương đồng, đó chỉ là sự trùng hợp ngẫu nhiên.';
+      'Các nhân vật và bối cảnh trong trò chơi đều là hư cấu, vui lòng không áp dụng vào thực tế!';
 
   @override
   String appVersion(String version) {
@@ -3663,4 +3663,61 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get referral_success_content =>
       'Chúc mừng bạn đã giao lưu sâu sắc với nhân vật đạt mốc 15 câu thành công!\n\n\'Phần thưởng người mới 50 điểm\' đã được gửi đến tài khoản của bạn, và bạn của bạn cũng đồng thời nhận được phần thưởng 50 điểm! 🎁';
+
+  @override
+  String get profile_referral_title => 'Tinh Chi Mời Gọi 🌟';
+
+  @override
+  String get profile_referral_hint => 'Nhập mã mời của bạn bè';
+
+  @override
+  String get profile_referral_bind_btn => 'Liên kết';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'Đã chấp nhận lời mời của người chơi $id\nHãy mau đến trò chuyện cùng nhân vật đạt 15 câu để mở khóa 50 điểm Hoa nhé!';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      'Không thể nhập mã mời của chính mình đâu nhé!';
+
+  @override
+  String get profile_referral_err_duplicate =>
+      'Bạn đã liên kết mã mời rồi nhé!';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'Không tìm thấy người chơi này, vui lòng kiểm tra lại mã mời!';
+
+  @override
+  String get profile_referral_success =>
+      'Liên kết thành công! Mau đi trò chuyện cùng nhân vật thôi nào!';
+
+  @override
+  String get profile_referral_err_expired =>
+      'Xin lỗi, mã mời người mới phải được liên kết trong vòng 3 ngày sau khi đăng ký nhé!';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ Mình đã bắt đầu hành trình rung động cùng $character trong 《Luyến Luyến Thập Quang》 rồi đấy! Hãy tải ngay App và nhập mã Tinh Chi Mời Gọi của mình: 【$code】 tại trang cá nhân nhé, cả hai chúng mình đều sẽ nhận được 50 điểm Hoa miễn phí đấy! 🎁\n\n Link tải:\n https://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn =>
+      'Khoe khoảnh khắc rung động này với bạn bè ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'Mã mời độc quyền của tôi (Bias hiện tại: $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => 'Gửi Tinh Chi Mời Gọi cho bạn bè';
+
+  @override
+  String get profile_fallback_character => 'Nhân vật yêu thích';
+
+  @override
+  String get profile_copy_success => '✅ Đã sao chép mã mời vào khay nhớ tạm!';
 }

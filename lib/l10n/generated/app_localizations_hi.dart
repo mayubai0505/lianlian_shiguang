@@ -344,7 +344,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'गेम में पात्र और दृश्य सभी काल्पनिक हैं, कृपया उन्हें वास्तविकता में न लें! यदि कोई समानता है, तो यह पूरी तरह से एक संयोग है।';
+      'खेल के सभी पात्र और दृश्य काल्पनिक हैं, कृपया इन्हें वास्तविकता से न जोड़ें!';
 
   @override
   String appVersion(String version) {
@@ -3664,4 +3664,62 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get referral_success_content =>
       'बधाई हो! आपने एक पात्र के साथ 15 लाइनों तक सफलतापूर्वक गहरी बातचीत की है!\n\n\'न्यूबी रिवॉर्ड: 50 पॉइंट्स\' आपके खाते में भेज दिया गया है, और आपके दोस्त को भी एक साथ 50-पॉइंट का रिवॉर्ड मिला है! 🎁';
+
+  @override
+  String get profile_referral_title => 'स्टार इनविटेशन 🌟';
+
+  @override
+  String get profile_referral_hint => 'मित्र का आमंत्रण कोड दर्ज करें';
+
+  @override
+  String get profile_referral_bind_btn => 'लिंक करें';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'खिलाड़ी $id का आमंत्रण स्वीकार कर लिया गया है\n50 फ्लावर पॉइंट्स अनलॉक करने के लिए पात्र के साथ 15 लाइनों तक बातचीत करें!';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      'आप अपना खुद का आमंत्रण कोड दर्ज नहीं कर सकते!';
+
+  @override
+  String get profile_referral_err_duplicate =>
+      'आप पहले ही एक आमंत्रण कोड लिंक कर चुके हैं!';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'खिलाड़ी नहीं मिला। कृपया आमंत्रण कोड जांचें!';
+
+  @override
+  String get profile_referral_success =>
+      'सफलतापूर्वक लिंक हुआ! अभी पात्रों के साथ बातचीत करें!';
+
+  @override
+  String get profile_referral_err_expired =>
+      'क्षमा करें, नए उपयोगकर्ता आमंत्रण कोड को पंजीकरण के 3 दिनों के भीतर लिंक करना होगा!';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ मैंने \'Lianlian ShiGuang\' में $character के साथ एक दिल दहला देने वाली यात्रा शुरू की है! अभी ऐप डाउनलोड करें और अपने प्रोफ़ाइल पेज पर मेरा स्टार इनविटेशन कोड: 【$code】 दर्ज करें। हम दोनों को मुफ्त में 50 फूल मिलेंगे! 🎁\n\n डाउनलोड लिंक:\n https://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn =>
+      'दोस्तों के सामने इस रोमांचक पल का दिखावा करें ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'मेरा विशेष आमंत्रण कोड (वर्तमान पसंदीदा: $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => 'दोस्तों को स्टार इनविटेशन भेजें';
+
+  @override
+  String get profile_fallback_character => 'पसंदीदा पात्र';
+
+  @override
+  String get profile_copy_success =>
+      '✅ आमंत्रण कोड क्लिपबोर्ड पर कॉपी किया गया!';
 }

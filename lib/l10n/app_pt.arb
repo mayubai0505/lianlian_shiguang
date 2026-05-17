@@ -118,8 +118,7 @@
    "deleteAccountDialogActionCancel": "Não, eu não quero excluir",
    "deleteAccountDialogActionConfirm": "Confirmar",
    "deleteAccountSuccessSnackbar": "Conta excluída com sucesso.",
-   "appDisclaimer": "Os personagens e cenas do jogo são fictícios, por favor, não os aplique na realidade! Se houver alguma semelhança, é pura coincidência.",
-   "appVersion": "Versão do Aplicativo: {version}",
+   "appDisclaimer": "Os personagens e cenários do jogo son puramente fictícios. Por favor, não os confunda com a realidade!",   "appVersion": "Versão do Aplicativo: {version}",
    "@appVersion": {
    "description": "Exibe o número da versão do aplicativo",
    "placeholders": {
@@ -1533,5 +1532,31 @@
    "referral_log_newbie_reward": "Convite Estelar: Recompensa de Novo Usuário ✨",
    "referral_log_inviter_reward": "Convite Estelar: Recompensa de Meta de Amigo 🎁",
    "referral_success_title": "Convite Estelar Desbloqueado!",
-   "referral_success_content": "Parabéns! Você conversou profundamente com o personagem por 15 linhas com sucesso!\n\nA 'Recompensa de Novo Usuário: 50 Pontos' foi entregue em sua conta, e seu amigo também recebeu uma recompensa de 50 pontos simultaneamente! 🎁"
+   "referral_success_content": "Parabéns! Você conversou profundamente com o personagem por 15 linhas com sucesso!\n\nA 'Recompensa de Novo Usuário: 50 Pontos' foi entregue em sua conta, e seu amigo também recebeu uma recompensa de 50 pontos simultaneamente! 🎁",
+   "profile_referral_title": "Convite Estelar 🌟",
+   "profile_referral_hint": "Digite o código de convite do amigo",
+   "profile_referral_bind_btn": "Vincular",
+   "profile_referral_pending": "Convite do jogador {id} aceito\nConverse com o personagem por 15 linhas para desbloquear 50 Flores!",
+   "profile_referral_err_self": "Você não pode inserir seu próprio código de convite!",
+   "profile_referral_err_duplicate": "Você já vinculou um código de convite!",
+   "profile_referral_err_not_found": "Jogador não encontrado, por favor verifique o código de convite!",
+   "profile_referral_success": "Vinculado com sucesso! Vá conversar com os personagens!",
+   "profile_referral_err_expired": "Desculpe, o código de convite de novo usuário deve ser vinculado dentro de 3 dias após o registro!",
+   "profile_share_message": "✨ Comecei uma jornada emocionante com {character} em 'Lianlian ShiGuang'! Baixe o aplicativo agora e insira o meu Código de Convite Estelar: 【{code}】 na sua página de perfil. Nós dois ganharemos 50 Flores gratuitamente! 🎁\n\n Link para download:\n https://yourgame.url/download",
+   "@profile_share_message": {
+      "placeholders": {
+         "character": { "type": "String" },
+         "code": { "type": "String" }
+      }
+   },
+   "chat_levelup_share_btn": "Mostre este momento emocionante para seus amigos ✨",
+   "profile_my_invite_code_with_char": "Meu código de convite exclusivo (Favorito atual: {character})",
+   "@profile_my_invite_code_with_char": {
+      "placeholders": {
+         "character": { "type": "String" }
+      }
+   },
+   "profile_send_invite_btn": "Enviar Convite Estelar para os amigos",
+   "profile_fallback_character": "Personagem Favorito",
+   "profile_copy_success": "✅ Código de convite copiado para a área de transferência!"
 }

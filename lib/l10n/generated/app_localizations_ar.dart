@@ -337,7 +337,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'الشخصيات والمشاهد في اللعبة خيالية، يرجى عدم تطبيقها على الواقع! إذا كان هناك أي تشابه، فهو من قبيل الصدفة البحتة.';
+      'الشخصيات والمشاهد في اللعبة خيالية تماماً، يرجى عدم إسقاطها على أرض الواقع!';
 
   @override
   String appVersion(String version) {
@@ -3612,4 +3612,60 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get referral_success_content =>
       'تهانينا! لقد نجحتِ في تبادل 15 جملة من الحوار العميق مع الشخصية!\n\nتم إرسال \'مكافأة تسجيل القادمين الجدد 50 نقطة\' إلى حسابكِ، وحصل صديقكِ أيضاً على مكافأة 50 نقطة في نفس الوقت! 🎁';
+
+  @override
+  String get profile_referral_title => 'دعوة النجوم 🌟';
+
+  @override
+  String get profile_referral_hint => 'أدخلي رمز دعوة الصديق';
+
+  @override
+  String get profile_referral_bind_btn => 'ربط';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'تم قبول دعوة اللاعب $id\nاذهبي وتحدثي مع الشخصية لـ 15 جملة لفتح 50 زهرة!';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      'لا يمكنكِ إدخال رمز الدعوة الخاص بكِ!';
+
+  @override
+  String get profile_referral_err_duplicate =>
+      'لقد قمتِ بربط رمز الدعوة بالفعل!';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'تعذر العثور على هذا اللاعب، يرجى التحقق من الرمز!';
+
+  @override
+  String get profile_referral_success =>
+      'تم الربط بنجاح! اذهبي وتحدثي مع الشخصية الآن!';
+
+  @override
+  String get profile_referral_err_expired =>
+      'عذراً، يجب ربط رمز دعوة المبتدئين في غغضون 3 أيام من التسجيل!';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ لقد بدأتُ رحلة خفقان القلب مع $character في \'Lianlian ShiGuang\'! حمّلي التطبيق الآن وأدخلي رمز دعوة النجوم الخاص بي: 【$code】 في الصفحة الشخصية، وسنحصل كلانا على 50 زهرة مجاناً! 🎁\n\nرابط التحميل:\nhttps://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn => 'تباهي بهذا الخفقان لأصدقائكِ ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'رمز الدعوة الحصري الخاص بي (المفضل الحالي: $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => 'إرسال دعوة النجوم للأصدقاء';
+
+  @override
+  String get profile_fallback_character => 'الشخصية المفضلة';
+
+  @override
+  String get profile_copy_success => '✅ تم نسخ رمز الدعوة إلى الحافظة!';
 }

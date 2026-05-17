@@ -324,7 +324,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteAccountSuccessSnackbar => '帳號已成功刪除。';
 
   @override
-  String get appDisclaimer => '遊戲裡面的角色與場景皆為虛構,請勿帶入現實!如有雷同,純屬巧合';
+  String get appDisclaimer => '遊戲裡面的角色與場景皆為虛構,請勿帶入現實!';
 
   @override
   String appVersion(String version) {
@@ -3446,6 +3446,57 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get referral_success_content =>
       '恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁';
+
+  @override
+  String get profile_referral_title => '星之邀約 🌟';
+
+  @override
+  String get profile_referral_hint => '輸入好友邀請碼';
+
+  @override
+  String get profile_referral_bind_btn => '綁定';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return '已接受玩家 $id 的邀請\n快去和角色聊滿 15 句解鎖 50 點花花！';
+  }
+
+  @override
+  String get profile_referral_err_self => '不能輸入自己的邀請碼喔！';
+
+  @override
+  String get profile_referral_err_duplicate => '您已經綁定過邀請碼囉！';
+
+  @override
+  String get profile_referral_err_not_found => '找不到這位玩家，請確認邀請碼！';
+
+  @override
+  String get profile_referral_success => '綁定成功！快去和角色聊天吧！';
+
+  @override
+  String get profile_referral_err_expired => '抱歉，新手邀請碼必須在註冊 3 天內綁定喔！';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ 我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn => '向好友炫耀這份心動 ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return '我的專屬邀請碼 (當前本命：$character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => '發送星之邀約給好友';
+
+  @override
+  String get profile_fallback_character => '心動角色';
+
+  @override
+  String get profile_copy_success => '✅ 邀請碼已複製到剪貼簿！';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -3768,7 +3819,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get deleteAccountSuccessSnackbar => '帐号已成功删除。';
 
   @override
-  String get appDisclaimer => '游戏里面的角色与场景皆为虚构,请勿带入现实!如有雷同,纯属巧合';
+  String get appDisclaimer => '游戏里面的角色与场景皆为虚构,请勿带入现实!';
 
   @override
   String appVersion(String version) {
@@ -6890,6 +6941,57 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get referral_success_content =>
       '恭喜您已成功与角色深度交流满 15 句！\n\n「新手报到奖励 50 点」已送达您的账户，您的好友也同步获得了 50 点回馈！🎁';
+
+  @override
+  String get profile_referral_title => '星之邀约 🌟';
+
+  @override
+  String get profile_referral_hint => '输入好友邀请码';
+
+  @override
+  String get profile_referral_bind_btn => '绑定';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return '已接受玩家 $id 的邀请\n快去和角色聊满 15 句解锁 50 点花花！';
+  }
+
+  @override
+  String get profile_referral_err_self => '不能输入自己的邀请码喔！';
+
+  @override
+  String get profile_referral_err_duplicate => '您已经绑定过邀请码囉！';
+
+  @override
+  String get profile_referral_err_not_found => '找不到这位玩家，请确认邀请码！';
+
+  @override
+  String get profile_referral_success => '绑定成功！快去和角色聊天吧！';
+
+  @override
+  String get profile_referral_err_expired => '抱歉，新手邀请码必须在注册 3 天内绑定喔！';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ 我在《恋恋拾光》与$character展开了心动旅程！快下载 App 并在个人主页填写我的星之邀请码：【$code】，我们双方都能免费获得 50 点花花喔！🎁\n\n 下载链接：\nhttps://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn => '向好友炫耀这份心动 ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return '我的专属邀请码 (当前本命：$character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => '发送星之邀约给好友';
+
+  @override
+  String get profile_fallback_character => '心动角色';
+
+  @override
+  String get profile_copy_success => '✅ 邀请码已复制到剪贴板！';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -7212,7 +7314,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get deleteAccountSuccessSnackbar => '帳號已成功刪除。';
 
   @override
-  String get appDisclaimer => '遊戲裡面的角色與場景皆為虛構,請勿帶入現實!如有雷同,純屬巧合';
+  String get appDisclaimer => '遊戲裡面的角色與場景皆為虛構,請勿帶入現實!';
 
   @override
   String appVersion(String version) {
@@ -10334,4 +10436,55 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get referral_success_content =>
       '恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁';
+
+  @override
+  String get profile_referral_title => '星之邀約 🌟';
+
+  @override
+  String get profile_referral_hint => '輸入好友邀請碼';
+
+  @override
+  String get profile_referral_bind_btn => '綁定';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return '已接受玩家 $id 的邀請\n快去和角色聊滿 15 句解鎖 50 點花花！';
+  }
+
+  @override
+  String get profile_referral_err_self => '不能輸入自己的邀請碼喔！';
+
+  @override
+  String get profile_referral_err_duplicate => '您已經綁定過邀請碼囉！';
+
+  @override
+  String get profile_referral_err_not_found => '找不到這位玩家，請確認邀請碼！';
+
+  @override
+  String get profile_referral_success => '綁定成功！快去和角色聊天吧！';
+
+  @override
+  String get profile_referral_err_expired => '抱歉，新手邀請碼必須在註冊 3 天內綁定喔！';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ 我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn => '向好友炫耀這份心動 ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return '我的專屬邀請碼 (當前本命：$character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => '發送星之邀約給好友';
+
+  @override
+  String get profile_fallback_character => '心動角色';
+
+  @override
+  String get profile_copy_success => '✅ 邀請碼已複製到剪貼簿！';
 }

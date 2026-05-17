@@ -337,7 +337,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'The characters and scenes in the game are fictional. Please do not apply them to reality. Any resemblance is purely coincidental.';
+      'The characters and scenes in the game are purely fictional. Please do not project them into reality!';
 
   @override
   String appVersion(String version) {
@@ -3633,4 +3633,61 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get referral_success_content =>
       'Congratulations! You have successfully chatted deeply with a character for 15 lines!\n\n\'Newbie Reward: 50 Points\' has been delivered to your account, and your friend has also received a 50-point reward simultaneously! 🎁';
+
+  @override
+  String get profile_referral_title => 'Star Invitation 🌟';
+
+  @override
+  String get profile_referral_hint => 'Enter friend\'s invitation code';
+
+  @override
+  String get profile_referral_bind_btn => 'Link';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'Accepted invitation from player $id\nGo chat with a character for 15 lines to unlock 50 Flower Points!';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      'You cannot enter your own invitation code!';
+
+  @override
+  String get profile_referral_err_duplicate =>
+      'You have already linked an invitation code!';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'Player not found. Please check the invitation code!';
+
+  @override
+  String get profile_referral_success =>
+      'Linked successfully! Go chat with the characters now!';
+
+  @override
+  String get profile_referral_err_expired =>
+      'Sorry, newbie invitation codes must be linked within 3 days of registration!';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ I\'ve started a heart-fluttering journey with $character in \'Lianlian ShiGuang\'! Download the app now and enter my Star Invitation Code: 【$code】 on your profile page. Both of us will get 50 Flowers for free! 🎁\n\n Download link:\n https://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn =>
+      'Show off this heart-fluttering moment to friends ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'My exclusive invite code (Current favorite: $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => 'Send Star Invitation to friends';
+
+  @override
+  String get profile_fallback_character => 'Favorite Character';
+
+  @override
+  String get profile_copy_success => '✅ Invitation code copied to clipboard!';
 }

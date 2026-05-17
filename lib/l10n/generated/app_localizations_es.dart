@@ -344,7 +344,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'Los personajes y escenas del juego son ficticios, ¡por favor no los aplique a la realidad! Si hay alguna similitud, es pura coincidencia.';
+      'Los personajes y escenarios del juego son ficticios. ¡Por favor, no los traslades a la realidad!';
 
   @override
   String appVersion(String version) {
@@ -3688,4 +3688,63 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get referral_success_content =>
       '¡Felicidades! ¡Has conversado profundamente con un personaje durante 15 líneas!\n\nLa \'Recompensa de nuevo usuario: 50 puntos\' ha sido entregada en tu cuenta, ¡y tu amigo también ha recibido una recompensa de 50 puntos de forma simultánea! 🎁';
+
+  @override
+  String get profile_referral_title => 'Invitación Estelar 🌟';
+
+  @override
+  String get profile_referral_hint =>
+      'Introduce el código de invitación de tu amigo';
+
+  @override
+  String get profile_referral_bind_btn => 'Vincular';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'Has aceptado la invitación del jugador $id\n¡Chatea con un personaje durante 15 líneas para desbloquear 50 puntos de flores!';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      '¡No puedes introducir tu propio código de invitación!';
+
+  @override
+  String get profile_referral_err_duplicate =>
+      '¡Ya has vinculado un código de invitación!';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'Jugador no encontrado. ¡Por favor, verifica el código de invitación!';
+
+  @override
+  String get profile_referral_success =>
+      '¡Vinculado con éxito! ¡Ve a chatear con los personajes!';
+
+  @override
+  String get profile_referral_err_expired =>
+      'Lo sentimos, ¡el código de invitación para nuevos usuarios debe vincularse dentro de los 3 días posteriores al registro!';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ ¡He comenzado un viaje emocionante con $character en \'Lianlian ShiGuang\'! Descarga la app ahora e introduce mi código de invitación estelar: 【$code】 en tu página de perfil. ¡Ambos ganaremos 50 flores gratis! 🎁\n\n Enlace de descarga:\n https://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn =>
+      'Presume de este momento emocionante a tus amigos ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'Mi código de invitación exclusivo (Favorito actual: $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => 'Enviar Invitación Estelar a amigos';
+
+  @override
+  String get profile_fallback_character => 'Personaje favorito';
+
+  @override
+  String get profile_copy_success =>
+      '✅ ¡Código de invitación copiado al portapapeles!';
 }

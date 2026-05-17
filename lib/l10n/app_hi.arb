@@ -118,8 +118,7 @@
     "deleteAccountDialogActionCancel": "नहीं, मैं इसे हटाना नहीं चाहता",
     "deleteAccountDialogActionConfirm": "पुष्टि करें",
     "deleteAccountSuccessSnackbar": "खाता सफलतापूर्वक हटा दिया गया है।",
-    "appDisclaimer": "गेम में पात्र और दृश्य सभी काल्पनिक हैं, कृपया उन्हें वास्तविकता में न लें! यदि कोई समानता है, तो यह पूरी तरह से एक संयोग है।",
-    "appVersion": "ऐप संस्करण: {version}",
+    "appDisclaimer": "खेल के सभी पात्र और दृश्य काल्पनिक हैं, कृपया इन्हें वास्तविकता से न जोड़ें!",    "appVersion": "ऐप संस्करण: {version}",
     "@appVersion": {
     "description": "ऐप का संस्करण संख्या दिखाता है",
     "placeholders": {
@@ -1532,5 +1531,31 @@
     "referral_log_newbie_reward": "स्टार इनविटेशन: न्यूबी रिवॉर्ड ✨",
     "referral_log_inviter_reward": "स्टार इनविटेशन: फ्रेंड माइलस्टोन रिवॉर्ड 🎁",
     "referral_success_title": "स्टार इनविटेशन अनलॉक हुआ!",
-    "referral_success_content": "बधाई हो! आपने एक पात्र के साथ 15 लाइनों तक सफलतापूर्वक गहरी बातचीत की है!\n\n'न्यूबी रिवॉर्ड: 50 पॉइंट्स' आपके खाते में भेज दिया गया है, और आपके दोस्त को भी एक साथ 50-पॉइंट का रिवॉर्ड मिला है! 🎁"
+    "referral_success_content": "बधाई हो! आपने एक पात्र के साथ 15 लाइनों तक सफलतापूर्वक गहरी बातचीत की है!\n\n'न्यूबी रिवॉर्ड: 50 पॉइंट्स' आपके खाते में भेज दिया गया है, और आपके दोस्त को भी एक साथ 50-पॉइंट का रिवॉर्ड मिला है! 🎁",
+    "profile_referral_title": "स्टार इनविटेशन 🌟",
+    "profile_referral_hint": "मित्र का आमंत्रण कोड दर्ज करें",
+    "profile_referral_bind_btn": "लिंक करें",
+    "profile_referral_pending": "खिलाड़ी {id} का आमंत्रण स्वीकार कर लिया गया है\n50 फ्लावर पॉइंट्स अनलॉक करने के लिए पात्र के साथ 15 लाइनों तक बातचीत करें!",
+    "profile_referral_err_self": "आप अपना खुद का आमंत्रण कोड दर्ज नहीं कर सकते!",
+    "profile_referral_err_duplicate": "आप पहले ही एक आमंत्रण कोड लिंक कर चुके हैं!",
+    "profile_referral_err_not_found": "खिलाड़ी नहीं मिला। कृपया आमंत्रण कोड जांचें!",
+    "profile_referral_success": "सफलतापूर्वक लिंक हुआ! अभी पात्रों के साथ बातचीत करें!",
+    "profile_referral_err_expired": "क्षमा करें, नए उपयोगकर्ता आमंत्रण कोड को पंजीकरण के 3 दिनों के भीतर लिंक करना होगा!",
+    "profile_share_message": "✨ मैंने 'Lianlian ShiGuang' में {character} के साथ एक दिल दहला देने वाली यात्रा शुरू की है! अभी ऐप डाउनलोड करें और अपने प्रोफ़ाइल पेज पर मेरा स्टार इनविटेशन कोड: 【{code}】 दर्ज करें। हम दोनों को मुफ्त में 50 फूल मिलेंगे! 🎁\n\n डाउनलोड लिंक:\n https://yourgame.url/download",
+    "@profile_share_message": {
+        "placeholders": {
+            "character": { "type": "String" },
+            "code": { "type": "String" }
+        }
+    },
+    "chat_levelup_share_btn": "दोस्तों के सामने इस रोमांचक पल का दिखावा करें ✨",
+    "profile_my_invite_code_with_char": "मेरा विशेष आमंत्रण कोड (वर्तमान पसंदीदा: {character})",
+    "@profile_my_invite_code_with_char": {
+        "placeholders": {
+            "character": { "type": "String" }
+        }
+    },
+    "profile_send_invite_btn": "दोस्तों को स्टार इनविटेशन भेजें",
+    "profile_fallback_character": "पसंदीदा पात्र",
+    "profile_copy_success": "✅ आमंत्रण कोड क्लिपबोर्ड पर कॉपी किया गया!"
 }

@@ -753,13 +753,33 @@ class _SelectChatPageState extends State<SelectChatPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                widget.character.name,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // 加上 Flexible 防止名字太長把圖示擠出螢幕外
+                                  Flexible(
+                                    child: Text(
+                                      widget.character.name,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  // ✨ 總裁請注意：這裡的判斷式！
+                                  // ⚠️ 請把 '填寫總裁您的_UID' 換成您在 Firebase Authentication 裡的真實 UID
+                                  if (widget.character.createdBy == 'B71k2kyooubYsOtIO1nkiBwyBXt2') ...[
+                                    const SizedBox(width: 8),
+                                    const Icon(
+                                      Icons.wb_sunny_rounded, // 🌞 圓潤可愛的小太陽
+                                      color: Colors.white,    // 閃耀的金黃色
+                                      size: 26,
+                                    ),
+                                  ],
+                                ],
                               ),
                               const SizedBox(height: 4), // 👈 名字跟職業之間的微小上下間距
                               Text(

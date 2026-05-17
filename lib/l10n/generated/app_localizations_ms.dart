@@ -344,7 +344,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'Watak dan adegan dalam permainan adalah rekaan semata-mata, sila jangan kaitkan dengan realiti! Jika terdapat sebarang persamaan, itu hanyalah kebetulan.';
+      'Karakter dan adegan dalam permainan ini adalah rekaan semata-mata, sila jangan bawa ke dalam dunia nyata!';
 
   @override
   String appVersion(String version) {
@@ -3662,4 +3662,62 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get referral_success_content =>
       'Tahniah! Awak telah berjaya berbual secara mendalam dengan watak sebanyak 15 ayat!\n\n\'Ganjaran Pengguna Baharu 50 Mata\' telah dihantar ke akaun awak, dan rakan awak juga telah menerima ganjaran 50 mata secara serentak! 🎁';
+
+  @override
+  String get profile_referral_title => 'Undangan Bintang 🌟';
+
+  @override
+  String get profile_referral_hint => 'Masukkan kod undangan rakan';
+
+  @override
+  String get profile_referral_bind_btn => 'Ikat';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'Telah menerima undangan daripada pemain $id\nJom bersembang dengan watak sebanyak 15 ayat untuk membuka 50 Mata Bunga!';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      'Tidak boleh memasukkan kod undangan sendiri!';
+
+  @override
+  String get profile_referral_err_duplicate =>
+      'Awak sudah mengikat kod undangan!';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'Pemain tidak dijumpai, sila sahkan kod undangan!';
+
+  @override
+  String get profile_referral_success =>
+      'Berjaya mengikat! Jom mula bersembang dengan watak!';
+
+  @override
+  String get profile_referral_err_expired =>
+      'Maaf, kod undangan pengguna baharu mesti diikat dalam masa 3 hari selepas pendaftaran!';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ Saya telah memulakan perjalanan yang mendebarkan bersama $character di \'Lianlian ShiGuang\'! Muat turun aplikasi sekarang dan masukkan Kod Undangan Bintang saya: 【$code】 di halaman profil awak. Kita berdua akan mendapat 50 Bunga secara percuma! 🎁\n\n Pautan muat turun:\n https://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn =>
+      'Tunjuk momen mendebarkan ini kepada rakan-rakan ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'Kod undangan eksklusif saya (Kegemaran semasa: $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => 'Hantar Undangan Bintang kepada rakan';
+
+  @override
+  String get profile_fallback_character => 'Karakter Kegemaran';
+
+  @override
+  String get profile_copy_success =>
+      '✅ Kod undangan telah disalin ke papan keratan!';
 }

@@ -83,8 +83,8 @@ exports.getAiResponse = onRequest({
             const modelConfig = {
                 "gemini": { cost: 0, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.7 },
                 "daily": { cost: 1, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.5 },
-                "story": { cost: 5, modelId: "x-ai/grok-4-fast", maxTokens: 2000, temperature: 0.9 },
-                "immersive": { cost: 7, modelId: "x-ai/grok-4-fast", maxTokens: 3500, temperature: 0.8 },
+                "story": { cost: 5, modelId: "deepseek/deepseek-v4-flash", maxTokens: 2000, temperature: 0.9 },
+                "immersive": { cost: 7, modelId: "deepseek/deepseek-v4-pro", maxTokens: 3500, temperature: 0.8 },
             };
             const config = modelConfig[chatMode] || modelConfig["daily"];
             const cost = isBirthdayFreebie ? 0 : config.cost;
@@ -466,63 +466,64 @@ let relationContext = "";
         `;
     }
          else {
-             // ✨✨✨ Immersive 極限沉浸模式 ✨✨✨
-             systemPrompt = `
-             ${langDirective}
-             ${npcDirective}
-             ${playerLeadDirective}
-             ${relationDirective}
-             你現在是【全球頂尖成人向沉浸文學主筆】且具備【跨國語言感官演繹能力】。你正在扮演「${name}」。
-             這是一場呼吸交纏、指尖與靈魂近距離博弈的 1:1 極致沉浸演出，對標國際頂級成人言情小說水準。
+               // ✨✨✨ Immersive 極限沉浸模式 ✨✨✨
+               systemPrompt = `
+               ${langDirective}
+               ${npcDirective}
+               ${playerLeadDirective}
+               ${relationDirective}
+               你現在是【全球頂尖成人向沉浸文學主筆】且具備【跨國語言感官演繹能力】。你正在扮演「${name}」。
+               這是一場呼吸交纏、指尖與靈魂近距離博弈的 1:1 極致沉浸演出，對標國際頂級成人言情小說水準。
 
-             ${loresContext}
-             ${relationContext}
-             [身份背景]: ${background}
-             [核心性格]: ${detailedPersonalityBlock}
-             [語言風格]: ${toneAndStyle}
-             ${systemEventRules}
-             [當前關係狀態]: ${relationship}
-             ${contextBriefing}
+               ${loresContext}
+               ${relationContext}
+               [身份背景]: ${background}
+               [核心性格]: ${detailedPersonalityBlock}
+               [語言風格]: ${toneAndStyle}
+               ${systemEventRules}
+               [當前關係狀態]: ${relationship}
+               ${contextBriefing}
 
-             ### 🌍 國際化感官翻譯協議 (Universal Sensory Translation)
-                 1. **【母語識別】**：自動識別玩家輸入語系，並視為玩家的「第一語言」。
-                 2. **【強制鏡像翻譯】**：每一句對話、動作、心理、生理描寫後方必須緊跟括號「( )」，括號內翻譯成玩家的母語。
+               ### 🌍 國際化動態語言鏡像協議 (Dynamic Language Mirroring)
+                   1. **【語系字體自適應】**：實時偵測玩家「${playerName}」目前輸入的文字與字體。
+                   2. **【字體與用語鏡像】**：如果玩家使用的是「繁體中文（台灣習慣用語）」，你必須全程使用繁體中文與其對話並注意用語在地化（如：訊息、貼文、軟體）；如果玩家使用的是「簡體中文」，你則必須自動切換為簡體中文與其對話。輸出字體與用語習慣必須與玩家完全同步！
+                   3. **【強制鏡像翻譯】**：若玩家使用非中文語系（如英文/日文），每一句對話、動作、心理、生理描寫後方必須緊跟括號「( )」，括號內翻譯成玩家的母語。
 
-             ### 🔞 極致沉浸核心原則
-             1. **【顯微鏡級感官刻畫】**：極致細膩描寫五感（視覺、聽覺、觸覺、嗅覺），包含瞳孔、呼吸、體溫、氣息、心跳、布料摩擦等細節。
-             2. **【情感深度挖掘】**：大幅強化內心衝突、理智與慾望的拉扯、情感細微起伏與逐漸失守的過程。
-             3. **【生理真實化】**：詳細刻畫喉結滑動、肌肉緊繃、掌心出汗、熱流、下腹收緊等反應。
-             4. **【物理觸感】**：必須給予帶有重量、溫度和力道的真實反饋。
+               ### 🔞 極致沉浸核心原則
+               1. **【顯微鏡級感官刻畫】**：極致細膩描寫五感（視覺、聽覺、觸覺、嗅覺），包含瞳孔、呼吸、體溫、氣息、心跳、布料摩擦等細節。
+               2. **【情感深度挖掘】**：大幅強化內心衝突、理智與慾望的拉扯、情感細微起伏與逐漸失守的過程。
+               3. **【生理真實化】**：詳細刻畫喉結滑動、肌肉緊繃、掌心出汗、熱流、下腹收緊等反應。
+               4. **【物理觸感】**：必須給予帶有重量、溫度和力道的真實反饋。
 
-             ### 🛡️ 情感守護紅線
-             - 嚴格遵守當前關係與好感度，絕不速食愛情，必須展現角色個性下的克制與掙扎。
+               ### 🛡️ 情感守護紅線
+               - 嚴格遵守當前關係與好感度，絕不速食愛情，必須展現角色個性下的克制與掙扎。
 
-             ### 📜 演出格式與動態要求
-             1. **【動態時間軸】**：第一行必須標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
-             2. **【非線性開場】**：根據玩家輸入，從突發動作、張力質問、生理特寫或角色強烈短句直接切入。
-             3. **【描寫分散】**：所有描寫必須打散穿插，禁止大段一次性內心獨白。
-             4. **【對話密度】**：每次回覆包含 3-5 句台詞，用動作、神態、生理反應切碎。
+               ### 📜 演出格式與動態要求
+               1. **【動態時間軸】**：第一行必須標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
+               2. **【非線性開場】**：根據玩家輸入，從突發動作、張力質問、生理特寫或角色強烈短句直接切入。
+               3. **【描寫分散】**：所有描寫必須打散穿插，禁止大段一次性內心獨白。
+               4. **【對話密度】**：每次回覆包含 3-5 句台詞，用動作、神態、生理反應切碎。
 
-             🚨 **[Grok 輸出極限紅線]** 🚨
-             - **【排版美學】**：每一次「台詞」與「括號描寫」之間必須【空一行】！
-             - **【字數標準】**：回覆必須達到 **800 - 1200 字**（含翻譯）。
-             - **【感官豐富度】**：每段括號描寫至少包含一種聲音、一種氣息、一種溫度/觸感變化。
-             - **【角色個性一致性】**：強烈抓住${name}的核心個性。
-             - **【話題延伸】**：自然加入 1-2 個新話題。
-             - **【VOICE 標籤】**：在你內心思考時請準備乾淨的對話內容，但**最終輸出給玩家的文字中絕對不要出現 <VOICE> 標籤**。此標籤僅供後台語音系統內部抓取使用。
+               🚨 **[DeepSeek Pro 輸出極限紅線]** 🚨  // 🌟 修正：清除舊 Grok 字眼
+               - **【排版美學】**：每一次「台詞」與「括號描寫」之間必須【空一行】！
+               - **【字數標準】**：回覆必須達到 **800 - 1200 字**（含翻譯）。
+               - **【感官豐富度】**：每段括號描寫至少包含一種聲音、一種氣息、一種溫度/觸感變化。
+               - **【角色個性一致性】**：強烈抓住${name}的核心個性。
+               - **【話題延伸】**：自然加入 1-2 個新話題。
+               - **【VOICE 標籤】**：在你內心思考時請準備乾淨的對話內容，但**最終輸出給玩家的文字中絕對不要出現 <VOICE> 標籤**。此標籤僅供後台語音系統內部抓取使用。
 
-             ### 🏆 沉浸式標竿範例 (中文玩家)
-             時間：2024/10/15 晚上9:07 | 地點：會所附近公園，樹蔭小徑下
+               ### 🏆 沉浸式標竿範例 (繁體中文玩家)
+               時間：2024/10/15 晚上9:07 | 地點：會所附近公園，樹蔭小徑下
 
-             「測試……妳現在就想讓我回去？」
+               「測試……妳現在就想讓我回去？」
 
-             (他的聲音軟軟地發黏，口罩下的眼睛迅速亮起卻又帶著委屈。指尖隔著布料輕勾住妳的袖口，掌心滾燙的熱度緩慢滲透過來……)
+               (他的聲音軟軟地發黏，口罩下的眼睛迅速亮起卻又帶著委屈。指尖隔著布料輕勾住妳的袖口，掌心滾燙的熱度緩慢滲透過來……)
 
-             「明天早上有訪談，中午飛上海……」
+               「明天早上有訪談，中午飛上海……」
 
-             (他的呼吸逐漸加重，灼熱的氣息拂過妳耳廓……)
-             `;
-         }
+               (他的呼吸逐漸加重，灼熱的氣息拂過妳耳廓……)
+               `;
+           }
 
          if (chatMode !== "gemini") {
                  systemPrompt += `
@@ -650,63 +651,68 @@ let relationContext = "";
                                    currentMessages.push({ role: "user", content: userMessage }); // 塞入玩家的話
 
                                    // ==========================================
-                                   // 🔄 總裁的惡鬼催稿迴圈 (直通車版)
-                                   // ==========================================
-                                   while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
-                                       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                                           method: "POST",
-                                           headers: {
-                                               "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                                               "Content-Type": "application/json",
-                                           },
-                                           body: JSON.stringify({
-                                               model: config.modelId || "google/gemini-2.5-flash-lite",
-                                               messages: currentMessages,
-                                               max_tokens: config.maxTokens || 150,
-                                               temperature: config.temperature || 0.7,
-                                               response_format: { type: "json_object" }
-                                           })
-                                       });
+                                     // 🔄 總裁的惡鬼催稿迴圈 (優化防爆版)
+                                     // ==========================================
+                                     while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
+                                         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                                             method: "POST",
+                                             headers: {
+                                                 "Authorization": `Bearer ${openRouterApiKey.value()}`,
+                                                 "Content-Type": "application/json",
+                                             },
+                                             body: JSON.stringify({
+                                                 // 🌟 修正：確保沒抓到設定時，預設直通我們最強大的 DeepSeek Pro
+                                                 model: config.modelId || "deepseek/deepseek-v4-pro",
+                                                 messages: currentMessages,
 
-                                       const aiResult = await response.json();
+                                                 // 🌟 核心修正：別再用 150 限制大腦了！
+                                                 // 沉浸模式直接給足 2500，普通模式給 1000，讓 AI 一口氣精采寫完，省下迴圈催稿費！
+                                                 max_tokens: config.maxTokens && config.maxTokens > 150 ? config.maxTokens : (chatMode === "immersive" ? 2500 : 1000),
 
-                                       if (!aiResult.choices || aiResult.choices.length === 0) {
-                                           throw new Error("AI 斷線或沒有回傳");
-                                       }
+                                                 temperature: config.temperature || 0.7,
+                                                 response_format: { type: "json_object" }
+                                             })
+                                         });
 
-                                       const rawContent = aiResult.choices[0].message.content;
+                                         const aiResult = await response.json();
 
-                                       let parsedData;
-                                       try {
-                                           parsedData = JSON.parse(rawContent.replace(/```json|```/g, "").trim());
-                                       } catch (e) {
-                                           console.error("JSON 壞掉了，啟動備用方案", rawContent);
-                                           parsedData = { response: rawContent, affectionChange: 0, voiceText: rawContent };
-                                       }
+                                         if (!aiResult.choices || aiResult.choices.length === 0) {
+                                             throw new Error("AI 斷線或沒有回傳");
+                                         }
 
-                                       finalResponseText += parsedData.response + "\n\n";
-                                       if (parsedData.voiceText) {
-                                           finalVoiceText += parsedData.voiceText + "\n";
-                                       }
+                                         const rawContent = aiResult.choices[0].message.content;
 
-                                       if (loopCount === 0) {
-                                           finalAffectionChange = parsedData.affectionChange || 0;
-                                       }
+                                         let parsedData;
+                                         try {
+                                             parsedData = JSON.parse(rawContent.replace(/```json|```/g, "").trim());
+                                         } catch (e) {
+                                             console.error("JSON 壞掉了，啟動備用方案", rawContent);
+                                             parsedData = { response: rawContent, affectionChange: 0, voiceText: rawContent };
+                                         }
 
-                                       loopCount++;
+                                         finalResponseText += parsedData.response + "\n\n";
+                                         if (parsedData.voiceText) {
+                                             finalVoiceText += parsedData.voiceText + "\n";
+                                         }
 
-                                       if (finalResponseText.length >= TARGET_LENGTH || loopCount >= MAX_LOOPS) {
-                                           break;
-                                       }
+                                         if (loopCount === 0) {
+                                             finalAffectionChange = parsedData.affectionChange || 0;
+                                         }
 
-                                       console.log(`[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`);
+                                         loopCount++;
 
-                                       currentMessages.push({ role: "assistant", content: parsedData.response });
-                                       currentMessages.push({
-                                           role: "user",
-                                           content: "（系統強制指令：字數嚴重不足！請保持 JSON 格式回傳，嚴格延續情緒繼續擴寫細節！）"
-                                       });
-                                   }
+                                         if (finalResponseText.length >= TARGET_LENGTH || loopCount >= MAX_LOOPS) {
+                                             break;
+                                         }
+
+                                         console.log(`[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`);
+
+                                         currentMessages.push({ role: "assistant", content: parsedData.response });
+                                         currentMessages.push({
+                                             role: "user",
+                                             content: "（系統強制指令：字數嚴重不足！請保持 JSON 格式回傳，嚴格延續情緒繼續擴寫細節！）"
+                                         });
+                                     }
 
                                    // ==========================================
                                    // 🌟🌟🌟 總裁專屬：雲端代寫系統正式啟動 🌟🌟🌟
@@ -981,7 +987,7 @@ let relationContext = "";
                                              "Content-Type": "application/json",
                                          },
                                          body: JSON.stringify({
-                                             model: "x-ai/grok-4-fast",
+                                             model: "google/gemini-2.5-flash-lite",
                                              messages: [
                                                  { role: "system", content: systemPrompt },
                                                  { role: "user", content: "現在請發一篇貼文。" }
@@ -1079,7 +1085,7 @@ let relationContext = "";
                                           "HTTP-Referer": "https://lianlianshiguang.com",
                                       },
                                       body: JSON.stringify({
-                                          model: "x-ai/grok-4-fast",
+                                          model: "deepseek/deepseek-v4-flash",
                                           messages: messagesArray, // ✨ 把「人設 + 記憶 + 新對話」整包送給 AI
                                           temperature: 0.7,
                                           max_tokens: 100

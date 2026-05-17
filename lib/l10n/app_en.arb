@@ -124,7 +124,7 @@
   "deleteAccountDialogActionCancel": "No, I don't want to delete",
   "deleteAccountDialogActionConfirm": "Confirm",
   "deleteAccountSuccessSnackbar": "Account successfully deleted.",
-  "appDisclaimer": "The characters and scenes in the game are fictional. Please do not apply them to reality. Any resemblance is purely coincidental.",
+  "appDisclaimer": "The characters and scenes in the game are purely fictional. Please do not project them into reality!",
   "appVersion": "App Version: {version}",
   "@appVersion": {
     "description": "Displays the app version number",
@@ -137,6 +137,7 @@
   },
   "dialogTitleHint": "Hint",
   "completeProfilePrompt": "Please edit your profile to complete your information!",
+
   "goToEdit": "Go to Edit",
   "later": "Later",
   "chattingWith": "Chat with {friendName}",
@@ -1744,5 +1745,31 @@
   "referral_log_newbie_reward": "Star Invitation: Newbie Reward ✨",
   "referral_log_inviter_reward": "Star Invitation: Friend Milestone Reward 🎁",
   "referral_success_title": "Star Invitation Unlocked!",
-  "referral_success_content": "Congratulations! You have successfully chatted deeply with a character for 15 lines!\n\n'Newbie Reward: 50 Points' has been delivered to your account, and your friend has also received a 50-point reward simultaneously! 🎁"
+  "referral_success_content": "Congratulations! You have successfully chatted deeply with a character for 15 lines!\n\n'Newbie Reward: 50 Points' has been delivered to your account, and your friend has also received a 50-point reward simultaneously! 🎁",
+  "profile_referral_title": "Star Invitation 🌟",
+  "profile_referral_hint": "Enter friend's invitation code",
+  "profile_referral_bind_btn": "Link",
+  "profile_referral_pending": "Accepted invitation from player {id}\nGo chat with a character for 15 lines to unlock 50 Flower Points!",
+  "profile_referral_err_self": "You cannot enter your own invitation code!",
+  "profile_referral_err_duplicate": "You have already linked an invitation code!",
+  "profile_referral_err_not_found": "Player not found. Please check the invitation code!",
+  "profile_referral_success": "Linked successfully! Go chat with the characters now!",
+  "profile_referral_err_expired": "Sorry, newbie invitation codes must be linked within 3 days of registration!",
+  "profile_share_message": "✨ I've started a heart-fluttering journey with {character} in 'Lianlian ShiGuang'! Download the app now and enter my Star Invitation Code: 【{code}】 on your profile page. Both of us will get 50 Flowers for free! 🎁\n\n Download link:\n https://yourgame.url/download",
+  "@profile_share_message": {
+    "placeholders": {
+      "character": { "type": "String" },
+      "code": { "type": "String" }
+    }
+  },
+  "chat_levelup_share_btn": "Show off this heart-fluttering moment to friends ✨",
+  "profile_my_invite_code_with_char": "My exclusive invite code (Current favorite: {character})",
+  "@profile_my_invite_code_with_char": {
+    "placeholders": {
+      "character": { "type": "String" }
+    }
+  },
+  "profile_send_invite_btn": "Send Star Invitation to friends",
+  "profile_fallback_character": "Favorite Character",
+  "profile_copy_success": "✅ Invitation code copied to clipboard!"
 }

@@ -344,7 +344,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'Os personagens e cenas do jogo são fictícios, por favor, não os aplique na realidade! Se houver alguma semelhança, é pura coincidência.';
+      'Os personagens e cenários do jogo son puramente fictícios. Por favor, não os confunda com a realidade!';
 
   @override
   String appVersion(String version) {
@@ -3679,4 +3679,62 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get referral_success_content =>
       'Parabéns! Você conversou profundamente com o personagem por 15 linhas com sucesso!\n\nA \'Recompensa de Novo Usuário: 50 Pontos\' foi entregue em sua conta, e seu amigo também recebeu uma recompensa de 50 pontos simultaneamente! 🎁';
+
+  @override
+  String get profile_referral_title => 'Convite Estelar 🌟';
+
+  @override
+  String get profile_referral_hint => 'Digite o código de convite do amigo';
+
+  @override
+  String get profile_referral_bind_btn => 'Vincular';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'Convite do jogador $id aceito\nConverse com o personagem por 15 linhas para desbloquear 50 Flores!';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      'Você não pode inserir seu próprio código de convite!';
+
+  @override
+  String get profile_referral_err_duplicate =>
+      'Você já vinculou um código de convite!';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'Jogador não encontrado, por favor verifique o código de convite!';
+
+  @override
+  String get profile_referral_success =>
+      'Vinculado com sucesso! Vá conversar com os personagens!';
+
+  @override
+  String get profile_referral_err_expired =>
+      'Desculpe, o código de convite de novo usuário deve ser vinculado dentro de 3 dias após o registro!';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ Comecei uma jornada emocionante com $character em \'Lianlian ShiGuang\'! Baixe o aplicativo agora e insira o meu Código de Convite Estelar: 【$code】 na sua página de perfil. Nós dois ganharemos 50 Flores gratuitamente! 🎁\n\n Link para download:\n https://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn =>
+      'Mostre este momento emocionante para seus amigos ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'Meu código de convite exclusivo (Favorito atual: $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => 'Enviar Convite Estelar para os amigos';
+
+  @override
+  String get profile_fallback_character => 'Personagem Favorito';
+
+  @override
+  String get profile_copy_success =>
+      '✅ Código de convite copiado para a área de transferência!';
 }

@@ -118,8 +118,7 @@
   "deleteAccountDialogActionCancel": "아니요, 삭제하지 않을게요",
   "deleteAccountDialogActionConfirm": "확인",
   "deleteAccountSuccessSnackbar": "계정이 성공적으로 삭제되었습니다.",
-  "appDisclaimer": "게임 내의 캐릭터와 장면은 모두 허구이므로 현실에 대입하지 마세요! 유사한 점이 있더라도 이는 순전히 우연입니다",
-  "appVersion": "앱 버전: {version}",
+  "appDisclaimer": "게임 속 캐릭터와 배경은 모두 허구이오니 현실과 혼동하지 마세요!",  "appVersion": "앱 버전: {version}",
   "@appVersion": {
   "description": "앱 버전 번호 표시",
   "placeholders": {
@@ -1531,5 +1530,31 @@
   "referral_log_newbie_reward": "별의 초대: 신규 유저 보상 ✨",
   "referral_log_inviter_reward": "별의 초대: 친구 미션 달성 보상 🎁",
   "referral_success_title": "별의 초대 해제!",
-  "referral_success_content": "축하합니다! 캐릭터와 15마디 이상의 깊은 대화를 나누는 데 성공하셨습니다!\n\n'신규 유저 보상 50 포인트'가 계정으로 지급되었으며, 친구분도 동시에 50 포인트 보상을 획득하셨습니다! 🎁"
+  "referral_success_content": "축하합니다! 캐릭터와 15마디 이상의 깊은 대화를 나누는 데 성공하셨습니다!\n\n'신규 유저 보상 50 포인트'가 계정으로 지급되었으며, 친구분도 동시에 50 포인트 보상을 획득하셨습니다! 🎁",
+  "profile_referral_title": "별의 초대 🌟",
+  "profile_referral_hint": "친구 초대 코드 입력",
+  "profile_referral_bind_btn": "연동",
+  "profile_referral_pending": "플레이어 {id}님의 초대를 수락했습니다\n얼른 캐릭터와 15마디 대화를 나누고 꽃 50 포인트를 해제하세요!",
+  "profile_referral_err_self": "자신의 초대 코드는 입력할 수 없습니다!",
+  "profile_referral_err_duplicate": "이미 초대 코드를 연동하셨습니다!",
+  "profile_referral_err_not_found": "해당 플레이어를 찾을 수 없습니다. 초대 코드를 확인해 주세요!",
+  "profile_referral_success": "연동 성공! 지금 바로 캐릭터와 대화해 보세요!",
+  "profile_referral_err_expired": "죄송합니다. 신규 유저 초대 코드는 가입 후 3일 이내에 연동해야 합니다!",
+  "profile_share_message": "✨ 지금 《Lianlian ShiGuang》에서 {character}님과 설레는 여정을 시작했어요! 지금 앱을 다운로드하고 프로필 페이지에 저의 별의 초대 코드 【{code}】를 입력해 보세요. 우리 둘 다 꽃 50송이를 무료로 받을 수 있어요! 🎁\n\n 다운로드 링크:\n https://yourgame.url/download",
+  "@profile_share_message": {
+    "placeholders": {
+      "character": { "type": "String" },
+      "code": { "type": "String" }
+    }
+  },
+  "chat_levelup_share_btn": "친구들에게 이 설렘을 자랑하기 ✨",
+  "profile_my_invite_code_with_char": "나만의 전용 초대 코드 (현재 최애: {character})",
+  "@profile_my_invite_code_with_char": {
+    "placeholders": {
+      "character": { "type": "String" }
+    }
+  },
+  "profile_send_invite_btn": "친구에게 별의 초대 보내기",
+  "profile_fallback_character": "최애 캐릭터",
+  "profile_copy_success": "✅ 초대 코드가 클립보드에 복사되었습니다!"
 }

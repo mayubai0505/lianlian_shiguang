@@ -118,8 +118,7 @@
     "deleteAccountDialogActionCancel": "Tidak, saya tidak mahu memadam",
     "deleteAccountDialogActionConfirm": "Sahkan",
     "deleteAccountSuccessSnackbar": "Akaun berjaya dipadamkan.",
-    "appDisclaimer": "Watak dan adegan dalam permainan adalah rekaan semata-mata, sila jangan kaitkan dengan realiti! Jika terdapat sebarang persamaan, itu hanyalah kebetulan.",
-    "appVersion": "Versi Aplikasi: {version}",
+    "appDisclaimer": "Karakter dan adegan dalam permainan ini adalah rekaan semata-mata, sila jangan bawa ke dalam dunia nyata!",    "appVersion": "Versi Aplikasi: {version}",
     "@appVersion": {
     "description": "Memaparkan nombor versi aplikasi",
     "placeholders": {
@@ -1532,5 +1531,31 @@
     "referral_log_newbie_reward": "Undangan Bintang: Ganjaran Pengguna Baharu ✨",
     "referral_log_inviter_reward": "Undangan Bintang: Ganjaran Sasaran Rakan 🎁",
     "referral_success_title": "Undangan Bintang Dibuka!",
-    "referral_success_content": "Tahniah! Awak telah berjaya berbual secara mendalam dengan watak sebanyak 15 ayat!\n\n'Ganjaran Pengguna Baharu 50 Mata' telah dihantar ke akaun awak, dan rakan awak juga telah menerima ganjaran 50 mata secara serentak! 🎁"
+    "referral_success_content": "Tahniah! Awak telah berjaya berbual secara mendalam dengan watak sebanyak 15 ayat!\n\n'Ganjaran Pengguna Baharu 50 Mata' telah dihantar ke akaun awak, dan rakan awak juga telah menerima ganjaran 50 mata secara serentak! 🎁",
+    "profile_referral_title": "Undangan Bintang 🌟",
+    "profile_referral_hint": "Masukkan kod undangan rakan",
+    "profile_referral_bind_btn": "Ikat",
+    "profile_referral_pending": "Telah menerima undangan daripada pemain {id}\nJom bersembang dengan watak sebanyak 15 ayat untuk membuka 50 Mata Bunga!",
+    "profile_referral_err_self": "Tidak boleh memasukkan kod undangan sendiri!",
+    "profile_referral_err_duplicate": "Awak sudah mengikat kod undangan!",
+    "profile_referral_err_not_found": "Pemain tidak dijumpai, sila sahkan kod undangan!",
+    "profile_referral_success": "Berjaya mengikat! Jom mula bersembang dengan watak!",
+    "profile_referral_err_expired": "Maaf, kod undangan pengguna baharu mesti diikat dalam masa 3 hari selepas pendaftaran!",
+    "profile_share_message": "✨ Saya telah memulakan perjalanan yang mendebarkan bersama {character} di 'Lianlian ShiGuang'! Muat turun aplikasi sekarang dan masukkan Kod Undangan Bintang saya: 【{code}】 di halaman profil awak. Kita berdua akan mendapat 50 Bunga secara percuma! 🎁\n\n Pautan muat turun:\n https://yourgame.url/download",
+    "@profile_share_message": {
+        "placeholders": {
+            "character": { "type": "String" },
+            "code": { "type": "String" }
+        }
+    },
+    "chat_levelup_share_btn": "Tunjuk momen mendebarkan ini kepada rakan-rakan ✨",
+    "profile_my_invite_code_with_char": "Kod undangan eksklusif saya (Kegemaran semasa: {character})",
+    "@profile_my_invite_code_with_char": {
+        "placeholders": {
+            "character": { "type": "String" }
+        }
+    },
+    "profile_send_invite_btn": "Hantar Undangan Bintang kepada rakan",
+    "profile_fallback_character": "Karakter Kegemaran",
+    "profile_copy_success": "✅ Kod undangan telah disalin ke papan keratan!"
 }

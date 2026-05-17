@@ -347,7 +347,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get appDisclaimer =>
-      'Les personnages et les scènes du jeu sont fictifs, ne les appliquez pas à la réalité ! S\'il y a des similitudes, c\'est purement une coïncidence.';
+      'Les personnages et les scènes du jeu sont purement fictifs. Veuillez ne pas les transposer dans la réalité !';
 
   @override
   String appVersion(String version) {
@@ -3708,4 +3708,63 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get referral_success_content =>
       'Félicitations ! Vous avez discuté en profondeur avec un personnage pendant 15 lignes !\n\nLa \'Récompense de nouveau joueur : 50 points\' a été créditée sur votre compte, et votre ami a également reçu une récompensée de 50 points en même temps ! 🎁';
+
+  @override
+  String get profile_referral_title => 'Invitation Stellaire 🌟';
+
+  @override
+  String get profile_referral_hint => 'Entrez le code d\'invitation d\'un ami';
+
+  @override
+  String get profile_referral_bind_btn => 'Lier';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'Invitation du joueur $id acceptée\nDiscutez avec un personnage pendant 15 lignes pour débloquer 50 fleurs !';
+  }
+
+  @override
+  String get profile_referral_err_self =>
+      'Vous ne pouvez pas entrer votre propre code d\'invitation !';
+
+  @override
+  String get profile_referral_err_duplicate =>
+      'Vous avez déjà lié un code d\'invitation !';
+
+  @override
+  String get profile_referral_err_not_found =>
+      'Joueur introuvable. Veuillez vérifier le code d\'invitation !';
+
+  @override
+  String get profile_referral_success =>
+      'Liaison réussie ! Allez discuter avec les personnages !';
+
+  @override
+  String get profile_referral_err_expired =>
+      'Désolé, le code d\'invitation de nouveau joueur doit être lié dans les 3 jours suivant l\'inscription !';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨ Je viens de commencer une aventure palpitante avec $character sur \'Lianlian ShiGuang\' ! Télécharge l\'application dès maintenant et entre mon code d\'invitation stellaire : 【$code】 sur ta page de profil. Nous recevrons tous les deux 50 fleurs gratuites ! 🎁\n\n Lien de téléchargement :\n https://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn =>
+      'Montrez ce moment palpitant à vos amis ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return 'Mon code d\'invitation exclusif (Favori actuel : $character)';
+  }
+
+  @override
+  String get profile_send_invite_btn =>
+      'Envoyer l\'Invitation Stellaire aux amis';
+
+  @override
+  String get profile_fallback_character => 'Personnage coup de cœur';
+
+  @override
+  String get profile_copy_success =>
+      '✅ Code d\'invitation copié dans le presse-papiers !';
 }

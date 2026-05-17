@@ -326,8 +326,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deleteAccountSuccessSnackbar => 'アカウントが正常に削除されました。';
 
   @override
-  String get appDisclaimer =>
-      'ゲーム内のキャラクターやシーンはすべて架空のものですので、現実世界と混同しないでください！似ている点がある場合でも、それは偶然の一致です';
+  String get appDisclaimer => 'ゲーム内のキャラクターや舞台はすべてフィクションです。現実と混同しないようご注意ください！';
 
   @override
   String appVersion(String version) {
@@ -3478,4 +3477,56 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get referral_success_content =>
       'おめでとうございます！キャラクターとの深い交流が15言に達しました！\n\n「新規登録報酬 50ポイント」があなたのアカウントに届きました。また、お友達も同時に50ポイントのリワードを獲得しました！🎁';
+
+  @override
+  String get profile_referral_title => '星の招待 🌟';
+
+  @override
+  String get profile_referral_hint => '友達の招待コードを入力';
+
+  @override
+  String get profile_referral_bind_btn => '連携';
+
+  @override
+  String profile_referral_pending(Object id) {
+    return 'プレイヤー $id の招待を承認しました\nキャラクターと15言話してお花50ポイントを解放しよう！';
+  }
+
+  @override
+  String get profile_referral_err_self => '自分の招待コードは入力できません！';
+
+  @override
+  String get profile_referral_err_duplicate => 'すでに招待コードを連携済みです！';
+
+  @override
+  String get profile_referral_err_not_found => 'プレイヤーが見つかりません。招待コードを確認してください！';
+
+  @override
+  String get profile_referral_success => '連携成功！さっそくキャラクターとチャットしましょう！';
+
+  @override
+  String get profile_referral_err_expired =>
+      '申し訳ありません。新規招待コードは登録後3日以内に連携する必要があります！';
+
+  @override
+  String profile_share_message(String character, String code) {
+    return '✨『恋恋拾光』で$characterときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【$code】を入力してね。二人とも無料でお花50ポイントがもらえるよ！🎁\n\n ダウンロードリンク：\nhttps://yourgame.url/download';
+  }
+
+  @override
+  String get chat_levelup_share_btn => 'このときめきを友達に自慢する ✨';
+
+  @override
+  String profile_my_invite_code_with_char(String character) {
+    return '私の専用招待コード (現在の推し：$character)';
+  }
+
+  @override
+  String get profile_send_invite_btn => '星の招待を友達に送信';
+
+  @override
+  String get profile_fallback_character => '推しキャラクター';
+
+  @override
+  String get profile_copy_success => '✅ 招待コードをクリップボードにコピーしました！';
 }

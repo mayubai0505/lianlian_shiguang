@@ -124,8 +124,7 @@
     "deleteAccountDialogActionCancel": "Non, je ne veux pas le supprimer",
     "deleteAccountDialogActionConfirm": "Confirmer",
     "deleteAccountSuccessSnackbar": "Le compte a été supprimé avec succès.",
-    "appDisclaimer": "Les personnages et les scènes du jeu sont fictifs, ne les appliquez pas à la réalité ! S'il y a des similitudes, c'est purement une coïncidence.",
-    "appVersion": "Version de l'application: {version}",
+    "appDisclaimer": "Les personnages et les scènes du jeu sont purement fictifs. Veuillez ne pas les transposer dans la réalité !",    "appVersion": "Version de l'application: {version}",
     "@appVersion": {
         "description": "Affiche le numéro de version de l'application",
         "placeholders": {
@@ -1702,5 +1701,31 @@
     "referral_log_newbie_reward": "Invitation Stellaire : Récompense de nouveau joueur ✨",
     "referral_log_inviter_reward": "Invitation Stellaire : Récompense d'objectif d'ami 🎁",
     "referral_success_title": "Invitation Stellaire débloquée !",
-    "referral_success_content": "Félicitations ! Vous avez discuté en profondeur avec un personnage pendant 15 lignes !\n\nLa 'Récompense de nouveau joueur : 50 points' a été créditée sur votre compte, et votre ami a également reçu une récompensée de 50 points en même temps ! 🎁"
+    "referral_success_content": "Félicitations ! Vous avez discuté en profondeur avec un personnage pendant 15 lignes !\n\nLa 'Récompense de nouveau joueur : 50 points' a été créditée sur votre compte, et votre ami a également reçu une récompensée de 50 points en même temps ! 🎁",
+    "profile_referral_title": "Invitation Stellaire 🌟",
+    "profile_referral_hint": "Entrez le code d'invitation d'un ami",
+    "profile_referral_bind_btn": "Lier",
+    "profile_referral_pending": "Invitation du joueur {id} acceptée\nDiscutez avec un personnage pendant 15 lignes pour débloquer 50 fleurs !",
+    "profile_referral_err_self": "Vous ne pouvez pas entrer votre propre code d'invitation !",
+    "profile_referral_err_duplicate": "Vous avez déjà lié un code d'invitation !",
+    "profile_referral_err_not_found": "Joueur introuvable. Veuillez vérifier le code d'invitation !",
+    "profile_referral_success": "Liaison réussie ! Allez discuter avec les personnages !",
+    "profile_referral_err_expired": "Désolé, le code d'invitation de nouveau joueur doit être lié dans les 3 jours suivant l'inscription !",
+    "profile_share_message": "✨ Je viens de commencer une aventure palpitante avec {character} sur 'Lianlian ShiGuang' ! Télécharge l'application dès maintenant et entre mon code d'invitation stellaire : 【{code}】 sur ta page de profil. Nous recevrons tous les deux 50 fleurs gratuites ! 🎁\n\n Lien de téléchargement :\n https://yourgame.url/download",
+    "@profile_share_message": {
+        "placeholders": {
+            "character": { "type": "String" },
+            "code": { "type": "String" }
+        }
+    },
+    "chat_levelup_share_btn": "Montrez ce moment palpitant à vos amis ✨",
+    "profile_my_invite_code_with_char": "Mon code d'invitation exclusif (Favori actuel : {character})",
+    "@profile_my_invite_code_with_char": {
+        "placeholders": {
+            "character": { "type": "String" }
+        }
+    },
+    "profile_send_invite_btn": "Envoyer l'Invitation Stellaire aux amis",
+    "profile_fallback_character": "Personnage coup de cœur",
+    "profile_copy_success": "✅ Code d'invitation copié dans le presse-papiers !"
 }
