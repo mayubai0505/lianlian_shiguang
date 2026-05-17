@@ -3664,4 +3664,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'Clique para copiar o ID';
+
+  @override
+  String get referral_log_newbie_reward =>
+      'Convite Estelar: Recompensa de Novo Usuário ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'Convite Estelar: Recompensa de Meta de Amigo 🎁';
+
+  @override
+  String get referral_success_title => 'Convite Estelar Desbloqueado!';
+
+  @override
+  String get referral_success_content =>
+      'Parabéns! Você conversou profundamente com o personagem por 15 linhas com sucesso!\n\nA \'Recompensa de Novo Usuário: 50 Pontos\' foi entregue em sua conta, e seu amigo também recebeu uma recompensa de 50 pontos simultaneamente! 🎁';
 }

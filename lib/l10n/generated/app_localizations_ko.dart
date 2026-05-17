@@ -3481,4 +3481,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get profile_copy_id => '클릭하여 ID 복사';
+
+  @override
+  String get referral_log_newbie_reward => '별의 초대: 신규 유저 보상 ✨';
+
+  @override
+  String get referral_log_inviter_reward => '별의 초대: 친구 미션 달성 보상 🎁';
+
+  @override
+  String get referral_success_title => '별의 초대 해제!';
+
+  @override
+  String get referral_success_content =>
+      '축하합니다! 캐릭터와 15마디 이상의 깊은 대화를 나누는 데 성공하셨습니다!\n\n\'신규 유저 보상 50 포인트\'가 계정으로 지급되었으며, 친구분도 동시에 50 포인트 보상을 획득하셨습니다! 🎁';
 }

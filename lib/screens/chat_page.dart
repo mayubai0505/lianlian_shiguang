@@ -113,6 +113,9 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  // 🌟 總裁的聊天室監控探針
+  bool _isReferralTrackerActive = false; // 是否需要啟動邀請計數器
+  int _currentReferralChatCount = 0;     // 本次上線聊了幾句
   // ✨ 截圖模式專用變數
   bool _isScreenshotMode = false;      // 是否正在截圖模式中？
   Set<String> _selectedMessageIds = {}; // 裝著被玩家「打勾勾」的對話 ID
@@ -212,7 +215,13 @@ class _ChatPageState extends State<ChatPage> {
       // 💡 測試模式到此為止，後面那些去資料庫撈資料的程式碼「全部跳過」！
       return;
     }
+
     // --- 下面是正常模式的邏輯，只有不是測試模式才會跑到這裡 ---
+
+    // 🎯 總裁雷達防線：加在正常模式的第一槍！
+    // 一進聊天室，立刻暗中偵測該玩家是不是「被邀請的新人」，如果是就打開計數器！
+    _checkReferralEligibility();
+
     if (widget.initialText != null && widget.initialText!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _executeMessageSending(userText: widget.initialText!);
@@ -275,6 +284,54 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Future<void> _checkReferralEligibility() async {
+    if (_userId == null) return;
+
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(_userId).get();
+    if (!userDoc.exists || !mounted) return;
+
+    final data = userDoc.data() ?? {};
+
+    // 檢查：1. 有被邀請 2. 還沒領過獎勵
+    String? inviterId = data['invitedBy'];
+    bool isClaimed = data['referralRewardClaimed'] ?? true;
+
+    setState(() {
+      if (inviterId != null && !isClaimed) {
+        _isReferralTrackerActive = true;
+        _currentReferralChatCount = data['totalChatMessages'] ?? 0;
+        debugPrint("🎯 偵測到合格被邀請新人！計數器已啟動，目前已聊：$_currentReferralChatCount 句");
+      } else {
+        _isReferralTrackerActive = false;
+      }
+    });
+  }
+
+  void _showReferralSuccessDialog() {
+    final l10n = AppLocalizations.of(context)!; // 🌟 載入翻譯字典
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.card_membership_rounded, color: Colors.amber, size: 28),
+            const SizedBox(width: 8),
+            Text(l10n.referral_success_title), // 🌟 換成翻譯變數
+          ],
+        ),
+        content: Text(l10n.referral_success_content), // 🌟 換成翻譯變數
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.shop_purchase_awesome, style: const TextStyle(fontWeight: FontWeight.bold)), // 🌟 換成翻譯變數
+          )
+        ],
+      ),
+    );
+  }
   // 讀取 Firebase 舊資料並填入輸入框
   Future<void> _loadExistingProfile() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -767,6 +824,9 @@ class _ChatPageState extends State<ChatPage> {
         _increaseTaskProgress('dailyChatProgress', 3);
       }
     }
+    if (_isReferralTrackerActive) {
+      await _triggerReferralCounter();
+    }
 
     dynamic triggeredEgg; // 這裡用 dynamic 或 妳的 EasterEgg 類別
 
@@ -808,6 +868,76 @@ class _ChatPageState extends State<ChatPage> {
           audioPath: audioPath,
           secretPrompt: secretPrompt
       );
+    }
+  }
+
+  Future<void> _triggerReferralCounter() async {
+    if (_userId == null || !mounted) return; // 加上 mounted 保護
+
+    final l10n = AppLocalizations.of(context)!; // 🌟 載入翻譯字典
+
+    _currentReferralChatCount++;
+    debugPrint("🗣️ 新人說話了！當前累計：$_currentReferralChatCount / 15 句");
+
+    final userRef = FirebaseFirestore.instance.collection('users').doc(_userId);
+
+    // 如果還沒到 15 句，只悄悄更新數字
+    if (_currentReferralChatCount < 15) {
+      await userRef.update({'totalChatMessages': _currentReferralChatCount});
+      return;
+    }
+
+    // 剛好滿 15 句！瞬間把監控關掉，防止重複觸發
+    setState(() {
+      _isReferralTrackerActive = false;
+    });
+
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final userDoc = await transaction.get(userRef);
+        final userData = userDoc.data() ?? {};
+
+        if (userData['referralRewardClaimed'] == true) return; // 安全鎖
+
+        String? inviterId = userData['invitedBy'];
+
+        // 給自己 50 點
+        transaction.update(userRef, {
+          'totalChatMessages': _currentReferralChatCount,
+          'referralRewardClaimed': true,
+          'flowerPoints': FieldValue.increment(50),
+        });
+        transaction.set(userRef.collection('flower_logs').doc(), {
+          'title': l10n.referral_log_newbie_reward, // 🌟 換成翻譯變數
+          'amount': 50,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
+        // 給邀請人 50 點
+        if (inviterId != null) {
+          final inviterRef = FirebaseFirestore.instance.collection('users').doc(inviterId);
+          final inviterDoc = await transaction.get(inviterRef);
+          if (inviterDoc.exists) {
+            transaction.update(inviterRef, {
+              'flowerPoints': FieldValue.increment(50),
+            });
+            transaction.set(inviterRef.collection('flower_logs').doc(), {
+              'title': l10n.referral_log_inviter_reward, // 🌟 換成翻譯變數
+              'amount': 50,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+          }
+        }
+      });
+
+      // 成功後彈出華麗通知
+      if (mounted) _showReferralSuccessDialog();
+
+    } catch (e) {
+      debugPrint("❌ 雙向派彩失敗: $e");
+      if (mounted) {
+        setState(() => _isReferralTrackerActive = true); // 失敗重開保險
+      }
     }
   }
 

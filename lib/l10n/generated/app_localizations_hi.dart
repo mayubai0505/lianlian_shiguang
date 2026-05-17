@@ -3650,4 +3650,18 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'आईडी कॉपी करने के लिए क्लिक करें';
+
+  @override
+  String get referral_log_newbie_reward => 'स्टार इनविटेशन: न्यूबी रिवॉर्ड ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'स्टार इनविटेशन: फ्रेंड माइलस्टोन रिवॉर्ड 🎁';
+
+  @override
+  String get referral_success_title => 'स्टार इनविटेशन अनलॉक हुआ!';
+
+  @override
+  String get referral_success_content =>
+      'बधाई हो! आपने एक पात्र के साथ 15 लाइनों तक सफलतापूर्वक गहरी बातचीत की है!\n\n\'न्यूबी रिवॉर्ड: 50 पॉइंट्स\' आपके खाते में भेज दिया गया है, और आपके दोस्त को भी एक साथ 50-पॉइंट का रिवॉर्ड मिला है! 🎁';
 }

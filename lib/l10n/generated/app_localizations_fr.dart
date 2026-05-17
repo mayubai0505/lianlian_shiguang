@@ -3693,4 +3693,19 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'Cliquez pour copier l\'ID';
+
+  @override
+  String get referral_log_newbie_reward =>
+      'Invitation Stellaire : Récompense de nouveau joueur ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'Invitation Stellaire : Récompense d\'objectif d\'ami 🎁';
+
+  @override
+  String get referral_success_title => 'Invitation Stellaire débloquée !';
+
+  @override
+  String get referral_success_content =>
+      'Félicitations ! Vous avez discuté en profondeur avec un personnage pendant 15 lignes !\n\nLa \'Récompense de nouveau joueur : 50 points\' a été créditée sur votre compte, et votre ami a également reçu une récompensée de 50 points en même temps ! 🎁';
 }

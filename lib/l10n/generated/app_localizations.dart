@@ -6393,6 +6393,30 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'點擊複製 ID'**
   String get profile_copy_id;
+
+  /// No description provided for @referral_log_newbie_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星之邀約：新手報到獎勵 ✨'**
+  String get referral_log_newbie_reward;
+
+  /// No description provided for @referral_log_inviter_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星之邀約：好友達標回饋 🎁'**
+  String get referral_log_inviter_reward;
+
+  /// No description provided for @referral_success_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星之邀約解鎖！'**
+  String get referral_success_title;
+
+  /// No description provided for @referral_success_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁'**
+  String get referral_success_content;
 }
 
 class _AppLocalizationsDelegate

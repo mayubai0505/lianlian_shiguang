@@ -3604,4 +3604,19 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'คลิกเพื่อคัดลอก ID';
+
+  @override
+  String get referral_log_newbie_reward =>
+      'คำเชิญแห่งดวงดาว: รางวัลผู้เล่นใหม่ ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'คำเชิญแห่งดวงดาว: รางวัลเพื่อนบรรลุเป้าหมาย 🎁';
+
+  @override
+  String get referral_success_title => 'ปลดล็อกคำเชิญแห่งดวงดาวแล้ว!';
+
+  @override
+  String get referral_success_content =>
+      'ยินดีด้วย! คุณได้พูดคุยอย่างลึกซึ้งกับตัวละครครบ 15 ประโยคสำเร็จแล้ว!\n\n\'รางวัลผู้เล่นใหม่ 50 แต้ม\' ได้ถูกส่งไปยังบัญชีของคุณแล้ว และเพื่อนของคุณก็ได้รับรางวัล 50 แต้มไปพร้อมกันด้วย! 🎁';
 }

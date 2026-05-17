@@ -3619,4 +3619,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'Click to copy ID';
+
+  @override
+  String get referral_log_newbie_reward => 'Star Invitation: Newbie Reward ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'Star Invitation: Friend Milestone Reward 🎁';
+
+  @override
+  String get referral_success_title => 'Star Invitation Unlocked!';
+
+  @override
+  String get referral_success_content =>
+      'Congratulations! You have successfully chatted deeply with a character for 15 lines!\n\n\'Newbie Reward: 50 Points\' has been delivered to your account, and your friend has also received a 50-point reward simultaneously! 🎁';
 }

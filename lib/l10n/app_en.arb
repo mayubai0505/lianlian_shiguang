@@ -1740,5 +1740,9 @@
   "task_monthly_subtitle_inactive": "Unlock 【Star Contract】 Monthly Card to open this task (0 / 1)",
   "task_monthly_log_name": "Monthly Card Daily Privilege",
   "profile_id_locked": "Exclusive ID locked",
-  "profile_copy_id": "Click to copy ID"
+  "profile_copy_id": "Click to copy ID",
+  "referral_log_newbie_reward": "Star Invitation: Newbie Reward ✨",
+  "referral_log_inviter_reward": "Star Invitation: Friend Milestone Reward 🎁",
+  "referral_success_title": "Star Invitation Unlocked!",
+  "referral_success_content": "Congratulations! You have successfully chatted deeply with a character for 15 lines!\n\n'Newbie Reward: 50 Points' has been delivered to your account, and your friend has also received a 50-point reward simultaneously! 🎁"
 }

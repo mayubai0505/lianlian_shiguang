@@ -3597,4 +3597,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'انقر لنسخ المعرّف';
+
+  @override
+  String get referral_log_newbie_reward =>
+      'دعوة النجوم: مكافأة تسجيل القادمين الجدد ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'دعوة النجوم: مكافأة تحقيق الصديق للهدف 🎁';
+
+  @override
+  String get referral_success_title => 'تم فتح دعوة النجوم!';
+
+  @override
+  String get referral_success_content =>
+      'تهانينا! لقد نجحتِ في تبادل 15 جملة من الحوار العميق مع الشخصية!\n\nتم إرسال \'مكافأة تسجيل القادمين الجدد 50 نقطة\' إلى حسابكِ، وحصل صديقكِ أيضاً على مكافأة 50 نقطة في نفس الوقت! 🎁';
 }

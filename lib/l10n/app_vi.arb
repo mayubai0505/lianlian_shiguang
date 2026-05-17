@@ -1528,5 +1528,9 @@
   "task_monthly_subtitle_inactive": "Mở khóa thẻ tháng 【Tinh Chi Khế Ước】 để mở nhiệm vụ này (0 / 1)",
   "task_monthly_log_name": "Đặc quyền mỗi ngày thẻ tháng",
   "profile_id_locked": "Đã khóa ID độc quyền",
-  "profile_copy_id": "Nhấn để sao chép ID"
+  "profile_copy_id": "Nhấn để sao chép ID",
+  "referral_log_newbie_reward": "Tinh Chi Mời Gọi: Phần thưởng người mới ✨",
+  "referral_log_inviter_reward": "Tinh Chi Mời Gọi: Phần thưởng bạn bè đạt mốc 🎁",
+  "referral_success_title": "Đã mở khóa Tinh Chi Mời Gọi!",
+  "referral_success_content": "Chúc mừng bạn đã giao lưu sâu sắc với nhân vật đạt mốc 15 câu thành công!\n\n'Phần thưởng người mới 50 điểm' đã được gửi đến tài khoản của bạn, và bạn của bạn cũng đồng thời nhận được phần thưởng 50 điểm! 🎁"
 }

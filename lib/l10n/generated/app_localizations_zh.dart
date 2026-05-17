@@ -3433,6 +3433,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get profile_copy_id => '點擊複製 ID';
+
+  @override
+  String get referral_log_newbie_reward => '星之邀約：新手報到獎勵 ✨';
+
+  @override
+  String get referral_log_inviter_reward => '星之邀約：好友達標回饋 🎁';
+
+  @override
+  String get referral_success_title => '星之邀約解鎖！';
+
+  @override
+  String get referral_success_content =>
+      '恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6864,6 +6877,19 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get profile_copy_id => '点击复制 ID';
+
+  @override
+  String get referral_log_newbie_reward => '星之邀约：新手报到奖励 ✨';
+
+  @override
+  String get referral_log_inviter_reward => '星之邀约：好友达标回馈 🎁';
+
+  @override
+  String get referral_success_title => '星之邀约解锁！';
+
+  @override
+  String get referral_success_content =>
+      '恭喜您已成功与角色深度交流满 15 句！\n\n「新手报到奖励 50 点」已送达您的账户，您的好友也同步获得了 50 点回馈！🎁';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10295,4 +10321,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get profile_copy_id => '點擊複製 ID';
+
+  @override
+  String get referral_log_newbie_reward => '星之邀約：新手報到獎勵 ✨';
+
+  @override
+  String get referral_log_inviter_reward => '星之邀約：好友達標回饋 🎁';
+
+  @override
+  String get referral_success_title => '星之邀約解鎖！';
+
+  @override
+  String get referral_success_content =>
+      '恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁';
 }

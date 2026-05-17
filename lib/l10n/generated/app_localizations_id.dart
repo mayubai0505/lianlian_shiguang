@@ -3648,4 +3648,19 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'Klik untuk menyalin ID';
+
+  @override
+  String get referral_log_newbie_reward =>
+      'Undangan Bintang: Hadiah Pengguna Baru ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'Undangan Bintang: Hadiah Pencapaian Teman 🎁';
+
+  @override
+  String get referral_success_title => 'Undangan Bintang Terbuka!';
+
+  @override
+  String get referral_success_content =>
+      'Selamat! Anda telah berhasil mengobrol secara mendalam dengan karakter sebanyak 15 kalimat!\n\n\'Hadiah Pengguna Baru 50 Poin\' telah dikirim ke akun Anda, dan teman Anda juga menerima hadiah 50 poin secara bersamaan! 🎁';
 }

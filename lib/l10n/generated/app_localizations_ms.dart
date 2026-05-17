@@ -3647,4 +3647,19 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'Klik untuk salin ID';
+
+  @override
+  String get referral_log_newbie_reward =>
+      'Undangan Bintang: Ganjaran Pengguna Baharu ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'Undangan Bintang: Ganjaran Sasaran Rakan 🎁';
+
+  @override
+  String get referral_success_title => 'Undangan Bintang Dibuka!';
+
+  @override
+  String get referral_success_content =>
+      'Tahniah! Awak telah berjaya berbual secara mendalam dengan watak sebanyak 15 ayat!\n\n\'Ganjaran Pengguna Baharu 50 Mata\' telah dihantar ke akaun awak, dan rakan awak juga telah menerima ganjaran 50 mata secara serentak! 🎁';
 }

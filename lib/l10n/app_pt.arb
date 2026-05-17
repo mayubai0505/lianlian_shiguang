@@ -1529,5 +1529,9 @@
    "task_monthly_subtitle_inactive": "Desbloqueie o Cartão Mensal 【Contrato Estelar】 para abrir esta missão (0 / 1)",
    "task_monthly_log_name": "Privilégio Diário do Cartão Mensal",
    "profile_id_locked": "ID exclusivo bloqueado",
-   "profile_copy_id": "Clique para copiar o ID"
+   "profile_copy_id": "Clique para copiar o ID",
+   "referral_log_newbie_reward": "Convite Estelar: Recompensa de Novo Usuário ✨",
+   "referral_log_inviter_reward": "Convite Estelar: Recompensa de Meta de Amigo 🎁",
+   "referral_success_title": "Convite Estelar Desbloqueado!",
+   "referral_success_content": "Parabéns! Você conversou profundamente com o personagem por 15 linhas com sucesso!\n\nA 'Recompensa de Novo Usuário: 50 Pontos' foi entregue em sua conta, e seu amigo também recebeu uma recompensa de 50 pontos simultaneamente! 🎁"
 }

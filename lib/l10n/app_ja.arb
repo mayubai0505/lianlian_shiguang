@@ -1528,5 +1528,9 @@
   "task_monthly_subtitle_inactive": "月間カード【星の契約】を解放してこのタスクを開始 (0 / 1)",
   "task_monthly_log_name": "月間カード毎日特権",
   "profile_id_locked": "専用 ID がロックされました",
-  "profile_copy_id": "タップして ID をコピー"
+  "profile_copy_id": "タップして ID をコピー",
+  "referral_log_newbie_reward": "星の招待：新規登録報酬 ✨",
+  "referral_log_inviter_reward": "星の招待：フレンド目標達成リワード 🎁",
+  "referral_success_title": "星の招待が解放されました！",
+  "referral_success_content": "おめでとうございます！キャラクターとの深い交流が15言に達しました！\n\n「新規登録報酬 50ポイント」があなたのアカウントに届きました。また、お友達も同時に50ポイントのリワードを獲得しました！🎁"
 }

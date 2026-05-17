@@ -1657,5 +1657,9 @@
   "task_monthly_subtitle_inactive": "解鎖【星之契約】月卡開啟此任務 (0 / 1)",
   "task_monthly_log_name": "月卡每日特權",
   "profile_id_locked": "專屬 ID 已鎖定",
-  "profile_copy_id": "點擊複製 ID"
+  "profile_copy_id": "點擊複製 ID",
+  "referral_log_newbie_reward": "星之邀約：新手報到獎勵 ✨",
+  "referral_log_inviter_reward": "星之邀約：好友達標回饋 🎁",
+  "referral_success_title": "星之邀約解鎖！",
+  "referral_success_content": "恭喜您已成功與角色深度交流滿 15 句！\n\n「新手報到獎勵 50 點」已送達您的賬戶，您的好友也同步獲得了 50 點回饋！🎁"
 }

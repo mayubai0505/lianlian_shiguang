@@ -3465,4 +3465,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'タップして ID をコピー';
+
+  @override
+  String get referral_log_newbie_reward => '星の招待：新規登録報酬 ✨';
+
+  @override
+  String get referral_log_inviter_reward => '星の招待：フレンド目標達成リワード 🎁';
+
+  @override
+  String get referral_success_title => '星の招待が解放されました！';
+
+  @override
+  String get referral_success_content =>
+      'おめでとうございます！キャラクターとの深い交流が15言に達しました！\n\n「新規登録報酬 50ポイント」があなたのアカウントに届きました。また、お友達も同時に50ポイントのリワードを獲得しました！🎁';
 }

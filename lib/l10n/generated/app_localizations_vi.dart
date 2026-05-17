@@ -3648,4 +3648,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profile_copy_id => 'Nhấn để sao chép ID';
+
+  @override
+  String get referral_log_newbie_reward =>
+      'Tinh Chi Mời Gọi: Phần thưởng người mới ✨';
+
+  @override
+  String get referral_log_inviter_reward =>
+      'Tinh Chi Mời Gọi: Phần thưởng bạn bè đạt mốc 🎁';
+
+  @override
+  String get referral_success_title => 'Đã mở khóa Tinh Chi Mời Gọi!';
+
+  @override
+  String get referral_success_content =>
+      'Chúc mừng bạn đã giao lưu sâu sắc với nhân vật đạt mốc 15 câu thành công!\n\n\'Phần thưởng người mới 50 điểm\' đã được gửi đến tài khoản của bạn, và bạn của bạn cũng đồng thời nhận được phần thưởng 50 điểm! 🎁';
 }
