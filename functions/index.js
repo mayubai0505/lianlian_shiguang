@@ -641,10 +641,11 @@ let relationContext = "";
                                    let MAX_LOOPS = 1;
 
                                    if (chatMode === "story" || chatMode === "immersive") {
-                                       TARGET_LENGTH = chatMode === "immersive" ? 500 : 350;
-                                       MAX_LOOPS = 2; // 給大模型兩次補字機會
+                                       // 🌟 修正：大幅降低「強制催稿」的門檻到 250 字。
+                                       // 讓 DeepSeek Pro 只要寫滿 250 字且完整了，就放它通關，不要硬逼它湊字數！
+                                       TARGET_LENGTH = 250;
+                                       MAX_LOOPS = 2; // 保留給它兩次機會，以防它第一口氣真的寫太少
                                    }
-
                                    // 準備對話紀錄
                                    let currentMessages = [...trimmedHistory];
                                    currentMessages.unshift({ role: "system", content: systemPrompt }); // 塞入大劇本
@@ -690,8 +691,13 @@ let relationContext = "";
                                              parsedData = { response: rawContent, affectionChange: 0, voiceText: rawContent };
                                          }
 
-                                         finalResponseText += parsedData.response + "\n\n";
-                                         if (parsedData.voiceText) {
+                                         // 🌟 修正：嚴格防堵 null 幽靈混進來！
+                                         let currentText = parsedData.response;
+                                         if (currentText && currentText !== "null") {
+                                             finalResponseText += currentText + "\n\n";
+                                         }
+
+                                         if (parsedData.voiceText && parsedData.voiceText !== "null") {
                                              finalVoiceText += parsedData.voiceText + "\n";
                                          }
 

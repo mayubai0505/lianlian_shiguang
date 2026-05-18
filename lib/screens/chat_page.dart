@@ -113,6 +113,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  static Set<String> generatingRooms = {};
   // 🌟 總裁的聊天室監控探針
   bool _isReferralTrackerActive = false; // 是否需要啟動邀請計數器
   int _currentReferralChatCount = 0;     // 本次上線聊了幾句
@@ -185,6 +186,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     _checkFirstTimeEntry();
+    _isGenerating = generatingRooms.contains(widget.character.id);
     _currentCharacter = widget.character;
     // 在頁面渲染後立刻去尋找這個角色的專屬照片
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1652,7 +1654,10 @@ class _ChatPageState extends State<ChatPage> {
 
       await Future.delayed(const Duration(milliseconds: 300));
       _handleTaskProgressAfterSendingMessage();
-      if (mounted) setState(() => _isGenerating = true);
+      generatingRooms.add(widget.character.id);
+      setState(() {
+        _isGenerating = true;
+      });
 
       // --- C. 喚醒真正的長期記憶 ---
       List<Map<String, String>> actualChatHistory = [];
@@ -1759,76 +1764,93 @@ class _ChatPageState extends State<ChatPage> {
           // 1. 取得 AI 算出的好感度變化
           int finalAffectionChange = responseData['affectionChange'] ?? 0;
 
-          if (mounted) {
-            // 2. 扣除花花點數與記帳
-            if (mounted) setState(() {
-              _flowerPoints = (_flowerPoints - messageCost).clamp(0, 999999);
-            });
-            FirebaseFirestore.instance.collection('users').doc(userId).update({'flowerPoints': FieldValue.increment(-messageCost)});
-            FirebaseFirestore.instance.collection('users').doc(userId).collection('flower_logs').add({
-              'title': '與 ${_currentCharacter.name} 聊天',
-              'amount': -messageCost,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
+          // ========================================================
+          // 🟢 第一區：【資料庫鐵血執行】不管玩家在不在畫面，這段必須強行過水、記帳！
+          // ========================================================
 
-            // 3. 處理好感度與升級動畫
-            if (finalAffectionChange != 0) {
-              int oldScore = _currentFriendship;
-              if (mounted) setState(() {
-                _currentFriendship += finalAffectionChange;
+          // A. 資料庫扣除花花點數與記帳（移到 mounted 外面）
+          FirebaseFirestore.instance.collection('users').doc(userId).update({
+            'flowerPoints': FieldValue.increment(-messageCost)
+          });
+          FirebaseFirestore.instance.collection('users').doc(userId).collection('flower_logs').add({
+            'title': '與 ${_currentCharacter.name} 聊天',
+            'amount': -messageCost,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+
+          // B. 同步更新全域最高好感度 (widget.shouldSave 整個邏輯搬到 mounted 外面)
+          if (widget.shouldSave == true) {
+            try {
+              final userCharRef = FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .collection('characters')
+                  .doc(characterId);
+
+              await FirebaseFirestore.instance.runTransaction((transaction) async {
+                final snapshot = await transaction.get(userCharRef);
+                int currentGlobalAffection = 0;
+                if (snapshot.exists) {
+                  currentGlobalAffection = snapshot.data()?['affection'] ?? 0;
+                }
+
+                // 🎯 安全防護：因為玩家可能秒退，記憶體裡的 _currentFriendship 尚未 setState
+                // 我們直接用「當前分數 + 變動值」來做最精準的跨時空比對！
+                int targetGlobalScore = _currentFriendship + finalAffectionChange;
+
+                // 🏆 只有新算出來的分數更猛時，才更新最高紀錄
+                if (targetGlobalScore > currentGlobalAffection) {
+                  transaction.set(userCharRef, {
+                    'affection': targetGlobalScore,
+                    'characterName': _currentCharacter.name,
+                    'lastUpdate': FieldValue.serverTimestamp(),
+                  }, SetOptions(merge: true));
+                  print("📈 全域存摺已同步最高分：$targetGlobalScore");
+                }
               });
-              _checkForLevelUp(oldScore, _currentFriendship);
-
-              if (finalAffectionChange > 0 && !_hasShownAffectionCard) {
-                _showAffectionAnimation(finalAffectionChange);
-                _hasShownAffectionCard = true;
-              }
+            } catch (e) {
+              print("❌ 同步總存摺失敗: $e");
             }
 
-            // ✨ 總裁遺漏的拼圖：同步更新全域最高好感度！(把成就存進保險箱)
-            if (widget.shouldSave == true) {
+            if (!_currentCharacter.isPublic) {
               try {
-                final userCharRef = FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(userId)
-                    .collection('characters')
-                    .doc(characterId);
-
-                await FirebaseFirestore.instance.runTransaction((transaction) async {
-                  final snapshot = await transaction.get(userCharRef);
-                  int currentGlobalAffection = 0;
-                  if (snapshot.exists) {
-                    currentGlobalAffection = snapshot.data()?['affection'] ?? 0;
-                  }
-
-                  // 🏆 只有當前分數更猛時，才更新最高紀錄
-                  if (_currentFriendship > currentGlobalAffection) {
-                    transaction.set(userCharRef, {
-                      'affection': _currentFriendship,
-                      'characterName': _currentCharacter.name,
-                      'lastUpdate': FieldValue.serverTimestamp(),
-                    }, SetOptions(merge: true));
-                    print("📈 全域存摺已同步最高分：$_currentFriendship");
-                  }
-                });
+                await FirebaseFirestore.instance.collection('artifacts').doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang')).collection('users').doc(userId).collection('private_characters').doc(characterId).update({'lastChatTime': FieldValue.serverTimestamp()});
               } catch (e) {
-                print("❌ 同步總存摺失敗: $e");
+                print('更新私人角色時間失敗: $e');
               }
+            }
+          }
 
-              if (!_currentCharacter.isPublic) {
-                try {
-                  await FirebaseFirestore.instance.collection('artifacts').doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang')).collection('users').doc(userId).collection('private_characters').doc(characterId).update({'lastChatTime': FieldValue.serverTimestamp()});
-                } catch (e) {
-                  print('更新私人角色時間失敗: $e');
+
+          // ========================================================
+          // 🟡 第二區：【UI 溫室防線】只有當玩家還在房間畫面上，才需要處理 setState 與升級動畫
+          // ========================================================
+          generatingRooms.remove(widget.character.id);
+          if (mounted) {
+            setState(() {
+              // 2. 本地 UI 扣除花花點數
+              _flowerPoints = (_flowerPoints - messageCost).clamp(0, 999999);
+
+              // 3. 處理本地好感度與升級動畫
+              if (finalAffectionChange != 0) {
+                int oldScore = _currentFriendship;
+                _currentFriendship += finalAffectionChange;
+
+                _checkForLevelUp(oldScore, _currentFriendship);
+
+                if (finalAffectionChange > 0 && !_hasShownAffectionCard) {
+                  _showAffectionAnimation(finalAffectionChange);
+                  _hasShownAffectionCard = true;
                 }
               }
-            }
 
-            // 4. 關閉「對方正在輸入...」的轉圈圈
-            // (這時雲端早就把訊息寫進資料庫，StreamBuilder 會自動把它畫出來了！)
-            setState(() => _isGenerating = false);
+              // 4. 關閉「對方正在輸入...」的轉圈圈
+              _isGenerating = false;
+            });
           }
+
         } else {
+          generatingRooms.remove(widget.character.id);
           if (mounted) {
             setState(() => _isGenerating = false);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_system_busy)));
@@ -2881,11 +2903,14 @@ class _ChatPageState extends State<ChatPage> {
                     }),
 
                     // 🪪 5. 拾光檔案
-                    _buildToolItem(Icons.badge_outlined,l10n.chat_tool_profile, () {
-                      Navigator.pop(context);
+                    _buildToolItem(Icons.badge_outlined, l10n.chat_tool_profile, () {
+                      // 🌟 護身符：在 pop (殺死 context) 之前，先把它綁架起來！
+                      final messenger = ScaffoldMessenger.of(context);
+                      Navigator.pop(context); // 關閉選單
                       UserProfilePopup.show(context, onSaved: () {
                         _checkProfileCompletion();
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        // 🌟 改用剛才綁架好的 messenger，再也不怕 context 死掉啦！
+                        messenger.showSnackBar(
                           SnackBar(
                             content: Text(l10n.chat_profile_updated_msg),
                             backgroundColor: Colors.grey[800],
