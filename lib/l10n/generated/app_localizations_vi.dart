@@ -3720,4 +3720,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profile_copy_success => '✅ Đã sao chép mã mời vào khay nhớ tạm!';
+
+  @override
+  String get profile_referral_rule_title => 'Quy tắc Tinh Chi Mời Gọi';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ Sau khi liên kết mã mời, chỉ cần trò chuyện với bất kỳ nhân vật yêu thích nào đạt mốc 15 câu, bạn và người mời sẽ đồng thời nhận được phần thưởng 50 Hoa!\n\n⚠️ Lưu ý: Vui lòng nhập mã mời trong vòng 3 ngày sau khi đăng ký tài khoản để mã có hiệu lực.';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ Mời bạn mới tải App và nhập mã mời của bạn. Khi người đó hoàn thành liên kết trong vòng 3 ngày sau khi đăng ký và trò chuyện với bất kỳ nhân vật nào đạt 15 câu, cả hai bên sẽ đồng thời nhận được phần thưởng 50 điểm Hoa nhé! 🎁';
 }

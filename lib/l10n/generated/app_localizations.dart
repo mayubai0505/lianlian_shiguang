@@ -6507,6 +6507,24 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'✅ 邀請碼已複製到剪貼簿！'**
   String get profile_copy_success;
+
+  /// No description provided for @profile_referral_rule_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星之契約規則'**
+  String get profile_referral_rule_title;
+
+  /// No description provided for @profile_referral_rule_receiver.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n⚠️ 注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。'**
+  String get profile_referral_rule_receiver;
+
+  /// No description provided for @profile_referral_rule_inviter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁'**
+  String get profile_referral_rule_inviter;
 }
 
 class _AppLocalizationsDelegate

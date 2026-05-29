@@ -3747,4 +3747,15 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get profile_copy_success =>
       '✅ ¡Código de invitación copiado al portapapeles!';
+
+  @override
+  String get profile_referral_rule_title => 'Reglas de Invitación Estelar';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ ¡Después de vincular el código, solo tienes que chatear con cualquier personaje favorito durante 15 líneas y tanto tú como tu invitador recibirán una recompensa de 50 flores al mismo tiempo!\n\n⚠️ Nota: Introduce el código de invitación dentro de los 3 días posteriores al registro de la cuenta para que sea válido.';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ ¡Invita a nuevos amigos a descargarse la app e introducir tu código de invitación! Cuando completen la vinculación dentro de los 3 días posteriores al registro y chateen con cualquier personaje durante 15 líneas, ¡ambos recibirán una recompensa de 50 flores simultáneamente! 🎁';
 }

@@ -3529,4 +3529,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get profile_copy_success => '✅ 招待コードをクリップボードにコピーしました！';
+
+  @override
+  String get profile_referral_rule_title => '星の招待ルール';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ 招待コードを連携した後、任意の推しキャラクターと15言以上チャットするだけで、あなたと招待者に同時にお花50ポイントの報酬が配布されます！\n\n⚠️ 注意：招待コードはアカウント登録後3日以内に入力しないと無効になりますのでご注意ください。';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ 新しい友達を招待してアプリをダウンロードしてもらい、あなたの招待コードを入力してもらいましょう。相手が登録後3日以内に連携を完了し、任意のキャラクターと15言以上チャットすると、二人とも同時にお花50ポイントの報酬を獲得できます！🎁';
 }

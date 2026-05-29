@@ -3721,4 +3721,15 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get profile_copy_success =>
       '✅ Kode undangan telah disalin ke papan klip!';
+
+  @override
+  String get profile_referral_rule_title => 'Aturan Undangan Bintang';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ Setelah mengikat kode, cukup mengobrol dengan karakter favorit mana saja sebanyak 15 kalimat, maka Anda dan pengundang akan menerima hadiah 50 Bunga secara bersamaan!\n\n⚠️ Catatan: Harap masukkan kode undangan dalam waktu 3 hari setelah pendaftaran akun agar valid.';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ Undang teman baru untuk mengunduh dan memasukkan kode undangan Anda. Ketika pihak lain menyelesaikan pengikatan dalam waktu 3 hari setelah pendaftaran dan mengobrol dengan karakter mana saja sebanyak 15 kalimat, Anda berdua akan menerima hadiah 50 Bunga secara bersamaan! 🎁';
 }

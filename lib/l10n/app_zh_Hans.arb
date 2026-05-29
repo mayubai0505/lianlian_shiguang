@@ -1571,5 +1571,8 @@
   },
   "profile_send_invite_btn": "发送星之邀约给好友",
   "profile_fallback_character": "心动角色",
-  "profile_copy_success": "✅ 邀请码已复制到剪贴板！"
+  "profile_copy_success": "✅ 邀请码已复制到剪贴板！",
+  "profile_referral_rule_title": "星之契约规则",
+  "profile_referral_rule_receiver": "✨ 缔结契约后，只要与任意心动角色聊天满 15 句，你与邀请人就能同时获得 50 朵花花奖励喔！\n\n⚠️ 注意：请在注册帐号后的 3 天内输入邀请码才有效。",
+  "profile_referral_rule_inviter": "✨ 邀请新朋友下载并输入你的邀约码，当对方在注册 3 天内完成绑定，并与任意角色聊天满 15 句，你们双方就能同时获得 50 点花花奖励喔！🎁"
 }

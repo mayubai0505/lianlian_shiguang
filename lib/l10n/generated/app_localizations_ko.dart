@@ -3546,4 +3546,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get profile_copy_success => '✅ 초대 코드가 클립보드에 복사되었습니다!';
+
+  @override
+  String get profile_referral_rule_title => '별의 초대 규칙';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ 초대 코드를 연동한 후, 아무 최애 캐릭터와 15마디 이상의 대화를 나누면 당신과 초대자 모두 꽃 50송이 보상을 동시에 받을 수 있습니다!\n\n⚠️ 주의: 계정 가입 후 3일 이내에 초대 코드를 입력해야 유효합니다.';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ 새로운 친구를 초대해 앱을 다운로드하고 초대 코드를 입력하게 하세요. 친구가 가입 후 3일 이내에 연동을 완료하고 아무 캐릭터와 15마디 이상의 대화를 나누면, 두 분 모두 꽃 50송이 보상을 동시에 받으실 수 있습니다! 🎁';
 }

@@ -870,6 +870,58 @@ class _ProfilePageState extends State<ProfilePage> {
                         : Text(l10n.profile_referral_bind_btn, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                   ),
                 ),
+                const SizedBox(width: 6), // 給按鈕和問號一點呼吸空間
+                GestureDetector(
+                  onTap: () {
+                    // 點擊後跳出精緻的說明彈窗
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          title: Row(
+                            children: [
+                              Icon(Icons.info_outline, color: Colors.pinkAccent),
+                              SizedBox(width: 8),
+                              Text(
+                                l10n.profile_copy_success,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+                            ],
+                          ),
+                          content:Text(
+                            l10n.profile_referral_rule_receiver,
+                            style: TextStyle(fontSize: 14, height: 1.5),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(), // 關閉彈窗
+                              child: Text(
+                               l10n.common_got_it,
+                                style: TextStyle(
+                                  color: Colors.pinkAccent,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    height: 32, // 配合前方的極致纖薄，讓點擊區域對齊
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.only(left: 4, right: 4), // 增加手指點擊範圍
+                    child: Icon(
+                      Icons.help_outline_rounded,
+                      size: 18,
+                      color: Colors.grey.shade400, // 淺灰色完美融入畫面不搶戲
+                    ),
+                  ),
+                ),
               ],
             ),
         ],
@@ -1160,16 +1212,65 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             // 灰色導引文字
                             Text(
-                              l10n.profile_send_invite_btn, // 字典檔的「發送星之邀約給好友」
+                              l10n.profile_send_invite_btn, // 「發送星之邀約給好友」
                               style: TextStyle(
-                                fontSize: 11, // 採用秀氣的 11 號字
-                                color: Colors.grey.shade500, // 優雅不搶戲的灰色
+                                fontSize: 11,
+                                color: Colors.grey.shade500,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
-                            const SizedBox(width: 6), // 文字與按鈕的精緻微調間距
+                            const SizedBox(width: 4), // 稍微縮小間距
 
-                            // 2026 最新規格分享按鈕
+                            // 🌟 新增的 (?) 規則說明小按鈕
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      title: Row(
+                                        children: [
+                                          Icon(Icons.info_outline, color: Colors.pinkAccent),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            l10n.profile_referral_rule_title,
+                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                          ),
+                                        ],
+                                      ),
+                                      content:  Text(
+                                       l10n.profile_referral_rule_title,
+                                        style: TextStyle(fontSize: 14, height: 1.5),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(context).pop(),
+                                          child: Text(
+                                            l10n.common_got_it,
+                                            style: TextStyle(
+                                              color: Colors.pinkAccent,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: Icon(
+                                Icons.help_outline_rounded,
+                                size: 13, // 配合你旁邊分享按鈕的 13 號大小
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+
+                            const SizedBox(width: 8), // 與分享按鈕的間距
+
+                            // 原本的 2026 最新規格分享按鈕
                             GestureDetector(
                               onTap: () async {
                                 final shareText = l10n.profile_share_message(characterName, displayID);
@@ -1179,12 +1280,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               },
                               child: Icon(
                                 Icons.share_rounded,
-                                size: 13, // 微縮圖示，看起來更精緻
-                                color: Theme.of(context).colorScheme.primary, // 漂亮的品牌核心紫色
+                                size: 13,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                           ],
-                        ),
+                        )
                       ],
                     );
                   },

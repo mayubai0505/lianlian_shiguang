@@ -3737,4 +3737,15 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get profile_copy_success =>
       '✅ Código de convite copiado para a área de transferência!';
+
+  @override
+  String get profile_referral_rule_title => 'Regras do Convite Estelar';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ Após vincular o código, basta conversar com qualquer personagem favorito por 15 linhas, e você e quem o convidou receberão simultaneamente uma recompensa de 50 Flores!\n\n⚠️ Nota: Insira o código de convite dentro de 3 days após o registro da conta para que seja válido.';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ Convide novos amigos para baixar o aplicativo e inserir seu código de convite. Quando eles concluírem a vinculação dentro de 3 dias após o registro e conversarem com qualquer personagem por 15 linhas, ambos receberão uma recompensa de 50 Flores simultaneamente! 🎁';
 }

@@ -3690,4 +3690,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile_copy_success => '✅ Invitation code copied to clipboard!';
+
+  @override
+  String get profile_referral_rule_title => 'Star Invitation Rules';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ After linking, simply chat with any favorite character for 15 lines, and both you and your inviter will receive a 50 Flowers reward at the same time!\n\n⚠️ Note: Please enter the invitation code within 3 days of account registration to be valid.';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ Invite new friends to download and enter your invitation code. Once they complete the linking within 3 days of registration and chat with any character for 15 lines, both of you will receive a 50 Flowers reward simultaneously! 🎁';
 }

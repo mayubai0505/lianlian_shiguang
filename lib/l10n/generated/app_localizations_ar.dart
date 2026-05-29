@@ -3668,4 +3668,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profile_copy_success => '✅ تم نسخ رمز الدعوة إلى الحافظة!';
+
+  @override
+  String get profile_referral_rule_title => 'قواعد عقد النجوم';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ بعد إبرام العقد، ما عليكِ سوى التحدث مع أي شخصية مفضلة لـ 15 جملة، وستحصلين أنتِ ومن دعاكِ على مكافأة 50 زهرة في نفس الوقت!\n\n⚠️ تنبيه: يرجى إدخال رمز الدعوة في غضون 3 أيام من تسجيل الحساب ليكون صالحاً.';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ ادعي أصدقاءً جدداً لتحميل التطبيق وإدخال رمز الدعوة الخاص بكِ، وعندما يكمل الطرف الآخر الربط في غضون 3 أيام من التسجيل ويتحدث مع أي شخصية لـ 15 جملة، سيحصل كلاكما على مكافأة 50 زهرة في نفس الوقت! 🎁';
 }

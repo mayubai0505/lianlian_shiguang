@@ -3497,6 +3497,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get profile_copy_success => '✅ 邀請碼已複製到剪貼簿！';
+
+  @override
+  String get profile_referral_rule_title => '星之契約規則';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ 締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n⚠️ 注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6992,6 +7003,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get profile_copy_success => '✅ 邀请码已复制到剪贴板！';
+
+  @override
+  String get profile_referral_rule_title => '星之契约规则';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ 缔结契约后，只要与任意心动角色聊天满 15 句，你与邀请人就能同时获得 50 朵花花奖励喔！\n\n⚠️ 注意：请在注册帐号后的 3 天内输入邀请码才有效。';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ 邀请新朋友下载并输入你的邀约码，当对方在注册 3 天内完成绑定，并与任意角色聊天满 15 句，你们双方就能同时获得 50 点花花奖励喔！🎁';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10487,4 +10509,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get profile_copy_success => '✅ 邀請碼已複製到剪貼簿！';
+
+  @override
+  String get profile_referral_rule_title => '星之契約規則';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ 締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n⚠️ 注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁';
 }

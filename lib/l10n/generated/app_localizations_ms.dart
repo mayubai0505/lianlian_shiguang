@@ -3720,4 +3720,15 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get profile_copy_success =>
       '✅ Kod undangan telah disalin ke papan keratan!';
+
+  @override
+  String get profile_referral_rule_title => 'Peraturan Undangan Bintang';
+
+  @override
+  String get profile_referral_rule_receiver =>
+      '✨ Selepas mengikat kod, hanya perlu bersembang dengan mana-mana karakter kegemaran sebanyak 15 ayat, awak dan pengundang akan menerima ganjaran 50 Bunga secara serentak!\n\n⚠️ Nota: Sila masukkan kod undangan dalam masa 3 hari selepas pendaftaran akaun untuk memastikan ia sah.';
+
+  @override
+  String get profile_referral_rule_inviter =>
+      '✨ Jemput rakan baharu untuk memuat turun dan memasukkan kod undangan awak. Apabila mereka menyelesaikan pengikatan dalam masa 3 hari selepas pendaftaran dan bersembang dengan mana-mana watak sebanyak 15 ayat, awak berdua akan menerima ganjaran 50 Bunga secara serentak! 🎁';
 }
