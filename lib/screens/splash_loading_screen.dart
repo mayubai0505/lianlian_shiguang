@@ -24,33 +24,18 @@ class SplashLoadingScreen extends StatelessWidget {
             colors: isDark
                 ? [const Color(0xFF100B20), const Color(0xFF20163A)]
             // 🌸 淺色模式：浪漫溫柔的淡紫色漸層 (依您的要求修改)
-                : [const Color(0xFFF8F0FB), const Color(0xFFE1BEE7)], // ✨ 這裡是新的淡紫配色喔
+                : [const Color(0xFFF8F0FB), const Color(0xFFF0CEF6)], // ✨ 這裡是新的淡紫配色喔
           ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // 🌸 1. 這裡放您的 Logo 圖片
-            // 如果還沒有 Logo 圖片，可以先用一個漂亮的 Icon 暫代
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: theme.colorScheme.primary.withValues(alpha:0.1),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha:0.2),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.auto_awesome, // 替換成您的 Logo: Image.asset('assets/images/logo.png')
-                size: 60,
-                color: theme.colorScheme.primary,
-              ),
+            // ✨ 換成 100% 原創手繪的靈魂蝴蝶！
+            Image.asset(
+              'assets/images/butterfly_transparent.png', // 👉 記得確認檔名是妳丟進去的透明蝴蝶
+              width: 140, // 視覺大小可以自由微調
+              fit: BoxFit.contain,
             ),
 
             const SizedBox(height: 40),

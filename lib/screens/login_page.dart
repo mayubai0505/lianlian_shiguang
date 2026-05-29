@@ -164,13 +164,13 @@ class _LoginPageState extends State<LoginPage> {
           width: double.infinity,
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
-            // ✨ 1. 這裡換成粉藍到粉紫的漸層，完美襯托妳的手繪蝴蝶！
+            // ✅ 總裁指定的漸層效果：淡紫色到純白
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
               colors: [
-                Color(0xFFC7E9FC), // 粉藍色
-                Color(0xFFE3CAFE), // 粉紫色
+                Color(0xFFF3E5F5), // 浪漫淡紫色 (取代原本的淡粉色)
+                Colors.white,       // 漸層到純白
               ],
             ),
           ),
@@ -178,12 +178,6 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/images/butterfly_transparent.png', // 👉 記得換成妳去背完丟進去的檔名喔！
-                  width: 160, // 大小可以自由調整，160 應該滿精緻的
-                  fit: BoxFit.contain,
-                ),
-                const SizedBox(height: 24), // 蝴蝶和標題之間的呼吸空間
                 // 🌸 遊戲標題
                 Text(l10n.app_name,
                   style: TextStyle(

@@ -103,11 +103,10 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/images/logo.jpg"
 
 flutter_native_splash:
-  # 🌟 把原本的 color 拿掉，換成 background_image
+  # ✨ 1. 所有一般手機（iOS、舊版 Android）：使用妳做好的完美漸層大圖
   background_image: "assets/images/splash_bg.png"
-  image: "assets/images/splash_logo.png"
 
   android_12:
-    # Android 12 的規範比較特別，建議底色還是給一個最接近的單色
-    icon_background_color: "#FFD5E3"
-    image: "assets/images/splash_logo.png"
+    # ✨ 2. Android 12+ 手機：只能用「單色底 + 圖片」
+    color: "#E3CAFE" # 這是妳漸層裡的粉紫色 (也可以換成粉藍色 #C7E9FC)
+    image: "assets/images/butterfly_transparent.png" # 👉 這裡放妳去背好的透明蝴蝶檔名！
