@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main.dart'; // 確保 navigatorKey 在這裡
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'dart:io';
 
 class ProductDetailsWrapper {
   final ProductDetails productDetails;
@@ -106,7 +107,7 @@ class PurchaseService extends ChangeNotifier {
 
   Future<void> _handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) async {
     for (var purchaseDetails in purchaseDetailsList) {
-      // ✨ 1. 安全尋找商品：用 firstOrNull 溫柔尋找，找不到也不會噴紅字報錯
+      // ✨ 1. 安全尋找商品 (維持原樣)
       if (products.isNotEmpty) {
         final wrapper = products.where((p) => p.productDetails.id == purchaseDetails.productID).firstOrNull;
         if (wrapper != null && purchaseDetails.status != PurchaseStatus.pending) {
@@ -119,19 +120,30 @@ class PurchaseService extends ChangeNotifier {
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
           _handleError(purchaseDetails.error!);
-        } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+
+          // 🌟 修正點 1：購買失敗也要記得結案，否則蘋果會一直重複彈窗，但要安全結案
+          if (purchaseDetails.pendingCompletePurchase) {
+            await _inAppPurchase.completePurchase(purchaseDetails).catchError((e) => debugPrint("iOS 失敗訂單結案安全攔截: $e"));
+          }
+        }
+        else if (purchaseDetails.status == PurchaseStatus.purchased) {
           // 🌟 正常購買成功：發放點數與月卡天數！
           await _deliverPurchase(purchaseDetails);
-        } else if (purchaseDetails.status == PurchaseStatus.restored) {
-          // 🚨 總裁防護鎖：攔截恢復購買！
-          // 因為是一次性商品，如果玩家換手機重裝 App，Google 可能會重送舊收據。
-          // 這裡攔下來，不呼叫 _deliverPurchase，徹底封殺「無限白嫖 250 點」的漏洞！
-          debugPrint("🔄 偵測到歷史訂單恢復 (ID: ${purchaseDetails.productID})，不重複發放點數。");
-        }
 
-        // 🌟 結案：告訴 Google Play 訂單已消化完畢，可以收工了
-        if (purchaseDetails.pendingCompletePurchase) {
-          await _inAppPurchase.completePurchase(purchaseDetails);
+          // 🌟 修正點 2：只有成功發放商品後，才呼叫結案
+          if (purchaseDetails.pendingCompletePurchase) {
+            await _inAppPurchase.completePurchase(purchaseDetails).catchError((e) => debugPrint("iOS 成功訂單結案安全攔截: $e"));
+          }
+        }
+        else if (purchaseDetails.status == PurchaseStatus.restored) {
+          // 🚨 總裁防護鎖：攔截恢復購買！
+          debugPrint("🔄 偵測到歷史訂單恢復 (ID: ${purchaseDetails.productID})，不重複發放點數。");
+
+          // ⚠️ 修正點 3：如果是 iOS 的 restored，千、萬、不、能、叫 Google 的結案邏輯！
+          // 只有 Android 的 restored 需要手動消化訂單
+          if (Platform.isAndroid && purchaseDetails.pendingCompletePurchase) {
+            await _inAppPurchase.completePurchase(purchaseDetails);
+          }
         }
       }
     }

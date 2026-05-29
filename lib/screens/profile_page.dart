@@ -1242,7 +1242,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         ],
                                       ),
                                       content:  Text(
-                                       l10n.profile_referral_rule_title,
+                                       l10n.profile_referral_rule_receiver,
                                         style: TextStyle(fontSize: 14, height: 1.5),
                                       ),
                                       actions: [
