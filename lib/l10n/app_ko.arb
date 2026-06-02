@@ -1559,5 +1559,25 @@
   "profile_copy_success": "✅ 초대 코드가 클립보드에 복사되었습니다!",
   "profile_referral_rule_title": "별의 초대 규칙",
   "profile_referral_rule_receiver": "✨ 초대 코드를 연동한 후, 아무 최애 캐릭터와 15마디 이상의 대화를 나누면 당신과 초대자 모두 꽃 50송이 보상을 동시에 받을 수 있습니다!\n\n⚠️ 주의: 계정 가입 후 3일 이내에 초대 코드를 입력해야 유효합니다.",
-  "profile_referral_rule_inviter": "✨ 새로운 친구를 초대해 앱을 다운로드하고 초대 코드를 입력하게 하세요. 친구가 가입 후 3일 이내에 연동을 완료하고 아무 캐릭터와 15마디 이상의 대화를 나누면, 두 분 모두 꽃 50송이 보상을 동시에 받으실 수 있습니다! 🎁"
+  "profile_referral_rule_inviter": "✨ 새로운 친구를 초대해 앱을 다운로드하고 초대 코드를 입력하게 하세요. 친구가 가입 후 3일 이내에 연동을 완료하고 아무 캐릭터와 15마디 이상의 대화를 나누면, 두 분 모두 꽃 50송이 보상을 동시에 받으실 수 있습니다! 🎁",
+  "error_user_not_found": "사용자를 찾을 수 없습니다. 다시 로그인해 주세요",
+  "@error_user_not_found": {
+  "description": "找不到使用者時的錯誤提示"
+  },
+  "error_id_taken": "이미 사용 중인 ID입니다. 다른 ID를 선택해 주세요!",
+  "@error_id_taken": {
+  "description": "ID 重複時的錯誤提示 (長版)"
+  },
+  "error_id_taken_short": "이미 사용 중인 ID입니다!",
+  "@error_id_taken_short": {
+  "description": "ID 重複時的錯誤提示 (短版)"
+  },
+  "shop_restocking": "상점 상품 재입고 중... 📦",
+  "@shop_restocking": {
+  "description": "商店載入中或商品為空時的提示"
+  },
+  "shop_preview_mode": "⚠️ 현재 상점 미리보기 모드입니다",
+  "@shop_preview_mode": {
+  "description": "商店預覽模式的警告標語"
+  }
 }

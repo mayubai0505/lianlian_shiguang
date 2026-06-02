@@ -1560,5 +1560,25 @@
   "profile_copy_success": "✅ 招待コードをクリップボードにコピーしました！",
   "profile_referral_rule_title": "星の招待ルール",
   "profile_referral_rule_receiver": "✨ 招待コードを連携した後、任意の推しキャラクターと15言以上チャットするだけで、あなたと招待者に同時にお花50ポイントの報酬が配布されます！\n\n⚠️ 注意：招待コードはアカウント登録後3日以内に入力しないと無効になりますのでご注意ください。",
-  "profile_referral_rule_inviter": "✨ 新しい友達を招待してアプリをダウンロードしてもらい、あなたの招待コードを入力してもらいましょう。相手が登録後3日以内に連携を完了し、任意のキャラクターと15言以上チャットすると、二人とも同時にお花50ポイントの報酬を獲得できます！🎁"
+  "profile_referral_rule_inviter": "✨ 新しい友達を招待してアプリをダウンロードしてもらい、あなたの招待コードを入力してもらいましょう。相手が登録後3日以内に連携を完了し、任意のキャラクターと15言以上チャットすると、二人とも同時にお花50ポイントの報酬を獲得できます！🎁",
+  "error_user_not_found": "ユーザーが見つかりません。再ログインしてください",
+  "@error_user_not_found": {
+  "description": "找不到使用者時的錯誤提示"
+  },
+  "error_id_taken": "このIDはすでに使用されています。別のIDを選択してください！",
+  "@error_id_taken": {
+  "description": "ID 重複時的錯誤提示 (長版)"
+  },
+  "error_id_taken_short": "このIDはすでに使用されています！",
+  "@error_id_taken_short": {
+  "description": "ID 重複時的錯誤提示 (短版)"
+  },
+  "shop_restocking": "ショップは入荷待ちです... 📦",
+  "@shop_restocking": {
+  "description": "商店載入中或商品為空時的提示"
+  },
+  "shop_preview_mode": "⚠️ 現在ショッププレビューモードです",
+  "@shop_preview_mode": {
+  "description": "商店預覽模式的警告標語"
+  }
 }

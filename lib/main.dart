@@ -26,27 +26,20 @@ import 'package:flutter_native_splash/flutter_native_splash.dart'; // 🌟 記�
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-
-// 🌟 用來記住玩家現在正在跟誰講電話/聊天
 String? globalActiveCharacterId;
-// 🌟 1. 全域鑰匙：導航員的萬能鑰匙
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-// 🌟🌟🌟 新增：推播頻道與本地通知外掛 🌟🌟🌟
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_importance_channel', // 頻道 ID，必須跟 XML 裡一致
-  '聊天訊息通知', // 使用者在手機設定裡看到的頻道名稱
+  'high_importance_channel',
+  '聊天訊息通知',
   description: '用於接收角色的最新回覆與遊戲提醒。',
-  importance: Importance.max, // 🚀 關鍵：這就是讓通知變成橫幅彈出來的魔法！
+  importance: Importance.max,
 );
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-// 🌟🌟🌟 第一道門：給背景小精靈發「免死金牌」 🌟🌟🌟
-// 注意：這個函數一定要放在 main 的外面，而且必須加上這行 pragma！
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // 確保 Firebase 在背景也能順利被喚醒
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print("👻 [背景小精靈] 成功攔截到背景通知: ${message.notification?.title}");
 }
@@ -56,26 +49,22 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // ==========================================
 
 Future<void> main() async {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
 
-  // --- A. 時區初始化 (保留) ---
-  // 退一百步的無敵寫法
+  // 🗑️ 刪除了 FlutterNativeSplash.preserve(...)
+  // 讓系統原生的啟動圖自然結束，直接交接給妳的 SplashLoadingScreen
+
   tz_data.initializeTimeZones();
   try {
     final timeZoneName = await FlutterTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName.toString())); // 強制轉字串
+    tz.setLocalLocation(tz.getLocation(timeZoneName.toString()));
   } catch (e) {
     tz.setLocalLocation(tz.getLocation('Asia/Taipei'));
   }
 
-  // --- B. Firebase 初始化 (保留) ---
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // --- 💣 拆彈一：App Check 防護升級 ---
-  // 🌟 策略：如果是網頁版 + 開發模式，我們先「放行」，避免 400 錯誤卡死妳
   if (kIsWeb && kDebugMode) {
     debugPrint("🚀 網頁開發模式：暫時跳過 App Check 驗證，避免 400 錯誤");
   } else {
@@ -91,7 +80,6 @@ Future<void> main() async {
   }
   await setupPushNotifications();
 
-  // 2. 跑起妳的 App
   runApp(
     MultiProvider(
       providers: [
@@ -102,12 +90,10 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
-
-  FlutterNativeSplash.remove();
 }
 
 // ==========================================
-// 📱 MyApp 主架構 (已加上終極防閃爍鎖)
+// 📱 MyApp 主架構
 // ==========================================
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -118,20 +104,19 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
-  // ✨ 1. 宣告一把鎖，用來裝「2秒延遲」的任務
+  // ✨ 加回這把鎖！用來控制 SplashLoadingScreen 的顯示時間
   late Future<void> _appInitFuture;
 
   @override
   void initState() {
     super.initState();
-    // 1. 啟動推播特務
     setupPushNotifications();
-    // 2. 啟動「在線狀態」觀察員
     WidgetsBinding.instance.addObserver(this);
     _updateUserStatus(true);
 
-    // ✨ 2. 在這裡上鎖！這輩子只會等這一次 2 秒！
-    _appInitFuture = _initializeApp();
+    // ✨ 設定 2 秒的展示時間，讓玩家可以看見「正在喚醒《戀戀拾光》的宇宙...」
+    // 如果妳覺得 2 秒太長或太短，可以直接改這裡的數字
+    _appInitFuture = Future.delayed(const Duration(seconds: 2));
   }
 
   @override
@@ -158,9 +143,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _initializeApp() async {
-    await Future.delayed(const Duration(seconds: 2));
-  }
   @override
   Widget build(BuildContext context) {
     return Consumer2<ThemeNotifier, LocaleNotifier>(
@@ -187,15 +169,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
           routes: {
             '/login': (context) => const LoginPage(),
-            '/main': (context) => const MainPage(), // 如果妳有主頁的話
+            '/main': (context) => const MainPage(),
           },
 
           onGenerateRoute: (settings) {
             if (settings.name == '/chat') {
-              // 🌟 解開剛才打包的 Map
               final Map<String, dynamic>? args = settings.arguments as Map<String, dynamic>?;
               final String charId = args?['characterId'] ?? "default_id";
-              final String sessionId = args?['sessionId'] ?? ""; // 👈 拿到真正的房間 ID
+              final String sessionId = args?['sessionId'] ?? "";
 
               return MaterialPageRoute(
                 builder: (context) => ChatLoaderWrapper(
@@ -206,13 +187,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             }
             return null;
           },
-          // 🏠 首頁判斷邏輯
+
+          // 🏠 把 FutureBuilder 叫回來！
           home: FutureBuilder(
-            future: _appInitFuture, // ✨ 3. 這裡改用鎖好的變數，不再重複觸發！
+            future: _appInitFuture,
             builder: (context, snapshot) {
+              // ⏳ 在這 2 秒內，顯示妳自訂的「喚醒宇宙」畫面
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const SplashLoadingScreen();
               }
+              // ✨ 2 秒結束後，交接給 AuthWrapper 去判斷要進入登入頁還是主頁
               return const AuthWrapper();
             },
           ),
@@ -222,7 +206,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 }
 
-// 🌟 總裁專屬：推播導航緩衝區 (負責去 Firebase 查戶口)
+// 🌟 總裁專屬：推播導航緩衝區 (保持原樣)
 class ChatLoaderWrapper extends StatefulWidget {
   final String charId;
   final String sessionId;
@@ -234,12 +218,11 @@ class ChatLoaderWrapper extends StatefulWidget {
 }
 
 class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
-  late Future<Character> _characterFuture; // 🌟 宣告一個固定的 Future
+  late Future<Character> _characterFuture;
 
   @override
   void initState() {
     super.initState();
-    // 🌟 只在初始化時查一次戶口，避免 Rebuild 時重複查詢
     _characterFuture = _fetchCharacter();
   }
 
@@ -263,10 +246,10 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Character>(
-      future: _characterFuture, // 🌟 使用固定好的 Future
+      future: _characterFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
+          return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
@@ -290,7 +273,7 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
 }
 
 // ==========================================
-// 🕵️‍♂️ 登入狀態守門員 (已升級為有狀態，並加上防閃爍鎖)
+// 🕵️‍♂️ 登入狀態守門員
 // ==========================================
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -300,43 +283,42 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  // ✨ 1. 宣告一把鎖，用來裝登入狀態流
   late Stream<User?> _authStream;
 
   @override
   void initState() {
     super.initState();
-    // ✨ 2. 在這裡上鎖！這輩子只會綁定這一次！
     _authStream = FirebaseAuth.instance.authStateChanges();
   }
 
-  @override
-  // 在 AuthWrapper 的 build 裡面
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: _authStream,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
-          if (snapshot.hasData) {
-            // 👇 🌟 總裁，加上這行列印！
-            print("🏠 守衛認出妳了！歡迎回來: ${snapshot.data?.displayName}");
-            return const MainPage();
-          }
-          print("🚪 守衛沒看到人，請去登入頁面");
-          return const LoginPage();
+        // 如果還在極短暫的判斷期間，繼續墊著妳的過渡頁，防閃爍
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SplashLoadingScreen();
         }
-        return const SplashLoadingScreen();
+
+        // 判斷要去哪裡
+        if (snapshot.hasData) {
+          print("🏠 守衛認出妳了！歡迎回來: ${snapshot.data?.displayName}");
+          return const MainPage();
+        }
+
+        print("🚪 守衛沒看到人，請去登入頁面");
+        return const LoginPage();
       },
     );
   }
 }
 
-
 // ==========================================
-// 💌 推播處理函數
+// 💌 推播處理函數 (保持原樣)
 // ==========================================
 void _handleNotificationClick(RemoteMessage message) {
+  // ...（保持原本的推播邏輯不變）
   final data = message.data;
   debugPrint("🚨 收到推播的 Data 內容: $data");
 
@@ -349,12 +331,9 @@ void _handleNotificationClick(RemoteMessage message) {
       return;
     }
 
-    debugPrint("✅ 成功抓到角色 ID: $charId, 房間 ID: $sessionId，執行清理式跳轉...");
-
-    // ✨✨✨ 總裁級導航：推開多餘頁面，只留這一個 ✨✨✨
     navigatorKey.currentState?.pushNamedAndRemoveUntil(
       '/chat',
-          (route) => route.isFirst, // 👈 關鍵：除了最底層的主畫面，中間擋路的所有頁面通通退場！
+          (route) => route.isFirst,
       arguments: {
         'characterId': charId,
         'sessionId': sessionId,
@@ -364,7 +343,6 @@ void _handleNotificationClick(RemoteMessage message) {
 }
 
 Future<void> setupPushNotifications() async {
-  // 💣 拆彈：如果是網頁版，目前先直接回傳，避免 Service Worker 報錯
   if (kIsWeb) {
     debugPrint("🌐 網頁版：暫不初始化推播（避免 Service Worker 錯誤）");
     return;
@@ -373,23 +351,18 @@ Future<void> setupPushNotifications() async {
   try {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    // 🌟🌟🌟 新增：建立 Android 高權重頻道 🌟🌟🌟
-    // 這一步會告訴手機：「這個 App 的通知很重要，請給我彈出橫幅！」
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    // 🌟🌟🌟 新增：設定前景收到通知時的表現 🌟🌟🌟
     await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true, // 允許彈出橫幅
-      badge: true, // 允許顯示 APP 右上角紅點
-      sound: true, // 允許發出聲音
+      alert: true,
+      badge: true,
+      sound: true,
     );
 
-    // 1. 請求權限
     await messaging.requestPermission(alert: true, badge: true, sound: true);
 
-    // 2. 獲取 Token 並存到 Firestore
     String? token = await messaging.getToken();
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null && token != null) {
@@ -398,16 +371,12 @@ Future<void> setupPushNotifications() async {
       }, SetOptions(merge: true));
     }
 
-    // 3. 監聽點擊
     FirebaseMessaging.instance.getInitialMessage().then((msg) {
       if (msg != null) _handleNotificationClick(msg);
     });
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationClick);
 
-    // 4. 前台收到訊息
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      // 總裁下令：App 在前台打開時，完全不要顯示任何干擾畫面的通知！
-      // 所以這裡我們只要在終端機印出紀錄就好，什麼畫面都不彈。
       print("🤫 收到前景推播，但總裁下令隱藏：${message.notification?.title}");
     });
   } catch (e) {

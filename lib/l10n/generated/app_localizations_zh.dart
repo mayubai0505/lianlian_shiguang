@@ -3508,6 +3508,21 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁';
+
+  @override
+  String get error_user_not_found => '找不到使用者，請重新登入';
+
+  @override
+  String get error_id_taken => '此 ID 已被使用，請換一個！';
+
+  @override
+  String get error_id_taken_short => '此 ID 已被使用！';
+
+  @override
+  String get shop_restocking => '商店正在補貨... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ 目前為商店預覽模式';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7014,6 +7029,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   @override
   String get profile_referral_rule_inviter =>
       '✨ 邀请新朋友下载并输入你的邀约码，当对方在注册 3 天内完成绑定，并与任意角色聊天满 15 句，你们双方就能同时获得 50 点花花奖励喔！🎁';
+
+  @override
+  String get error_user_not_found => '找不到用户，请重新登录';
+
+  @override
+  String get error_id_taken => '此 ID 已被使用，请换一个！';
+
+  @override
+  String get error_id_taken_short => '此 ID 已被使用！';
+
+  @override
+  String get shop_restocking => '商店正在补货... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ 目前为商店预览模式';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10520,4 +10550,19 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get profile_referral_rule_inviter =>
       '✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁';
+
+  @override
+  String get error_user_not_found => '找不到使用者，請重新登入';
+
+  @override
+  String get error_id_taken => '此 ID 已被使用，請換一個！';
+
+  @override
+  String get error_id_taken_short => '此 ID 已被使用！';
+
+  @override
+  String get shop_restocking => '商店正在補貨... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ 目前為商店預覽模式';
 }

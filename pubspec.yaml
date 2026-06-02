@@ -1,7 +1,7 @@
 name: lianlian_shiguang
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.0+11
+version: 1.0.0+12
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -89,6 +89,8 @@ flutter:
     - assets/images/profile_icon.png
     - assets/images/my_cute_phone_icon.png
     - assets/audio/pickup.mp3
+    - assets/images/splash_bg_only.png
+    - assets/images/butterfly_transparent.png
   fonts:
     - family: NotoSansTC
       fonts:
@@ -103,10 +105,18 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "assets/images/logo.jpg"
 
 flutter_native_splash:
-  # ✨ 1. 所有一般手機（iOS、舊版 Android）：使用妳做好的完美漸層大圖
-  background_image: "assets/images/splash_bg.png"
 
+  # ✨ 1. 背景：放「純漸層（沒有蝴蝶）」的圖
+  background_image: "assets/images/splash_bg_only.png"
+
+  # ✨ 2. 前景 Logo：放「透明去背」的手繪蝴蝶
+  image: "assets/images/butterfly_transparent.png"
+
+  # 📱 確保雙平台都有開啟替換
+  android: true
+  ios: true
+
+  # Android 12+ 專屬設定保持妳原本的聰明做法即可
   android_12:
-    # ✨ 2. Android 12+ 手機：只能用「單色底 + 圖片」
-    color: "#E3CAFE" # 這是妳漸層裡的粉紫色 (也可以換成粉藍色 #C7E9FC)
-    image: "assets/images/butterfly_transparent.png" # 👉 這裡放妳去背好的透明蝴蝶檔名！
+    color: "#E3CAFE"
+    image: "assets/images/butterfly_transparent.png"

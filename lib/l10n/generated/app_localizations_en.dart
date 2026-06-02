@@ -3701,4 +3701,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ Invite new friends to download and enter your invitation code. Once they complete the linking within 3 days of registration and chat with any character for 15 lines, both of you will receive a 50 Flowers reward simultaneously! 🎁';
+
+  @override
+  String get error_user_not_found => 'User not found, please log in again';
+
+  @override
+  String get error_id_taken =>
+      'This ID is already taken, please choose another one!';
+
+  @override
+  String get error_id_taken_short => 'This ID is already taken!';
+
+  @override
+  String get shop_restocking => 'The shop is restocking... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ Currently in Shop Preview Mode';
 }

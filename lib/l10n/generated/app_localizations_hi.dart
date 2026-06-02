@@ -3733,4 +3733,21 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ नए दोस्तों को ऐप डाउनलोड करने और अपना आमंत्रण कोड दर्ज करने के लिए आमंत्रित करें। जब वे पंजीकरण के 3 दिनों के भीतर लिंकिंग पूरी कर लेंगे और किसी भी पात्र के साथ 15 लाइनों तक बातचीत करेंगे, तो आप दोनों को एक साथ 50 फूलों का पुरस्कार मिलेगा! 🎁';
+
+  @override
+  String get error_user_not_found =>
+      'उपयोगकर्ता नहीं मिला, कृपया फिर से लॉग इन करें';
+
+  @override
+  String get error_id_taken =>
+      'यह आईडी पहले से ही उपयोग में है, कृपया दूसरी चुनें!';
+
+  @override
+  String get error_id_taken_short => 'यह आईडी पहले से ही उपयोग में है!';
+
+  @override
+  String get shop_restocking => 'दुकान में सामान दोबारा भरा जा रहा है... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ वर्तमान में शॉप प्रिव्यू मोड चालू है';
 }

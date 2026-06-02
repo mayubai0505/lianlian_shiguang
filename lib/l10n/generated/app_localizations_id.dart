@@ -3732,4 +3732,21 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ Undang teman baru untuk mengunduh dan memasukkan kode undangan Anda. Ketika pihak lain menyelesaikan pengikatan dalam waktu 3 hari setelah pendaftaran dan mengobrol dengan karakter mana saja sebanyak 15 kalimat, Anda berdua akan menerima hadiah 50 Bunga secara bersamaan! 🎁';
+
+  @override
+  String get error_user_not_found =>
+      'Pengguna tidak ditemukan, silakan masuk log kembali';
+
+  @override
+  String get error_id_taken =>
+      'ID ini sudah digunakan, silakan pilih ID yang lain!';
+
+  @override
+  String get error_id_taken_short => 'ID ini sudah digunakan!';
+
+  @override
+  String get shop_restocking => 'Toko sedang mengisi ulang stok... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ Saat ini dalam Mode Pratinjau Toko';
 }

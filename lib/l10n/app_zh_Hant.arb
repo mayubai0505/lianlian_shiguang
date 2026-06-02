@@ -1698,5 +1698,25 @@
   "profile_copy_success": "✅ 邀請碼已複製到剪貼簿！",
   "profile_referral_rule_title": "星之契約規則",
   "profile_referral_rule_receiver": "✨ 締結契約後，只要與任意心動角色聊天滿 15 句，你與邀請人就能同時獲得 50 朵花花獎勵喔！\n\n⚠️ 注意：請在註冊帳號後的 3 天內輸入邀請碼才有效。",
-"profile_referral_rule_inviter": "✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁"
+"profile_referral_rule_inviter": "✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁",
+"error_user_not_found": "找不到使用者，請重新登入",
+  "@error_user_not_found": {
+    "description": "找不到使用者時的錯誤提示"
+  },
+  "error_id_taken": "此 ID 已被使用，請換一個！",
+  "@error_id_taken": {
+    "description": "ID 重複時的錯誤提示 (長版)"
+  },
+  "error_id_taken_short": "此 ID 已被使用！",
+  "@error_id_taken_short": {
+    "description": "ID 重複時的錯誤提示 (短版)"
+  },
+    "shop_restocking": "商店正在補貨... 📦",
+      "@shop_restocking": {
+        "description": "商店載入中或商品為空時的提示"
+      },
+      "shop_preview_mode": "⚠️ 目前為商店預覽模式",
+      "@shop_preview_mode": {
+        "description": "商店預覽模式的警告標語"
+      }
 }

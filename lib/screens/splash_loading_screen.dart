@@ -1,71 +1,111 @@
 import 'package:flutter/material.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart'; // 記得保留這個 import
 
-//載入動畫
-
-class SplashLoadingScreen extends StatelessWidget {
+class SplashLoadingScreen extends StatefulWidget {
   const SplashLoadingScreen({super.key});
 
   @override
+  State<SplashLoadingScreen> createState() => _SplashLoadingScreenState();
+}
+
+// 載入動畫 (改成 StatefulWidget 才能監聽畫面載入完成)
+class _SplashLoadingScreenState extends State<SplashLoadingScreen> {
+  // 用來記錄圖片是不是已經載入過了
+  bool _imagesPreloaded = false;
+
+  // 🌟 使用 didChangeDependencies 而不是 initState，因為預載圖片需要 context
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // 確保預載動作只執行一次
+    if (!_imagesPreloaded) {
+      _imagesPreloaded = true;
+      _preloadImagesAndUnlockSplash();
+    }
+  }
+
+  // 🛡️ 核心防護網：強制預先載入
+  Future<void> _preloadImagesAndUnlockSplash() async {
+    try {
+      // 1. 下令 Flutter：先把這兩張圖給我解碼，放進記憶體等著！
+      await Future.wait([
+        precacheImage(const AssetImage('assets/images/splash_bg_only.png'), context),
+        precacheImage(const AssetImage('assets/images/butterfly_transparent.png'), context),
+      ]);
+    } catch (e) {
+      debugPrint("圖片預載失敗: $e");
+    }
+
+    // 2. 確定圖片都 100% 準備好了，才下令把死守在最前面的「原生漸層畫面」撤掉！
+    if (mounted) {
+      FlutterNativeSplash.remove();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // 取得當前主題，確保載入頁也符合深淺色模式
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      // 使用漸層背景，讓等待的過程也很有質感
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark
-                ? [const Color(0xFF100B20), const Color(0xFF20163A)]
-            // 🌸 淺色模式：浪漫溫柔的淡紫色漸層 (依您的要求修改)
-                : [const Color(0xFFF8F0FB), const Color(0xFFF0CEF6)], // ✨ 這裡是新的淡紫配色喔
+        height: double.infinity,
+        // ✨ 1. 滿版漸層背景
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/splash_bg_only.png'),
+            fit: BoxFit.cover,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        // ✨ 2. Stack 分層排版
+        child: Stack(
           children: [
-            // 🌸 1. 這裡放您的 Logo 圖片
-            // ✨ 換成 100% 原創手繪的靈魂蝴蝶！
-            Image.asset(
-              'assets/images/butterfly_transparent.png', // 👉 記得確認檔名是妳丟進去的透明蝴蝶
-              width: 140, // 視覺大小可以自由微調
-              fit: BoxFit.contain,
-            ),
-
-            const SizedBox(height: 40),
-
-            // ✨ 2. 載入文字
-            SizedBox(
-              height: 30, // 給一個固定的高度，讓渲染引擎不要因為字體載入而亂縮放
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  l10n.splash_loading_universe,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface.withValues(alpha:0.8),
-                    letterSpacing: 2.0, // 字距拉開一點比較有呼吸感
-                  ),
-                ),
+            // 🦋 第一層：絕對置中的蝴蝶
+            Center(
+              child: Image.asset(
+                'assets/images/butterfly_transparent.png',
+                // 這裡的數字可以微調，讓它跟原生畫面的蝴蝶大小一模一樣
+                width: 250,
               ),
             ),
 
-            const SizedBox(height: 24),
-            // ⏳ 3. 載入動畫 (精緻的圓形進度條)
-            SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                backgroundColor: theme.colorScheme.primary.withValues(alpha:0.2),
+            // ⏳ 第二層：底部的載入文字與動畫
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 80.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l10n.splash_loading_universe,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white70 : const Color(0xFF7B1FA2),
+                          letterSpacing: 2.0,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              isDark ? Colors.white70 : const Color(0xFF7B1FA2)),
+                          backgroundColor:
+                          theme.colorScheme.primary.withValues(alpha: 0.1),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

@@ -3685,4 +3685,20 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ เชิญเพื่อนใหม่ให้ดาวน์โหลดและกรอกรหัสเชิญของคุณ เมื่อเพื่อนผูกบัญชีสำเร็จภายใน 3 วันหลังลงทะเบียน และคุยกับตัวละครใดก็ได้ครบ 15 ประโยค คุณทั้งคู่จะได้รับรางวัล 50 ดอกไม้พร้อมกันทันที! 🎁';
+
+  @override
+  String get error_user_not_found =>
+      'ไม่พบผู้ใช้งาน กรุณาเข้าสู่ระบบใหม่อีกครั้ง';
+
+  @override
+  String get error_id_taken => 'ID นี้ถูกใช้งานแล้ว กรุณาเปลี่ยนเป็น ID อื่น!';
+
+  @override
+  String get error_id_taken_short => 'ID นี้ถูกใช้งานแล้ว!';
+
+  @override
+  String get shop_restocking => 'ร้านค้ากำลังเติมสินค้า... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ ขณะนี้อยู่ในโหมดพรีวิวร้านค้า';
 }

@@ -3778,4 +3778,22 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ Invitez de nouveaux amis à télécharger l\'application et à entrer votre code d\'invitation. Lorsqu\'ils effectuent la liaison dans les 3 jours suivant leur inscription et discutent avec n\'importe quel personnage pendant 15 lignes, vous recevrez tous les deux une récompense de 50 fleurs simultanément ! 🎁';
+
+  @override
+  String get error_user_not_found =>
+      'Utilisateur introuvable, veuillez vous reconnecter';
+
+  @override
+  String get error_id_taken =>
+      'Cet ID est déjà utilisé, veuillez en choisir un autre !';
+
+  @override
+  String get error_id_taken_short => 'Cet ID est déjà utilisé !';
+
+  @override
+  String get shop_restocking => 'La boutique se réapprovisionne... 📦';
+
+  @override
+  String get shop_preview_mode =>
+      '⚠️ Actuellement en mode aperçu de la boutique';
 }

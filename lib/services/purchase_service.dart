@@ -53,6 +53,7 @@ class PurchaseService extends ChangeNotifier {
     // ✨ 修改 1：換上總裁在 Google 後台設定的「真實暗號」
     const Set<String> productIds = {
       'com_lianlian_monthly_card', // 星光契約月卡
+      'com_lianlian_monthly_card_250', // 星光契約月卡
       'com.lianlian.points_90',    // 初見禮包
       'com.lianlian.points_215',   // 曖昧禮包
       'com.lianlian.points_370',   // 心動禮包
@@ -63,10 +64,12 @@ class PurchaseService extends ChangeNotifier {
       'com.lianlian.points_1650',  // 我愛你禮包
       'com.lianlian.points_2200',  // 蜜月禮包
       'com.lianlian.points_2300',  // 承諾禮包
+      'com.lianlian.points_2350',  // 承諾禮包
       'com.lianlian.points_2400',  // 相伴禮包
       'com.lianlian.points_2680',  // 深愛禮包
-      'com.lianlian.points_3200',  // 長久禮包
-      'com.lianlian.points_3400',  // 唯一禮包
+      'com.lianlian.points_3200',// 長久禮包
+      'com.lianlian.points_3400',// 唯一禮包
+      'com.lianlian.points_3450',  // 唯一禮包
       'com.lianlian.points_4200',  // 摯愛禮包
       'com.lianlian.points_4300',  // 一生一世包
       'com.lianlian.points_6400',  // 誓約禮包
@@ -82,8 +85,31 @@ class PurchaseService extends ChangeNotifier {
     products = response.productDetails.map((pd) => ProductDetailsWrapper(productDetails: pd)).toList();
 
     // 依據價格由低到高排序
-    products.sort((a, b) => a.productDetails.rawPrice.compareTo(b.productDetails.rawPrice));
+// ✨ 修正後的完美排序邏輯
+    products.sort((a, b) {
+      // 1. 第一關：先比價格 (由低到高)
+      int priceCompare = a.productDetails.rawPrice.compareTo(b.productDetails.rawPrice);
 
+      // 如果價格不一樣，第一關就直接分出勝負了！
+      if (priceCompare != 0) {
+        return priceCompare;
+      }
+
+      // 2. 第二關 (延長賽)：如果遇到 Apple 美金同價距，改用「點數數字」來決勝負！
+      int getPoints(String id) {
+        // ✨ 一樣改成只要包含 monthly_card 就排在最前面
+        if (id.contains('monthly_card')) return -1;
+
+        String numStr = id.replaceAll(RegExp(r'[^0-9]'), '');
+        return int.tryParse(numStr) ?? 0;
+      }
+
+      int pointsA = getPoints(a.productDetails.id);
+      int pointsB = getPoints(b.productDetails.id);
+
+      // 點數少的排前面
+      return pointsA.compareTo(pointsB);
+    });
     isLoading = false;
     notifyListeners();
   }
@@ -172,8 +198,10 @@ class PurchaseService extends ChangeNotifier {
       Map<String, dynamic> updateData = {};
 
       // ✨ 修正後的 _deliverPurchase 片段
-      if (productId == 'com_lianlian_monthly_card') {
+      // ✨ 魔法升級：只要 ID 裡面「包含」 monthly_card 這個關鍵字，就當作是買月卡！
+      if (productId.contains('monthly_card')) {
         pointsToAdd = 250;
+
 
         // 1. 抓出舊的到期日 (如果是第一次買，就以現在為準)
         DateTime now = DateTime.now();
@@ -185,7 +213,7 @@ class PurchaseService extends ChangeNotifier {
         DateTime baseDate = currentEndDate.isBefore(now) ? now : currentEndDate;
         DateTime newEndDate = baseDate.add(const Duration(days: 30));
 
-        // 3. 🌟 總裁的半年封頂條款 (180 天)
+        // 3. 總裁的半年封頂條款 (180 天)
         if (newEndDate.difference(now).inDays > 180) {
           newEndDate = now.add(const Duration(days: 180));
           print("⚠️ 已達半年上限，調整到期日為 180 天後");
@@ -193,11 +221,18 @@ class PurchaseService extends ChangeNotifier {
 
         updateData['isMonthlySubscribed'] = true;
         updateData['monthlySubEndDate'] = newEndDate.toIso8601String();
-
-        // 💡 小提醒：為了方便商店顯示，我們多存一個給前端看的欄位
         updateData['monthlyCardStatus'] = 'active';
       }
+      // 🌟 第二種情況：買的是「一般花花禮包」
+      else if (productId.startsWith('com.lianlian.points_')) {
+        // 魔法：把前面的字串拔掉，剩下的數字直接轉成整數！
+        // 例如 'com.lianlian.points_90' 會直接變成整數 90
+        String pointsStr = productId.replaceAll('com.lianlian.points_', '');
+        int basePoints = int.tryParse(pointsStr) ?? 0;
 
+        // 首購雙倍判斷！
+        pointsToAdd = isFirstTime ? (basePoints * 2) : basePoints;
+      }
       if (pointsToAdd > 0) {
         updateData['flowerPoints'] = FieldValue.increment(pointsToAdd);
 

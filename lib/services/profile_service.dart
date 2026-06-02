@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // ✨ 1. 確保這個 import 存在
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 // ✨ 2. 修正 import 路徑 (請將 your_project_name 換成您專案的名稱)
 import 'package:lianlian_shiguang/models/player_profile.dart';
@@ -38,19 +39,23 @@ class ProfileService {
   }
 
   // ✨ 完美細節 2：建立個人檔案
-  Future<void> createNewProfile({
+  Future<void> createNewProfile(
+  BuildContext context, {
     required String nickname,
     required String playerID,
     required String avatarPath,
     required String gender,
     required DateTime? birthDate,
   }) async {
+    // 🌟 召喚翻譯年糕
+    final l10n = AppLocalizations.of(context);
+
     final User? currentUser = _auth.currentUser;
-    if (currentUser == null) throw Exception("找不到使用者，請重新登入");
+    if (currentUser == null) throw Exception(l10n?.error_user_not_found ?? "找不到使用者，請重新登入");
 
     // 檢查 ID 是否重複
     final idDoc = await _db.collection('playerIDs').doc(playerID).get();
-    if (idDoc.exists) throw Exception("此 ID 已被使用，請換一個！");
+    if (idDoc.exists) throw Exception(l10n?.error_id_taken ?? "此 ID 已被使用，請換一個！");
 
     // 上傳頭像 (調用私有方法)
     final String finalAvatarPath = await _uploadAvatar(currentUser.uid, avatarPath);
@@ -83,8 +88,9 @@ class ProfileService {
     );
   }
 
-  // ✨ 完美細節 3：更新個人檔案
-  Future<void> updateExistingProfile({
+// ✨ 完美細節 3：更新個人檔案
+  Future<void> updateExistingProfile(
+      BuildContext context, {
     required String newNickname,
     required String newID,
     required String originalID,
@@ -94,8 +100,10 @@ class ProfileService {
     required String gender,
     required DateTime? birthDate,
   }) async {
+    // 🌟 召喚翻譯年糕
+    final l10n = AppLocalizations.of(context);
     final User? currentUser = _auth.currentUser;
-    if (currentUser == null) throw Exception("找不到使用者，請重新登入");
+    if (currentUser == null) throw Exception(l10n?.error_user_not_found ?? "找不到使用者，請重新登入");
 
     final prefs = await SharedPreferences.getInstance();
     final dataToUpdate = <String, dynamic>{};
@@ -122,7 +130,7 @@ class ProfileService {
         final newIdRef = _db.collection('playerIDs').doc(newID);
         final newIdDoc = await transaction.get(newIdRef);
 
-        if (newIdDoc.exists) throw Exception("此 ID 已被使用！");
+        if (newIdDoc.exists) throw Exception(l10n?.error_id_taken_short ?? "此 ID 已被使用！");
 
         transaction.set(newIdRef, {'uid': currentUser.uid});
         if (originalID.isNotEmpty) {
@@ -134,6 +142,20 @@ class ProfileService {
       });
     }
 
+    // 5. 統一執行資料庫更新與本地同步
+    if (dataToUpdate.isNotEmpty) {
+      await _db.collection('users').doc(currentUser.uid).update(dataToUpdate);
+
+      // 同步到本地
+      await _updateLocalPrefs(
+        nickname: dataToUpdate['nickname'] ?? prefs.getString('nickname'),
+        playerID: dataToUpdate['playerID'] ?? prefs.getString('playerID'),
+        avatarPath: dataToUpdate['avatarPath'] ?? prefs.getString('avatarPath'),
+        gender: dataToUpdate['gender'] ?? prefs.getString('gender'),
+        birthDate: birthDate, // 這裡要根據邏輯判斷，為了簡潔先略過
+        hasChangedID: dataToUpdate['playerID'] != null,
+      );
+    }
     // 5. 統一執行資料庫更新與本地同步
     if (dataToUpdate.isNotEmpty) {
       await _db.collection('users').doc(currentUser.uid).update(dataToUpdate);

@@ -1561,5 +1561,25 @@
   "profile_copy_success": "✅ Đã sao chép mã mời vào khay nhớ tạm!",
   "profile_referral_rule_title": "Quy tắc Tinh Chi Mời Gọi",
   "profile_referral_rule_receiver": "✨ Sau khi liên kết mã mời, chỉ cần trò chuyện với bất kỳ nhân vật yêu thích nào đạt mốc 15 câu, bạn và người mời sẽ đồng thời nhận được phần thưởng 50 Hoa!\n\n⚠️ Lưu ý: Vui lòng nhập mã mời trong vòng 3 ngày sau khi đăng ký tài khoản để mã có hiệu lực.",
-  "profile_referral_rule_inviter": "✨ Mời bạn mới tải App và nhập mã mời của bạn. Khi người đó hoàn thành liên kết trong vòng 3 ngày sau khi đăng ký và trò chuyện với bất kỳ nhân vật nào đạt 15 câu, cả hai bên sẽ đồng thời nhận được phần thưởng 50 điểm Hoa nhé! 🎁"
+  "profile_referral_rule_inviter": "✨ Mời bạn mới tải App và nhập mã mời của bạn. Khi người đó hoàn thành liên kết trong vòng 3 ngày sau khi đăng ký và trò chuyện với bất kỳ nhân vật nào đạt 15 câu, cả hai bên sẽ đồng thời nhận được phần thưởng 50 điểm Hoa nhé! 🎁",
+  "error_user_not_found": "Không tìm thấy người dùng, vui lòng đăng nhập lại",
+  "@error_user_not_found": {
+  "description": "找不到使用者時的錯誤提示"
+  },
+  "error_id_taken": "ID này đã được sử dụng, vui lòng chọn ID khác!",
+  "@error_id_taken": {
+  "description": "ID 重複時的錯誤提示 (長版)"
+  },
+  "error_id_taken_short": "ID này đã được sử dụng!",
+  "@error_id_taken_short": {
+  "description": "ID 重複時的錯誤提示 (短版)"
+  },
+  "shop_restocking": "Cửa hàng đang bổ sung hàng hóa... 📦",
+  "@shop_restocking": {
+  "description": "商店載入中或商品為空時的提示"
+  },
+  "shop_preview_mode": "⚠️ Hiện tại đang ở chế độ xem trước cửa hàng",
+  "@shop_preview_mode": {
+  "description": "商店預覽模式的警告標語"
+  }
 }

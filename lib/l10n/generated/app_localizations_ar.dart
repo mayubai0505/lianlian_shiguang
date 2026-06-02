@@ -3679,4 +3679,21 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ ادعي أصدقاءً جدداً لتحميل التطبيق وإدخال رمز الدعوة الخاص بكِ، وعندما يكمل الطرف الآخر الربط في غضون 3 أيام من التسجيل ويتحدث مع أي شخصية لـ 15 جملة، سيحصل كلاكما على مكافأة 50 زهرة في نفس الوقت! 🎁';
+
+  @override
+  String get error_user_not_found =>
+      'تعذر العثور على المستخدم، يرجى تسجيل الدخول مرة أخرى';
+
+  @override
+  String get error_id_taken =>
+      'هذا المعرّف مستخدم بالفعل، يرجى اختيار معرّف آخر!';
+
+  @override
+  String get error_id_taken_short => 'هذا المعرّف مستخدم بالفعل!';
+
+  @override
+  String get shop_restocking => 'المتجر قيد إعادة التعبئة... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ وضع معاينة المتجر الحالي';
 }

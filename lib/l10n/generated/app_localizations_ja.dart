@@ -3540,4 +3540,19 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ 新しい友達を招待してアプリをダウンロードしてもらい、あなたの招待コードを入力してもらいましょう。相手が登録後3日以内に連携を完了し、任意のキャラクターと15言以上チャットすると、二人とも同時にお花50ポイントの報酬を獲得できます！🎁';
+
+  @override
+  String get error_user_not_found => 'ユーザーが見つかりません。再ログインしてください';
+
+  @override
+  String get error_id_taken => 'このIDはすでに使用されています。別のIDを選択してください！';
+
+  @override
+  String get error_id_taken_short => 'このIDはすでに使用されています！';
+
+  @override
+  String get shop_restocking => 'ショップは入荷待ちです... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ 現在ショッププレビューモードです';
 }

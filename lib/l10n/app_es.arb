@@ -1560,5 +1560,25 @@
     "profile_copy_success": "✅ ¡Código de invitación copiado al portapapeles!",
     "profile_referral_rule_title": "Reglas de Invitación Estelar",
     "profile_referral_rule_receiver": "✨ ¡Después de vincular el código, solo tienes que chatear con cualquier personaje favorito durante 15 líneas y tanto tú como tu invitador recibirán una recompensa de 50 flores al mismo tiempo!\n\n⚠️ Nota: Introduce el código de invitación dentro de los 3 días posteriores al registro de la cuenta para que sea válido.",
-    "profile_referral_rule_inviter": "✨ ¡Invita a nuevos amigos a descargarse la app e introducir tu código de invitación! Cuando completen la vinculación dentro de los 3 días posteriores al registro y chateen con cualquier personaje durante 15 líneas, ¡ambos recibirán una recompensa de 50 flores simultáneamente! 🎁"
+    "profile_referral_rule_inviter": "✨ ¡Invita a nuevos amigos a descargarse la app e introducir tu código de invitación! Cuando completen la vinculación dentro de los 3 días posteriores al registro y chateen con cualquier personaje durante 15 líneas, ¡ambos recibirán una recompensa de 50 flores simultáneamente! 🎁",
+    "error_user_not_found": "Usuario no encontrado, por favor inicia sesión de nuevo",
+    "@error_user_not_found": {
+    "description": "找不到使用者時的錯誤提示"
+    },
+    "error_id_taken": "¡Este ID ya está en uso, por favor elige otro!",
+    "@error_id_taken": {
+    "description": "ID 重複時的錯誤提示 (長版)"
+    },
+    "error_id_taken_short": "¡Este ID ya está en uso!",
+    "@error_id_taken_short": {
+    "description": "ID 重複時的錯誤提示 (短版)"
+    },
+    "shop_restocking": "La tienda se está reabasteciendo... 📦",
+    "@shop_restocking": {
+    "description": "商店載入中或商品為空時的提示"
+    },
+    "shop_preview_mode": "⚠️ Actualmente en modo de vista previa de la tienda",
+    "@shop_preview_mode": {
+    "description": "商店預覽模式的警告標語"
+    }
 }

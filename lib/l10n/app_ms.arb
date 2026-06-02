@@ -1560,5 +1560,25 @@
     "profile_copy_success": "✅ Kod undangan telah disalin ke papan keratan!",
     "profile_referral_rule_title": "Peraturan Undangan Bintang",
     "profile_referral_rule_receiver": "✨ Selepas mengikat kod, hanya perlu bersembang dengan mana-mana karakter kegemaran sebanyak 15 ayat, awak dan pengundang akan menerima ganjaran 50 Bunga secara serentak!\n\n⚠️ Nota: Sila masukkan kod undangan dalam masa 3 hari selepas pendaftaran akaun untuk memastikan ia sah.",
-    "profile_referral_rule_inviter": "✨ Jemput rakan baharu untuk memuat turun dan memasukkan kod undangan awak. Apabila mereka menyelesaikan pengikatan dalam masa 3 hari selepas pendaftaran dan bersembang dengan mana-mana watak sebanyak 15 ayat, awak berdua akan menerima ganjaran 50 Bunga secara serentak! 🎁"
+    "profile_referral_rule_inviter": "✨ Jemput rakan baharu untuk memuat turun dan memasukkan kod undangan awak. Apabila mereka menyelesaikan pengikatan dalam masa 3 hari selepas pendaftaran dan bersembang dengan mana-mana watak sebanyak 15 ayat, awak berdua akan menerima ganjaran 50 Bunga secara serentak! 🎁",
+    "error_user_not_found": "Pengguna tidak dijumpai, sila log masuk semula",
+    "@error_user_not_found": {
+    "description": "找不到使用者時的錯誤提示"
+    },
+    "error_id_taken": "ID ini telah digunakan, sila pilih ID yang lain!",
+    "@error_id_taken": {
+    "description": "ID 重複時的錯誤提示 (長版)"
+    },
+    "error_id_taken_short": "ID ini telah digunakan!",
+    "@error_id_taken_short": {
+    "description": "ID 重複時的錯誤提示 (短版)"
+    },
+    "shop_restocking": "Kedai sedang menambah stok... 📦",
+    "@shop_restocking": {
+    "description": "商店載入中或商品為空時的提示"
+    },
+    "shop_preview_mode": "⚠️ Pada masa ini dalam Mod Pratonton Kedai",
+    "@shop_preview_mode": {
+    "description": "商店預覽模式的警告標語"
+    }
 }

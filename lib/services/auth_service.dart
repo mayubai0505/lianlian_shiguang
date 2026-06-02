@@ -8,6 +8,7 @@ import '../screens/login_page.dart';
 import 'package:flutter/material.dart'; // 🌟 加入這一行，紅字就會消失！
 import 'package:flutter/foundation.dart' show kIsWeb; // 確保判斷網頁版的工具也在
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -140,29 +141,39 @@ class AuthService {
       UserCredential userCredential;
 
       if (kIsWeb) {
-        // 🌐 【網頁版專屬通道：呼叫 Firebase 彈出視窗】
+        // 🌐 【網頁版專屬通道】
         print("🌐 執行網頁版 Facebook 登入...");
-
-        // 建立 Facebook 的驗證提供者
         FacebookAuthProvider authProvider = FacebookAuthProvider();
-
-        // 要求額外的權限（例如 Email 和公開個人資料）
         authProvider.addScope('email');
         authProvider.addScope('public_profile');
-
-        // 直接彈出視窗，跟 Google 一樣順暢
         userCredential = await _auth.signInWithPopup(authProvider);
-
       } else {
-        // 📱 【手機版專屬通道：這部分我們之後打包 APK 前再來補齊】
-        print("📱 執行手機版 Facebook 登入... (目前先專注網頁版)");
-        // 手機版通常需要搭配 flutter_facebook_auth 套件，這裡先預留位置
-        throw UnimplementedError("手機版 FB 登入尚未實作");
+        // 📱 【手機版專屬通道：正式啟動！】
+        print("📱 執行手機版 Facebook 登入...");
+
+        // 1. 呼叫 Facebook 原生登入視窗
+        final LoginResult result = await FacebookAuth.instance.login(
+          permissions: ['email', 'public_profile'],
+        );
+
+        // 2. 判斷玩家的操作結果
+        if (result.status == LoginStatus.success) {
+          // 拿到 FB 發的通行證 (Token)
+          final String token = result.accessToken!.tokenString;
+          final OAuthCredential credential = FacebookAuthProvider.credential(token);
+
+          // 拿著通行證去 Firebase 報到
+          userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        } else {
+          // 玩家按了取消，或是網路錯誤
+          print("⚠️ Facebook 登入取消或失敗: ${result.message}");
+          return null; // 直接回傳 null，中斷流程
+        }
       }
 
-      print("Facebook 登入成功！使用者: ${userCredential.user?.displayName}");
+      print("🎉 Facebook 登入成功！使用者: ${userCredential.user?.displayName}");
 
-      // 🎉 成功拿到資料後，統一走總裁原本寫好的邏輯
+      // 成功拿到資料後，統一走總裁原本寫好的邏輯
       if (userCredential.user != null) {
         final bool isNewUser = await createNewUser(userCredential.user!);
         return {'user': userCredential.user, 'isNewUser': isNewUser};

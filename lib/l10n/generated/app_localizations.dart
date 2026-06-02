@@ -6525,6 +6525,36 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'✨ 邀請新朋友下載並輸入你的邀約碼，當對方在註冊 3 天內完成綁定，並與任意角色聊天滿 15 句，你們雙方就能同時獲得 50 點花花獎勵喔！🎁'**
   String get profile_referral_rule_inviter;
+
+  /// 找不到使用者時的錯誤提示
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到使用者，請重新登入'**
+  String get error_user_not_found;
+
+  /// ID 重複時的錯誤提示 (長版)
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'此 ID 已被使用，請換一個！'**
+  String get error_id_taken;
+
+  /// ID 重複時的錯誤提示 (短版)
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'此 ID 已被使用！'**
+  String get error_id_taken_short;
+
+  /// 商店載入中或商品為空時的提示
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'商店正在補貨... 📦'**
+  String get shop_restocking;
+
+  /// 商店預覽模式的警告標語
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'⚠️ 目前為商店預覽模式'**
+  String get shop_preview_mode;
 }
 
 class _AppLocalizationsDelegate

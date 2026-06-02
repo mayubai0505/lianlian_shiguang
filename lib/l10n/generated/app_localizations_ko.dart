@@ -3557,4 +3557,19 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ 새로운 친구를 초대해 앱을 다운로드하고 초대 코드를 입력하게 하세요. 친구가 가입 후 3일 이내에 연동을 완료하고 아무 캐릭터와 15마디 이상의 대화를 나누면, 두 분 모두 꽃 50송이 보상을 동시에 받으실 수 있습니다! 🎁';
+
+  @override
+  String get error_user_not_found => '사용자를 찾을 수 없습니다. 다시 로그인해 주세요';
+
+  @override
+  String get error_id_taken => '이미 사용 중인 ID입니다. 다른 ID를 선택해 주세요!';
+
+  @override
+  String get error_id_taken_short => '이미 사용 중인 ID입니다!';
+
+  @override
+  String get shop_restocking => '상점 상품 재입고 중... 📦';
+
+  @override
+  String get shop_preview_mode => '⚠️ 현재 상점 미리보기 모드입니다';
 }

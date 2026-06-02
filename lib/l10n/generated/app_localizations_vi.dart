@@ -3731,4 +3731,21 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ Mời bạn mới tải App và nhập mã mời của bạn. Khi người đó hoàn thành liên kết trong vòng 3 ngày sau khi đăng ký và trò chuyện với bất kỳ nhân vật nào đạt 15 câu, cả hai bên sẽ đồng thời nhận được phần thưởng 50 điểm Hoa nhé! 🎁';
+
+  @override
+  String get error_user_not_found =>
+      'Không tìm thấy người dùng, vui lòng đăng nhập lại';
+
+  @override
+  String get error_id_taken => 'ID này đã được sử dụng, vui lòng chọn ID khác!';
+
+  @override
+  String get error_id_taken_short => 'ID này đã được sử dụng!';
+
+  @override
+  String get shop_restocking => 'Cửa hàng đang bổ sung hàng hóa... 📦';
+
+  @override
+  String get shop_preview_mode =>
+      '⚠️ Hiện tại đang ở chế độ xem trước cửa hàng';
 }

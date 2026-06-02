@@ -3748,4 +3748,22 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get profile_referral_rule_inviter =>
       '✨ Convide novos amigos para baixar o aplicativo e inserir seu código de convite. Quando eles concluírem a vinculação dentro de 3 dias após o registro e conversarem com qualquer personagem por 15 linhas, ambos receberão uma recompensa de 50 Flores simultaneamente! 🎁';
+
+  @override
+  String get error_user_not_found =>
+      'Usuário não encontrado, por favor faça login novamente';
+
+  @override
+  String get error_id_taken =>
+      'Este ID já está em uso, por favor escolha outro!';
+
+  @override
+  String get error_id_taken_short => 'Este ID já está em uso!';
+
+  @override
+  String get shop_restocking => 'A loja está reabastecendo o estoque... 📦';
+
+  @override
+  String get shop_preview_mode =>
+      '⚠️ Atualmente no Modo de Visualização da Loja';
 }

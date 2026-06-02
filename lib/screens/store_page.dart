@@ -240,6 +240,7 @@ class _StorePageState extends State<StorePage> {
   // 第一頁：儲值商品列表邏輯
   // ==========================================
   Widget _buildProductList(BuildContext context, PurchaseService service) {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     // 🌟 1. 在 return Column 之前，先測量目前螢幕的寬度
     if (user == null) return const SizedBox.shrink();
@@ -257,8 +258,8 @@ class _StorePageState extends State<StorePage> {
             children: [
               Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.withValues(alpha: 0.5)),
               const SizedBox(height: 16),
-              const Text(
-                "商店連線中，或貨架正在補貨... 📦\n\n(提示：請確認您已透過 Play 商店下載測試版\n並接受了測試人員邀請)",
+              Text(
+                l10n.shop_restocking,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey, fontSize: 16, height: 1.5),
               ),
@@ -295,23 +296,23 @@ class _StorePageState extends State<StorePage> {
           final bool isWideScreen = screenWidth > 600;
           final int columns = isWideScreen ? 3 : 2;
           final double cardRatio = isWideScreen ? 1.1 : 0.75;
-
+          final l10n = AppLocalizations.of(context)!;
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 900),
               child: Column(
                 children: [
                   if (isTestingMode)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(bottom: 16),
-                      child: Text('⚠️ 目前為商店預覽模式', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      child: Text(l10n.shop_preview_mode, style: TextStyle(color: Colors.grey, fontSize: 12)),
                     ),
 
                   // 🌟 第二步：把算好的天數跟封頂狀態，交給 MonthlyCardBanner！
                   MonthlyCardBanner(
                     productWrapper: monthlyCard,
-                    daysRemaining: daysRemaining,   // 👈 新增這行
-                    isLimitReached: isLimitReached, // 👈 新增這行
+                    daysRemaining: daysRemaining,
+                    isLimitReached: isLimitReached,
                   ),
 
                   const SizedBox(height: 20),

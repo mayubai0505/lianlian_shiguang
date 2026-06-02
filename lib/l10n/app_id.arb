@@ -1560,5 +1560,25 @@
     "profile_copy_success": "✅ Kode undangan telah disalin ke papan klip!",
     "profile_referral_rule_title": "Aturan Undangan Bintang",
     "profile_referral_rule_receiver": "✨ Setelah mengikat kode, cukup mengobrol dengan karakter favorit mana saja sebanyak 15 kalimat, maka Anda dan pengundang akan menerima hadiah 50 Bunga secara bersamaan!\n\n⚠️ Catatan: Harap masukkan kode undangan dalam waktu 3 hari setelah pendaftaran akun agar valid.",
-    "profile_referral_rule_inviter": "✨ Undang teman baru untuk mengunduh dan memasukkan kode undangan Anda. Ketika pihak lain menyelesaikan pengikatan dalam waktu 3 hari setelah pendaftaran dan mengobrol dengan karakter mana saja sebanyak 15 kalimat, Anda berdua akan menerima hadiah 50 Bunga secara bersamaan! 🎁"
+    "profile_referral_rule_inviter": "✨ Undang teman baru untuk mengunduh dan memasukkan kode undangan Anda. Ketika pihak lain menyelesaikan pengikatan dalam waktu 3 hari setelah pendaftaran dan mengobrol dengan karakter mana saja sebanyak 15 kalimat, Anda berdua akan menerima hadiah 50 Bunga secara bersamaan! 🎁",
+    "error_user_not_found": "Pengguna tidak ditemukan, silakan masuk log kembali",
+    "@error_user_not_found": {
+    "description": "找不到使用者時的錯誤提示"
+    },
+    "error_id_taken": "ID ini sudah digunakan, silakan pilih ID yang lain!",
+    "@error_id_taken": {
+    "description": "ID 重複時的錯誤提示 (長版)"
+    },
+    "error_id_taken_short": "ID ini sudah digunakan!",
+    "@error_id_taken_short": {
+    "description": "ID 重複時的錯誤提示 (短版)"
+    },
+    "shop_restocking": "Toko sedang mengisi ulang stok... 📦",
+    "@shop_restocking": {
+    "description": "商店載入中或商品為空時的提示"
+    },
+    "shop_preview_mode": "⚠️ Saat ini dalam Mode Pratinjau Toko",
+    "@shop_preview_mode": {
+    "description": "商店預覽模式的警告標語"
+    }
 }

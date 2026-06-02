@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
+import 'dart:math'; // ✨ 用來生成隨機亂數
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';      // 這一行是為了讓檔案認識 Provider
@@ -104,10 +105,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _nicknameController.text = widget.isCreating ? '' : (prefs.getString('nickname') ?? '');
         _gender = widget.isCreating ? '未選擇' : (prefs.getString('gender') ??l10n.genderNotSelected);
         _avatarPath = widget.isCreating ? 'assets/images/avatar1.png' : (prefs.getString('avatarPath') ?? 'assets/images/avatar1.png');
+        // ... 前面的程式碼不變 ...
         if (widget.isCreating) {
           _birthDate = null;
           _isAgeEditable = true;
-          _originalID = '';
+          // ✨ 關鍵修改：如果是新玩家，自動給他一組隨機 ID！
+          _originalID = _generateRandomID();
           _hasChangedID = false;
         } else {
           String? birthDateStr = prefs.getString('birthDate');
@@ -116,9 +119,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
           _originalID = prefs.getString('playerID') ?? '';
           _hasChangedID = prefs.getBool('hasChangedID') ?? false;
         }
-        _playerIDController.text = _originalID;
+        _playerIDController.text = _originalID; // 👈 隨機 ID 就會被塞進框框裡了！
       });
     }
+  }
+
+  // ✨ 自動生成 8 碼隨機專屬 ID (大寫英文+數字)
+  String _generateRandomID() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rnd = Random();
+    return String.fromCharCodes(
+        Iterable.generate(8, (_) => chars.codeUnitAt(rnd.nextInt(chars.length)))
+    );
   }
 
   Future<void> _saveProfile() async {
@@ -249,29 +261,35 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   // --- 修正後的完整儲存函式 (加入舊 ID 徹底移除機制) ---
+  // --- 修正後的完整儲存函式 (讓 ID 變成選填) ---
   Future<void> _performFullSave() async {
     final l10n = AppLocalizations.of(context)!;
     if (mounted) setState(() => _isSaving = true);
     final newID = _playerIDController.text.trim();
+
     try {
-      if (newID.isEmpty) throw Exception(l10n.error_id_empty);
-      if (newID.length > 10) throw Exception(l10n.error_id_too_long);
+      // ✨ 修改 1：拿掉 newID.isEmpty 的報錯。如果有填寫，才檢查長度
+      if (newID.isNotEmpty && newID.length > 20) throw Exception(l10n.error_id_too_long);
+
       final prefs = await SharedPreferences.getInstance();
-      // 只有在 ID 被實際更改時，才執行 Firebase 搬家檢查
-      if (newID != _originalID && !_hasChangedID) {
+
+      // ✨ 修改 2：只有當「有填寫新 ID」且「跟原本不同」且「還沒被鎖定」時，才執行 Firebase 搬家檢查
+      if (newID.isNotEmpty && newID != _originalID && !_hasChangedID) {
         final User? currentUser = FirebaseAuth.instance.currentUser;
         if (currentUser == null) throw Exception("找不到使用者");
+
         // A. 檢查新 ID 是否被別人搶走了
         final idDoc = await _db.collection('playerIDs').doc(newID).get();
         if (idDoc.exists) {
           throw Exception(l10n.error_id_already_used);
         }
-        // B. ✨ 使用 Transaction 確保搬家過程一氣呵成 ✨
+
+        // B. 使用 Transaction 確保搬家過程一氣呵成
         await _db.runTransaction((transaction) async {
           final newIdRef = _db.collection('playerIDs').doc(newID);
           // 1. 在 playerIDs 資料表建立新的門牌號碼
           transaction.set(newIdRef, {'uid': currentUser.uid});
-          // 2. 🧹 如果有舊的 ID，立刻在 playerIDs 裡面把舊門牌拆掉！
+          // 2. 如果有舊的 ID，立刻在 playerIDs 裡面把舊門牌拆掉！
           if (_originalID.isNotEmpty && _originalID != newID) {
             final oldIdRef = _db.collection('playerIDs').doc(_originalID);
             transaction.delete(oldIdRef);
@@ -281,10 +299,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         await prefs.setString('playerID', newID);
         await prefs.setBool('hasChangedID', true);
       }
+
+      // ✨ 修改 3：最後存檔時，判斷一下 ID 是不是空的
       await _saveProfileDataOnly(
         popOnSuccess: true,
-        newID: newID,
-        hasChangedID: true,
+        newID: newID.isNotEmpty ? newID : null, // 沒填就不更新 ID
+        hasChangedID: (newID.isNotEmpty && newID != _originalID) ? true : null,
       );
     } catch (e) {
       if (mounted) {
@@ -588,7 +608,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: _playerIDController,
               style: TextStyle(color: onSurface),
               readOnly: _hasChangedID, // 已改過就鎖定
-              maxLength: 10,
+              maxLength: 20,
               decoration: customInputDecoration(
                 l10n.label_player_exclusive_id,
                 helper: _hasChangedID ? l10n.msg_id_locked : l10n.msg_id_change_chance,
