@@ -3420,10 +3420,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get task_monthly_locked => '未解鎖';
 
   @override
-  String get task_monthly_subtitle_active => '月卡專屬福利發放 (1 / 1)';
+  String get task_monthly_subtitle_active => '月卡專屬福利發放 ';
 
   @override
-  String get task_monthly_subtitle_inactive => '解鎖【星之契約】月卡開啟此任務 (0 / 1)';
+  String get task_monthly_subtitle_inactive => '解鎖【星之契約】月卡開啟此任務 ';
 
   @override
   String get task_monthly_log_name => '月卡每日特權';
@@ -6941,10 +6941,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get task_monthly_locked => '未解锁';
 
   @override
-  String get task_monthly_subtitle_active => '月卡专属福利发放 (1 / 1)';
+  String get task_monthly_subtitle_active => '月卡专属福利发放 ';
 
   @override
-  String get task_monthly_subtitle_inactive => '解锁【星之契约】月卡开启此任务 (0 / 1)';
+  String get task_monthly_subtitle_inactive => '解锁【星之契约】月卡开启此任务 ';
 
   @override
   String get task_monthly_log_name => '月卡每日特权';
@@ -10462,10 +10462,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get task_monthly_locked => '未解鎖';
 
   @override
-  String get task_monthly_subtitle_active => '月卡專屬福利發放 (1 / 1)';
+  String get task_monthly_subtitle_active => '月卡專屬福利發放';
 
   @override
-  String get task_monthly_subtitle_inactive => '解鎖【星之契約】月卡開啟此任務 (0 / 1)';
+  String get task_monthly_subtitle_inactive => '解鎖【星之契約】月卡開啟此任務 ';
 
   @override
   String get task_monthly_log_name => '月卡每日特權';

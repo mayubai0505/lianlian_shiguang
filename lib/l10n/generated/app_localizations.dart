@@ -6367,13 +6367,13 @@ abstract class AppLocalizations {
   /// No description provided for @task_monthly_subtitle_active.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'月卡專屬福利發放 (1 / 1)'**
+  /// **'月卡專屬福利發放'**
   String get task_monthly_subtitle_active;
 
   /// No description provided for @task_monthly_subtitle_inactive.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'解鎖【星之契約】月卡開啟此任務 (0 / 1)'**
+  /// **'解鎖【星之契約】月卡開啟此任務 '**
   String get task_monthly_subtitle_inactive;
 
   /// No description provided for @task_monthly_log_name.

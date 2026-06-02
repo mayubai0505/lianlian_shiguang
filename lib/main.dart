@@ -188,16 +188,24 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             return null;
           },
 
-          // 🏠 把 FutureBuilder 叫回來！
+
+          // 🏠 把 FutureBuilder 換成這個完美放權版！
           home: FutureBuilder(
             future: _appInitFuture,
             builder: (context, snapshot) {
-              // ⏳ 在這 2 秒內，顯示妳自訂的「喚醒宇宙」畫面
+              // ⏳ 1. 在這 2 秒內，顯示妳自訂的「喚醒宇宙」畫面
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const SplashLoadingScreen();
               }
-              // ✨ 2 秒結束後，交接給 AuthWrapper 去判斷要進入登入頁還是主頁
-              return const AuthWrapper();
+
+              // ✨ 2. 宇宙喚醒後，只做「一次性」檢查，把導航大權交還給 LoginPage！
+              if (FirebaseAuth.instance.currentUser != null) {
+                print("🏠 總裁已登入，直接進入大廳！");
+                return const MainPage();
+              } else {
+                print("🚪 尚未登入，進入登入頁面！");
+                return const LoginPage();
+              }
             },
           ),
         );
@@ -267,48 +275,6 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
           selectedLanguage: '繁體中文',
           shouldSave: true,
         );
-      },
-    );
-  }
-}
-
-// ==========================================
-// 🕵️‍♂️ 登入狀態守門員
-// ==========================================
-class AuthWrapper extends StatefulWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
-}
-
-class _AuthWrapperState extends State<AuthWrapper> {
-  late Stream<User?> _authStream;
-
-  @override
-  void initState() {
-    super.initState();
-    _authStream = FirebaseAuth.instance.authStateChanges();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: _authStream,
-      builder: (context, snapshot) {
-        // 如果還在極短暫的判斷期間，繼續墊著妳的過渡頁，防閃爍
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SplashLoadingScreen();
-        }
-
-        // 判斷要去哪裡
-        if (snapshot.hasData) {
-          print("🏠 守衛認出妳了！歡迎回來: ${snapshot.data?.displayName}");
-          return const MainPage();
-        }
-
-        print("🚪 守衛沒看到人，請去登入頁面");
-        return const LoginPage();
       },
     );
   }

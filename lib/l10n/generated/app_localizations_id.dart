@@ -3634,11 +3634,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'Distribusi keuntungan eksklusif Kartu Bulanan (1 / 1)';
+      'Distribusi keuntungan eksklusif Kartu Bulanan ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'Buka Kartu Bulanan 【Kontrak Bintang】 untuk membuka tugas ini (0 / 1)';
+      'Buka Kartu Bulanan 【Kontrak Bintang】 untuk membuka tugas ini ';
 
   @override
   String get task_monthly_log_name => 'Hak Istimewa Harian Kartu Bulanan';

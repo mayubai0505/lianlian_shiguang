@@ -3633,11 +3633,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'Agihan faedah eksklusif Kad Bulanan (1 / 1)';
+      'Agihan faedah eksklusif Kad Bulanan ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'Buka kunci Kad Bulanan 【Kontrak Bintang】 untuk memulakan tugasan ini (0 / 1)';
+      'Buka kunci Kad Bulanan 【Kontrak Bintang】 untuk memulakan tugasan ini ';
 
   @override
   String get task_monthly_log_name => 'Keistimewaan Harian Kad Bulanan';

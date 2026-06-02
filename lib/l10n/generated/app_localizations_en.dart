@@ -3605,11 +3605,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'Monthly Card exclusive benefits distributed (1 / 1)';
+      'Monthly Card exclusive benefits distributed ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'Unlock 【Star Contract】 Monthly Card to open this task (0 / 1)';
+      'Unlock 【Star Contract】 Monthly Card to open this task ';
 
   @override
   String get task_monthly_log_name => 'Monthly Card Daily Privilege';

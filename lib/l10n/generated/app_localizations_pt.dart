@@ -3650,11 +3650,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'Distribuição de benefícios exclusivos do Cartão Mensal (1 / 1)';
+      'Distribuição de benefícios exclusivos do Cartão Mensal';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'Desbloqueie o Cartão Mensal 【Contrato Estelar】 para abrir esta missão (0 / 1)';
+      'Desbloqueie o Cartão Mensal 【Contrato Estelar】 para abrir esta missão ';
 
   @override
   String get task_monthly_log_name => 'Privilégio Diário do Cartão Mensal';

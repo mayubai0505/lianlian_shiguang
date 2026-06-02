@@ -451,7 +451,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       customIncompleteText: l10n.task_monthly_locked,
                       onClaim: () {
                         if (!_hasActiveMonthlyCard || _isMonthlyRewardClaimed) return;
-
                         setStateInDialog(() => _isMonthlyRewardClaimed = true);
                         setState(() => _isMonthlyRewardClaimed = true);
 

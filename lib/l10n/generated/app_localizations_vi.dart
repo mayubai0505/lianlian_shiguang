@@ -3634,11 +3634,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'Phát phúc lợi độc quyền thẻ tháng (1 / 1)';
+      'Phát phúc lợi độc quyền thẻ tháng ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'Mở khóa thẻ tháng 【Tinh Chi Khế Ước】 để mở nhiệm vụ này (0 / 1)';
+      'Mở khóa thẻ tháng 【Tinh Chi Khế Ước】 để mở nhiệm vụ này ';
 
   @override
   String get task_monthly_log_name => 'Đặc quyền mỗi ngày thẻ tháng';

@@ -3466,11 +3466,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get task_monthly_locked => '미해제';
 
   @override
-  String get task_monthly_subtitle_active => '월간 카드 전용 혜택 지급 (1 / 1)';
+  String get task_monthly_subtitle_active => '월간 카드 전용 혜택 지급 ';
 
   @override
-  String get task_monthly_subtitle_inactive =>
-      '【별의 계약】 월간 카드를 해제하여 이 미션 오픈 (0 / 1)';
+  String get task_monthly_subtitle_inactive => '【별의 계약】 월간 카드를 해제하여 이 미션 오픈 ';
 
   @override
   String get task_monthly_log_name => '월간 카드 일일 특권';

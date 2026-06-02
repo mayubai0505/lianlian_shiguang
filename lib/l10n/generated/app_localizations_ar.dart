@@ -3583,11 +3583,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'توزيع مزايا البطاقة الشهرية الحصرية (1 / 1)';
+      'توزيع مزايا البطاقة الشهرية الحصرية ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'افتحي بطاقة 【عقد النجوم】 الشهرية لتفعيل هذه المهمة (0 / 1)';
+      'افتحي بطاقة 【عقد النجوم】 الشهرية لتفعيل هذه المهمة';
 
   @override
   String get task_monthly_log_name => 'المزايا اليومية للبطاقة الشهرية';

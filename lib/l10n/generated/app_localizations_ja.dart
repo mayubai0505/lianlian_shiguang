@@ -3450,11 +3450,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get task_monthly_locked => '未解放';
 
   @override
-  String get task_monthly_subtitle_active => '月間カード限定特典の配布 (1 / 1)';
+  String get task_monthly_subtitle_active => '月間カード限定特典の配布 ';
 
   @override
-  String get task_monthly_subtitle_inactive =>
-      '月間カード【星の契約】を解放してこのタスクを開始 (0 / 1)';
+  String get task_monthly_subtitle_inactive => '月間カード【星の契約】を解放してこのタスクを開始 ';
 
   @override
   String get task_monthly_log_name => '月間カード毎日特権';

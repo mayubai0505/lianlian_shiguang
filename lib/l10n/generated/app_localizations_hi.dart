@@ -3635,12 +3635,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get task_monthly_locked => 'अनलॉक नहीं हुआ';
 
   @override
-  String get task_monthly_subtitle_active =>
-      'मासिक कार्ड विशेष लाभ वितरण (1 / 1)';
+  String get task_monthly_subtitle_active => 'मासिक कार्ड विशेष लाभ वितरण ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'इस कार्य को शुरू करने के लिए 【स्टार कॉन्ट्रैक्ट】 मासिक कार्ड अनलॉक करें (0 / 1)';
+      'इस कार्य को शुरू करने के लिए 【स्टार कॉन्ट्रैक्ट】 मासिक कार्ड अनलॉक करें ';
 
   @override
   String get task_monthly_log_name => 'मासिक कार्ड दैनिक विशेषाधिकार';

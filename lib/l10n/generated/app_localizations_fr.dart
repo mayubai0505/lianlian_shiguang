@@ -3678,11 +3678,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'Distribution des avantages exclusifs de la carte mensuelle (1 / 1)';
+      'Distribution des avantages exclusifs de la carte mensuelle ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'Débloquez la carte mensuelle 【Contrat Stellaire】 pour ouvrir cette mission (0 / 1)';
+      'Débloquez la carte mensuelle 【Contrat Stellaire】 pour ouvrir cette mission ';
 
   @override
   String get task_monthly_log_name =>

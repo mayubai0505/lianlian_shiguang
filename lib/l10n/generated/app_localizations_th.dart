@@ -3590,11 +3590,11 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'แจกจ่ายสิทธิประโยชน์พิเศษจากบัตรรายเดือน (1 / 1)';
+      'แจกจ่ายสิทธิประโยชน์พิเศษจากบัตรรายเดือน ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'ปลดล็อกบัตรรายเดือน 【สัญญาแห่งดวงดาว】 เพื่อเปิดใช้งานภารกิจนี้ (0 / 1)';
+      'ปลดล็อกบัตรรายเดือน 【สัญญาแห่งดวงดาว】 เพื่อเปิดใช้งานภารกิจนี้ ';
 
   @override
   String get task_monthly_log_name => 'สิทธิพิเศษรายวันบัตรรายเดือน';

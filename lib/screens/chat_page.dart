@@ -1556,6 +1556,7 @@ class _ChatPageState extends State<ChatPage> {
       int messageCost = 1;
       if (_currentMode == ChatMode.story) messageCost = 5;
       if (_currentMode == ChatMode.immersive) messageCost = 7;
+      if (_currentMode == ChatMode.gemini) messageCost = 0;
       if (myActualFlowers < messageCost) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -1769,14 +1770,17 @@ class _ChatPageState extends State<ChatPage> {
           // ========================================================
 
           // A. 資料庫扣除花花點數與記帳（移到 mounted 外面）
-          FirebaseFirestore.instance.collection('users').doc(userId).update({
-            'flowerPoints': FieldValue.increment(-messageCost)
-          });
-          FirebaseFirestore.instance.collection('users').doc(userId).collection('flower_logs').add({
-            'title': '與 ${_currentCharacter.name} 聊天',
-            'amount': -messageCost,
-            'createdAt': FieldValue.serverTimestamp(),
-          });
+          // ✨ 綠色通道 2：只有當這句話真的要錢 (messageCost > 0) 時，才去扣款跟記帳！
+          if (messageCost > 0) {
+            FirebaseFirestore.instance.collection('users').doc(userId).update({
+              'flowerPoints': FieldValue.increment(-messageCost)
+            });
+            FirebaseFirestore.instance.collection('users').doc(userId).collection('flower_logs').add({
+              'title': '與 ${_currentCharacter.name} 聊天',
+              'amount': -messageCost,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
+          }
 
           // B. 同步更新全域最高好感度 (widget.shouldSave 整個邏輯搬到 mounted 外面)
           if (widget.shouldSave == true) {

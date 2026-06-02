@@ -3659,11 +3659,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get task_monthly_subtitle_active =>
-      'Distribución de beneficios exclusivos de tarjeta mensual (1 / 1)';
+      'Distribución de beneficios exclusivos de tarjeta mensual ';
 
   @override
   String get task_monthly_subtitle_inactive =>
-      'Desbloquea la tarjeta mensual 【Contrato Estelar】 para activar esta misión (0 / 1)';
+      'Desbloquea la tarjeta mensual 【Contrato Estelar】 para activar esta misión ';
 
   @override
   String get task_monthly_log_name => 'Privilegio diario de tarjeta mensual';
