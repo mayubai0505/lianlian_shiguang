@@ -102,5 +102,9 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>NSPhotoLibraryUsageDescription</key>
+        	<string>《戀戀拾光》需要存取您的相簿，以便讓您上傳或更換專屬的個人頭像。</string>
+        	<key>NSCameraUsageDescription</key>
+        	<string>《戀戀拾光》需要使用相機，以便讓您即時拍攝並設定為個人頭像。</string>
 	</dict>
 </plist>

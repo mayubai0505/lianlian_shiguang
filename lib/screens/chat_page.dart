@@ -22,7 +22,7 @@ import 'call_screen.dart';
 import 'user_profile_popup.dart';
 import 'package:lianlian_shiguang/main.dart';
 import '../services/theme_notifier.dart';
-import 'package:audioplayers/audioplayers.dart'; // 🌟 讓這個頁面認識 UrlSource 和 AudioPlayer
+import 'package:firebase_ai/firebase_ai.dart';
 import '../utils/image_utils.dart';
 import 'about_me_page.dart';
 import 'character_model.dart';
@@ -42,6 +42,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:audioplayers/audioplayers.dart';
 
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive , gemini}
