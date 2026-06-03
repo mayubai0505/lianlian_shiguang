@@ -4311,8 +4311,29 @@ class _ChatPageState extends State<ChatPage> {
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                     if (snapshot.hasError) return Center(child: Text(l10n.chat_error_load_msg(snapshot.error.toString())));
+
                     final messages = snapshot.data!.docs.map((doc) => ChatMessage.fromFirestore(doc)).toList();
                     _localMessages = messages;
+
+                    // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
+                    if (messages.isNotEmpty) {
+                      final latestMessage = messages.first; // 抓出最新的一句話
+
+                      // 檢查：如果最新一句話是 AI 說的，而且畫面居然還卡在轉圈圈
+                      if (latestMessage.sender == 'ai' && _isGenerating) {
+                        // 呼叫 Flutter 系統，在畫面渲染完畢後偷偷把它解鎖
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) {
+                            setState(() {
+                              _isGenerating = false;
+                            });
+                            generatingRooms.remove(widget.character.id);
+                            debugPrint("✨ 偵測到 AI 最新回覆，強制解除鎖定狀態！");
+                          }
+                        });
+                      }
+                    }
+                    // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
                     if (messages.isEmpty && !_isGenerating) {
                       return Center(child: Text(l10n.chat_empty_msg));
                     }
