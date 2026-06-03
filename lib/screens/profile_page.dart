@@ -936,6 +936,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final currentUser = FirebaseAuth.instance.currentUser;
     final String adminUid = 'B71k2kyooubYsOtIO1nkiBwyBXt2';
     final bool isAdmin = (currentUser?.uid == adminUid);
+    final theme = Theme.of(context);
     // ✨ 移除舊的 Scaffold，最外層改為 Container + NestedScrollView
     return Container(
       decoration: themeNotifier.currentBackground,
@@ -1009,6 +1010,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.auto_stories),
                       label: Text(l10n.tab_heartbeat_diary),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.7), // 乾淨的半透明白底
+                        foregroundColor: theme.colorScheme.primary,     // 文字與圖示自動抓取主題色 (粉紅/粉藍等)
+                        elevation: 0, // 拿掉陰影，讓畫面更輕盈透亮
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      ),
                       onPressed: _showHeartbeatDiary,
                     ),
                   ),
@@ -1067,25 +1074,36 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildCheckInButton() {
     final l10n = AppLocalizations.of(context)!;
+    // 🌟 總裁補丁：把主題雷達加進來
+    final theme = Theme.of(context);
+
     if (_hasCheckedInToday) {
       return ElevatedButton.icon(
         icon: const Icon(Icons.check_circle),
         label: Text(l10n.status_signed_in_today),
-        onPressed: _hasCheckedInToday ? null : _performCheckIn,
+        onPressed: null, // 已經簽到就直接設為 null 禁用
         style: ElevatedButton.styleFrom(
-          disabledBackgroundColor: Colors.grey.withValues(alpha: 0.2),
+          // ✨ 禁用狀態：給它 50% 的乾淨白底配上溫柔的灰色字，絕對不髒！
+          disabledBackgroundColor: Colors.white.withValues(alpha: 0.5),
           disabledForegroundColor: Colors.grey,
+          elevation: 0, // 拿掉陰影更輕盈
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
       );
     } else {
       return ElevatedButton.icon(
         icon: _isClaimingCheckIn
-            ? const SizedBox(width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2))
+            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
             : const Icon(Icons.calendar_today),
         label: Text(_isClaimingCheckIn ? l10n.status_signing_in : l10n.status_daily_sign_in),
-        onPressed: _performCheckIn,
+        onPressed: _isClaimingCheckIn ? null : _performCheckIn,
+        // ✨ 可用狀態：完美複製「心動日記」的變色龍裝扮！
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white.withValues(alpha: 0.7), // 乾淨的半透明白底
+          foregroundColor: theme.colorScheme.primary,           // 字體自動抓主題色
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        ),
       );
     }
   }
@@ -1303,9 +1321,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // 稍微增加垂直 padding 更好點擊
                   decoration: BoxDecoration(
-                    color: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
+                    // 🌟 總裁補丁：讓花花點數標籤永遠保持乾淨透亮！
+                    color: isDarkMode
+                        ? Colors.grey[800]!.withValues(alpha: 0.6)  // 深夜模式：保持低調的半透灰
+                        : Colors.white.withValues(alpha: 0.85),     // ✨ 淺色/漸層模式：給它 85% 的純白！
+
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: primaryColor.withValues(alpha:0.2)),
+                    border: Border.all(color: primaryColor.withValues(alpha:0.3)), // 稍微加深一點邊框
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min, // 👈 關鍵：膠囊會隨內容寬度自動伸縮

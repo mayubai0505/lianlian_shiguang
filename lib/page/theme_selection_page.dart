@@ -13,13 +13,14 @@ class ThemeSelectionPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final themeNotifier = Provider.of<ThemeNotifier>(context);
 
-    // 定義卡片的顯示資料
+
+    // 定義卡片的顯示資料 (✨ 新增 textColor 屬性)
     final List<Map<String, dynamic>> themeOptions = [
-      {'theme': AppTheme.pinkGradient, 'name': l10n.theme_sakura_pink, 'colors': [Color(0xFFFFD5E3), Colors.white]},
-      {'theme': AppTheme.blueGradient, 'name':l10n.theme_ocean_blue, 'colors': [Color(0xFFD5E3FF), Color(0xFFE9D5FF)]},
-      {'theme': AppTheme.orangeGradient, 'name': l10n.theme_sunset_orange, 'colors': [Color(0xFFFFE9D5), Color(0xFFFFD5D5)]},
-      {'theme': AppTheme.greenGradient, 'name': l10n.theme_mint_forest, 'colors': [Color(0xFFD5FFD6), Colors.white]},
-      {'theme': AppTheme.dark, 'name': l10n.theme_midnight, 'colors': [Colors.black, Colors.grey[900]!]},
+      {'theme': AppTheme.pinkGradient, 'name': l10n.theme_sakura_pink, 'colors': [const Color(0xFFFFD5E3), Colors.white], 'textColor': Colors.black87},
+      {'theme': AppTheme.blueGradient, 'name':l10n.theme_ocean_blue, 'colors': [const Color(0xFFD5E3FF), const Color(0xFFE9D5FF)], 'textColor': Colors.black87},
+      {'theme': AppTheme.orangeGradient, 'name': l10n.theme_sunset_orange, 'colors': [const Color(0xFFFFE9D5), const Color(0xFFFFD5D5)], 'textColor': Colors.black87},
+      {'theme': AppTheme.greenGradient, 'name': l10n.theme_mint_forest, 'colors': [const Color(0xFFD5FFD6), Colors.white], 'textColor': Colors.black87},
+      {'theme': AppTheme.dark, 'name': l10n.theme_midnight, 'colors': [Colors.black, Colors.grey[900]!], 'textColor': Colors.white}, // ✨ 深夜模式專屬白字！
     ];
     return Scaffold(
       appBar: AppBar(title:  Text(l10n.change_atmosphere)),
@@ -44,6 +45,7 @@ class ThemeSelectionPage extends StatelessWidget {
     );
   }
 
+
   // 🎭 普通主題卡片
   Widget _buildThemeCard(BuildContext context, Map<String, dynamic> option, ThemeNotifier notifier) {
     bool isSelected = notifier.currentThemeEnum == option['theme'];
@@ -55,11 +57,12 @@ class ThemeSelectionPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(colors: option['colors'], begin: Alignment.topLeft, end: Alignment.bottomRight),
           border: Border.all(color: isSelected ? Colors.white : Colors.transparent, width: 3),
-          boxShadow: isSelected ? [BoxShadow(color: Colors.black26, blurRadius: 10)] : [],
+          boxShadow: isSelected ? [const BoxShadow(color: Colors.black26, blurRadius: 10)] : [],
         ),
         child: Center(
           child: Text(option['name'], style: TextStyle(
-            color: isSelected ? Colors.black : Colors.black54,
+            // ✨ 根據選項決定字體顏色，如果被選中則稍微加深/加亮
+            color: isSelected ? option['textColor'] : (option['textColor'] as Color).withValues(alpha: 0.6),
             fontWeight: FontWeight.bold, fontSize: 18,
           )),
         ),
@@ -68,23 +71,44 @@ class ThemeSelectionPage extends StatelessWidget {
   }
 
   // 🎨 神祕自定義卡片
+  // 🎨 神祕自定義卡片 (✨ 拒絕漸層，打造乾淨質感)
   Widget _buildCustomPickerCard(BuildContext context, ThemeNotifier notifier) {
     final l10n = AppLocalizations.of(context)!;
     bool isCustom = notifier.currentThemeEnum == AppTheme.custom;
+
     return InkWell(
       onTap: () => _showColorPickerDialog(context, notifier),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.3),
+          // ✨ 堅決不用漸層！用乾淨的白色微透底，帶有一點磨砂玻璃的質感
+          color: Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isCustom ? notifier.customColor : Colors.white54, width: 3),
+          border: Border.all(
+            // 如果被選中，就用玩家選的顏色當邊框；沒選中就用低調的灰色
+              color: isCustom ? notifier.customColor : Colors.white70,
+              width: 3
+          ),
+          // 選中時給它一點專屬顏色的光暈
+          boxShadow: isCustom ? [BoxShadow(color: notifier.customColor.withValues(alpha: 0.3), blurRadius: 10)] : [],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_circle_outline, size: 40, color: notifier.customColor),
+            Icon(
+                Icons.add_circle,
+                size: 40,
+                // 圖示顏色跟著玩家選的顏色走
+                color: isCustom ? notifier.customColor : Colors.grey[400]
+            ),
             const SizedBox(height: 10),
-            Text(l10n.custom_color, style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+                l10n.custom_color,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  // 文字顏色也跟著選定的顏色走
+                  color: isCustom ? notifier.customColor : Colors.grey[600],
+                )
+            ),
           ],
         ),
       ),

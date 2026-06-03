@@ -141,22 +141,31 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (dialogContext) =>
           AlertDialog(
+            // 🌟 總裁無敵防護罩：管你什麼主題，對話框絕對要有實心底色！
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF2C2C2C) // 深色模式給深灰底
+                : Colors.white,           // 淺色/漸層模式絕對給白底
+
+            // 🌟 擋掉 Material 3 雞婆的自動染色功能，確保顏色純粹
+            surfaceTintColor: Colors.transparent,
+
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20)),
             title:  Text(l10n.resetAppearanceTitle),
             content: Text(l10n.resetAppearanceWarning),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(dialogContext),
-                  child:  Text(l10n.cancelButton
-                  )),
+              TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child:  Text(l10n.cancelButton)
+              ),
               TextButton(
                 onPressed: () {
                   themeNotifier.resetToDefault();
                   Navigator.pop(dialogContext);
                   ScaffoldMessenger.of(context).showSnackBar(
-                       SnackBar(content: Text(l10n.appearanceRestored)));
+                      SnackBar(content: Text(l10n.appearanceRestored)));
                 },
-                child:Text(l10n.confirmReset, style: TextStyle(color: Colors.red)),
+                child: Text(l10n.confirmReset, style: const TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -421,7 +430,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
+                      backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(

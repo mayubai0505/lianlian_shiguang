@@ -429,7 +429,7 @@ let relationContext = "";
         2. **【動態非線性開場】**：**嚴禁每次都先寫環境或大段內心獨白**。必須根據玩家上一句輸入，立即從「充滿張力的質問」、「突發的肢體動作」、「生理反應特寫」、「視線交鋒」或「角色個性強烈的短句」直接切入。
         3. **【時間結界】**：首行必須精確標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
 
-        ### 🔞 成人向張力 (Grok 欲望解禁)
+        ### 🔞 成人向張力
         1. **【生理反應真實化】**：全面解禁生理描寫，精確刻畫瞳孔變化、喉結滑動、肌肉緊繃、體溫變化、呼吸頻率、掌心出汗等細節。
         2. **【物理觸感特寫】**：著重描寫觸碰時的真實力道、溫度、顫慄與布料摩擦感。
         3. **【描寫分散原則】**：生理與心理描寫必須打散穿插在動作與對話之間，**禁止一次性塞入大段內心獨白**。
@@ -504,7 +504,7 @@ let relationContext = "";
                3. **【描寫分散】**：所有描寫必須打散穿插，禁止大段一次性內心獨白。
                4. **【對話密度】**：每次回覆包含 3-5 句台詞，用動作、神態、生理反應切碎。
 
-               🚨 **[DeepSeek Pro 輸出極限紅線]** 🚨  // 🌟 修正：清除舊 Grok 字眼
+               🚨 **[DeepSeek Pro 輸出極限紅線]** 🚨
                - **【排版美學】**：每一次「台詞」與「括號描寫」之間必須【空一行】！
                - **【字數標準】**：回覆必須達到 **800 - 1200 字**（含翻譯）。
                - **【感官豐富度】**：每段括號描寫至少包含一種聲音、一種氣息、一種溫度/觸感變化。
@@ -556,10 +556,10 @@ let relationContext = "";
        2. **好感度評定**：根據對話內容評定「affectionChange」。
           - 日常閒聊：0 ~ +2 | 體貼關懷：+3 ~ +5
           - 告白、親密行為：+10 ~ +30 | 冒犯、冷淡：-1 ~ -10
-
-       3. **嚴格格式要求**：妳的輸出【必須】是純粹的 JSON，禁止包覆任何 Markdown (如 \`\`\`json) 或額外文字。格式如下：
+       3. **回覆寫作順序規範 (排版極度重要)**：請務必遵守以下寫作順序，不可顛倒：先描寫環境氛圍、角色動作或心理活動（使用旁白形式），最後才將角色實際說出口的「對話」放在整段回覆的最末尾。
+       4. **嚴格格式要求**：妳的輸出【必須】是純粹的 JSON，禁止包覆任何 Markdown (如 \`\`\`json) 或額外文字。格式如下：
        {
-         "response": "在此填入絕美情境描寫與台詞。記得稱呼對方為『${playerName}』。",
+         "response": "請先填入絕美情境與旁白描寫，最後再填入角色的對話。記得稱呼對方為『${playerName}』。",
          "affectionChange": 數字,
          "voiceText": "純台詞提取"
        }
@@ -673,6 +673,7 @@ let relationContext = "";
                                                  temperature: config.temperature || 0.7,
                                                  response_format: { type: "json_object" }
                                              })
+                                             signal: abortController.signal
                                          });
 
                                          const aiResult = await response.json();
@@ -720,6 +721,41 @@ let relationContext = "";
                                          });
                                      }
 
+// ==========================================
+// 🛑 總裁鐵門：防堵幽靈回覆與幽靈扣款
+// ==========================================
+if (isAborted) {
+    console.log("🛑 玩家已經離開或按下停止，取消扣款與資料庫寫入！");
+    return res.status(499).json({ status: "aborted", message: "Client closed request" });
+}
+
+                                     // ==========================================
+                                     // 💰💰💰 新增：總裁的雲端收銀台 (絕對不漏接) 💰💰💰
+                                     // ==========================================
+                                     if (cost > 0) {
+                                         try {
+                                             const batch = admin.firestore().batch();
+
+                                             // A. 扣錢：去這個使用者的總資產扣除花朵
+                                             batch.update(userDocRef, {
+                                                 flowerPoints: admin.firestore.FieldValue.increment(-cost)
+                                             });
+
+                                             // B. 記帳：在花朵明細裡寫下一筆
+                                             const newLogRef = userDocRef.collection('flower_logs').doc();
+                                             batch.set(newLogRef, {
+                                                 title: `與 ${name} 聊天`,
+                                                 amount: -cost,
+                                                 createdAt: admin.firestore.FieldValue.serverTimestamp()
+                                             });
+
+                                             await batch.commit();
+                                             console.log(`✅ [雲端收銀台] 成功向 ${userId} 收取 ${cost} 朵花花！`);
+                                         } catch (dbError) {
+                                             console.error("🔴 [雲端收銀台崩潰] 收費失敗，但放行對話！", dbError);
+                                         }
+                                     }
+
                                    // ==========================================
                                    // 🌟🌟🌟 總裁專屬：雲端代寫系統正式啟動 🌟🌟🌟
                                    // ==========================================
@@ -760,6 +796,19 @@ let relationContext = "";
                                                        const appId = body.appId || "lianlianshiguang";
                                                        const sessionRef = admin.firestore().collection('artifacts').doc(appId).collection('chat_sessions').doc(sessionId);
 
+
+// ==========================================
+// 🛡️ 總裁防空包彈過濾器：如果文字是空的，拒絕寫入！
+// ==========================================
+if (!cleanDisplayText || cleanDisplayText.trim() === "") {
+    console.log("🛑 [防禦系統] 偵測到 AI 回傳內容為空字串，攔截寫入，避免產生空白泡泡！");
+
+    // 給手機端一個正常的錯誤回應，讓它關閉轉圈圈，但「不」寫入資料庫
+    return res.status(200).json({
+        status: "error",
+        errorMessage: "AI 回覆生成異常，已成功攔截空訊息。"
+    });
+}
                                                        // ☁️ 寫入資料庫 (這會觸發您的 notifyPlayerNewMessage 推播)
                                                        await sessionRef.collection('messages').add({
                                                            sender: 'ai',

@@ -17,19 +17,37 @@ enum AppTheme {
 
 // --- ✨✨✨ 核心修正 #1: 將所有主題和背景的定義移到 Class 外部 ---
 
-final ThemeData _lightTheme = ThemeData.light().copyWith();
-final ThemeData _darkTheme = ThemeData.dark().copyWith();
+final ThemeData _lightTheme = ThemeData.light().copyWith(
+  scaffoldBackgroundColor: Colors.white,
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Colors.white,
+    surfaceTintColor: Colors.transparent, // 避免被 Material 3 染成奇怪的紫色
+  ),
+);
+
+final ThemeData _darkTheme = ThemeData.dark().copyWith(
+  scaffoldBackgroundColor: const Color(0xFF121212),
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Color(0xFF1E1E1E),
+    surfaceTintColor: Colors.transparent,
+  ),
+);
 
 final ThemeData _pinkGradientTheme = ThemeData(
   primarySwatch: Colors.pink,
   scaffoldBackgroundColor: const Color(0xFFFFD5E3),
+  cardColor: Colors.white,
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Colors.white, // 強制白底，絕對不透明！
+    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
+  ),
   colorScheme: const ColorScheme.light(
     primary: Color(0xFF82B1FF),
     primaryContainer: Color(0xFFA892F5),
     secondary: Color(0xFFF48FB1),
     secondaryContainer: Color(0xFFF8BBD0),
     onPrimary: Colors.white,
-    surface: Colors.transparent,
+    surface: Colors.white,
     onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
@@ -46,6 +64,11 @@ final ThemeData _pinkGradientTheme = ThemeData(
 final ThemeData _blueGradientTheme = ThemeData(
   primarySwatch: Colors.blue,
   scaffoldBackgroundColor: const Color(0xFFD5E3FF),
+  cardColor: Colors.white,
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Colors.white, // 強制白底，絕對不透明！
+    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
+  ),
   colorScheme: const ColorScheme.light(
     primary: Color(0xFF64B5F6),
     primaryContainer: Color(0xFF9575CD),
@@ -53,7 +76,7 @@ final ThemeData _blueGradientTheme = ThemeData(
     secondaryContainer: Color(0xFF81C784),
     onPrimary: Colors.white,
     onSecondaryContainer: Colors.white,
-    surface: Colors.transparent,
+    surface: Colors.white,
     onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
@@ -70,11 +93,16 @@ final ThemeData _blueGradientTheme = ThemeData(
 final ThemeData _orangeGradientTheme = ThemeData(
   primarySwatch: Colors.orange,
   scaffoldBackgroundColor: const Color(0xFFFFE9D5),
+  cardColor: Colors.white,
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Colors.white, // 強制白底，絕對不透明！
+    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
+  ),
   colorScheme: const ColorScheme.light(
     primary: Colors.orange,
     onPrimary: Colors.white,
     secondary: Colors.deepOrangeAccent,
-    surface: Colors.transparent,
+    surface: Colors.white,
     onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
@@ -91,11 +119,16 @@ final ThemeData _orangeGradientTheme = ThemeData(
 final ThemeData _yellowGradientTheme = ThemeData(
   primarySwatch: Colors.yellow,
   scaffoldBackgroundColor: const Color(0xFFFFF9D5),
+  cardColor: Colors.white,
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Colors.white, // 強制白底，絕對不透明！
+    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
+  ),
   colorScheme: const ColorScheme.light(
     primary: Colors.yellow,
     onPrimary: Colors.black,
     secondary: Colors.amber,
-    surface: Colors.transparent,
+    surface: Colors.white,
     onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
@@ -112,11 +145,16 @@ final ThemeData _yellowGradientTheme = ThemeData(
 final ThemeData _greenGradientTheme = ThemeData(
   primarySwatch: Colors.green,
   scaffoldBackgroundColor: const Color(0xFFD5FFD6),
+  cardColor: Colors.white,
+  bottomSheetTheme: const BottomSheetThemeData(
+    backgroundColor: Colors.white, // 強制白底，絕對不透明！
+    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
+  ),
   colorScheme: const ColorScheme.light(
     primary: Colors.green,
     onPrimary: Colors.white,
     secondary: Colors.teal,
-    surface: Colors.transparent,
+    surface: Colors.white,
     onSurface: Colors.black87,
   ),
   appBarTheme: const AppBarTheme(
@@ -184,17 +222,35 @@ class ThemeNotifier extends ChangeNotifier {
   String? get backgroundImagePath => _backgroundImagePath;
   String? get activeCharacterBackground => _activeCharacterBackground;
 
+
+  // ✨ 動態生成自定義 ThemeData (按鈕、AppBar 的顏色)
   // ✨ 動態生成自定義 ThemeData (按鈕、AppBar 的顏色)
   ThemeData _buildCustomTheme(Color color) {
+    // 讓系統自動算出完美的深淺搭配色
+    final ColorScheme customScheme = ColorScheme.fromSeed(seedColor: color);
+
     return ThemeData(
+      useMaterial3: true,
       primaryColor: color,
-      scaffoldBackgroundColor: color.withValues(alpha:0.1),
-      colorScheme: ColorScheme.light(
-        primary: color,
-        secondary: color.withBlue(200),
-        surface: Colors.transparent,
+      scaffoldBackgroundColor: Color.lerp(Colors.white, color, 0.15),
+      colorScheme: customScheme,
+
+      // ✨✨✨ 總裁看這裡：全域按鈕服裝規定！ ✨✨✨
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: customScheme.primary, // 按鈕背景跟著主題色
+          foregroundColor: customScheme.onPrimary, // 文字顏色自動計算 (深色配白字，淺色配黑字)
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        ),
       ),
-      appBarTheme: AppBarTheme(backgroundColor: color.withValues(alpha:0.2), elevation: 0),
+
+      appBarTheme: AppBarTheme(
+        backgroundColor: Color.lerp(Colors.white, color, 0.25),
+        elevation: 0,
+        iconTheme: IconThemeData(color: customScheme.onSurface),
+        titleTextStyle: TextStyle(color: customScheme.onSurface, fontSize: 20, fontWeight: FontWeight.bold),
+      ),
     );
   }
 
@@ -216,26 +272,21 @@ class ThemeNotifier extends ChangeNotifier {
   BoxDecoration get currentBackground {
     // 1. 如果是自定義模式
     if (_currentThemeEnum == AppTheme.custom) {
-      // 優先權 A：如果有照片，顯示照片
       if (_backgroundImagePath != null) {
         return BoxDecoration(
           image: DecorationImage(
             image: FileImage(File(_backgroundImagePath!)),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-              Colors.black.withValues(alpha:0.2), // 淡淡遮罩避免照片太亮
+              Colors.black.withValues(alpha:0.2),
               BlendMode.darken,
             ),
           ),
         );
       }
-      // 優先權 B：沒照片，顯示自定義漸層色
+      // ✨✨✨ 優先權 B：沒照片，拔掉漸層！改成乾淨的單色透底！ ✨✨✨
       return BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [_customColor.withValues(alpha:0.3), Colors.white],
-        ),
+        color: Color.lerp(Colors.white, _customColor, 0.15),// 只保留一點點淡淡的主題底色
       );
     }
 
@@ -340,16 +391,20 @@ class ThemeNotifier extends ChangeNotifier {
 
   // 在 ThemeNotifier 類別裡新增：
   Future<void> resetToDefault() async {
-    // 1. 恢復預設數值
-    _currentThemeEnum = AppTheme.blueGradient; // 或者您想預設為 light
+    // 1. 恢復預設數值 (切換回我們剛剛強化的 light 主題)
+    _currentThemeEnum = AppTheme.light;
     _backgroundImagePath = null;
-    _customColor = Colors.purple; // 恢復預設自定義色
-    notifyListeners(); // 通知所有頁面變色
+    _customColor = Colors.blue;
+
     // 2. 清除本地儲存紀錄
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('background_image_path');
     await prefs.remove('custom_color_value');
     await prefs.setString('app_theme', _currentThemeEnum.name);
+
+    // 3. ✨ 廣播通知全宇宙換衣服！
+    notifyListeners();
+
     // 給一個成功的震動回饋
     HapticFeedback.vibrate();
   }

@@ -311,14 +311,20 @@ class _ChatHomePageState extends State<ChatHomePage> {
                         padding: const EdgeInsets.only(right: 20),
                         child: const Icon(Icons.delete_outline, color: Colors.white, size: 30),
                       ),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: theme.cardColor.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
-                        ),
-                        child: ListTile(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          // 1. 外層 Container 現在只負責「陰影」
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+                          ),
+                          // 2. 🌟 總裁補丁：加入 Material 畫布
+                          child: Material(
+                            color: theme.cardColor.withOpacity(0.8), // 顏色搬到這裡
+                            borderRadius: BorderRadius.circular(16), // 圓角搬到這裡
+                            clipBehavior: Clip.antiAlias,            // 確保水波紋動畫不會超出圓角範圍！
+
+                            child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           leading: Stack(
                             children: [
@@ -344,10 +350,17 @@ class _ChatHomePageState extends State<ChatHomePage> {
                               Expanded(
                                 child: Text(
                                   displayRoomName,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    // 🌟 總裁補丁：強迫名字文字跟著主題走！
+                                    // 用 onSurface 保證文字在深淺色背景上都清晰可見
+                                    color: theme.colorScheme.onSurface,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                              // ... 後面是聊天模式標籤 ...
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
@@ -387,6 +400,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                           onLongPress: () => _renameChatRoom(sessionId, displayRoomName),
                         ),
                       ),
+                        ),
                     );
                   },
                 );

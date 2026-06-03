@@ -251,24 +251,36 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _voiceStyle = (data['voiceStyle'] is num) ? data['voiceStyle'].toDouble() : 0.75;
 
       // 5. 【照片合併：對齊 url/req/desc】
+      // ✨ 修正 2：讀取草稿時，如果是本機路徑，要還原成 XFile
       List<CharacterPhoto> tempGallery = [];
       if (data['gallery'] != null) {
         var rawGallery = data['gallery'] as List<dynamic>;
         tempGallery = rawGallery.map((item) {
           final photoData = item as Map<String, dynamic>;
+          final String savedUrl = photoData['url'] ?? '';
+
           return CharacterPhoto(
-              imageUrl: photoData['url'] ?? '', // ✨ 對齊妳資料庫裡的 'url'
-              requiredAffection: photoData['req'] ?? 0, // ✨ 對齊 'req'
-              description: photoData['desc'] ?? ''  // ✨ 對齊 'desc'
+              imageUrl: savedUrl.startsWith('http') ? savedUrl : '',
+              // 如果不是 http 開頭，代表它是上次存在手機裡的暫存檔，還原給 localFile
+              localFile: (!savedUrl.startsWith('http') && savedUrl.isNotEmpty) ? XFile(savedUrl) : null,
+              requiredAffection: photoData['req'] ?? 0,
+              description: photoData['desc'] ?? ''
           );
-        }).where((photo) => photo.imageUrl.trim().isNotEmpty).toList();
+        }).where((photo) => photo.imageUrl.isNotEmpty || photo.localFile != null).toList(); // 放寬條件：有本機檔案的也要留著！
       }
 
+      // ✨ 修正 3：大頭貼也比照辦理
       String? mainAvatar = data['avatarPath'];
       if (mainAvatar != null && mainAvatar.isNotEmpty) {
-        bool alreadyIn = tempGallery.any((p) => p.imageUrl == mainAvatar);
+        bool alreadyIn = tempGallery.any((p) =>
+        p.imageUrl == mainAvatar || (p.localFile != null && p.localFile!.path == mainAvatar));
         if (!alreadyIn) {
-          tempGallery.insert(0, CharacterPhoto(imageUrl: mainAvatar, requiredAffection: 0, description: ''));
+          tempGallery.insert(0, CharacterPhoto(
+              imageUrl: mainAvatar.startsWith('http') ? mainAvatar : '',
+              localFile: (!mainAvatar.startsWith('http') && mainAvatar.isNotEmpty) ? XFile(mainAvatar) : null,
+              requiredAffection: 0,
+              description: ''
+          ));
         }
       }
       _galleryPhotos = tempGallery;
@@ -439,8 +451,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           .where((path) => path.isNotEmpty)
           .toList();
 
-      final galleryData = _galleryPhotos.map((p) => p.toMap()).toList();
-
+// ✨ 修正 1：確保本機的圖片路徑也有被存進草稿裡
+      final galleryData = _galleryPhotos.map((p) {
+        return {
+          'url': p.imageUrl.isNotEmpty ? p.imageUrl : (p.localFile?.path ?? ''),
+          'req': p.requiredAffection,
+          'desc': p.description,
+        };
+      }).toList();
       // 🌟 3. 大頭貼防護罩：從剛才整理好的 galleryPathsOnly 拿第一張，絕對不會拿到空字串
       String currentAvatarPath = widget.character?.avatarPath ?? 'assets/images/blank_avatar.png';
       if (galleryPathsOnly.isNotEmpty) {
@@ -955,10 +973,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     return await ref.getDownloadURL();
   }
 
+  // ✨ 修正 4：讓圖片渲染器認識手機本機的 String 路徑
   ImageProvider _getImageProvider(dynamic imageSource) {
     if (imageSource is String) {
       if (imageSource.startsWith('http')) {
         return NetworkImage(imageSource);
+      } else if (imageSource.startsWith('/')) {
+        // 💡 如果字串是 '/' 開頭，代表它是手機裡的實體路徑！
+        return FileImage(File(imageSource));
       }
     } else if (imageSource is XFile) {
       if (kIsWeb) {
