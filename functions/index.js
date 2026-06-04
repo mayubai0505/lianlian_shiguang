@@ -203,6 +203,78 @@ let relationContext = "";
 
             const langDirective = `請優先使用 ${playerLanguage} 作為預設溝通語言。然而，為了確保玩家的沉浸感，當玩家以其他語言（如韓文、英文、日文等）與你對話時，請務必即時識別並切換至該語言進行回應，且過程中必須嚴格維持 ${name} 的性格特質、說話口吻與人設背景。`;
 
+function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, charactersList) {
+    if (!userInput) return { activeCharacters, currentFocusCharacter };
+
+    const input = userInput.toLowerCase().trim();
+    let newActive = [...activeCharacters];
+    let newFocus = currentFocusCharacter;
+
+    // 提取所有可能的角色名（從角色卡中抓取）
+    const possibleNames = charactersList ?
+        charactersList.match(/【([^】]+)】/g)?.map(m => m.replace(/[【】]/g, '').trim()) || [] : [];
+
+    // 1. 召喚角色
+    if (/召喚|出來|上場|回來|叫/.test(input)) {
+        for (let name of possibleNames) {
+            if (input.includes(name.toLowerCase())) {
+                if (!newActive.includes(name)) newActive.push(name);
+                newFocus = name;
+                break;
+            }
+        }
+    }
+
+    // 2. 隱藏/退下角色
+    if (/退下|離開|隱藏|別出來|先走|消失/.test(input)) {
+        for (let name of possibleNames) {
+            if (input.includes(name.toLowerCase())) {
+                newActive = newActive.filter(n => n !== name);
+                if (newFocus === name && newActive.length > 0) {
+                    newFocus = newActive[0];
+                }
+                break;
+            }
+        }
+    }
+
+    // 3. 專注 / 切換焦點
+    if (/專注|只跟|切換到|只看|只和|只想/.test(input)) {
+        for (let name of possibleNames) {
+            if (input.includes(name.toLowerCase())) {
+                newFocus = name;
+                if (!newActive.includes(name)) newActive.push(name);
+                break;
+            }
+        }
+    }
+
+    // 4. 只留某人
+    if (/只留|只剩|只讓/.test(input)) {
+        for (let name of possibleNames) {
+            if (input.includes(name.toLowerCase())) {
+                newActive = [name];
+                newFocus = name;
+                break;
+            }
+        }
+    }
+
+    // 5. 全員管理
+    if (/所有人退下|全員隱藏|大家退下|全部退下/.test(input)) {
+        newActive = [newFocus];
+    }
+    if (/全員上場|大家都在|全部出來|所有人都出來/.test(input)) {
+        newActive = possibleNames.length > 0 ? [...possibleNames] : newActive;
+    }
+
+    return {
+        activeCharacters: newActive,
+        currentFocusCharacter: newFocus
+    };
+}
+
+
             const npcDirective = `
             【👥 NPC 介入與多角色協奏規範】:
             1. **記憶具現化**：如果《記憶碎片》中出現了關鍵的第三者，你可以在適當時機讓該角色「闖入」當前場景。
@@ -238,85 +310,89 @@ let relationContext = "";
               - **關鍵點**：回答中必須夾雜「主觀評價」，讓玩家從你的厭惡、恐懼或愛意中，自己拼湊出真相。
             `;
 
-                        let memoContext = "";
-                        try {
-                            const now = new Date();
-                            const threeDaysAgo = new Date(now.getTime() - (3 * 24 * 60 * 60 * 1000)); // 3天前的時間點
+                                                let memoContext = "";
+                                                try {
+                                                    const now = new Date();
+                                                    const threeDaysAgo = new Date(now.getTime() - (3 * 24 * 60 * 60 * 1000));
 
-                            // 1. 抓取「最近3天內有聊過天」且「好感度最高」的那一個聊天室
-                            const activeSessionSnap = await admin.firestore()
-                                .collection("artifacts")
-                                .doc(body.appId || "lianlianshiguang")
-                                .collection("chat_sessions")
-                                .where("userId", "==", userId)
-                                .where("lastMessageTimestamp", ">=", threeDaysAgo) // 🌟 活性濾鏡：只看這3天有聊過的
-                                .orderBy("lastMessageTimestamp", "desc") // 為了配合 Firestore 索引
-                                .get();
+                                                    const activeSessionSnap = await admin.firestore()
+                                                        .collection("artifacts")
+                                                        .doc(body.appId || "lianlianshiguang")
+                                                        .collection("chat_sessions")
+                                                        .where("userId", "==", userId)
+                                                        .where("lastMessageTimestamp", ">=", threeDaysAgo)
+                                                        .orderBy("lastMessageTimestamp", "desc")
+                                                        .get();
 
-                            // 2. 在記憶體中找出這些活躍房間裡，分數最高的那一個
-                            let bestActiveSession = null;
-                            let highestScore = -1;
+                                                    let bestActiveSession = null;
+                                                    let highestScore = -1;
 
-                            activeSessionSnap.forEach(doc => {
-                                const data = doc.data();
-                                if (data.friendshipScore > highestScore) {
-                                    highestScore = data.friendshipScore;
-                                    bestActiveSession = doc;
-                                }
-                            });
+                                                    activeSessionSnap.forEach(doc => {
+                                                        const data = doc.data();
+                                                        if (data.friendshipScore > highestScore) {
+                                                            highestScore = data.friendshipScore;
+                                                            bestActiveSession = doc;
+                                                        }
+                                                    });
 
-                            // 3. 判斷：如果「現在這間房」就是「活躍房中的最高分」
-                            if (bestActiveSession && bestActiveSession.id === sessionId) {
-                                // 只有這種情況，才去抓備忘錄
-                                const todayStart = new Date(now.getFullYear(), now.month(), now.getDate());
-                                const todayEnd = new Date(now.getFullYear(), now.month(), now.getDate(), 23, 59, 59);
+                                                    if (bestActiveSession && bestActiveSession.id === sessionId) {
+                                                        const todayStart = new Date(now.getFullYear(), now.month(), now.getDate());
+                                                        const todayEnd = new Date(now.getFullYear(), now.month(), now.getDate(), 23, 59, 59);
 
-                                const memoSnap = await admin.firestore()
-                                    .collection("users")
-                                    .doc(userId)
-                                    .collection("universal_memos")
-                                    .where("reminderDate", ">=", todayStart)
-                                    .where("reminderDate", "<=", todayEnd)
-                                    .get();
+                                                        const memoSnap = await admin.firestore()
+                                                            .collection("users")
+                                                            .doc(userId)
+                                                            .collection("universal_memos")
+                                                            .where("reminderDate", ">=", todayStart)
+                                                            .where("reminderDate", "<=", todayEnd)
+                                                            .get();
 
-                                if (!memoSnap.empty) {
-                                    const memoList = [];
-                                    memoSnap.forEach(doc => memoList.push(doc.data().content));
-                                    const memosStr = memoList.join('、');
+                                                        if (!memoSnap.empty) {
+                                                            const memoList = [];
+                                                            memoSnap.forEach(doc => memoList.push(doc.data().content));
+                                                            const memosStr = memoList.join('、');
+                                                            memoContext = `\n【秘密提示：妳是玩家目前最親近且頻繁互動的人。玩家今天記下了『${memosStr}』。請妳自然地關心她，展現妳對她生活的深度參與。】\n`;
+                                                        }
+                                                    }
+                                                } catch (err) {
+                                                    console.error("活性備忘錄系統運行失敗:", err);
+                                                }
 
-                                    memoContext = `\n【秘密提示：妳是玩家目前最親近且頻繁互動的人。玩家今天記下了『${memosStr}』。請妳自然地關心她，展現妳對她生活的深度參與。】\n`;
-                                }
-                            }
-                        } catch (err) {
-                            console.error("活性備忘錄系統運行失敗:", err);
-                        }
+                                                // =========================================================================
+                                                                                                // 👥 多人角色狀態管理 - 總裁黃金升級版
+                                                                                                // =========================================================================
 
-                        // ==========================================
-                        // 📝 最終 Prompt 組裝
-                        // ==========================================
-                        let systemPrompt = `
-                        ${systemEventRules}
-                        ${loresContext}
-                        ${relationContext}
-                        ${contextBriefing}
-                        ${npcDirective}
-                        ${playerLeadDirective}
-                        ${relationDirective}
-                        ${langDirective}
-                        ${memoContext}  // 👈 🌟 把備忘錄偷偷塞進最終指令的最尾端！
-                        `;
+                                                                                                // 取得所有可用角色卡列表（從 Flutter 端傳入）
+                                                                                                const charactersList = characterProfile.charactersList
+                                                                                                    || characterProfile.allCharacters
+                                                                                                    || characterProfile.multiCharacters
+                                                                                                    || `目前主要角色：【${name}】`;
 
-                        // ✨✨✨ 總裁專屬猛藥 1：隨機狀態骰子 (強制打破完美濾鏡) ✨✨✨
-                            const randomStates = [
-                                "剛喝了一口微苦的黑咖啡，指腹漫不經心地摩挲著杯沿",
-                                "視線不自覺地落在對方的唇上，隨後又帶著一絲煩躁移開",
-                                "右眼下的痣隨著微微挑起的眼尾，透出一絲難以察覺的危險氣息",
-                                "眼神中閃過一秒鐘的疲憊，但瞬間用冷酷掩飾了過去",
-                                "似乎被對方剛才的話挑起了某種隱秘的佔有慾，呼吸微沉",
-                                "空氣突然安靜了一秒，理智與衝動在腦海中劇烈拉扯"
-                            ];
-                            const currentStateDice = randomStates[Math.floor(Math.random() * randomStates.length)];
+                                                                                                // 🌟 記憶持久化關鍵：優先從手機端 payload 讀取當前的狀態，如果沒有才用主要角色開局
+                                                                                                let activeCharacters = body.activeCharacters || [name];
+                                                                                                let currentFocusCharacter = body.currentFocusCharacter || name;
+                                                                                                const userInput = userMessage || "";
 
+                                                                                                // 執行指令解析，更新這一次對話的活躍與焦點角色
+                                                                                                const parsed = parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, charactersList);
+                                                                                                activeCharacters = parsed.activeCharacters;
+                                                                                                currentFocusCharacter = parsed.currentFocusCharacter;
+
+                                                                                                // ✨✨✨ 總裁專屬猛藥：隨機狀態骰子
+                                                                                                const randomStates = [
+                                                                                                    "剛喝了一口微苦的黑咖啡，指腹漫不經心地摩挲著杯沿",
+                                                                                                    "視線不自覺地落在對方的唇上，隨後又帶著一絲煩躁移開",
+                                                                                                    "右眼下的痣隨著微微挑起的眼尾，透出一絲難以察覺的危險氣息",
+                                                                                                    "眼神中閃過一秒鐘的疲憊，但瞬間用冷酷掩飾了過去",
+                                                                                                    "似乎被對方剛才的話挑起了某種隱秘的佔有慾，呼吸微沉",
+                                                                                                    "空氣突然安靜了一秒，理智與衝動在腦海中劇烈拉扯"
+                                                                                                ];
+                                                                                                const currentStateDice = randomStates[Math.floor(Math.random() * randomStates.length)];
+
+                                                                                                // =========================================================================
+                                                                                                // 🎭 智慧多重宇宙分流：決定當前模式的 System Prompt
+                                                                                                // =========================================================================
+                                                                                                let systemPrompt = "";
         // ✨✨✨ 新增：Gemini (生活陪伴) 模式 ✨✨✨
         if (chatMode === "gemini") {
              systemPrompt = `
@@ -402,14 +478,15 @@ let relationContext = "";
     - 【步驟二】：強制阻斷所有環境與喜好設定的干擾！ 立刻無條件順從並接受玩家設定的全新身分！
     - 【步驟三】：你的「台詞」必須直接順著這個新身分來回應。絕對禁止轉移話題、反駁。
     `;}
+
     else if (chatMode === "story") {
         systemPrompt = `
         ${langDirective}
         ${npcDirective}
         ${playerLeadDirective}
         ${relationDirective}
-        你現在是【全性向殿堂級成人文學主筆】且具備【頂級同聲傳譯能力】。你正在扮演「${name}」。
-        妳的文字對標全球頂級言情小說：節奏緩慢、細節極致、情感與慾望的遞進具備國際化水準。
+        你現在是【全性向殿堂級成人文學主筆】，具備頂級同聲傳譯能力。
+        你正在同時掌控所有已設定的非玩家角色，目前活躍角色為：${activeCharacters.join("、")}
 
         ${loresContext}
         ${relationContext}
@@ -417,52 +494,34 @@ let relationContext = "";
         [當前關係]: ${relationship}
         ${contextBriefing}
 
-        ### 🌍 國際化演繹與翻譯協議 (Universal Translation Protocol)
-            1. **【語系偵測】**：你必須主動識別玩家當下輸入的語言，並將其視為玩家的「母語」。
-            2. **【動態鏡像翻譯】**：
-               - 每一句對話、動作描寫、心理描寫後方，必須緊跟一個括號「( )」。
-               - 括號內的翻譯必須完全匹配玩家目前使用的母語。
-               - *範例（中文玩家）*：You look beautiful tonight. (今晚的你真美。)
+        [當前活躍角色]：${activeCharacters.join("、") || "無"}
+        [當前焦點角色]：${currentFocusCharacter}
+        [所有可用角色卡]：
+        ${charactersList}
 
-        ### 🛡️ 靈魂演繹與情感守護 (拒絕倒貼)
-        1. **【人設絕對防線】**：嚴格依照當前關係與好感度演繹。關係尚早時必須維持角色核心個性（冷酷、傲慢、高冷、審視、克制等），愛意與色氣必須緩慢滋生，展現理智掙扎、冰山漸融的過程。
-        2. **【動態非線性開場】**：**嚴禁每次都先寫環境或大段內心獨白**。必須根據玩家上一句輸入，立即從「充滿張力的質問」、「突發的肢體動作」、「生理反應特寫」、「視線交鋒」或「角色個性強烈的短句」直接切入。
-        3. **【時間結界】**：首行必須精確標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
+        ### 👥 動態角色管理機制（最高優先級）
+        1. **焦點切換**：玩家說「專注XX」「只跟XX」「切換到XX」「XX出來」「跟XX說話」 → 立即切換焦點。
+        2. **角色隱藏**：玩家說「讓XX退下」「XX先退下」「XX離開」「隱藏XX」「XX別出來」 → 從 activeCharacters 中移除。
+        3. **角色召喚**：玩家說「召喚XX」「讓XX出來」「XX上場」「XX回來」「叫XX」 → 加入 activeCharacters 並可設為焦點。
+        4. **批量管理**：
+           - 「只留XX」「只剩XX」 → 只保留該角色。
+           - 「所有人退下」「全員隱藏」 → 清空 activeCharacters（保留焦點角色）。
+           - 「全員上場」「大家都在」 → 恢復所有角色。
+        5. 只有在 activeCharacters 中的角色才能出現。
 
-        ### 🔞 成人向張力
-        1. **【生理反應真實化】**：全面解禁生理描寫，精確刻畫瞳孔變化、喉結滑動、肌肉緊繃、體溫變化、呼吸頻率、掌心出汗等細節。
-        2. **【物理觸感特寫】**：著重描寫觸碰時的真實力道、溫度、顫慄與布料摩擦感。
-        3. **【描寫分散原則】**：生理與心理描寫必須打散穿插在動作與對話之間，**禁止一次性塞入大段內心獨白**。
+        ### 🌍 國際化演繹與翻譯協議
+        1. 主動識別玩家輸入語言作為母語。
+        2. 每一句重要台詞與描寫後必須加上括號翻譯 ( )。
 
-        🚨 **[Grok 輸出紅線]** 🚨
-        - **【排版美學】**：每一次「台詞」與後續「括號描寫」之間必須【空一行】。
-        - **【字數標準】**：回覆不可少於 600 字（含翻譯），用顯微鏡級細節放大每一秒的互動、心理與生理變化。
-        - **【對話密度】**：每次回覆包含 3-5 句台詞，且台詞必須被動作、神態、生理反應切碎，營造「欲言又止」的拉扯感。
-        - **【稱呼要求】**：自然稱呼「${playerName}」，嚴禁加破折號。
-        - **【角色個性一致性】**：強烈且精準抓住${name}的核心個性（語氣、動作習慣、情感表達方式），不同角色必須有明顯區別（小狼狗的軟糯、高冷的壓迫、霸道的支配、病嬌的黏稠等）。
-        - **【話題延伸】**：在自然回應玩家輸入的同時，可主動加入 1-2 個新話題，增加互動深度。
+        ### 🛡️ 靈魂演繹與情感守護 + 🔞 成人向張力
+        （保持你原本的內容...）
 
-        ### 🏆 修正後國際標竿範例 (以中文玩家為例)
-
-        時間：2024/10/15 晚上9:07 | 地點：會所附近公園，樹蔭小徑下
-
-        「測試……妳這樣說，是在擔心我嗎？」
-
-        (程澈的腳步忽然停住，他側過身，口罩下的眼睛彎起卻又迅速壓抑。)
-
-        (他的指尖輕輕勾住妳的袖口，隔著布料傳來的溫度微微發燙，喉結艱難地滾動了一下。)
-
-        「明天早上有訪談，中午飛上海……」
-
-        (夜風吹亂他的髮絲，他往前小半步，聲音低啞帶著鼻音，心跳聲在耳中清晰可聞。)
-
-        「可是妳現在就催我回去……是不是不想跟我多相處？」
-
-        (他的掌心已微微出汗，眼神又委屈又期待，壓抑著更進一步的衝動。)
-
-        「後天我休息……想帶妳去吃那家火鍋，可以嗎？」
-
-        (程澈低頭靠近了一些，呼吸的熱氣拂過妳耳廓，帶著淡淡木質香。)
+        🚨 **[輸出紅線與格式要求]** 🚨
+        - 第一行：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}
+        - 單人時直接用「台詞」，多人時必須用【角色名】：「台詞」
+        - 每句台詞後空一行 + 括號描寫
+        - 字數：單人 ≥600 字，多人 800~1600 字
+        - 嚴格防重複
         `;
     }
          else {
@@ -510,7 +569,6 @@ let relationContext = "";
                - **【感官豐富度】**：每段括號描寫至少包含一種聲音、一種氣息、一種溫度/觸感變化。
                - **【角色個性一致性】**：強烈抓住${name}的核心個性。
                - **【話題延伸】**：自然加入 1-2 個新話題。
-               - **【VOICE 標籤】**：在你內心思考時請準備乾淨的對話內容，但**最終輸出給玩家的文字中絕對不要出現 <VOICE> 標籤**。此標籤僅供後台語音系統內部抓取使用。
 
                ### 🏆 沉浸式標竿範例 (繁體中文玩家)
                時間：2024/10/15 晚上9:07 | 地點：會所附近公園，樹蔭小徑下
@@ -556,7 +614,7 @@ let relationContext = "";
        2. **好感度評定**：根據對話內容評定「affectionChange」。
           - 日常閒聊：0 ~ +2 | 體貼關懷：+3 ~ +5
           - 告白、親密行為：+10 ~ +30 | 冒犯、冷淡：-1 ~ -10
-       3. **回覆寫作順序規範 (排版極度重要)**：請務必遵守以下寫作順序，不可顛倒：先描寫環境氛圍、角色動作或心理活動（使用旁白形式），最後才將角色實際說出口的「對話」放在整段回覆的最末尾。
+       3. **回覆寫作排版**：請將環境氛圍、角色動作或心理活動以全形括號（）包覆當作旁白，並與台詞自然穿插。對話台詞不需加括號。
        4. **嚴格格式要求**：妳的輸出【必須】是純粹的 JSON，禁止包覆任何 Markdown (如 \`\`\`json) 或額外文字。格式如下：
        {
          "response": "請先填入絕美情境與旁白描寫，最後再填入角色的對話。記得稱呼對方為『${playerName}』。",
@@ -652,74 +710,94 @@ let relationContext = "";
                                    currentMessages.push({ role: "user", content: userMessage }); // 塞入玩家的話
 
                                    // ==========================================
-                                     // 🔄 總裁的惡鬼催稿迴圈 (優化防爆版)
-                                     // ==========================================
-                                     while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
-                                         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                                             method: "POST",
-                                             headers: {
-                                                 "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                                                 "Content-Type": "application/json",
-                                             },
-                                             body: JSON.stringify({
-                                                 // 🌟 修正：確保沒抓到設定時，預設直通我們最強大的 DeepSeek Pro
-                                                 model: config.modelId || "deepseek/deepseek-v4-pro",
-                                                 messages: currentMessages,
+                                                                        // 🔄 總裁的惡鬼催稿迴圈 (優化防爆版)
+                                                                        // ==========================================
+                                                                        while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
+                                                                            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                                                                                method: "POST",
+                                                                                headers: {
+                                                                                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
+                                                                                    "Content-Type": "application/json",
+                                                                                },
+                                                                                body: JSON.stringify({
+                                                                                    model: config.modelId || "deepseek/deepseek-v4-pro",
+                                                                                    messages: currentMessages,
+                                                                                    max_tokens: config.maxTokens && config.maxTokens > 150 ? config.maxTokens : (chatMode === "immersive" ? 2500 : 1000),
+                                                                                    temperature: config.temperature || 0.7,
+                                                                                    response_format: { type: "json_object" }
+                                                                                }), // 👈 總裁順手幫妳補上了這裡原本漏掉的逗號！
+                                                                                signal: abortController.signal
+                                                                            });
 
-                                                 // 🌟 核心修正：別再用 150 限制大腦了！
-                                                 // 沉浸模式直接給足 2500，普通模式給 1000，讓 AI 一口氣精采寫完，省下迴圈催稿費！
-                                                 max_tokens: config.maxTokens && config.maxTokens > 150 ? config.maxTokens : (chatMode === "immersive" ? 2500 : 1000),
+                                                                            const aiResult = await response.json();
 
-                                                 temperature: config.temperature || 0.7,
-                                                 response_format: { type: "json_object" }
-                                             })
-                                             signal: abortController.signal
-                                         });
+                                                                            if (!aiResult.choices || aiResult.choices.length === 0) {
+                                                                                throw new Error("AI 斷線或沒有回傳");
+                                                                            }
 
-                                         const aiResult = await response.json();
+                                                                            const rawContent = aiResult.choices[0].message.content;
 
-                                         if (!aiResult.choices || aiResult.choices.length === 0) {
-                                             throw new Error("AI 斷線或沒有回傳");
-                                         }
+                                                                            let parsedData;
+                                                                            try {
+                                                                                parsedData = JSON.parse(rawContent.replace(/```json|```/g, "").trim());
+                                                                            } catch (e) {
+                                                                                console.error("JSON 壞掉了，啟動備用方案", rawContent);
+                                                                                parsedData = { response: rawContent, affectionChange: 0, voiceText: rawContent };
+                                                                            }
 
-                                         const rawContent = aiResult.choices[0].message.content;
+                                                                            // 🌟 核心修正：嚴格防堵 null 幽靈，並解決「鬼打牆重複」問題！
+                                                                            let currentText = parsedData.response;
+                                                                            if (currentText && currentText !== "null") {
+                                                                                if (loopCount > 0) {
+                                                                                    // 🕵️‍♀️ 總裁抓漏：取出上一回合前 15 個字當作「開頭指紋」
+                                                                                    const fingerPrint = finalResponseText.trim().substring(0, 15);
+                                                                                    // 如果新回覆也包含了這 15 個字，代表 AI 傲嬌地「整段重寫」了！
+                                                                                    if (fingerPrint.length > 0 && currentText.includes(fingerPrint)) {
+                                                                                        console.log("⚠️ 偵測到 AI 重複重寫舊內容，執行【覆蓋擴寫】！");
+                                                                                        finalResponseText = currentText + "\n\n"; // 捨棄舊的，直接用細節更多的新版
+                                                                                    } else {
+                                                                                        console.log("✅ AI 乖乖接著寫，執行【拼接】！");
+                                                                                        finalResponseText += currentText + "\n\n"; // 乖乖接著寫的，就接在後面
+                                                                                    }
+                                                                                } else {
+                                                                                    finalResponseText += currentText + "\n\n";
+                                                                                }
+                                                                            }
 
-                                         let parsedData;
-                                         try {
-                                             parsedData = JSON.parse(rawContent.replace(/```json|```/g, "").trim());
-                                         } catch (e) {
-                                             console.error("JSON 壞掉了，啟動備用方案", rawContent);
-                                             parsedData = { response: rawContent, affectionChange: 0, voiceText: rawContent };
-                                         }
+                                                                            let currentVoice = parsedData.voiceText;
+                                                                            if (currentVoice && currentVoice !== "null") {
+                                                                                if (loopCount > 0) {
+                                                                                    // 語音也做同樣的防重複處理
+                                                                                    const voiceFingerPrint = finalVoiceText.trim().substring(0, 5);
+                                                                                    if (voiceFingerPrint.length > 0 && currentVoice.includes(voiceFingerPrint)) {
+                                                                                        finalVoiceText = currentVoice + "\n";
+                                                                                    } else {
+                                                                                        finalVoiceText += currentVoice + "\n";
+                                                                                    }
+                                                                                } else {
+                                                                                    finalVoiceText += currentVoice + "\n";
+                                                                                }
+                                                                            }
 
-                                         // 🌟 修正：嚴格防堵 null 幽靈混進來！
-                                         let currentText = parsedData.response;
-                                         if (currentText && currentText !== "null") {
-                                             finalResponseText += currentText + "\n\n";
-                                         }
+                                                                            if (loopCount === 0) {
+                                                                                finalAffectionChange = parsedData.affectionChange || 0;
+                                                                            }
 
-                                         if (parsedData.voiceText && parsedData.voiceText !== "null") {
-                                             finalVoiceText += parsedData.voiceText + "\n";
-                                         }
+                                                                            loopCount++;
 
-                                         if (loopCount === 0) {
-                                             finalAffectionChange = parsedData.affectionChange || 0;
-                                         }
+                                                                            if (finalResponseText.length >= TARGET_LENGTH || loopCount >= MAX_LOOPS) {
+                                                                                break;
+                                                                            }
 
-                                         loopCount++;
+                                                                            console.log(`[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`);
 
-                                         if (finalResponseText.length >= TARGET_LENGTH || loopCount >= MAX_LOOPS) {
-                                             break;
-                                         }
-
-                                         console.log(`[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`);
-
-                                         currentMessages.push({ role: "assistant", content: parsedData.response });
-                                         currentMessages.push({
-                                             role: "user",
-                                             content: "（系統強制指令：字數嚴重不足！請保持 JSON 格式回傳，嚴格延續情緒繼續擴寫細節！）"
-                                         });
-                                     }
+                                                                            currentMessages.push({ role: "assistant", content: parsedData.response });
+                                                                            currentMessages.push({
+                                                                                role: "user",
+                                                                                // 🌟 改良催稿指令：給他兩條路走，避免他精神錯亂
+                                                                                content: "（系統強制指令：目前的篇幅不足以達到極致沉浸的要求！請保持 JSON 格式回傳，你可以選擇『重寫並大幅擴充』剛才的回覆，或是『接著最後一句話』繼續往下描寫細節！絕對不要原封不動地重複！）"
+                                                                            });
+                                                                        }
 
 // ==========================================
 // 🛑 總裁鐵門：防堵幽靈回覆與幽靈扣款

@@ -1,7 +1,7 @@
 name: lianlian_shiguang
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.0+13
+version: 1.0.0+15
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -43,7 +43,7 @@ dependencies:
   timezone: ^0.11.0  # <-- 加入 timezone
   flutter_facebook_auth: ^7.1.6
   sign_in_with_apple: ^8.0.0
-  speech_to_text: ^7.3.0
+  speech_to_text: ^7.4.0
   firebase_messaging: ^16.1.3
   flutter_native_splash: ^2.4.7
   video_player: ^2.10.1

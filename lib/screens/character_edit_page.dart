@@ -482,6 +482,47 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         currentAvatarPath = galleryPathsOnly.first;
       }
 
+      // 🌟 總裁補位：動態產生給後端看的多角色【名字與關係】對照字串！
+      String multiCharactersString = "目前主要角色：【${_nameController.text.trim()}】\n";
+      _relationships.forEach((targetId, description) {
+        final targetChar = _myCharacters.firstWhere(
+              (c) => c.id == targetId,
+          orElse: () => Character(
+            id: targetId,
+            name: '未知角色',
+            avatarPath: '',
+            age: '',
+            occupation: '',
+            birthday: '',
+            height: '',
+            gender: '',
+            background: '',
+            storySummary: '',
+            initialStory: '',
+            firstLine: '',
+            toneAndStyle: '',
+            detailedPersonality: '',
+            likes: '',
+            dislikes: '',
+            secrets: '',
+            appearance: '',
+            dialogueExamples: '',
+            personalityTags: [],
+            easterEggs: [],
+            extraInfoItems: [],
+            isPublic: true,
+            galleryPaths: [],
+            // ✨✨✨ 這裡就是剛才漏掉的 4 個必填參數，直接塞預設值給它！ ✨✨✨
+            createdBy: 'system',
+            createdAt: DateTime.now(),
+            playCount: 0,
+            likesCount: 0,
+            initialRelationship: '',
+          ),
+        );
+        multiCharactersString += "【${targetChar.name}】：$description\n";
+      });
+
       // 🌟 4. 終極草稿資料大集合
       final draftData = {
         'avatarPath': currentAvatarPath,
@@ -524,6 +565,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'lastEditTime': FieldValue.serverTimestamp(),
         'isCompleted': false,
         'relationships': _relationships, // 🌟 補上這行，Tab 3 的關係就不會消失了！
+        'multiCharacters': multiCharactersString,
       };
 
       // 🌟 5. 寫入 Firestore 的草稿區 (draft_characters)
@@ -848,6 +890,47 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         });
       }
 
+      // 🌟 總裁補位：動態產生給後端看的多角色【名字與關係】對照字串！
+      String multiCharactersString = "目前主要角色：【${_nameController.text.trim()}】\n";
+      _relationships.forEach((targetId, description) {
+        final targetChar = _myCharacters.firstWhere(
+              (c) => c.id == targetId,
+          orElse: () => Character(
+            id: targetId,
+            name: '未知角色',
+            avatarPath: '',
+            age: '',
+            occupation: '',
+            birthday: '',
+            height: '',
+            gender: '',
+            background: '',
+            storySummary: '',
+            initialStory: '',
+            firstLine: '',
+            toneAndStyle: '',
+            detailedPersonality: '',
+            likes: '',
+            dislikes: '',
+            secrets: '',
+            appearance: '',
+            dialogueExamples: '',
+            personalityTags: [],
+            easterEggs: [],
+            extraInfoItems: [],
+            isPublic: true,
+            galleryPaths: [],
+            // ✨✨✨ 這裡就是剛才漏掉的 4 個必填參數，直接塞預設值給它！ ✨✨✨
+            createdBy: 'system',
+            createdAt: DateTime.now(),
+            playCount: 0,
+            likesCount: 0,
+            initialRelationship: '',
+          ),
+        );
+        multiCharactersString += "【${targetChar.name}】：$description\n";
+      });
+
       // 🌟 4. 準備主角色的所有資料包 (這行開始保留妳原本的程式碼)
       List<String> identitiesArray = _occupationController.text.trim().isEmpty
           ? []
@@ -897,6 +980,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voiceStability': _voiceStability,
         'voiceStyle': _voiceStyle,
         'relationships': _relationships,
+        'multiCharacters': multiCharactersString,
       };
 
       // 🌟 5. 區分編輯 vs 創建的寫入動作
