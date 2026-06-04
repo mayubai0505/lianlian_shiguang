@@ -594,7 +594,7 @@
     }
   },
   "voice_sample_script": "(Clears throat) Hello. This is a voice test exclusive to me. In the days ahead, I will be here with you. Whether you are happy or sad, you can always share it with me. Are you comfortable with this pace and tone? If you like it, let's settle on this voice as my exclusive voice for chatting with you. Looking forward to every day of our future.",
-  "voice_test_script": "What do you think of my tone right now? If you're satisfied, let's keep it this way.",
+  "voice_test_script": "Do you actually know what I'm thinking every time I look at you? ... I really don't know what to do with you.",
   "field_background": "Character Background",
   "field_tone": "Tone and Habits",
   "field_initial_story": "Initial Story",

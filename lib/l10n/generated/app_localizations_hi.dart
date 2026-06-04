@@ -1376,7 +1376,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get voice_test_script =>
-      'तुम्हें अभी मेरे बोलने का लहजा कैसा लग रहा है? अगर तुम संतुष्ट हो, तो चलो इसे ऐसे ही तय कर लेते हैं।';
+      'क्या तुम सच में जानते हो कि हर बार जब मैं तुम्हें देखता हूँ, तो मेरे दिल में क्या चल रहा होता है? ... सच में तुम्हारा कोई इलाज नहीं है।';
 
   @override
   String get field_background => 'पात्र की पृष्ठभूमि';

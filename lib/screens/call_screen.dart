@@ -13,6 +13,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 // 通話介面
 
@@ -435,8 +438,20 @@ class _CallOverlayState extends State<CallOverlay> {
       if (response.statusCode == 200) {
         final audioBytes = response.bodyBytes;
         if (!mounted) return;
-        await _audioPlayer.play(BytesSource(audioBytes));
 
+        // 🌟 總裁防快取神技：確保每一句通話都是最新鮮的！
+        if (kIsWeb) {
+          await _audioPlayer.play(BytesSource(audioBytes));
+        } else {
+          final directory = await getTemporaryDirectory();
+          // 🔑 加上時間戳記，確保每句話的實體檔名都不同 (例如: call_voice_171746201823.mp3)
+          final String uniqueFileName = 'call_voice_${DateTime.now().millisecondsSinceEpoch}.mp3';
+          final file = File('${directory.path}/$uniqueFileName');
+          await file.writeAsBytes(audioBytes);
+          await _audioPlayer.play(DeviceFileSource(file.path));
+        }
+
+        // 🚨 總裁搶救：幫妳把剛剛不小心刪掉的雲端上傳和畫面更新補回來了！
         String? cloudUrl = await _uploadVoiceToStorage(audioBytes);
 
         if (cloudUrl != null && mounted) {
@@ -449,7 +464,7 @@ class _CallOverlayState extends State<CallOverlay> {
             }
           });
         }
-      }
+      } // 👈 剛剛就是少了這個括號！
     } catch (e) {
       print('語音處理失敗: $e');
     }

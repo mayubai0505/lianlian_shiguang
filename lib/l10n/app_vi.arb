@@ -492,7 +492,7 @@
   "elevenlabs_error": "Lỗi ElevenLabs: {code}",
   "@elevenlabs_error": { "placeholders": { "code": { "type": "String" } } },
   "voice_sample_script": "(Rặng hắng) Xin chào. Đây là đoạn thử giọng dành riêng cho tôi. Trong những ngày sắp tới, tôi sẽ ở đây bên bạn. Dù là lúc vui hay lúc buồn, bạn đều có thể chia sẻ với tôi. Nhịp điệu và âm sắc nói chuyện như thế này, bạn nghe có quen không? Nếu cảm thấy ổn, chúng ta hãy chốt giọng nói này làm giọng nói riêng để tôi trò chuyện với bạn sau này nhé. Mong chờ mỗi ngày trong tương lai của chúng ta.",
-  "voice_test_script": "Bạn thấy giọng điệu nói chuyện của tôi bây giờ thế nào? Nếu hài lòng, chúng ta hãy chốt như vậy nhé.",
+  "voice_test_script": "Rốt cuộc em có biết mỗi lần nhìn em, trong lòng anh đang nghĩ gì không? …… Thật là hết cách với em luôn mà.",
   "field_background": "Bối cảnh nhân vật",
   "field_tone": "Giọng điệu và thói quen",
   "field_initial_story": "Câu chuyện ban đầu",

@@ -252,11 +252,73 @@ class _ProfilePageState extends State<ProfilePage> {
           _hasCheckedInToday = true; // 同步彈窗用的變數
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(
-            content: Text(l10n.daily_gift_success),
-            behavior: SnackBarBehavior.floating,
-          ),
+        // 🌟 總裁補丁：把底部的 SnackBar 改為螢幕正中間的夢幻彈窗！
+        showDialog(
+          context: context,
+          barrierDismissible: false, // 點擊旁邊空白處不會消失，強迫玩家按下「太棒了」
+          builder: (BuildContext context) {
+            final theme = Theme.of(context);
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24), // 圓角跟妳的變色龍按鈕完美呼應
+              ),
+              backgroundColor: Colors.white, // 確保大廠級純白乾淨底色
+              content: Column(
+                mainAxisSize: MainAxisSize.min, // 緊貼內容，不會肥大
+                children: [
+                  const SizedBox(height: 16),
+                  // 🌸 放入妳親手在 iPad 上畫的超美花花圖示（如果檔名不同記得換掉喔）
+                  Image.asset(
+                    'assets/images/flower_gift.png',
+                    height: 80,
+                    width: 80,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    l10n.daily_gift_success, // 「恭喜獲得今日花花！」或類似的文字
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '+$rewardAmount 花花', // 動態顯示拿到了多少點（例如 +20 花花）
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: theme.colorScheme.primary, // 亮眼的主題色（櫻花粉/湛藍海）
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // 👆 太棒了確認按鈕
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary, // 填滿主題色
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // 關閉彈窗
+                      },
+                      child: Text(
+                        l10n.shop_purchase_awesome,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       }
 
@@ -1011,7 +1073,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       icon: const Icon(Icons.auto_stories),
                       label: Text(l10n.tab_heartbeat_diary),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.7), // 乾淨的半透明白底
+                        backgroundColor: Colors.white.withValues(alpha:0.7), // 乾淨的半透明白底
                         foregroundColor: theme.colorScheme.primary,     // 文字與圖示自動抓取主題色 (粉紅/粉藍等)
                         elevation: 0, // 拿掉陰影，讓畫面更輕盈透亮
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

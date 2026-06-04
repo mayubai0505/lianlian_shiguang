@@ -1383,7 +1383,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get voice_test_script =>
-      '¿Qué te parece mi tono de voz ahora? Si te gusta, fijémoslo así.';
+      '¿Acaso sabes en qué estoy pensando cada vez que te miro? ... De verdad que no sé qué hacer contigo.';
 
   @override
   String get field_background => 'Trasfondo del personaje';

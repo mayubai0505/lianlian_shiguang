@@ -491,7 +491,7 @@
     "elevenlabs_error": "Error de ElevenLabs: {code}",
     "@elevenlabs_error": { "placeholders": { "code": { "type": "String" } } },
     "voice_sample_script": "(Se aclara la garganta) Hola. Esta es una prueba de voz exclusiva para mí. En los días venideros, estaré aquí contigo. Ya sea que estés feliz o triste, puedes compartirlo conmigo. ¿Te resulta cómodo este ritmo y tono? Si te gusta, fijemos esta voz como mi voz exclusiva para chatear contigo. Espero con ansias cada uno de nuestros días futuros.",
-    "voice_test_script": "¿Qué te parece mi tono de voz ahora? Si te gusta, fijémoslo así.",
+    "voice_test_script": "¿Acaso sabes en qué estoy pensando cada vez que te miro? ... De verdad que no sé qué hacer contigo.",
     "field_background": "Trasfondo del personaje",
     "field_tone": "Tono y hábitos",
     "field_initial_story": "Historia inicial",

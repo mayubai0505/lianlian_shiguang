@@ -2543,7 +2543,7 @@ abstract class AppLocalizations {
   /// No description provided for @voice_test_script.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'你覺得我現在說話的語氣，聽起來怎麼樣呢？如果滿意的話，我們就這樣定下來吧。'**
+  /// **'你到底知不知道，每次看著你的時候，我心裡在想些什麼？……真是拿你沒辦法。'**
   String get voice_test_script;
 
   /// No description provided for @field_background.

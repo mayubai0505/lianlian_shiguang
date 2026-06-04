@@ -176,14 +176,49 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             _lastCheckedDateString = DateFormat('yyyy-MM-dd').format(DateTime.now());
                           });
 
-                          Navigator.pop(dialogContext); // 關閉彈窗
+                          // 先關閉原本的「每日簽到」大彈窗
+                          Navigator.pop(dialogContext);
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: primaryColor,
-                              behavior: SnackBarBehavior.floating,
-                              content: Text(l10n.success_claim_reward(rewardAmount.toString())),
-                            ),
+                          // 🌟 總裁補丁：把底下的 SnackBar 刪掉，直接在正中間召喚「恭喜獲得」小彈窗！
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                backgroundColor: Colors.white,
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    // 🌸 放上可愛的花花圖示
+                                    Image.asset('assets/images/flower_gift.png', height: 80, width: 80),
+                                    const SizedBox(height: 16),
+                                    // 🎉 恭喜獲得文字
+                                    Text(
+                                      l10n.success_claim_reward(rewardAmount.toString()),
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    // 👆 收下獎勵的確認按鈕
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: primaryColor,
+                                          foregroundColor: Colors.white,
+                                          elevation: 0,
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                        ),
+                                        onPressed: () => Navigator.pop(context), // 關閉這個恭喜彈窗
+                                        child: Text(l10n.shop_purchase_awesome, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           );
                         }
                       } catch (e) {
@@ -272,7 +307,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       builder: (dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20)),
+              borderRadius: BorderRadius.circular(24)),
           title: Text('🎂 生日驚喜', style: TextStyle(color: primaryColor)),
           content: Column(
             mainAxisSize: MainAxisSize.min,

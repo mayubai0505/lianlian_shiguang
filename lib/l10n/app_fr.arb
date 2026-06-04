@@ -606,7 +606,7 @@
         }
     },
     "voice_sample_script": "(Se racle la gorge) Bonjour. C'est un test de voix exclusif pour moi. Dans les jours à venir, je serai ici avec toi. Que tu sois heureux ou triste, tu peux tout partager avec moi. Ce rythme et ce timbre de voix te conviennent-ils ? Si tu aimes, fixons cette voix comme ma voix exclusive pour discuter avec toi. J'attends avec impatience chacun de nos jours à venir.",
-    "voice_test_script": "Que penses-tu de mon ton actuel ? Si cela te convient, fixons-le ainsi.",
+    "voice_test_script": "Sais-tu vraiment ce que je pense chaque fois que je te regarde ? ... Je ne sais vraiment plus quoi faire de toi.",
     "field_background": "Contexte du personnage",
     "field_tone": "Ton et habitudes",
     "field_initial_story": "Histoire initiale",

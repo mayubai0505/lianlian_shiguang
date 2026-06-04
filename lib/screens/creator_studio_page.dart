@@ -3,10 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'character_edit_page.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
 
-//私人工作室
-
+// 私人工作室
 class CreatorStudioPage extends StatelessWidget {
   const CreatorStudioPage({super.key});
 
@@ -37,10 +36,6 @@ class CreatorStudioPage extends StatelessWidget {
     if (!confirm) return;
 
     try {
-      // 🛑 【重要手術】：我們移除了原本刪除 Firebase Storage 圖片的代碼。
-      // 理由：避免因為草稿被刪除，導致正式版或其他引用此圖片的角色出現 404 破圖。
-      // 雖然會佔用一點雲端空間，但保證了圖片的安全性。
-
       // 2. 直接刪除 Firestore 裡的草稿文件
       await FirebaseFirestore.instance
           .collection('draft_characters')
@@ -52,9 +47,7 @@ class CreatorStudioPage extends StatelessWidget {
           SnackBar(content: Text(l10n.draft_cleared_success)),
         );
       }
-
       debugPrint("♻️ 草稿文件已移除，雲端圖片已安全留存。");
-
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,49 +62,92 @@ class CreatorStudioPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     final theme = Theme.of(context);
+
     if (user == null) {
       return Scaffold(body: Center(child: Text(l10n.login_required_for_studio)));
     }
+
+    // 🌟 總裁級三頻雷達：分別定義三個頻道的監聽器
+    final draftStream = FirebaseFirestore.instance
+        .collection('draft_characters')
+        .where('createdBy', isEqualTo: user.uid)
+        .snapshots();
+
+    final privateStream = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'))
+        .collection('users')
+        .doc(user.uid)
+        .collection('private_characters')
+        .snapshots();
+
+    final publicStream = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'))
+        .collection('public_characters')
+        .where('creatorId', isEqualTo: user.uid)
+        .snapshots();
+
+    // 🌟 組合技：將三個雷達畫面疊加在一起！
+    final combinedStream = Rx.combineLatest3(
+      draftStream,
+      privateStream,
+      publicStream,
+          (QuerySnapshot drafts, QuerySnapshot privates, QuerySnapshot publics) {
+        List<Map<String, dynamic>> allMyCharacters = [];
+
+        for (var doc in drafts.docs) {
+          allMyCharacters.add({'doc': doc, 'status': 'draft'});
+        }
+        for (var doc in privates.docs) {
+          allMyCharacters.add({'doc': doc, 'status': 'private'});
+        }
+        for (var doc in publics.docs) {
+          allMyCharacters.add({'doc': doc, 'status': 'public'});
+        }
+        return allMyCharacters;
+      },
+    );
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title:Text(l10n.my_secret_studio_title, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.my_secret_studio_title, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
       ),
-      // ✨ 右下角：創造新角色
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: Text(l10n.create_new_character_btn),
         onPressed: () {
-          // 🚀 導向「全新」的編輯頁面
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const CharacterEditPage()),
           );
         },
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        // 🌟 確保這裡的路徑跟您的 _saveToDraft 是一致的
-        // 建議統一使用 collection('draft_characters').where('createdBy', isEqualTo: user.uid)
-        stream: FirebaseFirestore.instance
-            .collection('draft_characters')
-            .where('createdBy', isEqualTo: user.uid)
-            .snapshots(),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: combinedStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          final docs = snapshot.data?.docs ?? [];
-          if (docs.isEmpty) return _buildEmptyState(context,theme);
+
+          final charactersList = snapshot.data ?? [];
+
+          if (charactersList.isEmpty) return _buildEmptyState(context, theme);
+
           return ListView.builder(
             padding: const EdgeInsets.all(16).copyWith(bottom: 100),
-            itemCount: docs.length,
+            itemCount: charactersList.length,
             itemBuilder: (context, index) {
-              final doc = docs[index];
+              final item = charactersList[index];
+              final doc = item['doc'] as QueryDocumentSnapshot;
+              final status = item['status'] as String;
               final data = doc.data() as Map<String, dynamic>;
+
               final characterName = data['name'] ?? l10n.unnamed_draft;
               final avatarUrl = data['avatarPath'];
 
@@ -122,7 +158,7 @@ class CreatorStudioPage extends StatelessWidget {
                   contentPadding: const EdgeInsets.all(16),
                   leading: CircleAvatar(
                     radius: 28,
-                    backgroundColor: theme.colorScheme.surfaceVariant,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
                     backgroundImage: (avatarUrl != null && avatarUrl.startsWith('http'))
                         ? NetworkImage(avatarUrl)
                         : null,
@@ -134,24 +170,24 @@ class CreatorStudioPage extends StatelessWidget {
                     children: [
                       Text(characterName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                       const SizedBox(width: 8),
-                      _buildDraftBadge(context),
+                      if (status == 'draft') _buildDraftBadge(context),
+                      if (status == 'private') _buildPrivateBadge(context),
+                      if (status == 'public') _buildPublicBadge(context),
                     ],
                   ),
-                  subtitle: Text(l10n.click_to_edit_story, style: TextStyle(color: Colors.grey)),
-                  // 👇 把原本的 trailing 替換成這個 Row 👇
+                  subtitle: Text(l10n.click_to_edit_story, style: const TextStyle(color: Colors.grey)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // 🗑️ 垃圾桶按鈕：按下就會呼叫 _deleteDraft
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                        onPressed: () => _deleteDraft(context, doc.id, avatarUrl),
-                      ),
-                      const Icon(Icons.chevron_right, color: Colors.grey), // 右箭頭提示可以點擊
+                      if (status == 'draft')
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          onPressed: () => _deleteDraft(context, doc.id, avatarUrl),
+                        ),
+                      const Icon(Icons.chevron_right, color: Colors.grey),
                     ],
                   ),
                   onTap: () {
-                    // 🚀 關鍵動作：跳轉並把「草稿文件」傳過去！
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -174,10 +210,34 @@ class CreatorStudioPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.2),
+        color: Colors.orange.withValues(alpha:0.2),
         borderRadius: BorderRadius.circular(8),
       ),
-      child:Text(l10n.label_draft, style: TextStyle(color: Colors.orange, fontSize: 12)),
+      child: Text(l10n.label_draft, style: const TextStyle(color: Colors.orange, fontSize: 12)),
+    );
+  }
+
+  // 🌟 新增：私人與公開的標籤 UI
+  Widget _buildPrivateBadge(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.grey.withValues(alpha:0.2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child:  Text(l10n.private, style: TextStyle(color: Colors.grey, fontSize: 12)),
+    );
+  }
+
+  Widget _buildPublicBadge(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.green.withValues(alpha:0.2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Text('已發布', style: TextStyle(color: Colors.green, fontSize: 12)),
     );
   }
 
@@ -188,11 +248,11 @@ class CreatorStudioPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.brush, size: 80, color: theme.colorScheme.primary.withOpacity(0.3)),
+          Icon(Icons.brush, size: 80, color: theme.colorScheme.primary.withValues(alpha:0.3)),
           const SizedBox(height: 16),
-          Text(l10n.studio_empty_title, style: TextStyle(fontSize: 18, color: Colors.grey)),
+          Text(l10n.studio_empty_title, style: const TextStyle(fontSize: 18, color: Colors.grey)),
           const SizedBox(height: 8),
-          Text(l10n.studio_empty_subtitle, style: TextStyle(color: Colors.grey)),
+          Text(l10n.studio_empty_subtitle, style: const TextStyle(color: Colors.grey)),
         ],
       ),
     );

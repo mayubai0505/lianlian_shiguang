@@ -507,7 +507,7 @@
   "elevenlabs_error": "ElevenLabs 错误：{code}",
   "@elevenlabs_error": { "placeholders": { "code": { "type": "String" } } },
   "voice_sample_script": "（清了清嗓子）你好。这是一段专属于我的声音测试。在接下来的日子里，我会在这里陪着你。不管是开心的时候，还是难过的时候，你都可以跟我分享。这样说话的节奏和音色，你听起来还习惯吗？如果觉得不错的话，我们就把这个声音定下来，做为我以后和你聊天的专属声线吧。期待我们未来的每一天。",
-  "voice_test_script": "你觉得我现在说话的语气，听起来怎么样呢？如果满意的话，我们就这样定下来吧。",
+  "voice_test_script": "你到底知不知道，每次看着你的时候，我心里在想些什么？……真是拿你没办法。",
   "field_background": "角色简介",
   "field_tone": "语气与习惯",
   "field_initial_story": "初始故事",

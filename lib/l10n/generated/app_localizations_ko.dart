@@ -1327,7 +1327,8 @@ class AppLocalizationsKo extends AppLocalizations {
       '(큼큼) 안녕하세요. 이건 저만의 전용 목소리 테스트예요. 앞으로의 시간 동안 저는 여기서 당신과 함께할 거예요. 기쁠 때나 슬플 때나 언제든 저에게 들려주세요. 지금의 말하기 속도와 음색은 어떠신가요? 괜찮으시다면 이 목소리를 당신과 대화할 저의 전용 목소리로 정할게요. 우리의 앞날이 매일매일 기대돼요.';
 
   @override
-  String get voice_test_script => '지금 제 말투는 어떻게 들리시나요? 마음에 드신다면 이걸로 정할까요?';
+  String get voice_test_script =>
+      '매번 널 바라볼 때마다 내 마음속으로 무슨 생각을 하는지 정말 알기나 해? …… 정말 너란 사람은 못 말리겠다니까.';
 
   @override
   String get field_background => '캐릭터 배경';

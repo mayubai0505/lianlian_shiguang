@@ -491,7 +491,7 @@
     "elevenlabs_error": "Ralat ElevenLabs: {code}",
     "@elevenlabs_error": { "placeholders": { "code": { "type": "String" } } },
     "voice_sample_script": "(Berdehem) Helo. Ini ialah ujian suara eksklusif untuk saya. Pada hari-hari mendatang, saya akan berada di sini bersamamu. Sama ada semasa gembira atau sedih, kamu boleh berkongsi dengan saya. Adakah kamu selesa dengan rentak dan nada suara sebegini? Jika kamu rasa bagus, mari kita tetapkan suara ini sebagai suara eksklusif saya untuk berbual denganmu. Menantikan setiap hari masa depan kita.",
-    "voice_test_script": "Bagaimana pendapatmu tentang nada bicara saya sekarang? Jika kamu berpuas hati, mari kita tetapkan sebegini.",
+    "voice_test_script": "Adakah awak benar-benar tahu apa yang saya fikirkan setiap kali saya melihat awak? ... Sungguh, saya tidak tahu apa yang harus dilakukan dengan awak.",
     "field_background": "Latar Belakang Watak",
     "field_tone": "Nada dan Tabiat",
     "field_initial_story": "Cerita Awal",

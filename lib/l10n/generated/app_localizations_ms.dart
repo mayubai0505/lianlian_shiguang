@@ -1379,7 +1379,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get voice_test_script =>
-      'Bagaimana pendapatmu tentang nada bicara saya sekarang? Jika kamu berpuas hati, mari kita tetapkan sebegini.';
+      'Adakah awak benar-benar tahu apa yang saya fikirkan setiap kali saya melihat awak? ... Sungguh, saya tidak tahu apa yang harus dilakukan dengan awak.';
 
   @override
   String get field_background => 'Latar Belakang Watak';

@@ -1362,7 +1362,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get voice_test_script =>
-      'คุณคิดว่าน้ำเสียงของผมตอนนี้เป็นอย่างไรบ้างครับ? ถ้าพอใจแล้ว เรามาตกลงใช้แบบนี้กันเถอะ';
+      'เธอรู้จริงๆ ไหมว่าทุกครั้งที่ฉันมองเธอ ฉันกำลังคิดอะไรอยู่ใจใน? …… จริงๆ เลยนะ ฉันละยอมเธอเลยจริงๆ';
 
   @override
   String get field_background => 'ภูมิหลังตัวละคร';

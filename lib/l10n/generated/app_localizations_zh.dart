@@ -1305,7 +1305,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '（清了清嗓子）你好。這是一段專屬於我的聲音測試。在接下來的日子裡，我會在這裡陪著你。不管是開心的時候，還是難過的時候，你都可以跟我分享。這樣說話的節奏和音色，你聽起來還習慣嗎？如果覺得不錯的話，我們就把這個聲音定下來，做為我以後和你聊天的專屬聲線吧。期待我們未來的每一天。';
 
   @override
-  String get voice_test_script => '你覺得我現在說話的語氣，聽起來怎麼樣呢？如果滿意的話，我們就這樣定下來吧。';
+  String get voice_test_script => '你到底知不知道，每次看著你的時候，我心裡在想些什麼？……真是拿你沒辦法。';
 
   @override
   String get field_background => '角色簡介';
@@ -4826,7 +4826,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '（清了清嗓子）你好。这是一段专属于我的声音测试。在接下来的日子里，我会在这里陪着你。不管是开心的时候，还是难过的时候，你都可以跟我分享。这样说话的节奏和音色，你听起来还习惯吗？如果觉得不错的话，我们就把这个声音定下来，做为我以后和你聊天的专属声线吧。期待我们未来的每一天。';
 
   @override
-  String get voice_test_script => '你觉得我现在说话的语气，听起来怎么样呢？如果满意的话，我们就这样定下来吧。';
+  String get voice_test_script => '你到底知不知道，每次看着你的时候，我心里在想些什么？……真是拿你没办法。';
 
   @override
   String get field_background => '角色简介';
@@ -8347,7 +8347,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '（清了清嗓子）你好。這是一段專屬於我的聲音測試。在接下來的日子裡，我會在這裡陪著你。不管是開心的時候，還是難過的時候，你都可以跟我分享。這樣說話的節奏和音色，你聽起來還習慣嗎？如果覺得不錯的話，我們就把這個聲音定下來，做為我以後和你聊天的專屬聲線吧。期待我們未來的每一天。';
 
   @override
-  String get voice_test_script => '你覺得我現在說話的語氣，聽起來怎麼樣呢？如果滿意的話，我們就這樣定下來吧。';
+  String get voice_test_script => '你到底知不知道，每次看著你的時候，我心裡在想些什麼？……真是拿你沒辦法。';
 
   @override
   String get field_background => '角色簡介';

@@ -114,8 +114,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _updateUserStatus(true);
 
-    // ✨ 設定 2 秒的展示時間，讓玩家可以看見「正在喚醒《戀戀拾光》的宇宙...」
-    // 如果妳覺得 2 秒太長或太短，可以直接改這裡的數字
+    // ✨ 設定 2 秒的展示時間，讓玩家可以看見「正在喚醒《戀戀拾光》的宇宙...」如果妳覺得 2 秒太長或太短，可以直接改這裡的數字
     _appInitFuture = Future.delayed(const Duration(seconds: 2));
   }
 

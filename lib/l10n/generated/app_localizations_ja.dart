@@ -1321,7 +1321,8 @@ class AppLocalizationsJa extends AppLocalizations {
       '（コホン）こんにちは。これは僕専用のボイステストです。これから先、僕はここで君と一緒にいます。嬉しい時も、悲しい時も、何でも僕に聞かせてください।。この話すリズムや音色は、聞き慣れましたか？もし気に入ってくれたなら、これを僕の専用ボイスとして決めましょう。これからの一日一日を楽しみにしています。';
 
   @override
-  String get voice_test_script => '今の僕の話し方はどうですか？もし気に入ってくれたなら、これで決めましょう。';
+  String get voice_test_script =>
+      '君を見つめるたびに、僕が心の中で何を考えているか、本当に分かっているのかい？……本当に君には敵わないな。';
 
   @override
   String get field_background => 'キャラクターの背景';

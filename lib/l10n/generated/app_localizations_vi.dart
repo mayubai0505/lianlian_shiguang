@@ -1378,7 +1378,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get voice_test_script =>
-      'Bạn thấy giọng điệu nói chuyện của tôi bây giờ thế nào? Nếu hài lòng, chúng ta hãy chốt như vậy nhé.';
+      'Rốt cuộc em có biết mỗi lần nhìn em, trong lòng anh đang nghĩ gì không? …… Thật là hết cách với em luôn mà.';
 
   @override
   String get field_background => 'Bối cảnh nhân vật';

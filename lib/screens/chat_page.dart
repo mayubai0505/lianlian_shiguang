@@ -508,7 +508,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _initializeChat() async {
-    // 🌟 總裁補位：如果是測試模式，直接給它模式，不要去資料庫抓資料！
+    // 🌟 總裁補位：如果是測試模式，直接開門！
     if (widget.isTestMode) {
       final String modeName = widget.chatMode ?? 'daily';
       if (mounted) setState(() {
@@ -516,18 +516,50 @@ class _ChatPageState extends State<ChatPage> {
                 (e) => e.name == modeName,
             orElse: () => ChatMode.daily
         );
-        _isLoading = false; // 測試模式直接開門，不轉圈圈！
+        _isLoading = false;
       });
-      return; // 🚀 測試模式到此結束，不准往下走去敲資料庫的門
+      return;
     }
 
-    // --- 以下是正式模式的原有邏輯 ---
+    // --- 🚀 總裁無敵帶位員：正式模式 ---
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // 情況 1：玩家有直接帶鑰匙 (sessionId) 來
     if (widget.sessionId != null) {
       await _loadExistingChat(widget.sessionId!);
-    } else if (widget.chatMode != null) {
-      final modeName = widget.chatMode ?? 'daily';
-      _currentMode = ChatMode.values.firstWhere((e) => e.name == modeName, orElse: () => ChatMode.daily);
-      await _createNewChat(widget.chatMode!);
+    }
+    // 情況 2：玩家沒帶鑰匙，管家親自去幫他找或蓋房子！
+    else {
+      try {
+        // 🔍 先查查看，他們以前有沒有開過房間？
+        final existingSession = await FirebaseFirestore.instance
+            .collection('artifacts')
+            .doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang')) // 確保找到對的 App
+            .collection('chat_sessions')
+            .where('userId', isEqualTo: user.uid)
+            .where('characterId', isEqualTo: widget.character.id)
+            .limit(1) // 只要找到一間就好
+            .get();
+
+        if (existingSession.docs.isNotEmpty) {
+          // 🎉 找到了！帶入他們以前的舊房間
+          await _loadExistingChat(existingSession.docs.first.id);
+        } else {
+          // 🏗️ 沒找到舊房間！管家現場直接呼叫工程隊蓋一間！
+          final modeName = widget.chatMode ?? 'daily'; // 預設用 daily 模式開房
+          _currentMode = ChatMode.values.firstWhere(
+                  (e) => e.name == modeName,
+              orElse: () => ChatMode.daily
+          );
+          await _createNewChat(modeName);
+        }
+      } catch (e) {
+        print("❌ 管家尋找房間時發生錯誤: $e");
+        // 萬一查資料庫出錯，為了不讓玩家卡住，強制蓋一間新房間給他！
+        final modeName = widget.chatMode ?? 'daily';
+        await _createNewChat(modeName);
+      }
     }
   }
 
@@ -1824,15 +1856,15 @@ class _ChatPageState extends State<ChatPage> {
         "characterProfile": {
           "id": _currentCharacter.id,
           "name": _currentCharacter.name,
-          "toneAndStyle": _currentCharacter.toneAndStyle?.replaceAll('{{玩家名字}}', _playerNickname) ?? "",
-          "background": _currentCharacter.background?.replaceAll('{{玩家名字}}', _playerNickname) ?? "",
-          "detailedPersonality": _currentCharacter.detailedPersonality?.replaceAll('{{玩家名字}}', _playerNickname) ?? "",
-          "likes": _currentCharacter.likes?.replaceAll('{{玩家名字}}', _playerNickname) ?? "",
-          "secrets": _currentCharacter.secrets?.replaceAll('{{玩家名字}}', _playerNickname) ?? "",
+          "toneAndStyle": _currentCharacter.toneAndStyle?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
+          "background": _currentCharacter.background?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
+          "detailedPersonality": _currentCharacter.detailedPersonality?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
+          "likes": _currentCharacter.likes?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
+          "secrets": _currentCharacter.secrets?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
           "gender": _currentCharacter.gender ,
           "relationship": dynamicRelationship,
           "socialRelationships": _currentCharacter.relationships != null
-              ? jsonEncode(_currentCharacter.relationships).replaceAll('{{玩家名字}}', _playerNickname)
+              ? jsonEncode(_currentCharacter.relationships).replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname)
               : "",
         },
         "chatHistory": actualChatHistory,
@@ -4660,9 +4692,17 @@ class _ChatPageState extends State<ChatPage> {
                     .colorScheme.onSurfaceVariant).withValues(alpha: 0.7));
 
             // ✨✨✨ 總裁修正處：在這裡把殼脫掉！ ✨✨✨
-            final displayText = isUserMessage
+            // ✨✨✨ 總裁修正處：在這裡把殼脫掉！ ✨✨✨
+// 先拿到原始文字或脫殼後的文字
+            String rawDisplayText = isUserMessage
                 ? message.text
                 : _getCleanAiMessage(message.text);
+
+// 🌟 總裁無敵淨水器：不管 AI 講了什麼括號，全部強迫替換成玩家的名字！
+            final displayText = rawDisplayText
+                .replaceAll('(玩家名字)', _playerNickname)
+                .replaceAll('{{玩家名字}}', _playerNickname)
+                .replaceAll('【玩家名字】', _playerNickname); // 多加一個括號防禦以防萬一
 
             messageContent = Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),

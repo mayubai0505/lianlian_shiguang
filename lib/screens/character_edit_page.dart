@@ -412,12 +412,29 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         debugPrint("❌ 錯誤：這筆語音數據是空的，無法播放");
         return;
       }
-      // 2. 建立播放器實體
-      await _audioPlayer.stop();
-      // 3. 核心重點：使用 BytesSource 直接播放（網頁/手機全通用）
-      await _audioPlayer.play(BytesSource(audioBytes));
 
-      debugPrint("🎵 正在播放語音...");
+      // 2. 先停止目前的播放器
+      await _audioPlayer.stop();
+
+      // 3. 🌟 核心重點：根據平台採取不同策略，打破快取魔咒！
+      if (kIsWeb) {
+        // 💻 網頁版：瀏覽器機制不同，可以直接安全使用 BytesSource
+        await _audioPlayer.play(BytesSource(audioBytes));
+      } else {
+        // 📱 手機版：強制寫入一個「檔名永遠不重複」的實體檔案
+        final directory = await getTemporaryDirectory();
+        // 🔑 關鍵魔法：用毫秒級的時間戳記當檔名，例如 voice_test_171746201823.mp3
+        final String uniqueFileName = 'voice_test_${DateTime.now().millisecondsSinceEpoch}.mp3';
+        final file = File('${directory.path}/$uniqueFileName');
+
+        // 將最新收到的 API 聲音寫入這個新檔案
+        await file.writeAsBytes(audioBytes);
+
+        // 指定播放這個絕對不會被快取的全新檔案
+        await _audioPlayer.play(DeviceFileSource(file.path));
+      }
+
+      debugPrint("🎵 正在播放最新生成的語音...");
     } catch (e) {
       debugPrint("❌ 播放語音時發生錯誤: $e");
       if (mounted) {
@@ -2147,8 +2164,19 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                             const Icon(Icons.check_circle, color: Colors.green),
                             const SizedBox(width: 8),
                             Expanded(child: Text(l10n.voice_bind_success_banner, style: TextStyle(fontWeight: FontWeight.bold))),
+                            // 🌟 總裁解 BUG：重置時必須把舊的「綁定紀錄」徹底清空！
                             TextButton(
-                              onPressed: _showVoiceGenerationDialog,
+                              onPressed: () {
+                                setState(() {
+                                  _generatedVoiceId = null; // 🔑 關鍵 1：解開綁定，這樣才會掉進「顯示三張卡片」的判斷式
+                                  _voiceSamples = [];       // 🔑 關鍵 2：清空舊的試聽檔案
+                                  _selectedSampleIndex = null;
+                                  _playingSampleIndex = null;
+                                  _finalAudioBytes = null;
+                                });
+                                // 徹底清空後，再彈出輸入框讓玩家重新生成
+                                _showVoiceGenerationDialog();
+                              },
                               child: Text(l10n.voice_remake),
                             ),
                             if (_finalAudioBytes != null || (_finalVoicePreviewUrl != null && _finalVoicePreviewUrl!.isNotEmpty))

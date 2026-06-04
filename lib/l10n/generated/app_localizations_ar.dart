@@ -1359,7 +1359,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get voice_test_script =>
-      'كيف تجد نبرة صوتي الآن؟ إذا كنت راضيًا عنها، فلنعتمدها هكذا.';
+      'هل تعلمين حقاً بمَ أفكّر في كل مرة أنظر فيها إليكِ؟ ... أنا حقاً لا أعرف ماذا أفعل معكِ.';
 
   @override
   String get field_background => 'مقدمة الشخصية';
