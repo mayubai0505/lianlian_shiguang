@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart'; // 記得確保有 import 這個來格式化時間
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import '../screens/moment_detail_page.dart'; // 🌟 記得匯入這頁！
 
 
 class InboxPage extends StatelessWidget {
@@ -127,14 +128,40 @@ class InboxPage extends StatelessWidget {
                   ],
                 ),
                 onTap: () {
-                  // 點擊後，把這封信標記為「已讀」
+                  // 1. 點擊後，把這封信標記為「已讀」 (妳原本完美的寫法)
                   if (!isRead) {
                     FirebaseFirestore.instance
-                        .collection('users') // 這裡也要記得改路徑！
+                        .collection('users')
                         .doc(currentUser.uid)
                         .collection('mailbox')
                         .doc(docs[index].id)
                         .update({'isRead': true});
+                  }
+
+                  // ========================================================
+                  // ✨ 總裁特製：點擊信件的「時空傳送門」
+                  // ========================================================
+                  final String type = data['type'] ?? '';
+                  final String postId = data['postId'] ?? '';
+
+                  // 🖼️ 情況 A：如果是按讚、留言，或是【創作者發新文】！
+                  if (type == 'like' || type == 'comment' || type == 'new_post') {
+                    if (postId.isNotEmpty) {
+                      debugPrint("🚀 傳送門啟動：前往貼文 $postId");
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MomentDetailPage(postId: postId),
+                        ),
+                      );
+                    }
+                  }
+                  // 👩‍❤️‍👨 情況 B：如果是被新粉絲「關注」了
+                  else if (type == 'follow') {
+                    debugPrint("🚀 傳送門啟動：有人關注我，看看他是誰");
+
+                    // 這裡可以選擇跳轉到該粉絲的個人檔案，或是直接留在信箱
                   }
                 },
               );

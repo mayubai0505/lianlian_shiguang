@@ -247,7 +247,9 @@ class PurchaseService extends ChangeNotifier {
         final l10n = context != null ? AppLocalizations.of(context) : null;
 
         String logTitle = '';
-        if (productId == 'com_lianlian_monthly_card') {
+
+        // ✨ 總裁修正：只要 ID 裡面「包含」 monthly_card，不管是舊版還是 250 版，通通都是星光契約！
+        if (productId.contains('monthly_card')) {
           // 如果抓不到翻譯，就給預設中文
           logTitle = l10n?.shop_log_monthly_card ?? '啟動：星光契約 (月卡立即贈點) 🌙';
         } else {

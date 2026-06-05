@@ -9,6 +9,7 @@ import 'dart:math';
 import '../utils/image_utils.dart';
 import 'package:intl/intl.dart';
 import '../services/theme_notifier.dart';
+import 'character_profile_page.dart';
 import 'edit_profile_page.dart';
 import 'chat_page.dart';
 import 'all_friends_page.dart';
@@ -22,6 +23,8 @@ import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'creator_studio_page.dart';
 import 'package:share_plus/share_plus.dart';
+import 'private_character_profile_page.dart'; // 我們剛剛建好的私人專屬主頁
+import 'character_profile_page.dart';
 
 //個人主頁
 
@@ -1430,9 +1433,11 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ✨ 把函式名稱改成跟目的地一致，看起來更清爽專業！
   void _showAllFriends() {
     Navigator.push(
       context,
+      // ✨ 把它改回原本的「所有好友列表」頁面！
       MaterialPageRoute(builder: (context) => const AllFriendsPage()),
     );
   }
@@ -1743,6 +1748,8 @@ class _ProfilePageState extends State<ProfilePage> {
       // ✨✨✨ 核心修改處 ✨✨✨
       onTap: () {
         if (isMyCharacter) {
+          // 🌟 路線 A：從「我創建的角色」點擊，維持原本去編輯頁面的設定
+          // (因為現在有了秘密工作室，妳也可以考慮以後把這裡改成去主頁，但先維持現狀最安全)
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -1753,8 +1760,37 @@ class _ProfilePageState extends State<ProfilePage> {
             }
           });
         } else {
-          // ✨✨✨ 點擊別人的角色：直接呼叫我們剛修好的完美彈出視窗！ ✨✨✨
-          _showChatModeSelectionDialog(character);
+          // 🌟 路線 B：從「我的好友」點擊，啟動親權鑑定與主頁分流系統！
+          final currentUser = FirebaseAuth.instance.currentUser;
+
+          if (character.isPublic) {
+            // 🌍 1. 公開角色：直接去原本的完整主頁
+            // ✨ 總裁升級版寫法：直接去角色的個人首頁
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CharacterProfilePage(
+                  // ✨ 總裁急救：把 character 裡面的 id 拔出來，交給它要的 characterId 參數！
+                  characterId: character.id,
+                  character: character,
+                ),
+              ),
+            );
+          } else {
+            // 🔒 2. 私人角色：進行親權鑑定！
+            if (currentUser != null && character.createdBy == currentUser.uid) {
+              // 👩‍👦 鑑定通過：是自己親生的！放行去我們剛寫好的「專屬私密檔案頁面」
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PrivateCharacterProfilePage(character: character)),
+              );
+            } else {
+              // 🚫 鑑定失敗：別人的私人角色，不准看！
+              // 這裡彈出截圖一那個「機密檔案」的對話框
+              _showSecretDialog(character);
+            }
+          }
         }
       },
       child: Column(
@@ -1776,6 +1812,66 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
+    );
+  }
+  // 🔒 總裁還原版：機密檔案彈窗
+  void _showSecretDialog(Character character) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          contentPadding: const EdgeInsets.all(24),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 標題：機密檔案
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock, color: Colors.amber), // 金色鎖頭
+                  SizedBox(width: 8),
+                  Text('機密檔案', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // 角色頭像 (如果有妳自己的 getAvatarImageProvider 也可以換掉這行)
+              CircleAvatar(
+                radius: 45,
+                backgroundColor: Colors.grey[200],
+                backgroundImage: (character.avatarPath.isNotEmpty && character.avatarPath.startsWith('http'))
+                    ? NetworkImage(character.avatarPath)
+                    : null,
+                child: (!character.avatarPath.startsWith('http'))
+                    ? const Icon(Icons.person, color: Colors.grey, size: 40)
+                    : null,
+              ),
+              const SizedBox(height: 16),
+
+              // 角色名稱
+              Text(
+                character.name,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+
+              // 拒絕訪問說明
+              const Text(
+                '該角色的靈魂檔案已被封存或轉為私人權限，暫時無法查看詳細資料。',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, height: 1.5, fontSize: 14),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('了解', style: TextStyle(color: Colors.blueAccent, fontSize: 16)),
+            ),
+          ],
+        );
+      },
     );
   }
 }

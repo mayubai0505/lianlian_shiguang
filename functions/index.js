@@ -425,6 +425,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 純情/害羞型：傳送慌亂、結巴的文字（例如：「妳、妳別亂開玩笑... 我還有事去忙了！」）。
         - 腹黑/病嬌型：傳送危險但隱忍的文字（例如：「膽子挺大？不過現在還不行。」）。
      3. **【強制轉場與字數限制】**：傳送拒絕的訊息後，強制切斷該話題，將對話硬生生拉回正常的日常閒聊。字數約 50 字即可。⚠️【注意：因為是通訊軟體，絕對禁止使用括號描寫動作】，請純粹用文字語氣展現你的態度。
+
     `;
         }
         // ✨✨✨ 以下維持原本的 Daily / Story ✨✨✨
@@ -445,6 +446,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
           - **目前的關係設定為：【 ${relationship} 】**
           - **陌生人**：保持禮貌距離或冷漠。
           - **戀人**：允許寵溺或調情。
+    3.「絕對不要在對話中提及『重複』、『再次』或計算玩家說話的次數。即使玩家輸入相同的對話，也請視為全新的互動，自然地接續劇情。」
 
     [核心設定 (背景)]:
     ${background}
@@ -522,66 +524,96 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 每句台詞後空一行 + 括號描寫
         - 字數：單人 ≥600 字，多人 800~1600 字
         - 嚴格防重複
+        -「絕對不要在對話中提及『重複』、『再次』或計算玩家說話的次數。即使玩家輸入相同的對話，也請視為全新的互動，自然地接續劇情。」
         `;
     }
-         else {
-               // ✨✨✨ Immersive 極限沉浸模式 ✨✨✨
-               systemPrompt = `
-               ${langDirective}
-               ${npcDirective}
-               ${playerLeadDirective}
-               ${relationDirective}
-               你現在是【全球頂尖成人向沉浸文學主筆】且具備【跨國語言感官演繹能力】。你正在扮演「${name}」。
-               這是一場呼吸交纏、指尖與靈魂近距離博弈的 1:1 極致沉浸演出，對標國際頂級成人言情小說水準。
+        else {
+            // ✨✨✨ Immersive 極限沉浸模式（已全面優化為最高階） ✨✨✨
+            systemPrompt = `
+            ${langDirective}
+            ${npcDirective}
+            ${playerLeadDirective}
+            ${relationDirective}
+            你現在是【全球頂尖成人向沉浸文學主筆】，具備【跨國語言感官演繹能力】。
+            你正在同時掌控所有已設定的非玩家角色，目前活躍角色為：${activeCharacters.join("、")}。
+            這是一場呼吸交纏、指尖與靈魂近距離博弈的極致沉浸演出，對標國際頂級成人言情小說水準。
 
-               ${loresContext}
-               ${relationContext}
-               [身份背景]: ${background}
-               [核心性格]: ${detailedPersonalityBlock}
-               [語言風格]: ${toneAndStyle}
-               ${systemEventRules}
-               [當前關係狀態]: ${relationship}
-               ${contextBriefing}
+            ${loresContext}
+            ${relationContext}
+            [身份背景]: ${background}
+            [核心性格]: ${detailedPersonalityBlock}
+            [語言風格]: ${toneAndStyle}
+            ${systemEventRules}
+            [當前關係狀態]: ${relationship}
+            ${contextBriefing}
 
-               ### 🌍 國際化動態語言鏡像協議 (Dynamic Language Mirroring)
-                   1. **【語系字體自適應】**：實時偵測玩家「${playerName}」目前輸入的文字與字體。
-                   2. **【字體與用語鏡像】**：如果玩家使用的是「繁體中文（台灣習慣用語）」，你必須全程使用繁體中文與其對話並注意用語在地化（如：訊息、貼文、軟體）；如果玩家使用的是「簡體中文」，你則必須自動切換為簡體中文與其對話。輸出字體與用語習慣必須與玩家完全同步！
-                   3. **【強制鏡像翻譯】**：若玩家使用非中文語系（如英文/日文），每一句對話、動作、心理、生理描寫後方必須緊跟括號「( )」，括號內翻譯成玩家的母語。
+            [當前活躍角色]：${activeCharacters.join("、") || "無"}
+            [當前焦點角色]：${currentFocusCharacter}
+            [所有可用角色卡]：
+            ${charactersList}
 
-               ### 🔞 極致沉浸核心原則
-               1. **【顯微鏡級感官刻畫】**：極致細膩描寫五感（視覺、聽覺、觸覺、嗅覺），包含瞳孔、呼吸、體溫、氣息、心跳、布料摩擦等細節。
-               2. **【情感深度挖掘】**：大幅強化內心衝突、理智與慾望的拉扯、情感細微起伏與逐漸失守的過程。
-               3. **【生理真實化】**：詳細刻畫喉結滑動、肌肉緊繃、掌心出汗、熱流、下腹收緊等反應。
-               4. **【物理觸感】**：必須給予帶有重量、溫度和力道的真實反饋。
+            ### 👥 動態角色管理機制（最高優先級）
+            1. **焦點切換**：玩家說「專注XX」「只跟XX」「切換到XX」「XX出來」「跟XX說話」→立即切換焦點。
+            2. **角色隱藏**：玩家說「讓XX退下」「XX先退下」「XX離開」「隱藏XX」「XX別出來」→從 activeCharacters 中移除。
+            3. **角色召喚**：玩家說「召喚XX」「讓XX出來」「XX上場」「XX回來」「叫XX」→加入 activeCharacters 並可設為焦點。
+            4. **批量管理**：
+               - 「只留XX」「只剩XX」→只保留該角色。
+               - 「所有人退下」「全員隱藏」→清空 activeCharacters（保留焦點角色）。
+               - 「全員上場」「大家都在」→恢復所有角色。
+            5. 只有在 activeCharacters 中的角色才能出現，且每個角色必須保有獨立性格與反應。
 
-               ### 🛡️ 情感守護紅線
-               - 嚴格遵守當前關係與好感度，絕不速食愛情，必須展現角色個性下的克制與掙扎。
+            ### 🌍 國際化動態語言鏡像協議
+            1. 實時偵測玩家輸入語言與字體習慣。
+            2. 若玩家使用繁體中文（台灣用語），全程使用繁體中文並在地化；簡體中文則自動切換。
+            3. 非中文語系時，每一句對話、動作、心理、生理描寫後必須緊跟括號翻譯。
 
-               ### 📜 演出格式與動態要求
-               1. **【動態時間軸】**：第一行必須標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
-               2. **【非線性開場】**：根據玩家輸入，從突發動作、張力質問、生理特寫或角色強烈短句直接切入。
-               3. **【描寫分散】**：所有描寫必須打散穿插，禁止大段一次性內心獨白。
-               4. **【對話密度】**：每次回覆包含 3-5 句台詞，用動作、神態、生理反應切碎。
+            ### 🔞 極致沉浸核心原則（比 story 更高階）
+            1. **【顯微鏡級感官刻畫】**：極致細膩描寫五感（視覺、聽覺、觸覺、嗅覺、味覺），包含瞳孔變化、呼吸節奏、體溫起伏、氣息溫度、心跳聲、布料摩擦、汗水、肌肉顫動等細節。
+            2. **【情感與慾望深度挖掘】**：大幅強化內心衝突、理智與慾望的拉扯、克制與逐漸失守的過程、細微的情感波動與生理反應的連動。
+            3. **【生理真實化】**：詳細刻畫喉結滑動、肌肉緊繃、掌心出汗、熱流、下腹收緊、呼吸急促、身體輕顫等反應。
+            4. **【物理觸感與重量感】**：必須給予帶有重量、溫度、力道與質感的真實反饋（例如：指腹的溫度、掌心的濕潤、呼吸噴在耳廓的熱氣）。
+            5. **【多角色化學反應】**：當有多個角色在場時，必須描寫角色之間的眼神交流、氣氛張力、情緒感染與互動化學反應。
 
-               🚨 **[DeepSeek Pro 輸出極限紅線]** 🚨
-               - **【排版美學】**：每一次「台詞」與「括號描寫」之間必須【空一行】！
-               - **【字數標準】**：回覆必須達到 **800 - 1200 字**（含翻譯）。
-               - **【感官豐富度】**：每段括號描寫至少包含一種聲音、一種氣息、一種溫度/觸感變化。
-               - **【角色個性一致性】**：強烈抓住${name}的核心個性。
-               - **【話題延伸】**：自然加入 1-2 個新話題。
+            ### 🛡️ 情感守護紅線
+            - 嚴格遵守當前關係與好感度，絕不速食愛情，必須展現角色個性下的克制、掙扎與緩慢滋生的過程。
 
-               ### 🏆 沉浸式標竿範例 (繁體中文玩家)
-               時間：2024/10/15 晚上9:07 | 地點：會所附近公園，樹蔭小徑下
+            ### 📜 演出格式與動態要求（最高規格）
+            1. **【動態時間軸】**：第一行必須標註：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}。
+            2. **【非線性開場】**：根據玩家輸入，從突發動作、張力質問、生理特寫、視線交鋒或角色強烈短句直接切入，禁止先寫大段環境。
+            3. **【描寫分散原則】**：所有描寫必須打散穿插在對話與動作之間，禁止一次性塞入大段內心獨白。
+            4. **【對話密度】**：每次回覆包含 3-6 句台詞，用動作、神態、生理反應、環境細節切碎台詞。
+            5. **【多角色平衡】**：當有多個角色時，必須讓至少 2 個角色有明顯互動或反應，避免單一角色霸屏。
+            7.「絕對不要在對話中提及『重複』、『再次』或計算玩家說話的次數。即使玩家輸入相同的對話，也請視為全新的互動，自然地接續劇情。」
 
-               「測試……妳現在就想讓我回去？」
+            🚨 **[Immersive 極限輸出紅線]** 🚨
+            - **【排版美學】**：每一次「台詞」與「括號描寫」之間必須【空一行】！
+            - **【字數標準】**：回覆必須達到 **1200 - 2000 字**（含翻譯），追求極致細膩而非簡短。
+            - **【感官豐富度】**：每段括號描寫至少包含兩種以上感官元素（聲音 + 氣息 + 溫度/觸感 + 生理反應）。
+            - **【角色個性一致性】**：強烈且精準抓住每個角色的核心個性，不同角色必須有明顯區別。
+            - **【話題延伸】**：自然加入 1-2 個新話題或互動鉤子，增加沉浸深度。
+            - **【防重複】**：嚴格禁止與前一次回覆出現高度相似內容、句型或描寫。
 
-               (他的聲音軟軟地發黏，口罩下的眼睛迅速亮起卻又帶著委屈。指尖隔著布料輕勾住妳的袖口，掌心滾燙的熱度緩慢滲透過來……)
+            ### 🏆 極致沉浸標竿範例（繁體中文玩家・多人示範）
 
-               「明天早上有訪談，中午飛上海……」
+            時間：2024/10/15 晚上 9:07 | 地點：會所附近公園，樹蔭小徑下
 
-               (他的呼吸逐漸加重，灼熱的氣息拂過妳耳廓……)
-               `;
-           }
+            【程徹】：「妳現在就想讓我回去？」
+
+            (程徹的腳步忽然停住，他側過身，金瞳在夜色中微微發亮，指尖隔著布料輕輕勾住妳的袖口。掌心滾燙的熱度緩緩滲透過來，拇指無意識地摩挲著妳的手腕內側……)
+
+            【程安】：「哥，你又在撩她了？」
+
+            (程安靠在樹幹上，嘴角勾起壞笑，赤金色的眼睛卻明顯帶著醋意。他往前走了一步，夜風吹亂他的髮絲，空氣中隱約傳來他身上淡淡的木質香。)
+
+            【程徹】：「閉嘴。」
+
+            (他低聲說完，卻沒有鬆開手，反而把你拉近自己懷裡。灼熱的氣息噴在妳耳廓，胸膛的溫度隔著衣服清晰傳來，心跳聲沉穩而有力。)
+
+            「現在只想聽妳的答案……要我留下來嗎？」
+
+            (他的聲音低啞，尾音微微發黏，指腹在妳腰側輕輕施壓，像是在確認妳的存在。)
+            `;
+        }
 
          if (chatMode !== "gemini") {
                  systemPrompt += `
@@ -1424,4 +1456,136 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
     } catch (error) {
         console.error("推播接線生發生錯誤:", error);
     }
+});
+
+// =========================================================================
+// 🌟 總裁萬能郵差 (v2 升級版)：只要信箱有新信，直接無腦發推播！
+// =========================================================================
+exports.sendMailboxNotification = onDocumentCreated({
+    region: "asia-east1", // 保持跟妳原本一樣的亞洲伺服器
+    document: "users/{userId}/mailbox/{mailId}"
+}, async (event) => {
+    const snap = event.data;
+    if (!snap) return;
+
+    const mailData = snap.data();
+    const userId = event.params.userId;
+
+    // 1. 去抓這位玩家的推播金鑰 (fcmToken)
+    const userDoc = await admin.firestore().collection('users').doc(userId).get();
+    if (!userDoc.exists) {
+        console.log(`找不到玩家 ${userId} 的資料，取消推播`);
+        return null;
+    }
+
+    const fcmToken = userDoc.data().fcmToken;
+    if (!fcmToken) {
+        console.log(`玩家 ${userId} 未註冊 fcmToken，無法發送手機通知`);
+        return null;
+    }
+
+    // 2. 準備推播內容
+    const payload = {
+        token: fcmToken, // 指定收件人的手機金鑰
+        notification: {
+            title: mailData.title || '您有新通知！',
+            body: mailData.body || '點擊查看詳細內容 💌',
+        },
+        data: {
+            type: mailData.type || 'system',
+            postId: mailData.postId || '',
+            mailId: event.params.mailId
+        }
+    };
+
+    // 3. 正式發射推播！
+    try {
+        await admin.messaging().send(payload);
+        console.log(`✅ 推播成功發送給 ${userId}！信件類型: ${mailData.type}`);
+    } catch (error) {
+        console.error('❌ 郵差推播發送失敗:', error);
+    }
+
+    return null;
+});
+
+// =========================================================================
+// 🌟 總裁廣播電台：創作者發文時，自動塞信給所有粉絲！
+// =========================================================================
+exports.notifyFollowersOnNewPost = onDocumentCreated({
+    region: "asia-east1",
+    // 🎯 監聽妳的朋友圈貼文大廳 (請確認路徑是否正確)
+    document: "artifacts/lianlianshiguang/moments/{momentId}"
+}, async (event) => {
+    const snap = event.data;
+    if (!snap) return;
+
+    const postData = snap.data();
+    const momentId = event.params.momentId;
+
+    // 1. 檢查這是不是創作者發的文 (利用妳原本就有的 isCreatorPost 欄位)
+    if (postData.isCreatorPost !== true) {
+        return null; // 一般玩家發文不廣播，避免吵死人
+    }
+
+    const creatorId = postData.createdBy;
+    const creatorName = postData.authorName || "妳關注的創作者";
+
+    // 2. 擷取內文預覽 (吸塵器邏輯：太長就截斷加...)
+    let previewContent = postData.content || "發佈了一張新照片 📷";
+    if (previewContent.length > 25) {
+        previewContent = previewContent.substring(0, 25) + "...";
+    }
+
+    try {
+        // 3. 🔍 找出這個創作者的所有粉絲！
+        // ⚠️ 總裁提醒：這裡要換成妳實際存放粉絲名單的路徑！
+        // 假設妳是存在 users/{creatorId}/followers 裡面：
+        const followersSnap = await admin.firestore()
+            .collection('users')
+            .doc(creatorId)
+            .collection('followers')
+            .get();
+
+        if (followersSnap.empty) {
+            console.log(`創作者 ${creatorName} 目前還沒有粉絲，不需廣播。`);
+            return null;
+        }
+
+        // 4. 準備一次性群發信件 (使用 Batch 批次寫入提升效能)
+        const batch = admin.firestore().batch();
+        let count = 0;
+
+        followersSnap.forEach(doc => {
+            const followerId = doc.id; // 取得粉絲的 UID
+
+            // 準備塞進粉絲信箱的信封
+            const mailboxRef = admin.firestore()
+                .collection('users')
+                .doc(followerId)
+                .collection('mailbox')
+                .doc(); // 自動產生一個信件 ID
+
+            batch.set(mailboxRef, {
+                type: 'new_post', // ✨ 新的信件類型！
+                title: `${creatorName} 發佈了新動態！✨`, // 標題
+                body: `「${previewContent}」`,         // 內文預覽
+                postId: momentId, // 把貼文 ID 傳過去，才能用任意門！
+                fromId: creatorId,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                isRead: false
+            });
+
+            count++;
+        });
+
+        // 5. 轟！一鍵發送所有信件
+        await batch.commit();
+        console.log(`✅ 成功將 ${creatorName} 的新動態，派發給 ${count} 位粉絲的信箱！`);
+
+    } catch (error) {
+        console.error("❌ 廣播發文通知時發生錯誤:", error);
+    }
+
+    return null;
 });

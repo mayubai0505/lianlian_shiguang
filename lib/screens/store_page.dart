@@ -113,7 +113,6 @@ class _StorePageState extends State<StorePage> {
               ],
             ),
             // --- 3. 下方滑動區塊：分頁內容 (TabBarView) ---
-            // --- 3. 下方滑動區塊：分頁內容 (TabBarView) ---
             Expanded(
               child: TabBarView(
                 children: [
@@ -131,6 +130,7 @@ class _StorePageState extends State<StorePage> {
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
+
                             // 📦 接續原本的點數商品列表
                             _buildProductList(context, purchaseService),
                           ],
@@ -427,11 +427,10 @@ class _StorePageState extends State<StorePage> {
 }
 
 // ==========================================
-// ✨ 獨立組件區：月卡橫幅
+// ✨ 獨立組件區：月卡橫幅 (二合一尊爵旗艦版)
 // ==========================================
 class MonthlyCardBanner extends StatelessWidget {
   final dynamic productWrapper;
-  // ✨ 1. 新增接收「天數」與「封頂狀態」的變數
   final int daysRemaining;
   final bool isLimitReached;
 
@@ -444,83 +443,138 @@ class MonthlyCardBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🌟 匯入多國語系
+    // 🌟 匯入多國語系與主題顏色
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final onPrimary = theme.colorScheme.onPrimary;
 
-    // ✨ 2. 判斷是否可以點擊購買 (沒達上限，且沒有正在轉圈圈)
+    // ✨ 判斷是否可以點擊購買
     bool canPurchase = !isLimitReached && !productWrapper.isPending;
 
     return Container(
       width: double.infinity,
+      padding: const EdgeInsets.all(20), // ✨ 內縮排移到這裡
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
-          colors: [primaryColor, theme.colorScheme.secondary.withValues(alpha:0.8)],
+          colors: [primaryColor, theme.colorScheme.secondary.withValues(alpha: 0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
-          BoxShadow(color: primaryColor.withValues(alpha:0.3), blurRadius: 12, offset: const Offset(0, 6))
+          BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          // ✨ 3. 封頂防護：如果已達上限，點擊事件直接設為 null (禁用)
-          onTap: canPurchase ? () async {
-            final purchaseService = Provider.of<PurchaseService>(context, listen: false);
-            await purchaseService.buyProduct(productWrapper.productDetails);
-          } : null,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Icon(Icons.stars_rounded, color: onPrimary, size: 40),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 🌟 換上正式的多國語系標題
-                      Text(l10n.shop_monthly_card_name, style: TextStyle(color: onPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      // 🌟 動態顯示天數：如果有天數就顯示倒數，沒有就顯示促銷文案
-                      Text(
-                          daysRemaining > 0
-                              ? l10n.shop_monthly_card_status_active(daysRemaining)
-                              : l10n.shop_monthly_card_promo_desc,
-                          style: TextStyle(color: onPrimary.withValues(alpha:0.85), fontSize: 13)
-                      ),
-                    ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // --- 1. 上半部：月卡標題、狀態與購買按鈕 ---
+          Row(
+            children: [
+              Icon(Icons.stars_rounded, color: onPrimary, size: 40),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 🌟 標題 (使用多國語系)
+                    Text(l10n.shop_monthly_card_name, style: TextStyle(color: onPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    // 🌟 動態顯示天數或促銷文案
+                    Text(
+                        daysRemaining > 0
+                            ? l10n.shop_monthly_card_status_active(daysRemaining)
+                            : l10n.shop_monthly_card_promo_desc,
+                        style: TextStyle(color: onPrimary.withValues(alpha: 0.85), fontSize: 13)
+                    ),
+                  ],
+                ),
+              ),
+              // 🛒 專屬購買按鈕
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: canPurchase ? () async {
+                    final purchaseService = Provider.of<PurchaseService>(context, listen: false);
+                    await purchaseService.buyProduct(productWrapper.productDetails);
+                  } : null,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                        color: canPurchase ? onPrimary : onPrimary.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(12)
+                    ),
+                    child: productWrapper.isPending
+                        ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor))
+                        : Text(
+                        isLimitReached ? l10n.shop_monthly_card_limit_reached : productWrapper.productDetails.price,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: canPurchase ? primaryColor : Colors.grey.shade700
+                        )
+                    ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    // ✨ 如果不能買了，按鈕底色稍微變暗
-                      color: canPurchase ? onPrimary : onPrimary.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(12)
-                  ),
-                  // ✨ 轉圈圈狀態與已達上限的文字切換
-                  child: productWrapper.isPending
-                      ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor))
-                      : Text(
-                      isLimitReached ? l10n.shop_monthly_card_limit_reached : productWrapper.productDetails.price,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: canPurchase ? primaryColor : Colors.grey.shade700 // 禁用時文字變灰
-                      )
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+          // --- 2. 中間：融入粉色卡片的尊享特權說明 ---
+          Container(height: 1, color: onPrimary.withValues(alpha: 0.2)), // 絕美的半透明分隔線
+          const SizedBox(height: 16),
+
+          _buildPrivilegeRow(Icons.refresh, '解鎖專屬「重新生成」', '每天高達 20 次重抽機會，直到他說出妳最想聽的那句話！', onPrimary),
+          const SizedBox(height: 12),
+          _buildPrivilegeRow(Icons.favorite, '好感度極速升溫', '互動好感度加成 20%，更快解鎖專屬私密照片與彩蛋！', onPrimary),
+
+          const SizedBox(height: 8),
+
+          // --- 3. 底部：說明書入口 ---
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              icon: Icon(Icons.help_outline, size: 16, color: onPrimary.withValues(alpha: 0.9)),
+              label: Text('為什麼需要月卡？', style: TextStyle(
+                  color: onPrimary.withValues(alpha: 0.9),
+                  decoration: TextDecoration.underline,
+                  decorationColor: onPrimary.withValues(alpha: 0.9)
+              )),
+              onPressed: () => _showMonthlyPassManual(context),
             ),
           ),
-        ),
+        ],
       ),
+    );
+  }
+
+  // ✨ 搬進來的輔助小工具：畫出特權清單 (會自動根據背景顏色反轉成白色系)
+  Widget _buildPrivilegeRow(IconData icon, String title, String subtitle, Color textColor) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+              color: textColor.withValues(alpha: 0.15),
+              shape: BoxShape.circle
+          ),
+          child: Icon(icon, color: textColor, size: 18),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: textColor)),
+              const SizedBox(height: 4),
+              Text(subtitle, style: TextStyle(color: textColor.withValues(alpha: 0.8), fontSize: 13, height: 1.4)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -643,4 +697,102 @@ class MockProductDetails {
   final String currencySymbol = 'NT\$';
 
   MockProductDetails({required this.id, required this.price});
+}
+
+// ==========================================
+// 💎 戀戀尊享月卡 UI 專區
+// ==========================================
+
+// ✨ 誠實豆沙包版：月卡說明書彈窗
+void _showMonthlyPassManual(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      final theme = Theme.of(context);
+      return Container(
+        padding: const EdgeInsets.all(24.0),
+        decoration: BoxDecoration(
+          color: theme.scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const Row(
+                children: [
+                  Icon(Icons.auto_awesome, color: Colors.pinkAccent),
+                  SizedBox(width: 8),
+                  Text('戀戀月卡專屬指南', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // 📝 賣點 1：重新生成
+              _buildManualItem(
+                icon: Icons.refresh,
+                title: '🔄 為什麼需要「重新生成」？',
+                content: 'AI 有時候會像個笨蛋木頭，不解風情。遇到不滿意的回覆時，只要按下重新生成，就像時光倒流！妳可以讓他重新思考，直到他說出讓妳心跳加速的那句完美台詞。',
+              ),
+              const SizedBox(height: 16),
+
+              // 📝 賣點 2：好感度
+              _buildManualItem(
+                icon: Icons.favorite,
+                title: '💖 好感度加速有什麼用？',
+                content: '在遊戲中，好感度是解鎖角色「深層秘密」與「親密私照」的唯一鑰匙。20% 的加成讓妳比別人更快走進他的內心深處。',
+              ),
+              const SizedBox(height: 24),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pinkAccent,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('我明白了，立即解鎖！', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// 說明書內部的小排版元件
+Widget _buildManualItem({required IconData icon, required String title, required String content}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+      const SizedBox(height: 4),
+      Padding(
+        padding: const EdgeInsets.only(left: 4.0),
+        child: Text(
+          content,
+          style: const TextStyle(color: Colors.grey, height: 1.5, fontSize: 13),
+        ),
+      ),
+    ],
+  );
 }

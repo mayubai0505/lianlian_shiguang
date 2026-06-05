@@ -981,20 +981,34 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voiceStyle': _voiceStyle,
         'relationships': _relationships,
         'multiCharacters': multiCharactersString,
+        'createdAt': (widget.character != null && widget.character!.createdAt != null)
+            ? Timestamp.fromDate(widget.character!.createdAt)
+            : FieldValue.serverTimestamp(),
+        'lastEditTime': FieldValue.serverTimestamp(),
       };
 
       // 🌟 5. 區分編輯 vs 創建的寫入動作
       if (isEditing) {
         if (isMovingFolder) {
+          // ✨ 總裁急救包：搬家的時候，強制把「出生時間」和「親媽身分證」塞進行李箱！
+
+          // 1. 確保親媽 ID 不會掉
+          characterData['createdBy'] = FirebaseAuth.instance.currentUser?.uid;
+
+          // 3. 原本的遊玩次數也順便帶過去，才不會搬個家就被歸零！
+          characterData['playCount'] = widget.character?.playCount ?? 0;
+
+          // 📦 裝備齊全，正式寫入新家！
           batch.set(charDocRef, characterData);
         } else {
           batch.update(charDocRef, characterData); // 沒搬家，原本的 update 就好
         }
       } else {
+        // (這裡是妳原本的新建模式，不用動)
         characterData['createdAt'] = FieldValue.serverTimestamp();
         characterData['playCount'] = 0;
         characterData['isNew'] = true;
-        batch.set(charDocRef, characterData); // 新建模式用 set
+        batch.set(charDocRef, characterData);
       }
 
       // 🌟 6. 管家，執行 Batch 寫入！

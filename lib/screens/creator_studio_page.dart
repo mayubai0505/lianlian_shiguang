@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'character_edit_page.dart';
 import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
+import 'dart:io'; // 🌟 讀取手機本機檔案必備！
 
 // 私人工作室
 class CreatorStudioPage extends StatelessWidget {
@@ -156,15 +157,46 @@ class CreatorStudioPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  leading: CircleAvatar(
-                    radius: 28,
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                    backgroundImage: (avatarUrl != null && avatarUrl.startsWith('http'))
-                        ? NetworkImage(avatarUrl)
-                        : null,
-                    child: (avatarUrl == null || !avatarUrl.startsWith('http'))
-                        ? const Icon(Icons.person, color: Colors.grey)
-                        : null,
+                  // 🌟 總裁級全能頭像渲染器！
+                  leading: Builder(
+                    builder: (context) {
+                      // 1. 先準備一個預設的假人頭元件
+                      Widget defaultAvatar = CircleAvatar(
+                        radius: 28,
+                        backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                        child: const Icon(Icons.person, color: Colors.grey),
+                      );
+
+                      // 2. 如果沒有圖片路徑，直接回傳假人頭
+                      if (avatarUrl == null || avatarUrl.isEmpty) {
+                        return defaultAvatar;
+                      }
+
+                      // 3. ✨ 核心魔法：根據路徑類型，決定要用哪個 ImageProvider
+                      ImageProvider imageProvider;
+                      if (avatarUrl.startsWith('http')) {
+                        // 🌍 網路圖片
+                        imageProvider = NetworkImage(avatarUrl);
+                      } else if (avatarUrl.startsWith('/')) {
+                        // 📱 本機相簿圖片 (用 FileImage 包起來)
+                        // 注意：這裡我們用到 dart:io 裡的 File，記得在檔案最上面 import 'dart:io';
+                        imageProvider = FileImage(File(avatarUrl));
+                      } else {
+                        // 🤷‍♀️ 其他怪異路徑 (例如 assets/...)，直接放棄，給假人頭
+                        return defaultAvatar;
+                      }
+
+                      // 4. 把決定好的圖片裝進 CircleAvatar
+                      return CircleAvatar(
+                        radius: 28,
+                        backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                        backgroundImage: imageProvider,
+                        // ✨ 加上這行防止本機圖片有時候載入失敗爆掉
+                        onBackgroundImageError: (exception, stackTrace) {
+                          debugPrint('草稿頭像載入失敗: $exception');
+                        },
+                      );
+                    },
                   ),
                   title: Row(
                     children: [

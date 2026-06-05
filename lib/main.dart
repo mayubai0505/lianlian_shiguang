@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/page/inbox_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -283,10 +284,10 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
 // 💌 推播處理函數 (保持原樣)
 // ==========================================
 void _handleNotificationClick(RemoteMessage message) {
-  // ...（保持原本的推播邏輯不變）
   final data = message.data;
   debugPrint("🚨 收到推播的 Data 內容: $data");
 
+  // 🌍 路線一：如果是聊天訊息，維持原本的邏輯，去對應的聊天室
   if (data['type'] == 'chat') {
     final String charId = data['characterId']?.toString() ?? '';
     final String sessionId = data['sessionId']?.toString() ?? '';
@@ -303,6 +304,15 @@ void _handleNotificationClick(RemoteMessage message) {
         'characterId': charId,
         'sessionId': sessionId,
       },
+    );
+  }
+  // ✨ 總裁新增：路線二！如果是萬能郵差送來的社交互動通知（按讚、留言、關注）
+  // ✨ 總裁修正：如果是社交通知，直接大腳一開，帶她去 InboxPage！
+  else if (data['type'] == 'like' || data['type'] == 'comment' || data['type'] == 'follow') {
+    debugPrint("📫 玩家點擊了社交通知，準備導向私密信箱頁面");
+
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(builder: (context) => const InboxPage()),
     );
   }
 }

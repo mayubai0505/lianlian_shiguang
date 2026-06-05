@@ -235,6 +235,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
               );
             },
           ),
+          const SizedBox(width: 16),
         ],
       ),
       body: Stack(
