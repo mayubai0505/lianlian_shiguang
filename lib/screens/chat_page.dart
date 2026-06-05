@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'call_screen.dart';
+import 'login_page.dart';
 import 'user_profile_popup.dart';
 import 'package:lianlian_shiguang/main.dart';
 import '../services/theme_notifier.dart';
@@ -351,31 +352,43 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _showSubscriptionDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('✨ 重新生成次數已用盡'),
-        content: const Text('親愛的玩家，您的免費重新生成次數（3/3）已用完。\n\n開通【戀戀月卡】，即可解鎖「無限次重新生成」，讓他每一次的回覆都完美契合您的心意！'),
+        title: Row(
+          children: [
+            const Icon(Icons.stars, color: Colors.pinkAccent),
+            const SizedBox(width: 8),
+            const Text('星光契約啟動'),
+          ],
+        ),
+        content: Text(
+          '親愛的，今日的額度已經用完囉！\n\n開通【戀戀月卡】，每日享有 ${_maxRegenerateCount} 次重新生成機會，讓他每一次的回覆都更貼近您的心意。',
+          style: const TextStyle(fontSize: 16),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('先不要', style: TextStyle(color: Colors.grey)),
+            child: Text(l10n.cancelButton, style: const TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.pinkAccent,
+              backgroundColor: theme.colorScheme.primary, // 跟隨你的主題色
               foregroundColor: Colors.white,
+              shape: const StadiumBorder(),
             ),
             onPressed: () {
-              // 1. 先把這個警告彈窗關掉
+              // 1. 關掉警告視窗
               Navigator.pop(context);
 
-              // 2. 🌟 總裁指定通道：立刻飛向妳建好的商城！
+              // 2. 飛向商城
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  // 👇 這裡換成妳 store_page.dart 裡面的類別名稱（通常是 StorePage）
                   builder: (context) => const StorePage(),
                 ),
               );
@@ -489,12 +502,8 @@ class _ChatPageState extends State<ChatPage> {
       print("❌ 讀取角色失敗: $e");
       if (mounted) {
         setState(() => _isLoading = false); // 確保一定會關閉讀取圈圈
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.chat_load_char_failed),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+        // ✨ 總裁級：換成帶有紅色驚嘆號的置中錯誤小彈窗！
+        _showCenterToast(l10n.chat_load_char_failed, isError: true);
       }
     }
   }
@@ -532,29 +541,7 @@ class _ChatPageState extends State<ChatPage> {
         curve: Curves.easeInOutQuart,
       );
       // ✨ 5. 給玩家視覺回饋：在畫面上方跳出 SnackBar (比原本的灰色質感更升級！)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(milliseconds: 1500),
-          backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha:0.9), // 跟隨主題色
-          behavior: SnackBarBehavior.floating, // ✨ 漂浮在上面，更有質感
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          margin: EdgeInsets.only(
-            bottom: MediaQuery.of(context).size.height * 0.65, // 跳轉後 SnackBar 顯示在畫面偏上方
-            left: 60,
-            right: 60,
-          ),
-          content:Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.auto_awesome, color: Colors.white, size: 20),
-              SizedBox(width: 12),
-              Text(l10n.chat_jump_success, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            ],
-          ),
-        ),
-      );
-
-      // 🕵️‍♀️ 6. 時效設定：2 秒後自動「關燈」，把光芒消失，恢復正常
+      _showCenterToast(l10n.chat_jump_success, customIcon: Icons.auto_awesome);      // 🕵️‍♀️ 6. 時效設定：2 秒後自動「關燈」，把光芒消失，恢復正常
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           if (mounted) setState(() {
@@ -795,13 +782,9 @@ class _ChatPageState extends State<ChatPage> {
       print("❌ 建立新聊天室失敗: $e");
       if (mounted) {
         setState(() => _isLoading = false);
-        // ✨ 加上 SnackBar 提示，避免玩家看著白畫面發呆
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.chat_create_room_failed),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+
+        // ✨ 總裁級：用置中錯誤小彈窗優雅地提示玩家
+        _showCenterToast(l10n.chat_create_room_failed, isError: true);
       }
     }
   }
@@ -942,6 +925,42 @@ class _ChatPageState extends State<ChatPage> {
       print("上傳 $fileType 失敗: $e");
       return null;
     }
+  }
+
+  void _showCenterToast(String message, {bool isError = false, IconData? customIcon}) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (context) {
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          if (mounted && Navigator.canPop(context)) Navigator.pop(context);
+        });
+        return Center(
+          child: Material(
+            color: Colors.black.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(24),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 1. 如果是錯誤，顯示紅色驚嘆號
+                  if (isError) const Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
+
+                  // 2. 如果有傳入自訂圖示，就顯示自訂圖示
+                  if (!isError && customIcon != null) Icon(customIcon, color: Colors.amberAccent, size: 20),
+
+                  // 處理圖示跟文字的間距
+                  if (isError || customIcon != null) const SizedBox(width: 8),
+
+                  Text(message, style: const TextStyle(color: Colors.white, fontSize: 16)),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _sendMessage({
@@ -1132,24 +1151,25 @@ class _ChatPageState extends State<ChatPage> {
             });
           }
         } else {
+          // ❌ 伺服器回傳狀態不是 success (系統忙碌中)
           if (mounted) {
             setState(() => _isGenerating = false);
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_system_busy)));
+            _showCenterToast(l10n.error_system_busy, isError: true);
           }
         }
       } else {
+        // ❌ HTTP 狀態碼不是 200 (網路異常或伺服器崩潰)
         if (mounted) {
           setState(() => _isGenerating = false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_msg_send_failed)));
+          _showCenterToast(l10n.error_msg_send_failed, isError: true);
         }
       }
-
     } catch (e) {
       debugPrint('重新生成發生錯誤: $e');
       if (mounted) {
         setState(() => _isGenerating = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('重新生成失敗，請稍後再試 😢')));
-      }
+// 如果是錯誤或警示，記得把 isError 設為 true，這樣就會帶個紅色驚嘆號！
+        _showCenterToast('重新生成失敗，請稍後再試 😢', isError: true);      }
     } finally {
       _httpClient?.close();
       _httpClient = null;
@@ -1380,42 +1400,68 @@ class _ChatPageState extends State<ChatPage> {
         'prompt': egg.contentPrompt ?? egg.prompt,
         'setScene': egg.setScene,
         'teaser': l10n.chat_teaser_keyword(egg.keyword),
-        'unlockedAt': FieldValue.serverTimestamp(), // 背包頁面是用 timestamp 還是 unlockedAt 排序？
-        'timestamp': FieldValue.serverTimestamp(),  // 保險起見兩個都給它存！
+        'unlockedAt': FieldValue.serverTimestamp(),
+        // 背包頁面是用 timestamp 還是 unlockedAt 排序？
+        'timestamp': FieldValue.serverTimestamp(),
+        // 保險起見兩個都給它存！
       });
 
       // 2. 顯示像 Email 一樣的頂部橫幅通知
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.only(top: 50, left: 16, right: 16),
-            elevation: 6,
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            content: Row(
-              children: [
-                const Icon(Icons.mail_outline, color: Colors.pinkAccent, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.chat_egg_unlocked(egg.title), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
-                      Text(l10n.chat_egg_saved, style: TextStyle(fontSize: 12, color: Colors.black54)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            duration: const Duration(seconds: 4),
-          ),
+        // ✨ 總裁級：呼叫剛剛寫好的專屬成就解鎖彈窗！
+        _showAchievementDialog(
+          l10n.chat_egg_unlocked(egg.title),
+          l10n.chat_egg_saved,
         );
       }
     } catch (e) {
       debugPrint('背包掉落失敗: $e');
     }
+  }
+
+  void _showAchievementDialog(String title, String subtitle) {
+    showDialog(
+      context: context,
+      barrierDismissible: true, // 點擊旁邊可以關閉
+      builder: (context) {
+        // 自動消失的計時器
+        Future.delayed(const Duration(seconds: 4), () {
+          if (mounted && Navigator.canPop(context)) Navigator.pop(context);
+        });
+
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 4))],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.mail_outline, color: Colors.pinkAccent, size: 40),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87)),
+                        const SizedBox(height: 4),
+                        Text(subtitle, style: const TextStyle(fontSize: 14, color: Colors.black54)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // 🎒 偷偷檢查玩家背包，把已經拿過的彩蛋加進黑名單
@@ -1497,31 +1543,10 @@ class _ChatPageState extends State<ChatPage> {
 
       // ✨ 2. 加上頂級乙女遊戲的「Email 橫幅掉落特效」
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            margin: const EdgeInsets.only(top: 50, left: 16, right: 16), // 懸浮在畫面上方
-            elevation: 6,
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            content: Row(
-              children: [
-                const Icon(Icons.mail_outline, color: Colors.pinkAccent, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(l10n.chat_egg_unlocked_dynamic(egg.title ?? egg.keyword), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
-                      Text(l10n.chat_egg_saved_his_backpack, style: TextStyle(fontSize: 12, color: Colors.black54)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            duration: const Duration(seconds: 4), // 顯示 4 秒後自動消失
-          ),
+        // ✨ 總裁級：呼叫成就解鎖專屬彈窗，儀式感拉滿！
+        _showAchievementDialog(
+          l10n.chat_egg_unlocked_dynamic(egg.title ?? egg.keyword),
+          l10n.chat_egg_saved_his_backpack,
         );
       }
       print("🎒 彩蛋已成功存入 ${_currentCharacter.name} 的專屬背包！");
@@ -1534,10 +1559,46 @@ class _ChatPageState extends State<ChatPage> {
 // --- 處理通話按鈕點擊 ---
   Future<void> _handleCallPress(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
-  final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text(l10n.please_login_first)),
+      // ✨ 總裁級：引導註冊/登入的專屬互動彈窗
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              const Icon(Icons.lock_person_outlined, color: Colors.blueAccent),
+              const SizedBox(width: 8),
+              Text('需要登入', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+            ],
+          ),
+          content: Text('${l10n.please_login_first}\n\n登入後即可解鎖專屬語音通話功能喔！', style: const TextStyle(fontSize: 16)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancelButton ?? '稍後再說', style: const TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+                shape: const StadiumBorder(),
+              ),
+              onPressed: () {
+                Navigator.pop(dialogContext); // 1. 先關閉彈窗
+
+                // 🚀 2. 飛向你的登入介面！
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()), // 記得確認頂部有 import 'login_page.dart'; 喔！
+                );
+              },
+              child: const Text('前往登入'),
+            ),
+          ],
+        ),
       );
       return;
     }
@@ -2002,10 +2063,45 @@ class _ChatPageState extends State<ChatPage> {
 
       if (myActualFlowers < messageCost) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(l10n.chat_points_shortage(myActualFlowers.toString())),
-                backgroundColor: Colors.redAccent
+          // ✨ 總裁級：無縫接軌商城的專屬互動彈窗
+          showDialog(
+            context: context,
+            builder: (BuildContext dialogContext) => AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Row(
+                children: [
+                  const Icon(Icons.local_florist, color: Colors.pinkAccent), // 繁花幣的小圖示
+                  const SizedBox(width: 8),
+                  Text(l10n.chat_points_not_enough_title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                ],
+              ),
+              content: Text(
+                  '${l10n.chat_points_shortage(myActualFlowers.toString())}\n\n${l10n.chat_points_not_enough_desc}',
+                  style: const TextStyle(fontSize: 16)
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(l10n.cancelButton ?? '稍後再說', style: const TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary, // 主題色
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(dialogContext); // 1. 先關掉這個提醒視窗
+
+                    // 🚀 2. 總裁專機：立刻載玩家去買月卡或補幣！
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const StorePage()), // 確保你有 import store_page
+                    );
+                  },
+                  child: const Text('前往獲取'),
+                ),
+              ],
             ),
           );
         }
@@ -2021,9 +2117,11 @@ class _ChatPageState extends State<ChatPage> {
 
         // 0.5 秒後再檢查一次，如果還是 null，那才是真的出問題了！
         if (_messagesCollection == null) {
-          debugPrint("❌ 錯誤：等了 0.5 秒 _messagesCollection 還是 Null，無法寫入訊息！");
+          debugPrint(
+              "❌ 錯誤：等了 0.5 秒 _messagesCollection 還是 Null，無法寫入訊息！");
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.chat_room_not_ready)));
+            // ✨ 總裁級：優雅提示系統還在準備中，帶個小紅驚嘆號！
+            _showCenterToast(l10n.chat_room_not_ready, isError: true);
           }
           return; // 真的不行才中斷
         }
@@ -2310,13 +2408,15 @@ class _ChatPageState extends State<ChatPage> {
           generatingRooms.remove(widget.character.id);
           if (mounted) {
             setState(() => _isGenerating = false);
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_system_busy)));
+            // ✨ 總裁級：伺服器忙碌，輕量錯誤提示
+            _showCenterToast(l10n.error_system_busy, isError: true);
           }
         }
       } else {
         if (mounted) {
           setState(() => _isGenerating = false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_msg_send_failed)));
+          // ✨ 總裁級：網路或傳送異常，輕量錯誤提示
+          _showCenterToast(l10n.error_msg_send_failed, isError: true);
         }
       }
     } catch (e, stack) {
@@ -2324,7 +2424,8 @@ class _ChatPageState extends State<ChatPage> {
       print('📍 錯誤堆疊: $stack');
       if (mounted) {
         setState(() => _isGenerating = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error_system_confusion)));
+        // ✨ 總裁級：優雅地攔截崩潰，用輕量小彈窗安撫玩家！
+        _showCenterToast(l10n.error_system_confusion, isError: true);
       }
     } finally {
       _httpClient?.close();
@@ -2456,16 +2557,15 @@ class _ChatPageState extends State<ChatPage> {
       // 🛑 直接切斷網路連線！雲端收到斷線通知，就會停止運算並退還點數！
       _httpClient!.close();
       _httpClient = null;
-      if (mounted) setState(() {
-        _isGenerating = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar( // 👈 把這裡原本的 const 拿掉
-          content: Text(l10n.chat_stop_generating_msg), // 👈 把 const 移來這裡
-          backgroundColor: Colors.grey[800], // 👈 換成有質感的深灰色。如果想要更黑，可以換成 Colors.black87
-          duration: const Duration(seconds: 2), // 👈 這裡也要加上 const
-        ),
-      );
+
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+        });
+
+        // ✨ 總裁級：俐落的回饋提示，告訴玩家已經成功停止
+        _showCenterToast(l10n.chat_stop_generating_msg);
+      }
     }
   }
 
@@ -2658,17 +2758,15 @@ class _ChatPageState extends State<ChatPage> {
 
             ListTile(
               leading: const Icon(Icons.copy),
-              title:Text(l10n.chat_msg_copy),
+              title: Text(l10n.chat_msg_copy),
               onTap: () {
-                Navigator.pop(context);
-                Clipboard.setData(ClipboardData(text: message.text));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content:Text(l10n.chat_msg_copied),
-                    backgroundColor: Colors.grey[800],
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
+                Navigator.pop(context); // 1. 先關閉長按選單
+                Clipboard.setData(ClipboardData(text: message.text)); // 2. 複製文字到剪貼簿
+
+                if (mounted) {
+                  // ✨ 總裁級：用極致簡約的小彈窗告訴玩家「複製好了！」
+                  _showCenterToast(l10n.chat_msg_copied);
+                }
               },
             ),
 
@@ -2832,9 +2930,8 @@ class _ChatPageState extends State<ChatPage> {
       });
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.chat_report_success), backgroundColor: Colors.green),
-        );
+        // ✨ 總裁級：用優雅的置中提示取代突兀的綠色大方塊！
+        _showCenterToast(l10n.chat_report_success);
       }
     } catch (e) {
       print('舉報失敗: $e');
@@ -2880,9 +2977,8 @@ class _ChatPageState extends State<ChatPage> {
                   });
 
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.chat_suggest_success), backgroundColor: Colors.pinkAccent),
-                    );
+                    // ✨ 總裁級：俐落的成功回饋，取代底部的色塊！
+                    _showCenterToast(l10n.chat_suggest_success);
                   }
                 }
               },
@@ -2951,19 +3047,15 @@ class _ChatPageState extends State<ChatPage> {
             _isMultiSelectMode = false;
             _selectedMessageIds.clear();
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('✅ 已成功刪除 $count 則訊息'),
-              backgroundColor: Colors.grey[800],
-            ),
-          );
+
+          // ✨ 總裁級：輕巧置中的成功提示！
+          _showCenterToast('✅ 已成功刪除 $count 則訊息');
         }
       } catch (e) {
         if (mounted) Navigator.pop(context); // 關閉轉圈圈
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.delete_failed_msg}: $e')),
-          );
+          // ✨ 總裁級：刪除失敗的輕量錯誤提示，帶上小紅驚嘆號！
+          _showCenterToast('${l10n.delete_failed_msg}: $e', isError: true);
         }
       }
     }
@@ -3067,13 +3159,18 @@ class _ChatPageState extends State<ChatPage> {
       }
       if (mounted) {
         String snackBarText = resetType == 'full_reset'
-            ?l10n.chat_reset_full_msg
+            ? l10n.chat_reset_full_msg
             : l10n.chat_reset_chat_msg;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(snackBarText)));
+
+        // ✨ 總裁級：用優雅的置中提示，為這段關係的「重新開始」畫下完美句點
+        _showCenterToast(snackBarText);
       }
 
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.common_reset_failed(e.toString()))));
+      if (mounted) {
+        // ✨ 總裁級：重置失敗的輕量錯誤提示，帶上小紅驚嘆號！
+        _showCenterToast(l10n.common_reset_failed(e.toString()), isError: true);
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -3137,7 +3234,10 @@ class _ChatPageState extends State<ChatPage> {
       try {
         await collection.doc(message.id).update({'text': newText.trim()});
       } catch (e) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.common_edit_failed(e.toString()))));
+        if (mounted) {
+          // ✨ 總裁級：編輯失敗的輕量錯誤提示，為聊天室淨化行動完美收尾！
+          _showCenterToast(l10n.common_edit_failed(e.toString()), isError: true);
+        }
       }
     }
   }
@@ -3423,19 +3523,15 @@ class _ChatPageState extends State<ChatPage> {
 
                     // 🪪 5. 拾光檔案
                     _buildToolItem(Icons.badge_outlined, l10n.chat_tool_profile, () {
-                      // 🌟 護身符：在 pop (殺死 context) 之前，先把它綁架起來！
-                      final messenger = ScaffoldMessenger.of(context);
-                      Navigator.pop(context); // 關閉選單
+                      // 1. 直接關閉工具選單
+                      Navigator.pop(context);
+                      // 2. 彈出個人資料設定視窗
                       UserProfilePopup.show(context, onSaved: () {
                         _checkProfileCompletion();
-                        // 🌟 改用剛才綁架好的 messenger，再也不怕 context 死掉啦！
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.chat_profile_updated_msg),
-                            backgroundColor: Colors.grey[800],
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
+                        // 🌟 3. 總裁級：儲存成功後，只要確認畫面還在 (mounted)，直接呼叫中間小彈窗！
+                        if (mounted) {
+                          _showCenterToast(l10n.chat_profile_updated_msg);
+                        }
                       });
                     }),
                     // 👆 6. 互動玩法
@@ -3681,39 +3777,54 @@ class _ChatPageState extends State<ChatPage> {
                 // 🌟 2. 判斷是否有聲線 ID
                 if (widget.character.voiceId == null || widget.character.voiceId!.isEmpty) {
                   // 🎭 3. 跳出第一個 SnackBar：提示目前沒聲音 + 「戳一下」按鈕
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.chat_no_voice_msg(widget.character.name)),
-                      backgroundColor: Colors.orangeAccent,
-                      behavior: SnackBarBehavior.floating,
-                      duration: const Duration(seconds: 4), // 給玩家足夠時間去點按鈕
-                      action: SnackBarAction(
-                        label: l10n.chat_poke_btn,
-                        textColor: Colors.white,
-                        onPressed: () async {
-                          // 🚀 4. 當玩家按下「戳一下」時執行的邏輯
-                          try {
-                            // 呼叫我們寫好的戳戳函式（把資料傳給雲端）
-                            await _sendPoke(
-                                widget.character.id,
-                                widget.character.createdBy,
-                                widget.character.name
-                            );
-                            // ✨ 5. 成功後，再跳出第二個溫馨 SnackBar 告訴玩家
-                         if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(l10n.chat_poke_success),
-                                  backgroundColor: Colors.pinkAccent,
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            debugPrint("戳戳失敗: $e");
-                          }
-                        },
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext dialogContext) => AlertDialog(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      title: Row(
+                        children: [
+                          const Icon(Icons.volume_mute_rounded, color: Colors.orangeAccent, size: 28),
+                          const SizedBox(width: 8),
+                          Text('暫無語音', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                        ],
                       ),
+                      // 這裡放入你原本的沒語音提示文字
+                      content: Text(l10n.chat_no_voice_msg(widget.character.name), style: const TextStyle(fontSize: 16)),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: Text(l10n.cancelButton ?? '取消', style: const TextStyle(color: Colors.grey)),
+                        ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.pinkAccent,
+                            foregroundColor: Colors.white,
+                            shape: const StadiumBorder(),
+                          ),
+                          icon: const Icon(Icons.touch_app, size: 18), // 加個可愛的點擊圖示
+                          label: Text(l10n.chat_poke_btn), // 你的「戳一下」按鈕
+                          onPressed: () async {
+                            // 1. 玩家按下戳戳後，先關閉這個催更彈窗
+                            Navigator.pop(dialogContext);
+
+                            // 2. 執行你的雲端戳戳邏輯
+                            try {
+                              await _sendPoke(
+                                  widget.character.id,
+                                  widget.character.createdBy,
+                                  widget.character.name
+                              );
+
+                              // 🌟 3. 成功後，華麗呼叫你的自動消失小彈窗！
+                              if (mounted) {
+                                _showCenterToast(l10n.chat_poke_success);
+                              }
+                            } catch (e) {
+                              debugPrint("戳戳失敗: $e");
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   );
                 } else {
@@ -3825,10 +3936,44 @@ class _ChatPageState extends State<ChatPage> {
     final l10n = AppLocalizations.of(context)!;
     // 1. 檢查花花點數夠不夠
     if (_flowerPoints < gift['cost']) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(l10n.chat_gift_points_needed(gift['cost'].toString())),
-            backgroundColor: Colors.redAccent
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              const Icon(Icons.local_florist, color: Colors.pinkAccent), // 花朵圖示
+              const SizedBox(width: 8),
+              Text('心意不足', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+            ],
+          ),
+          content: Text(
+              '${l10n.chat_gift_points_needed(gift['cost'].toString())}\n\n要前往獲取更多繁花幣嗎？',
+              style: const TextStyle(fontSize: 16)
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancelButton ?? '先不要', style: const TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+                shape: const StadiumBorder(),
+              ),
+              onPressed: () {
+                Navigator.pop(dialogContext); // 先關閉彈窗
+
+                // 🚀 飛向商城或是任務頁面！(請換成你實際的頁面名稱)
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const StorePage()), // 或 TaskPage()
+                );
+              },
+              child: const Text('前往獲取'),
+            ),
+          ],
         ),
       );
       return;
@@ -5313,11 +5458,11 @@ class _ChatPageState extends State<ChatPage> {
                       // 🔄 重新生成按鈕 (升級橢圓明顯版)
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          // ✨ 修正 1：月卡尊爵防護！有月卡的話，就算次數歸零，按鈕也要是亮晶晶的主題色！
-                          backgroundColor: (_freeRegenerateCount > 0 || _hasMonthlyPass)
+                          // ✨ 修正 1：外觀防呆！只要次數是 0，不管有沒有月卡，按鈕一律反灰！
+                          backgroundColor: (_freeRegenerateCount > 0)
                               ? Theme.of(context).colorScheme.primaryContainer
                               : Colors.grey.withValues(alpha: 0.2),
-                          foregroundColor: (_freeRegenerateCount > 0 || _hasMonthlyPass)
+                          foregroundColor: (_freeRegenerateCount > 0)
                               ? Theme.of(context).colorScheme.primary
                               : Colors.grey,
                           elevation: 0,
@@ -5332,30 +5477,51 @@ class _ChatPageState extends State<ChatPage> {
                             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
                         ),
                         onPressed: () async {
-                          // 🛑 沒次數又沒月卡，擋下來！
-                          if (!_hasMonthlyPass && _freeRegenerateCount <= 0) {
-                            _showSubscriptionDialog();
-                            return;
+                          // 🛑 總裁鐵腕防護：只要次數歸零，不管你是誰，一律擋下來！
+                          if (_freeRegenerateCount <= 0) {
+                            if (!_hasMonthlyPass) {
+                              // 沒次數又沒月卡：跳出推銷視窗
+                              _showSubscriptionDialog();
+                            } // 替換掉原本 onPressed 裡面那一小段 SnackBar 的地方：
+                            else {
+                              // 有月卡但次數真的用光了：溫柔的中間小彈窗提示
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  title: const Icon(Icons.info_outline, color: Colors.blueAccent, size: 48),
+                                  content: const Text(
+                                    '今日的重新生成次數已經用盡囉！\n明日將會自動為您補充滿次數。',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('好的'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return; // 🛑 絕對擋下，不會執行到後面的扣次數！
                           }
 
                           // ✨ 總裁升級：自動判斷現在是用哪一個對話陣列！
                           final activeMessages = (widget.shouldSave == true && _messagesCollection != null)
                               ? _localMessages
                               : _testMessages;
-
                           // ✨ 修正 2：確保聊天室裡真的有對話可以抓
                           if (activeMessages.length < 2) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('目前沒有可以重新生成的對話喔！')),
-                            );
+                            // 換成總裁小彈窗，帶有錯誤/提示小圖示
+                            _showCenterToast('目前沒有可以重新生成的對話喔！', isError: true);
                             return;
                           }
 
-                          // 💡 終極防呆：確保最新的一句真的是 AI 說的，上一句真的是玩家說的
+// 💡 終極防呆：確保最新的一句真的是 AI 說的，上一句真的是玩家說的
                           if (activeMessages[0].sender != 'ai' || activeMessages[1].sender != 'user') {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('只能重新生成 AI 的回覆喔！')),
-                            );
+                            // 換成總裁小彈窗，帶有錯誤/提示小圖示
+                            _showCenterToast('只能重新生成他的回覆喔！', isError: true);
                             return;
                           }
 
@@ -5363,7 +5529,7 @@ class _ChatPageState extends State<ChatPage> {
                           final aiMessageId = activeMessages[0].id;
                           final userMessageText = activeMessages[1].text;
 
-                          // 2. 扣次數與存檔
+                          // 2. 扣次數與存檔 (現在絕對安全，保證是大於 0 才會進來這裡減 1)
                           setState(() {
                             _freeRegenerateCount--;
                           });

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -193,10 +194,8 @@ class _MemoPageState extends State<MemoPage> {
                   onPressed: () {
                     final content = textController.text.trim();
                     if (content.isEmpty) {
-                      // 💡 額外加個小提醒，不要讓玩家存空內容
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.memo_error_empty_content))
-                      );
+                      // ✨ 總裁級：備忘錄空白防呆，輕量錯誤提示直接抓回玩家視線！
+                      ToastUtils.showCenterToast(context, l10n.memo_error_empty_content, isError: true);
                       return;
                     }
 

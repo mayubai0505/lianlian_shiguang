@@ -5,6 +5,8 @@ import 'package:url_launcher/url_launcher.dart'; // ✨ 1. 引入 url_launcher �
 import 'package:flutter/services.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
+import '../services/toast_utils.dart';
+
 //意見回饋
 
 class FeedbackPage extends StatefulWidget {
@@ -28,10 +30,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
   Future<void> _sendEmail() async {
     final l10n = AppLocalizations.of(context)!;
     final String feedbackText = _feedbackController.text.trim();
+
     if (feedbackText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.error_feedback_empty)),
-      );
+      // ✨ 總裁級：表單防呆！輕量錯誤提示，俐落提醒玩家
+      ToastUtils.showCenterToast(context, l10n.error_feedback_empty, isError: true);
       return;
     }
 
@@ -49,11 +51,17 @@ class _FeedbackPageState extends State<FeedbackPage> {
     if (await canLaunchUrl(emailLaunchUri)) {
       await launchUrl(emailLaunchUri);
     } else {
-      // 如果無法啟動郵件 App，可以給予提示
+      // 如果無法啟動郵件 App，可以給予提示並自動複製
       Clipboard.setData(ClipboardData(text: recipientEmail));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.msg_email_app_not_found_copied)),
-      );
+
+      // ✨ 總裁級：貼心幫玩家複製好 Email，並用帶圖示的輕量彈窗優雅告知
+      if (context.mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          l10n.msg_email_app_not_found_copied,
+          customIcon: Icons.copy, // 放一個複製的圖示，讓玩家一目了然
+        );
+      }
     }
   }
 

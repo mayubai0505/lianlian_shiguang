@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/toast_utils.dart';
 import 'character_model.dart';
 // ⚠️ 總裁請注意：這裡的 import 請替換成您實際的檔案路徑
  import '../models/moment_model.dart';
@@ -198,8 +199,11 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     } catch (e) {
       setState(() => _comments.removeWhere((c) => c.id == tempComment.id));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.comment_post_failed(e.toString())), backgroundColor: Colors.red),
+        // ✨ 總裁級：評論發布失敗的輕量錯誤提示，俐落取代刺眼的大紅方塊！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.comment_post_failed(e.toString()),
+          isError: true, // 💡 總裁細節：系統自動帶入紅驚嘆號，優雅提示錯誤
         );
       }
     }
@@ -237,7 +241,12 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       await batch.commit();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.comment_delete_failed)));
+        // ✨ 總裁級：使用重量級錯誤提示，告知玩家刪除失敗且已復原
+        ToastUtils.showCenterToast(
+          context,
+          l10n.comment_delete_failed,
+          isError: true, // 💡 必須帶上紅驚嘆號，這是嚴肅的資料操作錯誤
+        );
         setState(() => _comments.insert(originalIndex, backupComment));
       }
     }
@@ -295,43 +304,54 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
     final bool? confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Text(l10n.comment_report_title),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.help_outline, size: 20, color: Colors.grey),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text(l10n.comment_report_rules_title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                    content: Text(
-                      l10n.comment_report_rules_desc,
-                      style: const TextStyle(height: 1.5, fontSize: 14),
-                    ),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.comment_report_understood, style: const TextStyle(color: Colors.pinkAccent))),
-                    ],
-                  ),
-                );
-              },
+      builder: (context) =>
+          AlertDialog(
+            title: Row(
+              children: [
+                Text(l10n.comment_report_title),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(
+                      Icons.help_outline, size: 20, color: Colors.grey),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          AlertDialog(
+                            title: Text(l10n.comment_report_rules_title,
+                                style: const TextStyle(fontWeight: FontWeight
+                                    .bold, fontSize: 18)),
+                            content: Text(
+                              l10n.comment_report_rules_desc,
+                              style: const TextStyle(height: 1.5, fontSize: 14),
+                            ),
+                            actions: [
+                              TextButton(onPressed: () =>
+                                  Navigator.pop(context), child: Text(
+                                  l10n.comment_report_understood,
+                                  style: const TextStyle(
+                                      color: Colors.pinkAccent))),
+                            ],
+                          ),
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-        content: Text(l10n.comment_report_confirm_desc),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancelButton)),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: Text(l10n.comment_report_submit_btn, style: const TextStyle(color: Colors.white)),
+            content: Text(l10n.comment_report_confirm_desc),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(l10n.cancelButton)),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                child: Text(l10n.comment_report_submit_btn,
+                    style: const TextStyle(color: Colors.white)),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirm != true) return;
@@ -347,12 +367,25 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'pending',
       });
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.comment_report_success)));
+      // 🌟 檢舉評論後的優雅回饋
+      if (mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          l10n.comment_report_success,
+          customIcon: Icons.verified_user_rounded, // 💡 總裁細節：代表檢舉已受理、系統已納入安全防護
+        );
+      }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.comment_report_failed)));
+      if (mounted) {
+        // ⚠️ 檢舉失敗：使用重量級錯誤提示，告知玩家系統卡住了
+        ToastUtils.showCenterToast(
+          context,
+          l10n.comment_report_failed,
+          isError: true, // 💡 紅驚嘆號告知玩家需稍後再試
+        );
+      }
     }
   }
-
   void _showCommentOptions(Comment comment) {
     final l10n = AppLocalizations.of(context)!;
     final currentUser = FirebaseAuth.instance.currentUser;

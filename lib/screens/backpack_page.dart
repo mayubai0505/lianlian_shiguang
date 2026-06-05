@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../services/toast_utils.dart';
 import 'character_model.dart'; // 請確保引入您的角色模型
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -143,11 +144,11 @@ class BackpackPage extends StatelessWidget {
                                       Navigator.pop(ctx); // 1. 先關閉確認對話框
 
                                       // 2. 顯示魔法發動的提示
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('✨ ${l10n.guiding_into_story(eggData['title'])}'),                                         backgroundColor: theme.colorScheme.primary,
-                                          duration: const Duration(seconds: 2),
-                                        ),
+                                      // ✨ 總裁級：充滿儀式感的隱藏故事轉場提示！
+                                      ToastUtils.showCenterToast(
+                                        context,
+                                        '✨ ${l10n.guiding_into_story(eggData['title'])}',
+                                        customIcon: Icons.auto_awesome, // 放一個閃閃發光的魔法小圖示，完美呼應彩蛋氛圍！
                                       );
 
                                       // 3. 觸發聊天室的回呼函式，送出劇本指令

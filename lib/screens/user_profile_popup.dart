@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
+import '../services/toast_utils.dart';
 class UserProfilePopup {
   static void show(BuildContext context, {required VoidCallback onSaved}) {
     // ✨ 新增：檔案名稱控制器 (例如：用來命名為「總裁線專用」、「校園線專用」)
@@ -169,7 +171,13 @@ class UserProfilePopup {
                               ),
                               onPressed: isSaving ? null : () async {
                                 if (profileNameController.text.trim().isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('請給這個檔案取個名字喔！')));
+                                  // ✨ 總裁級：溫馨的輸入防呆，提醒玩家別忘了給檔案取個好名字
+                                  ToastUtils.showCenterToast(
+                                    context,
+                                    '請給這個檔案取個名字喔！',
+                                    customIcon: Icons.edit_note_rounded, // 💡 用「筆記/編輯」圖示，暗示玩家這裡還有個欄位等著被填寫
+                                    isError: true, // 💡 雖然是提醒，但因為阻擋了流程，用紅色提醒確保玩家能注意到
+                                  );
                                   return;
                                 }
 
@@ -210,7 +218,14 @@ class UserProfilePopup {
                                     onSaved(); // 通知外部更新
                                   }
                                 } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('儲存失敗 ($e)')));
+                                  // ✨ 總裁級：儲存失敗的輕量錯誤提示
+                                  if (context.mounted) {
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      '儲存失敗 ($e)',
+                                      isError: true, // 💡 帶上紅驚嘆號，清楚明瞭，讓玩家第一時間知道這裡出了狀況
+                                    );
+                                  }
                                   setModalState(() => isSaving = false);
                                 }
                               },

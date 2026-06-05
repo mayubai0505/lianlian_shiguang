@@ -5,6 +5,8 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/toast_utils.dart';
+
 class AnnouncementNotificationButton extends StatefulWidget {
   const AnnouncementNotificationButton({super.key});
 
@@ -102,11 +104,13 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
 
   Future<void> _publish() async {
     final l10n = AppLocalizations.of(context)!;
-    if (_titleController.text.isEmpty || _contentController.text.isEmpty) return;
+    if (_titleController.text.isEmpty || _contentController.text.isEmpty)
+      return;
     setState(() => _isPublishing = true);
     try {
       final batch = FirebaseFirestore.instance.batch();
-      DocumentReference annRef = FirebaseFirestore.instance.collection('announcements').doc();
+      DocumentReference annRef = FirebaseFirestore.instance.collection(
+          'announcements').doc();
       batch.set(annRef, {
         'title': _titleController.text.trim(),
         'content': _contentController.text.trim(),
@@ -114,7 +118,8 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
       });
 
       if (_sendNotification) {
-        DocumentReference notifyRef = FirebaseFirestore.instance.collection('system_notifications').doc();
+        DocumentReference notifyRef = FirebaseFirestore.instance.collection(
+            'system_notifications').doc();
         batch.set(notifyRef, {
           'title': '📢 ${l10n.announcement_new}：${_titleController.text.trim()}',
           'message': l10n.mail_notification,
@@ -123,11 +128,25 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
         });
       }
       await batch.commit();
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ 公告與全服通知已發布！')));
+      if (mounted) {
+        // ✨ 總裁級：全服公告發布成功的優雅回饋
+        ToastUtils.showCenterToast(
+          context,
+          '✅ 公告與全服通知已發布！',
+          customIcon: Icons.campaign_rounded, // 💡 用「廣播/公告」圖示，完美對應公告發布的情境
+        );
+      }
       _titleController.clear();
       _contentController.clear();
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('❌ 發布失敗: $e')));
+      if (mounted) {
+        // ⚠️ 發布失敗：重量級錯誤提示
+        ToastUtils.showCenterToast(
+          context,
+          '❌ 發布失敗: $e',
+          isError: true, // 💡 帶上紅驚嘆號，讓管理員第一時間發現異常
+        );
+      }
     } finally {
       if (mounted) setState(() => _isPublishing = false);
     }
@@ -179,7 +198,12 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
               await batch.commit();
               if (mounted) {
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ 已處理並寄送回信！')));
+                // ✨ 總裁級：任務完成的優雅回饋，讓玩家感受到系統的高效率！
+                ToastUtils.showCenterToast(
+                  context,
+                  '✅ 已處理並寄送回信！',
+                  customIcon: Icons.mark_email_read_rounded, // 💡 用「已讀郵件/已處理」圖示，比單純勾選更精準！
+                );
               }
             },
             child: const Text('確認回覆'),

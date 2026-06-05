@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
+import '../services/toast_utils.dart';
 import 'chat_page.dart';
 import 'character_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -298,8 +299,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     if (user == null) return;
     // 🛑 防禦機制 1：創作者不能按自己的讚
     if (_isCreator) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.like_own_char_warning)),
+      // ✨ 總裁級：溫柔的遊戲規則提醒，取代冰冷的系統警告！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.like_own_char_warning,
+        customIcon: Icons.front_hand_rounded, // 給個「等等，請停手」的可愛圖示，或用 Icons.info_outline
       );
       return;
     }
@@ -353,15 +357,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         await batch.commit(); // 🚀 送出包裹
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Row(children: [
-                Icon(Icons.favorite, color: Colors.pink),
-                SizedBox(width: 8),
-                Text(l10n.like_success_msg)
-              ]),
-              behavior: SnackBarBehavior.floating,
-            ),
+          // ✨ 總裁級：點讚成功的極致回饋！一行程式碼搞定圖示加文字！
+          ToastUtils.showCenterToast(
+            context,
+            l10n.like_success_msg,
+            customIcon: Icons.favorite, // 直接傳入愛心圖示，工具會幫你排得漂漂亮亮
           );
         }
       } else {
@@ -374,11 +374,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         await batch.commit(); // 🚀 送出包裹
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.unlike_success_msg),
-              behavior: SnackBarBehavior.floating,
-            ),
+          // ✨ 總裁級：收回讚的優雅提示，輕巧不留痕跡！
+          ToastUtils.showCenterToast(
+            context,
+            l10n.unlike_success_msg,
+            customIcon: Icons.favorite_border, // 💡 用空心愛心完美暗示「讚已收回」的狀態！
           );
         }
       }
@@ -426,8 +426,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     });
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.followed_creator_msg(widget.character.creatorName)))
+      // ✨ 總裁級：追蹤創作者的專屬提示，讓建立連結的瞬間充滿質感！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.followed_creator_msg(widget.character.creatorName),
+        customIcon: Icons.person_add_alt_1_rounded, // 💡 用帶有「+」號的人物圖示，完美傳達「加入追蹤」的意象！
       );
     }
   }
@@ -476,8 +479,14 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                 final reason = reasonController.text.trim();
                 if (reason.isEmpty) return;
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(l10n.dislike_thanks))); // ✨ 替換：感謝您的回饋...
+                if (mounted) {
+                  // ✨ 總裁級：低調且專業的「收到回饋」確認！
+                  ToastUtils.showCenterToast(
+                    context,
+                    l10n.dislike_thanks,
+                    customIcon: Icons.feedback_outlined, // 💡 總裁細節：用「意見回饋」的圖示，比直接放一個倒讚 (thumb_down) 讓人感覺更舒服且被尊重！
+                  );
+                }
                 await FirebaseFirestore.instance
                     .collection('admin_feedback')
                     .add({
@@ -586,15 +595,21 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.report_success)),
+        // ✨ 總裁級：檢舉成功的安心回饋，讓玩家知道我們有在保護社群！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.report_success,
+          customIcon: Icons.shield_outlined, // 💡 總裁細節：使用「安全盾牌」圖示，傳遞滿滿的保護與安心感！
         );
       }
     } catch (e) {
       print("檢舉失敗: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.report_failed)),
+        // ✨ 總裁級：檢舉失敗的輕量錯誤提示，用紅驚嘆號俐落告知！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.report_failed,
+          isError: true, // 💡 總裁細節：開啟錯誤狀態，讓系統自動帶上紅色的小驚嘆號
         );
       }
     }
@@ -638,21 +653,21 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
           .delete();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.lore_delete_success),
-            backgroundColor: Colors.grey,
-          ),
+        // ✨ 總裁級：刪除記憶成功的優雅提示，輕盈且不留痕跡
+        ToastUtils.showCenterToast(
+          context,
+          l10n.lore_delete_success,
+          customIcon: Icons.auto_delete_outlined, // 💡 使用帶有科技感或魔法感的刪除圖示，非常符合「清除記憶」的意境！
         );
       }
     } catch (e) {
       print("刪除記憶失敗: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.common_delete_failed_with_err(e.toString())),
-            backgroundColor: Colors.red,
-          ),
+        // ✨ 總裁級：刪除失敗的輕量錯誤提示，用紅驚嘆號俐落接住例外狀況！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.common_delete_failed_with_err(e.toString()),
+          isError: true,
         );
       }
     }
@@ -719,14 +734,16 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   onPressed: () async {
                     final title = titleController.text.trim();
                     final content = contentController.text.trim();
+
                     if (title.isEmpty || content.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.lore_empty_error)),
-                      );
+                      // ✨ 總裁級防呆：直接用輕量錯誤提示抓住玩家眼球
+                      ToastUtils.showCenterToast(context, l10n.lore_empty_error, isError: true);
                       return;
                     }
+
                     // 關閉 Dialog
                     Navigator.pop(context);
+
                     try {
                       // 🌟 關鍵新增：使用 .add() 創建一筆全新資料
                       await FirebaseFirestore.instance
@@ -744,17 +761,28 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         'timestamp': FieldValue.serverTimestamp(),
                       });
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.lore_add_success), backgroundColor: Colors.green),
-                      );
+                      // 💡 總裁細節：因為前面有 await 加上關閉了 Dialog，這裡務必檢查 mounted
+                      if (context.mounted) {
+                        // ✨ 總裁級：發布成功的優雅回饋，告別綠色大色塊！
+                        ToastUtils.showCenterToast(
+                          context,
+                          l10n.lore_add_success,
+                          customIcon: Icons.library_add_check_rounded, // 💡 用一個代表「成功收錄/發布」的精緻圖示
+                        );
+                      }
                     } catch (e) {
                       print('新增碎片失敗: $e');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.common_add_failed), backgroundColor: Colors.red),
-                      );
+                      if (context.mounted) {
+                        // ✨ 總裁級：發布失敗的輕量錯誤提示，告別紅色大色塊！
+                        ToastUtils.showCenterToast(
+                          context,
+                          l10n.common_add_failed,
+                          isError: true,
+                        );
+                      }
                     }
                   },
-                  child:Text(l10n.lore_publish),
+                  child: Text(l10n.lore_publish),
                 ),
               ],
             );
@@ -790,15 +818,21 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     try {
       await doc.reference.delete(); // 直接對著這份文件的地址按下刪除鍵
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text(l10n.echo_clear_success)),
+        // ✨ 總裁級：清除回音成功的優雅提示，輕盈地拂去痕跡
+        ToastUtils.showCenterToast(
+          context,
+          l10n.echo_clear_success,
+          customIcon: Icons.delete_sweep_rounded, // 💡 總裁細節：用「輕輕掃去」的圖示，比生硬的垃圾桶更符合 Echo 消散的詩意！
         );
       }
     } catch (e) {
       print("${l10n.delete_failed_msg}: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.delete_failed_network)),
+        // ✨ 總裁級：網路異常導致刪除失敗的輕量錯誤提示
+        ToastUtils.showCenterToast(
+          context,
+          l10n.delete_failed_network,
+          isError: true, // 💡 直接帶出小紅驚嘆號，俐落告知玩家網路卡住了
         );
       }
     }
@@ -1045,8 +1079,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         icon: const Icon(Icons.more_vert, color: Colors.white),
                         onSelected: (v) {
                           if (v == 'block') {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                               SnackBar(content: Text(l10n.char_blocked_msg))
+                            // ✨ 總裁級：封鎖角色的俐落提示，給予玩家掌控社交邊界的安心感！
+                            ToastUtils.showCenterToast(
+                              context,
+                              l10n.char_blocked_msg,
+                              customIcon: Icons.person_off_outlined, // 💡 總裁細節：用「人物關閉」或「封鎖」圖示，低調但極度明確地傳達狀態改變
                             );
                           }
                         },
@@ -1552,8 +1589,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                     final content = contentController.text.trim();
 
                     if (title.isEmpty || content.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.lore_empty_error)),
+                      // ✨ 總裁級防呆：直接用輕量錯誤提示抓住玩家眼球，俐落阻擋無效送出！
+                      ToastUtils.showCenterToast(
+                        context,
+                        l10n.lore_empty_error,
+                        isError: true, // 💡 總裁細節：自動帶上紅驚嘆號，讓玩家秒懂哪裡出錯
                       );
                       return;
                     }
@@ -1578,15 +1618,24 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         'isHidden': isHidden,
                         'updatedAt': FieldValue.serverTimestamp(), // 標記最後修改時間
                       });
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.lore_edit_success), backgroundColor: Colors.green),
-                      );
+// ✨ 總裁級：更新成功的優雅回饋，告別綠色大色塊！
+                      if (mounted) {
+                        ToastUtils.showCenterToast(
+                          context,
+                          l10n.lore_edit_success,
+                          customIcon: Icons.task_alt_rounded, // 💡 總裁細節：用「打勾完成」或「儲存」的圖示，給予玩家確實保存的安心感
+                        );
+                      }
                     } catch (e) {
                       print('更新碎片失敗: $e');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.common_update_failed), backgroundColor: Colors.red),
-                      );
+                      // ✨ 總裁級：更新失敗的輕量錯誤提示，俐落取代紅色大色塊！
+                      if (mounted) {
+                        ToastUtils.showCenterToast(
+                          context,
+                          l10n.common_update_failed,
+                          isError: true, // 💡 直接帶出小紅驚嘆號，優雅提示系統錯誤
+                        );
+                      }
                     }
                   },
                   child: Text(l10n.social_save_changes),
@@ -1717,9 +1766,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         _showLoreDetailDialog(doc.id, data,
                             theme)
                         : () =>
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(l10n.lore_not_open_msg))),
+                    // ✨ 總裁級：記憶尚未解鎖的溫柔提醒，用鎖頭圖示增加故事帶入感！
+                    ToastUtils.showCenterToast(
+                      context,
+                      l10n.lore_not_open_msg,
+                      customIcon: Icons.lock_outline_rounded, // 💡 總裁細節：用精緻的鎖頭圖示，明確暗示「內容尚未解鎖」，比純文字更有 Fu！
+                    )
                   ),
                 );
               }).toList(),
@@ -1807,9 +1859,15 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                                   result: translationResult,
                                 );
                               } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(l10n.translate_failed(e.toString()))));
-                              } finally {
+                                if (mounted) {
+                                  // ✨ 總裁級：翻譯失敗的輕巧提示，用紅驚嘆號俐落接住 API 例外狀況！
+                                  ToastUtils.showCenterToast(
+                                    context,
+                                    l10n.translate_failed(e.toString()),
+                                    isError: true, // 💡 總裁細節：自動帶上紅驚嘆號，清楚明瞭
+                                  );
+                                }
+                              }finally {
                                 setModalState(() => isTranslating = false);
                               }
                             },
@@ -1980,22 +2038,22 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                       if (_isFollowing) return;
                       final currentUser = FirebaseAuth.instance.currentUser;
                       if (currentUser != null && currentUser.uid == creatorId) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.follow_own_warning),
-                            behavior: SnackBarBehavior.floating,
-                          ),
+                        // ✨ 總裁級：溫柔的防呆提示，婉拒「自己追蹤自己」的孤單操作！
+                        ToastUtils.showCenterToast(
+                          context,
+                          l10n.follow_own_warning,
+                          customIcon: Icons.front_hand_rounded, // 💡 總裁細節：跟「不能按自己讚」一樣，用小手圖示溫柔擋下這個動作
                         );
                         return;
                       }
                       setState(() {
                         _isFollowing = true;
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.follow_success_msg(myName, creatorName)),
-                            backgroundColor: theme.colorScheme.primary,
-                          )
+                      // ✨ 總裁級：成功追蹤的專屬提示，讓建立羈絆的瞬間充滿質感！
+                      ToastUtils.showCenterToast(
+                        context,
+                        l10n.follow_success_msg(myName, creatorName),
+                        customIcon: Icons.person_add_alt_1_rounded, // 💡 總裁細節：用帶加號的人物圖示，或是 Icons.how_to_reg_rounded (已註冊/確認)，完美傳遞「追蹤成功」的意象
                       );
                       await FirebaseFirestore.instance
                           .collection('users')
@@ -2315,8 +2373,11 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
                           _updateCallBackgroundToCloud(''); // 傳空字串給 Firebase，代表恢復預設
 
                           // 這裡妳可以另外寫一個提示，或是直接共用
-                          ScaffoldMessenger.of(context).showSnackBar(
-                           SnackBar(content: Text(l10n.gallery_reset_bg), duration: Duration(seconds: 1)),
+                          // ✨ 總裁級：背景已重置的優雅回饋，輕巧一閃，不干擾視覺
+                          ToastUtils.showCenterToast(
+                            context,
+                            l10n.gallery_reset_bg,
+                            customIcon: Icons.refresh_rounded, // 💡 用「重置/刷新」圖示，與「重置背景」的語意完美對應
                           );
                         } else {
                           // ✨ 情況 B：玩家按了「還沒選中」的照片 ➡️ 執行設定！
@@ -2418,12 +2479,24 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
   // 提示訊息與同步函式（維持總裁原本的專業邏輯）
   void _showSuccessSnackBar(BuildContext context, String desc) {
     final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gallery_unlocked_msg(desc))));
+
+    // ✨ 總裁級：解鎖成功的優雅回饋，給予玩家滿滿的成就感！
+    ToastUtils.showCenterToast(
+      context,
+      l10n.gallery_unlocked_msg(desc),
+      customIcon: Icons.lock_open_rounded, // 💡 用「解鎖」的圖示，呼應解鎖成功的情境，絕妙！
+    );
   }
 
   void _showLockSnackBar(BuildContext context, int req) {
     final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gallery_lock_msg(req.toString()))));
+
+    // ✨ 總裁級：未達門檻的溫柔提醒，用鎖頭圖示鼓勵玩家繼續努力！
+    ToastUtils.showCenterToast(
+      context,
+      l10n.gallery_lock_msg(req.toString()),
+      customIcon: Icons.lock_outline_rounded, // 💡 使用相同的鎖頭圖示，與系統的「鎖定」狀態語彙完全一致
+    );
   }
 
   Future<void> _updateCallBackgroundToCloud(String url) async {

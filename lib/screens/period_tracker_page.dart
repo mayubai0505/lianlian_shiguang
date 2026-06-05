@@ -5,6 +5,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/theme_notifier.dart';
+import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -89,12 +90,18 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
       id: '', startDate: startDate, endDate: endDate, mood: _selectedMood,
     ));
 
-    setState(() { _selectedStartDay = null; _selectedEndDay = null; });
+    setState(() {
+      _selectedStartDay = null;
+      _selectedEndDay = null;
+    });
+
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l10n.care_calendar_save_success(widget.character.name)),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ));
+      // ✨ 總裁級：呼叫全域工具類別！記得把 context 傳進去
+      ToastUtils.showCenterToast(
+        context, // 👈 多了這個參數
+        l10n.care_calendar_save_success(widget.character.name),
+        customIcon: Icons.favorite_rounded, // 貼心的愛心圖示
+      );
     }
   }
 
