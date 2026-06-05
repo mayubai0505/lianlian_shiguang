@@ -27,6 +27,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   Stream<QuerySnapshot>? _sessionsStream;
   bool _isOpeningChat = false;
   final String _appId = AppConfig.appId;
+  final Map<String, Character> _characterCache = {};
 
   @override
   void initState() {
@@ -144,19 +145,35 @@ class _ChatHomePageState extends State<ChatHomePage> {
   Future<void> _navigateToChat(String sessionId, String characterId) async {
     if (_isOpeningChat || !mounted) return;
     final l10n = AppLocalizations.of(context)!;
-    setState(() => _isOpeningChat = true);
 
-    final character = await _getCharacterById(characterId);
+    Character? character;
 
-    if (!mounted) return;
-    setState(() => _isOpeningChat = false);
+    // 🕵️‍♂️ 總裁快取攔截：先查字典裡有沒有這個角色？
+    if (_characterCache.containsKey(characterId)) {
+      // 🌟 有快取！不顯示轉圈圈，直接從記憶體抓取，實現「秒進」！
+      character = _characterCache[characterId];
+    } else {
+      // 🐌 沒快取（第一次點擊）！顯示轉圈圈，並去 Firebase 下載
+      setState(() => _isOpeningChat = true);
 
+      character = await _getCharacterById(characterId);
+
+      // 下載成功後，立刻存進快取字典裡，下次就不用再等了
+      if (character != null) {
+        _characterCache[characterId] = character;
+      }
+
+      if (!mounted) return;
+      setState(() => _isOpeningChat = false);
+    }
+
+    // 🚀 執行跳轉
     if (character != null) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ChatPage(
-            character: character,
+            character: character!, // 注意這裡加了驚嘆號，因為我們確定它不是 null 了
             sessionId: sessionId,
             chatMode: 'daily',
             selectedLanguage: l10n.ai_chat_language,

@@ -175,7 +175,7 @@ class _StorePageState extends State<StorePage> {
 
     // 🌟 3. 找出月卡商品 (根據 ID 搜尋)
     final monthlyCardWrapper = purchaseService.products.firstWhere(
-          (p) => p.productDetails.id == 'com_lianlian_monthly_card',
+          (p) => p.productDetails.id == 'com_lianlian_monthly_card_250',
       orElse: () => purchaseService.products.first, // 防呆
     );
 

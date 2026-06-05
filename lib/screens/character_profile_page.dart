@@ -1174,6 +1174,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                                 chatMode: "gemini", // 維持妳的 0元 模式
                                 selectedLanguage:l10n.ai_chat_language_code,
                                 shouldSave: true, // ✨ 改成 true！讓它乖乖建檔，就不會報錯了
+                                forceNewRoom: true,
                                 initialText: widget.character.storyModeFirstLine ?? l10n.default_chat_initial, // ✨ 補上第一句話
                               )
                           )
@@ -1221,6 +1222,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                                 chatMode: "daily",
                                 selectedLanguage: l10n.ai_chat_language,
                                 shouldSave: true,
+                                forceNewRoom: true,
                               )
                           )
                       );

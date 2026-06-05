@@ -93,6 +93,7 @@ class ChatPage extends StatefulWidget {
   final String selectedLanguage;
   final bool isTestMode;
   final bool shouldSave;
+  final bool forceNewRoom;
   final String? initialText;
 
   const ChatPage({
@@ -105,6 +106,7 @@ class ChatPage extends StatefulWidget {
     required this.selectedLanguage,
     required this.shouldSave,
     this.initialText,
+    this.forceNewRoom = false,
   })
       : assert(chatMode != null || sessionId != null, 'Either chatMode or sessionId must be provided');
 
@@ -229,7 +231,7 @@ class _ChatPageState extends State<ChatPage> {
     _checkReferralEligibility();
     _loadDraft();
     _initHardware();
-    int _maxRegenerateCount = 3;
+    _initRegenerateCount();
   }
 
   @override
@@ -285,47 +287,66 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // ✨ 總裁專屬：全域共用的次數查帳系統
   Future<void> _initRegenerateCount() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    // 1. 決定他今天的上限是 3 還是 20
-    _maxRegenerateCount = _hasMonthlyPass ? 20 : 3;
+    try {
+      final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final userDoc = await userDocRef.get();
 
-    final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
-    final userDoc = await userDocRef.get();
+      if (userDoc.exists) {
+        final data = userDoc.data()!;
 
-    // 取今天的日期字串，例如 '2026-06-04'
-    final todayStr = DateTime.now().toString().substring(0, 10);
-
-    if (userDoc.exists) {
-      final data = userDoc.data()!;
-      final lastDate = data['lastRegenerateDate'] as String?;
-
-      if (lastDate != todayStr) {
-        // ✨ 發現是新的一天！幫玩家把次數補滿
-        setState(() {
-          _freeRegenerateCount = _maxRegenerateCount;
-        });
-        await userDocRef.update({
-          'regenerateCount': _maxRegenerateCount,
-          'lastRegenerateDate': todayStr,
-          'wasVip': _hasMonthlyPass,
-        });
-      } else {
-        // 🕰️ 還是同一天，讀取他在別的聊天室用剩的次數
-        int savedCount = data['regenerateCount'] ?? _maxRegenerateCount;
-
-        // 💡 總裁防呆：如果他今天剛買月卡，要馬上把差額 (17次) 補給他！
-        if (_hasMonthlyPass && data['wasVip'] != true) {
-          savedCount += 17;
-          await userDocRef.update({'regenerateCount': savedCount, 'wasVip': true});
+        // 🌟 1. 查帳前，先確認是不是月卡尊爵 VVIP！
+        bool hasPass = false;
+        final endDateStr = data['monthlySubEndDate'] as String?;
+        if (endDateStr != null) {
+          try {
+            final endDate = DateTime.parse(endDateStr);
+            if (endDate.isAfter(DateTime.now())) {
+              hasPass = true; // 月卡還沒過期
+            }
+          } catch (_) {}
         }
 
-        setState(() {
-          _freeRegenerateCount = savedCount;
-        });
+        // 根據月卡狀態決定今天的總扣打
+        final int maxCount = hasPass ? 20 : 3;
+
+        // 🌟 2. 判斷今天日期
+        final todayStr = DateTime.now().toString().substring(0, 10);
+        final lastDate = data['lastRegenerateDate'] as String?;
+
+        if (lastDate != todayStr) {
+          // 🎉 發現是新的一天！幫玩家把次數補滿
+          if (mounted) {
+            setState(() {
+              _hasMonthlyPass = hasPass;
+              _maxRegenerateCount = maxCount;
+              _freeRegenerateCount = maxCount;
+            });
+          }
+          // 同步給雲端：今天已經領過滿血次數囉
+          await userDocRef.update({
+            'regenerateCount': maxCount,
+            'lastRegenerateDate': todayStr,
+          });
+        } else {
+          // 🕰️ 還是同一天，讀取他在其他聊天室用剩的真實次數
+          int savedCount = data['regenerateCount'] ?? maxCount;
+
+          if (mounted) {
+            setState(() {
+              _hasMonthlyPass = hasPass;
+              _maxRegenerateCount = maxCount;
+              _freeRegenerateCount = savedCount; // 👈 關鍵：覆蓋掉預設的 3！
+            });
+          }
+        }
       }
+    } catch (e) {
+      debugPrint("讀取重新生成次數失敗: $e");
     }
   }
 
@@ -577,6 +598,15 @@ class _ChatPageState extends State<ChatPage> {
     // 情況 1：玩家有直接帶鑰匙 (sessionId) 來
     if (widget.sessionId != null) {
       await _loadExistingChat(widget.sessionId!);
+    }
+    else if (widget.forceNewRoom == true) {
+      print("✨ 收到強制開新房指令，直接呼叫工程隊！");
+      final modeName = widget.chatMode ?? 'daily';
+      _currentMode = ChatMode.values.firstWhere(
+              (e) => e.name == modeName,
+          orElse: () => ChatMode.daily
+      );
+      await _createNewChat(modeName);
     }
     // 情況 2：玩家沒帶鑰匙，管家親自去幫他找或蓋房子！
     else {
@@ -4260,7 +4290,7 @@ class _ChatPageState extends State<ChatPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // 取消按鈕
+            // 1. 取消按鈕
             TextButton(
               onPressed: () {
                 if (mounted) setState(() {
@@ -4271,13 +4301,20 @@ class _ChatPageState extends State<ChatPage> {
               child: Text(l10n.cancelButton, style: const TextStyle(color: Colors.grey, fontSize: 16)),
             ),
 
-            // 顯示選了幾則
-            Text(
-              '已選擇 ${_selectedMessageIds.length} 則',
-              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: Colors.redAccent),
+            // ✨ 總裁修復魔法：用 Expanded 包起來，強制在剩餘空間內置中！
+            Expanded(
+              child: Text(
+                '已選擇 ${_selectedMessageIds.length} 則',
+                textAlign: TextAlign.center, // 讓文字乖乖置中
+                overflow: TextOverflow.ellipsis, // 如果字數真的太多會變點點點，不報錯
+                style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.redAccent
+                ),
+              ),
             ),
 
-            // 處決按鈕
+            // 3. 處決按鈕
             ElevatedButton.icon(
               icon: const Icon(Icons.delete_outline, size: 18),
               label: Text(l10n.delete_btn),
@@ -4286,7 +4323,6 @@ class _ChatPageState extends State<ChatPage> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
-              // 如果沒選半個，按鈕就反灰不能按
               onPressed: _selectedMessageIds.isEmpty ? null : _deleteSelectedMessages,
             ),
           ],
@@ -4331,9 +4367,13 @@ class _ChatPageState extends State<ChatPage> {
               },
               child: Text(l10n.cancel, style: TextStyle(color: Colors.grey, fontSize: 16)),
             ),
-            Text(
-              l10n.selectedMessagesCount(_selectedMessageIds.length),
-              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            Expanded(
+              child: Text(
+                l10n.selectedMessagesCount(_selectedMessageIds.length),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
             ElevatedButton.icon(
               icon: const Icon(Icons.share, size: 18),
@@ -4351,16 +4391,41 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-// 📸 2. 在幕後畫一張美美的長圖畫布 (防爆裝甲與括弧校正版)
+  // 📸 2. 在幕後畫一張美美的長圖畫布 (全視角主題換色版)
   Widget _buildScreenshotCanvas(List<ChatMessage> selectedMsgs) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    // 定義顏色策略：根據 style 決定顏色
+    // 🎨 決定浮水印顏色
     Color getWatermarkColor() {
-      if (_watermarkStyle == 1) return Colors.white; // 全白
-      if (_watermarkStyle == 2) return Colors.black; // 全黑
-      return theme.colorScheme.primary;              // 主題色
+      if (_watermarkStyle == 1) return Colors.white;
+      if (_watermarkStyle == 2) return Colors.black87;
+
+      // ✨ 模式 0：一樣跟著 surface 的對比色
+      return theme.colorScheme.onSurface;
+    }
+
+    // 🌌 動態決定背景樣式
+    BoxDecoration getBackgroundDecoration() {
+      if (_watermarkStyle == 1) {
+        return const BoxDecoration(color: Color(0xFF1A1A24)); // 曜石黑
+      } else if (_watermarkStyle == 2) {
+        return const BoxDecoration(color: Color(0xFFF5F6F8)); // 晨曦白
+      }
+
+      // ✨ 模式 0：跟隨 App 的「背景底色」(亮色模式通常是白/灰，暗色模式是黑)
+      return BoxDecoration(
+        color: theme.colorScheme.surface,
+      );
+    }
+
+    // 🖋️ 動態決定標題與分隔線顏色
+    Color getTitleColor() {
+      if (_watermarkStyle == 1) return Colors.white;
+      if (_watermarkStyle == 2) return Colors.black87;
+
+      // ✨ 模式 0：跟著 surface 變換對比色 (亮色模式變黑字，暗色模式變白字)
+      return theme.colorScheme.onSurface;
     }
 
     return MediaQuery(
@@ -4373,30 +4438,26 @@ class _ChatPageState extends State<ChatPage> {
             width: 400,
             alignment: Alignment.topCenter,
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF2A1B38), Color(0xFF533B65), Color(0xFF8B6B9E)],
-                stops: [0.0, 0.5, 1.0],
-              ),
-            ),
+              decoration: getBackgroundDecoration(),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // 🏆 頂部標題
+                // 🏆 頂部標題 (顏色動態跟隨)
                 Text(
                   l10n.exclusiveMomentsWith(_currentCharacter.name),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    shadows: [BoxShadow(color: Colors.black45, blurRadius: 4, offset: Offset(0, 2))],
+                    color: getTitleColor(), // ✨ 顏色連動
+                    // 如果是亮色背景，就把陰影拿掉比較乾淨
+                    shadows: _watermarkStyle == 2
+                        ? null
+                        : const [BoxShadow(color: Colors.black45, blurRadius: 4, offset: Offset(0, 2))],
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // 💬 渲染對話
+                // 💬 渲染對話 (這段維持不變)
                 ...selectedMsgs.map((msg) {
                   final isUser = msg.sender == 'user';
                   return Padding(
@@ -4416,9 +4477,13 @@ class _ChatPageState extends State<ChatPage> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                             decoration: BoxDecoration(
-                              color: isUser ? theme.colorScheme.primary : Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
+                              // ✨ 模式 0：底色用 onSurface 加上微透明
+                              color: _watermarkStyle == 0
+                                  ? theme.colorScheme.onSurface.withValues(alpha: 0.1)
+                                  : (_watermarkStyle == 1
+                                  ? Colors.white.withValues(alpha: 0.2)
+                                  : Colors.black.withValues(alpha: 0.05)),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               msg.text,
@@ -4433,22 +4498,14 @@ class _ChatPageState extends State<ChatPage> {
                 }),
 
                 const SizedBox(height: 16),
-                const Divider(color: Colors.white24, height: 1),
+                // ✨ 分隔線顏色也跟著標題變色！
+                Divider(color: getTitleColor().withValues(alpha: 0.2), height: 1),
                 const SizedBox(height: 16),
 
-                // 🦋 底部浮水印：質感膠囊 + 小刷子
+                // 🦋 底部浮水印：質感膠囊 (沒有按鈕版)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.brush, size: 18),
-                      color: Colors.white.withValues(alpha: 0.7),
-                      onPressed: () {
-                        setState(() {
-                          _watermarkStyle = (_watermarkStyle + 1) % 3;
-                        });
-                      },
-                    ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
@@ -4487,11 +4544,11 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
-
-// 📸 3. 喀嚓！正式拍照、預覽並分享
+  // 📸 3. 喀嚓！正式拍照、預覽並分享 (總裁動態重拍版)
   Future<void> _generateAndShareImage() async {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -4503,96 +4560,137 @@ class _ChatPageState extends State<ChatPage> {
           .where((m) => _selectedMessageIds.contains(m.id))
           .toList()
         ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
-      // 🚀專屬 Hack：字數與換行【極致緊緻版】演算法！
-      double canvasHeight = 150.0; // 基礎高度 (標題 + 頂部間距)
+
+      // 🚀 字數與換行【極致緊緻版】高度精算
+      double canvasHeight = 150.0;
       for (var msg in msgsToExport) {
-        canvasHeight += 45.0; // 每則訊息的頭像與氣泡基礎開銷
-        // 文字精算：寬度 400 的畫布，扣掉邊距後，一行約 18-20 個中文字
-        // 每行高度抓 28 像素 (含行距)
+        canvasHeight += 45.0;
         List<String> paragraphs = msg.text.split('\n');
         for (var p in paragraphs) {
           int lines = (p.length / 18).ceil();
           if (lines == 0) lines = 1;
           canvasHeight += (lines * 28.0);
         }
-        canvasHeight += 12.0; // 訊息間的額外間距
+        canvasHeight += 12.0;
+      }
+      canvasHeight += 80.0;
+
+      // 📸 總裁秘製：把「拍照」獨立成一個小函數，這樣換顏色時可以隨時呼叫它重拍！
+      Future<Uint8List> takePicture() async {
+        return await _screenshotController.captureFromWidget(
+          UnconstrainedBox(
+            clipBehavior: Clip.hardEdge,
+            child: _buildScreenshotCanvas(msgsToExport), // 這裡會讀取最新的 _watermarkStyle
+          ),
+          delay: const Duration(milliseconds: 200),
+          targetSize: Size(400, canvasHeight),
+        );
       }
 
-      canvasHeight += 80.0; // 底部浮水印與最後的緩衝空間
+      // 第一次拍照
+      Uint8List imageBytes = await takePicture();
 
-      // 📸 拍照！關鍵在於：不要讓內容被螢幕高度限制住
-      final Uint8List imageBytes = await _screenshotController.captureFromWidget(
-        // 🌟 核心修正：加上 UnconstrainedBox，讓畫布可以無限向下延伸，徹底消滅黃黑線！
-        UnconstrainedBox(
-          clipBehavior: Clip.hardEdge,
-          child: _buildScreenshotCanvas(msgsToExport),
-        ),
-        delay: const Duration(milliseconds: 200),
-        targetSize: Size(400, canvasHeight),
-      );
-
-      if (mounted) Navigator.pop(context); // 關閉 Loading
+      if (mounted) Navigator.pop(context); // 關閉第一次的 Loading 圈圈
 
       // 🌟 預覽視窗
       if (mounted) {
         showDialog(
           context: context,
           builder: (BuildContext dialogContext) {
+            bool isRecapturing = false; // 控制重拍時的局部轉圈圈
+
             return StatefulBuilder(
-              builder: (BuildContext innerContext, StateSetter setState) {
-            return AlertDialog(
-              title:  Text(l10n.exclusiveMomentsGenerated, style: TextStyle(fontWeight: FontWeight.bold)),
-              content: SizedBox(
-                width: 400,
-                child: SingleChildScrollView(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.memory(imageBytes),
+              builder: (BuildContext innerContext, StateSetter setDialogState) {
+                return AlertDialog(
+                  titlePadding: const EdgeInsets.fromLTRB(24, 16, 16, 0),
+                  // ✨ 魔法發生地：把刷子移到視窗標題的右邊！
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.exclusiveMomentsGenerated,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.brush),
+                        color: theme.colorScheme.primary,
+                        tooltip: '更換浮水印顏色',
+                        onPressed: isRecapturing ? null : () async {
+                          // 1. 預覽視窗顯示載入中
+                          setDialogState(() => isRecapturing = true);
+
+                          // 2. 更新顏色狀態
+                          setState(() {
+                            _watermarkStyle = (_watermarkStyle + 1) % 3;
+                          });
+
+                          // 3. 喀嚓！重新拍照
+                          final newBytes = await takePicture();
+
+                          // 4. 把新照片換上去，解除載入狀態
+                          setDialogState(() {
+                            imageBytes = newBytes;
+                            isRecapturing = false;
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: Text(l10n.selectAgain, style: TextStyle(color: Colors.grey)),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.download, size: 18),
-                  label: Text(l10n.downloadAndShare),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: Colors.white,
+                  content: SizedBox(
+                    width: 400,
+                    child: isRecapturing
+                        ? const SizedBox(height: 200, child: Center(child: CircularProgressIndicator())) // 重拍時顯示轉圈圈
+                        : SingleChildScrollView(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.memory(imageBytes), // 顯示拍好的照片
+                      ),
+                    ),
                   ),
-                  onPressed: () async {
-                    Navigator.pop(dialogContext);
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext),
+                      child: Text(l10n.selectAgain, style: const TextStyle(color: Colors.grey)),
+                    ),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.download, size: 18),
+                      label: Text(l10n.downloadAndShare),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () async {
+                        Navigator.pop(dialogContext);
 
-                    final xFile = XFile.fromData(
-                      imageBytes,
-                      mimeType: 'image/png',
-                      name: 'lianlian_screenshot.png',
-                    );
+                        final xFile = XFile.fromData(
+                          imageBytes,
+                          mimeType: 'image/png',
+                          name: 'lianlian_screenshot.png',
+                        );
 
-                    await Share.shareXFiles(
-                        [xFile],
-                        text: l10n.inviteToMeet(_currentCharacter.name)
-                    );
+                        await Share.shareXFiles(
+                            [xFile],
+                            text: l10n.inviteToMeet(_currentCharacter.name)
+                        );
 
-                    if (mounted) setState(() {
-                      _isScreenshotMode = false;
-                      _selectedMessageIds.clear();
-                    });
-                  },
-                ),
-              ],
+                        if (mounted) setState(() {
+                          _isScreenshotMode = false;
+                          _selectedMessageIds.clear();
+                        });
+                      },
+                    ),
+                  ],
+                );
+              },
             );
-          },
-        );
           },
         );
       }
     } catch (e) {
       if (mounted) Navigator.pop(context);
-      print("❌ 截圖失敗: $e");
+      debugPrint("❌ 截圖失敗: $e");
     }
   }
 
@@ -4939,11 +5037,17 @@ class _ChatPageState extends State<ChatPage> {
                   ],
                 ),
               ),
-              // ✨ 4. 底部輸入框與發送區
+            // 🌟 總裁的多選替換魔法：根據模式決定下方要顯示什麼
+            if (_isMultiSelectMode)
+
+              _buildMultiSelectBottomBar() // 👈 沒錯！就只留這一行！直接呼叫你寫好的完美函數！
+
+            else
+            // 【平常的聊天輸入框】(一字不漏保留你原本的程式碼)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                 decoration: BoxDecoration(
-                  color: theme.cardColor,
+                  color: Theme.of(context).cardColor, // 稍微修正為 Theme.of(context) 避免抓不到 theme 變數
                   boxShadow: const [BoxShadow(blurRadius: 2, offset: Offset(0, -1), color: Colors.black12)],
                 ),
                 child: SafeArea(
@@ -4986,7 +5090,7 @@ class _ChatPageState extends State<ChatPage> {
                               maxLength: 900,
                               keyboardType: TextInputType.multiline,
                               decoration: InputDecoration(
-                                hintText: _isGenerating ? l10n.chat_ai_typing : l10n.chat_input_hint_default,
+                                hintText: _isGenerating ? AppLocalizations.of(context)?.chat_ai_typing ?? '對方正在輸入...' : AppLocalizations.of(context)?.chat_input_hint_default ?? '請輸入...',
                                 border: InputBorder.none,
                                 counterText: "",
                                 contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
@@ -4998,14 +5102,14 @@ class _ChatPageState extends State<ChatPage> {
                       IconButton(
                         icon: _isGenerating
                             ? const Icon(Icons.stop_circle_outlined, color: Colors.red)
-                            : Icon(Icons.send, color: theme.colorScheme.primary),
+                            : Icon(Icons.send, color: Theme.of(context).colorScheme.primary),
                         // 🌟 載入中也不要讓玩家點發送
                         onPressed: (_isGenerating || _isLoading) ? _stopGenerating : () => _sendMessage(text: _textController.text),
                       ),
                     ],
                   ),
                 ),
-              ),
+              )
           ],
             ],
           ),
@@ -5198,108 +5302,110 @@ class _ChatPageState extends State<ChatPage> {
               children: [
                 messageContent, // 上面的對話氣泡
                 const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
 
-                    // 🔄 重新生成按鈕 (升級橢圓明顯版)
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        // ✨ 修正 1：月卡尊爵防護！有月卡的話，就算次數歸零，按鈕也要是亮晶晶的主題色！
-                        backgroundColor: (_freeRegenerateCount > 0 || _hasMonthlyPass)
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : Colors.grey.withValues(alpha: 0.2),
-                        foregroundColor: (_freeRegenerateCount > 0 || _hasMonthlyPass)
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey,
-                        elevation: 0,
-                        shape: const StadiumBorder(),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      icon: const Icon(Icons.refresh, size: 16),
-                      label: Text(
-                          '重新生成 ($_freeRegenerateCount/$_maxRegenerateCount)',
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
-                      ),
-                      onPressed: () async {
-                        // 🛑 沒次數又沒月卡，擋下來！
-                        if (!_hasMonthlyPass && _freeRegenerateCount <= 0) {
-                          _showSubscriptionDialog();
-                          return;
-                        }
+                // 🕵️‍♂️ 總裁隱身術：只有在「非多選模式」下，才畫出下面這組按鈕
+                if (!_isMultiSelectMode)
+                  Wrap( // 🛡️ 總裁防護罩：將 Row 改成 Wrap，徹底消滅 25 像素溢出黃黑線！
+                    spacing: 8.0, // 按鈕之間的左右間距 (取代了原本的 SizedBox)
+                    runSpacing: 8.0, // 如果螢幕太小換行時的上下間距
+                    children: [
 
-                        // ✨ 總裁升級：自動判斷現在是用哪一個對話陣列！
-                        final activeMessages = (widget.shouldSave == true && _messagesCollection != null)
-                            ? _localMessages
-                            : _testMessages;
-
-                        // ✨ 修正 2：確保聊天室裡真的有對話可以抓
-                        if (activeMessages.length < 2) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('目前沒有可以重新生成的對話喔！')),
-                          );
-                          return;
-                        }
-
-                        // 💡 終極防呆：確保最新的一句真的是 AI 說的，上一句真的是玩家說的
-                        if (activeMessages[0].sender != 'ai' || activeMessages[1].sender != 'user') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('只能重新生成 AI 的回覆喔！')),
-                          );
-                          return;
-                        }
-
-                        // 1. 安全抓出要刪除的 AI 訊息 ID，以及上一句玩家說的話
-                        final aiMessageId = activeMessages[0].id;
-                        final userMessageText = activeMessages[1].text;
-
-                        // 2. 扣次數與存檔
-                        setState(() {
-                          _freeRegenerateCount--;
-                        });
-
-                        final user = FirebaseAuth.instance.currentUser;
-                        if (user != null) {
-                          try {
-                            final todayStr = DateTime.now().toString().substring(0, 10);
-                            await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-                              'regenerateCount': _freeRegenerateCount,
-                              'lastRegenerateDate': todayStr,
-                            });
-                          } catch (e) {
-                            debugPrint('⚠️ 更新重新生成次數失敗: $e');
+                      // 🔄 重新生成按鈕 (升級橢圓明顯版)
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          // ✨ 修正 1：月卡尊爵防護！有月卡的話，就算次數歸零，按鈕也要是亮晶晶的主題色！
+                          backgroundColor: (_freeRegenerateCount > 0 || _hasMonthlyPass)
+                              ? Theme.of(context).colorScheme.primaryContainer
+                              : Colors.grey.withValues(alpha: 0.2),
+                          foregroundColor: (_freeRegenerateCount > 0 || _hasMonthlyPass)
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey,
+                          elevation: 0,
+                          shape: const StadiumBorder(),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        icon: const Icon(Icons.refresh, size: 16),
+                        label: Text(
+                            '重新生成 ($_freeRegenerateCount/$_maxRegenerateCount)',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
+                        ),
+                        onPressed: () async {
+                          // 🛑 沒次數又沒月卡，擋下來！
+                          if (!_hasMonthlyPass && _freeRegenerateCount <= 0) {
+                            _showSubscriptionDialog();
+                            return;
                           }
-                        }
 
-                        // 🌟 3. 呼叫總裁秘製的無痕通道！
-                        _regenerateAIResponse(aiMessageId, userMessageText);
-                      },
-                    ),
+                          // ✨ 總裁升級：自動判斷現在是用哪一個對話陣列！
+                          final activeMessages = (widget.shouldSave == true && _messagesCollection != null)
+                              ? _localMessages
+                              : _testMessages;
 
-                    const SizedBox(width: 8), // 兩個按鈕中間加一點點空隙
+                          // ✨ 修正 2：確保聊天室裡真的有對話可以抓
+                          if (activeMessages.length < 2) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('目前沒有可以重新生成的對話喔！')),
+                            );
+                            return;
+                          }
 
-                    // ▶️ 繼續按鈕 (也順便幫妳改成一樣的橢圓風格)
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.withValues(alpha: 0.15),
-                        foregroundColor: Colors.grey[700],
-                        elevation: 0,
-                        shape: const StadiumBorder(),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          // 💡 終極防呆：確保最新的一句真的是 AI 說的，上一句真的是玩家說的
+                          if (activeMessages[0].sender != 'ai' || activeMessages[1].sender != 'user') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('只能重新生成 AI 的回覆喔！')),
+                            );
+                            return;
+                          }
+
+                          // 1. 安全抓出要刪除的 AI 訊息 ID，以及上一句玩家說的話
+                          final aiMessageId = activeMessages[0].id;
+                          final userMessageText = activeMessages[1].text;
+
+                          // 2. 扣次數與存檔
+                          setState(() {
+                            _freeRegenerateCount--;
+                          });
+
+                          final user = FirebaseAuth.instance.currentUser;
+                          if (user != null) {
+                            try {
+                              final todayStr = DateTime.now().toString().substring(0, 10);
+                              await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+                                'regenerateCount': _freeRegenerateCount,
+                                'lastRegenerateDate': todayStr,
+                              });
+                            } catch (e) {
+                              debugPrint('⚠️ 更新重新生成次數失敗: $e');
+                            }
+                          }
+
+                          // 🌟 3. 呼叫總裁秘製的無痕通道！
+                          _regenerateAIResponse(aiMessageId, userMessageText);
+                        },
                       ),
-                      icon: const Icon(Icons.play_arrow, size: 16),
-                      label: const Text('繼續', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                      onPressed: () {
-                        // ✨ 總裁換線：呼叫專屬的智能繼續函數！
-                        _handleContinueButton();
-                      },
-                    ),
-                  ],
-                ),
+
+                      // ▶️ 繼續按鈕 (也順便幫妳改成一樣的橢圓風格)
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey.withValues(alpha: 0.15),
+                          foregroundColor: Colors.grey[700],
+                          elevation: 0,
+                          shape: const StadiumBorder(),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        icon: const Icon(Icons.play_arrow, size: 16),
+                        label: const Text('繼續', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          // ✨ 總裁換線：呼叫專屬的智能繼續函數！
+                          _handleContinueButton();
+                        },
+                      ),
+                    ],
+                  ),
               ],
             );
           }

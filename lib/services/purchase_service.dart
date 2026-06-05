@@ -202,12 +202,15 @@ class PurchaseService extends ChangeNotifier {
       if (productId.contains('monthly_card')) {
         pointsToAdd = 250;
 
-
         // 1. 抓出舊的到期日 (如果是第一次買，就以現在為準)
         DateTime now = DateTime.now();
         DateTime currentEndDate = data['monthlySubEndDate'] != null
             ? DateTime.parse(data['monthlySubEndDate'])
             : now;
+
+        // 🕵️‍♂️ 總裁關鍵判斷：購買的這一刻，他的月卡是不是「還在有效期間內」？
+        // 如果舊的到期日還在未來，代表他是在有月卡的狀態下續約！
+        bool wasAlreadySubscribed = currentEndDate.isAfter(now);
 
         // 2. 決定「起跳點」：如果已經過期了，從現在開始算；如果還沒過期，從舊到期日往後加
         DateTime baseDate = currentEndDate.isBefore(now) ? now : currentEndDate;
@@ -222,6 +225,18 @@ class PurchaseService extends ChangeNotifier {
         updateData['isMonthlySubscribed'] = true;
         updateData['monthlySubEndDate'] = newEndDate.toIso8601String();
         updateData['monthlyCardStatus'] = 'active';
+
+        // 🌟 4. 【新增】重新生成次數的尊爵邏輯！
+        updateData['maxRegenerateCount'] = 20; // 只要有月卡，最大上限一律是 20 次
+
+        if (!wasAlreadySubscribed) {
+          // 如果他原本「沒有」月卡 (首購，或是過期後才重買)，立刻霸氣把次數補滿！
+          updateData['regenerateCount'] = 20;
+          print("🎁 玩家首購或重置月卡，重新生成次數已補滿 20 次！");
+        } else {
+          // 如果他原本就有月卡 (續約)，這行就不執行，保留他在 Firestore 裡面剩餘的次數 (例如 15/20)
+          print("🔄 玩家於月卡期間續約，保留當下剩餘的重新生成次數！");
+        }
       }
       // 🌟 第二種情況：買的是「一般花花禮包」
       else if (productId.startsWith('com.lianlian.points_')) {
