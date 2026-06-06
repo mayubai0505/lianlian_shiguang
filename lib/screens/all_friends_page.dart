@@ -105,11 +105,11 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
       MaterialPageRoute(
         builder: (context) => ChatPage(
           character: character,
+          characterId: character.id,
           chatMode: "daily",
           // 🌟 既然 ChatPage 現在變嚴格了，我們就補給它預設值
           sessionId: character.id,    // 暫時用角色 ID 當作 Session ID
           selectedLanguage: l10n.traditional_chinese, // 預設語言
-          shouldSave: true,           // 預設開啟存檔
         ),
       ),
     );

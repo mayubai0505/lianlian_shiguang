@@ -35,7 +35,14 @@ class ToastUtils {
                   // 圖示跟文字的間距
                   if (isError || customIcon != null) const SizedBox(width: 8),
 
-                  Text(message, style: const TextStyle(color: Colors.white, fontSize: 16)),
+                  // ✨ 總裁級防護：火速加入 Flexible，徹底封印黃黑斑馬線！
+                  Flexible(
+                    child: Text(
+                      message,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      softWrap: true, // 💡 總裁秘技：當文字觸碰到邊界時，會自動且流暢地向下換行
+                    ),
+                  ),
                 ],
               ),
             ),

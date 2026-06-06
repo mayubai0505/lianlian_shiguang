@@ -23,7 +23,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'dart:async';
 import 'screens/character_model.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart'; // 🌟 記得先 add 這個套件
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -273,7 +272,9 @@ class _ChatLoaderWrapperState extends State<ChatLoaderWrapper> {
           chatMode: "daily",
           sessionId: widget.sessionId,
           selectedLanguage: '繁體中文',
-          shouldSave: true,
+          // ✨ 最後的補給：從 snapshot.data 裡面把鑰匙拿出來！
+          // 如果你的資料模型裡 ID 欄位叫 .id，這樣寫就對了：
+          characterId: snapshot.data!.id,
         );
       },
     );

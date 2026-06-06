@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../services/toast_utils.dart';
 import 'character_model.dart'; // 確保您的角色模型路徑正確
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -96,16 +97,21 @@ class _AboutMePageState extends State<AboutMePage> {
       try {
         await _memoriesCollection.doc(memoryId).delete();
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.memory_erased_msg + '🍃'), duration: Duration(seconds: 2)),
+          // ✨ 總裁級：刪除回憶的儀式感，用輕柔的圖示，讓那片葉子飄得更有質感！
+          ToastUtils.showCenterToast(
+            context,
+            l10n.memory_erased_msg + ' 🍃',
+            customIcon: Icons.auto_delete_rounded, // 💡 總裁精選：自動刪除圖示，簡潔俐落
+            // 💡 總裁秘技：搭配你原本的 '🍃' 文字，這種圖示+文字的雙重慰藉，效果絕佳！
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${l10n.delete_failed_msg}: $e'),
-              ),
+          // ✨ 總裁級防護：刪除失敗的專業接手
+          ToastUtils.showCenterToast(
+            context,
+            '${l10n.delete_failed_msg}: $e',
+            isError: true, // 💡 紅色驚嘆號，處理無法刪除的異常狀況
           );
         }
       }
@@ -150,14 +156,21 @@ class _AboutMePageState extends State<AboutMePage> {
       try {
         await _memoriesCollection.doc(memory.id).update({'text': newText.trim()});
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.memory_re_recorded_msg + '✨'), duration: Duration(seconds: 2)),
+          // ✨ 總裁級：記憶重塑的閃耀瞬間，讓星星符號在畫面中央綻放光芒！
+          ToastUtils.showCenterToast(
+            context,
+            l10n.memory_re_recorded_msg + ' ✨',
+            customIcon: Icons.auto_awesome_rounded, // 💡 總裁精選：完美的「閃耀/魔法」圖示，與你的 ✨ 完美雙重呼應！
+            // 💡 總裁秘技：Duration 已經封裝在 ToastUtils 裡，不用再手動設定，代碼更乾淨！
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.update_failed_msg}: $e')),
+          // ✨ 總裁級防護：重塑失敗的專業接手，不讓系統報錯破壞畫面
+          ToastUtils.showCenterToast(
+            context,
+            '${l10n.update_failed_msg}: $e',
+            isError: true, // 💡 全域統一的紅色驚嘆號，清楚標示異常
           );
         }
       }
@@ -172,8 +185,11 @@ class _AboutMePageState extends State<AboutMePage> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.update_favorite_failed_msg}: $e')),
+        // ✨ 總裁級防護：收藏失敗的優雅迫降，不讓冰冷的系統錯誤破壞當下的唯美氛圍！
+        ToastUtils.showCenterToast(
+          context,
+          '${l10n.update_favorite_failed_msg}: $e',
+          isError: true, // 💡 全域統一的紅色驚嘆號，清楚標示異常狀態
         );
       }
     }

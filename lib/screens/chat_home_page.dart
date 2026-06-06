@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart'; // ✨ 引入 Provider
 import '../services/theme_notifier.dart'; // ✨ 引入主題背景
+import '../services/toast_utils.dart';
 import 'chat_page.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/page/inbox_page.dart';
@@ -119,9 +120,23 @@ class _ChatHomePageState extends State<ChatHomePage> {
             .update({
           'customRoomName': newName,
         });
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.room_name_updated)));
+        // 成功時的優雅回饋
+        if (mounted) {
+          ToastUtils.showCenterToast(
+            context,
+            l10n.room_name_updated,
+            customIcon: Icons.drive_file_rename_outline_rounded, // 💡 總裁精選：對應「修改名稱」的畫筆圖示
+          );
+        }
       } catch (e) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.update_failed(e.toString()))));
+        // 失敗時的優雅迫降
+        if (mounted) {
+          ToastUtils.showCenterToast(
+            context,
+            l10n.update_failed(e.toString()),
+            isError: true, // 💡 使用統一的紅驚嘆號，清楚標示錯誤
+          );
+        }
       }
     }
   }
@@ -177,12 +192,19 @@ class _ChatHomePageState extends State<ChatHomePage> {
             sessionId: sessionId,
             chatMode: 'daily',
             selectedLanguage: l10n.ai_chat_language,
-            shouldSave: true,
+            characterId: character!.id,
           ),
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.character_not_found)));
+      // ✨ 總裁級防護：角色查找失敗的優雅迫降，清楚告知狀態但不引發焦慮！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.character_not_found,
+        isError: true, // 💡 使用統一的紅色驚嘆號，讓玩家明確知道「路走不通」
+        // 💡 總裁精選：如果想要更強調「找不到」的感覺，也可以用：
+        // customIcon: Icons.person_search_rounded (搜尋人物) 或是 Icons.person_off_rounded (人物不存在)
+      );
     }
   }
 

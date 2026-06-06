@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
+import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
 import 'package:intl/intl.dart';
 import '../services/theme_notifier.dart';
@@ -329,8 +330,11 @@ class _ProfilePageState extends State<ProfilePage> {
       final l10n = AppLocalizations.of(context)!;
       debugPrint("❌ 手動簽到失敗: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(content: Text(l10n.check_in_fail_network)),
+        // ✨ 總裁級：網路異常的輕量錯誤提示，俐落告知，不增加玩家的煩躁感
+        ToastUtils.showCenterToast(
+          context,
+          l10n.check_in_fail_network,
+          isError: true, // 💡 紅色驚嘆號能立刻讓玩家意識到是異常狀況，進而主動重試
         );
       }
     } finally {
@@ -418,18 +422,25 @@ class _ProfilePageState extends State<ProfilePage> {
 
       // 一口氣把 增加花花、更新任務進度、寫入明細 全部送出！
       await batch.commit();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.task_reward_claimed(taskName, rewardAmount.toString())))
+      if (mounted) { // 💡 如果報錯，記得換成 context.mounted
+        // ✨ 總裁級：領取獎勵的專屬優雅回饋，給予玩家滿滿的成就感
+        ToastUtils.showCenterToast(
+          context,
+          l10n.task_reward_claimed(taskName, rewardAmount.toString()),
+          customIcon: Icons.emoji_events_rounded, // 💡 用「獎盃/禮物」圖示，完美強化獲得獎勵的喜悅感！
         );
         // 更新彈窗內的 UI
         onDialogSetState();
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted) { // 💡 同樣地，如果報錯記得換成 context.mounted
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.claim_failed_error(e.toString())))
+
+        // ✨ 總裁級：領取失敗的溫柔防護，清楚告知異常狀況
+        ToastUtils.showCenterToast(
+          context,
+          l10n.claim_failed_error(e.toString()),
+          isError: true, // 💡 紅色驚嘆號，在任務彈窗上方明確提示異常
         );
       }
     }
@@ -711,17 +722,19 @@ class _ProfilePageState extends State<ProfilePage> {
             // 🌟 1. 身分證乖乖交出來
             character: character,
 
+            // ✨ 補上這兩把必備的鑰匙：
+            characterId: character.id, // 🔑 補上角色ID
+
             // 🌟 2. 模式 ('daily' 或 'story')
             chatMode: selectedMode,
-            // 🌟 4. 語言跟存檔
-            selectedLanguage: 'zh-TW', // 建議統一用代碼比較不會出錯
-            shouldSave: true,
 
-            // 🌟 5. 【最關鍵】補上第一句話跟故事情節！
-            // 根據玩家選的是劇情還是閒聊，給不同的第一句話
+            // 🌟 4. 語言跟存檔
+            selectedLanguage: 'zh-TW',
+
+            // 🌟 5. 第一句話跟故事情節
             initialText: selectedMode == 'story'
-                ? (character.storyModeFirstLine ?? l10n.greeting_hello) // 劇情模式抓設定好的第一句話
-                : l10n.greeting_default_daily, // 日常模式給個預設開場白
+                ? (character.storyModeFirstLine ?? l10n.greeting_hello)
+                : l10n.greeting_default_daily,
           ),
         ),
       ).then((_) {
@@ -747,19 +760,27 @@ class _ProfilePageState extends State<ProfilePage> {
     final creationTime = user.metadata.creationTime ?? DateTime.now();
     final int hoursSinceCreation = DateTime.now().difference(creationTime).inHours;
     if (hoursSinceCreation > 72) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.profile_referral_err_expired)),
+      if (mounted) { // 💡 若有報錯，請記得替換為 context.mounted
+        // ✨ 總裁防禦第一槍：超過新手保護期的輕量提示
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profile_referral_err_expired,
+          isError: true, // 💡 紅色驚嘆號，明確告知規則限制
         );
       }
       return;
     }
 
-    // 🌟 總裁防禦第二槍：嚴禁自我崇拜（自己填自己）
+// 🌟 總裁防禦第二槍：嚴禁自我崇拜（自己填自己）
     if (trimmedId == user.uid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.profile_referral_err_self)),
-      );
+      if (mounted) { // 💡 確保安全調用
+        // ✨ 總裁級防呆：俐落擋下無效操作
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profile_referral_err_self,
+          isError: true, // 💡 紅色驚嘆號，讓玩家馬上知道「這招行不通」
+        );
+      }
       return;
     }
 
@@ -772,20 +793,26 @@ class _ProfilePageState extends State<ProfilePage> {
 
       // 🌟 總裁防禦第三槍：終身限綁一次，有過綁定紀錄者不准再點
       if (userDoc.data()?['invitedBy'] != null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.profile_referral_err_duplicate)),
+        if (mounted) { // 💡 如果有波浪底線記得換 context.mounted
+          // ✨ 總裁防禦第三槍：溫柔擋下重複領取的企圖
+          ToastUtils.showCenterToast(
+            context,
+            l10n.profile_referral_err_duplicate,
+            isError: true, // 💡 紅色驚嘆號，明確告知「你已經有綁定對象囉」
           );
         }
         return;
       }
 
-      // 🌟 總裁防禦第四槍：虛擬代碼實體審查（檢查目標邀請人是否存在）
+// 🌟 總裁防禦第四槍：虛擬代碼實體審查（檢查目標邀請人是否存在）
       final inviterDoc = await db.collection('users').doc(trimmedId).get();
       if (!inviterDoc.exists) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.profile_referral_err_not_found)),
+        if (mounted) { // 💡 同上
+          // ✨ 總裁防禦第四槍：查無此人的精準攔截
+          ToastUtils.showCenterToast(
+            context,
+            l10n.profile_referral_err_not_found,
+            isError: true, // 💡 紅色驚嘆號，提示玩家檢查是不是不小心打錯字了
           );
         }
         return;
@@ -798,9 +825,12 @@ class _ProfilePageState extends State<ProfilePage> {
         'totalChatMessages': 0,         // 新人計數器初始化歸零
       });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.profile_referral_success)),
+      if (mounted) { // 💡 如果有波浪底線記得換 context.mounted
+        // ✨ 總裁級：成功綁定推薦碼的慶祝回饋，完美的雙贏時刻！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profile_referral_success,
+          customIcon: Icons.handshake_rounded, // 💡 用「握手/結盟」的圖示，完美象徵邀請人與被邀請人建立起《戀戀拾光》的羈絆
         );
         _inviteCodeController.clear();
       }
@@ -1274,8 +1304,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             GestureDetector(
                               onTap: () {
                                 Clipboard.setData(ClipboardData(text: displayID));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(l10n.toast_id_copied)));
+                                // ✨ 總裁級：行雲流水的複製回饋，一閃而過的安心感
+                                ToastUtils.showCenterToast(
+                                  context, // 💡 如果 onTap 變成 async，記得前面要加 if (context.mounted) 喔！
+                                  l10n.toast_id_copied,
+                                  customIcon: Icons.copy_rounded, // 💡 用「複製」的專屬圖示，直覺度滿分！
+                                );
                               },
                               child: Tooltip(
                                 message: _hasChangedID ? l10n.profile_id_locked : l10n.profile_copy_id,

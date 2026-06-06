@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import '../services/toast_utils.dart';
 import 'main_page.dart';
 import 'onboarding_page.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
@@ -36,8 +37,14 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
     final password = _passwordController.text.trim();
     final l10n = AppLocalizations.of(context)!;
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.error_email_password_empty)));
+      // ✨ 總裁級防呆：登入大門的優雅守衛，完美跨越虛擬鍵盤的視覺死角！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.error_email_password_empty,
+        isError: true, // 💡 全域統一的紅色驚嘆號，明確告知這是一項「必須完成的任務」
+        // 💡 總裁秘技：如果想讓語意更貼近登入情境，
+        // 非常推薦換成 customIcon: Icons.key_off_rounded 或是 Icons.no_accounts_rounded！
+      );
       return;
     }
 
@@ -86,9 +93,16 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
         errorMessage = l10n.auth_error_invalid_email;
       }
 
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)));
+      if (mounted) {
+        // ✨ 總裁級防護：動態錯誤訊息的完美封裝，絕不讓不可控的字串破壞畫面排版！
+        ToastUtils.showCenterToast(
+          context,
+          errorMessage,
+          isError: true, // 💡 全域統一的紅色驚嘆號，清楚傳達這是個異常狀態
+        );
+      }
     } finally {
+      // 💡 總裁讚賞：無懈可擊的 finally 善後區塊，確保狀態完美重置！
       if (mounted) setState(() => _isLoading = false);
     }
   }

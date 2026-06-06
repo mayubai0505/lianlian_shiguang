@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:typed_data';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/foundation.dart'; // 🌟 用來判斷是不是網頁版 (kIsWeb)
+import 'package:flutter/foundation.dart';
+
+import '../services/toast_utils.dart'; // 🌟 用來判斷是不是網頁版 (kIsWeb)
 
 // 🌟 回放室：需要動態狀態來播放音樂
 class CallMemoryDetailPage extends StatefulWidget {
@@ -40,8 +42,13 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
     if (!_isPlayerInitialized) return;
     final voiceId = widget.memoryData['voiceId'];
     if (voiceId == null || voiceId.isEmpty) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.no_exclusive_voice
-      )));
+      if (mounted) {
+        // ✨ 總裁級：專屬語音從缺的溫柔提醒，用輕盈的視覺回饋安撫聽覺的期待！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.no_exclusive_voice,
+        );
+      }
       return;
     }
 

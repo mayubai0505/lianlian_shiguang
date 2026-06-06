@@ -15,7 +15,9 @@ import 'package:intl/intl.dart'; // ✅ 就是這行，讓程式認識 DateForma
 import 'package:image_cropper/image_cropper.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // 雲端硬碟總管
-import 'package:http/http.dart' as http; // 專門用來破解網頁版 blob 網址的工具
+import 'package:http/http.dart' as http;
+
+import '../services/toast_utils.dart'; // 專門用來破解網頁版 blob 網址的工具
 
 //個人檔案
 
@@ -140,8 +142,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final newID = _playerIDController.text.trim();
 
     if (newNickname.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.error_nickname_empty)));
+      // ✨ 總裁級防呆：精準攔截空白暱稱，完美避開虛擬鍵盤的遮擋！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.error_nickname_empty,
+        isError: true, // 💡 紅色警告，讓玩家立刻意識到「名字不能留白」
+        // 💡 總裁秘技：如果想讓介面看起來更專屬、更沒有責備感，可以拿掉 isError，改用：
+        // customIcon: Icons.drive_file_rename_outline_rounded, // 帶有「重新命名/畫筆」意象的圖示
+      );
       return;
     }
     if (!widget.isCreating && !_hasChangedID && newID == _originalID) {
@@ -244,14 +252,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
 
       if (mounted && popOnSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text(l10n.profile_saved_success)));
-        Navigator.pop(context, true);
+        // ✨ 總裁級：個人檔案儲存成功的完美過場，提示與退場動畫互不干擾！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profile_saved_success,
+          // 💡 總裁精選：針對「個人檔案」，強烈推薦使用帶有個人專屬質感的圖示
+          customIcon: Icons.account_circle_rounded,
+          // 💡 總裁秘技：如果想更強調「大功告成/煥然一新」的感覺，
+          // Icons.face_retouching_natural_rounded 或是 Icons.how_to_reg_rounded 也會非常有高級感喔！
+        );
+
+        Navigator.pop(context, true); // 帶著更新成功的信號，優雅地回到上一頁
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('儲存失敗: $e')));
+        // ✨ 總裁級防護：儲存失敗的優雅迫降，讓不可預期的錯誤訊息不再破壞畫面排版！
+        ToastUtils.showCenterToast(
+          context,
+          '儲存失敗: $e',
+          isError: true, // 💡 全域統一的紅色驚嘆號，清楚傳達異常狀態
+        );
       }
     } finally {
       if (mounted) {
@@ -308,10 +328,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(l10n.profile_save_failed(e.toString().replaceFirst("Exception: ", "")))));
+        // ✨ 總裁級防護：個人檔案儲存失敗的優雅迫降，搭配你完美的字串修剪！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profile_save_failed(
+              e.toString().replaceFirst("Exception: ", "")),
+          isError: true, // 💡 全域統一的紅色驚嘆號，清楚告知錯誤，但不引發焦慮
+        );
       }
-    } finally {
+    }finally {
       if (mounted) setState(() => _isSaving = false);
     }
   }
@@ -323,11 +348,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
     // 或是如果這是第一次建立，則引導玩家進入主畫面
     Navigator.pop(context);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.draft_saved_success_msg),
-        behavior: SnackBarBehavior.floating,
-      ),
+    // ✨ 總裁級：草稿儲存的安心回饋，徹底告別容易被鍵盤擋住的底部彈窗！
+    ToastUtils.showCenterToast(
+      context, // 💡 若在 async 之後，記得包一層 if (mounted) 喔！
+      l10n.draft_saved_success_msg,
+      customIcon: Icons.save_rounded, // 💡 總裁精選：最直覺的「儲存/安全」圖示，瞬間消除玩家怕心血白費的焦慮
+      // 💡 總裁秘技：如果是偏向「寫信/傳訊息」的草稿，
+      // 非常推薦換成 Icons.drafts_rounded 或 Icons.edit_note_rounded，語意會更精準、更有沉浸感！
     );
   }
 
@@ -362,10 +389,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _selectDate() async {
     final l10n = AppLocalizations.of(context)!;
     if (!_isAgeEditable) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-           SnackBar(content: Text(l10n.error_birthdate_locked)));
-      return;
+      // ✨ 總裁級防護：生日鎖定攔截，堅定卻不失優雅的規則宣示！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.error_birthdate_locked,
+        customIcon: Icons.lock_rounded, // 💡 總裁精選：最直覺的「上鎖」圖示，清楚傳達規則不可動搖
+        // 💡 總裁秘技：如果想更強調「日期」的概念，
+        // 也可以換成 Icons.event_busy_rounded (行事曆打叉) 或是 Icons.edit_off_rounded (禁止編輯)！
+      );
+      return; // 煞車！絕對不准修改！
     }
     DateTime? picked = await showDatePicker(
       context: context,
@@ -475,9 +507,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
         setState(() {
           _avatarPath = filePath; // 裁切失敗就用原圖保底
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          // ✨ 修正 3：發生錯誤的 SnackBar 也要加上保底文字
-          SnackBar(content: Text(l10n?.avatar_updated_success ?? '已為您換上頭像 🍃')),
+        // ✨ 總裁級：大頭貼更新成功的絕美過場，完美守護你的原創畫作！
+        ToastUtils.showCenterToast(
+          context, // 💡 若在 async 之後，記得包一層 if (mounted)
+          l10n?.avatar_updated_success ?? '已為您換上頭像 🍃',
+          customIcon: Icons.face_retouching_natural_rounded, // 💡 總裁精選：帶有「煥然一新、精緻臉龐」意涵的完美圖示
+          // 💡 總裁秘技：如果想強調「圖片/畫作」的感覺，
+          // 換成 Icons.wallpaper_rounded 或 Icons.photo_camera_front_rounded 也非常適合！
         );
       }
     }

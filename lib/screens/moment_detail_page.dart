@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/toast_utils.dart';
 import 'moment_card.dart';
 import '../models/moment_model.dart';
 import '../services/app_constants.dart';
@@ -23,11 +24,24 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
   final String _userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   String? _myNickname;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-
+  Moment? _moment;
+  bool _isLoading = true;
   @override
   void initState() {
     super.initState();
     _fetchMyNickname();
+    _fetchMomentData(); // 初始化時只抓一次
+  }
+
+  Future<void> _fetchMomentData() async {
+    final doc = await _db.collection('artifacts').doc(AppConfig.appId)
+        .collection('moments').doc(widget.postId).get();
+    if (doc.exists && mounted) {
+      setState(() {
+        _moment = Moment.fromFirestore(doc);
+        _isLoading = false;
+      });
+    }
   }
 
   // 1. 抓取個人暱稱 (留言用)
@@ -92,9 +106,17 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         );
       }
 
-      ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(l10n.moment_like_success)));
+      // ✨ 總裁級：動態按讚的溫暖回饋，讓你的心意絲滑呈現！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.moment_like_success,
+        customIcon: Icons.favorite_rounded, // 💡 總裁精選：用「愛心」圖示，與按讚動作完美呼應！
+        // 💡 總裁秘技：因為按讚動作非常頻繁，ToastUtils 的中央懸浮感會讓玩家覺得：「這 App 真的懂我的喜好！」
+      );
     } catch (e) {
       print("按讚失敗: $e");
+      // 💡 總裁秘技：如果失敗了，除了 print，也可以補上一個 Toast 提醒，
+      // 讓玩家知道「剛剛那一顆心可能沒送出去喔」，提升互動的真實感。
     }
   }
 
@@ -221,28 +243,21 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title:Text(l10n.moment_detail_title)),
-      body: FutureBuilder<DocumentSnapshot>(
-        future: _db.collection('artifacts').doc(AppConfig.appId).collection('moments').doc(widget.postId).get(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-          if (!snapshot.hasData || !snapshot.data!.exists) return Center(child: Text(l10n.moment_not_found));
-
-          final moment = Moment.fromFirestore(snapshot.data!);
-
-          return Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
                     children: [
                       // --- A. 動態主體卡片 ---
                       MomentCard(
-                        moment: moment,
+                        moment: _moment!,
                         currentUserId: _userId,
-                        onLikeTapped: () => _handleLikeTaskProgress(moment),
+                        onLikeTapped: () => _handleLikeTaskProgress(_moment!),
                         onDeleteTapped: () {
-                          _deleteMoment(moment.id).then((success) {
+                          _deleteMoment(_moment!.id).then((success) {
                             if (success && mounted) Navigator.pop(context);
                           });
                         },
@@ -400,7 +415,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                           const SizedBox(width: 8),
                           IconButton(
                             icon: const Icon(Icons.send_rounded, color: Colors.pinkAccent),
-                            onPressed: () => _saveCommentToDb(_commentController.text, moment),
+                            onPressed: () => _saveCommentToDb(_commentController.text, _moment!),
                           )
                         ],
                       ),
@@ -409,8 +424,6 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
                 ],
               ),
             ],
-          );
-        },
       ),
     );
   }

@@ -9,6 +9,8 @@ import '../services/theme_notifier.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
+
+import '../services/toast_utils.dart';
 //發文編輯器 / 創作中心(點擊+後才會出現的頁面)
 class CreateMomentPage extends StatefulWidget {
   // ✨ 門禁更新：不強制要求傳入 Character 物件，而是傳入具體的名稱和照片
@@ -49,8 +51,13 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
     final l10n = AppLocalizations.of(context)!;
     final content = _contentController.text.trim();
     if (content.isEmpty && _pickedImage == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.moment_create_error_empty)),
+      // ✨ 總裁級防呆：動態發佈的溫柔提醒，保護你的 UI 排版不受鍵盤干擾！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.moment_create_error_empty,
+        customIcon: Icons.edit_note_rounded, // 💡 總裁精選：用「筆記/編輯」圖示，提醒玩家「輸入一點內容吧！」
+        // 💡 總裁秘技：若你想更強調「照片」的重要性，
+        // 使用 Icons.add_photo_alternate_rounded 也會非常有引導性喔！
       );
       return;
     }
@@ -97,8 +104,13 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
     } catch (e) {
       print("發布動態失敗: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text(l10n.moment_create_error_failed)),
+        // ✨ 總裁級防護：動態發佈失敗的優雅迫降，用紅色驚嘆號建立專業感！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.moment_create_error_failed,
+          isError: true, // 💡 全域統一的紅色驚嘆號，清楚傳達異常，但不引發不必要的恐慌
+          // 💡 總裁秘技：此時玩家一定很焦慮，CenterToast 能穩穩地顯示在畫面中央，
+          // 讓他們第一時間看到提示，而不會因為 SnackBar 被鍵盤擋住而感到疑惑。
         );
       }
     } finally {

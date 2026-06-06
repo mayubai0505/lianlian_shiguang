@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart'; // ✅ 確保導入您的 AuthService
+import '../services/toast_utils.dart';
 import 'onboarding_page.dart'; // ✅ 確保導入導航頁面
 import 'main_page.dart'; // ✅ 確保導入主頁面
 import 'email_login_page.dart'; // ✅ 確保導入 Email 登入頁面
@@ -125,11 +126,13 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('連線異常，請稍後再試：$e'),
-            backgroundColor: const Color(0xFF9C27B0), // 總裁專屬紫色
-          ),
+        // ✨ 總裁級：將連線異常的「大色塊紫色」轉化為「質感圖示與半透明黑底」
+        ToastUtils.showCenterToast(
+          context,
+          '連線異常，請稍後再試：$e',
+          customIcon: Icons.cloud_off_rounded, // 💡 總裁精選：完美的「斷線」圖示，比色塊更有語意！
+          // 💡 總裁秘技：因為你是連線異常，直接使用預設配置即可，
+          // ToastUtils 已經幫你統一了這種「提示性錯誤」的視覺語彙。
         );
       }
     } finally {

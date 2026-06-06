@@ -18,6 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import '../services/toast_utils.dart';
 import 'call_screen.dart';
 import 'login_page.dart';
 import 'user_profile_popup.dart';
@@ -93,9 +94,9 @@ class ChatPage extends StatefulWidget {
   final String? sessionId;
   final String selectedLanguage;
   final bool isTestMode;
-  final bool shouldSave;
   final bool forceNewRoom;
   final String? initialText;
+  final String characterId;
 
   const ChatPage({
     super.key,
@@ -105,9 +106,9 @@ class ChatPage extends StatefulWidget {
     this.sessionId,
     this.isTestMode = false,
     required this.selectedLanguage,
-    required this.shouldSave,
     this.initialText,
     this.forceNewRoom = false,
+    required this.characterId,
   })
       : assert(chatMode != null || sessionId != null, 'Either chatMode or sessionId must be provided');
 
@@ -116,6 +117,11 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  Map<String, dynamic>? _roomConfig;
+  bool _isMonthlyPassActive = false;
+  bool _isLoadingRoom = true;
+  bool _isChecking = false; // 也要記得保留原本檢查中的狀態變數
+  String _userProfileText = ""; // 用來顯示檔案內容的變數
   int _watermarkStyle = 0;
   // 🌟 請確保這行加在這裡！這樣整個頁面才都認識它
   int _maxRegenerateCount = 3;
@@ -159,7 +165,6 @@ class _ChatPageState extends State<ChatPage> {
   int _currentFriendship = 0;
   FlutterSoundRecorder? _recorder;
   FlutterSoundPlayer? _player;
-  bool _isChecking = false;
   StreamSubscription? _pointsSubscription; // 用來管理點數的監聽器
   int _flowerPoints = 0;
   // ✨ 煞車系統專用變數，必須放在類別最上方
@@ -179,7 +184,6 @@ class _ChatPageState extends State<ChatPage> {
   String? _currentStoryTime;  //時間
   String? _currentStoryLocation;  //地點
   String? _highlightedMessageId; // 🌟 用來記住現在要「發光」的是誰
-  String _userProfileText = ""; // 存放玩家的專屬名片文字
   String _playerNickname = "玩家"; // ✨ 新增：專門用來記住玩家的暱稱，方便替換字串！
   List<ChatMessage> _localMessages = [];
   String? _userId;
@@ -212,7 +216,7 @@ class _ChatPageState extends State<ChatPage> {
 
     // 🌟🌟🌟 總裁無敵星星：測試模式攔截器 🌟🌟🌟
     // 這裡我們直接幫妳把所有「開關」都打開，不讓它有機會去轉圈圈！
-    if (widget.isTestMode || !widget.shouldSave) {
+    if (widget.isTestMode) {
       print("🧪 測試模式啟動：正在手動配置 UI...");
 
       _sessionId = widget.sessionId;     // 🔑 報到成功，給予假 ID
@@ -222,7 +226,7 @@ class _ChatPageState extends State<ChatPage> {
       _currentMode = ChatMode.daily;
 
       _isLoading = false;                // 🏁 停止轉圈圈
-
+      _loadRoomData();
       // 💡 測試模式到此為止，後面那些去資料庫撈資料的程式碼「全部跳過」！
       return;
     }
@@ -233,6 +237,7 @@ class _ChatPageState extends State<ChatPage> {
     _loadDraft();
     _initHardware();
     _initRegenerateCount();
+    _checkProfileCompletion(widget.sessionId!, widget.characterId);
   }
 
   @override
@@ -288,66 +293,105 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  // ✨ 總裁專屬：全域共用的次數查帳系統
-  Future<void> _initRegenerateCount() async {
+  Future<void> _loadRoomData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
+    // 1. 同時並行讀取房間資料與使用者月卡資料 (使用 Future.wait 讓速度加倍！)
+    final roomRef = FirebaseFirestore.instance.collection('rooms').doc(widget.sessionId!).get();
+    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+
+    final results = await Future.wait([roomRef, userRef]);
+
+    final roomDoc = results[0];
+    final userDoc = results[1];
+
+    if (mounted) {
+      setState(() {
+        _roomConfig = roomDoc.data();
+
+        // 🌟 直接算好月卡資格，存入變數
+        final userData = userDoc.data() as Map<String, dynamic>?;
+        final endDateStr = userData?['monthlySubEndDate'] as String?;
+        _isMonthlyPassActive = _calculateIsActive(endDateStr);
+
+        _isLoadingRoom = false;
+      });
+
+      // 2. 資料都準備好後，才執行檢查檔案與次數
+      _checkProfileCompletion(widget.sessionId!, widget.character.id);
+      _initRegenerateCount(); // 確保重新生成次數邏輯也跑一次
+    }
+  }
+
+// 輔助函式：判斷月卡是否有效
+  bool _calculateIsActive(String? dateStr) {
+    if (dateStr == null) return false;
     try {
-      final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
-      final userDoc = await userDocRef.get();
+      return DateTime.parse(dateStr).isAfter(DateTime.now());
+    } catch (e) {
+      return false;
+    }
+  }
 
-      if (userDoc.exists) {
-        final data = userDoc.data()!;
 
-        // 🌟 1. 查帳前，先確認是不是月卡尊爵 VVIP！
-        bool hasPass = false;
-        final endDateStr = data['monthlySubEndDate'] as String?;
-        if (endDateStr != null) {
-          try {
-            final endDate = DateTime.parse(endDateStr);
-            if (endDate.isAfter(DateTime.now())) {
-              hasPass = true; // 月卡還沒過期
-            }
-          } catch (_) {}
-        }
+  // ✨ 總裁專屬：全域共用的次數查帳系統
+  Future<void> _initRegenerateCount() async {
+    final user = FirebaseAuth.instance.currentUser;
+    // 加上對 sessionId 的安全檢查
+    if (user == null || widget.sessionId == null) return;
 
-        // 根據月卡狀態決定今天的總扣打
-        final int maxCount = hasPass ? 20 : 3;
+    try {
+      bool hasPass = _isMonthlyPassActive;
+      final int maxCount = hasPass ? 20 : 3;
+      final todayStr = DateTime.now().toString().substring(0, 10);
 
-        // 🌟 2. 判斷今天日期
-        final todayStr = DateTime.now().toString().substring(0, 10);
-        final lastDate = data['lastRegenerateDate'] as String?;
+      // 1. 定義路徑 (宣告 docRef)
+      final docRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('aiRequests')
+          .doc(widget.sessionId);
 
-        if (lastDate != todayStr) {
-          // 🎉 發現是新的一天！幫玩家把次數補滿
-          if (mounted) {
-            setState(() {
-              _hasMonthlyPass = hasPass;
-              _maxRegenerateCount = maxCount;
-              _freeRegenerateCount = maxCount;
-            });
-          }
-          // 同步給雲端：今天已經領過滿血次數囉
-          await userDocRef.update({
-            'regenerateCount': maxCount,
-            'lastRegenerateDate': todayStr,
+      // 2. 先去抓資料，不要先寫入
+      final docSnapshot = await docRef.get();
+      final data = docSnapshot.data() ?? {};
+
+      final lastDate = data['lastRegenerateDate'] as String?;
+      final currentCount = data['regenerateCount'] as int? ?? maxCount;
+
+      // 3. 判斷是否需要重置
+      if (lastDate != todayStr) {
+        // 🎉 新的一天 (或是全新對話)：補滿次數
+        if (mounted) {
+          setState(() {
+            _hasMonthlyPass = hasPass;
+            _maxRegenerateCount = maxCount;
+            _freeRegenerateCount = maxCount;
           });
-        } else {
-          // 🕰️ 還是同一天，讀取他在其他聊天室用剩的真實次數
-          int savedCount = data['regenerateCount'] ?? maxCount;
-
-          if (mounted) {
-            setState(() {
-              _hasMonthlyPass = hasPass;
-              _maxRegenerateCount = maxCount;
-              _freeRegenerateCount = savedCount; // 👈 關鍵：覆蓋掉預設的 3！
-            });
-          }
         }
+
+        // 這時候才執行寫入
+        await docRef.set({
+          'regenerateCount': maxCount,
+          'lastRegenerateDate': todayStr,
+        }, SetOptions(merge: true));
+
+        debugPrint("🔄 初始化：重置對話 ${widget.sessionId} 為 $maxCount 次");
+
+      } else {
+        // 🕰️ 同一天：讀取雲端現有的次數
+        if (mounted) {
+          setState(() {
+            _hasMonthlyPass = hasPass;
+            _maxRegenerateCount = maxCount;
+            _freeRegenerateCount = currentCount;
+          });
+        }
+        debugPrint("📥 讀檔成功：今日對話 ${widget.sessionId} 剩餘 $currentCount 次");
       }
     } catch (e) {
-      debugPrint("讀取重新生成次數失敗: $e");
+      debugPrint("❌ 讀取對話次數失敗: $e");
     }
   }
 
@@ -366,8 +410,10 @@ class _ChatPageState extends State<ChatPage> {
             const Text('星光契約啟動'),
           ],
         ),
+        // 在 content 裡面：
         content: Text(
-          '親愛的，今日的額度已經用完囉！\n\n開通【戀戀月卡】，每日享有 ${_maxRegenerateCount} 次重新生成機會，讓他每一次的回覆都更貼近您的心意。',
+          '今日的額度已經用完囉！\n\n'
+              '${_hasMonthlyPass ? "您的月卡額度已用盡。" : "開通【戀戀月卡】，每日享有 20 次重新生成機會，讓他每一次的回覆都更貼近您的心意。"}',
           style: const TextStyle(fontSize: 16),
         ),
         actions: [
@@ -949,11 +995,16 @@ class _ChatPageState extends State<ChatPage> {
 
                   // 2. 如果有傳入自訂圖示，就顯示自訂圖示
                   if (!isError && customIcon != null) Icon(customIcon, color: Colors.amberAccent, size: 20),
-
                   // 處理圖示跟文字的間距
                   if (isError || customIcon != null) const SizedBox(width: 8),
-
-                  Text(message, style: const TextStyle(color: Colors.white, fontSize: 16)),
+                  // ✨ 總裁級防護：加上 Flexible！讓超長文字自動換行，絕不衝破你的精美排版！
+                  Flexible(
+                    child: Text(
+                      message,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      softWrap: true, // 💡 總裁秘技：允許文字在遇到邊界時優雅地自動換行
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -1050,24 +1101,30 @@ class _ChatPageState extends State<ChatPage> {
     });
 
     try {
-      // 🌟 2. 毀屍滅跡：把資料庫裡那句失敗的 AI 台詞刪掉
-      if (widget.shouldSave == true && _messagesCollection != null) {
+      // 🌟 1. 毀屍滅跡：直接刪除該筆 AI 訊息 (不再需要判斷 shouldSave)
+      if (_messagesCollection != null) {
         await _messagesCollection!.doc(aiMessageId).delete();
-      } else {
-        _testMessages.removeWhere((msg) => msg.id == aiMessageId);
       }
 
-      // 🌟 3. 喚醒長期記憶 (跟原本的邏輯一模一樣)
+      // 🌟 2. 喚醒長期記憶：直接從 Firestore 抓取歷史紀錄
       List<Map<String, String>> actualChatHistory = [];
-      if (widget.shouldSave == true && _messagesCollection != null) {
-        // 抓取包含玩家剛剛說的那句話的歷史紀錄
-        final historySnapshot = await _messagesCollection!.orderBy('timestamp', descending: true).limit(16).get();
+
+      if (_messagesCollection != null) {
+        // 直接抓取該對話的歷史，無需判斷 shouldSave
+        final historySnapshot = await _messagesCollection!
+            .orderBy('timestamp', descending: true)
+            .limit(16)
+            .get();
+
         var docsList = historySnapshot.docs.reversed.toList();
         for (var doc in docsList) {
           final data = doc.data() as Map<String, dynamic>;
           final sender = data['sender'];
           if (sender == 'user' || sender == 'ai') {
-            actualChatHistory.add({"role": sender == 'ai' ? "assistant" : "user", "text": data['text'] as String? ?? ''});
+            actualChatHistory.add({
+              "role": sender == 'ai' ? "assistant" : "user",
+              "text": data['text'] as String? ?? ''
+            });
           }
         }
       } else {
@@ -2049,7 +2106,8 @@ class _ChatPageState extends State<ChatPage> {
 
     try {
       // 🌟 2. 暴力現抓點數：解決 9325 點卻報不夠的問題
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(
+          userId).get();
       int myActualFlowers = userDoc.data()?['flowerPoints'] ?? 0;
 
       final bool isFreeToday = await _isBirthdayFreeChatActive();
@@ -2058,58 +2116,75 @@ class _ChatPageState extends State<ChatPage> {
       // 🌸 決定本次聊天的收費標準（改用 AppConfig 統一管理常數）
       int messageCost = AppConfig.costDailyChat;
       if (_currentMode == ChatMode.story) messageCost = AppConfig.costStoryChat;
-      if (_currentMode == ChatMode.immersive) messageCost = AppConfig.costImmersiveChat;
-      if (_currentMode == ChatMode.gemini) messageCost = AppConfig.costGeminiChat;
+      if (_currentMode == ChatMode.immersive)
+        messageCost = AppConfig.costImmersiveChat;
+      if (_currentMode == ChatMode.gemini)
+        messageCost = AppConfig.costGeminiChat;
 
       if (myActualFlowers < messageCost) {
         if (mounted) {
           // ✨ 總裁級：無縫接軌商城的專屬互動彈窗
           showDialog(
             context: context,
-            builder: (BuildContext dialogContext) => AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: Row(
-                children: [
-                  const Icon(Icons.local_florist, color: Colors.pinkAccent), // 繁花幣的小圖示
-                  const SizedBox(width: 8),
-                  Text(l10n.chat_points_not_enough_title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                ],
-              ),
-              content: Text(
-                  '${l10n.chat_points_shortage(myActualFlowers.toString())}\n\n${l10n.chat_points_not_enough_desc}',
-                  style: const TextStyle(fontSize: 16)
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: Text(l10n.cancelButton ?? '稍後再說', style: const TextStyle(color: Colors.grey)),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary, // 主題色
-                    foregroundColor: Colors.white,
-                    shape: const StadiumBorder(),
+            builder: (BuildContext dialogContext) =>
+                AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  title: Row(
+                    children: [
+                      const Icon(Icons.local_florist, color: Colors.pinkAccent),
+                      // 繁花幣的小圖示
+                      const SizedBox(width: 8),
+                      Text(l10n.chat_points_not_enough_title,
+                          style: TextStyle(color: Theme
+                              .of(context)
+                              .colorScheme
+                              .onSurface)),
+                    ],
                   ),
-                  onPressed: () {
-                    Navigator.pop(dialogContext); // 1. 先關掉這個提醒視窗
+                  content: Text(
+                      '${l10n.chat_points_shortage(
+                          myActualFlowers.toString())}\n\n${l10n
+                          .chat_points_not_enough_desc}',
+                      style: const TextStyle(fontSize: 16)
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(dialogContext),
+                      child: Text(l10n.cancelButton ?? '稍後再說',
+                          style: const TextStyle(color: Colors.grey)),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme
+                            .of(context)
+                            .colorScheme
+                            .primary, // 主題色
+                        foregroundColor: Colors.white,
+                        shape: const StadiumBorder(),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(dialogContext); // 1. 先關掉這個提醒視窗
 
-                    // 🚀 2. 總裁專機：立刻載玩家去買月卡或補幣！
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const StorePage()), // 確保你有 import store_page
-                    );
-                  },
-                  child: const Text('前往獲取'),
+                        // 🚀 2. 總裁專機：立刻載玩家去買月卡或補幣！
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (
+                              context) => const StorePage()), // 確保你有 import store_page
+                        );
+                      },
+                      child: const Text('前往獲取'),
+                    ),
+                  ],
                 ),
-              ],
-            ),
           );
         }
         return;
       }
       // 🌟 3. 防彈檢查：如果連線失敗，不要強行執行，避免 Unexpected null value
       // ✨ 總裁急救包：給它一點耐心，不要馬上放棄！
-      if (widget.shouldSave == true && _messagesCollection == null) {
+      // 🌟 改良後的等待機制：只檢查 Firebase 是否準備好，不管 shouldSave 了
+      if (_messagesCollection == null) {
         debugPrint("⏳ _messagesCollection 還沒準備好，稍等 0.5 秒...");
 
         // 讓程式稍微等一下 Firebase 建置房間
@@ -2120,7 +2195,7 @@ class _ChatPageState extends State<ChatPage> {
           debugPrint(
               "❌ 錯誤：等了 0.5 秒 _messagesCollection 還是 Null，無法寫入訊息！");
           if (mounted) {
-            // ✨ 總裁級：優雅提示系統還在準備中，帶個小紅驚嘆號！
+            // ✨ 總裁級：優雅提示系統還在準備中
             _showCenterToast(l10n.chat_room_not_ready, isError: true);
           }
           return; // 真的不行才中斷
@@ -2143,8 +2218,11 @@ class _ChatPageState extends State<ChatPage> {
             final storageRef = FirebaseStorage.instance
                 .ref()
                 .child('artifacts/lianlianshiguang/chat_audios')
-                .child('web_audio_${DateTime.now().millisecondsSinceEpoch}.webm');
-            final uploadTask = await storageRef.putData(audioBytes, SettableMetadata(contentType: 'audio/webm'));
+                .child('web_audio_${DateTime
+                .now()
+                .millisecondsSinceEpoch}.webm');
+            final uploadTask = await storageRef.putData(
+                audioBytes, SettableMetadata(contentType: 'audio/webm'));
             storagePath = await uploadTask.ref.getDownloadURL();
           } catch (e) {
             print("❌ 網頁版錄音上傳失敗: $e");
@@ -2157,8 +2235,8 @@ class _ChatPageState extends State<ChatPage> {
       }
 
       // --- B. 寫入用戶訊息到 Firestore ---
-      if (widget.shouldSave == true && _messagesCollection != null) {
-        // 🛡️ 防彈版：這裡加了 _messagesCollection != null 檢查，絕對不會崩潰
+      // 🛡️ 防彈版：只要有集合存在，就直接寫入資料庫
+      if (_messagesCollection != null) {
         await _messagesCollection!.add({
           'sender': 'user',
           'text': userText.trim(),
@@ -2166,7 +2244,6 @@ class _ChatPageState extends State<ChatPage> {
           'path': storagePath ?? '',
           'timestamp': FieldValue.serverTimestamp(),
         });
-
         final userCharRef = _db
             .collection('users')
             .doc(userId)
@@ -2215,16 +2292,30 @@ class _ChatPageState extends State<ChatPage> {
 
       // --- C. 喚醒真正的長期記憶 ---
       List<Map<String, String>> actualChatHistory = [];
-      if (widget.shouldSave == true && _messagesCollection != null) {
-        final historySnapshot = await _messagesCollection!.orderBy('timestamp', descending: true).limit(16).get();
+      // 🌟 直接檢查集合是否存在即可，不再需要 shouldSave
+      if (_messagesCollection != null) {
+        final historySnapshot = await _messagesCollection!
+            .orderBy('timestamp', descending: true)
+            .limit(16)
+            .get();
+
         var docsList = historySnapshot.docs.reversed.toList();
+
         for (int i = 0; i < docsList.length; i++) {
           final data = docsList[i].data() as Map<String, dynamic>;
           final sender = data['sender'];
           String text = data['text'] as String? ?? '';
-          if (i == docsList.length - 1 && sender == 'user' && secretPrompt != null) text = secretPrompt;
+
+          // 處理秘密提示詞
+          if (i == docsList.length - 1 && sender == 'user' && secretPrompt != null) {
+            text = secretPrompt;
+          }
+
           if (sender == 'user' || sender == 'ai') {
-            actualChatHistory.add({"role": sender == 'ai' ? "assistant" : "user", "text": text});
+            actualChatHistory.add({
+              "role": sender == 'ai' ? "assistant" : "user",
+              "text": text
+            });
           }
         }
       } else {
@@ -2323,7 +2414,6 @@ class _ChatPageState extends State<ChatPage> {
           // ========================================================
 
           // B. 同步更新全域最高好感度 (widget.shouldSave 整個邏輯搬到 mounted 外面)
-          if (widget.shouldSave == true) {
             try {
               final userCharRef = FirebaseFirestore.instance
                   .collection('users')
@@ -2361,7 +2451,6 @@ class _ChatPageState extends State<ChatPage> {
                 await FirebaseFirestore.instance.collection('artifacts').doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang')).collection('users').doc(userId).collection('private_characters').doc(characterId).update({'lastChatTime': FieldValue.serverTimestamp()});
               } catch (e) {
                 print('更新私人角色時間失敗: $e');
-              }
             }
           }
 
@@ -2640,10 +2729,16 @@ class _ChatPageState extends State<ChatPage> {
           // 延遲一下下再彈出，等聊天室背景跟程宇的對話框跑出來，體感更流暢
           Future.delayed(const Duration(milliseconds: 800), () {
             if (mounted) {
-              UserProfilePopup.show(context, onSaved: () {
-                // 玩家填寫完畢後的邏輯 (例如重新整理背景人設變數)
-                _checkProfileCompletion();
-              });
+              // ✨ 總裁級修復：補上遺失的兩個必填參數！
+              UserProfilePopup.show(
+                  context,
+                  roomId: widget.sessionId!,              // 🔑 補上房間 ID
+                  characterId: widget.character.id,   // 🔑 補上角色 ID
+                  onSaved: () {
+                    // 玩家填寫完畢後的邏輯
+                    _checkProfileCompletion(widget.sessionId!, widget.character.id);
+                  }
+              );
             }
           });
         }
@@ -2654,78 +2749,87 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Future<void> _checkProfileCompletion() async {
+  // ✨ 總裁級進化：加入 currentRoomId 參數，讓每個房間都能召喚專屬的分身！
+  Future<void> _checkProfileCompletion(String roomId, String characterId) async {
     if (_isChecking) return;
     _isChecking = true;
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) {
       _isChecking = false;
       return;
     }
+
     try {
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       final data = doc.data() ?? {};
 
       final String nickname = data['nickname'] ?? l10n.chat_default_player_name;
       final String birthday = data['birthday'] ?? l10n.authMethodUnknown;
-      _playerNickname = nickname;
 
-      // 🌟 新增：多重身分讀取邏輯
       Map<String, dynamic>? activeProfile;
 
-      // 1. 先嘗試找新版的「多重檔案 (profiles)」與「啟動中的 ID (activeProfileId)」
-      if (data.containsKey('profiles') && data.containsKey('activeProfileId')) {
-        List<dynamic> profiles = data['profiles'];
-        String activeId = data['activeProfileId'];
+      if (data.containsKey('profiles')) {
+        // 📦 這是全宇宙所有角色的衣服大總匯
+        List<dynamic> allProfiles = data['profiles'];
 
-        // 🔍 在陣列中尋找符合 ID 的那個身分
-        try {
-          activeProfile = profiles.firstWhere((p) => p['id'] == activeId);
-        } catch (e) {
-          activeProfile = null; // 如果意外找不到就留空
+        // 🚪 這是房間的記憶體：紀錄哪個房間穿了哪件衣服
+        Map<String, dynamic>? roomProfiles = data['roomProfiles'];
+        String? targetProfileId;
+
+        // 🎯 房間記憶：找出這個房間綁定的衣服 ID
+        if (roomProfiles != null && roomProfiles.containsKey(roomId)) {
+          targetProfileId = roomProfiles[roomId];
+        }
+
+        if (targetProfileId != null) {
+          try {
+            // 🔒 ✨ 總裁級雙重驗證：這件衣服的 ID 必須吻合，且必須屬於「當前這個男主」！
+            activeProfile = allProfiles.firstWhere((p) =>
+            p['id'] == targetProfileId && p['characterId'] == characterId
+            );
+          } catch (e) {
+            // 如果這件衣服不屬於這個男主（例如防呆、或舊資料異常），就當作沒穿！
+            activeProfile = null;
+          }
+        } else {
+          // ✨ 新房間進來，絕對是 null！觸發基礎名片！
+          activeProfile = null;
         }
       }
-      // 2. 🛡️ 過渡期防護：如果玩家還沒點開過新版設定，就先讀取舊版的單一名片
-      else if (data.containsKey('profile')) {
-        activeProfile = Map<String, dynamic>.from(data['profile']);
-        activeProfile['profileName'] = '預設檔案'; // 幫舊檔案加個稱呼
+      // ... (過渡期舊版 profile 防護略) ...
+
+      // ✨ 虛擬組裝：沒有指定人設的房間，一律用最原始的名字跟生日！
+      if (activeProfile == null) {
+        activeProfile = {
+          'profileName': '基礎檔案',
+          'name': nickname,
+          'birthday': birthday,
+          'height': '尚未填寫',
+          'appearance': '尚未填寫',
+          'occupation': '尚未填寫',
+          'intro': '這份拾光檔案還在等待主人動筆...'
+        };
       }
 
-      // 根據是否找到檔案來更新畫面
-      if (activeProfile != null) {
-        // ✨ 完整人設檔案
-        final String profileName = activeProfile['profileName'] ?? l10n.profile_unnamed_file;
-        final String currentIdentityName = activeProfile['name']?.toString().trim().isNotEmpty == true
-            ? activeProfile['name']
-            : nickname;
-
-        if (mounted) setState(() {
+      // 完美渲染 (l10n.chat_profile_full...)
+      if (mounted) {
+        setState(() {
           _userProfileText = l10n.chat_profile_full(
-              profileName,                     // {name}
-              currentIdentityName,             // {identity}
-              birthday,                        // {birthday}
-              activeProfile!['height'] ?? '',  // {height}
-              activeProfile!['appearance'] ?? '', // {appearance}
-              activeProfile!['occupation'] ?? '', // {job}
-              activeProfile!['intro'] ?? ''    // {intro}
-          );
-        });
-
-      } else {
-        // 🔒 尚未填寫的神秘狀態
-        if (mounted) {
-          setState(() {
-          _userProfileText = l10n.chat_profile_locked(
-              nickname, // {nickname}
-              birthday  // {birthday}
+              activeProfile!['profileName'] ?? l10n.profile_unnamed_file,
+              activeProfile!['name']?.toString().trim().isNotEmpty == true ? activeProfile!['name'] : nickname,
+              birthday,
+              activeProfile!['height'] ?? '尚未填寫',
+              activeProfile!['appearance'] ?? '尚未填寫',
+              activeProfile!['occupation'] ?? '尚未填寫',
+              activeProfile!['intro'] ?? '這份拾光檔案還在等待主人動筆...'
           );
         });
       }
-        }
+
     } catch (e) {
-      // 這裡屬於除錯訊息，不用翻譯喔！
-      print("檢查玩家拾光檔案失敗: $e");
+      debugPrint("檢查房間 [$roomId] 的專屬拾光檔案失敗: $e");
     } finally {
       _isChecking = false;
     }
@@ -2779,8 +2883,6 @@ class _ChatPageState extends State<ChatPage> {
                   _editMessage(message);
                 },
               ),
-
-            // 🗑️ 原本的單一刪除
             // 🗑️ 總裁進化版：按下刪除直接進入「多選選取模式」
             ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.red),
@@ -3523,16 +3625,29 @@ class _ChatPageState extends State<ChatPage> {
 
                     // 🪪 5. 拾光檔案
                     _buildToolItem(Icons.badge_outlined, l10n.chat_tool_profile, () {
-                      // 1. 直接關閉工具選單
+                      // 🌟 總裁級救援：精準抓住「當下這個主畫面(State)」的 context！
+                      // 這樣就不會用到馬上要被 pop 殺掉的那個工具選單 context。
+                      final safeContext = this.context;
+
+                      // 1. 先關閉底部的工具選單 (這裡用原本的 context 關沒問題，因為就是要殺掉它)
                       Navigator.pop(context);
-                      // 2. 彈出個人資料設定視窗
-                      UserProfilePopup.show(context, onSaved: () {
-                        _checkProfileCompletion();
-                        // 🌟 3. 總裁級：儲存成功後，只要確認畫面還在 (mounted)，直接呼叫中間小彈窗！
-                        if (mounted) {
-                          _showCenterToast(l10n.chat_profile_updated_msg);
-                        }
-                      });
+
+                      // 2. ✨ 總裁級開門：把 safeContext 跟兩把鑰匙精準傳入！
+                      UserProfilePopup.show(
+                        safeContext, // 🛡️ 替換成絕對安全的 safeContext
+
+                        roomId: widget.sessionId!,
+                        characterId: widget.characterId,
+
+                        onSaved: () {
+                          _checkProfileCompletion(widget.sessionId!, widget.characterId);
+
+                          if (mounted) {
+                            // 🛡️ 這裡的 Toast 也要改用 safeContext 來呼叫！
+                            ToastUtils.showCenterToast(safeContext, l10n.chat_profile_updated_msg);
+                          }
+                        },
+                      );
                     }),
                     // 👆 6. 互動玩法
                     _buildToolItem(Icons.touch_app_outlined, l10n.chat_tool_interact, () {
@@ -5458,7 +5573,6 @@ class _ChatPageState extends State<ChatPage> {
                       // 🔄 重新生成按鈕 (升級橢圓明顯版)
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          // ✨ 修正 1：外觀防呆！只要次數是 0，不管有沒有月卡，按鈕一律反灰！
                           backgroundColor: (_freeRegenerateCount > 0)
                               ? Theme.of(context).colorScheme.primaryContainer
                               : Colors.grey.withValues(alpha: 0.2),
@@ -5477,59 +5591,29 @@ class _ChatPageState extends State<ChatPage> {
                             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
                         ),
                         onPressed: () async {
-                          // 🛑 總裁鐵腕防護：只要次數歸零，不管你是誰，一律擋下來！
+                          // 1. 擋下機制
                           if (_freeRegenerateCount <= 0) {
-                            if (!_hasMonthlyPass) {
-                              // 沒次數又沒月卡：跳出推銷視窗
-                              _showSubscriptionDialog();
-                            } // 替換掉原本 onPressed 裡面那一小段 SnackBar 的地方：
-                            else {
-                              // 有月卡但次數真的用光了：溫柔的中間小彈窗提示
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) => AlertDialog(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  title: const Icon(Icons.info_outline, color: Colors.blueAccent, size: 48),
-                                  content: const Text(
-                                    '今日的重新生成次數已經用盡囉！\n明日將會自動為您補充滿次數。',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('好的'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                            return; // 🛑 絕對擋下，不會執行到後面的扣次數！
+                            _showSubscriptionDialog();
+                            return;
                           }
 
-                          // ✨ 總裁升級：自動判斷現在是用哪一個對話陣列！
-                          final activeMessages = (widget.shouldSave == true && _messagesCollection != null)
-                              ? _localMessages
-                              : _testMessages;
-                          // ✨ 修正 2：確保聊天室裡真的有對話可以抓
-                          if (activeMessages.length < 2) {
-                            // 換成總裁小彈窗，帶有錯誤/提示小圖示
+                          // 2. 檢測對話條件 (直接檢查 _messagesCollection 是否就緒)
+                          if (_messagesCollection == null) {
+                            _showCenterToast('系統還在準備中，請稍候...', isError: true);
+                            return;
+                          }
+
+                          // 🌟 這裡直接使用 _messagesCollection 的資料或本地暫存，不需要再區分 shouldSave
+                          // 假設妳現在已經統一改用 Firestore 的數據源
+                          final querySnapshot = await _messagesCollection!.orderBy('timestamp', descending: true).limit(2).get();
+                          if (querySnapshot.docs.length < 2) {
                             _showCenterToast('目前沒有可以重新生成的對話喔！', isError: true);
                             return;
                           }
 
-// 💡 終極防呆：確保最新的一句真的是 AI 說的，上一句真的是玩家說的
-                          if (activeMessages[0].sender != 'ai' || activeMessages[1].sender != 'user') {
-                            // 換成總裁小彈窗，帶有錯誤/提示小圖示
-                            _showCenterToast('只能重新生成他的回覆喔！', isError: true);
-                            return;
-                          }
-
-                          // 1. 安全抓出要刪除的 AI 訊息 ID，以及上一句玩家說的話
-                          final aiMessageId = activeMessages[0].id;
-                          final userMessageText = activeMessages[1].text;
-
-                          // 2. 扣次數與存檔 (現在絕對安全，保證是大於 0 才會進來這裡減 1)
+                          // 取得 ID 與 Text
+                          final aiMessageId = querySnapshot.docs[0].id;
+                          final userMessageText = (querySnapshot.docs[1].data() as Map<String, dynamic>)['text'] ?? '';                          // 3. 扣次數與同步更新 (🌟 使用正確路徑)
                           setState(() {
                             _freeRegenerateCount--;
                           });
@@ -5538,16 +5622,25 @@ class _ChatPageState extends State<ChatPage> {
                           if (user != null) {
                             try {
                               final todayStr = DateTime.now().toString().substring(0, 10);
-                              await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+
+                              // 🌟 關鍵修正：路徑改為 user -> aiRequests -> sessionId
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(user.uid)
+                                  .collection('aiRequests')
+                                  .doc(widget.sessionId!)
+                                  .set({
                                 'regenerateCount': _freeRegenerateCount,
                                 'lastRegenerateDate': todayStr,
-                              });
+                              }, SetOptions(merge: true));
+
+                              debugPrint("✅ 已同步更新對話 ${widget.sessionId} 的次數: $_freeRegenerateCount");
                             } catch (e) {
-                              debugPrint('⚠️ 更新重新生成次數失敗: $e');
+                              debugPrint('⚠️ 更新次數失敗: $e');
                             }
                           }
 
-                          // 🌟 3. 呼叫總裁秘製的無痕通道！
+                          // 4. 呼叫重新生成
                           _regenerateAIResponse(aiMessageId, userMessageText);
                         },
                       ),

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart'; // ✨ 1. 引入 Firebase Storage
 import 'package:cloud_firestore/cloud_firestore.dart';   // ✨ 2. 引入 Firestore
 import '../models/moment_model.dart';
+import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
@@ -63,8 +64,15 @@ class _EditMomentPageState extends State<EditMomentPage> {
 
     // 檢查是否有變更，沒變更就直接退回
     if (newContent == widget.momentToEdit.content && !_imageChanged) {
-      ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(l10n.common_no_changes)));
-      Navigator.pop(context);
+      // ✨ 總裁級防呆：無效修改的溫柔攔截，伴隨完美的過場退場！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.common_no_changes,
+        customIcon: Icons.history_edu_rounded, // 💡 總裁精選：帶有「維持原案/筆記」意象的輕柔圖示
+        // 💡 總裁秘技：若想表達「一切如常」，也可以使用 Icons.done_all_rounded
+        // 或是 Icons.edit_off_rounded，語意會非常精準。
+      );
+      Navigator.pop(context); // 帶著懸浮提示，行雲流水地滑回上一頁
       return;
     }
 
@@ -108,11 +116,26 @@ class _EditMomentPageState extends State<EditMomentPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(l10n.moment_updated_success)));
-        Navigator.pop(context, true); // 返回上一頁並傳回 true
+        // ✨ 總裁級：動態更新成功的完美轉場，徹底告別 SnackBar 跨頁面的閃爍災難！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.moment_updated_success,
+          customIcon: Icons.task_alt_rounded, // 💡 總裁精選：帶有「俐落完成、打勾確認」意象的完美圖示
+          // 💡 總裁秘技：如果想強調「圖文已經為您修改好囉」，
+          // 換成 Icons.edit_note_rounded 或 Icons.photo_filter_rounded 也會非常有質感！
+        );
+
+        Navigator.pop(context, true); // 返回上一頁並傳回 true，行雲流水，毫無破綻！
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.common_save_failed(e.toString()))));
+      if (mounted) {
+        // ✨ 總裁級防護：通用儲存失敗的終極兜底！妥善包裝未知錯誤，維持系統優雅！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.common_save_failed(e.toString()),
+          isError: true, // 💡 全域統一的紅色驚嘆號，清楚傳達異常狀態
+        );
+      }
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }

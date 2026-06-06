@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/theme_notifier.dart';
 import '../models/moment_model.dart';
+import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'create_moment_page.dart';
 import 'moment_card.dart';
@@ -23,18 +24,18 @@ class _MomentsPageState extends State<MomentsPage> {
   String? _nickname;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   String? _userId = FirebaseAuth.instance.currentUser?.uid;
-  // 🌟 總裁指示：這裡也要對齊總部 AppConfig，不要再用環境變數了！
   final String _appId = AppConfig.appId;
   int _likeProgress = 0;
   bool _isLikeClaimed = false;
   late Stream<QuerySnapshot> _friendsStream;
+
   @override
   void initState() {
     super.initState();
     _userId = FirebaseAuth.instance.currentUser?.uid;
     _loadDailyTaskProgress();
 
-    // ✨ 關鍵：在這裡就先連好線！這樣 build 跑幾次，連線都不會中斷
+    // ✨ 關鍵：在這裡就先連好線！
     if (_userId != null) {
       _friendsStream = _db.collection('users').doc(_userId!).collection('friends').snapshots();
     }
@@ -44,21 +45,23 @@ class _MomentsPageState extends State<MomentsPage> {
   Future<void> _handleLikeTaskProgress(Moment moment) async {
     final l10n = AppLocalizations.of(context)!;
     if (_userId == null) return;
+
+    // 1. 本地更新：讓 UI 先動，給使用者即時回饋
     setState(() {
       _likeProgress++;
     });
+
+    // 2. 背景處理雲端邏輯（不要用 await 等待所有刷新，除非有絕對必要）
     final userDocRef = _db.collection('users').doc(_userId);
 
+    // 這裡的邏輯保持不動，但把 _loadDailyTaskProgress 拿掉！
     try {
-      // 1. 雲端記帳：幫按讚次數 +1
       await userDocRef.update({
         'dailyTasks.likeProgress': FieldValue.increment(1),
       });
       // 使用妳剛定義好的 moment.createdBy 找出這篇貼文的「親媽」
         final String recipientId = moment.createdBy;
-
         if (recipientId.isNotEmpty && recipientId != _userId) {
-
           // ✨ 總裁關鍵判斷：決定信件內容
           String mailBody;
           if (moment.isCreatorPost) {
@@ -69,7 +72,6 @@ class _MomentsPageState extends State<MomentsPage> {
             // 這裡會抓取 moment.authorName (例如：程宇)
             mailBody = l10n.moment_like_other(_nickname ?? "某位朋友", moment.authorName);
           }
-
           await _sendNotificationLetter(
             recipientId: recipientId,
             postId: moment.id,
@@ -83,18 +85,17 @@ class _MomentsPageState extends State<MomentsPage> {
       // 3. 檢查是否達標 (目標 3 次)
       if (_likeProgress == 3 && !_isLikeClaimed) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.task_social_tour_complete),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 3),
-              behavior: SnackBarBehavior.floating,
-            ),
+          // ✨ 總裁級：社交導覽完成的榮譽印記，將綠色色塊轉化為質感圖示！
+          ToastUtils.showCenterToast(
+            context,
+            l10n.task_social_tour_complete,
+            customIcon: Icons.tour_rounded, // 💡 總裁精選：用「旗幟」圖示象徵導覽與巡迴的圓滿達成！
           );
         }
       }
     } catch (e) {
       print('更新按讚進度失敗: $e');
+      setState(() => _likeProgress--);
     }
   }
   Future<void> _loadDailyTaskProgress() async {
@@ -169,16 +170,15 @@ class _MomentsPageState extends State<MomentsPage> {
     if (_userId == null) return Center(child: Text(l10n.please_login_first));
 
     return StreamBuilder<QuerySnapshot>(
-      stream: _db.collection('users').doc(_userId!).collection('friends').snapshots(),
+      stream: _friendsStream, // 💡 修正 1：改用 initState 裡連好線的 _friendsStream，不要再當場 snapshots() 了！
       builder: (context, friendSnapshot) {
         if (friendSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
         final friendIds = friendSnapshot.data?.docs.map((doc) => doc.id).toList() ?? [];
-        friendIds.add(_userId!); // 把自己也加進去名單
+        friendIds.add(_userId!);
 
-        // ✨ 修正：把重複的 return 刪掉，結構更清爽
         return TabBarView(
           children: [
             PersistentFeed(
@@ -188,7 +188,7 @@ class _MomentsPageState extends State<MomentsPage> {
               appId: _appId,
               onLikeTapped: _handleLikeTaskProgress,
               onDeleteTapped: _deleteMoment,
-              onAvatarTapped: _navigateToCharacterProfile, // ✨ 交出跳轉指令！
+              onAvatarTapped: _navigateToCharacterProfile,
             ),
             PersistentFeed(
               friendIds: friendIds,
@@ -197,14 +197,13 @@ class _MomentsPageState extends State<MomentsPage> {
               appId: _appId,
               onLikeTapped: _handleLikeTaskProgress,
               onDeleteTapped: _deleteMoment,
-              onAvatarTapped: _navigateToCharacterProfile, // ✨ 交出跳轉指令！
+              onAvatarTapped: _navigateToCharacterProfile,
             ),
           ],
         );
       },
     );
   }
-
   // 🗑️ 刪除動態的執行邏輯
   Future<void> _deleteMoment(String momentId) async {
     final l10n = AppLocalizations.of(context)!;
@@ -232,8 +231,13 @@ class _MomentsPageState extends State<MomentsPage> {
             .collection('moments')
             .doc(momentId)
             .delete();
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.delete_success))
+        // ✨ 總裁級：乾淨俐落的刪除回饋，讓畫面瞬間清爽！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.delete_success,
+          customIcon: Icons.delete_outline_rounded, // 💡 總裁精選：最直覺的空心垃圾桶圖示，視覺負擔極低
+          // 💡 總裁秘技：如果是針對較輕量的元素（例如標籤或小文字），
+          // 使用 Icons.clear_all_rounded 或 Icons.backspace_outlined 也能展現極佳的品味！
         );
       }
     } catch (e) {
@@ -746,7 +750,7 @@ class PersistentFeed extends StatefulWidget {
   final String appId;
   final Function(Moment) onLikeTapped;
   final Function(String) onDeleteTapped;
-  final Function(Moment) onAvatarTapped; // ✨ 新增：把跳轉功能傳進來
+  final Function(Moment) onAvatarTapped;
 
   const PersistentFeed({
     super.key,
@@ -756,13 +760,30 @@ class PersistentFeed extends StatefulWidget {
     required this.appId,
     required this.onLikeTapped,
     required this.onDeleteTapped,
-    required this.onAvatarTapped, // 👈 這裡也要必填
+    required this.onAvatarTapped,
   });
 
   @override
   State<PersistentFeed> createState() => _PersistentFeedState();
 }
+
 class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAliveClientMixin {
+  // 💡 修正 2：幫動態牆也建立專屬的 Stream 變數
+  late Stream<QuerySnapshot> _momentsStream;
+
+  @override
+  void initState() {
+    super.initState();
+    // 💡 修正 3：在初始化時就把動態牆的連線定下來，任憑外面怎麼呼叫 setState，這裡都穩如泰山！
+    _momentsStream = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(widget.appId)
+        .collection('moments')
+        .orderBy('createdAt', descending: true)
+        .limit(50)
+        .snapshots();
+  }
+
   @override
   bool get wantKeepAlive => true; // 🌟 保命符：確保切換分頁或退回時不重刷
 
@@ -772,17 +793,20 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
 
     return RefreshIndicator(
       onRefresh: () async {
-        setState(() {});
+        // 💡 如果使用者手動下拉重新整理，我們才重新抓一次 Stream
+        setState(() {
+          _momentsStream = FirebaseFirestore.instance
+              .collection('artifacts')
+              .doc(widget.appId)
+              .collection('moments')
+              .orderBy('createdAt', descending: true)
+              .limit(50)
+              .snapshots();
+        });
         await Future.delayed(const Duration(milliseconds: 500));
       },
       child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('artifacts')
-            .doc(widget.appId)
-            .collection('moments')
-            .orderBy('createdAt', descending: true)
-            .limit(50)
-            .snapshots(),
+        stream: _momentsStream, // 💡 修正 4：改用綁定好的 _momentsStream
         builder: (context, momentSnapshot) {
           if (momentSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -815,7 +839,6 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
                 currentUserId: widget.userId,
                 onLikeTapped: () => widget.onLikeTapped(moment),
                 onDeleteTapped: () => widget.onDeleteTapped(moment.id),
-                // ✨ 這裡最重要：直接執行從爸爸那裡傳過來的指令！
                 onAvatarTapped: () => widget.onAvatarTapped(moment),
               );
             },

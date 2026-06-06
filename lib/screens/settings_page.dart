@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../services/theme_notifier.dart'; // ✨ 引入主題大腦
+import '../services/toast_utils.dart';
 import 'feedback_page.dart';
 import 'language_selection_page.dart'; // ✨ 引入語言選擇頁面
 import 'package:shared_preferences/shared_preferences.dart';
@@ -162,8 +163,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 onPressed: () {
                   themeNotifier.resetToDefault();
                   Navigator.pop(dialogContext);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.appearanceRestored)));
+                  // ✨ 總裁級：一鍵恢復外觀的優雅回饋，將視覺焦點完美留在角色身上！
+                  ToastUtils.showCenterToast(
+                    context, // 💡 若在 async 之後，請記得確認 if (context.mounted)
+                    l10n.appearanceRestored,
+                    customIcon: Icons.settings_backup_restore_rounded, // 💡 總裁精選：「恢復/時光倒流」的最佳通用圖示
+                    // 💡 總裁秘技：如果是專門針對「角色裝扮」的恢復，
+                    // 用 Icons.checkroom_rounded (衣帽間) 或 Icons.face_retouching_off_rounded 也會非常有沉浸感喔！
+                  );
                 },
                 child: Text(l10n.confirmReset, style: const TextStyle(color: Colors.red)),
               ),
@@ -199,8 +206,14 @@ class _SettingsPageState extends State<SettingsPage> {
               if (context.mounted) {
                 if (errorMessage == null) {
                   // ✅ 成功：顯示成功訊息
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.deleteAccountSuccessSnackbar)),
+                  // 💡 總裁防護罩提醒：刪除帳號絕對是 async 動作，記得確認外層是否有 if (mounted) 喔！
+
+// ✨ 總裁級：帳號註銷成功的最後道別，乾淨俐落、不留痕跡的完美退場！
+                  ToastUtils.showCenterToast(
+                    context,
+                    l10n.deleteAccountSuccessSnackbar,
+                    customIcon: Icons.no_accounts_rounded, // 💡 總裁精選：專門用於「無帳號 / 帳號已刪除」的精準圖示
+                    // 💡 總裁秘技：如果想帶有一點「揮手道別」的感覺，用 Icons.waving_hand_rounded 也非常有溫度喔！
                   );
 
                   // 🌟 核心修正：不要只是 pop()，要徹底跳回登入頁
@@ -346,8 +359,14 @@ class _SettingsPageState extends State<SettingsPage> {
                       if (currentUser?.uid != null) {
                         Clipboard.setData(ClipboardData(text: currentUser!
                             .uid));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.userIdCopied)));
+                        // ✨ 總裁級：行雲流水的複製回饋，瞬間確認不拖泥帶水！
+                        ToastUtils.showCenterToast(
+                          context, // 💡 如果前一步有使用 await，請確認外層是否有 if (context.mounted)
+                          l10n.userIdCopied,
+                          // 💡 總裁秘技：針對 User ID，除了用傳統的 Icons.copy_rounded，
+                          // 非常推薦使用 Icons.badge_rounded (識別證) 或 Icons.fingerprint_rounded (指紋)，能大幅提升「專屬身分」的高級感！
+                          customIcon: Icons.badge_rounded,
+                        );
                       }
                     },
                     theme: theme,

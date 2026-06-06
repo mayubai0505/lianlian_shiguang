@@ -269,9 +269,9 @@ class _StorePageState extends State<StorePage> {
       );
     }
 
-    final monthlyCard = displayProducts.where((p) => p.productDetails.id == 'com_lianlian_monthly_card').firstOrNull ?? displayProducts.first;
+    final monthlyCard = displayProducts.where((p) => p.productDetails.id == 'com_lianlian_monthly_card_250').firstOrNull ?? displayProducts.first;
     final regularProducts = displayProducts.where(
-            (p) => p.productDetails.id != 'com_lianlian_monthly_card'
+            (p) => p.productDetails.id != 'com_lianlian_monthly_card_250'
     ).toList();
 
     return StreamBuilder<DocumentSnapshot>(

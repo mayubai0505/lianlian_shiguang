@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:convert';
+import '../services/toast_utils.dart';
 import 'chat_page.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
@@ -576,12 +577,22 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         _currentDraftId = docRef.id;
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.draft_saved_success)));
+        // ✨ 總裁級：行雲流水的草稿儲存確認，完美避開虛擬鍵盤的干擾！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.draft_saved_success,
+          customIcon: Icons.save_rounded, // 💡 用「磁碟片/儲存」或是 Icons.edit_document，給予滿滿的安心感
+        );
       }
     } catch (e) {
-      print("儲存草稿失敗: $e");
+      print("儲存草稿失敗: $e"); // 開發者除錯用，保留沒問題
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.draft_save_failed)));
+        // ⚠️ 總裁級防護：儲存失敗的緊急提醒！讓玩家有機會先手動複製文字備份
+        ToastUtils.showCenterToast(
+          context,
+          l10n.draft_save_failed,
+          isError: true, // 💡 紅色驚嘆號，明確告知「現在離開會遺失資料喔」
+        );
       }
     } finally {
       if (mounted) {
@@ -671,7 +682,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       await _db.collection('artifacts').doc(AppConfig.appId).collection('public_characters').doc(widget.character!.id).delete();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.char_deleted)));
+        // ✨ 總裁級：刪除成功後的俐落退場，伴隨畫面返回的完美過場！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.char_deleted,
+          customIcon: Icons.person_remove_rounded, // 💡 總裁精選：「移除角色/人員」專用圖示。如果不是人物，也可以用 Icons.delete_sweep_rounded
+        );
+
         Navigator.pop(context, true); // 回到上一頁並刷新
       }
     } catch (e) {
@@ -787,8 +804,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     // --- 開始儲存流程 ---
     setState(() => _isSaving = true);
     final User? currentUser = FirebaseAuth.instance.currentUser;
+
     if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.user_not_found)));
+      // ✨ 總裁級第一道防線：乾淨俐落的權限攔截！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.user_not_found,
+        isError: true, // 💡 紅色驚嘆號，明確告知玩家「系統目前無法辨識你的身分」
+      );
       setState(() => _isSaving = false);
       return;
     }
@@ -1057,12 +1080,21 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         await _clearDraft();
       }
       // 關閉轉圈圈並跳出成功訊息
-      if (mounted) {
+      if (mounted) { // 💡 若有報錯，請記得替換為 context.mounted
         Navigator.pop(context); // 關閉 loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.char_saved_success(characterData['name'], isEditing ? l10n.update_action : l10n.createButton)))
+
+        // ✨ 總裁級：雙重視覺細節拉滿！根據新增或編輯給予專屬的圖示回饋
+        ToastUtils.showCenterToast(
+          context,
+          l10n.char_saved_success(
+              characterData['name'],
+              isEditing ? l10n.update_action : l10n.createButton
+          ),
+          // 💡 總裁秘技：動態圖示！新增用「加入人物」，編輯用「管理人物」
+          customIcon: isEditing ? Icons.manage_accounts_rounded : Icons.person_add_rounded,
         );
-        Navigator.pop(context, true); // 回到上一頁
+
+        Navigator.pop(context, true); // 帶著成功狀態，優雅地回到上一頁
       }
 
     } catch (e) {
@@ -1166,7 +1198,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           ElevatedButton(
             onPressed: () {
               if (_keywordController.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.keyword_empty_error)));
+                // ✨ 總裁級防呆：精準攔截空白關鍵字，完美避開虛擬鍵盤的遮擋！
+                ToastUtils.showCenterToast(
+                  context,
+                  l10n.keyword_empty_error,
+                  isError: true, // 💡 紅色警告，讓玩家立刻意識到「啊，我忘了打字」
+                  // 💡 總裁秘技：如果是用在搜尋功能，你也可以拿掉 isError，改用 customIcon: Icons.search_off_rounded，語意會更精準喔！
+                );
                 return;
               }
 
@@ -1453,10 +1491,17 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         // 如果還是失敗，把原因印出來
         debugPrint("聲音生成失敗: ${response.body}");
         setState(() => _isGeneratingVoice = false);
-        // 彈出提示讓玩家知道
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.elevenlabs_error(response.statusCode.toString()))),
-        );
+
+        if (mounted) { // 💡 總裁防護罩：非同步操作回來後，一定要確認畫面還在！
+          // ✨ 總裁級：語音生成失敗的優雅提示，明確且不具恐嚇性
+          ToastUtils.showCenterToast(
+            context,
+            l10n.elevenlabs_error(response.statusCode.toString()),
+            isError: true, // 💡 紅色驚嘆號，讓玩家知道是系統出錯
+            // 💡 總裁秘技：如果想讓語意更專屬，可以拿掉 isError，改用：
+            // customIcon: Icons.volume_off_rounded, // 喇叭打叉的圖示，直覺告訴玩家「現在沒聲音」
+          );
+        }
       }
     } catch (e) {
       debugPrint("API 請求發生錯誤: $e");
@@ -1471,8 +1516,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     // 防呆：確認玩家有先選定一個聲音
     if (targetVoiceId == null || targetVoiceId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.voice_bind_first)),
+      // ✨ 總裁級引導：溫柔提醒玩家為角色注入「聲音的靈魂」
+      ToastUtils.showCenterToast(
+        context,
+        l10n.voice_bind_first,
+        customIcon: Icons.mic_external_off_rounded, // 💡 總裁精選：「找不到麥克風」的圖示，直覺告訴玩家要去設定聲音
+        // 或是使用 Icons.record_voice_over_rounded (配音設定) 也很適合！
       );
       return;
     }
@@ -1508,11 +1557,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       } else {
         debugPrint("❌ 試聽失敗: ${response.body}");
         // 🌟 潛規則防護：如果 API 報錯，通常是因為只聽了樣本，還沒正式建立聲音
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.voice_test_failed),
-            backgroundColor: Colors.redAccent,
-          ),
+        // 💡 總裁防護罩提醒：因為試聽通常是 async（非同步）請求，
+        ToastUtils.showCenterToast(
+          context,
+          l10n.voice_test_failed,
+          isError: true, // 💡 完美取代原本的 redAccent，用全域統一的紅驚嘆號精緻呈現
         );
       }
     } catch (e) {
@@ -1555,8 +1604,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       if (response.statusCode != 200) {
         debugPrint("❌ ElevenLabs 儲存聲音失敗: ${response.body}");
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.voice_bind_failed), backgroundColor: Colors.red),
+          // ✨ 總裁級：語音綁定失敗的精準攔截，用高級感取代原生大紅底色！
+          ToastUtils.showCenterToast(
+            context,
+            l10n.voice_bind_failed,
+            isError: true, // 💡 全域統一的紅驚嘆號，清楚傳達錯誤，同時維持 UI 質感
           );
         }
         setState(() => _isSaving = false);
@@ -1582,28 +1634,23 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         });
         // ✨ 華麗的成功提示
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.cloud_done, color: Colors.white),
-                  const SizedBox(width: 12),
-                  Text(l10n.voice_bind_success(widget.character!.name)),
-                ],
-              ),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ),
+          // ✨ 總裁級：語音綁定成功的完美收尾！將原本複雜的 UI 封裝成極致的一行程式碼。
+          ToastUtils.showCenterToast(
+            context,
+            l10n.voice_bind_success(widget.character!.name),
+            customIcon: Icons.cloud_done_rounded, // 💡 完美繼承你原本的「雲端同步成功」圖示！
+            // 💡 總裁秘技：如果想更強調「聲音」，也可以換成 Icons.record_voice_over_rounded
           );
         }
       } else {
         // 如果是新建角色的草稿階段，也給個綠色小提示
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(l10n.voice_bind_success_draft),
-                backgroundColor: Colors.green
-            ),
+          // ✨ 總裁級：語音草稿儲存的輕量回饋，給予玩家毫無壓力的安心感！
+          ToastUtils.showCenterToast(
+            context,
+            l10n.voice_bind_success_draft,
+            customIcon: Icons.edit_note_rounded, // 💡 總裁精選：帶有筆記與草稿意味的圖示，語意滿分。
+            // 💡 若想強調「已經安全存入磁碟」的感覺，使用 Icons.save_rounded 也是絕佳選擇！
           );
         }
       }
@@ -1619,8 +1666,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     } catch (e) {
       debugPrint("儲存失敗: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.sync_failed(e.toString())), backgroundColor: Colors.red),
+        // ✨ 總裁級防護：同步失敗的優雅迫降，用精緻的警告取代驚悚的紅色警報！
+        ToastUtils.showCenterToast(
+          context,
+          l10n.sync_failed(e.toString()),
+          isError: true, // 💡 全域統一的紅色驚嘆號，清楚告知錯誤但不引發焦慮
+          // 💡 總裁秘技：如果你的錯誤訊息 e.toString() 通常很長，
+          // CenterToast 的版面配置會比底部 SnackBar 更適合閱讀，不會把 UI 頂得亂七八糟！
         );
       }
     } finally {
@@ -1704,26 +1756,30 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   onPressed: () {
                     // 🛡️ 總裁防呆第一關：檢查角色是不是還沒出生的「幽靈」
                     if (widget.character == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.test_mode_error),
-                            backgroundColor: Colors.orangeAccent,
-                          )
+                      // ✨ 總裁級防禦網：測試模式精準攔截！告別突兀的橘色工程色塊
+                      ToastUtils.showCenterToast(
+                        context,
+                        l10n.test_mode_error,
+                        customIcon: Icons.warning_amber_rounded, // 💡 總裁精選：用優雅的黃色/橘色警告圖示，取代整塊橘色背景
+                        // 如果你覺得這算是嚴重錯誤，也可以直接換成 isError: true
                       );
                       return; // 煞車！絕對不准跳轉！
                     }
-                    // 💡 放行！
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.test_mode_notice))
+
+// 💡 放行！
+// ✨ 總裁級過場：測試模式啟動的專屬儀式感
+                    ToastUtils.showCenterToast(
+                      context,
+                      l10n.test_mode_notice,
+                      customIcon: Icons.science_rounded, // 💡 總裁秘技：「實驗室/燒杯」圖示！最適合用在 Test Mode 的放行提示
+                      // 喜歡速度感的話，也可以用 Icons.rocket_launch_rounded (火箭發射) 🚀
                     );
                     Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(
                       character: widget.character!, // 這時候用 ! 就絕對安全了
                       chatMode: 'daily',
                       sessionId: 'TEST_DRIVE_${DateTime.now().millisecondsSinceEpoch}',
                       selectedLanguage: l10n.traditional_chinese,
-                      // ⚠️ 總裁小提醒：確認妳的 ChatPage 真的有接收這兩個參數喔！
-                      shouldSave: false,
-                      isTestMode: true,
+                      characterId: '',
                     )));
                   },
                 ),
@@ -2212,8 +2268,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                                         // 🌟 3. 開始播放新聲音
                                         await _playVoice(bytes);
                                       } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                         SnackBar(content: Text(l10n.voice_preparing)),
+                                        // ✨ 總裁級：語音準備中的優雅過場，把視線焦點還給角色！
+                                        ToastUtils.showCenterToast(
+                                          context, // 💡 如果是在 async 方法中，記得包裝 if (context.mounted)
+                                          l10n.voice_preparing,
+                                          customIcon: Icons.graphic_eq_rounded, // 💡 總裁精選 1：「聲音波形」圖示，完美暗示語音即將播放
+                                          // 💡 總裁精選 2：如果你想強調「讀取中」，也可以用 Icons.hourglass_empty_rounded (沙漏)
                                         );
                                       }
                                     }
@@ -2752,11 +2812,16 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   }
 
   // --- 🌟 上傳圖片並彈出設定視窗的核心邏輯 ---
-  // --- 🌟 上傳圖片並彈出設定視窗的核心邏輯 (附掛全自動無感壓縮) ---
   Future<void> _addCharacterImage() async {
     final l10n = AppLocalizations.of(context)!;
     if (_galleryPhotos.length >= 10) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gallery_upload_limit)));
+      // ✨ 總裁級防護：溫柔的畫廊上限提示，保護畫面的整體美感！
+      ToastUtils.showCenterToast(
+        context,
+        l10n.gallery_upload_limit,
+        customIcon: Icons.photo_library_rounded, // 💡 總裁精選：用「相簿/畫廊」圖示，直覺告知容量已滿
+        // 💡 總裁秘技：如果想稍微帶點提醒意味，也可以用 Icons.filter_9_plus_rounded (代表超過9個)
+      );
       return;
     }
 

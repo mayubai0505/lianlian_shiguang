@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -71,8 +72,13 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
   Future<void> _deleteSummary(String id) async {
     await _summariesCollection.doc(id).delete();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text(AppLocalizations.of(context)!.story_summary_deleted_toast)),
+      // ✨ 總裁級：故事摘要刪除後的輕盈回饋，確認動作已完成，不留視覺殘留！
+      ToastUtils.showCenterToast(
+        context,
+        AppLocalizations.of(context)!.story_summary_deleted_toast,
+        // 💡 總裁精選：使用 Icons.delete_outline_rounded，帶有「整理與刪除」的意象
+        // 若想強調故事的「文稿」屬性，Icons.description_rounded 配上刪除意象也很有質感
+        customIcon: Icons.delete_outline_rounded,
       );
     }
   }

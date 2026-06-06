@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/theme_notifier.dart';
 import 'package:provider/provider.dart';
+import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // 🌟 解決 QuerySnapshot 和 FirebaseFirestore
@@ -51,11 +52,12 @@ class BackgroundSettingsPage extends StatelessWidget {
                         Provider.of<ThemeNotifier>(context, listen: false)
                             .resetCharacterBackground(character.name);
                         Navigator.pop(dialogContext);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.reset_bg_success),
-                            backgroundColor: Colors.grey,
-                          ),
+                        // ✨ 總裁級：背景重置成功的優雅回饋，告別沉悶的灰色大方塊！
+                        ToastUtils.showCenterToast(
+                          context, // 💡 如果是在 async 方法裡，記得外層要加 if (context.mounted)
+                          l10n.reset_bg_success,
+                          customIcon: Icons.wallpaper_rounded, // 💡 用「桌布/畫布」的圖示，直覺表達背景已更新
+                          // 如果你更喜歡「刷新」的感覺，也可以用 Icons.refresh_rounded
                         );
                       },
                       child:  Text(l10n.confirm_reset, style: const TextStyle(color: Colors.white)),
@@ -138,11 +140,12 @@ class BackgroundSettingsPage extends StatelessWidget {
                       if (isUnlocked) {
                         _showConfirmDialog(context, cg);
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.affection_required_to_unlock(cg.requiredAffection)),
-                            backgroundColor: Colors.pinkAccent,
-                          ),
+                        // ✨ 總裁級：溫柔的 CG 解鎖門檻提示，保留遊戲的浪漫氛圍
+                        ToastUtils.showCenterToast(
+                          context, // 💡 若在 async 中記得檢查 context.mounted
+                          l10n.affection_required_to_unlock(cg.requiredAffection),
+                          customIcon: Icons.lock_person_rounded, // 💡 總裁精選圖示 1：「心上人被鎖住」的感覺
+                          // 或是使用 Icons.favorite_border_rounded (空心愛心，暗示好感度未滿)
                         );
                       }
                     },
@@ -219,7 +222,6 @@ class BackgroundSettingsPage extends StatelessWidget {
 
   void _showConfirmDialog(BuildContext context, CharacterPhoto cg) {
     final l10n = AppLocalizations.of(context)!;
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     showDialog(
       context: context,
@@ -239,11 +241,12 @@ class BackgroundSettingsPage extends StatelessWidget {
               Navigator.pop(context);
               Navigator.pop(context);
 
-              scaffoldMessenger.showSnackBar(
-                SnackBar(
-                  content: Text(l10n.gallery_unlocked_msg(cg.description)),
-                  backgroundColor: Colors.purple,
-                ),
+              // ✨ 總裁級：解鎖稀有 CG 的專屬高光時刻！
+              ToastUtils.showCenterToast(
+                context, // 💡 若這是在 async 之後，請確保外層有 if (context.mounted)
+                l10n.gallery_unlocked_msg(cg.description),
+                customIcon: Icons.auto_awesome_rounded, // 💡 總裁精選圖示：「閃耀的星芒」，完美取代紫色的神祕驚喜感！
+                // 另一個好選擇是 Icons.collections_bookmark_rounded (象徵成功收錄進畫廊)
               );
             },
             child: Text(l10n.confirm_change),

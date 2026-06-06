@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import '../services/toast_utils.dart';
 import 'character_edit_page.dart';
 import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
 import 'dart:io'; // 🌟 讀取手機本機檔案必備！
@@ -43,16 +44,22 @@ class CreatorStudioPage extends StatelessWidget {
           .doc(docId)
           .delete();
 
+      // ✨ 總裁級：草稿清空後的徹底淨化，用最乾淨的回饋，對應你對資料保全的堅持！
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.draft_cleared_success)),
+        ToastUtils.showCenterToast(
+          context,
+          l10n.draft_cleared_success,
+          customIcon: Icons.layers_clear_rounded, // 💡 總裁精選：象徵「清除圖層/草稿」的完美圖示
         );
       }
       debugPrint("♻️ 草稿文件已移除，雲端圖片已安全留存。");
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('刪除失敗: $e')),
+        // 💡 總裁級防護：刪除失敗的緊急警告
+        ToastUtils.showCenterToast(
+          context,
+          '刪除失敗: $e',
+          isError: true,
         );
       }
     }

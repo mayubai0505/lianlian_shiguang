@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/moment_model.dart';
+import '../services/toast_utils.dart';
 import 'comment_bottom_sheet.dart';
 import 'edit_moment_page.dart';
 import '../services/app_constants.dart';
@@ -352,16 +353,12 @@ class _MomentCardState extends State<MomentCard> {
 
                                   // 🌟 C. 溫馨提示：讓玩家知道轉發成功了
                                   if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(l10n.moment_forward_success(char.name)),
-                                        behavior: SnackBarBehavior.floating,
-                                        backgroundColor: Colors.pinkAccent,
-                                        duration: const Duration(seconds: 2),
-                                      ),
-                                    );
+                                    // ✨ 總裁級：心意轉發的專屬浪漫！將粉紅大色塊化為輕柔的中央印記！
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n.moment_forward_success(char.name),
+                                      );
                                   }
-
                                   // 🌟 2. 核心修正：統一使用 chat_sessions 的路徑
                                   final sessionDocRef = FirebaseFirestore.instance
                                       .collection('artifacts')
@@ -619,8 +616,11 @@ class _MomentCardState extends State<MomentCard> {
                     // ✨ 呼叫我們新寫好的底部轉發表單
                     _showForwardBottomSheet(context);
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.moment_go_to_chat_msg(widget.moment.authorName))),
+                    // ✨ 總裁級：從動態走向私聊的優雅過場，完美避開聊天室底部的輸入框雷區！
+                    ToastUtils.showCenterToast(
+                      context,
+                      l10n.moment_go_to_chat_msg(widget.moment.authorName),
+                      customIcon: Icons.chat_bubble_outline_rounded, // 💡 總裁精選：最直覺的對話氣泡，完美預告接下來的聊天情境！
                     );
                   }
                 },

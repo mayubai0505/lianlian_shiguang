@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 // ✅ 修正：移除重複的 import，保留必要的
 import '../services/theme_notifier.dart';
+import '../services/toast_utils.dart';
 import 'chat_home_page.dart';
 import 'select_chat_page.dart';
 import 'moments_page.dart';
@@ -224,8 +225,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                       } catch (e) {
                         print("❌ 簽到失敗: $e");
                         if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l10n.error_claim_failed)),
+                          // ✨ 總裁級防護：領取失敗的優雅迫降，用最高級的視覺回饋安撫玩家的失落！
+                          ToastUtils.showCenterToast(
+                            context,
+                            l10n.error_claim_failed,
+                            isError: true, // 💡 全域統一的紅色驚嘆號，清楚告知異常，但不引發焦慮
                           );
                           setStateInDialog(() => isClaiming = false); // 開放按鈕重試
                         }
