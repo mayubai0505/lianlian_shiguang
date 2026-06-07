@@ -266,11 +266,14 @@ class PurchaseService extends ChangeNotifier {
         // ✨ 總裁修正：只要 ID 裡面「包含」 monthly_card，不管是舊版還是 250 版，通通都是星光契約！
         if (productId.contains('monthly_card')) {
           // 如果抓不到翻譯，就給預設中文
-          logTitle = l10n?.shop_log_monthly_card ?? '啟動：星光契約 (月卡立即贈點) 🌙';
+          logTitle =
+              l10n?.shop_log_monthly_card ?? '啟動：星光契約 (月卡立即贈點) 🌙';
         } else {
           logTitle = isFirstTime
-              ? (l10n?.shop_log_top_up_double(pointsToAdd) ?? '儲值：$pointsToAdd 點 (含首購雙倍 🎁)')
-              : (l10n?.shop_log_top_up_normal(pointsToAdd) ?? '儲值：$pointsToAdd 點');
+              ? (l10n?.shop_log_top_up_double(pointsToAdd) ??
+              '儲值：$pointsToAdd 點 (含首購雙倍 🎁)')
+              : (l10n?.shop_log_top_up_normal(pointsToAdd) ??
+              '儲值：$pointsToAdd 點');
         }
 
         await docRef.collection('flower_logs').add({
@@ -280,16 +283,21 @@ class PurchaseService extends ChangeNotifier {
         });
 
         print("成功發放！商品ID: $productId，獲得 $pointsToAdd 點，並已寫入明細！");
-        _showSuccessDialog(pointsToAdd, isFirstTime);
+// ✨ 總裁尊榮升級：把 isMonthlyCard 的判斷也傳進去！
+        _showSuccessDialog(
+          pointsToAdd,
+          isFirstTime: isFirstTime,
+          isMonthlyCard: productId.contains('monthly_card'), // 👈 自動判斷是不是月卡
+        );
       }
-
     } catch (e) {
       print("寫入 Firebase 失敗: $e");
     }
   }
 
   // 🌟 彈出成功視窗 (多國語系版)
-  void _showSuccessDialog(int points, bool isFirstTime) {
+  // ✨ 把 isFirstTime 變成可選參數，並新增 isMonthlyCard 開關
+  void _showSuccessDialog(int points, {bool isFirstTime = false, bool isMonthlyCard = false}) {
     final context = navigatorKey.currentContext;
     if (context == null) return;
 
@@ -299,34 +307,67 @@ class PurchaseService extends ChangeNotifier {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), // 🌟 加點圓角讓彈窗更有質感
         title: Row(
           children: [
-            Text(l10n.shop_purchase_success_title),
-            if (isFirstTime) const Text(' 🎉', style: TextStyle(fontSize: 24)),
+            // 🌟 根據是否為月卡，顯示不同的標題 (如果要支援多語系，這裡之後可以換成 l10n)
+            Text(isMonthlyCard ? '✨ 尊榮月卡解鎖成功！' : l10n.shop_purchase_success_title),
+            if (isFirstTime && !isMonthlyCard) const Text(' 🎉', style: TextStyle(fontSize: 24)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.shop_purchase_success_body(points)),
-            if (isFirstTime)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
+            // 🌟 核心分流：月卡專屬的華麗特權展示
+            if (isMonthlyCard) ...[
+              const Text('感謝您的訂閱！專屬特權已生效：', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              const SizedBox(height: 16),
+              _buildPerkRow('🌸', '立即獲得 250 朵時光花'),
+              const SizedBox(height: 10),
+              _buildPerkRow('🎁', '每日登入額外領取 10 朵時光花'),
+              const SizedBox(height: 10),
+              _buildPerkRow('💖', '解鎖專屬好感度互動次數上限'),
+            ]
+            // 🌟 原本的單次購買顯示邏輯
+            else ...[
+              Text(l10n.shop_purchase_success_body(points)),
+              if (isFirstTime)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
                     l10n.shop_purchase_success_double_bonus,
-                    style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)
+                    style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+            ],
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.shop_purchase_awesome),
+            // 🌟 月卡的按鈕文字也可以稍微不同，增加儀式感
+            child: Text(isMonthlyCard ? '開始享受特權' : l10n.shop_purchase_awesome),
           ),
         ],
       ),
+    );
+  }
+
+// 🌟 總裁御用排版小工具：讓月卡特權列表整齊又美觀
+  Widget _buildPerkRow(String emoji, String text) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 16)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(height: 1.4, color: Colors.black87),
+          ),
+        ),
+      ],
     );
   }
 

@@ -117,6 +117,8 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  // 在 _ChatPageState 的變數宣告區加上這行：
+  bool _hasPromptedProfileSetup = false; // 用來記住「已經問過玩家了」
   Map<String, dynamic>? _roomConfig;
   bool _isMonthlyPassActive = false;
   bool _isLoadingRoom = true;
@@ -187,12 +189,45 @@ class _ChatPageState extends State<ChatPage> {
   String _playerNickname = "玩家"; // ✨ 新增：專門用來記住玩家的暱稱，方便替換字串！
   List<ChatMessage> _localMessages = [];
   String? _userId;
+  Map<String, dynamic> _currentAiProfile = {'type': 'basic', 'name': '玩家'};
+
+
   // 🌟 在 _ChatPageState 裡面補上這個工具
   String _formatPoints(int points) {
     final safePoints = points < 0 ? 0 : points;
     // 如果妳沒裝 intl 套件，就先用最簡單的 toString()
     // 如果有裝，可以用 NumberFormat('#,##0').format(safePoints)
     return safePoints.toString();
+  }
+
+  // ✨ 總裁級專屬：動態人設字串產生器
+  String _buildDynamicUserProfileString() {
+    // 防呆機制：如果沒有讀到，給個最基本的預設值
+    final profile = _currentAiProfile;
+
+    if (profile['type'] == 'advanced') {
+      // 🎭 軌道 A：玩家有設定平行時空人設
+      return """
+【與你對話的主角當前時空設定】
+- 稱呼：${profile['name'] ?? '未填寫'}
+- 身高：${profile['height'] ?? '未填寫'}
+- 外貌特徵：${profile['appearance'] ?? '未填寫'}
+- 職業背景：${profile['occupation'] ?? '未填寫'}
+- 個性與自我介紹：${profile['intro'] ?? '未填寫'}
+
+請嚴格根據這個時空的具體設定與女主角互動，展現專屬默契。
+""";
+    } else {
+      // 🛡️ 軌道 B：兜底機制，玩家按了「稍後填寫」
+      return """
+【與你對話的主角基本資料】
+- 稱呼：${profile['name'] ?? '玩家'}
+- 性別：${profile['gender'] ?? '未填寫'}
+- 生日：${profile['birthday'] ?? '未填寫'}
+
+說明：當前為基礎相識時空，主角尚未展露更多具體的職業或外貌細節。請你以自然的語調與她交流，並在對話中逐步探索。
+""";
+    }
   }
 
   @override
@@ -202,10 +237,13 @@ class _ChatPageState extends State<ChatPage> {
     _isGenerating = generatingRooms.contains(widget.character.id);
     _currentCharacter = widget.character;
     // 在頁面渲染後立刻去尋找這個角色的專屬照片
+    // 🌟 1. 先在「同步」且 context 絕對安全的時候，把 Provider 抓下來放到變數裡
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+
+// 🌟 2. 只有「執行動作」需要延遲到畫面畫完之後
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        Provider.of<ThemeNotifier>(context, listen: false)
-            .loadCharacterBackground(_currentCharacter.name);
+        themeNotifier.loadCharacterBackground(_currentCharacter.name);
       }
     });
     // 1. 準備硬體設備 (維持原樣)
@@ -237,7 +275,16 @@ class _ChatPageState extends State<ChatPage> {
     _loadDraft();
     _initHardware();
     _initRegenerateCount();
-    _checkProfileCompletion(widget.sessionId!, widget.characterId);
+// 🛡️ 總裁級防護罩：第一，確保畫面已經畫完 (保護 context 跟多國語言 l10n)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        // 🌟 總裁級無縫接軌：有真實 ID 就用真實的，沒有就發放「臨時身分證」
+        final String safeRoomId = widget.sessionId ?? 'draft_${widget.characterId}';
+
+        // ✨ 直接放行！所有的檢查、兜底跟迎賓彈窗，都交給大腦去處理！
+        _checkProfileCompletion(safeRoomId, widget.characterId);
+      }
+    });
   }
 
   @override
@@ -277,6 +324,7 @@ class _ChatPageState extends State<ChatPage> {
     _pointsSubscription?.cancel();
     _audioPlayer.dispose();
     _httpClient?.close(); // 確保離開頁面時關閉網路連線
+    _triggerStorySummary(); //劇情摘要
     super.dispose();
   }
 
@@ -334,6 +382,50 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // ✨ 總裁級迎賓流程：自動彈出與後續追蹤
+  // ✨ 總裁級迎賓流程：自動彈出與後續追蹤 (已升級安全 ID 裝甲)
+  void _showWelcomeProfilePopup() {
+    bool didSave = false; // 追蹤玩家有沒有乖乖存檔
+
+    // 🌟 總裁級修復：取得安全的房間 ID，保護新房間不崩潰！
+    final String safeRoomId = widget.sessionId ?? 'draft_${widget.characterId}';
+
+    UserProfilePopup.show(
+      context,
+      roomId: safeRoomId, // 🛡️ 換成安全的 ID
+      characterId: widget.characterId,
+      onSaved: () {
+        didSave = true; // 玩家有按儲存！
+        _checkProfileCompletion(safeRoomId, widget.characterId); // 🛡️ 這裡也換成安全的 ID
+      },
+    ).then((_) {
+      // 🌟 當 UserProfilePopup 關閉時，這裡會被觸發！
+      if (!didSave && mounted) {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+            'hasSkippedProfile': true // 貼上永久免擾標籤
+          }, SetOptions(merge: true));
+        }
+        // 如果玩家沒有存檔 (按了稍後填寫、按關閉、或往下滑掉)
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Text('☁️ 溫馨提示', style: TextStyle(fontWeight: FontWeight.bold)),
+            content: const Text('好的！如果要編輯身分，請點擊左下角雲朵裡面的「拾光檔案」做填寫喔！'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('知道了'),
+              ),
+            ],
+          ),
+        );
+      }
+    });
+  }
+
 
   // ✨ 總裁專屬：全域共用的次數查帳系統
   Future<void> _initRegenerateCount() async {
@@ -342,7 +434,12 @@ class _ChatPageState extends State<ChatPage> {
     if (user == null || widget.sessionId == null) return;
 
     try {
-      bool hasPass = _isMonthlyPassActive;
+      // 🌟🌟🌟 總裁查水表：絕對不要相信本地變數，直接去雲端看最新狀態！
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final userData = userDoc.data() ?? {};
+
+      // 🕵️‍♀️ 注意：請把 'hasMonthlyPass' 換成妳資料庫裡真正用來紀錄月卡的那個欄位名稱！
+      bool hasPass = userData['isMonthlySubscribed'] == true;
       final int maxCount = hasPass ? 20 : 3;
       final todayStr = DateTime.now().toString().substring(0, 10);
 
@@ -353,19 +450,29 @@ class _ChatPageState extends State<ChatPage> {
           .collection('aiRequests')
           .doc(widget.sessionId);
 
-      // 2. 先去抓資料，不要先寫入
+      // 2. 先去抓對話次數資料
       final docSnapshot = await docRef.get();
       final data = docSnapshot.data() ?? {};
 
       final lastDate = data['lastRegenerateDate'] as String?;
-      final currentCount = data['regenerateCount'] as int? ?? maxCount;
+      int currentCount = data['regenerateCount'] as int? ?? maxCount;
+
+      // 🌟🌟🌟 總裁霸氣補發：如果今天是同一天，且妳有月卡，但次數竟然可憐到 <= 3，代表妳是今天剛買的！
+      if (hasPass && lastDate == todayStr && currentCount <= 3) {
+        currentCount = maxCount; // 霸氣直接幫妳把次數灌滿到 20！
+
+        // 順便把滿血的次數寫回雲端，以免下次進來又被扣
+        await docRef.set({
+          'regenerateCount': maxCount,
+        }, SetOptions(merge: true));
+      }
 
       // 3. 判斷是否需要重置
       if (lastDate != todayStr) {
         // 🎉 新的一天 (或是全新對話)：補滿次數
         if (mounted) {
           setState(() {
-            _hasMonthlyPass = hasPass;
+            _hasMonthlyPass = hasPass; // 更新 UI 的狀態
             _maxRegenerateCount = maxCount;
             _freeRegenerateCount = maxCount;
           });
@@ -380,7 +487,7 @@ class _ChatPageState extends State<ChatPage> {
         debugPrint("🔄 初始化：重置對話 ${widget.sessionId} 為 $maxCount 次");
 
       } else {
-        // 🕰️ 同一天：讀取雲端現有的次數
+        // 🕰️ 同一天：讀取雲端現有的次數 (已經經過上面的 VIP 霸氣補發了！)
         if (mounted) {
           setState(() {
             _hasMonthlyPass = hasPass;
@@ -394,7 +501,6 @@ class _ChatPageState extends State<ChatPage> {
       debugPrint("❌ 讀取對話次數失敗: $e");
     }
   }
-
   void _showSubscriptionDialog() {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -1135,21 +1241,18 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       }
-
       // 讀取備忘錄與生理期 (精簡版)
       final aboutMeSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('characters').doc(characterId).collection('memories').get();
       final aboutMeNotes = aboutMeSnapshot.docs.map((doc) => doc.data()['text'] as String? ?? '').toList();
-
       List<String> memos = [];
       if (_currentMode == ChatMode.daily || _currentMode == ChatMode.gemini) {
         final memosSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('characters').doc(characterId).collection('memos').get();
         memos = memosSnapshot.docs.map((doc) => doc.data()['content'] as String? ?? '').toList();
       }
-
       // 🌟 4. 準備跟大腦說話的封口令！
       final idToken = await currentUser.getIdToken();
       String dynamicRelationship = _currentFriendship.relationshipTitle(l10n);
-
+      String dynamicProfile = _buildDynamicUserProfileString();
       final Map<String, dynamic> requestBody = {
         "audioUrl": "", // 重新生成通常只針對文字
         "userMessage": lastUserText,
@@ -1157,11 +1260,13 @@ class _ChatPageState extends State<ChatPage> {
         "isBirthdayFreebie": false, // 重新生成不影響次數
         "overrideSystemPrompt": "",
         "sessionId": _sessionId,
-        "userProfile": _userProfileText.isNotEmpty ? _userProfileText : "玩家尚未提供詳細個人資料",
-
-        // 🛑 總裁專屬封口令：強迫 AI 忘掉這是重複對話！
-        "systemDirective": "【最高防護指令】這是玩家要求重新生成的對話。你必須嚴格維持當前的聊天情境與場景。絕對不可以提及『重複』、『再次』或暗示這是相同的問題。請視為全新的互動自然地接續。你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。",
-
+        // 🌟 同步升級：傳送精準名字！
+        "playerName": _playerNickname,
+        // 🌟 同步升級：呼叫動態人設產生器！
+        "userProfile": dynamicProfile,
+        // 🛑 總裁專屬封口令 + 最高防護指令合併版！
+// 🌟 總裁專屬封口令 + 強制改口令！
+        "systemDirective": "【最高防護指令】這是玩家要求重新生成的對話。注意：玩家的時空設定與稱呼可能已在此刻發生變更！你必須立刻捨棄歷史紀錄中的舊稱呼，現在起，與你對話的主角稱呼強制更新為「$_playerNickname」，絕對不能叫錯！請視為全新的互動自然地接續。以下是她當前的專屬時空設定：\n$dynamicProfile\n\n你必須嚴格根據這些設定與她互動，並以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。",
         "aboutMeNotes": aboutMeNotes,
         "memos": memos,
         "periodStatus": "未知", // 精簡化，避免過度讀取
@@ -1189,6 +1294,7 @@ class _ChatPageState extends State<ChatPage> {
         headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $idToken'},
         body: jsonEncode(requestBody),
       );
+
 
       // 🌟 6. 接收回覆，更新 UI (因為已經繞過 onCreate 監聽器，所以這裡要自己把 AI 的話加回畫面)
       if (response.statusCode == 200) {
@@ -2356,11 +2462,13 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       }
-
+      _triggerMemoryExtraction(userText);
       // --- 🚀 D. 呼叫雲端 AI 大腦 ---
       final idToken = await currentUser.getIdToken();
       int currentScore = _currentFriendship;
       String dynamicRelationship = currentScore.relationshipTitle(l10n);
+      String dynamicProfile = _buildDynamicUserProfileString();
+
       final Map<String, dynamic> requestBody = {
         "audioUrl": storagePath ?? "",
         "userMessage": userText.trim(),
@@ -2368,11 +2476,13 @@ class _ChatPageState extends State<ChatPage> {
         "isBirthdayFreebie": isFreeToday,
         "overrideSystemPrompt": overridePrompt ?? "",
         "sessionId": _sessionId,
-        "userProfile": _userProfileText.isNotEmpty ? _userProfileText : "玩家尚未提供詳細個人資料",
+        "playerName": _playerNickname,
+        // 🌟🌟🌟 核心修改點：這裡改呼叫動態人設產生器！ 🌟🌟🌟
+        "userProfile": _buildDynamicUserProfileString(),
+
         "systemDirective": (overridePrompt != null && overridePrompt.isNotEmpty)
-            ? "【最高防護指令】玩家已觸發特殊劇情，請配合 overrideSystemPrompt 的指示順暢地演出。你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數，通常在 -3 到 5 之間)。絕對不可以輸出任何其他格式或說明。"
-            : "【最高防護指令】你必須「維持當前的聊天情境與場景」。你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數，通常在 -3 到 5 之間)。絕對不可以輸出任何其他格式或說明。",
-        "aboutMeNotes": aboutMeNotes,
+            ? "【最高防護指令】與你對話的玩家叫做「$_playerNickname」！玩家已觸發特殊劇情，請配合 overrideSystemPrompt 的指示順暢地演出。以下是她當前的時空設定：\n$dynamicProfile\n\n你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數)。絕對不可以輸出任何其他格式或說明。"
+            : "【最高防護指令】請你「維持當前的聊天情境與場景」。記住，與你對話的主角稱呼是「$_playerNickname」，絕對不能叫錯！以下是她當前的專屬時空設定：\n$dynamicProfile\n\n你必須嚴格根據這些設定與她互動，並以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數)。絕對不可以輸出任何其他格式或說明。","aboutMeNotes": aboutMeNotes,
         "memos": memos,
         "periodStatus": periodStatus,
         "lastStoryTime": _currentStoryTime,
@@ -2413,7 +2523,7 @@ class _ChatPageState extends State<ChatPage> {
           // 🟢 第一區：【資料庫鐵血執行】不管玩家在不在畫面，這段必須強行過水、記帳！
           // ========================================================
 
-          // B. 同步更新全域最高好感度 (widget.shouldSave 整個邏輯搬到 mounted 外面)
+          //  同步更新全域最高好感度 (widget.shouldSave 整個邏輯搬到 mounted 外面)
             try {
               final userCharRef = FirebaseFirestore.instance
                   .collection('users')
@@ -2439,7 +2549,6 @@ class _ChatPageState extends State<ChatPage> {
                     'characterName': _currentCharacter.name,
                     'lastUpdate': FieldValue.serverTimestamp(),
                   }, SetOptions(merge: true));
-                  print("📈 全域存摺已同步最高分：$targetGlobalScore");
                 }
               });
             } catch (e) {
@@ -2519,6 +2628,35 @@ class _ChatPageState extends State<ChatPage> {
     } finally {
       _httpClient?.close();
       _httpClient = null;
+    }
+  }
+
+  // 🌟 總裁秘技：在前端寫一個小幫手函式，丟在背後跑
+  Future<void> _triggerMemoryExtraction(String text) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || text.isEmpty) return;
+
+    try {
+      final idToken = await user.getIdToken();
+      // 記得把 URL 換成妳自己的 Firebase Cloud Functions 網址！
+      final url = Uri.parse('https://asia-east1-妳的專案ID.cloudfunctions.net/extractUserMemory');
+
+      // 射後不理，不用等它回傳，讓它自己在雲端慢慢分析
+      http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $idToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'characterId': widget.characterId, // 或 _currentCharacter.id
+          'userMessage': text,
+        }),
+      ).then((response) {
+        debugPrint('🧠 記憶捕捉任務結束, 狀態碼: ${response.statusCode}');
+      });
+    } catch (e) {
+      debugPrint('⚠️ 記憶捕捉呼叫失敗: $e');
     }
   }
 
@@ -2764,45 +2902,41 @@ class _ChatPageState extends State<ChatPage> {
     try {
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       final data = doc.data() ?? {};
-
+      final bool hasSkippedProfile = data['hasSkippedProfile'] == true;
       final String nickname = data['nickname'] ?? l10n.chat_default_player_name;
       final String birthday = data['birthday'] ?? l10n.authMethodUnknown;
 
       Map<String, dynamic>? activeProfile;
 
       if (data.containsKey('profiles')) {
-        // 📦 這是全宇宙所有角色的衣服大總匯
         List<dynamic> allProfiles = data['profiles'];
-
-        // 🚪 這是房間的記憶體：紀錄哪個房間穿了哪件衣服
         Map<String, dynamic>? roomProfiles = data['roomProfiles'];
         String? targetProfileId;
-
-        // 🎯 房間記憶：找出這個房間綁定的衣服 ID
-        if (roomProfiles != null && roomProfiles.containsKey(roomId)) {
-          targetProfileId = roomProfiles[roomId];
+        if (roomProfiles != null) {
+          // 先找真正的房間 ID，如果找不到，去看看有沒有這角色的「臨時身分證」遺產！
+          targetProfileId =
+              roomProfiles[roomId] ?? roomProfiles['draft_$characterId'];
         }
 
         if (targetProfileId != null) {
-          try {
-            // 🔒 ✨ 總裁級雙重驗證：這件衣服的 ID 必須吻合，且必須屬於「當前這個男主」！
-            activeProfile = allProfiles.firstWhere((p) =>
-            p['id'] == targetProfileId && p['characterId'] == characterId
-            );
-          } catch (e) {
-            // 如果這件衣服不屬於這個男主（例如防呆、或舊資料異常），就當作沒穿！
-            activeProfile = null;
+          // ✨ 總裁級魔法：用 where().firstOrNull 取代笨重的 try-catch
+          activeProfile = allProfiles.where((p) =>
+          p['id'] == targetProfileId && p['characterId'] == characterId
+          ).firstOrNull;
+
+          if (activeProfile != null) {
+            debugPrint(
+                "✅ [時空監視] 成功穿上專屬檔案: ${activeProfile!['profileName']}");
+          } else {
+            debugPrint(
+                "❌ [時空監視] 找不到這件衣服！可能 characterId 不對，或是沒有這個 ID");
           }
         } else {
-          // ✨ 新房間進來，絕對是 null！觸發基礎名片！
-          activeProfile = null;
+          debugPrint("⚠️ [時空監視] 房間還沒綁定衣服，啟動基本兜底防線！");
         }
-      }
-      // ... (過渡期舊版 profile 防護略) ...
-
-      // ✨ 虛擬組裝：沒有指定人設的房間，一律用最原始的名字跟生日！
-      if (activeProfile == null) {
-        activeProfile = {
+        // ✨ 虛擬組裝：沒有指定人設的房間，一律用最原始的名字跟生日！
+        // ✨ 總裁級超簡潔寫法，直接用 ??= 取代 if (activeProfile == null)
+        activeProfile ??= {
           'profileName': '基礎檔案',
           'name': nickname,
           'birthday': birthday,
@@ -2811,27 +2945,109 @@ class _ChatPageState extends State<ChatPage> {
           'occupation': '尚未填寫',
           'intro': '這份拾光檔案還在等待主人動筆...'
         };
-      }
+        // 🌟 條件升級：如果「本次還沒問過」且「玩家以前也沒按過跳過」，才准彈出！
+        if (!_hasPromptedProfileSetup && !hasSkippedProfile) {
+          _hasPromptedProfileSetup = true;
 
-      // 完美渲染 (l10n.chat_profile_full...)
-      if (mounted) {
-        setState(() {
-          _userProfileText = l10n.chat_profile_full(
-              activeProfile!['profileName'] ?? l10n.profile_unnamed_file,
-              activeProfile!['name']?.toString().trim().isNotEmpty == true ? activeProfile!['name'] : nickname,
-              birthday,
-              activeProfile!['height'] ?? '尚未填寫',
-              activeProfile!['appearance'] ?? '尚未填寫',
-              activeProfile!['occupation'] ?? '尚未填寫',
-              activeProfile!['intro'] ?? '這份拾光檔案還在等待主人動筆...'
-          );
-        });
-      }
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showWelcomeProfilePopup();
+          });
+        }
+        // 完美渲染 (l10n.chat_profile_full...)
+        if (mounted) {
+          setState(() {
+            // 🌟🌟🌟 總裁級修復：同步更新玩家暱稱變數，讓男主內心設定也能無縫替換！
+            _playerNickname = activeProfile!['name']
+                ?.toString()
+                .trim()
+                .isNotEmpty == true
+                ? activeProfile!['name']
+                : nickname;
 
+            _currentAiProfile = {
+              // 如果是基礎檔案就走軌道 B，否則走軌道 A (高級人設)
+              'type': activeProfile!['profileName'] == '基礎檔案'
+                  ? 'basic'
+                  : 'advanced',
+              'name': _playerNickname,
+              'height': activeProfile!['height'],
+              'appearance': activeProfile!['appearance'],
+              'occupation': activeProfile!['occupation'],
+              'intro': activeProfile!['intro'],
+              'gender': data['gender'] ?? '未填寫', // 從最上面抓下來的基本資料
+              'birthday': birthday,
+            };
+
+            // 下面是妳原本的程式碼，不動
+            _userProfileText = l10n.chat_profile_full(
+                activeProfile!['profileName'] ?? l10n.profile_unnamed_file,
+                _playerNickname,
+                // ✨ 這裡可以直接套用剛剛更新好的變數，更乾淨！
+                birthday,
+                activeProfile!['height'] ?? '尚未填寫',
+                activeProfile!['appearance'] ?? '尚未填寫',
+                activeProfile!['occupation'] ?? '尚未填寫',
+                activeProfile!['intro'] ?? '這份拾光檔案還在等待主人動筆...'
+            );
+          });
+        }
+      }
     } catch (e) {
       debugPrint("檢查房間 [$roomId] 的專屬拾光檔案失敗: $e");
     } finally {
       _isChecking = false;
+    }
+  }
+
+  Future<void> _triggerStorySummary() async {
+    final user = FirebaseAuth.instance.currentUser;
+    // 🛡️ 確保有使用者，而且對話資料庫 (_messagesCollection) 已經準備好
+    if (user == null || _messagesCollection == null) return;
+
+    try {
+      // 🌟 總裁無敵抓取法：直接去資料庫撈這個房間的最後 10 句話！
+      final querySnapshot = await _messagesCollection!
+          .orderBy('timestamp', descending: true)
+          .limit(10)
+          .get();
+
+      // 如果聊不到 4 句話，代表沒什麼進展，就不浪費錢寫摘要了
+      if (querySnapshot.docs.length < 4) return;
+
+      // 🔄 因為 descending: true 拿出來的順序是 [新 -> 舊]，我們要反轉成 [舊 -> 新] 給 AI 讀
+      final docs = querySnapshot.docs.reversed.toList();
+
+      List<Map<String, String>> recentHistory = [];
+      for (var doc in docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final text = data['text'] ?? '';
+
+        // 🕵️‍♀️ 判斷是玩家說的還是 AI 說的 (如果妳資料庫裡的欄位叫 isUser，就用 data['isUser'] == true 判斷)
+        final isUser = data['isUser'] == true;
+        final role = isUser ? 'user' : 'assistant';
+
+        recentHistory.add({'role': role, 'content': text});
+      }
+
+      final idToken = await user.getIdToken();
+      // 🔗 記得把這行換成妳專案真正的 Cloud Functions 網址喔！
+      final url = Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/generateStorySummary');
+      // 射後不理，讓雲端慢慢寫
+      http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $idToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'characterId': widget.characterId,
+          'characterName': _currentCharacter.name,
+          'playerName': _playerNickname,
+          'chatHistory': recentHistory,
+        }),
+      ).then((_) => debugPrint('📖 劇情摘要任務發送成功！'));
+    } catch (e) {
+      debugPrint('⚠️ 劇情摘要發送失敗: $e');
     }
   }
 
@@ -3625,26 +3841,24 @@ class _ChatPageState extends State<ChatPage> {
 
                     // 🪪 5. 拾光檔案
                     _buildToolItem(Icons.badge_outlined, l10n.chat_tool_profile, () {
-                      // 🌟 總裁級救援：精準抓住「當下這個主畫面(State)」的 context！
-                      // 這樣就不會用到馬上要被 pop 殺掉的那個工具選單 context。
                       final safeContext = this.context;
+                      Navigator.pop(context); // 關閉工具列
 
-                      // 1. 先關閉底部的工具選單 (這裡用原本的 context 關沒問題，因為就是要殺掉它)
-                      Navigator.pop(context);
+                      // 🌟 總裁級魔法：如果還沒有 sessionId，發放一張專屬的「臨時身分證」
+                      final String safeRoomId = widget.sessionId ?? 'draft_${widget.characterId}';
 
-                      // 2. ✨ 總裁級開門：把 safeContext 跟兩把鑰匙精準傳入！
+                      // ✨ 直接放行開啟視窗，不再阻擋玩家！
                       UserProfilePopup.show(
-                        safeContext, // 🛡️ 替換成絕對安全的 safeContext
-
-                        roomId: widget.sessionId!,
+                        safeContext,
+                        roomId: safeRoomId, // 傳入保證安全的房間 ID
                         characterId: widget.characterId,
-
-                        onSaved: () {
-                          _checkProfileCompletion(widget.sessionId!, widget.characterId);
+                        onSaved: () async {
+                          // 這裡同步使用 safeRoomId 去重撈大腦記憶
+                          await _checkProfileCompletion(safeRoomId, widget.characterId);
 
                           if (mounted) {
-                            // 🛡️ 這裡的 Toast 也要改用 safeContext 來呼叫！
-                            ToastUtils.showCenterToast(safeContext, l10n.chat_profile_updated_msg);
+                            // ✨ 成功也換成優雅的置中彈窗！
+                            ToastUtils.showCenterToast(safeContext, '拾光檔案已更新！');
                           }
                         },
                       );

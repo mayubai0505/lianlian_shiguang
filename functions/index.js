@@ -186,7 +186,7 @@ let relationContext = "";
                 }
             }
 
-            const playerName = currentIdentityName;
+            const playerName = body.playerName || currentIdentityName;
             const playerBirthday = userData.birthday ? userData.birthday : "未知";
 
             // ✨✨✨ 總裁專屬：AI 情報中心 (完全信任 Flutter 傳來的新版多重身分檔案) ✨✨✨
@@ -739,8 +739,8 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                    // 準備對話紀錄
                                    let currentMessages = [...trimmedHistory];
                                    currentMessages.unshift({ role: "system", content: systemPrompt }); // 塞入大劇本
-                                   currentMessages.push({ role: "user", content: userMessage }); // 塞入玩家的話
-
+                                   // 🌟🌟🌟 正確接球：把加強版的 finalUserMessage 送給 AI！ 🌟🌟🌟
+                                   currentMessages.push({ role: "user", content: finalUserMessage });
                                    // ==========================================
                                                                         // 🔄 總裁的惡鬼催稿迴圈 (優化防爆版)
                                                                         // ==========================================
@@ -1588,4 +1588,166 @@ exports.notifyFollowersOnNewPost = onDocumentCreated({
     }
 
     return null;
+});
+
+// 🌟 總裁專屬：隱藏版記憶捕捉員
+exports.extractUserMemory = onRequest({
+    region: "asia-east1",
+    secrets: [openRouterApiKey],
+    memory: "256MiB", // 這個任務很輕，記憶體不用開太大
+    timeoutSeconds: 60,
+}, (req, res) => {
+    return cors(req, res, async () => {
+        try {
+            // 1. 驗證身分 (總裁的防護網)
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: "未授權" });
+            const idToken = authHeader.split('Bearer ')[1];
+            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const userId = decodedToken.uid;
+
+            const { characterId, userMessage } = req.body;
+            if (!characterId || !userMessage) return res.status(400).json({ error: "缺少參數" });
+
+            // 2. 🌟 核心記憶捕捉 Prompt
+            const systemPrompt = `
+            你是一個「隱藏版記憶捕捉員」。
+            請分析玩家剛剛說的話，判斷是否包含「關於玩家個人的具體情報」，例如：
+            - 喜歡/討厭的事物（例如：喜歡吃草莓、討厭下雨、對海鮮過敏）
+            - 個人背景/職業/習慣（例如：我是個學生、我每天早上喝咖啡）
+            - 重要的情感狀態或經歷
+
+            【嚴格規則】：
+            1. 如果有情報，請精煉成「簡短的一句話」。例如：「喜歡吃草莓」、「是一名設計師」。
+            2. 如果只是普通的閒聊、打招呼、或針對劇情的對話（例如：「早安」、「你在幹嘛」、「哈哈哈太好笑了」、「繼續」），請直接回覆一個字：NONE。
+            3. 絕對不要回覆多餘的說明或引號。
+            `;
+
+            // 3. 呼叫 AI 判斷 (用最便宜、最快的模型即可)
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    model: "google/gemini-2.5-flash-lite", // 便宜又快！
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: userMessage }
+                    ],
+                    temperature: 0.1, // 溫度調到極低，讓它精準判斷不廢話
+                    max_tokens: 50
+                })
+            });
+
+            const aiResult = await response.json();
+            const extractedText = aiResult.choices?.[0]?.message?.content?.trim() || "NONE";
+
+            // 4. 判斷並寫入資料庫
+            if (extractedText !== "NONE" && extractedText.length > 1) {
+                // 🌟 找到妳剛剛前端展示櫃的「那個抽屜」！
+                await admin.firestore()
+                    .collection('users').doc(userId)
+                    .collection('characters').doc(characterId)
+                    .collection('memories')
+                    .add({
+                        text: extractedText,
+                        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                        isFavorite: false
+                    });
+
+                console.log(`🍓 成功捕捉記憶並存檔：${extractedText}`);
+                return res.status(200).json({ success: true, memory: extractedText });
+            } else {
+                console.log(`💨 沒有捕捉到記憶，放行。玩家說: ${userMessage}`);
+                return res.status(200).json({ success: true, memory: null });
+            }
+
+        } catch (error) {
+            console.error("記憶捕捉失敗:", error);
+            return res.status(500).json({ error: error.message });
+        }
+    });
+});
+
+// 🌟 總裁專屬：殿堂級劇情書記官 (對話摘要生成)
+exports.generateStorySummary = onRequest({
+    region: "asia-east1",
+    secrets: [openRouterApiKey],
+    memory: "512MiB",
+    timeoutSeconds: 120, // 寫作需要一點時間，給他 2 分鐘
+}, (req, res) => {
+    return cors(req, res, async () => {
+        try {
+            // 1. 驗證身分
+            const authHeader = req.headers.authorization;
+            if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: "未授權" });
+            const idToken = authHeader.split('Bearer ')[1];
+            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const userId = decodedToken.uid;
+
+            const { characterId, characterName, playerName, chatHistory } = req.body;
+            if (!characterId || !chatHistory || chatHistory.length === 0) {
+                return res.status(400).json({ error: "缺少參數或歷史對話為空" });
+            }
+
+            // 將對話紀錄轉成純文字格式，方便 AI 閱讀
+            const formattedHistory = chatHistory.map(msg =>
+                `${msg.role === 'user' ? playerName : characterName}: ${msg.content}`
+            ).join('\n');
+
+            // 2. 🌟 核心寫作 Prompt：小說家筆觸
+            const systemPrompt = `
+            你是一位文筆極佳的浪漫小說家。
+            請閱讀以下 ${playerName} 與 ${characterName} 的對話紀錄，並寫下一段「唯美的劇情摘要」。
+
+            【寫作規則】：
+            1. 視角：請用「第三人稱全知視角」或是「客觀的敘事口吻」來撰寫。
+            2. 重點：抓住兩人互動中最有張力、最曖昧、或最關鍵的情感轉折。不需要流水帳紀錄每一句話。
+            3. 長度：嚴格控制在 100 到 150 字之間，簡潔而雋永。
+            4. 結尾：以一個帶有餘韻的句子收尾（例如：「兩人之間的氣氛似乎又產生了微妙的變化。」）。
+            5. 格式：請直接輸出摘要文字，絕對不要加上任何標題、引號或「以下是摘要」等廢話。
+            `;
+
+            // 3. 呼叫 AI 寫作 (用便宜又聰明的模型)
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    model: "google/gemini-2.5-flash-lite",
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: `【對話紀錄】：\n${formattedHistory}` }
+                    ],
+                    temperature: 0.6, // 稍微給一點創意空間
+                })
+            });
+
+            const aiResult = await response.json();
+            const summaryText = aiResult.choices?.[0]?.message?.content?.trim();
+
+            if (!summaryText) throw new Error("AI 沒有回傳摘要");
+
+            // 4. 寫入總裁的那個專屬展示櫃抽屜
+            await admin.firestore()
+                .collection('users').doc(userId)
+                .collection('friendships').doc(characterId)
+                .collection('summaries')
+                .add({
+                    content: summaryText,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                });
+
+            console.log(`📖 成功生成並寫入摘要：${summaryText.substring(0, 20)}...`);
+            return res.status(200).json({ success: true });
+
+        } catch (error) {
+            console.error("生成摘要失敗:", error);
+            return res.status(500).json({ error: error.message });
+        }
+    });
 });

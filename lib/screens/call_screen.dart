@@ -113,6 +113,12 @@ class _CallOverlayState extends State<CallOverlay> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_timeElapsed < _maxCallTime) {
         if (mounted) setState(() => _timeElapsed++);
+
+        // ✨ 關鍵邏輯：在第 50 秒觸發溫柔道別 (還剩 10 秒時)
+        if (_timeElapsed == 50) {
+          _playGentleHangupVoice();
+        }
+
       } else {
         _handleTimeUp();
       }
@@ -468,6 +474,23 @@ class _CallOverlayState extends State<CallOverlay> {
     } catch (e) {
       print('語音處理失敗: $e');
     }
+  }
+
+  // 在 _CallOverlayState 內部新增：
+
+// ✨ 新增函數：產生並播放道別台詞
+  Future<void> _playGentleHangupVoice() async {
+    // 提示詞指令
+    final prompt = "現在通話即將結束，請根據我們剛才的對話與你的人設（${widget.character.toneAndStyle}），用極度溫柔且不捨的語氣，說一句約 10-15 字的結束語。請確保每次說法都有變化，不要與上次重複。";
+
+    // 呼叫 AI 生成
+    final goodbyeText = await _fetchAIResponse(prompt, isFirstGreeting: false);
+
+    // 清理格式 (只取語音台詞)
+    String spokenGoodbye = goodbyeText.contains('|') ? goodbyeText.split('|')[0].trim() : goodbyeText;
+
+    // 播放
+    await _generateAndPlayAudio(spokenGoodbye);
   }
 
   void _scrollToBottom() {

@@ -6,7 +6,7 @@ import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
-
+//劇情摘要
 // (StorySummary class 的定義保持不變)
 class StorySummary {
   final String id;

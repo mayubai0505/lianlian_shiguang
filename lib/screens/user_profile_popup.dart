@@ -6,7 +6,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/toast_utils.dart';
 class UserProfilePopup {
   // ✨ 總裁級升級：正式引入 roomId 與 characterId 雙鑰匙架構！
-  static void show(
+  static Future<void> show(
       BuildContext context, {
         required String roomId,        // 🔑 鑰匙 A：當前房間 ID（用來綁定獨立記憶體）
         required String characterId,   // 🔑 鑰匙 B：當前角色 ID（用來隔離專屬衣櫥）
@@ -31,7 +31,7 @@ class UserProfilePopup {
     String? currentRoomProfileId; // 當前房間綁定的檔案 ID
     String? editingProfileId; // 目前正在編輯的檔案 ID (為 null 代表新建)
 
-    showModalBottomSheet(
+    return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -206,12 +206,6 @@ class UserProfilePopup {
                                 onPressed: isSaving ? null : () async {
                                   // 1. 基本防呆
                                   if (profileNameController.text.trim().isEmpty) {
-                                    // ToastUtils.showCenterToast(
-                                    //   context,
-                                    //   '請給這個檔案取個名字喔！',
-                                    //   customIcon: Icons.edit_note_rounded,
-                                    //   isError: true,
-                                    // );
                                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('請給這個檔案取個名字喔！')));
                                     return;
                                   }
@@ -253,10 +247,18 @@ class UserProfilePopup {
                                       'hasSkippedProfile': true,
                                     }, SetOptions(merge: true));
 
-// 3. 執行指標更新 (使用 update 來精準寫入房間對應，這是最不會出錯的寫法)
-                                    await userRef.update({
-                                      'roomProfiles.$roomId': selectedProfileId,
-                                    });
+// 3. 執行指標更新 (加上總裁級防撞裝甲！)
+                                    try {
+                                      // 先嘗試精準更新（如果字典已經存在的話）
+                                      await userRef.update({
+                                        'roomProfiles.$roomId': selectedProfileId,
+                                      });
+                                    } catch (_) {
+                                      // 如果字典不存在導致報錯，就用 set 合併初始化它！
+                                      await userRef.set({
+                                        'roomProfiles': { roomId: selectedProfileId }
+                                      }, SetOptions(merge: true));
+                                    }
 
                                     // 🌟 核心防護：執行 UI 更新前，檢查頁面是否還在
                                     if (!context.mounted) return;
@@ -272,8 +274,9 @@ class UserProfilePopup {
                                     // 🌟 核心防護：發生錯誤時，同樣檢查頁面是否還在
                                     if (!context.mounted) return;
 
-                                    // ToastUtils.showCenterToast(context, '儲存失敗: $e', isError: true);
-                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('儲存失敗: $e')));
+                                    // ✨ 總裁御用：優雅的置中失敗彈窗
+                                    ToastUtils.showCenterToast(context, '儲存失敗: $e', isError: true);
+
                                     setModalState(() => isSaving = false);
                                   }
                                 },
