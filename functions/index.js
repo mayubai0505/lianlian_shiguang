@@ -84,7 +84,7 @@ exports.getAiResponse = onRequest({
                 "gemini": { cost: 0, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.7 },
                 "daily": { cost: 1, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.5 },
                 "story": { cost: 5, modelId: "deepseek/deepseek-v4-flash", maxTokens: 2000, temperature: 0.9 },
-                "immersive": { cost: 7, modelId: "deepseek/deepseek-v4-pro", maxTokens: 3500, temperature: 0.8 },
+                "immersive": { cost: 7, modelId: "deepseek/deepseek-v4-pro", maxTokens: 2500, temperature: 0.8 },
             };
             const config = modelConfig[chatMode] || modelConfig["daily"];
             const cost = isBirthdayFreebie ? 0 : config.cost;
@@ -522,7 +522,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 第一行：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}
         - 單人時直接用「台詞」，多人時必須用【角色名】：「台詞」
         - 每句台詞後空一行 + 括號描寫
-        - 字數：單人 ≥600 字，多人 800~1600 字
+        - 字數：單人 ≥600 字，多人 800~1300 字
         - 嚴格防重複
         -「絕對不要在對話中提及『重複』、『再次』或計算玩家說話的次數。即使玩家輸入相同的對話，也請視為全新的互動，自然地接續劇情。」
         `;
@@ -587,8 +587,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             🚨 **[Immersive 極限輸出紅線]** 🚨
             - **【排版美學】**：每一次「台詞」與「括號描寫」之間必須【空一行】！
-            - **【字數標準】**：回覆必須達到 **1200 - 2000 字**（含翻譯），追求極致細膩而非簡短。
-            - **【感官豐富度】**：每段括號描寫至少包含兩種以上感官元素（聲音 + 氣息 + 溫度/觸感 + 生理反應）。
+            - **【字數標準】**：單人互動時回覆 800~1200 字；多人同場互動時回覆 1000~1500 字。追求極致細膩而非簡短，確保每一個出場角色的感官張力都能被完整釋放。            - **【感官豐富度】**：每段括號描寫至少包含兩種以上感官元素（聲音 + 氣息 + 溫度/觸感 + 生理反應）。
             - **【角色個性一致性】**：強烈且精準抓住每個角色的核心個性，不同角色必須有明顯區別。
             - **【話題延伸】**：自然加入 1-2 個新話題或互動鉤子，增加沉浸深度。
             - **【防重複】**：嚴格禁止與前一次回覆出現高度相似內容、句型或描寫。
@@ -718,7 +717,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                       });
 
 
-                       // ==========================================
+                                   // ==========================================
                                    // 🌟🌟🌟 啟動引擎：直通車變數初始化 🌟🌟🌟
                                    // ==========================================
                                    let finalResponseText = "";
@@ -741,95 +740,118 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                    currentMessages.unshift({ role: "system", content: systemPrompt }); // 塞入大劇本
                                    // 🌟🌟🌟 正確接球：把加強版的 finalUserMessage 送給 AI！ 🌟🌟🌟
                                    currentMessages.push({ role: "user", content: finalUserMessage });
-                                   // ==========================================
-                                                                        // 🔄 總裁的惡鬼催稿迴圈 (優化防爆版)
-                                                                        // ==========================================
-                                                                        while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
-                                                                            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                                                                                method: "POST",
-                                                                                headers: {
-                                                                                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                                                                                    "Content-Type": "application/json",
-                                                                                },
-                                                                                body: JSON.stringify({
-                                                                                    model: config.modelId || "deepseek/deepseek-v4-pro",
-                                                                                    messages: currentMessages,
-                                                                                    max_tokens: config.maxTokens && config.maxTokens > 150 ? config.maxTokens : (chatMode === "immersive" ? 2500 : 1000),
-                                                                                    temperature: config.temperature || 0.7,
-                                                                                    response_format: { type: "json_object" }
-                                                                                }), // 👈 總裁順手幫妳補上了這裡原本漏掉的逗號！
-                                                                                signal: abortController.signal
-                                                                            });
+                                  //                                       // ==========================================
+                                                                           // 🔄 總裁的惡鬼催稿迴圈 (優化防爆版)
+                                                                           // ==========================================
+                                                                           while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
+                                                                               const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                                                                                   method: "POST",
+                                                                                   headers: {
+                                                                                       "Authorization": `Bearer ${openRouterApiKey.value()}`,
+                                                                                       "Content-Type": "application/json",
+                                                                                   },
+                                                                                   body: JSON.stringify({
+                                                                                       model: config.modelId || "deepseek/deepseek-v4-pro",
+                                                                                       messages: currentMessages,
+                                                                                       max_tokens: config.maxTokens && config.maxTokens > 150 ? config.maxTokens : (chatMode === "immersive" ? 2500 : 1000),
+                                                                                       temperature: config.temperature || 0.7,
+                                                                                       response_format: { type: "json_object" }
+                                                                                   }),
+                                                                                   signal: abortController.signal
+                                                                               });
 
-                                                                            const aiResult = await response.json();
+                                                                               const aiResult = await response.json();
 
-                                                                            if (!aiResult.choices || aiResult.choices.length === 0) {
-                                                                                throw new Error("AI 斷線或沒有回傳");
-                                                                            }
+                                                                               if (!aiResult.choices || aiResult.choices.length === 0) {
+                                                                                   throw new Error("AI 斷線或沒有回傳");
+                                                                               }
 
-                                                                            const rawContent = aiResult.choices[0].message.content;
+                                                                               const rawContent = aiResult.choices[0].message.content;
 
-                                                                            let parsedData;
-                                                                            try {
-                                                                                parsedData = JSON.parse(rawContent.replace(/```json|```/g, "").trim());
-                                                                            } catch (e) {
-                                                                                console.error("JSON 壞掉了，啟動備用方案", rawContent);
-                                                                                parsedData = { response: rawContent, affectionChange: 0, voiceText: rawContent };
-                                                                            }
+                                                                               // ==========================================
+                                                                               // 🛡️ 總裁級三段式 JSON 淨化器
+                                                                               // ==========================================
+                                                                               let parsedData = null;
+                                                                               let safeContent = rawContent || "";
 
-                                                                            // 🌟 核心修正：嚴格防堵 null 幽靈，並解決「鬼打牆重複」問題！
-                                                                            let currentText = parsedData.response;
-                                                                            if (currentText && currentText !== "null") {
-                                                                                if (loopCount > 0) {
-                                                                                    // 🕵️‍♀️ 總裁抓漏：取出上一回合前 15 個字當作「開頭指紋」
-                                                                                    const fingerPrint = finalResponseText.trim().substring(0, 15);
-                                                                                    // 如果新回覆也包含了這 15 個字，代表 AI 傲嬌地「整段重寫」了！
-                                                                                    if (fingerPrint.length > 0 && currentText.includes(fingerPrint)) {
-                                                                                        console.log("⚠️ 偵測到 AI 重複重寫舊內容，執行【覆蓋擴寫】！");
-                                                                                        finalResponseText = currentText + "\n\n"; // 捨棄舊的，直接用細節更多的新版
-                                                                                    } else {
-                                                                                        console.log("✅ AI 乖乖接著寫，執行【拼接】！");
-                                                                                        finalResponseText += currentText + "\n\n"; // 乖乖接著寫的，就接在後面
-                                                                                    }
-                                                                                } else {
-                                                                                    finalResponseText += currentText + "\n\n";
-                                                                                }
-                                                                            }
+                                                                               try {
+                                                                                   parsedData = JSON.parse(safeContent.replace(/```json|```/g, "").trim());
+                                                                               } catch (e) {
+                                                                                   console.warn("JSON 第一次解析失敗，啟動 Regex 暴力提取...");
 
-                                                                            let currentVoice = parsedData.voiceText;
-                                                                            if (currentVoice && currentVoice !== "null") {
-                                                                                if (loopCount > 0) {
-                                                                                    // 語音也做同樣的防重複處理
-                                                                                    const voiceFingerPrint = finalVoiceText.trim().substring(0, 5);
-                                                                                    if (voiceFingerPrint.length > 0 && currentVoice.includes(voiceFingerPrint)) {
-                                                                                        finalVoiceText = currentVoice + "\n";
-                                                                                    } else {
-                                                                                        finalVoiceText += currentVoice + "\n";
-                                                                                    }
-                                                                                } else {
-                                                                                    finalVoiceText += currentVoice + "\n";
-                                                                                }
-                                                                            }
+                                                                                   try {
+                                                                                       const jsonMatch = safeContent.match(/\{[\s\S]*\}/);
+                                                                                       if (jsonMatch) {
+                                                                                           parsedData = JSON.parse(jsonMatch[0]);
+                                                                                           console.log("Regex 淨化成功！");
+                                                                                       } else {
+                                                                                           throw new Error("完全找不到 JSON 括號");
+                                                                                       }
+                                                                                   } catch (deepError) {
+                                                                                       console.error("JSON 徹底壞掉了，啟動終極備用方案", safeContent);
 
-                                                                            if (loopCount === 0) {
-                                                                                finalAffectionChange = parsedData.affectionChange || 0;
-                                                                            }
+                                                                                       let fallbackText = (typeof safeContent === 'string' && safeContent.trim() !== '')
+                                                                                           ? safeContent.replace(/[\{\}\"\[\]]/g, "")
+                                                                                           : "（他似乎陷入了沉思...）";
 
-                                                                            loopCount++;
+                                                                                       parsedData = {
+                                                                                           response: fallbackText,
+                                                                                           affectionChange: 0,
+                                                                                           voiceText: fallbackText
+                                                                                       };
+                                                                                   }
+                                                                               }
 
-                                                                            if (finalResponseText.length >= TARGET_LENGTH || loopCount >= MAX_LOOPS) {
-                                                                                break;
-                                                                            }
+                                                                               // 🌟 核心修正：嚴格防堵 null 幽靈，並解決「鬼打牆重複」問題！
+                                                                               let currentText = parsedData.response;
+                                                                               if (currentText && currentText !== "null") {
+                                                                                   if (loopCount > 0) {
+                                                                                       const fingerPrint = finalResponseText.trim().substring(0, 15);
+                                                                                       if (fingerPrint.length > 0 && currentText.includes(fingerPrint)) {
+                                                                                           console.log("⚠️ 偵測到 AI 重複重寫舊內容，執行【覆蓋擴寫】！");
+                                                                                           finalResponseText = currentText + "\n\n";
+                                                                                       } else {
+                                                                                           console.log("✅ AI 乖乖接著寫，執行【拼接】！");
+                                                                                           finalResponseText += currentText + "\n\n";
+                                                                                       }
+                                                                                   } else {
+                                                                                       finalResponseText += currentText + "\n\n";
+                                                                                   }
+                                                                               }
 
-                                                                            console.log(`[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`);
+                                                                               let currentVoice = parsedData.voiceText;
+                                                                               if (currentVoice && currentVoice !== "null") {
+                                                                                   if (loopCount > 0) {
+                                                                                       const voiceFingerPrint = finalVoiceText.trim().substring(0, 5);
+                                                                                       if (voiceFingerPrint.length > 0 && currentVoice.includes(voiceFingerPrint)) {
+                                                                                           finalVoiceText = currentVoice + "\n";
+                                                                                       } else {
+                                                                                           finalVoiceText += currentVoice + "\n";
+                                                                                       }
+                                                                                   } else {
+                                                                                       finalVoiceText += currentVoice + "\n";
+                                                                                   }
+                                                                               }
 
-                                                                            currentMessages.push({ role: "assistant", content: parsedData.response });
-                                                                            currentMessages.push({
-                                                                                role: "user",
-                                                                                // 🌟 改良催稿指令：給他兩條路走，避免他精神錯亂
-                                                                                content: "（系統強制指令：目前的篇幅不足以達到極致沉浸的要求！請保持 JSON 格式回傳，你可以選擇『重寫並大幅擴充』剛才的回覆，或是『接著最後一句話』繼續往下描寫細節！絕對不要原封不動地重複！）"
-                                                                            });
-                                                                        }
+                                                                               if (loopCount === 0) {
+                                                                                   finalAffectionChange = parsedData.affectionChange || 0;
+                                                                               }
+
+                                                                               loopCount++;
+
+                                                                               // 🚪 總裁級守門員：達成字數就打破迴圈，收工放飯！
+                                                                               if (finalResponseText.length >= TARGET_LENGTH || loopCount >= MAX_LOOPS) {
+                                                                                   break;
+                                                                               }
+
+                                                                               console.log(`[暴力接文] 目前字數 ${finalResponseText.length}，啟動第 ${loopCount + 1} 次催稿...`);
+
+                                                                               currentMessages.push({ role: "assistant", content: parsedData.response });
+                                                                               currentMessages.push({
+                                                                                   role: "user",
+                                                                                   content: "（系統強制指令：目前的篇幅不足以達到極致沉浸的要求！請保持 JSON 格式回傳，你可以選擇『重寫並大幅擴充』剛才的回覆，或是『接著最後一句話』繼續往下描寫細節！絕對不要原封不動地重複！）"
+                                                                               });
+                                                                           } // 👈 迴圈在這裡完美閉合！
 
 // ==========================================
 // 🛑 總裁鐵門：防堵幽靈回覆與幽靈扣款

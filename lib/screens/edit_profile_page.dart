@@ -137,26 +137,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> _saveProfile() async {
     final l10n = AppLocalizations.of(context)!;
-    if (_isSaving) return;
+
+    if (_isSaving) return; // 已經在存檔中就擋下來
+
+    // ✨ 關鍵修復 1：強制作業前先收起鍵盤！
+    // 避免按鈕變成「轉圈圈」時，Flutter 底層發生 Focus 焦點遺失的卡死問題。
+    FocusScope.of(context).unfocus();
+
     final newNickname = _nicknameController.text.trim();
     final newID = _playerIDController.text.trim();
 
     if (newNickname.isEmpty) {
-      // ✨ 總裁級防呆：精準攔截空白暱稱，完美避開虛擬鍵盤的遮擋！
       ToastUtils.showCenterToast(
         context,
         l10n.error_nickname_empty,
-        isError: true, // 💡 紅色警告，讓玩家立刻意識到「名字不能留白」
-        // 💡 總裁秘技：如果想讓介面看起來更專屬、更沒有責備感，可以拿掉 isError，改用：
-        // customIcon: Icons.drive_file_rename_outline_rounded, // 帶有「重新命名/畫筆」意象的圖示
+        isError: true,
       );
       return;
     }
+
     if (!widget.isCreating && !_hasChangedID && newID == _originalID) {
       _showIdNotSetDialog();
     } else {
-      // 「首次創建」或「ID已被編輯過」的情況，都直接執行完整儲存
-      _performFullSave();
+      // ✨ 關鍵修復 2：加上 await！
+      // 確保 _performFullSave 徹底跑完、錯誤提示顯示完後，_isSaving 狀態才不會錯亂！
+      await _performFullSave();
     }
   }
 
@@ -373,9 +378,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child:Text(l10n.action_continue_editing),
               ),
               ElevatedButton(
-                onPressed: () {
+                // ✨ 加上 async
+                onPressed: () async {
                   Navigator.pop(context);
-                  _saveProfileDataOnly(); // 只儲存非ID資料
+                  // ✨ 加上 await
+                  await _saveProfileDataOnly();
                 },
                 child: Text(l10n.action_edit_later),
               ),

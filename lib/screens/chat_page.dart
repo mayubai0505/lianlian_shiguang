@@ -2520,11 +2520,31 @@ class _ChatPageState extends State<ChatPage> {
       };
 
       _httpClient = http.Client();
-      final response = await _httpClient!.post(
-        Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/getAiResponse'),
-        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $idToken'},
-        body: jsonEncode(requestBody),
-      );
+      http.Response? response;
+      try {
+        response = await _httpClient!.post(
+          Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/getAiResponse'),
+          headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $idToken'},
+          body: jsonEncode(requestBody),
+        ).timeout(
+          const Duration(seconds: 90), // ⏳ 總裁級防護：最多只等 15 秒！
+          onTimeout: () {
+            // 超時的話，丟出一個特製的 TimeoutException
+            throw TimeoutException('AI 思考太久了');
+          },
+        );
+      } catch (e) {
+        // 🛡️ 攔截超時或網路斷線
+        if (mounted) {
+          setState(() {
+            _isGenerating = false;
+            generatingRooms.remove(widget.character.id);
+          });
+          // 溫柔安撫玩家，不要顯示駭人的英文錯誤
+          _showCenterToast('他似乎在沉思，請稍後再試...', isError: true);
+        }
+        return; // 提早結束，不要往下走
+      }
 
       // --- 🎯 E. 接收 API 的直接回覆 (告別舊版監聽器！) ---
       if (response.statusCode == 200) {
