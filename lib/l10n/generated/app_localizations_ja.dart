@@ -3555,4 +3555,205 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get shop_preview_mode => '⚠️ 現在ショッププレビューモードです';
+
+  @override
+  String get friendlyReminderTitle => '☁️ ユーザーへのヒント';
+
+  @override
+  String get editProfileHint =>
+      'わかりました！プロフィールを編集する場合は、左下の雲の中にある「拾光ファイル」をタップして入力してくださいね！';
+
+  @override
+  String get starlightContractTitle => '星光契約発動';
+
+  @override
+  String get dailyLimitReachedPrefix => '本日の上限に達しました！\n\n';
+
+  @override
+  String get monthlyPassExhausted => '月間カードの上限に達しました。';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      '【恋恋月間カード】を購入すると、毎日20回の再生成チャンスが付与され、彼のすべてのアプライがよりあなたの理想に近づきます。';
+
+  @override
+  String get goToSubscribeButton => '購入へ進む';
+
+  @override
+  String get profileUpdatedSuccess => '拾光ファイルが更新されました！';
+
+  @override
+  String get continueChatTitle => '会話を続ける';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return '彼に話を続けさせると、お花が $cost ポイント消費されます 🌸\n本当に続けますか？';
+  }
+
+  @override
+  String get dontShowAgainToday => '本日再非表示';
+
+  @override
+  String get confirmContinue => '続ける';
+
+  @override
+  String get hiddenPromptContinue => '続けてください';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return '選択した $count 件のメッセージを削除してもよろしいですか？';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return '再生成 ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait => 'システムを準備中です。少々お待ちください...';
+
+  @override
+  String get noMessagesToRegenerate => '現在、再生成できるメッセージはありません！';
+
+  @override
+  String get continueButton => '次へ';
+
+  @override
+  String get creatorExclusive => '🔒 クリエイター限定';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age歳 | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 好きなもの';
+
+  @override
+  String get dislikesLabel => '👎 苦手なもの';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return '誕生日: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return '身長: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'バックストーリー';
+
+  @override
+  String get noneLabel => 'なし';
+
+  @override
+  String flowerPointsCount(String points) {
+    return 'お花 $points 個';
+  }
+
+  @override
+  String get passGuideTitle => '恋恋月間カード専属ガイド';
+
+  @override
+  String get passGuideRegenerateTitle => '🔄 なぜ「再生成」が必要なの？';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'AIは時々、空気が読めないカタブツになってしまうことがあります。気に入らない返答があった時は、再生成を押すだけでタイムリープしたかのようにやり直せます！彼に何度も考え直させ、あなたの胸を高鳴らせる完璧なセリフを引き出しましょう。';
+
+  @override
+  String get passGuideAffectionTitle => '💖 好感度ブーストにはどんな効果があるの？';
+
+  @override
+  String get passGuideAffectionContent =>
+      'ゲーム内において、好感度はキャラクターの「ディープな秘密」や「親密なプライベート写真」を解放するための唯一の鍵です。20%のボーナスがあれば、誰よりも早く彼の心の奥底に踏み込むことができます。';
+
+  @override
+  String get passGuideUnlockButton => 'わかりました、今すぐ解放！';
+
+  @override
+  String get pleaseWait => '少々お待ちください';
+
+  @override
+  String get createNewProfileTitle => '📜 拾光ファイルを新規作成';
+
+  @override
+  String get editProfileTitle => '✏️ 拾光ファイルを編集';
+
+  @override
+  String get profileEditDescription =>
+      '異なるキャラクター設定を作成して、パラレルワールドで彼に新しいあなたを魅せましょう！';
+
+  @override
+  String get profileNameLabel => 'ファイル名 (自分にのみ表示されます)';
+
+  @override
+  String get profileNameHint => '例：学園の後輩設定、ツンデレ女社長';
+
+  @override
+  String get profileNicknameLabel => '名前 / 呼び名';
+
+  @override
+  String get profileNicknameHint => '例：さくら、李社長';
+
+  @override
+  String get profileHeightLabel => '身長';
+
+  @override
+  String get profileHeightHint => '例：160cm';
+
+  @override
+  String get profileAppearanceLabel => '外見';
+
+  @override
+  String get profileAppearanceHint => '例：黒髪ロング、ワンピースが好き';
+
+  @override
+  String get profileOccupationLabel => '職業';
+
+  @override
+  String get profileOccupationHint => '例：フリーランスの画家';
+
+  @override
+  String get profileIntroLabel => '性格と自己紹介';
+
+  @override
+  String get profileIntroHint => '例：少しドジなところがある、甘いものが大好物...';
+
+  @override
+  String get profileNameEmptyWarning => 'このファイルに名前を付けてください！';
+
+  @override
+  String profileSaveError(String error) {
+    return '保存失敗: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'ファイルを保存';
+
+  @override
+  String get fillLaterButton => '後で入力する';
+
+  @override
+  String get exclusiveProfileTitle => '📜 専属拾光ファイル';
+
+  @override
+  String get profileSelectionDescription =>
+      '彼との交流に使用したい身分を選択してください (同キャラクターで共有、最大10個まで)';
+
+  @override
+  String profileSwitchError(String error) {
+    return '切り替え失敗: $error';
+  }
+
+  @override
+  String get unnamedProfile => '未命名のファイル';
+
+  @override
+  String get noOccupationYet => '職業未入力';
+
+  @override
+  String get createNewProfileButton => '拾光ファイルを新規作成';
 }

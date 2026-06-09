@@ -1594,5 +1594,126 @@
   "shop_preview_mode": "⚠️ 目前为商店预览模式",
   "@shop_preview_mode": {
   "description": "商店預覽模式的警告標語"
-  }
+  },
+  "friendlyReminderTitle": "☁️ 温馨提示",
+  "editProfileHint": "好的！如果要编辑身份，请点击左下角云朵 Inside 的「拾光档案」做填写喔！",
+  "starlightContractTitle": "星光契约启动",
+  "dailyLimitReachedPrefix": "今日的额度已经用完啰！\n\n",
+  "monthlyPassExhausted": "您的月卡额度已用尽。",
+  "subscribeMonthlyPassPrompt": "开通【恋恋月卡】，每日享有 20 次重新生成机会，让他每一次的回复都更贴近您的心意。",
+  "goToSubscribeButton": "前往开通",
+  "profileUpdatedSuccess": "拾光档案已更新！",
+  "continueChatTitle": "继续对话",
+  "continueChatCostWarning": "让他说下去，将会消耗 {cost} 朵花花 🌸\n确定要继续吗？",
+  "@continueChatCostWarning": {
+    "placeholders": {
+      "cost": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "dontShowAgainToday": "今日不再提示",
+  "confirmContinue": "确定继续",
+  "hiddenPromptContinue": "请继续",
+  "confirmDeleteMessagesTitle": "确定删除这 {count} 则对话？",
+  "@confirmDeleteMessagesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "regenerateButtonLabel": "重新生成 ({current}/{max})",
+  "@regenerateButtonLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "3"
+      },
+      "max": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "systemPreparingWait": "系统还在准备中，请稍候...",
+  "noMessagesToRegenerate": "目前没有可以重新生成的对话喔！",
+  "continueButton": "继续",
+  "creatorExclusive": "🔒 创作者专属",
+  "ageAndOccupation": "{age}岁 | {occupation}",
+  "@ageAndOccupation": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "likesLabel": "💖 喜欢",
+  "dislikesLabel": "👎 不喜欢",
+  "birthdayLabel": "生日: {birthday}",
+  "@birthdayLabel": {
+    "placeholders": {
+      "birthday": { "type": "String" }
+    }
+  },
+  "heightLabel": "身高: {height} cm",
+  "@heightLabel": {
+    "placeholders": {
+      "height": { "type": "String" }
+    }
+  },
+  "backgroundStoryLabel": "背景故事",
+  "noneLabel": "无",
+  "flowerPointsCount": "{points} 点花花",
+  "@flowerPointsCount": {
+    "placeholders": {
+      "points": {
+        "type": "String",
+        "example": "100"
+      }
+    }
+  },
+  "passGuideTitle": "恋恋月卡专属指南",
+  "passGuideRegenerateTitle": "🔄 为什么需要「重新生成」？",
+  "passGuideRegenerateContent": "AI 有时候会像个笨蛋木头，不解风情。遇到不满意的回复时，只要按下重新生成，就像时光倒流！妳可以让他重新思考，直到他说出让妳心跳加速的那句完美台词。",
+  "passGuideAffectionTitle": "💖 好感度加速有什么用？",
+  "passGuideAffectionContent": "在游戏中，好感度是解锁角色「深层秘密」与「亲密私照」的唯一钥匙。20% 的加成让妳比别人更快走进他的内心深处。",
+  "passGuideUnlockButton": "我明白了，立即解锁！",
+  "pleaseWait": "请稍候",
+  "createNewProfileTitle": "📜 建立新拾光档案",
+  "editProfileTitle": "✏️ 编辑拾光档案",
+  "profileEditDescription": "建立 different 的人设，在平行的时空里让他认识不一样的妳！",
+  "profileNameLabel": "档案名称 (仅自己可见)",
+  "profileNameHint": "例如: 校园学妹设定、霸道女总裁",
+  "profileNicknameLabel": "姓名 / 称呼",
+  "profileNicknameHint": "例如: 小樱、李总",
+  "profileHeightLabel": "身高",
+  "profileHeightHint": "例如: 160cm",
+  "profileAppearanceLabel": "外貌",
+  "profileAppearanceHint": "例如: 黑色长发、喜欢穿洋装",
+  "profileOccupationLabel": "职业",
+  "profileOccupationHint": "例如: 自由画家",
+  "profileIntroLabel": "个性与自我介绍",
+  "profileIntroHint": "例如：个性有点迷糊，喜欢吃甜食...",
+  "profileNameEmptyWarning": "请给这个档案取个名字喔！",
+  "profileSaveError": "储存失败: {error}",
+  "@profileSaveError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "saveProfileButton": "储存档案",
+  "fillLaterButton": "稍后填写",
+  "exclusiveProfileTitle": "📜 专属拾光档案",
+  "profileSelectionDescription": "选择你想用来和他互动的身分 (同角色共用清单，最多 10 个)",
+  "profileSwitchError": "切换失败: {error}",
+  "@profileSwitchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unnamedProfile": "未命名档案",
+  "noOccupationYet": "尚未填写职业",
+  "createNewProfileButton": "建立新拾光档案"
 }

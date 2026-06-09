@@ -1579,5 +1579,126 @@
     "shop_preview_mode": "⚠️ ขณะนี้อยู่ในโหมดพรีวิวร้านค้า",
     "@shop_preview_mode": {
     "description": "商店預覽模式的警告標語"
-    }
+    },
+    "friendlyReminderTitle": "☁️ คำแนะนำที่เป็นมิตร",
+    "editProfileHint": "รับทราบค่ะ! หากต้องการแก้ไขข้อมูลโปรไฟล์ โปรดคลิกที่ 'โปรไฟล์สือกวาง' ภายในก้อนเมฆที่มุมซ้ายล่างเพื่อกรอกข้อมูลนะคะ!",
+    "starlightContractTitle": "เปิดใช้งานสัญญาแสงดาว",
+    "dailyLimitReachedPrefix": "โควต้าของวันนี้ถูกใช้หมดแล้วนะ!\n\n",
+    "monthlyPassExhausted": "โควต้าบัตรรายเดือนของคุณหมดแล้ว",
+    "subscribeMonthlyPassPrompt": "เปิดใช้งาน 【บัตรรายเดือนเหลียนเหลียน】 เพื่อรับสิทธิ์สุ่มคำตอบใหม่ 20 ครั้งต่อวัน ให้ทุกการตอบกลับของเขาตรงใจคุณมากยิ่งขึ้น",
+    "goToSubscribeButton": "ไปที่หน้าเปิดใช้งาน",
+    "profileUpdatedSuccess": "อัปเดตโปรไฟล์สือกวางแล้ว!",
+    "continueChatTitle": "คุยต่อ",
+    "continueChatCostWarning": "ให้เขาพูดต่อไป จะต้องใช้ดอกไม้ {cost} ดอกนะ 🌸\nแน่ใจไหมว่าต้องการคุยต่อ?",
+    "@continueChatCostWarning": {
+        "placeholders": {
+            "cost": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    },
+    "dontShowAgainToday": "ไม่ต้องแสดงอีกในวันนี้",
+    "confirmContinue": "ตกลงคุยต่อ",
+    "hiddenPromptContinue": "โปรดพูดต่อ",
+    "confirmDeleteMessagesTitle": "แน่ใจไหมว่าต้องการลบข้อความทั้ง {count} ข้อความนี้?",
+    "@confirmDeleteMessagesTitle": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "3"
+            }
+        }
+    },
+    "regenerateButtonLabel": "สร้างใหม่ ({current}/{max})",
+    "@regenerateButtonLabel": {
+        "placeholders": {
+            "current": {
+                "type": "int",
+                "example": "3"
+            },
+            "max": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "systemPreparingWait": "ระบบกำลังจัดเตรียมข้อมูล กรุณารอสักครู่...",
+    "noMessagesToRegenerate": "ขณะนี้ไม่มีข้อความที่สามารถสร้างใหม่ได้นะ!",
+    "continueButton": "ถัดไป",
+    "creatorExclusive": "🔒 เฉพาะผู้สร้าง",
+    "ageAndOccupation": "อายุ {age} ปี | {occupation}",
+    "@ageAndOccupation": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "likesLabel": "💖 สิ่งที่ชอบ",
+    "dislikesLabel": "👎 สิ่งที่ไม่ชอบ",
+    "birthdayLabel": "วันเกิด: {birthday}",
+    "@birthdayLabel": {
+        "placeholders": {
+            "birthday": { "type": "String" }
+        }
+    },
+    "heightLabel": "ส่วนสูง: {height} ซม.",
+    "@heightLabel": {
+        "placeholders": {
+            "height": { "type": "String" }
+        }
+    },
+    "backgroundStoryLabel": "เรื่องราวภูมิหลัง",
+    "noneLabel": "ไม่มี",
+    "flowerPointsCount": "{points} ดอกไม้",
+    "@flowerPointsCount": {
+        "placeholders": {
+            "points": {
+                "type": "String",
+                "example": "100"
+            }
+        }
+    },
+    "passGuideTitle": "คู่มือพิเศษสำหรับบัตรรายเดือนเหลียนเหลียน",
+    "passGuideRegenerateTitle": "🔄 ทำไมต้องใช้ระบบ \"สร้างใหม่\"?",
+    "passGuideRegenerateContent": "บางครั้ง AI ก็อาจจะทื่อเหมือนท่อนไม้ที่ไม่เข้าใจในความรัก เมื่อคุณเจอกับคำตอบที่ไม่ถูกใจ เพียงแค่กดสร้างใหม่ก็เหมือนกับการย้อนเวลากลับไป! คุณสามารถให้เขาคิดทบทวนใหม่ได้เรื่อยๆ จนกว่าเขาจะพูดประโยคสุดสมบูรณ์แบบที่ทำให้คุณใจเต้นรัว",
+    "passGuideAffectionTitle": "💖 ระบบเร่งค่าความสนิทมีประโยชน์อย่างไร?",
+    "passGuideAffectionContent": "ในเกมนี้ ค่าความสนิทคือ กุญแจดอกเดียวที่จะปลดล็อก \"ความลับส่วนลึก\" และ \"รูปถ่ายส่วนตัวสุดใกล้ชิด\" ของตัวละคร โบนัสเพิ่มขึ้น 20% จะช่วยให้คุณเดินเข้าไปในส่วนลึกของหัวใจเขาได้เร็วกว่าใครๆ",
+    "passGuideUnlockButton": "เข้าใจแล้ว ปลดล็อกทันที!",
+    "pleaseWait": "กรุณารอสักครู่",
+    "createNewProfileTitle": "📜 สร้างโปรไฟล์สือกวางใหม่",
+    "editProfileTitle": "✏️ แก้ไขโปรไฟล์สือกวาง",
+    "profileEditDescription": "สร้างตัวตนที่แตกต่างกัน เพื่อให้เขาได้รู้จักคุณในหลากหลายแง่มุมผ่านโลกคู่ขนาน!",
+    "profileNameLabel": "ชื่อโปรไฟล์ (มองเห็นเฉพาะคุณเท่านั้น)",
+    "profileNameHint": "เช่น: รุ่นน้องในโรงเรียน, ประธานสาวสุดมั่น",
+    "profileNicknameLabel": "ชื่อ / สรรพนามเรียก",
+    "profileNicknameHint": "เช่น: ซากุระ, ประธานหลี่",
+    "profileHeightLabel": "ส่วนสูง",
+    "profileHeightHint": "เช่น: 160 ซม.",
+    "profileAppearanceLabel": "รูปลักษณ์ภายนอก",
+    "profileAppearanceHint": "เช่น: ผมยาวสีดำ, ชอบใส่ชุดเดรส",
+    "profileOccupationLabel": "อาชีพ",
+    "profileOccupationHint": "เช่น: ศิลปินอิสระ",
+    "profileIntroLabel": "นิสัยและการแนะนำตัว",
+    "profileIntroHint": "เช่น: นิสัยโก๊ะๆ นิดหน่อย, ชอบกินของหวาน...",
+    "profileNameEmptyWarning": "กรุณาตั้งชื่อให้โปรไฟล์นี้ด้วยนะคะ!",
+    "profileSaveError": "บันทึกล้มเหลว: {error}",
+    "@profileSaveError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "saveProfileButton": "บันทึกโปรไฟล์",
+    "fillLaterButton": "ไว้กรอกทีหลัง",
+    "exclusiveProfileTitle": "📜 โปรไฟล์สือกวางเฉพาะตัว",
+    "profileSelectionDescription": "เลือกตัวตนที่คุณต้องการใช้สำหรับโต้ตอบกับเขา (รายชื่อแชร์ร่วมกันในตัวละครเดียวกัน สูงสุด 10 โปรไฟล์)",
+    "profileSwitchError": "สลับโปรไฟล์ล้มเหลว: {error}",
+    "@profileSwitchError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "unnamedProfile": "โปรไฟล์ที่ไม่ได้ตั้งชื่อ",
+    "noOccupationYet": "ยังไม่ได้กรอกอาชีพ",
+    "createNewProfileButton": "สร้างโปรไฟล์สือกวางใหม่"
 }

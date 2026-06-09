@@ -3748,4 +3748,211 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get shop_preview_mode =>
       '⚠️ Hiện tại đang ở chế độ xem trước cửa hàng';
+
+  @override
+  String get friendlyReminderTitle => '☁️ Nhắc nhở thân thiện';
+
+  @override
+  String get editProfileHint =>
+      'Ok nhé! Nếu muốn chỉnh sửa hồ sơ, vui lòng nhấn vào \"Hồ sơ Thập Quang\" bên trong đám mây ở góc dưới bên trái để điền thông tin nhé!';
+
+  @override
+  String get starlightContractTitle => 'Kích hoạt Tinh Quang Khế Ước';
+
+  @override
+  String get dailyLimitReachedPrefix =>
+      'Hạn ngạch của ngày hôm nay đã dùng hết rồi nhé!\n\n';
+
+  @override
+  String get monthlyPassExhausted => 'Hạn ngạch thẻ tháng của bạn đã dùng hết.';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      'Mở khóa 【Thẻ Tháng Luyến Luyến】 để hưởng 20 cơ hội tạo lại mỗi ngày, giúp mỗi câu trả lời của anh ấy đều chạm đến trái tim bạn hơn.';
+
+  @override
+  String get goToSubscribeButton => 'Đi đến mở khóa';
+
+  @override
+  String get profileUpdatedSuccess => 'Hồ sơ Thập Quang đã được cập nhật!';
+
+  @override
+  String get continueChatTitle => 'Tiếp tục trò chuyện';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return 'Để anh ấy nói tiếp sẽ tiêu tốn $cost điểm Hoa 🌸\nBạn có chắc chắn muốn tiếp tục không?';
+  }
+
+  @override
+  String get dontShowAgainToday => 'Không hiển thị lại trong hôm nay';
+
+  @override
+  String get confirmContinue => 'Xác nhận tiếp tục';
+
+  @override
+  String get hiddenPromptContinue => 'Hãy nói tiếp đi';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return 'Bạn có chắc chắn muốn xóa $count tin nhắn này không?';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return 'Tạo lại ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait =>
+      'Hệ thống vẫn đang chuẩn bị, vui lòng chờ trong giây lát...';
+
+  @override
+  String get noMessagesToRegenerate =>
+      'Hiện tại không có cuộc trò chuyện nào có thể tạo lại!';
+
+  @override
+  String get continueButton => 'Tiếp tục';
+
+  @override
+  String get creatorExclusive => '🔒 Dành riêng cho nhà sáng tạo';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age tuổi | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 Sở thích';
+
+  @override
+  String get dislikesLabel => '👎 Ghét';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return 'Sinh nhật: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return 'Chiều cao: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'Câu chuyện bối cảnh';
+
+  @override
+  String get noneLabel => 'Không có';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points Hoa';
+  }
+
+  @override
+  String get passGuideTitle => 'Cẩm nang độc quyền Thẻ Tháng Luyến Luyến';
+
+  @override
+  String get passGuideRegenerateTitle =>
+      '🔄 Tại sao bạn lại cần chức năng \"Tạo lại\"?';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'AI đôi khi sẽ giống như một khúc gỗ ngốc nghếch, không hiểu phong tình. Khi gặp phải câu trả lời không ưng ý, chỉ cần nhấn tạo lại là giống như thời gian quay ngược vậy! Bạn có thể khiến anh ấy suy nghĩ lại, cho đến khi nói ra câu thoại hoàn hảo khiến tim bạn đập loạn nhịp.';
+
+  @override
+  String get passGuideAffectionTitle =>
+      '💖 Tăng tốc độ hảo cảm thì có tác dụng gì?';
+
+  @override
+  String get passGuideAffectionContent =>
+      'Trong game, độ hảo cảm là chiếc chìa khóa duy nhất để mở khóa \"bí mật sâu kín\" và \"ảnh riêng tư thân mật\" của nhân vật. Việc được cộng thêm 20% sẽ giúp bạn bước vào sâu trong tim anh ấy nhanh hơn những người khác.';
+
+  @override
+  String get passGuideUnlockButton => 'Mình đã hiểu, mở khóa ngay!';
+
+  @override
+  String get pleaseWait => 'Vui lòng chờ';
+
+  @override
+  String get createNewProfileTitle => '📜 Tạo Hồ Sơ Thập Quang Mới';
+
+  @override
+  String get editProfileTitle => '✏️ Chỉnh Sửa Hồ Sơ Thập Quang';
+
+  @override
+  String get profileEditDescription =>
+      'Tạo ra các thân phận khác nhau để anh ấy được làm quen với những khía cạnh khác của bạn ở thế giới song song!';
+
+  @override
+  String get profileNameLabel => 'Tên hồ sơ (Chỉ bạn mới nhìn thấy)';
+
+  @override
+  String get profileNameHint => 'Ví dụ: Đàn em trường học, Nữ tổng tài bá đạo';
+
+  @override
+  String get profileNicknameLabel => 'Tên / Danh xưng';
+
+  @override
+  String get profileNicknameHint => 'Ví dụ: Sakura, Lý Tổng';
+
+  @override
+  String get profileHeightLabel => 'Chiều cao';
+
+  @override
+  String get profileHeightHint => 'Ví dụ: 160cm';
+
+  @override
+  String get profileAppearanceLabel => 'Ngoại hình';
+
+  @override
+  String get profileAppearanceHint => 'Ví dụ: Tóc đen dài, thích mặc váy';
+
+  @override
+  String get profileOccupationLabel => 'Nghề nghiệp';
+
+  @override
+  String get profileOccupationHint => 'Ví dụ: Họa sĩ tự do';
+
+  @override
+  String get profileIntroLabel => 'Tính cách & Tự giới thiệu';
+
+  @override
+  String get profileIntroHint =>
+      'Ví dụ: Tính cách hơi đoảng một tí, thích ăn đồ ngọt...';
+
+  @override
+  String get profileNameEmptyWarning => 'Vui lòng đặt tên cho hồ sơ này nhé!';
+
+  @override
+  String profileSaveError(String error) {
+    return 'Lưu thất bại: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'Lưu hồ sơ';
+
+  @override
+  String get fillLaterButton => 'Điền sau';
+
+  @override
+  String get exclusiveProfileTitle => '📜 Hồ Sơ Thập Quang Độc Quyền';
+
+  @override
+  String get profileSelectionDescription =>
+      'Chọn thân phận bạn muốn dùng để tương tác với anh ấy (danh sách dùng chung cho cùng một nhân vật, tối đa 10 hồ sơ)';
+
+  @override
+  String profileSwitchError(String error) {
+    return 'Chuyển đổi thất bại: $error';
+  }
+
+  @override
+  String get unnamedProfile => 'Hồ sơ chưa đặt tên';
+
+  @override
+  String get noOccupationYet => 'Chưa điền nghề nghiệp';
+
+  @override
+  String get createNewProfileButton => 'Tạo Hồ Sơ Thập Quang Mới';
 }

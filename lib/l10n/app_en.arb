@@ -1794,5 +1794,126 @@
   "shop_preview_mode": "⚠️ Currently in Shop Preview Mode",
   "@shop_preview_mode": {
   "description": "商店預覽模式的警告標語"
-  }
+  },
+  "friendlyReminderTitle": "☁️ Friendly Reminder",
+  "editProfileHint": "Sure! If you want to edit your profile, please click on 'Shiguang Profile' inside the cloud in the bottom-left corner to fill it out!",
+  "starlightContractTitle": "Starlight Contract Activated",
+  "dailyLimitReachedPrefix": "Today's limit has been used up!\n\n",
+  "monthlyPassExhausted": "Your Monthly Pass limit has been exhausted.",
+  "subscribeMonthlyPassPrompt": "Subscribe to 【Lianlian Monthly Pass】 to enjoy 20 regenerate opportunities daily, making every response of his closer to your heart.",
+  "goToSubscribeButton": "Go to Subscribe",
+  "profileUpdatedSuccess": "Shiguang Profile updated!",
+  "continueChatTitle": "Continue Chat",
+  "continueChatCostWarning": "Letting him continue will consume {cost} Flowers 🌸\nAre you sure you want to continue?",
+  "@continueChatCostWarning": {
+    "placeholders": {
+      "cost": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "dontShowAgainToday": "Don't show again today",
+  "confirmContinue": "Confirm",
+  "hiddenPromptContinue": "Please continue",
+  "confirmDeleteMessagesTitle": "Are you sure you want to delete these {count} messages?",
+  "@confirmDeleteMessagesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "regenerateButtonLabel": "Regenerate ({current}/{max})",
+  "@regenerateButtonLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "3"
+      },
+      "max": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "systemPreparingWait": "The system is still preparing, please wait...",
+  "noMessagesToRegenerate": "There are currently no messages that can be regenerated!",
+  "continueButton": "Continue",
+  "creatorExclusive": "🔒 Creator Exclusive",
+  "ageAndOccupation": "{age} y/o | {occupation}",
+  "@ageAndOccupation": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "likesLabel": "💖 Likes",
+  "dislikesLabel": "👎 Dislikes",
+  "birthdayLabel": "Birthday: {birthday}",
+  "@birthdayLabel": {
+    "placeholders": {
+      "birthday": { "type": "String" }
+    }
+  },
+  "heightLabel": "Height: {height} cm",
+  "@heightLabel": {
+    "placeholders": {
+      "height": { "type": "String" }
+    }
+  },
+  "backgroundStoryLabel": "Background Story",
+  "noneLabel": "None",
+  "flowerPointsCount": "{points} Flowers",
+  "@flowerPointsCount": {
+    "placeholders": {
+      "points": {
+        "type": "String",
+        "example": "100"
+      }
+    }
+  },
+  "passGuideTitle": "Lianlian Monthly Pass Exclusive Guide",
+  "passGuideRegenerateTitle": "🔄 Why do you need 'Regenerate'?",
+  "passGuideRegenerateContent": "AI can sometimes act like a clueless block of wood. When you encounter an unsatisfying response, just press 'Regenerate' to turn back time! You can make him rethink his words until he says that perfect line that makes your heart race.",
+  "passGuideAffectionTitle": "💖 What is the use of Affection Boost?",
+  "passGuideAffectionContent": "In the game, Affection is the only key to unlocking a character's 'deepest secrets' and 'intimate private photos'. A 20% boost allows you to walk into the depths of his heart faster than anyone else.",
+  "passGuideUnlockButton": "I understand, unlock now!",
+  "pleaseWait": "Please wait",
+  "createNewProfileTitle": "📜 Create New Shiguang Profile",
+  "editProfileTitle": "✏️ Edit Shiguang Profile",
+  "profileEditDescription": "Create different personas to let him know a different you in parallel universes!",
+  "profileNameLabel": "Profile Name (Only visible to yourself)",
+  "profileNameHint": "e.g., School Junior, Bossy Female CEO",
+  "profileNicknameLabel": "Name / Nickname",
+  "profileNicknameHint": "e.g., Sakura, President Li",
+  "profileHeightLabel": "Height",
+  "profileHeightHint": "e.g., 160cm",
+  "profileAppearanceLabel": "Appearance",
+  "profileAppearanceHint": "e.g., Long black hair, likes wearing dresses",
+  "profileOccupationLabel": "Occupation",
+  "profileOccupationHint": "e.g., Freelance Artist",
+  "profileIntroLabel": "Personality & Self-Introduction",
+  "profileIntroHint": "e.g., A bit clumsy, loves eating sweets...",
+  "profileNameEmptyWarning": "Please give this profile a name!",
+  "profileSaveError": "Failed to save: {error}",
+  "@profileSaveError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "saveProfileButton": "Save Profile",
+  "fillLaterButton": "Fill Out Later",
+  "exclusiveProfileTitle": "📜 Exclusive Shiguang Profile",
+  "profileSelectionDescription": "Select the persona you want to use to interact with him (shared list per character, up to 10)",
+  "profileSwitchError": "Failed to switch: {error}",
+  "@profileSwitchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unnamedProfile": "Unnamed Profile",
+  "noOccupationYet": "No occupation filled yet",
+  "createNewProfileButton": "Create New Shiguang Profile"
 }

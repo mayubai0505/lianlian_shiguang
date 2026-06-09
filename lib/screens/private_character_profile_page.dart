@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'character_model.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 // ⚠️ 記得 import 妳的 Character 模型檔案
-// import 'models/character.dart';
 
 class PrivateCharacterProfilePage extends StatelessWidget {
-  final Character character; // 接收傳進來的角色資料
+  final Character character;
 
   const PrivateCharacterProfilePage({super.key, required this.character});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // 🌟 1. 取得多國語系字典
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      // 🌟 讓圖片可以延伸到最頂端 (沉浸式體驗)
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -28,20 +29,18 @@ class PrivateCharacterProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🖼️ 頂部：滿版帥氣大圖
             SizedBox(
               width: double.infinity,
               height: 450,
               child: Image.network(
-                character.avatarPath, // 顯示大頭貼或相簿第一張
+                character.avatarPath,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey[800], child: const Icon(Icons.person, color: Colors.white, size: 100)),
               ),
             ),
 
-            // 📝 下半部：專屬私密檔案
             Container(
-              transform: Matrix4.translationValues(0.0, -20.0, 0.0), // 稍微往上移，蓋住圖片底部邊緣
+              transform: Matrix4.translationValues(0.0, -20.0, 0.0),
               decoration: BoxDecoration(
                 color: theme.scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -50,7 +49,6 @@ class PrivateCharacterProfilePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 標題與「專屬私人」標籤
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -65,40 +63,40 @@ class PrivateCharacterProfilePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.pinkAccent.withValues(alpha: 0.5)),
                         ),
-                        child: const Text('🔒 創作者專屬', style: TextStyle(color: Colors.pinkAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                        // 🚀 替換創作者專屬
+                        child: Text(l10n.creatorExclusive, style: const TextStyle(color: Colors.pinkAccent, fontSize: 12, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
 
-                  // 年齡與職業
+                  // 🚀 替換年齡與職業 (用 .toString() 確保型別安全)
                   Text(
-                    '${character.age}歲 | ${character.occupation}',
+                    l10n.ageAndOccupation(character.age.toString(), character.occupation),
                     style: TextStyle(fontSize: 16, color: Colors.blueAccent.shade200, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 24),
 
-                  // 喜歡與不喜歡
                   Row(
                     children: [
-                      Expanded(child: _buildInfoCard('💖 喜歡', character.likes, Colors.pinkAccent)),
+                      // 🚀 替換喜歡/不喜歡，並把 l10n 傳進去
+                      Expanded(child: _buildInfoCard(l10n.likesLabel, character.likes, Colors.pinkAccent, l10n)),
                       const SizedBox(width: 12),
-                      Expanded(child: _buildInfoCard('👎 不喜歡', character.dislikes, Colors.blueGrey)),
+                      Expanded(child: _buildInfoCard(l10n.dislikesLabel, character.dislikes, Colors.blueGrey, l10n)),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  // 生日與身高
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text('生日: ${character.birthday}', style: const TextStyle(color: Colors.grey)),
-                      Text('身高: ${character.height} cm', style: const TextStyle(color: Colors.grey)),
+                      // 🚀 替換生日與身高
+                      Text(l10n.birthdayLabel(character.birthday), style: const TextStyle(color: Colors.grey)),
+                      Text(l10n.heightLabel(character.height.toString()), style: const TextStyle(color: Colors.grey)),
                     ],
                   ),
                   const Divider(height: 40),
 
-                  // 🏷️ 個性標籤 (完美還原圖二的 Tag)
                   Wrap(
                     spacing: 8.0,
                     runSpacing: 8.0,
@@ -115,14 +113,14 @@ class PrivateCharacterProfilePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // 📖 背景故事
-                  const Text('背景故事', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  // 🚀 替換背景故事
+                  Text(l10n.backgroundStoryLabel, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   Text(
                     character.background,
                     style: const TextStyle(fontSize: 15, height: 1.6, color: Colors.grey),
                   ),
-                  const SizedBox(height: 40), // 底部留白
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -132,8 +130,8 @@ class PrivateCharacterProfilePage extends StatelessWidget {
     );
   }
 
-  // 輔助畫出喜歡/不喜歡的小卡片
-  Widget _buildInfoCard(String title, String content, Color color) {
+  // 🌟 接收 l10n 以便翻譯裡面的「無」
+  Widget _buildInfoCard(String title, String content, Color color, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -146,7 +144,8 @@ class PrivateCharacterProfilePage extends StatelessWidget {
         children: [
           Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text(content.isEmpty ? '無' : content, style: const TextStyle(fontSize: 13)),
+          // 🚀 替換空值顯示的「無」
+          Text(content.isEmpty ? l10n.noneLabel : content, style: const TextStyle(fontSize: 13)),
         ],
       ),
     );

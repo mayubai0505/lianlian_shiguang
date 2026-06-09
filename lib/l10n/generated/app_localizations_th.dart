@@ -3701,4 +3701,208 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get shop_preview_mode => '⚠️ ขณะนี้อยู่ในโหมดพรีวิวร้านค้า';
+
+  @override
+  String get friendlyReminderTitle => '☁️ คำแนะนำที่เป็นมิตร';
+
+  @override
+  String get editProfileHint =>
+      'รับทราบค่ะ! หากต้องการแก้ไขข้อมูลโปรไฟล์ โปรดคลิกที่ \'โปรไฟล์สือกวาง\' ภายในก้อนเมฆที่มุมซ้ายล่างเพื่อกรอกข้อมูลนะคะ!';
+
+  @override
+  String get starlightContractTitle => 'เปิดใช้งานสัญญาแสงดาว';
+
+  @override
+  String get dailyLimitReachedPrefix => 'โควต้าของวันนี้ถูกใช้หมดแล้วนะ!\n\n';
+
+  @override
+  String get monthlyPassExhausted => 'โควต้าบัตรรายเดือนของคุณหมดแล้ว';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      'เปิดใช้งาน 【บัตรรายเดือนเหลียนเหลียน】 เพื่อรับสิทธิ์สุ่มคำตอบใหม่ 20 ครั้งต่อวัน ให้ทุกการตอบกลับของเขาตรงใจคุณมากยิ่งขึ้น';
+
+  @override
+  String get goToSubscribeButton => 'ไปที่หน้าเปิดใช้งาน';
+
+  @override
+  String get profileUpdatedSuccess => 'อัปเดตโปรไฟล์สือกวางแล้ว!';
+
+  @override
+  String get continueChatTitle => 'คุยต่อ';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return 'ให้เขาพูดต่อไป จะต้องใช้ดอกไม้ $cost ดอกนะ 🌸\nแน่ใจไหมว่าต้องการคุยต่อ?';
+  }
+
+  @override
+  String get dontShowAgainToday => 'ไม่ต้องแสดงอีกในวันนี้';
+
+  @override
+  String get confirmContinue => 'ตกลงคุยต่อ';
+
+  @override
+  String get hiddenPromptContinue => 'โปรดพูดต่อ';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return 'แน่ใจไหมว่าต้องการลบข้อความทั้ง $count ข้อความนี้?';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return 'สร้างใหม่ ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait =>
+      'ระบบกำลังจัดเตรียมข้อมูล กรุณารอสักครู่...';
+
+  @override
+  String get noMessagesToRegenerate =>
+      'ขณะนี้ไม่มีข้อความที่สามารถสร้างใหม่ได้นะ!';
+
+  @override
+  String get continueButton => 'ถัดไป';
+
+  @override
+  String get creatorExclusive => '🔒 เฉพาะผู้สร้าง';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return 'อายุ $age ปี | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 สิ่งที่ชอบ';
+
+  @override
+  String get dislikesLabel => '👎 สิ่งที่ไม่ชอบ';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return 'วันเกิด: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return 'ส่วนสูง: $height ซม.';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'เรื่องราวภูมิหลัง';
+
+  @override
+  String get noneLabel => 'ไม่มี';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points ดอกไม้';
+  }
+
+  @override
+  String get passGuideTitle => 'คู่มือพิเศษสำหรับบัตรรายเดือนเหลียนเหลียน';
+
+  @override
+  String get passGuideRegenerateTitle => '🔄 ทำไมต้องใช้ระบบ \"สร้างใหม่\"?';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'บางครั้ง AI ก็อาจจะทื่อเหมือนท่อนไม้ที่ไม่เข้าใจในความรัก เมื่อคุณเจอกับคำตอบที่ไม่ถูกใจ เพียงแค่กดสร้างใหม่ก็เหมือนกับการย้อนเวลากลับไป! คุณสามารถให้เขาคิดทบทวนใหม่ได้เรื่อยๆ จนกว่าเขาจะพูดประโยคสุดสมบูรณ์แบบที่ทำให้คุณใจเต้นรัว';
+
+  @override
+  String get passGuideAffectionTitle =>
+      '💖 ระบบเร่งค่าความสนิทมีประโยชน์อย่างไร?';
+
+  @override
+  String get passGuideAffectionContent =>
+      'ในเกมนี้ ค่าความสนิทคือ กุญแจดอกเดียวที่จะปลดล็อก \"ความลับส่วนลึก\" และ \"รูปถ่ายส่วนตัวสุดใกล้ชิด\" ของตัวละคร โบนัสเพิ่มขึ้น 20% จะช่วยให้คุณเดินเข้าไปในส่วนลึกของหัวใจเขาได้เร็วกว่าใครๆ';
+
+  @override
+  String get passGuideUnlockButton => 'เข้าใจแล้ว ปลดล็อกทันที!';
+
+  @override
+  String get pleaseWait => 'กรุณารอสักครู่';
+
+  @override
+  String get createNewProfileTitle => '📜 สร้างโปรไฟล์สือกวางใหม่';
+
+  @override
+  String get editProfileTitle => '✏️ แก้ไขโปรไฟล์สือกวาง';
+
+  @override
+  String get profileEditDescription =>
+      'สร้างตัวตนที่แตกต่างกัน เพื่อให้เขาได้รู้จักคุณในหลากหลายแง่มุมผ่านโลกคู่ขนาน!';
+
+  @override
+  String get profileNameLabel => 'ชื่อโปรไฟล์ (มองเห็นเฉพาะคุณเท่านั้น)';
+
+  @override
+  String get profileNameHint => 'เช่น: รุ่นน้องในโรงเรียน, ประธานสาวสุดมั่น';
+
+  @override
+  String get profileNicknameLabel => 'ชื่อ / สรรพนามเรียก';
+
+  @override
+  String get profileNicknameHint => 'เช่น: ซากุระ, ประธานหลี่';
+
+  @override
+  String get profileHeightLabel => 'ส่วนสูง';
+
+  @override
+  String get profileHeightHint => 'เช่น: 160 ซม.';
+
+  @override
+  String get profileAppearanceLabel => 'รูปลักษณ์ภายนอก';
+
+  @override
+  String get profileAppearanceHint => 'เช่น: ผมยาวสีดำ, ชอบใส่ชุดเดรส';
+
+  @override
+  String get profileOccupationLabel => 'อาชีพ';
+
+  @override
+  String get profileOccupationHint => 'เช่น: ศิลปินอิสระ';
+
+  @override
+  String get profileIntroLabel => 'นิสัยและการแนะนำตัว';
+
+  @override
+  String get profileIntroHint => 'เช่น: นิสัยโก๊ะๆ นิดหน่อย, ชอบกินของหวาน...';
+
+  @override
+  String get profileNameEmptyWarning => 'กรุณาตั้งชื่อให้โปรไฟล์นี้ด้วยนะคะ!';
+
+  @override
+  String profileSaveError(String error) {
+    return 'บันทึกล้มเหลว: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'บันทึกโปรไฟล์';
+
+  @override
+  String get fillLaterButton => 'ไว้กรอกทีหลัง';
+
+  @override
+  String get exclusiveProfileTitle => '📜 โปรไฟล์สือกวางเฉพาะตัว';
+
+  @override
+  String get profileSelectionDescription =>
+      'เลือกตัวตนที่คุณต้องการใช้สำหรับโต้ตอบกับเขา (รายชื่อแชร์ร่วมกันในตัวละครเดียวกัน สูงสุด 10 โปรไฟล์)';
+
+  @override
+  String profileSwitchError(String error) {
+    return 'สลับโปรไฟล์ล้มเหลว: $error';
+  }
+
+  @override
+  String get unnamedProfile => 'โปรไฟล์ที่ไม่ได้ตั้งชื่อ';
+
+  @override
+  String get noOccupationYet => 'ยังไม่ได้กรอกอาชีพ';
+
+  @override
+  String get createNewProfileButton => 'สร้างโปรไฟล์สือกวางใหม่';
 }

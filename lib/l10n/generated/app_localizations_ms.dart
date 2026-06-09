@@ -3748,4 +3748,215 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get shop_preview_mode => '⚠️ Pada masa ini dalam Mod Pratonton Kedai';
+
+  @override
+  String get friendlyReminderTitle => '☁️ Peringatan Mesra';
+
+  @override
+  String get editProfileHint =>
+      'Baiklah! Jika awak mahu mengedit identiti, sila klik \'Profil Shiguang\' di dalam awan di sudut kiri bawah untuk mengisinya!';
+
+  @override
+  String get starlightContractTitle => 'Kontrak Starlight Diaktifkan';
+
+  @override
+  String get dailyLimitReachedPrefix =>
+      'Had hari ini telah habis digunakan!\n\n';
+
+  @override
+  String get monthlyPassExhausted =>
+      'Had Kad Bulanan awak telah habis digunakan.';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      'Langgan 【Kad Bulanan Lianlian】 untuk menikmati 20 peluang penjanaan semula setiap hari, menjadikan setiap maklum balasnya lebih dekat dengan hati awak.';
+
+  @override
+  String get goToSubscribeButton => 'Pergi untuk Langgan';
+
+  @override
+  String get profileUpdatedSuccess => 'Profil Shiguang telah dikemas kini!';
+
+  @override
+  String get continueChatTitle => 'Lanjutkan Perbualan';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return 'Membiarkan dia terus bercakap akan menggunakan $cost Mata Bunga 🌸\nAdakah awak pasti ingin melanjutkan?';
+  }
+
+  @override
+  String get dontShowAgainToday => 'Jangan tunjuk lagi hari ini';
+
+  @override
+  String get confirmContinue => 'Sahkan Lanjut';
+
+  @override
+  String get hiddenPromptContinue => 'Sila lanjutkan';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return 'Adakah awak pasti ingin memadam $count mesej ini?';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return 'Jana Semula ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait =>
+      'Sistem masih dalam persediaan, sila tunggu...';
+
+  @override
+  String get noMessagesToRegenerate =>
+      'Tiada mesej yang boleh dijana semula pada masa ini!';
+
+  @override
+  String get continueButton => 'Teruskan';
+
+  @override
+  String get creatorExclusive => '🔒 Eksklusif Pencipta';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age tahun | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 Suka';
+
+  @override
+  String get dislikesLabel => '👎 Tidak Suka';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return 'Hari Lahir: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return 'Ketinggian: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'Cerita Latar Belakang';
+
+  @override
+  String get noneLabel => 'Tiada';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points Bunga';
+  }
+
+  @override
+  String get passGuideTitle => 'Panduan Eksklusif Kad Bulanan Lianlian';
+
+  @override
+  String get passGuideRegenerateTitle =>
+      '🔄 Mengapa awak memerlukan \'Jana Semula\'?';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'AI kadangkala boleh bertindak seperti tungtung kayu yang tidak memahami emosi. Apabila awak menerima maklum balas yang tidak memuaskan, hanya perlu menekan jana semula, ia seperti memutarkan kembali masa! Awak boleh membuat dia berfikir semula sehingga dia mengucapkan ayat sempurna yang membuatkan jantung awak berdegap-degup.';
+
+  @override
+  String get passGuideAffectionTitle =>
+      '💖 Apakah kegunaan Pecutan Kejelekitan?';
+
+  @override
+  String get passGuideAffectionContent =>
+      'Dalam permainan ini, kejelekitan (affection) adalah satu-satunya kunci untuk membuka \'rahsia tersembunyi\' dan \'foto peribadi intim\' karakter. Bonus 20% membolehkan awak melangkah masuk ke dalam lubuk hatinya dengan lebih cepat daripada orang lain.';
+
+  @override
+  String get passGuideUnlockButton => 'Saya faham, buka kunci sekarang!';
+
+  @override
+  String get pleaseWait => 'Sila tunggu';
+
+  @override
+  String get createNewProfileTitle => '📜 Bina Profil Shiguang Baharu';
+
+  @override
+  String get editProfileTitle => '✏️ Edit Profil Shiguang';
+
+  @override
+  String get profileEditDescription =>
+      'Bina personaliti yang berbeza, biarkan dia mengenali sisi lain diri awak dalam dimensi paralel!';
+
+  @override
+  String get profileNameLabel =>
+      'Nama Profil (Hanya dilihat oleh awak sendiri)';
+
+  @override
+  String get profileNameHint =>
+      'Contoh: Adik Kelas Sekolah, CEO Wanita yang Tegas';
+
+  @override
+  String get profileNicknameLabel => 'Nama / Panggilan';
+
+  @override
+  String get profileNicknameHint => 'Contoh: Sakura, Pengarah Li';
+
+  @override
+  String get profileHeightLabel => 'Ketinggian';
+
+  @override
+  String get profileHeightHint => 'Contoh: 160cm';
+
+  @override
+  String get profileAppearanceLabel => 'Rupa Paras';
+
+  @override
+  String get profileAppearanceHint =>
+      'Contoh: Rambut hitam panjang, suka memakai gaun';
+
+  @override
+  String get profileOccupationLabel => 'Pekerjaan';
+
+  @override
+  String get profileOccupationHint => 'Contoh: Pelukis Bebas';
+
+  @override
+  String get profileIntroLabel => 'Personaliti & Pengenalan Diri';
+
+  @override
+  String get profileIntroHint =>
+      'Contoh: Agak cuai, suka makan makanan manis...';
+
+  @override
+  String get profileNameEmptyWarning => 'Sila berikan nama untuk profil ini!';
+
+  @override
+  String profileSaveError(String error) {
+    return 'Gagal menyimpan: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'Simpan Profil';
+
+  @override
+  String get fillLaterButton => 'Isi Kemudian';
+
+  @override
+  String get exclusiveProfileTitle => '📜 Profil Shiguang Eksklusif';
+
+  @override
+  String get profileSelectionDescription =>
+      'Pilih identiti yang ingin awak gunakan untuk berinteraksi dengannya (senarai dikongsi bagi watak yang sama, maks. 10)';
+
+  @override
+  String profileSwitchError(String error) {
+    return 'Gagal menukar: $error';
+  }
+
+  @override
+  String get unnamedProfile => 'Profil Tanpa Nama';
+
+  @override
+  String get noOccupationYet => 'Belum mengisi pekerjaan';
+
+  @override
+  String get createNewProfileButton => 'Bina Profil Shiguang Baharu';
 }

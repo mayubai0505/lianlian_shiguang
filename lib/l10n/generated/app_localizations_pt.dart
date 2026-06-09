@@ -3766,4 +3766,212 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get shop_preview_mode =>
       '⚠️ Atualmente no Modo de Visualização da Loja';
+
+  @override
+  String get friendlyReminderTitle => '☁️ Lembrete Gentil';
+
+  @override
+  String get editProfileHint =>
+      'Certo! Se você quiser editar sua identidade, por favor clique em \'Perfil Shiguang\' dentro da nuvem no canto inferior esquerdo para preenchê-lo!';
+
+  @override
+  String get starlightContractTitle => 'Contrato de Luz Estelar Ativado';
+
+  @override
+  String get dailyLimitReachedPrefix => 'O limite de hoje foi esgotado!\n\n';
+
+  @override
+  String get monthlyPassExhausted =>
+      'O limite do seu Cartão Mensal foi esgotado.';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      'Ative o 【Cartão Mensal Lianlian】 para desfrutar de 20 chances de regeneração diariamente, fazendo com que cada resposta dele fique mais próxima do seu coração.';
+
+  @override
+  String get goToSubscribeButton => 'Ir para Ativar';
+
+  @override
+  String get profileUpdatedSuccess => 'Perfil Shiguang atualizado!';
+
+  @override
+  String get continueChatTitle => 'Continuar Conversa';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return 'Permitir que ele continue consumirá $cost Flores 🌸\nTem certeza de que deseja continuar?';
+  }
+
+  @override
+  String get dontShowAgainToday => 'Não mostrar novamente hoje';
+
+  @override
+  String get confirmContinue => 'Confirmar';
+
+  @override
+  String get hiddenPromptContinue => 'Por favor, continue';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return 'Tem certeza de que deseja excluir estas $count mensagens?';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return 'Regenerar ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait =>
+      'O sistema ainda está se preparando, por favor aguarde...';
+
+  @override
+  String get noMessagesToRegenerate =>
+      'Não há mensagens que possam ser regeneradas no momento!';
+
+  @override
+  String get continueButton => 'Continuar';
+
+  @override
+  String get creatorExclusive => '🔒 Exclusivo do Criador';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age anos | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 Gosta';
+
+  @override
+  String get dislikesLabel => '👎 Não gosta';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return 'Aniversário: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return 'Altura: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'História de fundo';
+
+  @override
+  String get noneLabel => 'Nenhum';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points Flores';
+  }
+
+  @override
+  String get passGuideTitle => 'Guia Exclusivo do Cartão Mensual Lianlian';
+
+  @override
+  String get passGuideRegenerateTitle =>
+      '🔄 Por que você precisa de \'Regenerar\'?';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'Às vezes, a IA pode agir como um pedaço de madeira insensível. Quando você se deparar com uma resposta insatisfatória, basta pressionar \'Regenerar\' para voltar no tempo! Você pode fazê-lo repensar as palavras até que ele diga aquela frase perfeita que fará seu coração disparar.';
+
+  @override
+  String get passGuideAffectionTitle =>
+      '💖 Para que serve o Impulso de Afinidade?';
+
+  @override
+  String get passGuideAffectionContent =>
+      'No jogo, a afinidade é a única chave para desbloquear os \'segredos profundos\' e as \'fotos íntimas privadas\' dos personagens. O bônus de 20% permite que você entre no fundo do coração dele mais rápido do que qualquer outra pessoa.';
+
+  @override
+  String get passGuideUnlockButton => 'Entendi, desbloquear agora!';
+
+  @override
+  String get pleaseWait => 'Por favor, aguarde';
+
+  @override
+  String get createNewProfileTitle => '📜 Criar Novo Perfil Shiguang';
+
+  @override
+  String get editProfileTitle => '✏️ Editar Perfil Shiguang';
+
+  @override
+  String get profileEditDescription =>
+      'Crie personalidades diferentes para que ele conheça uma versão diferente de você em universos paralelos!';
+
+  @override
+  String get profileNameLabel => 'Nome do Perfil (Visível apenas para você)';
+
+  @override
+  String get profileNameHint =>
+      'Ex: Caloura da escola, CEO feminina autoritária';
+
+  @override
+  String get profileNicknameLabel => 'Nome / Apelido';
+
+  @override
+  String get profileNicknameHint => 'Ex: Sakura, Diretora Li';
+
+  @override
+  String get profileHeightLabel => 'Altura';
+
+  @override
+  String get profileHeightHint => 'Ex: 160cm';
+
+  @override
+  String get profileAppearanceLabel => 'Aparência';
+
+  @override
+  String get profileAppearanceHint =>
+      'Ex: Cabelo longo e preto, gosta de usar vestidos';
+
+  @override
+  String get profileOccupationLabel => 'Profissão';
+
+  @override
+  String get profileOccupationHint => 'Ex: Pintora freelancer';
+
+  @override
+  String get profileIntroLabel => 'Personalidade e Auto-introdução';
+
+  @override
+  String get profileIntroHint => 'Ex: Um pouco distraída, adora comer doces...';
+
+  @override
+  String get profileNameEmptyWarning => 'Por favor, dê um nome a este perfil!';
+
+  @override
+  String profileSaveError(String error) {
+    return 'Falha ao salvar: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'Salvar Perfil';
+
+  @override
+  String get fillLaterButton => 'Preencher Mais Tarde';
+
+  @override
+  String get exclusiveProfileTitle => '📜 Perfil Shiguang Exclusivo';
+
+  @override
+  String get profileSelectionDescription =>
+      'Selecione a identidade que deseja usar para interagir com ele (lista compartilhada por personagem, no máximo 10)';
+
+  @override
+  String profileSwitchError(String error) {
+    return 'Falha ao alternar: $error';
+  }
+
+  @override
+  String get unnamedProfile => 'Perfil sem Nome';
+
+  @override
+  String get noOccupationYet => 'Profissão não preenchida';
+
+  @override
+  String get createNewProfileButton => 'Criar Novo Perfil Shiguang';
 }

@@ -1580,5 +1580,126 @@
   "shop_preview_mode": "⚠️ 現在ショッププレビューモードです",
   "@shop_preview_mode": {
   "description": "商店預覽模式的警告標語"
-  }
+  },
+  "friendlyReminderTitle": "☁️ ユーザーへのヒント",
+  "editProfileHint": "わかりました！プロフィールを編集する場合は、左下の雲の中にある「拾光ファイル」をタップして入力してくださいね！",
+  "starlightContractTitle": "星光契約発動",
+  "dailyLimitReachedPrefix": "本日の上限に達しました！\n\n",
+  "monthlyPassExhausted": "月間カードの上限に達しました。",
+  "subscribeMonthlyPassPrompt": "【恋恋月間カード】を購入すると、毎日20回の再生成チャンスが付与され、彼のすべてのアプライがよりあなたの理想に近づきます。",
+  "goToSubscribeButton": "購入へ進む",
+  "profileUpdatedSuccess": "拾光ファイルが更新されました！",
+  "continueChatTitle": "会話を続ける",
+  "continueChatCostWarning": "彼に話を続けさせると、お花が {cost} ポイント消費されます 🌸\n本当に続けますか？",
+  "@continueChatCostWarning": {
+    "placeholders": {
+      "cost": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "dontShowAgainToday": "本日再非表示",
+  "confirmContinue": "続ける",
+  "hiddenPromptContinue": "続けてください",
+  "confirmDeleteMessagesTitle": "選択した {count} 件のメッセージを削除してもよろしいですか？",
+  "@confirmDeleteMessagesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "regenerateButtonLabel": "再生成 ({current}/{max})",
+  "@regenerateButtonLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "3"
+      },
+      "max": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "systemPreparingWait": "システムを準備中です。少々お待ちください...",
+  "noMessagesToRegenerate": "現在、再生成できるメッセージはありません！",
+  "continueButton": "次へ",
+  "creatorExclusive": "🔒 クリエイター限定",
+  "ageAndOccupation": "{age}歳 | {occupation}",
+  "@ageAndOccupation": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "likesLabel": "💖 好きなもの",
+  "dislikesLabel": "👎 苦手なもの",
+  "birthdayLabel": "誕生日: {birthday}",
+  "@birthdayLabel": {
+    "placeholders": {
+      "birthday": { "type": "String" }
+    }
+  },
+  "heightLabel": "身長: {height} cm",
+  "@heightLabel": {
+    "placeholders": {
+      "height": { "type": "String" }
+    }
+  },
+  "backgroundStoryLabel": "バックストーリー",
+  "noneLabel": "なし",
+  "flowerPointsCount": "お花 {points} 個",
+  "@flowerPointsCount": {
+    "placeholders": {
+      "points": {
+        "type": "String",
+        "example": "100"
+      }
+    }
+  },
+  "passGuideTitle": "恋恋月間カード専属ガイド",
+  "passGuideRegenerateTitle": "🔄 なぜ「再生成」が必要なの？",
+  "passGuideRegenerateContent": "AIは時々、空気が読めないカタブツになってしまうことがあります。気に入らない返答があった時は、再生成を押すだけでタイムリープしたかのようにやり直せます！彼に何度も考え直させ、あなたの胸を高鳴らせる完璧なセリフを引き出しましょう。",
+  "passGuideAffectionTitle": "💖 好感度ブーストにはどんな効果があるの？",
+  "passGuideAffectionContent": "ゲーム内において、好感度はキャラクターの「ディープな秘密」や「親密なプライベート写真」を解放するための唯一の鍵です。20%のボーナスがあれば、誰よりも早く彼の心の奥底に踏み込むことができます。",
+  "passGuideUnlockButton": "わかりました、今すぐ解放！",
+  "pleaseWait": "少々お待ちください",
+  "createNewProfileTitle": "📜 拾光ファイルを新規作成",
+  "editProfileTitle": "✏️ 拾光ファイルを編集",
+  "profileEditDescription": "異なるキャラクター設定を作成して、パラレルワールドで彼に新しいあなたを魅せましょう！",
+  "profileNameLabel": "ファイル名 (自分にのみ表示されます)",
+  "profileNameHint": "例：学園の後輩設定、ツンデレ女社長",
+  "profileNicknameLabel": "名前 / 呼び名",
+  "profileNicknameHint": "例：さくら、李社長",
+  "profileHeightLabel": "身長",
+  "profileHeightHint": "例：160cm",
+  "profileAppearanceLabel": "外見",
+  "profileAppearanceHint": "例：黒髪ロング、ワンピースが好き",
+  "profileOccupationLabel": "職業",
+  "profileOccupationHint": "例：フリーランスの画家",
+  "profileIntroLabel": "性格と自己紹介",
+  "profileIntroHint": "例：少しドジなところがある、甘いものが大好物...",
+  "profileNameEmptyWarning": "このファイルに名前を付けてください！",
+  "profileSaveError": "保存失敗: {error}",
+  "@profileSaveError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "saveProfileButton": "ファイルを保存",
+  "fillLaterButton": "後で入力する",
+  "exclusiveProfileTitle": "📜 専属拾光ファイル",
+  "profileSelectionDescription": "彼との交流に使用したい身分を選択してください (同キャラクターで共有、最大10個まで)",
+  "profileSwitchError": "切り替え失敗: {error}",
+  "@profileSwitchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unnamedProfile": "未命名のファイル",
+  "noOccupationYet": "職業未入力",
+  "createNewProfileButton": "拾光ファイルを新規作成"
 }

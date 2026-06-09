@@ -1580,5 +1580,126 @@
     "shop_preview_mode": "⚠️ वर्तमान में शॉप प्रिव्यू मोड चालू है",
     "@shop_preview_mode": {
     "description": "商店預覽模式的警告標語"
-    }
+    },
+    "friendlyReminderTitle": "☁️ एक प्यारा सा सुझाव",
+    "editProfileHint": "ठीक है! यदि आप अपनी प्रोफ़ाइल संपादित करना चाहते हैं, तो कृपया भरने के लिए नीचे-बाएँ कोने में क्लाउड के अंदर 'शिगुआंग प्रोफ़ाइल' पर क्लिक करें!",
+    "starlightContractTitle": "स्टारलाइट कॉन्ट्रैक्ट सक्रिय हुआ",
+    "dailyLimitReachedPrefix": "आज की सीमा समाप्त हो गई है!\n\n",
+    "monthlyPassExhausted": "आपके मासिक कार्ड की सीमा समाप्त हो गई है।",
+    "subscribeMonthlyPassPrompt": "दैनिक 20 री-जेनरेट अवसरों का आनंद लेने के लिए 【लियनलियन मासिक कार्ड】 सक्रिय करें, ताकि उसकी हर प्रतिक्रिया आपके दिल के और करीब हो।",
+    "goToSubscribeButton": "सक्रिय करने जाएं",
+    "profileUpdatedSuccess": "शिगुआंग प्रोफ़ाइल अपडेट हो गई है!",
+    "continueChatTitle": "बातचीत जारी रखें",
+    "continueChatCostWarning": "उसे बात जारी रखने देने के लिए {cost} फूल खर्च होंगे 🌸\nक्या आप सच में जारी रखना चाहते हैं?",
+    "@continueChatCostWarning": {
+        "placeholders": {
+            "cost": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    },
+    "dontShowAgainToday": "आज फिर न दिखाएं",
+    "confirmContinue": "जारी रखें",
+    "hiddenPromptContinue": "कृपया जारी रखें",
+    "confirmDeleteMessagesTitle": "क्या आप सच में इन {count} संदेशों को हटाना चाहते हैं?",
+    "@confirmDeleteMessagesTitle": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "3"
+            }
+        }
+    },
+    "regenerateButtonLabel": "पुनः उत्पन्न करें ({current}/{max})",
+    "@regenerateButtonLabel": {
+        "placeholders": {
+            "current": {
+                "type": "int",
+                "example": "3"
+            },
+            "max": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "systemPreparingWait": "सिस्टम अभी भी तैयारी कर रहा है, कृपया प्रतीक्षा करें...",
+    "noMessagesToRegenerate": "वर्तमान में कोई संदेश नहीं है जिसे पुनः उत्पन्न किया जा सके!",
+    "continueButton": "जारी रखें",
+    "creatorExclusive": "🔒 निर्माता विशेष",
+    "ageAndOccupation": "{age} वर्ष | {occupation}",
+    "@ageAndOccupation": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "likesLabel": "💖 पसंद",
+    "dislikesLabel": "👎 नापसंद",
+    "birthdayLabel": "जन्मदिन: {birthday}",
+    "@birthdayLabel": {
+        "placeholders": {
+            "birthday": { "type": "String" }
+        }
+    },
+    "heightLabel": "लंबाई: {height} सेमी",
+    "@heightLabel": {
+        "placeholders": {
+            "height": { "type": "String" }
+        }
+    },
+    "backgroundStoryLabel": "बैकग्राउंड कहानी",
+    "noneLabel": "कोई नहीं",
+    "flowerPointsCount": "{points} फूल",
+    "@flowerPointsCount": {
+        "placeholders": {
+            "points": {
+                "type": "String",
+                "example": "100"
+            }
+        }
+    },
+    "passGuideTitle": "लियनलियन मासिक कार्ड विशेष गाइड",
+    "passGuideRegenerateTitle": "🔄 आपको 'पुनः उत्पन्न करें' की आवश्यकता क्यों है?",
+    "passGuideRegenerateContent": "एआई कभी-कभी एक नासमझ लकड़ी के टुकड़े की तरह व्यवहार कर सकता है जो भावनाओं को नहीं समझता। जब आपको कोई असंतोषजनक प्रतिक्रिया मिले, तो बस 'पुनः उत्पन्न करें' दबाएं, यह समय में पीछे जाने जैसा है! आप उसे तब तक दोबारा सोचने पर मजबूर कर सकते हैं जब तक कि वह आपके दिल की धड़कन बढ़ाने वाली एकदम सही बात न कह दे।",
+    "passGuideAffectionTitle": "💖 स्नेह बढ़ाने से क्या फायदा है?",
+    "passGuideAffectionContent": "खेल में, स्नेह ही पात्र के 'गहरे रहस्यों' और 'अंतरंग निजी तस्वीरों' को अनलॉक करने की एकमात्र चाबी है। 20% की बढ़ोतरी आपको किसी भी अन्य व्यक्ति की तुलना में तेजी से उसके दिल की गहराइयों में जाने की अनुमति देती है।",
+    "passGuideUnlockButton": "मैं समझ गया, अभी अनलॉक करें!",
+    "pleaseWait": "कृपया प्रतीक्षा करें",
+    "createNewProfileTitle": "📜 नई शिगुआंग प्रोफ़ाइल बनाएं",
+    "editProfileTitle": "✏️ शिगुआंग प्रोफ़ाइल संपादित करें",
+    "profileEditDescription": "अलग-अलग व्यक्तित्व बनाएं ताकि वह समानांतर ब्रह्मांडों में आपके एक अलग रूप को जान सके!",
+    "profileNameLabel": "प्रोफ़ाइल नाम (केवल आपके लिए दृश्यमान)",
+    "profileNameHint": "जैसे: स्कूल जूनियर, दबंग महिला सीईओ",
+    "profileNicknameLabel": "नाम / उपनाम",
+    "profileNicknameHint": "जैसे: साकुरा, प्रेसिडेंट ली",
+    "profileHeightLabel": "लंबाई",
+    "profileHeightHint": "जैसे: 160 सेमी",
+    "profileAppearanceLabel": "दिखावट",
+    "profileAppearanceHint": "जैसे: काले लंबे बाल, फ्रॉक पहनना पसंद है",
+    "profileOccupationLabel": "व्यवसाय",
+    "profileOccupationHint": "जैसे: फ्रीलांस चित्रकार",
+    "profileIntroLabel": "व्यक्तित्व और आत्म-परिचय",
+    "profileIntroHint": "जैसे: थोड़ी भुलक्कड़ है, मीठा खाना पसंद है...",
+    "profileNameEmptyWarning": "कृपया इस प्रोफ़ाइल को एक नाम दें!",
+    "profileSaveError": "सहेजने में विफल: {error}",
+    "@profileSaveError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "saveProfileButton": "प्रोफ़ाइल सहेजें",
+    "fillLaterButton": "बाद में भरें",
+    "exclusiveProfileTitle": "📜 विशेष शिगुआंग प्रोफ़ाइल",
+    "profileSelectionDescription": "वह पहचान चुनें जिसका उपयोग आप उसके साथ बातचीत करने के लिए करना चाहते हैं (प्रति पात्र साझा सूची, अधिकतम 10)",
+    "profileSwitchError": "बदलने में विफल: {error}",
+    "@profileSwitchError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "unnamedProfile": "अनाम प्रोफ़ाइल",
+    "noOccupationYet": "अभी तक कोई व्यवसाय नहीं भरा गया",
+    "createNewProfileButton": "नई शिगुआंग प्रोफ़ाइल बनाएं"
 }

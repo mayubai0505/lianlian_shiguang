@@ -3749,4 +3749,210 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get shop_preview_mode => '⚠️ Saat ini dalam Mode Pratinjau Toko';
+
+  @override
+  String get friendlyReminderTitle => '☁️ Pengingat Ramah';
+
+  @override
+  String get editProfileHint =>
+      'Baiklah! Jika ingin mengedit identitas, silakan klik \'Profil Shiguang\' di dalam awan di sudut kiri bawah untuk mengisinya!';
+
+  @override
+  String get starlightContractTitle => 'Kontrak Starlight Diaktifkan';
+
+  @override
+  String get dailyLimitReachedPrefix =>
+      'Kuota hari ini telah habis digunakan!\n\n';
+
+  @override
+  String get monthlyPassExhausted => 'Kuota Kartu Bulanan Anda telah habis.';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      'Aktifkan 【Kartu Bulanan Lianlian】 untuk menikmati 20 kesempatan pembuatan ulang setiap hari, membuat setiap tanggapannya lebih dekat ke hati Anda.';
+
+  @override
+  String get goToSubscribeButton => 'Pergi untuk Mengaktifkan';
+
+  @override
+  String get profileUpdatedSuccess => 'Profil Shiguang telah diperbarui!';
+
+  @override
+  String get continueChatTitle => 'Lanjutkan Percakapan';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return 'Membiarkannya terus berbicara akan mengonsumsi $cost Bunga 🌸\nApakah Anda yakin ingin melanjutkan?';
+  }
+
+  @override
+  String get dontShowAgainToday => 'Jangan tampilkan lagi hari ini';
+
+  @override
+  String get confirmContinue => 'Yakin Lanjutkan';
+
+  @override
+  String get hiddenPromptContinue => 'Silakan lanjutkan';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return 'Apakah Anda yakin ingin menghapus $count pesan ini?';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return 'Buat Ulang ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait => 'Sistem masih bersiap, mohon tunggu...';
+
+  @override
+  String get noMessagesToRegenerate =>
+      'Saat ini tidak ada percakapan yang dapat dibuat ulang!';
+
+  @override
+  String get continueButton => 'Lanjutkan';
+
+  @override
+  String get creatorExclusive => '🔒 Eksklusif Kreator';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age tahun | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 Suka';
+
+  @override
+  String get dislikesLabel => '👎 Tidak Suka';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return 'Hari Ulang Tahun: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return 'Tinggi Badan: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'Cerita Latar Belakang';
+
+  @override
+  String get noneLabel => 'Tidak ada';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points Bunga';
+  }
+
+  @override
+  String get passGuideTitle => 'Panduan Eksklusif Kartu Bulanan Lianlian';
+
+  @override
+  String get passGuideRegenerateTitle =>
+      '🔄 Mengapa Anda membutuhkan \'Buat Ulang\'?';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'AI terkadang bisa menjadi tidak peka seperti balok kayu. Saat Anda menemui tanggapan yang tidak memuaskan, cukup tekan buat ulang, itu seperti memutar balik waktu! Anda bisa membiarkannya berpikir ulang sampai dia mengucapkan kalimat sempurna yang membuat jantung Anda berdebar kencang.';
+
+  @override
+  String get passGuideAffectionTitle => '💖 Apa kegunaan Akselerasi Afeksi?';
+
+  @override
+  String get passGuideAffectionContent =>
+      'Dalam permainan, afeksi adalah satu-satunya kunci untuk membuka \'rahasia terdalam\' dan \'foto pribadi intim\' dari karakter. Bonus 20% memungkinkan Anda berjalan masuk ke lubuk hatinya lebih cepat daripada orang lain.';
+
+  @override
+  String get passGuideUnlockButton => 'Saya mengerti, buka kunci sekarang!';
+
+  @override
+  String get pleaseWait => 'Mohon tunggu';
+
+  @override
+  String get createNewProfileTitle => '📜 Buat Profil Shiguang Baru';
+
+  @override
+  String get editProfileTitle => '✏️ Edit Profil Shiguang';
+
+  @override
+  String get profileEditDescription =>
+      'Buat persona yang berbeda, biarkan dia mengenali sisi lain dari dirimu di dimensi paralel!';
+
+  @override
+  String get profileNameLabel => 'Nama Profil (Hanya terlihat oleh Anda)';
+
+  @override
+  String get profileNameHint => 'Contoh: Adik Kelas, CEO Wanita yang Angkuh';
+
+  @override
+  String get profileNicknameLabel => 'Nama / Panggilan';
+
+  @override
+  String get profileNicknameHint => 'Contoh: Sakura, Direktur Li';
+
+  @override
+  String get profileHeightLabel => 'Tinggi Badan';
+
+  @override
+  String get profileHeightHint => 'Contoh: 160cm';
+
+  @override
+  String get profileAppearanceLabel => 'Penampilan';
+
+  @override
+  String get profileAppearanceHint =>
+      'Contoh: Rambut hitam panjang, suka memakai gaun';
+
+  @override
+  String get profileOccupationLabel => 'Pekerjaan';
+
+  @override
+  String get profileOccupationHint => 'Contoh: Pelukis Lepas';
+
+  @override
+  String get profileIntroLabel => 'Kepribadian & Pengenalan Diri';
+
+  @override
+  String get profileIntroHint =>
+      'Contoh: Agak ceroboh, suka makan makanan manis...';
+
+  @override
+  String get profileNameEmptyWarning => 'Silakan beri nama untuk profil ini!';
+
+  @override
+  String profileSaveError(String error) {
+    return 'Gagal menyimpan: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'Simpan Profil';
+
+  @override
+  String get fillLaterButton => 'Isi Nanti';
+
+  @override
+  String get exclusiveProfileTitle => '📜 Profil Shiguang Eksklusif';
+
+  @override
+  String get profileSelectionDescription =>
+      'Pilih identitas yang ingin Anda gunakan untuk berinteraksi dengannya (daftar bersama per karakter, maks. 10)';
+
+  @override
+  String profileSwitchError(String error) {
+    return 'Gagal beralih: $error';
+  }
+
+  @override
+  String get unnamedProfile => 'Profil Tanpa Nama';
+
+  @override
+  String get noOccupationYet => 'Belum mengisi pekerjaan';
+
+  @override
+  String get createNewProfileButton => 'Buat Profil Shiguang Baru';
 }

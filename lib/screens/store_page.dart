@@ -653,10 +653,11 @@ class ProductCard extends StatelessWidget {
 
               // 🌸 顯示浪漫禮包名稱
               Text(romanticName, style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor, fontSize: 14)),
-
               // 🌸 顯示點數
-              Text("$points 點花花", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-
+              Text(
+                  l10n.flowerPointsCount(points.toString()),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey)
+              ),
               const SizedBox(height: 4),
               if (isFirstPurchase)
                 Container(
@@ -705,6 +706,7 @@ class MockProductDetails {
 
 // ✨ 誠實豆沙包版：月卡說明書彈窗
 void _showMonthlyPassManual(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -733,11 +735,12 @@ void _showMonthlyPassManual(BuildContext context) {
                   ),
                 ),
               ),
-              const Row(
+               Row(
                 children: [
                   Icon(Icons.auto_awesome, color: Colors.pinkAccent),
                   SizedBox(width: 8),
-                  Text('戀戀月卡專屬指南', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  // 💡 拿掉 Text 前面的 const
+                  Text(l10n.passGuideTitle, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -745,16 +748,16 @@ void _showMonthlyPassManual(BuildContext context) {
               // 📝 賣點 1：重新生成
               _buildManualItem(
                 icon: Icons.refresh,
-                title: '🔄 為什麼需要「重新生成」？',
-                content: 'AI 有時候會像個笨蛋木頭，不解風情。遇到不滿意的回覆時，只要按下重新生成，就像時光倒流！妳可以讓他重新思考，直到他說出讓妳心跳加速的那句完美台詞。',
+                title: l10n.passGuideRegenerateTitle, // 🚀 替換標題
+                content: l10n.passGuideRegenerateContent, // 🚀 替換內文
               ),
               const SizedBox(height: 16),
 
               // 📝 賣點 2：好感度
               _buildManualItem(
                 icon: Icons.favorite,
-                title: '💖 好感度加速有什麼用？',
-                content: '在遊戲中，好感度是解鎖角色「深層秘密」與「親密私照」的唯一鑰匙。20% 的加成讓妳比別人更快走進他的內心深處。',
+                title: l10n.passGuideAffectionTitle, // 🚀 替換標題
+                content: l10n.passGuideAffectionContent, // 🚀 替換內文
               ),
               const SizedBox(height: 24),
 
@@ -768,7 +771,8 @@ void _showMonthlyPassManual(BuildContext context) {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('我明白了，立即解鎖！', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  // 💡 拿掉 Text 前面的 const
+                  child: Text(l10n.passGuideUnlockButton, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
             ],

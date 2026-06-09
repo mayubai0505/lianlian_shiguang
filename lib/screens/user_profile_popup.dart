@@ -39,10 +39,11 @@ class UserProfilePopup {
         final theme = Theme.of(context);
         final colorScheme = theme.colorScheme;
         // 💡 請確保本地化資源呼叫名稱與你專案相符
-        // final l10n = AppLocalizations.of(context)!;
+         final l10n = AppLocalizations.of(context)!;
 
         return StatefulBuilder(
             builder: (context, setModalState) {
+              final l10n = AppLocalizations.of(context)!;
               // ✨ 魔法對接：去資料庫撈取資料
               if (!hasFetched) {
                 hasFetched = true;
@@ -113,14 +114,8 @@ class UserProfilePopup {
                 canPop: !isSaving,
                 onPopInvoked: (didPop) {
                   if (didPop) return; // 如果已經成功退出就不理會
-                  // 當玩家試圖在存檔時強制退出，給予溫柔的提示
-                  // ToastUtils.showCenterToast(
-                  //   context,
-                  //   '資料正在宇宙間傳輸，請稍候喔！',
-                  //   customIcon: Icons.hourglass_top,
-                  // );
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('請稍候')),
+                     SnackBar(content:Text(l10n.pleaseWait)),
                   );
                 },
                 child: Padding(
@@ -165,34 +160,33 @@ class UserProfilePopup {
                                   ),
                                 Expanded(
                                   child: Text(
-                                      editingProfileId == null ? '📜 建立新拾光檔案' : '✏️ 編輯拾光檔案',
+                                      editingProfileId == null ? l10n.createNewProfileTitle : l10n.editProfileTitle,
                                       style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary)
                                   ),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Text('建立不同的人設，在平行的時空裡讓他認識不一樣的妳！', style: TextStyle(color: theme.hintColor, fontSize: 13)),
+                            Text(l10n.profileEditDescription, style: TextStyle(color: theme.hintColor, fontSize: 13)),
                             const SizedBox(height: 24),
 
                             _buildTextField(
                               controller: profileNameController,
-                              label: '檔案名稱 (僅自己可見)',
-                              hint: '例如: 校園學妹設定、霸道女總裁',
+                              label: l10n.profileNameLabel,
+                              hint: l10n.profileNameHint,
                               icon: Icons.bookmark_border,
                             ),
                             _buildTextField(
                                 controller: nameController,
-                                label: '姓名 / 稱呼',
-                                hint: '例如: 小櫻、李總',
+                                label: l10n.profileNicknameLabel,
+                                hint: l10n.profileNicknameHint,
                                 icon: Icons.person_outline
                             ),
                             // 若有 l10n 請自行替換回 l10n.charHeightLabel 等
-                            _buildTextField(controller: heightController, label: '身高', hint: '例如: 160cm', icon: Icons.height),
-                            _buildTextField(controller: appearanceController, label: '外貌', hint: '例如: 黑色長髮、喜歡穿洋裝', icon: Icons.face_retouching_natural),
-                            _buildTextField(controller: occupationController, label: '職業', hint: '例如: 自由畫家', icon: Icons.work_outline),
-                            _buildTextField(controller: personalityController, label: '個性與自我介紹', hint: '例如：個性有點迷糊，喜歡吃甜食...', icon: Icons.assignment_ind_outlined, maxLines: 3),
-
+                            _buildTextField(controller: heightController, label: l10n.profileHeightLabel, hint: l10n.profileHeightHint, icon: Icons.height),
+                            _buildTextField(controller: appearanceController, label: l10n.profileAppearanceLabel, hint: l10n.profileAppearanceHint, icon: Icons.face_retouching_natural),
+                            _buildTextField(controller: occupationController, label: l10n.profileOccupationLabel, hint: l10n.profileOccupationHint, icon: Icons.work_outline),
+                            _buildTextField(controller: personalityController, label: l10n.profileIntroLabel, hint: l10n.profileIntroHint, icon: Icons.assignment_ind_outlined, maxLines: 3),
                             const SizedBox(height: 24),
                             SizedBox(
                               width: double.infinity,
@@ -206,7 +200,8 @@ class UserProfilePopup {
                                 onPressed: isSaving ? null : () async {
                                   // 1. 基本防呆
                                   if (profileNameController.text.trim().isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('請給這個檔案取個名字喔！')));
+                                    // 🚀 替換空檔名警告
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.profileNameEmptyWarning)));
                                     return;
                                   }
 
@@ -259,40 +254,35 @@ class UserProfilePopup {
                                         'roomProfiles': { roomId: selectedProfileId }
                                       }, SetOptions(merge: true));
                                     }
-
                                     // 🌟 核心防護：執行 UI 更新前，檢查頁面是否還在
                                     if (!context.mounted) return;
-
                                     setModalState(() {
                                       isEditingView = false;
                                       isSaving = false;
                                     });
-
                                     onSaved(); // 觸發成功後的操作
-
                                   } catch (e) {
                                     // 🌟 核心防護：發生錯誤時，同樣檢查頁面是否還在
                                     if (!context.mounted) return;
 
-                                    // ✨ 總裁御用：優雅的置中失敗彈窗
-                                    ToastUtils.showCenterToast(context, '儲存失敗: $e', isError: true);
+                                    // 🚀 替換錯誤提示，並帶入參數 e
+                                    ToastUtils.showCenterToast(context, l10n.profileSaveError(e.toString()), isError: true);
 
                                     setModalState(() => isSaving = false);
                                   }
                                 },
                                 child: isSaving
                                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                                    : const Text('儲存檔案'),
+                                    : Text(l10n.saveProfileButton), // 🚀 替換
                               ),
                             ),
                             const SizedBox(height: 8),
                             Center(
                               child: TextButton(
-                                // 🔒 UI 防禦：存檔中禁用「稍後填寫」按鈕
                                 onPressed: isSaving ? null : () {
-                                  Navigator.pop(context); // 優雅轉身，觸發稍後填寫的虛擬原始名片邏輯
+                                  Navigator.pop(context);
                                 },
-                                child: Text('稍後填寫', style: TextStyle(color: isSaving ? Colors.grey.shade300 : Colors.grey)),
+                                child: Text(l10n.fillLaterButton, style: TextStyle(color: isSaving ? Colors.grey.shade300 : Colors.grey)), // 🚀 替換
                               ),
                             ),
                           ]
@@ -301,11 +291,11 @@ class UserProfilePopup {
                           // 📂 畫面 B：多身分列表畫面 (已注入角色專屬過濾防禦)
                           // ==========================================
                           else ...[
-                            Text('📜 專屬拾光檔案', style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary)),
+                            // 🚀 替換標題與說明
+                            Text(l10n.exclusiveProfileTitle, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary)),
                             const SizedBox(height: 8),
-                            Text('選擇你想用來和他互動的身分 (同角色共用清單，最多 10 個)', style: TextStyle(color: theme.hintColor, fontSize: 13)),
+                            Text(l10n.profileSelectionDescription, style: TextStyle(color: theme.hintColor, fontSize: 13)),
                             const SizedBox(height: 16),
-
                             // 身分列表：全面換用經過「男主過濾」後的 characterSpecificProfiles 跑渲染！
                             ListView.builder(
                               shrinkWrap: true,
@@ -361,14 +351,14 @@ class UserProfilePopup {
                                         } catch (e) {
                                           if (context.mounted) {
                                             setModalState(() => isSaving = false);
-                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('切換失敗: $e')));
+                                            // 🚀 替換切換失敗提示
+                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.profileSwitchError(e.toString()))));
                                           }
                                         }
                                       },
                                     ),
-                                    title: Text(profile['profileName'] ?? '未命名檔案', style: const TextStyle(fontWeight: FontWeight.bold)),
-                                    subtitle: Text(profile['occupation'] ?? '尚未填寫職業', maxLines: 1, overflow: TextOverflow.ellipsis),
-                                    trailing: IconButton(
+                                    title: Text(profile['profileName'] ?? l10n.unnamedProfile, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    subtitle: Text(profile['occupation'] ?? l10n.noOccupationYet, maxLines: 1, overflow: TextOverflow.ellipsis),trailing: IconButton(
                                       icon: const Icon(Icons.edit_outlined, color: Colors.blue),
                                       onPressed: isSaving ? null : () {
                                         // 倒填資料進入控制器準備編輯
@@ -394,8 +384,7 @@ class UserProfilePopup {
                                 width: double.infinity,
                                 child: OutlinedButton.icon(
                                   icon: const Icon(Icons.add),
-                                  label: const Text('建立新拾光檔案'),
-                                  onPressed: isSaving ? null : () {
+                                  label: Text(l10n.createNewProfileButton),                                  onPressed: isSaving ? null : () {
                                     editingProfileId = null;
                                     profileNameController.clear();
                                     nameController.clear();
@@ -414,7 +403,7 @@ class UserProfilePopup {
                               child: TextButton(
                                 // 🔒 UI 防禦：存檔中禁用「關閉」按鈕
                                 onPressed: isSaving ? null : () => Navigator.pop(context),
-                                child: Text('關閉', style: TextStyle(color: isSaving ? Colors.grey.shade300 : Colors.grey)),
+                                child: Text(l10n.common_close, style: TextStyle(color: isSaving ? Colors.grey.shade300 : Colors.grey)),
                               ),
                             )
                           ]

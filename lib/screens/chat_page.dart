@@ -381,15 +381,12 @@ class _ChatPageState extends State<ChatPage> {
       return false;
     }
   }
-
-  // ✨ 總裁級迎賓流程：自動彈出與後續追蹤
   // ✨ 總裁級迎賓流程：自動彈出與後續追蹤 (已升級安全 ID 裝甲)
   void _showWelcomeProfilePopup() {
     bool didSave = false; // 追蹤玩家有沒有乖乖存檔
-
+    final l10n = AppLocalizations.of(context)!;
     // 🌟 總裁級修復：取得安全的房間 ID，保護新房間不崩潰！
     final String safeRoomId = widget.sessionId ?? 'draft_${widget.characterId}';
-
     UserProfilePopup.show(
       context,
       roomId: safeRoomId, // 🛡️ 換成安全的 ID
@@ -412,12 +409,17 @@ class _ChatPageState extends State<ChatPage> {
           context: context,
           builder: (ctx) => AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: const Text('☁️ 溫馨提示', style: TextStyle(fontWeight: FontWeight.bold)),
-            content: const Text('好的！如果要編輯身分，請點擊左下角雲朵裡面的「拾光檔案」做填寫喔！'),
+            title: Text(
+              AppLocalizations.of(context)!.friendlyReminderTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Text(
+              AppLocalizations.of(context)!.editProfileHint,
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('知道了'),
+                child: Text(l10n.common_got_it),
               ),
             ],
           ),
@@ -513,13 +515,13 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             const Icon(Icons.stars, color: Colors.pinkAccent),
             const SizedBox(width: 8),
-            const Text('星光契約啟動'),
+             Text(l10n.starlightContractTitle),
           ],
         ),
         // 在 content 裡面：
         content: Text(
-          '今日的額度已經用完囉！\n\n'
-              '${_hasMonthlyPass ? "您的月卡額度已用盡。" : "開通【戀戀月卡】，每日享有 20 次重新生成機會，讓他每一次的回覆都更貼近您的心意。"}',
+            '${l10n.dailyLimitReachedPrefix}'
+                '${_hasMonthlyPass ? l10n.monthlyPassExhausted : l10n.subscribeMonthlyPassPrompt}}',
           style: const TextStyle(fontSize: 16),
         ),
         actions: [
@@ -545,7 +547,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               );
             },
-            child: const Text('前往開通'),
+              child: Text(l10n.goToSubscribeButton)
           ),
         ],
       ),
@@ -1125,6 +1127,7 @@ class _ChatPageState extends State<ChatPage> {
     String? imagePath,
     String? audioPath,
     String? secretPrompt,
+    bool showInChat = true,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     if (_isGenerating || _sessionId == null) return;
@@ -1166,27 +1169,24 @@ class _ChatPageState extends State<ChatPage> {
 
     // ✨ 2. 觸發彩蛋的「無縫接軌」與「掉落」
     if (triggeredEgg != null) {
-      // A. 記錄起來，這輩子(或這次對話)不准再觸發了
       _triggeredEggKeywords.add(triggeredEgg.keyword);
-      // B. 把戰利品丟進玩家背包，並顯示精美橫幅
       await _dropEggToBackpack(triggeredEgg);
-      // C. 偷偷把劇本塞給 AI (完美對接妳後端的 overrideSystemPrompt)
       await _executeMessageSending(
-        userText: text, // 玩家說的原文，例如：「把那個放到背包裡」
+        userText: text,
         imagePath: imagePath,
         audioPath: audioPath,
-        // 🌟 核心魔法：偷偷把彩蛋設定塞進去！
-        // 假設妳彩蛋存指令的欄位叫 setScene，如果是 script 請自行替換
-        secretPrompt:l10n.chat_hidden_event_trigger(triggeredEgg.title, triggeredEgg.setScene),
+        secretPrompt: l10n.chat_hidden_event_trigger(triggeredEgg.title, triggeredEgg.setScene),
+        showInChat: showInChat, // 🌟 把開關往下傳
       );
 
     } else {
       // 😐 沒觸發彩蛋：交給基層員工正常發送
       await _executeMessageSending(
-          userText: text,
-          imagePath: imagePath,
-          audioPath: audioPath,
-          secretPrompt: secretPrompt
+        userText: text,
+        imagePath: imagePath,
+        audioPath: audioPath,
+        secretPrompt: secretPrompt,
+        showInChat: showInChat, // 🌟 把開關往下傳
       );
     }
   }
@@ -1339,15 +1339,17 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  // ✨ 總裁秘製：智能繼續按鈕與防呆彈窗
   Future<void> _handleContinueButton() async {
     final prefs = await SharedPreferences.getInstance();
     final todayStr = DateTime.now().toIso8601String().substring(0, 10); // 取得今天日期 YYYY-MM-DD
     final hideDate = prefs.getString('hide_continue_warning_date');
+    // 🌟 提前取得 l10n，這樣隱形指令也能用到
+    final l10n = AppLocalizations.of(context)!;
 
     // 1. 如果玩家今天已經勾選過「不再提示」，就直接發送！
     if (hideDate == todayStr) {
-      _sendMessage(text: '請繼續', audioPath: null);
+      // 🚀 改用字典檔的隱形指令
+      _sendMessage(text: l10n.hiddenPromptContinue, showInChat: false);
       return;
     }
 
@@ -1358,34 +1360,37 @@ class _ChatPageState extends State<ChatPage> {
     if (_currentMode == ChatMode.gemini) cost = AppConfig.costGeminiChat;
 
     // 3. 彈出確認視窗
-    // 💡 總裁小學堂：彈窗裡面要有可以打勾的 Checkbox，一定要包一層 StatefulBuilder 才會動喔！
     bool dontShowAgain = false;
 
     if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) {
+        // 🌟 在這裡再取一次對話框的 l10n
+        final dialogL10n = AppLocalizations.of(context)!;
+
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: const Row(
+              // 💡 拿掉 Row 前面的 const
+              title: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.pinkAccent),
-                  SizedBox(width: 8),
-                  Text('繼續對話', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Icon(Icons.info_outline, color: Colors.pinkAccent),
+                  const SizedBox(width: 8),
+                  Text(dialogL10n.continueChatTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
                 ],
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 🚀 傳入 cost 變數給翻譯字串！
                   Text(
-                    '讓他說下去，將會消耗 $cost 朵花花 🌸\n確定要繼續嗎？',
+                    dialogL10n.continueChatCostWarning(cost),
                     style: const TextStyle(fontSize: 16, height: 1.5),
                   ),
                   const SizedBox(height: 16),
-                  // ✨ 今日不再提示的 Checkbox
                   InkWell(
                     onTap: () {
                       setDialogState(() {
@@ -1410,7 +1415,8 @@ class _ChatPageState extends State<ChatPage> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text('今日不再提示', style: TextStyle(color: Colors.grey)),
+                        // 💡 拿掉 Text 前面的 const
+                        Text(l10n.dontShowAgainToday, style: const TextStyle(color: Colors.grey)),
                       ],
                     ),
                   ),
@@ -1419,7 +1425,8 @@ class _ChatPageState extends State<ChatPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('取消', style: TextStyle(color: Colors.grey)),
+                  // 💡 拿掉 Text 前面的 const
+                  child: Text(dialogL10n.cancelButton, style: const TextStyle(color: Colors.grey)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1433,9 +1440,10 @@ class _ChatPageState extends State<ChatPage> {
                       prefs.setString('hide_continue_warning_date', todayStr);
                     }
                     Navigator.pop(context); // 關閉彈窗
-                    _sendMessage(text: '請繼續', audioPath: null); // 🚀 正式發送指令給 AI！
+                    // 🚀 改用字典檔的隱形指令
+                    _sendMessage(text: l10n.hiddenPromptContinue, showInChat: false);
                   },
-                  child: const Text('確定繼續'),
+                  child: Text(l10n.confirmContinue), // 💡 拿掉 const
                 ),
               ],
             );
@@ -2202,6 +2210,7 @@ class _ChatPageState extends State<ChatPage> {
     String? audioPath,
     String? overridePrompt,
     String? secretPrompt,
+    bool showInChat = true,
   }) async {
     // 🌟 1. 身分檢查
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -2342,6 +2351,7 @@ class _ChatPageState extends State<ChatPage> {
 
       // --- B. 寫入用戶訊息到 Firestore ---
       // 🛡️ 防彈版：只要有集合存在，就直接寫入資料庫
+      if (showInChat) {
       if (_messagesCollection != null) {
         await _messagesCollection!.add({
           'sender': 'user',
@@ -2387,6 +2397,7 @@ class _ChatPageState extends State<ChatPage> {
             isAI: false,
           ));
         });
+      }
       }
 
       await Future.delayed(const Duration(milliseconds: 300));
@@ -2435,6 +2446,10 @@ class _ChatPageState extends State<ChatPage> {
             actualChatHistory.add({"role": sender == 'ai' ? "assistant" : "user", "text": text});
           }
         }
+      }
+
+      if (!showInChat) {
+        actualChatHistory.insert(0, {"role": "user", "text": userText.trim()});
       }
 
       // --- 喚醒靈魂：讀取玩家記憶與生理期 ---
@@ -3321,7 +3336,7 @@ class _ChatPageState extends State<ChatPage> {
     final bool? confirmDelete = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: Text('確定刪除這 $count 則對話？', style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.confirmDeleteMessagesTitle(count), style: const TextStyle(fontWeight: FontWeight.bold)),
         content: Text(l10n.chat_del_warn),
         actions: [
           TextButton(
@@ -3858,7 +3873,7 @@ class _ChatPageState extends State<ChatPage> {
 
                           if (mounted) {
                             // ✨ 成功也換成優雅的置中彈窗！
-                            ToastUtils.showCenterToast(safeContext, '拾光檔案已更新！');
+                            ToastUtils.showCenterToast(safeContext, l10n.profileUpdatedSuccess);
                           }
                         },
                       );
@@ -4778,7 +4793,7 @@ class _ChatPageState extends State<ChatPage> {
             // ✨ 總裁修復魔法：用 Expanded 包起來，強制在剩餘空間內置中！
             Expanded(
               child: Text(
-                '已選擇 ${_selectedMessageIds.length} 則',
+                  l10n.selectedMessagesCount(_selectedMessageIds.length),
                 textAlign: TextAlign.center, // 讓文字乖乖置中
                 overflow: TextOverflow.ellipsis, // 如果字數真的太多會變點點點，不報錯
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -5785,6 +5800,9 @@ class _ChatPageState extends State<ChatPage> {
                     children: [
 
                       // 🔄 重新生成按鈕 (升級橢圓明顯版)
+                      // 假設您在 build 函數開頭已經有：
+// final l10n = AppLocalizations.of(context)!;
+
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: (_freeRegenerateCount > 0)
@@ -5800,8 +5818,9 @@ class _ChatPageState extends State<ChatPage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         icon: const Icon(Icons.refresh, size: 16),
+                        // 🚀 1. 帶入兩個變數的按鈕文字！
                         label: Text(
-                            '重新生成 ($_freeRegenerateCount/$_maxRegenerateCount)',
+                            l10n.regenerateButtonLabel(_freeRegenerateCount, _maxRegenerateCount),
                             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
                         ),
                         onPressed: () async {
@@ -5813,21 +5832,23 @@ class _ChatPageState extends State<ChatPage> {
 
                           // 2. 檢測對話條件 (直接檢查 _messagesCollection 是否就緒)
                           if (_messagesCollection == null) {
-                            _showCenterToast('系統還在準備中，請稍候...', isError: true);
+                            // 🚀 2. 替換準備中的提示
+                            _showCenterToast(l10n.systemPreparingWait, isError: true);
                             return;
                           }
 
-                          // 🌟 這裡直接使用 _messagesCollection 的資料或本地暫存，不需要再區分 shouldSave
-                          // 假設妳現在已經統一改用 Firestore 的數據源
                           final querySnapshot = await _messagesCollection!.orderBy('timestamp', descending: true).limit(2).get();
                           if (querySnapshot.docs.length < 2) {
-                            _showCenterToast('目前沒有可以重新生成的對話喔！', isError: true);
+                            // 🚀 3. 替換沒有對話可生成的提示
+                            _showCenterToast(l10n.noMessagesToRegenerate, isError: true);
                             return;
                           }
 
                           // 取得 ID 與 Text
                           final aiMessageId = querySnapshot.docs[0].id;
-                          final userMessageText = (querySnapshot.docs[1].data() as Map<String, dynamic>)['text'] ?? '';                          // 3. 扣次數與同步更新 (🌟 使用正確路徑)
+                          final userMessageText = (querySnapshot.docs[1].data() as Map<String, dynamic>)['text'] ?? '';
+
+                          // 3. 扣次數與同步更新
                           setState(() {
                             _freeRegenerateCount--;
                           });
@@ -5837,7 +5858,6 @@ class _ChatPageState extends State<ChatPage> {
                             try {
                               final todayStr = DateTime.now().toString().substring(0, 10);
 
-                              // 🌟 關鍵修正：路徑改為 user -> aiRequests -> sessionId
                               await FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(user.uid)
@@ -5871,8 +5891,10 @@ class _ChatPageState extends State<ChatPage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         icon: const Icon(Icons.play_arrow, size: 16),
-                        label: const Text('繼續', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                        onPressed: () {
+                        label: Text(
+                            l10n.continueButton,
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
+                        ),                        onPressed: () {
                           // ✨ 總裁換線：呼叫專屬的智能繼續函數！
                           _handleContinueButton();
                         },

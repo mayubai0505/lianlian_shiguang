@@ -6555,6 +6555,360 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'⚠️ 目前為商店預覽模式'**
   String get shop_preview_mode;
+
+  /// No description provided for @friendlyReminderTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'☁️ 溫馨提示'**
+  String get friendlyReminderTitle;
+
+  /// No description provided for @editProfileHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好的！如果要編輯身分，請點擊左下角雲朵裡面的「拾光檔案」做填寫喔！'**
+  String get editProfileHint;
+
+  /// No description provided for @starlightContractTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星光契約啟動'**
+  String get starlightContractTitle;
+
+  /// No description provided for @dailyLimitReachedPrefix.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日的額度已經用完囉！\n\n'**
+  String get dailyLimitReachedPrefix;
+
+  /// No description provided for @monthlyPassExhausted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您的月卡額度已用盡。'**
+  String get monthlyPassExhausted;
+
+  /// No description provided for @subscribeMonthlyPassPrompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開通【戀戀月卡】，每日享有 20 次重新生成機會，讓他每一次的回覆都更貼近您的心意。'**
+  String get subscribeMonthlyPassPrompt;
+
+  /// No description provided for @goToSubscribeButton.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'前往開通'**
+  String get goToSubscribeButton;
+
+  /// No description provided for @profileUpdatedSuccess.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'拾光檔案已更新！'**
+  String get profileUpdatedSuccess;
+
+  /// No description provided for @continueChatTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'繼續對話'**
+  String get continueChatTitle;
+
+  /// No description provided for @continueChatCostWarning.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讓他說下去，將會消耗 {cost} 朵花花 🌸\n確定要繼續嗎？'**
+  String continueChatCostWarning(int cost);
+
+  /// No description provided for @dontShowAgainToday.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日不再提示'**
+  String get dontShowAgainToday;
+
+  /// No description provided for @confirmContinue.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定繼續'**
+  String get confirmContinue;
+
+  /// No description provided for @hiddenPromptContinue.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請繼續'**
+  String get hiddenPromptContinue;
+
+  /// No description provided for @confirmDeleteMessagesTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定刪除這 {count} 則對話？'**
+  String confirmDeleteMessagesTitle(int count);
+
+  /// No description provided for @regenerateButtonLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新生成 ({current}/{max})'**
+  String regenerateButtonLabel(int current, int max);
+
+  /// No description provided for @systemPreparingWait.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'系統還在準備中，請稍候...'**
+  String get systemPreparingWait;
+
+  /// No description provided for @noMessagesToRegenerate.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有可以重新生成的對話喔！'**
+  String get noMessagesToRegenerate;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'繼續'**
+  String get continueButton;
+
+  /// No description provided for @creatorExclusive.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🔒 創作者專屬'**
+  String get creatorExclusive;
+
+  /// No description provided for @ageAndOccupation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{age}歲 | {occupation}'**
+  String ageAndOccupation(String age, String occupation);
+
+  /// No description provided for @likesLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'💖 喜歡'**
+  String get likesLabel;
+
+  /// No description provided for @dislikesLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'👎 不喜歡'**
+  String get dislikesLabel;
+
+  /// No description provided for @birthdayLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生日: {birthday}'**
+  String birthdayLabel(String birthday);
+
+  /// No description provided for @heightLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'身高: {height} cm'**
+  String heightLabel(String height);
+
+  /// No description provided for @backgroundStoryLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'背景故事'**
+  String get backgroundStoryLabel;
+
+  /// No description provided for @noneLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無'**
+  String get noneLabel;
+
+  /// No description provided for @flowerPointsCount.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{points} 點花花'**
+  String flowerPointsCount(String points);
+
+  /// No description provided for @passGuideTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀月卡專屬指南'**
+  String get passGuideTitle;
+
+  /// No description provided for @passGuideRegenerateTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🔄 為什麼需要「重新生成」？'**
+  String get passGuideRegenerateTitle;
+
+  /// No description provided for @passGuideRegenerateContent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'AI 有時候會像個笨蛋木頭，不解風情。遇到不滿意的回覆時，只要按下重新生成，就像時光倒流！妳可以讓他重新思考，直到他說出讓妳心跳加速的那句完美台詞。'**
+  String get passGuideRegenerateContent;
+
+  /// No description provided for @passGuideAffectionTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'💖 好感度加速有什麼用？'**
+  String get passGuideAffectionTitle;
+
+  /// No description provided for @passGuideAffectionContent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'在遊戲中，好感度是解鎖角色「深層秘密」與「親密私照」的唯一鑰匙。20% 的加成讓妳比別人更快走進他的內心深處。'**
+  String get passGuideAffectionContent;
+
+  /// No description provided for @passGuideUnlockButton.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我明白了，立即解鎖！'**
+  String get passGuideUnlockButton;
+
+  /// No description provided for @pleaseWait.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請稍候'**
+  String get pleaseWait;
+
+  /// No description provided for @createNewProfileTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'📜 建立新拾光檔案'**
+  String get createNewProfileTitle;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✏️ 編輯拾光檔案'**
+  String get editProfileTitle;
+
+  /// No description provided for @profileEditDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建立不同的人設，在平行的時空裡讓他認識不一樣的妳！'**
+  String get profileEditDescription;
+
+  /// No description provided for @profileNameLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檔案名稱 (僅自己可見)'**
+  String get profileNameLabel;
+
+  /// No description provided for @profileNameHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如: 校園學妹設定、霸道女總裁'**
+  String get profileNameHint;
+
+  /// No description provided for @profileNicknameLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'姓名 / 稱呼'**
+  String get profileNicknameLabel;
+
+  /// No description provided for @profileNicknameHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如: 小櫻、李總'**
+  String get profileNicknameHint;
+
+  /// No description provided for @profileHeightLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'身高'**
+  String get profileHeightLabel;
+
+  /// No description provided for @profileHeightHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如: 160cm'**
+  String get profileHeightHint;
+
+  /// No description provided for @profileAppearanceLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'外貌'**
+  String get profileAppearanceLabel;
+
+  /// No description provided for @profileAppearanceHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如: 黑色長髮、喜歡穿洋裝'**
+  String get profileAppearanceHint;
+
+  /// No description provided for @profileOccupationLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'職業'**
+  String get profileOccupationLabel;
+
+  /// No description provided for @profileOccupationHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如: 自由畫家'**
+  String get profileOccupationHint;
+
+  /// No description provided for @profileIntroLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'個性與自我介紹'**
+  String get profileIntroLabel;
+
+  /// No description provided for @profileIntroHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：個性有點迷糊，喜歡吃甜食...'**
+  String get profileIntroHint;
+
+  /// No description provided for @profileNameEmptyWarning.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請給這個檔案取個名字喔！'**
+  String get profileNameEmptyWarning;
+
+  /// No description provided for @profileSaveError.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存失敗: {error}'**
+  String profileSaveError(String error);
+
+  /// No description provided for @saveProfileButton.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存檔案'**
+  String get saveProfileButton;
+
+  /// No description provided for @fillLaterButton.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'稍後填寫'**
+  String get fillLaterButton;
+
+  /// No description provided for @exclusiveProfileTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'📜 專屬拾光檔案'**
+  String get exclusiveProfileTitle;
+
+  /// No description provided for @profileSelectionDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇你想用來和他互動的身分 (同角色共用清單，最多 10 個)'**
+  String get profileSelectionDescription;
+
+  /// No description provided for @profileSwitchError.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'切換失敗: {error}'**
+  String profileSwitchError(String error);
+
+  /// No description provided for @unnamedProfile.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未命名檔案'**
+  String get unnamedProfile;
+
+  /// No description provided for @noOccupationYet.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未填寫職業'**
+  String get noOccupationYet;
+
+  /// No description provided for @createNewProfileButton.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建立新拾光檔案'**
+  String get createNewProfileButton;
 }
 
 class _AppLocalizationsDelegate

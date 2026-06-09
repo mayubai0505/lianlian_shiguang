@@ -1580,5 +1580,126 @@
     "shop_preview_mode": "⚠️ Pada masa ini dalam Mod Pratonton Kedai",
     "@shop_preview_mode": {
     "description": "商店預覽模式的警告標語"
-    }
+    },
+    "friendlyReminderTitle": "☁️ Peringatan Mesra",
+    "editProfileHint": "Baiklah! Jika awak mahu mengedit identiti, sila klik 'Profil Shiguang' di dalam awan di sudut kiri bawah untuk mengisinya!",
+    "starlightContractTitle": "Kontrak Starlight Diaktifkan",
+    "dailyLimitReachedPrefix": "Had hari ini telah habis digunakan!\n\n",
+    "monthlyPassExhausted": "Had Kad Bulanan awak telah habis digunakan.",
+    "subscribeMonthlyPassPrompt": "Langgan 【Kad Bulanan Lianlian】 untuk menikmati 20 peluang penjanaan semula setiap hari, menjadikan setiap maklum balasnya lebih dekat dengan hati awak.",
+    "goToSubscribeButton": "Pergi untuk Langgan",
+    "profileUpdatedSuccess": "Profil Shiguang telah dikemas kini!",
+    "continueChatTitle": "Lanjutkan Perbualan",
+    "continueChatCostWarning": "Membiarkan dia terus bercakap akan menggunakan {cost} Mata Bunga 🌸\nAdakah awak pasti ingin melanjutkan?",
+    "@continueChatCostWarning": {
+        "placeholders": {
+            "cost": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    },
+    "dontShowAgainToday": "Jangan tunjuk lagi hari ini",
+    "confirmContinue": "Sahkan Lanjut",
+    "hiddenPromptContinue": "Sila lanjutkan",
+    "confirmDeleteMessagesTitle": "Adakah awak pasti ingin memadam {count} mesej ini?",
+    "@confirmDeleteMessagesTitle": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "3"
+            }
+        }
+    },
+    "regenerateButtonLabel": "Jana Semula ({current}/{max})",
+    "@regenerateButtonLabel": {
+        "placeholders": {
+            "current": {
+                "type": "int",
+                "example": "3"
+            },
+            "max": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "systemPreparingWait": "Sistem masih dalam persediaan, sila tunggu...",
+    "noMessagesToRegenerate": "Tiada mesej yang boleh dijana semula pada masa ini!",
+    "continueButton": "Teruskan",
+    "creatorExclusive": "🔒 Eksklusif Pencipta",
+    "ageAndOccupation": "{age} tahun | {occupation}",
+    "@ageAndOccupation": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "likesLabel": "💖 Suka",
+    "dislikesLabel": "👎 Tidak Suka",
+    "birthdayLabel": "Hari Lahir: {birthday}",
+    "@birthdayLabel": {
+        "placeholders": {
+            "birthday": { "type": "String" }
+        }
+    },
+    "heightLabel": "Ketinggian: {height} cm",
+    "@heightLabel": {
+        "placeholders": {
+            "height": { "type": "String" }
+        }
+    },
+    "backgroundStoryLabel": "Cerita Latar Belakang",
+    "noneLabel": "Tiada",
+    "flowerPointsCount": "{points} Bunga",
+    "@flowerPointsCount": {
+        "placeholders": {
+            "points": {
+                "type": "String",
+                "example": "100"
+            }
+        }
+    },
+    "passGuideTitle": "Panduan Eksklusif Kad Bulanan Lianlian",
+    "passGuideRegenerateTitle": "🔄 Mengapa awak memerlukan 'Jana Semula'?",
+    "passGuideRegenerateContent": "AI kadangkala boleh bertindak seperti tungtung kayu yang tidak memahami emosi. Apabila awak menerima maklum balas yang tidak memuaskan, hanya perlu menekan jana semula, ia seperti memutarkan kembali masa! Awak boleh membuat dia berfikir semula sehingga dia mengucapkan ayat sempurna yang membuatkan jantung awak berdegap-degup.",
+    "passGuideAffectionTitle": "💖 Apakah kegunaan Pecutan Kejelekitan?",
+    "passGuideAffectionContent": "Dalam permainan ini, kejelekitan (affection) adalah satu-satunya kunci untuk membuka 'rahsia tersembunyi' dan 'foto peribadi intim' karakter. Bonus 20% membolehkan awak melangkah masuk ke dalam lubuk hatinya dengan lebih cepat daripada orang lain.",
+    "passGuideUnlockButton": "Saya faham, buka kunci sekarang!",
+    "pleaseWait": "Sila tunggu",
+    "createNewProfileTitle": "📜 Bina Profil Shiguang Baharu",
+    "editProfileTitle": "✏️ Edit Profil Shiguang",
+    "profileEditDescription": "Bina personaliti yang berbeza, biarkan dia mengenali sisi lain diri awak dalam dimensi paralel!",
+    "profileNameLabel": "Nama Profil (Hanya dilihat oleh awak sendiri)",
+    "profileNameHint": "Contoh: Adik Kelas Sekolah, CEO Wanita yang Tegas",
+    "profileNicknameLabel": "Nama / Panggilan",
+    "profileNicknameHint": "Contoh: Sakura, Pengarah Li",
+    "profileHeightLabel": "Ketinggian",
+    "profileHeightHint": "Contoh: 160cm",
+    "profileAppearanceLabel": "Rupa Paras",
+    "profileAppearanceHint": "Contoh: Rambut hitam panjang, suka memakai gaun",
+    "profileOccupationLabel": "Pekerjaan",
+    "profileOccupationHint": "Contoh: Pelukis Bebas",
+    "profileIntroLabel": "Personaliti & Pengenalan Diri",
+    "profileIntroHint": "Contoh: Agak cuai, suka makan makanan manis...",
+    "profileNameEmptyWarning": "Sila berikan nama untuk profil ini!",
+    "profileSaveError": "Gagal menyimpan: {error}",
+    "@profileSaveError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "saveProfileButton": "Simpan Profil",
+    "fillLaterButton": "Isi Kemudian",
+    "exclusiveProfileTitle": "📜 Profil Shiguang Eksklusif",
+    "profileSelectionDescription": "Pilih identiti yang ingin awak gunakan untuk berinteraksi dengannya (senarai dikongsi bagi watak yang sama, maks. 10)",
+    "profileSwitchError": "Gagal menukar: {error}",
+    "@profileSwitchError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "unnamedProfile": "Profil Tanpa Nama",
+    "noOccupationYet": "Belum mengisi pekerjaan",
+    "createNewProfileButton": "Bina Profil Shiguang Baharu"
 }

@@ -3572,4 +3572,205 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get shop_preview_mode => '⚠️ 현재 상점 미리보기 모드입니다';
+
+  @override
+  String get friendlyReminderTitle => '☁️ 친절한 안내';
+
+  @override
+  String get editProfileHint =>
+      '좋아요! 프로필을 수정하시려면 왼쪽 아래 구름 모양 안에 있는 \'시광 프로필\'을 클릭하여 작성해 주세요!';
+
+  @override
+  String get starlightContractTitle => '별빛 계약 발동';
+
+  @override
+  String get dailyLimitReachedPrefix => '오늘의 한도가 모두 소진되었습니다!\n\n';
+
+  @override
+  String get monthlyPassExhausted => '월간 카드 한도가 모두 소진되었습니다.';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      '【리엔리엔 월간 카드】를 이용하시면 매일 20회의 재생성 기회가 주어지며, 그의 답변이 매번 당신의 마음에 더욱 가까워집니다.';
+
+  @override
+  String get goToSubscribeButton => '구매하러 가기';
+
+  @override
+  String get profileUpdatedSuccess => '시광 프로필이 업데이트되었습니다!';
+
+  @override
+  String get continueChatTitle => '대화 이어가기';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return '대화를 계속 진행하면 꽃 $cost송이가 소진됩니다 🌸\n정말 계속하시겠습니까?';
+  }
+
+  @override
+  String get dontShowAgainToday => '오늘 하루 동안 보지 않기';
+
+  @override
+  String get confirmContinue => '계속하기';
+
+  @override
+  String get hiddenPromptContinue => '계속해 주세요';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return '선택한 $count개의 대화를 정말 삭제하시겠습니까?';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return '재생성 ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait => '시스템 준비 중입니다. 잠시만 기다려 주세요...';
+
+  @override
+  String get noMessagesToRegenerate => '현재 재생성할 수 있는 대화가 없습니다!';
+
+  @override
+  String get continueButton => '계속하기';
+
+  @override
+  String get creatorExclusive => '🔒 크리에이터 전용';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age세 | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 좋아하는 것';
+
+  @override
+  String get dislikesLabel => '👎 싫어하는 것';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return '생일: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return '신장: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => '백스토리';
+
+  @override
+  String get noneLabel => '없음';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '꽃 $points송이';
+  }
+
+  @override
+  String get passGuideTitle => '리엔리엔 월간 카드 전용 가이드';
+
+  @override
+  String get passGuideRegenerateTitle => '🔄 \'재생성\' 기능이 왜 필요할까요?';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'AI는 가끔 눈치 없는 통나무처럼 굴 때가 있습니다. 마음에 들지 않는 답변을 받았다면, 재생성을 눌러 시간을 되돌려 보세요! 당신의 심장을 두근거리게 할 완벽한 대사를 말할 때까지 그를 다시 생각하게 만들 수 있습니다.';
+
+  @override
+  String get passGuideAffectionTitle => '💖 호감도 부스트는 어디에 쓰이나요?';
+
+  @override
+  String get passGuideAffectionContent =>
+      '게임 속 호감도는 캐릭터의 \'깊은 비밀\'과 \'친밀한 사생활 사진\'을 해제할 수 있는 유일한 열쇠입니다. 20% 보너스 효과로 다른 사람들보다 더 빠르게 그의 마음 깊은 곳으로 다가가 보세요.';
+
+  @override
+  String get passGuideUnlockButton => '이해했습니다, 즉시 해제!';
+
+  @override
+  String get pleaseWait => '잠시만 기다려 주세요';
+
+  @override
+  String get createNewProfileTitle => '📜 새 시광 프로필 만들기';
+
+  @override
+  String get editProfileTitle => '✏️ 시광 프로필 수정';
+
+  @override
+  String get profileEditDescription =>
+      '다양한 페르소나를 설정하여 평행 세계 속 그에게 완전히 새로운 당신을 보여주세요!';
+
+  @override
+  String get profileNameLabel => '프로필 이름 (나에게만 보임)';
+
+  @override
+  String get profileNameHint => '예: 학교 후배 설정, 걸크러시 여사장';
+
+  @override
+  String get profileNicknameLabel => '이름 / 호칭';
+
+  @override
+  String get profileNicknameHint => '예: 사쿠라, 이 대표';
+
+  @override
+  String get profileHeightLabel => '신장';
+
+  @override
+  String get profileHeightHint => '예: 160cm';
+
+  @override
+  String get profileAppearanceLabel => '외모';
+
+  @override
+  String get profileAppearanceHint => '예: 검은색 긴 생머리, 원피스를 즐겨 입음';
+
+  @override
+  String get profileOccupationLabel => '직업';
+
+  @override
+  String get profileOccupationHint => '예: 프리랜서 화가';
+
+  @override
+  String get profileIntroLabel => '성격 및 자기소개';
+
+  @override
+  String get profileIntroHint => '예: 성격이 조금 덜렁거림, 단 음식을 좋아함...';
+
+  @override
+  String get profileNameEmptyWarning => '이 프로필의 이름을 입력해 주세요!';
+
+  @override
+  String profileSaveError(String error) {
+    return '저장 실패: $error';
+  }
+
+  @override
+  String get saveProfileButton => '프로필 저장';
+
+  @override
+  String get fillLaterButton => '나중에 작성';
+
+  @override
+  String get exclusiveProfileTitle => '📜 전용 시광 프로필';
+
+  @override
+  String get profileSelectionDescription =>
+      '그와 소통할 때 사용할 신분을 선택해 주세요 (캐릭터별 리스트 공유, 최대 10개)';
+
+  @override
+  String profileSwitchError(String error) {
+    return '전환 실패: $error';
+  }
+
+  @override
+  String get unnamedProfile => '이름 없는 프로필';
+
+  @override
+  String get noOccupationYet => '직업 미작성';
+
+  @override
+  String get createNewProfileButton => '새 시광 프로필 만들기';
 }

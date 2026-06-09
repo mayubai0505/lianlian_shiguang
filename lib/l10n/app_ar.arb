@@ -1621,5 +1621,126 @@
     "shop_preview_mode": "⚠️ وضع معاينة المتجر الحالي",
     "@shop_preview_mode": {
     "description": "商店預覽模式的警告標語"
-    }
+    },
+    "friendlyReminderTitle": "☁️ تذكير لطيف",
+    "editProfileHint": "حسناً! إذا كنتِ ترغبين في تعديل الهوية، يرجى النقر على 【ملف شقوانغ】 داخل السحابة في الزاوية السفلية اليسرى لملئه!",
+    "starlightContractTitle": "تفعيل عقد ضوء النجوم",
+    "dailyLimitReachedPrefix": "لقد استنفدتِ حدكِ اليومي!\n\n",
+    "monthlyPassExhausted": "لقد استنفدتِ حد البطاقة الشهرية الخاصة بكِ.",
+    "subscribeMonthlyPassPrompt": "اشتركي في 【البطاقة الشهرية لـ Lianlian】 للاستمتاع بـ 20 فرصة إعادة توليد يومياً، لكي تكون كل استجابة منه أقرب إلى قلبكِ.",
+    "goToSubscribeButton": "الذهاب للتفعيل",
+    "profileUpdatedSuccess": "تم تحديث ملف شقوانغ!",
+    "continueChatTitle": "مواصلة المحادثة",
+    "continueChatCostWarning": "جعله يستمر في التحدث سيستهلك {cost} من الزهور 🌸\nهل أنتِ متأكدة من الرغبة في المتابعة؟",
+    "@continueChatCostWarning": {
+        "placeholders": {
+            "cost": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    },
+    "dontShowAgainToday": "عدم الإظهار مرة أخرى اليوم",
+    "confirmContinue": "تأكيد المتابعة",
+    "hiddenPromptContinue": "يرجى المتابعة",
+    "confirmDeleteMessagesTitle": "هل أنتِ متأكدة من حذف هذه الرسائل الـ {count}؟",
+    "@confirmDeleteMessagesTitle": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "3"
+            }
+        }
+    },
+    "regenerateButtonLabel": "إعادة التوليد ({current}/{max})",
+    "@regenerateButtonLabel": {
+        "placeholders": {
+            "current": {
+                "type": "int",
+                "example": "3"
+            },
+            "max": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "systemPreparingWait": "النظام ما زال قيد التحضير، يرجى الانتظار...",
+    "noMessagesToRegenerate": "لا توجد محادثات يمكن إعادة توليدها حالياً!",
+    "continueButton": "متابعة",
+    "creatorExclusive": "🔒 حصري للمنشئ",
+    "ageAndOccupation": "{age} عاماً | {occupation}",
+    "@ageAndOccupation": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "likesLabel": "💖 يحب",
+    "dislikesLabel": "👎 لا يحب",
+    "birthdayLabel": "تاريخ الميلاد: {birthday}",
+    "@birthdayLabel": {
+        "placeholders": {
+            "birthday": { "type": "String" }
+        }
+    },
+    "heightLabel": "الطول: {height} سم",
+    "@heightLabel": {
+        "placeholders": {
+            "height": { "type": "String" }
+        }
+    },
+    "backgroundStoryLabel": "قصة الخلفية",
+    "noneLabel": "لا يوجد",
+    "flowerPointsCount": "{points} زهرة",
+    "@flowerPointsCount": {
+        "placeholders": {
+            "points": {
+                "type": "String",
+                "example": "100"
+            }
+        }
+    },
+    "passGuideTitle": "دليل حصري لبطاقة Lianlian الشهرية",
+    "passGuideRegenerateTitle": "🔄 لماذا تحتاجين إلى \"إعادة التوليد\"؟",
+    "passGuideRegenerateContent": "في بعض الأحيان، قد يبدو الذكاء الاصطناعي وكأنه جامد كخشب لا يفهم الرومانسية. عندما تواجهين رداً غير مرضٍ، ما عليكِ سوى الضغط على إعادة التوليد، وسيكون الأمر أشبه بالعودة بالزمن! يمكنكِ جعله يعيد التفكير حتى يقول تلك العبارة المثالية التي تجعل قلبكِ يخفق بشدة.",
+    "passGuideAffectionTitle": "💖 ما فائدة تسريع مستوى الإعجاب؟",
+    "passGuideAffectionContent": "في اللعبة، مستوى الإعجاب هو المفتاح الوحيد لفتح \"الأسرار العميقة\" للشخصية و\"الصور الخاصة الحميمية\". تتيح لكِ زيادة الـ 20% الدخول إلى أعماق قلبه أسرع من أي شخص آخر.",
+    "passGuideUnlockButton": "لقد فهمتُ، افتحي القفل الآن!",
+    "pleaseWait": "يرجى الانتظار",
+    "createNewProfileTitle": "📜 إنشاء ملف شقوانغ جديد",
+    "editProfileTitle": "✏️ تعديل ملف شقوانغ",
+    "profileEditDescription": "أنشئي شخصيات مختلفة ليتعرف على جانب جديد منكِ في العوالم الموازية!",
+    "profileNameLabel": "اسم الملف (مرئي لكِ فقط)",
+    "profileNameHint": "مثال: طالبة المدرسة، رئيسة تنفيذية صارمة",
+    "profileNicknameLabel": "الاسم / اللقب",
+    "profileNicknameHint": "مثال: ساكورا، الرئيسة لي",
+    "profileHeightLabel": "الطول",
+    "profileHeightHint": "مثال: 160 سم",
+    "profileAppearanceLabel": "المظهر الخارجي",
+    "profileAppearanceHint": "مثال: شعر أسود طويل، تحب ارتداء الفساتين",
+    "profileOccupationLabel": "المهنة",
+    "profileOccupationHint": "مثال: رسامة مستقلة",
+    "profileIntroLabel": "الشخصية والتعريف بالنفس",
+    "profileIntroHint": "مثال: خرقاء قليلاً، تحب تناول الحلويات...",
+    "profileNameEmptyWarning": "يرجى تسمية هذا الملف!",
+    "profileSaveError": "فشل الحفظ: {error}",
+    "@profileSaveError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "saveProfileButton": "حفظ الملف",
+    "fillLaterButton": "الملء لاحقاً",
+    "exclusiveProfileTitle": "📜 ملف شقوانغ الحصري",
+    "profileSelectionDescription": "اختاري الهوية التي تودين استخدامها للتفاعل معه (قائمة مشتركة لنفس الشخصية، حتى 10 ملفات)",
+    "profileSwitchError": "فشل التبديل: {error}",
+    "@profileSwitchError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "unnamedProfile": "ملف غير مسمى",
+    "noOccupationYet": "لم يتم إدخال المهنة بعد",
+    "createNewProfileButton": "إنشاء ملف شقوانغ جديد"
 }

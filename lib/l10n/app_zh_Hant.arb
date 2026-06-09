@@ -1718,5 +1718,126 @@
       "shop_preview_mode": "⚠️ 目前為商店預覽模式",
       "@shop_preview_mode": {
         "description": "商店預覽模式的警告標語"
+      },
+  "friendlyReminderTitle": "☁️ 溫馨提示",
+  "editProfileHint": "好的！如果要編輯身分，請點擊左下角雲朵裡面的「拾光檔案」做填寫喔！",
+  "starlightContractTitle": "星光契約啟動",
+  "dailyLimitReachedPrefix": "今日的額度已經用完囉！\n\n",
+  "monthlyPassExhausted": "您的月卡額度已用盡。",
+  "subscribeMonthlyPassPrompt": "開通【戀戀月卡】，每日享有 20 次重新生成機會，讓他每一次的回覆都更貼近您的心意。",
+  "goToSubscribeButton": "前往開通",
+  "profileUpdatedSuccess": "拾光檔案已更新！",
+  "continueChatTitle": "繼續對話",
+  "continueChatCostWarning": "讓他說下去，將會消耗 {cost} 朵花花 🌸\n確定要繼續嗎？",
+  "@continueChatCostWarning": {
+    "placeholders": {
+      "cost": {
+        "type": "int",
+        "example": "10"
       }
+    }
+  },
+  "dontShowAgainToday": "今日不再提示",
+  "confirmContinue": "確定繼續",
+  "hiddenPromptContinue": "請繼續",
+  "confirmDeleteMessagesTitle": "確定刪除這 {count} 則對話？",
+  "@confirmDeleteMessagesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "regenerateButtonLabel": "重新生成 ({current}/{max})",
+  "@regenerateButtonLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "3"
+      },
+      "max": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "systemPreparingWait": "系統還在準備中，請稍候...",
+  "noMessagesToRegenerate": "目前沒有可以重新生成的對話喔！",
+  "continueButton": "繼續",
+  "creatorExclusive": "🔒 創作者專屬",
+  "ageAndOccupation": "{age}歲 | {occupation}",
+  "@ageAndOccupation": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "likesLabel": "💖 喜歡",
+  "dislikesLabel": "👎 不喜歡",
+  "birthdayLabel": "生日: {birthday}",
+  "@birthdayLabel": {
+    "placeholders": {
+      "birthday": { "type": "String" }
+    }
+  },
+  "heightLabel": "身高: {height} cm",
+  "@heightLabel": {
+    "placeholders": {
+      "height": { "type": "String" }
+    }
+  },
+  "backgroundStoryLabel": "背景故事",
+  "noneLabel": "無",
+  "flowerPointsCount": "{points} 點花花",
+  "@flowerPointsCount": {
+    "placeholders": {
+      "points": {
+        "type": "String",
+        "example": "100"
+      }
+    }
+  },
+  "passGuideTitle": "戀戀月卡專屬指南",
+  "passGuideRegenerateTitle": "🔄 為什麼需要「重新生成」？",
+  "passGuideRegenerateContent": "AI 有時候會像個笨蛋木頭，不解風情。遇到不滿意的回覆時，只要按下重新生成，就像時光倒流！妳可以讓他重新思考，直到他說出讓妳心跳加速的那句完美台詞。",
+  "passGuideAffectionTitle": "💖 好感度加速有什麼用？",
+  "passGuideAffectionContent": "在遊戲中，好感度是解鎖角色「深層秘密」與「親密私照」的唯一鑰匙。20% 的加成讓妳比別人更快走進他的內心深處。",
+  "passGuideUnlockButton": "我明白了，立即解鎖！",
+  "pleaseWait": "請稍候",
+  "createNewProfileTitle": "📜 建立新拾光檔案",
+  "editProfileTitle": "✏️ 編輯拾光檔案",
+  "profileEditDescription": "建立不同的人設，在平行的時空裡讓他認識不一樣的妳！",
+  "profileNameLabel": "檔案名稱 (僅自己可見)",
+  "profileNameHint": "例如: 校園學妹設定、霸道女總裁",
+  "profileNicknameLabel": "姓名 / 稱呼",
+  "profileNicknameHint": "例如: 小櫻、李總",
+  "profileHeightLabel": "身高",
+  "profileHeightHint": "例如: 160cm",
+  "profileAppearanceLabel": "外貌",
+  "profileAppearanceHint": "例如: 黑色長髮、喜歡穿洋裝",
+  "profileOccupationLabel": "職業",
+  "profileOccupationHint": "例如: 自由畫家",
+  "profileIntroLabel": "個性與自我介紹",
+  "profileIntroHint": "例如：個性有點迷糊，喜歡吃甜食...",
+  "profileNameEmptyWarning": "請給這個檔案取個名字喔！",
+  "profileSaveError": "儲存失敗: {error}",
+  "@profileSaveError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "saveProfileButton": "儲存檔案",
+  "fillLaterButton": "稍後填寫",
+  "exclusiveProfileTitle": "📜 專屬拾光檔案",
+  "profileSelectionDescription": "選擇你想用來和他互動的身分 (同角色共用清單，最多 10 個)",
+  "profileSwitchError": "切換失敗: {error}",
+  "@profileSwitchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unnamedProfile": "未命名檔案",
+  "noOccupationYet": "尚未填寫職業",
+  "createNewProfileButton": "建立新拾光檔案"
 }

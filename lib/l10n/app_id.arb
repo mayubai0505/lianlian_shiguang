@@ -1580,5 +1580,125 @@
     "shop_preview_mode": "⚠️ Saat ini dalam Mode Pratinjau Toko",
     "@shop_preview_mode": {
     "description": "商店預覽模式的警告標語"
-    }
+    },
+    "friendlyReminderTitle": "☁️ Pengingat Ramah",
+    "editProfileHint": "Baiklah! Jika ingin mengedit identitas, silakan klik 'Profil Shiguang' di dalam awan di sudut kiri bawah untuk mengisinya!",
+    "starlightContractTitle": "Kontrak Starlight Diaktifkan",
+    "dailyLimitReachedPrefix": "Kuota hari ini telah habis digunakan!\n\n",
+    "monthlyPassExhausted": "Kuota Kartu Bulanan Anda telah habis.",
+    "subscribeMonthlyPassPrompt": "Aktifkan 【Kartu Bulanan Lianlian】 untuk menikmati 20 kesempatan pembuatan ulang setiap hari, membuat setiap tanggapannya lebih dekat ke hati Anda.",
+    "goToSubscribeButton": "Pergi untuk Mengaktifkan",
+    "profileUpdatedSuccess": "Profil Shiguang telah diperbarui!",
+    "continueChatTitle": "Lanjutkan Percakapan",
+    "continueChatCostWarning": "Membiarkannya terus berbicara akan mengonsumsi {cost} Bunga 🌸\nApakah Anda yakin ingin melanjutkan?",
+    "@continueChatCostWarning": {
+        "placeholders": {
+            "cost": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    },
+    "dontShowAgainToday": "Jangan tampilkan lagi hari ini",
+    "confirmContinue": "Yakin Lanjutkan",
+    "hiddenPromptContinue": "Silakan lanjutkan","confirmDeleteMessagesTitle": "Apakah Anda yakin ingin menghapus {count} pesan ini?",
+    "@confirmDeleteMessagesTitle": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "3"
+            }
+        }
+    },
+    "regenerateButtonLabel": "Buat Ulang ({current}/{max})",
+    "@regenerateButtonLabel": {
+        "placeholders": {
+            "current": {
+                "type": "int",
+                "example": "3"
+            },
+            "max": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "systemPreparingWait": "Sistem masih bersiap, mohon tunggu...",
+    "noMessagesToRegenerate": "Saat ini tidak ada percakapan yang dapat dibuat ulang!",
+    "continueButton": "Lanjutkan",
+    "creatorExclusive": "🔒 Eksklusif Kreator",
+    "ageAndOccupation": "{age} tahun | {occupation}",
+    "@ageAndOccupation": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "likesLabel": "💖 Suka",
+    "dislikesLabel": "👎 Tidak Suka",
+    "birthdayLabel": "Hari Ulang Tahun: {birthday}",
+    "@birthdayLabel": {
+        "placeholders": {
+            "birthday": { "type": "String" }
+        }
+    },
+    "heightLabel": "Tinggi Badan: {height} cm",
+    "@heightLabel": {
+        "placeholders": {
+            "height": { "type": "String" }
+        }
+    },
+    "backgroundStoryLabel": "Cerita Latar Belakang",
+    "noneLabel": "Tidak ada",
+    "flowerPointsCount": "{points} Bunga",
+    "@flowerPointsCount": {
+        "placeholders": {
+            "points": {
+                "type": "String",
+                "example": "100"
+            }
+        }
+    },
+    "passGuideTitle": "Panduan Eksklusif Kartu Bulanan Lianlian",
+    "passGuideRegenerateTitle": "🔄 Mengapa Anda membutuhkan 'Buat Ulang'?",
+    "passGuideRegenerateContent": "AI terkadang bisa menjadi tidak peka seperti balok kayu. Saat Anda menemui tanggapan yang tidak memuaskan, cukup tekan buat ulang, itu seperti memutar balik waktu! Anda bisa membiarkannya berpikir ulang sampai dia mengucapkan kalimat sempurna yang membuat jantung Anda berdebar kencang.",
+    "passGuideAffectionTitle": "💖 Apa kegunaan Akselerasi Afeksi?",
+    "passGuideAffectionContent": "Dalam permainan, afeksi adalah satu-satunya kunci untuk membuka 'rahasia terdalam' dan 'foto pribadi intim' dari karakter. Bonus 20% memungkinkan Anda berjalan masuk ke lubuk hatinya lebih cepat daripada orang lain.",
+    "passGuideUnlockButton": "Saya mengerti, buka kunci sekarang!",
+    "pleaseWait": "Mohon tunggu",
+    "createNewProfileTitle": "📜 Buat Profil Shiguang Baru",
+    "editProfileTitle": "✏️ Edit Profil Shiguang",
+    "profileEditDescription": "Buat persona yang berbeda, biarkan dia mengenali sisi lain dari dirimu di dimensi paralel!",
+    "profileNameLabel": "Nama Profil (Hanya terlihat oleh Anda)",
+    "profileNameHint": "Contoh: Adik Kelas, CEO Wanita yang Angkuh",
+    "profileNicknameLabel": "Nama / Panggilan",
+    "profileNicknameHint": "Contoh: Sakura, Direktur Li",
+    "profileHeightLabel": "Tinggi Badan",
+    "profileHeightHint": "Contoh: 160cm",
+    "profileAppearanceLabel": "Penampilan",
+    "profileAppearanceHint": "Contoh: Rambut hitam panjang, suka memakai gaun",
+    "profileOccupationLabel": "Pekerjaan",
+    "profileOccupationHint": "Contoh: Pelukis Lepas",
+    "profileIntroLabel": "Kepribadian & Pengenalan Diri",
+    "profileIntroHint": "Contoh: Agak ceroboh, suka makan makanan manis...",
+    "profileNameEmptyWarning": "Silakan beri nama untuk profil ini!",
+    "profileSaveError": "Gagal menyimpan: {error}",
+    "@profileSaveError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "saveProfileButton": "Simpan Profil",
+    "fillLaterButton": "Isi Nanti",
+    "exclusiveProfileTitle": "📜 Profil Shiguang Eksklusif",
+    "profileSelectionDescription": "Pilih identitas yang ingin Anda gunakan untuk berinteraksi dengannya (daftar bersama per karakter, maks. 10)",
+    "profileSwitchError": "Gagal beralih: {error}",
+    "@profileSwitchError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "unnamedProfile": "Profil Tanpa Nama",
+    "noOccupationYet": "Belum mengisi pekerjaan",
+    "createNewProfileButton": "Buat Profil Shiguang Baru"
 }

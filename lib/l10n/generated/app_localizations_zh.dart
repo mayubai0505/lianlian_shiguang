@@ -3523,6 +3523,204 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get shop_preview_mode => '⚠️ 目前為商店預覽模式';
+
+  @override
+  String get friendlyReminderTitle => '☁️ 溫馨提示';
+
+  @override
+  String get editProfileHint => '好的！如果要編輯身分，請點擊左下角雲朵裡面的「拾光檔案」做填寫喔！';
+
+  @override
+  String get starlightContractTitle => '星光契約啟動';
+
+  @override
+  String get dailyLimitReachedPrefix => '今日的額度已經用完囉！\n\n';
+
+  @override
+  String get monthlyPassExhausted => '您的月卡額度已用盡。';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      '開通【戀戀月卡】，每日享有 20 次重新生成機會，讓他每一次的回覆都更貼近您的心意。';
+
+  @override
+  String get goToSubscribeButton => '前往開通';
+
+  @override
+  String get profileUpdatedSuccess => '拾光檔案已更新！';
+
+  @override
+  String get continueChatTitle => '繼續對話';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return '讓他說下去，將會消耗 $cost 朵花花 🌸\n確定要繼續嗎？';
+  }
+
+  @override
+  String get dontShowAgainToday => '今日不再提示';
+
+  @override
+  String get confirmContinue => '確定繼續';
+
+  @override
+  String get hiddenPromptContinue => '請繼續';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return '確定刪除這 $count 則對話？';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return '重新生成 ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait => '系統還在準備中，請稍候...';
+
+  @override
+  String get noMessagesToRegenerate => '目前沒有可以重新生成的對話喔！';
+
+  @override
+  String get continueButton => '繼續';
+
+  @override
+  String get creatorExclusive => '🔒 創作者專屬';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age歲 | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 喜歡';
+
+  @override
+  String get dislikesLabel => '👎 不喜歡';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return '生日: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return '身高: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => '背景故事';
+
+  @override
+  String get noneLabel => '無';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points 點花花';
+  }
+
+  @override
+  String get passGuideTitle => '戀戀月卡專屬指南';
+
+  @override
+  String get passGuideRegenerateTitle => '🔄 為什麼需要「重新生成」？';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'AI 有時候會像個笨蛋木頭，不解風情。遇到不滿意的回覆時，只要按下重新生成，就像時光倒流！妳可以讓他重新思考，直到他說出讓妳心跳加速的那句完美台詞。';
+
+  @override
+  String get passGuideAffectionTitle => '💖 好感度加速有什麼用？';
+
+  @override
+  String get passGuideAffectionContent =>
+      '在遊戲中，好感度是解鎖角色「深層秘密」與「親密私照」的唯一鑰匙。20% 的加成讓妳比別人更快走進他的內心深處。';
+
+  @override
+  String get passGuideUnlockButton => '我明白了，立即解鎖！';
+
+  @override
+  String get pleaseWait => '請稍候';
+
+  @override
+  String get createNewProfileTitle => '📜 建立新拾光檔案';
+
+  @override
+  String get editProfileTitle => '✏️ 編輯拾光檔案';
+
+  @override
+  String get profileEditDescription => '建立不同的人設，在平行的時空裡讓他認識不一樣的妳！';
+
+  @override
+  String get profileNameLabel => '檔案名稱 (僅自己可見)';
+
+  @override
+  String get profileNameHint => '例如: 校園學妹設定、霸道女總裁';
+
+  @override
+  String get profileNicknameLabel => '姓名 / 稱呼';
+
+  @override
+  String get profileNicknameHint => '例如: 小櫻、李總';
+
+  @override
+  String get profileHeightLabel => '身高';
+
+  @override
+  String get profileHeightHint => '例如: 160cm';
+
+  @override
+  String get profileAppearanceLabel => '外貌';
+
+  @override
+  String get profileAppearanceHint => '例如: 黑色長髮、喜歡穿洋裝';
+
+  @override
+  String get profileOccupationLabel => '職業';
+
+  @override
+  String get profileOccupationHint => '例如: 自由畫家';
+
+  @override
+  String get profileIntroLabel => '個性與自我介紹';
+
+  @override
+  String get profileIntroHint => '例如：個性有點迷糊，喜歡吃甜食...';
+
+  @override
+  String get profileNameEmptyWarning => '請給這個檔案取個名字喔！';
+
+  @override
+  String profileSaveError(String error) {
+    return '儲存失敗: $error';
+  }
+
+  @override
+  String get saveProfileButton => '儲存檔案';
+
+  @override
+  String get fillLaterButton => '稍後填寫';
+
+  @override
+  String get exclusiveProfileTitle => '📜 專屬拾光檔案';
+
+  @override
+  String get profileSelectionDescription => '選擇你想用來和他互動的身分 (同角色共用清單，最多 10 個)';
+
+  @override
+  String profileSwitchError(String error) {
+    return '切換失敗: $error';
+  }
+
+  @override
+  String get unnamedProfile => '未命名檔案';
+
+  @override
+  String get noOccupationYet => '尚未填寫職業';
+
+  @override
+  String get createNewProfileButton => '建立新拾光檔案';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7044,6 +7242,204 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get shop_preview_mode => '⚠️ 目前为商店预览模式';
+
+  @override
+  String get friendlyReminderTitle => '☁️ 温馨提示';
+
+  @override
+  String get editProfileHint => '好的！如果要编辑身份，请点击左下角云朵 Inside 的「拾光档案」做填写喔！';
+
+  @override
+  String get starlightContractTitle => '星光契约启动';
+
+  @override
+  String get dailyLimitReachedPrefix => '今日的额度已经用完啰！\n\n';
+
+  @override
+  String get monthlyPassExhausted => '您的月卡额度已用尽。';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      '开通【恋恋月卡】，每日享有 20 次重新生成机会，让他每一次的回复都更贴近您的心意。';
+
+  @override
+  String get goToSubscribeButton => '前往开通';
+
+  @override
+  String get profileUpdatedSuccess => '拾光档案已更新！';
+
+  @override
+  String get continueChatTitle => '继续对话';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return '让他说下去，将会消耗 $cost 朵花花 🌸\n确定要继续吗？';
+  }
+
+  @override
+  String get dontShowAgainToday => '今日不再提示';
+
+  @override
+  String get confirmContinue => '确定继续';
+
+  @override
+  String get hiddenPromptContinue => '请继续';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return '确定删除这 $count 则对话？';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return '重新生成 ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait => '系统还在准备中，请稍候...';
+
+  @override
+  String get noMessagesToRegenerate => '目前没有可以重新生成的对话喔！';
+
+  @override
+  String get continueButton => '继续';
+
+  @override
+  String get creatorExclusive => '🔒 创作者专属';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age岁 | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 喜欢';
+
+  @override
+  String get dislikesLabel => '👎 不喜欢';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return '生日: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return '身高: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => '背景故事';
+
+  @override
+  String get noneLabel => '无';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points 点花花';
+  }
+
+  @override
+  String get passGuideTitle => '恋恋月卡专属指南';
+
+  @override
+  String get passGuideRegenerateTitle => '🔄 为什么需要「重新生成」？';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'AI 有时候会像个笨蛋木头，不解风情。遇到不满意的回复时，只要按下重新生成，就像时光倒流！妳可以让他重新思考，直到他说出让妳心跳加速的那句完美台词。';
+
+  @override
+  String get passGuideAffectionTitle => '💖 好感度加速有什么用？';
+
+  @override
+  String get passGuideAffectionContent =>
+      '在游戏中，好感度是解锁角色「深层秘密」与「亲密私照」的唯一钥匙。20% 的加成让妳比别人更快走进他的内心深处。';
+
+  @override
+  String get passGuideUnlockButton => '我明白了，立即解锁！';
+
+  @override
+  String get pleaseWait => '请稍候';
+
+  @override
+  String get createNewProfileTitle => '📜 建立新拾光档案';
+
+  @override
+  String get editProfileTitle => '✏️ 编辑拾光档案';
+
+  @override
+  String get profileEditDescription => '建立 different 的人设，在平行的时空里让他认识不一样的妳！';
+
+  @override
+  String get profileNameLabel => '档案名称 (仅自己可见)';
+
+  @override
+  String get profileNameHint => '例如: 校园学妹设定、霸道女总裁';
+
+  @override
+  String get profileNicknameLabel => '姓名 / 称呼';
+
+  @override
+  String get profileNicknameHint => '例如: 小樱、李总';
+
+  @override
+  String get profileHeightLabel => '身高';
+
+  @override
+  String get profileHeightHint => '例如: 160cm';
+
+  @override
+  String get profileAppearanceLabel => '外貌';
+
+  @override
+  String get profileAppearanceHint => '例如: 黑色长发、喜欢穿洋装';
+
+  @override
+  String get profileOccupationLabel => '职业';
+
+  @override
+  String get profileOccupationHint => '例如: 自由画家';
+
+  @override
+  String get profileIntroLabel => '个性与自我介绍';
+
+  @override
+  String get profileIntroHint => '例如：个性有点迷糊，喜欢吃甜食...';
+
+  @override
+  String get profileNameEmptyWarning => '请给这个档案取个名字喔！';
+
+  @override
+  String profileSaveError(String error) {
+    return '储存失败: $error';
+  }
+
+  @override
+  String get saveProfileButton => '储存档案';
+
+  @override
+  String get fillLaterButton => '稍后填写';
+
+  @override
+  String get exclusiveProfileTitle => '📜 专属拾光档案';
+
+  @override
+  String get profileSelectionDescription => '选择你想用来和他互动的身分 (同角色共用清单，最多 10 个)';
+
+  @override
+  String profileSwitchError(String error) {
+    return '切换失败: $error';
+  }
+
+  @override
+  String get unnamedProfile => '未命名档案';
+
+  @override
+  String get noOccupationYet => '尚未填写职业';
+
+  @override
+  String get createNewProfileButton => '建立新拾光档案';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10565,4 +10961,202 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get shop_preview_mode => '⚠️ 目前為商店預覽模式';
+
+  @override
+  String get friendlyReminderTitle => '☁️ 溫馨提示';
+
+  @override
+  String get editProfileHint => '好的！如果要編輯身分，請點擊左下角雲朵裡面的「拾光檔案」做填寫喔！';
+
+  @override
+  String get starlightContractTitle => '星光契約啟動';
+
+  @override
+  String get dailyLimitReachedPrefix => '今日的額度已經用完囉！\n\n';
+
+  @override
+  String get monthlyPassExhausted => '您的月卡額度已用盡。';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      '開通【戀戀月卡】，每日享有 20 次重新生成機會，讓他每一次的回覆都更貼近您的心意。';
+
+  @override
+  String get goToSubscribeButton => '前往開通';
+
+  @override
+  String get profileUpdatedSuccess => '拾光檔案已更新！';
+
+  @override
+  String get continueChatTitle => '繼續對話';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return '讓他說下去，將會消耗 $cost 朵花花 🌸\n確定要繼續嗎？';
+  }
+
+  @override
+  String get dontShowAgainToday => '今日不再提示';
+
+  @override
+  String get confirmContinue => '確定繼續';
+
+  @override
+  String get hiddenPromptContinue => '請繼續';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return '確定刪除這 $count 則對話？';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return '重新生成 ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait => '系統還在準備中，請稍候...';
+
+  @override
+  String get noMessagesToRegenerate => '目前沒有可以重新生成的對話喔！';
+
+  @override
+  String get continueButton => '繼續';
+
+  @override
+  String get creatorExclusive => '🔒 創作者專屬';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age歲 | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 喜歡';
+
+  @override
+  String get dislikesLabel => '👎 不喜歡';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return '生日: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return '身高: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => '背景故事';
+
+  @override
+  String get noneLabel => '無';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points 點花花';
+  }
+
+  @override
+  String get passGuideTitle => '戀戀月卡專屬指南';
+
+  @override
+  String get passGuideRegenerateTitle => '🔄 為什麼需要「重新生成」？';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'AI 有時候會像個笨蛋木頭，不解風情。遇到不滿意的回覆時，只要按下重新生成，就像時光倒流！妳可以讓他重新思考，直到他說出讓妳心跳加速的那句完美台詞。';
+
+  @override
+  String get passGuideAffectionTitle => '💖 好感度加速有什麼用？';
+
+  @override
+  String get passGuideAffectionContent =>
+      '在遊戲中，好感度是解鎖角色「深層秘密」與「親密私照」的唯一鑰匙。20% 的加成讓妳比別人更快走進他的內心深處。';
+
+  @override
+  String get passGuideUnlockButton => '我明白了，立即解鎖！';
+
+  @override
+  String get pleaseWait => '請稍候';
+
+  @override
+  String get createNewProfileTitle => '📜 建立新拾光檔案';
+
+  @override
+  String get editProfileTitle => '✏️ 編輯拾光檔案';
+
+  @override
+  String get profileEditDescription => '建立不同的人設，在平行的時空裡讓他認識不一樣的妳！';
+
+  @override
+  String get profileNameLabel => '檔案名稱 (僅自己可見)';
+
+  @override
+  String get profileNameHint => '例如: 校園學妹設定、霸道女總裁';
+
+  @override
+  String get profileNicknameLabel => '姓名 / 稱呼';
+
+  @override
+  String get profileNicknameHint => '例如: 小櫻、李總';
+
+  @override
+  String get profileHeightLabel => '身高';
+
+  @override
+  String get profileHeightHint => '例如: 160cm';
+
+  @override
+  String get profileAppearanceLabel => '外貌';
+
+  @override
+  String get profileAppearanceHint => '例如: 黑色長髮、喜歡穿洋裝';
+
+  @override
+  String get profileOccupationLabel => '職業';
+
+  @override
+  String get profileOccupationHint => '例如: 自由畫家';
+
+  @override
+  String get profileIntroLabel => '個性與自我介紹';
+
+  @override
+  String get profileIntroHint => '例如：個性有點迷糊，喜歡吃甜食...';
+
+  @override
+  String get profileNameEmptyWarning => '請給這個檔案取個名字喔！';
+
+  @override
+  String profileSaveError(String error) {
+    return '儲存失敗: $error';
+  }
+
+  @override
+  String get saveProfileButton => '儲存檔案';
+
+  @override
+  String get fillLaterButton => '稍後填寫';
+
+  @override
+  String get exclusiveProfileTitle => '📜 專屬拾光檔案';
+
+  @override
+  String get profileSelectionDescription => '選擇你想用來和他互動的身分 (同角色共用清單，最多 10 個)';
+
+  @override
+  String profileSwitchError(String error) {
+    return '切換失敗: $error';
+  }
+
+  @override
+  String get unnamedProfile => '未命名檔案';
+
+  @override
+  String get noOccupationYet => '尚未填寫職業';
+
+  @override
+  String get createNewProfileButton => '建立新拾光檔案';
 }

@@ -3749,4 +3749,211 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get shop_preview_mode => '⚠️ वर्तमान में शॉप प्रिव्यू मोड चालू है';
+
+  @override
+  String get friendlyReminderTitle => '☁️ एक प्यारा सा सुझाव';
+
+  @override
+  String get editProfileHint =>
+      'ठीक है! यदि आप अपनी प्रोफ़ाइल संपादित करना चाहते हैं, तो कृपया भरने के लिए नीचे-बाएँ कोने में क्लाउड के अंदर \'शिगुआंग प्रोफ़ाइल\' पर क्लिक करें!';
+
+  @override
+  String get starlightContractTitle => 'स्टारलाइट कॉन्ट्रैक्ट सक्रिय हुआ';
+
+  @override
+  String get dailyLimitReachedPrefix => 'आज की सीमा समाप्त हो गई है!\n\n';
+
+  @override
+  String get monthlyPassExhausted =>
+      'आपके मासिक कार्ड की सीमा समाप्त हो गई है।';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      'दैनिक 20 री-जेनरेट अवसरों का आनंद लेने के लिए 【लियनलियन मासिक कार्ड】 सक्रिय करें, ताकि उसकी हर प्रतिक्रिया आपके दिल के और करीब हो।';
+
+  @override
+  String get goToSubscribeButton => 'सक्रिय करने जाएं';
+
+  @override
+  String get profileUpdatedSuccess => 'शिगुआंग प्रोफ़ाइल अपडेट हो गई है!';
+
+  @override
+  String get continueChatTitle => 'बातचीत जारी रखें';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return 'उसे बात जारी रखने देने के लिए $cost फूल खर्च होंगे 🌸\nक्या आप सच में जारी रखना चाहते हैं?';
+  }
+
+  @override
+  String get dontShowAgainToday => 'आज फिर न दिखाएं';
+
+  @override
+  String get confirmContinue => 'जारी रखें';
+
+  @override
+  String get hiddenPromptContinue => 'कृपया जारी रखें';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return 'क्या आप सच में इन $count संदेशों को हटाना चाहते हैं?';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return 'पुनः उत्पन्न करें ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait =>
+      'सिस्टम अभी भी तैयारी कर रहा है, कृपया प्रतीक्षा करें...';
+
+  @override
+  String get noMessagesToRegenerate =>
+      'वर्तमान में कोई संदेश नहीं है जिसे पुनः उत्पन्न किया जा सके!';
+
+  @override
+  String get continueButton => 'जारी रखें';
+
+  @override
+  String get creatorExclusive => '🔒 निर्माता विशेष';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age वर्ष | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 पसंद';
+
+  @override
+  String get dislikesLabel => '👎 नापसंद';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return 'जन्मदिन: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return 'लंबाई: $height सेमी';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'बैकग्राउंड कहानी';
+
+  @override
+  String get noneLabel => 'कोई नहीं';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points फूल';
+  }
+
+  @override
+  String get passGuideTitle => 'लियनलियन मासिक कार्ड विशेष गाइड';
+
+  @override
+  String get passGuideRegenerateTitle =>
+      '🔄 आपको \'पुनः उत्पन्न करें\' की आवश्यकता क्यों है?';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'एआई कभी-कभी एक नासमझ लकड़ी के टुकड़े की तरह व्यवहार कर सकता है जो भावनाओं को नहीं समझता। जब आपको कोई असंतोषजनक प्रतिक्रिया मिले, तो बस \'पुनः उत्पन्न करें\' दबाएं, यह समय में पीछे जाने जैसा है! आप उसे तब तक दोबारा सोचने पर मजबूर कर सकते हैं जब तक कि वह आपके दिल की धड़कन बढ़ाने वाली एकदम सही बात न कह दे।';
+
+  @override
+  String get passGuideAffectionTitle => '💖 स्नेह बढ़ाने से क्या फायदा है?';
+
+  @override
+  String get passGuideAffectionContent =>
+      'खेल में, स्नेह ही पात्र के \'गहरे रहस्यों\' और \'अंतरंग निजी तस्वीरों\' को अनलॉक करने की एकमात्र चाबी है। 20% की बढ़ोतरी आपको किसी भी अन्य व्यक्ति की तुलना में तेजी से उसके दिल की गहराइयों में जाने की अनुमति देती है।';
+
+  @override
+  String get passGuideUnlockButton => 'मैं समझ गया, अभी अनलॉक करें!';
+
+  @override
+  String get pleaseWait => 'कृपया प्रतीक्षा करें';
+
+  @override
+  String get createNewProfileTitle => '📜 नई शिगुआंग प्रोफ़ाइल बनाएं';
+
+  @override
+  String get editProfileTitle => '✏️ शिगुआंग प्रोफ़ाइल संपादित करें';
+
+  @override
+  String get profileEditDescription =>
+      'अलग-अलग व्यक्तित्व बनाएं ताकि वह समानांतर ब्रह्मांडों में आपके एक अलग रूप को जान सके!';
+
+  @override
+  String get profileNameLabel => 'प्रोफ़ाइल नाम (केवल आपके लिए दृश्यमान)';
+
+  @override
+  String get profileNameHint => 'जैसे: स्कूल जूनियर, दबंग महिला सीईओ';
+
+  @override
+  String get profileNicknameLabel => 'नाम / उपनाम';
+
+  @override
+  String get profileNicknameHint => 'जैसे: साकुरा, प्रेसिडेंट ली';
+
+  @override
+  String get profileHeightLabel => 'लंबाई';
+
+  @override
+  String get profileHeightHint => 'जैसे: 160 सेमी';
+
+  @override
+  String get profileAppearanceLabel => 'दिखावट';
+
+  @override
+  String get profileAppearanceHint =>
+      'जैसे: काले लंबे बाल, फ्रॉक पहनना पसंद है';
+
+  @override
+  String get profileOccupationLabel => 'व्यवसाय';
+
+  @override
+  String get profileOccupationHint => 'जैसे: फ्रीलांस चित्रकार';
+
+  @override
+  String get profileIntroLabel => 'व्यक्तित्व और आत्म-परिचय';
+
+  @override
+  String get profileIntroHint =>
+      'जैसे: थोड़ी भुलक्कड़ है, मीठा खाना पसंद है...';
+
+  @override
+  String get profileNameEmptyWarning => 'कृपया इस प्रोफ़ाइल को एक नाम दें!';
+
+  @override
+  String profileSaveError(String error) {
+    return 'सहेजने में विफल: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'प्रोफ़ाइल सहेजें';
+
+  @override
+  String get fillLaterButton => 'बाद में भरें';
+
+  @override
+  String get exclusiveProfileTitle => '📜 विशेष शिगुआंग प्रोफ़ाइल';
+
+  @override
+  String get profileSelectionDescription =>
+      'वह पहचान चुनें जिसका उपयोग आप उसके साथ बातचीत करने के लिए करना चाहते हैं (प्रति पात्र साझा सूची, अधिकतम 10)';
+
+  @override
+  String profileSwitchError(String error) {
+    return 'बदलने में विफल: $error';
+  }
+
+  @override
+  String get unnamedProfile => 'अनाम प्रोफ़ाइल';
+
+  @override
+  String get noOccupationYet => 'अभी तक कोई व्यवसाय नहीं भरा गया';
+
+  @override
+  String get createNewProfileButton => 'नई शिगुआंग प्रोफ़ाइल बनाएं';
 }

@@ -1581,5 +1581,125 @@
   "shop_preview_mode": "⚠️ Hiện tại đang ở chế độ xem trước cửa hàng",
   "@shop_preview_mode": {
   "description": "商店預覽模式的警告標語"
-  }
+  },
+  "friendlyReminderTitle": "☁️ Nhắc nhở thân thiện",
+  "editProfileHint": "Ok nhé! Nếu muốn chỉnh sửa hồ sơ, vui lòng nhấn vào \"Hồ sơ Thập Quang\" bên trong đám mây ở góc dưới bên trái để điền thông tin nhé!",
+  "starlightContractTitle": "Kích hoạt Tinh Quang Khế Ước",
+  "dailyLimitReachedPrefix": "Hạn ngạch của ngày hôm nay đã dùng hết rồi nhé!\n\n",
+  "monthlyPassExhausted": "Hạn ngạch thẻ tháng của bạn đã dùng hết.",
+  "subscribeMonthlyPassPrompt": "Mở khóa 【Thẻ Tháng Luyến Luyến】 để hưởng 20 cơ hội tạo lại mỗi ngày, giúp mỗi câu trả lời của anh ấy đều chạm đến trái tim bạn hơn.",
+  "goToSubscribeButton": "Đi đến mở khóa",
+  "profileUpdatedSuccess": "Hồ sơ Thập Quang đã được cập nhật!",
+  "continueChatTitle": "Tiếp tục trò chuyện",
+  "continueChatCostWarning": "Để anh ấy nói tiếp sẽ tiêu tốn {cost} điểm Hoa 🌸\nBạn có chắc chắn muốn tiếp tục không?",
+  "@continueChatCostWarning": {
+    "placeholders": {
+      "cost": {
+        "type": "int",
+        "example": "10"
+      }
+    }
+  },
+  "dontShowAgainToday": "Không hiển thị lại trong hôm nay",
+  "confirmContinue": "Xác nhận tiếp tục",
+  "hiddenPromptContinue": "Hãy nói tiếp đi",
+  "confirmDeleteMessagesTitle": "Bạn có chắc chắn muốn xóa {count} tin nhắn này không?",
+  "@confirmDeleteMessagesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },"regenerateButtonLabel": "Tạo lại ({current}/{max})",
+  "@regenerateButtonLabel": {
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "3"
+      },
+      "max": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "systemPreparingWait": "Hệ thống vẫn đang chuẩn bị, vui lòng chờ trong giây lát...",
+  "noMessagesToRegenerate": "Hiện tại không có cuộc trò chuyện nào có thể tạo lại!",
+  "continueButton": "Tiếp tục",
+  "creatorExclusive": "🔒 Dành riêng cho nhà sáng tạo",
+  "ageAndOccupation": "{age} tuổi | {occupation}",
+  "@ageAndOccupation": {
+    "placeholders": {
+      "age": { "type": "String" },
+      "occupation": { "type": "String" }
+    }
+  },
+  "likesLabel": "💖 Sở thích",
+  "dislikesLabel": "👎 Ghét",
+  "birthdayLabel": "Sinh nhật: {birthday}",
+  "@birthdayLabel": {
+    "placeholders": {
+      "birthday": { "type": "String" }
+    }
+  },
+  "heightLabel": "Chiều cao: {height} cm",
+  "@heightLabel": {
+    "placeholders": {
+      "height": { "type": "String" }
+    }
+  },
+  "backgroundStoryLabel": "Câu chuyện bối cảnh",
+  "noneLabel": "Không có",
+  "flowerPointsCount": "{points} Hoa",
+  "@flowerPointsCount": {
+    "placeholders": {
+      "points": {
+        "type": "String",
+        "example": "100"
+      }
+    }
+  },
+  "passGuideTitle": "Cẩm nang độc quyền Thẻ Tháng Luyến Luyến",
+  "passGuideRegenerateTitle": "🔄 Tại sao bạn lại cần chức năng \"Tạo lại\"?",
+  "passGuideRegenerateContent": "AI đôi khi sẽ giống như một khúc gỗ ngốc nghếch, không hiểu phong tình. Khi gặp phải câu trả lời không ưng ý, chỉ cần nhấn tạo lại là giống như thời gian quay ngược vậy! Bạn có thể khiến anh ấy suy nghĩ lại, cho đến khi nói ra câu thoại hoàn hảo khiến tim bạn đập loạn nhịp.",
+  "passGuideAffectionTitle": "💖 Tăng tốc độ hảo cảm thì có tác dụng gì?",
+  "passGuideAffectionContent": "Trong game, độ hảo cảm là chiếc chìa khóa duy nhất để mở khóa \"bí mật sâu kín\" và \"ảnh riêng tư thân mật\" của nhân vật. Việc được cộng thêm 20% sẽ giúp bạn bước vào sâu trong tim anh ấy nhanh hơn những người khác.",
+  "passGuideUnlockButton": "Mình đã hiểu, mở khóa ngay!",
+  "pleaseWait": "Vui lòng chờ",
+  "createNewProfileTitle": "📜 Tạo Hồ Sơ Thập Quang Mới",
+  "editProfileTitle": "✏️ Chỉnh Sửa Hồ Sơ Thập Quang",
+  "profileEditDescription": "Tạo ra các thân phận khác nhau để anh ấy được làm quen với những khía cạnh khác của bạn ở thế giới song song!",
+  "profileNameLabel": "Tên hồ sơ (Chỉ bạn mới nhìn thấy)",
+  "profileNameHint": "Ví dụ: Đàn em trường học, Nữ tổng tài bá đạo",
+  "profileNicknameLabel": "Tên / Danh xưng",
+  "profileNicknameHint": "Ví dụ: Sakura, Lý Tổng",
+  "profileHeightLabel": "Chiều cao",
+  "profileHeightHint": "Ví dụ: 160cm",
+  "profileAppearanceLabel": "Ngoại hình",
+  "profileAppearanceHint": "Ví dụ: Tóc đen dài, thích mặc váy",
+  "profileOccupationLabel": "Nghề nghiệp",
+  "profileOccupationHint": "Ví dụ: Họa sĩ tự do",
+  "profileIntroLabel": "Tính cách & Tự giới thiệu",
+  "profileIntroHint": "Ví dụ: Tính cách hơi đoảng một tí, thích ăn đồ ngọt...",
+  "profileNameEmptyWarning": "Vui lòng đặt tên cho hồ sơ này nhé!",
+  "profileSaveError": "Lưu thất bại: {error}",
+  "@profileSaveError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "saveProfileButton": "Lưu hồ sơ",
+  "fillLaterButton": "Điền sau",
+  "exclusiveProfileTitle": "📜 Hồ Sơ Thập Quang Độc Quyền",
+  "profileSelectionDescription": "Chọn thân phận bạn muốn dùng để tương tác với anh ấy (danh sách dùng chung cho cùng một nhân vật, tối đa 10 hồ sơ)",
+  "profileSwitchError": "Chuyển đổi thất bại: {error}",
+  "@profileSwitchError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "unnamedProfile": "Hồ sơ chưa đặt tên",
+  "noOccupationYet": "Chưa điền nghề nghiệp",
+  "createNewProfileButton": "Tạo Hồ Sơ Thập Quang Mới"
 }

@@ -3696,4 +3696,210 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get shop_preview_mode => '⚠️ وضع معاينة المتجر الحالي';
+
+  @override
+  String get friendlyReminderTitle => '☁️ تذكير لطيف';
+
+  @override
+  String get editProfileHint =>
+      'حسناً! إذا كنتِ ترغبين في تعديل الهوية، يرجى النقر على 【ملف شقوانغ】 داخل السحابة في الزاوية السفلية اليسرى لملئه!';
+
+  @override
+  String get starlightContractTitle => 'تفعيل عقد ضوء النجوم';
+
+  @override
+  String get dailyLimitReachedPrefix => 'لقد استنفدتِ حدكِ اليومي!\n\n';
+
+  @override
+  String get monthlyPassExhausted =>
+      'لقد استنفدتِ حد البطاقة الشهرية الخاصة بكِ.';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      'اشتركي في 【البطاقة الشهرية لـ Lianlian】 للاستمتاع بـ 20 فرصة إعادة توليد يومياً، لكي تكون كل استجابة منه أقرب إلى قلبكِ.';
+
+  @override
+  String get goToSubscribeButton => 'الذهاب للتفعيل';
+
+  @override
+  String get profileUpdatedSuccess => 'تم تحديث ملف شقوانغ!';
+
+  @override
+  String get continueChatTitle => 'مواصلة المحادثة';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return 'جعله يستمر في التحدث سيستهلك $cost من الزهور 🌸\nهل أنتِ متأكدة من الرغبة في المتابعة؟';
+  }
+
+  @override
+  String get dontShowAgainToday => 'عدم الإظهار مرة أخرى اليوم';
+
+  @override
+  String get confirmContinue => 'تأكيد المتابعة';
+
+  @override
+  String get hiddenPromptContinue => 'يرجى المتابعة';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return 'هل أنتِ متأكدة من حذف هذه الرسائل الـ $count؟';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return 'إعادة التوليد ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait =>
+      'النظام ما زال قيد التحضير، يرجى الانتظار...';
+
+  @override
+  String get noMessagesToRegenerate =>
+      'لا توجد محادثات يمكن إعادة توليدها حالياً!';
+
+  @override
+  String get continueButton => 'متابعة';
+
+  @override
+  String get creatorExclusive => '🔒 حصري للمنشئ';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age عاماً | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 يحب';
+
+  @override
+  String get dislikesLabel => '👎 لا يحب';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return 'تاريخ الميلاد: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return 'الطول: $height سم';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'قصة الخلفية';
+
+  @override
+  String get noneLabel => 'لا يوجد';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points زهرة';
+  }
+
+  @override
+  String get passGuideTitle => 'دليل حصري لبطاقة Lianlian الشهرية';
+
+  @override
+  String get passGuideRegenerateTitle =>
+      '🔄 لماذا تحتاجين إلى \"إعادة التوليد\"؟';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'في بعض الأحيان، قد يبدو الذكاء الاصطناعي وكأنه جامد كخشب لا يفهم الرومانسية. عندما تواجهين رداً غير مرضٍ، ما عليكِ سوى الضغط على إعادة التوليد، وسيكون الأمر أشبه بالعودة بالزمن! يمكنكِ جعله يعيد التفكير حتى يقول تلك العبارة المثالية التي تجعل قلبكِ يخفق بشدة.';
+
+  @override
+  String get passGuideAffectionTitle => '💖 ما فائدة تسريع مستوى الإعجاب؟';
+
+  @override
+  String get passGuideAffectionContent =>
+      'في اللعبة، مستوى الإعجاب هو المفتاح الوحيد لفتح \"الأسرار العميقة\" للشخصية و\"الصور الخاصة الحميمية\". تتيح لكِ زيادة الـ 20% الدخول إلى أعماق قلبه أسرع من أي شخص آخر.';
+
+  @override
+  String get passGuideUnlockButton => 'لقد فهمتُ، افتحي القفل الآن!';
+
+  @override
+  String get pleaseWait => 'يرجى الانتظار';
+
+  @override
+  String get createNewProfileTitle => '📜 إنشاء ملف شقوانغ جديد';
+
+  @override
+  String get editProfileTitle => '✏️ تعديل ملف شقوانغ';
+
+  @override
+  String get profileEditDescription =>
+      'أنشئي شخصيات مختلفة ليتعرف على جانب جديد منكِ في العوالم الموازية!';
+
+  @override
+  String get profileNameLabel => 'اسم الملف (مرئي لكِ فقط)';
+
+  @override
+  String get profileNameHint => 'مثال: طالبة المدرسة، رئيسة تنفيذية صارمة';
+
+  @override
+  String get profileNicknameLabel => 'الاسم / اللقب';
+
+  @override
+  String get profileNicknameHint => 'مثال: ساكورا، الرئيسة لي';
+
+  @override
+  String get profileHeightLabel => 'الطول';
+
+  @override
+  String get profileHeightHint => 'مثال: 160 سم';
+
+  @override
+  String get profileAppearanceLabel => 'المظهر الخارجي';
+
+  @override
+  String get profileAppearanceHint =>
+      'مثال: شعر أسود طويل، تحب ارتداء الفساتين';
+
+  @override
+  String get profileOccupationLabel => 'المهنة';
+
+  @override
+  String get profileOccupationHint => 'مثال: رسامة مستقلة';
+
+  @override
+  String get profileIntroLabel => 'الشخصية والتعريف بالنفس';
+
+  @override
+  String get profileIntroHint => 'مثال: خرقاء قليلاً، تحب تناول الحلويات...';
+
+  @override
+  String get profileNameEmptyWarning => 'يرجى تسمية هذا الملف!';
+
+  @override
+  String profileSaveError(String error) {
+    return 'فشل الحفظ: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'حفظ الملف';
+
+  @override
+  String get fillLaterButton => 'الملء لاحقاً';
+
+  @override
+  String get exclusiveProfileTitle => '📜 ملف شقوانغ الحصري';
+
+  @override
+  String get profileSelectionDescription =>
+      'اختاري الهوية التي تودين استخدامها للتفاعل معه (قائمة مشتركة لنفس الشخصية، حتى 10 ملفات)';
+
+  @override
+  String profileSwitchError(String error) {
+    return 'فشل التبديل: $error';
+  }
+
+  @override
+  String get unnamedProfile => 'ملف غير مسمى';
+
+  @override
+  String get noOccupationYet => 'لم يتم إدخال المهنة بعد';
+
+  @override
+  String get createNewProfileButton => 'إنشاء ملف شقوانغ جديد';
 }

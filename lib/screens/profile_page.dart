@@ -479,7 +479,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         setStateInDialog(() => _isDailyChatClaimed = true);
                         setState(() => _isDailyChatClaimed = true);
                         // 🎁 3. 慢慢去後台發花花
-                        _claimTaskReward('閒話家常', 'dailyChatProgress', 'dailyChatClaimed', 5, () {
+                        _claimTaskReward(l10n.tab_daily_chit_chat, 'dailyChatProgress', 'dailyChatClaimed', 5, () {
                           // 因為前面已經鎖了，這裡的 callback 甚至可以留空
                         });
                       },
@@ -496,7 +496,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         setStateInDialog(() => _isStoryChatClaimed = true); // ⚡ 瞬間鎖門
                         setState(() => _isStoryChatClaimed = true);
 
-                        _claimTaskReward('劇情推進', 'storyChatProgress', 'storyChatClaimed', 5, () {});
+                        _claimTaskReward(l10n.tab_story_progression, 'storyChatProgress', 'storyChatClaimed', 5, () {});
                       },
                     ),
 
@@ -511,7 +511,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         setStateInDialog(() => _isLikeClaimed = true); // ⚡ 瞬間鎖門
                         setState(() => _isLikeClaimed = true);
 
-                        _claimTaskReward('社群巡禮', 'likeProgress', 'likeClaimed', 5, () {});
+                        _claimTaskReward(l10n.tab_social_tour, 'likeProgress', 'likeClaimed', 5, () {});
                       },
                     ),
                     // 🏆 4. ✨✨✨ 第四個獨立任務（星之契約特權）- 全多國語系版 ✨✨✨

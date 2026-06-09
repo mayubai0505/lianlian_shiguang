@@ -1580,5 +1580,126 @@
     "shop_preview_mode": "⚠️ Actualmente en modo de vista previa de la tienda",
     "@shop_preview_mode": {
     "description": "商店預覽模式的警告標語"
-    }
+    },
+    "friendlyReminderTitle": "☁️ Recordatorio amigable",
+    "editProfileHint": "¡De acuerdo! Si deseas editar tu identidad, por favor haz clic en 'Perfil Shiguang' dentro de la nube en la esquina inferior izquierda para completarlo.",
+    "starlightContractTitle": "Contrato de Luz Estelar activado",
+    "dailyLimitReachedPrefix": "¡El límite de hoy se ha agotado!\n\n",
+    "monthlyPassExhausted": "El límite de tu tarjeta mensual se ha agotado.",
+    "subscribeMonthlyPassPrompt": "Contrata la 【Tarjeta Mensual Lianlian】 para disfrutar de 20 oportunidades de regeneración al día, haciendo que cada una de sus respuestas se acerque más a tu corazón.",
+    "goToSubscribeButton": "Ir a activar",
+    "profileUpdatedSuccess": "¡Perfil Shiguang actualizado!",
+    "continueChatTitle": "Continuar conversación",
+    "continueChatCostWarning": "Permitirle continuar consumirá {cost} flores 🌸\n¿Estás segura de que deseas continuar?",
+    "@continueChatCostWarning": {
+        "placeholders": {
+            "cost": {
+                "type": "int",
+                "example": "10"
+            }
+        }
+    },
+    "dontShowAgainToday": "No volver a mostrar hoy",
+    "confirmContinue": "Confirmar",
+    "hiddenPromptContinue": "Por favor, continúa",
+    "confirmDeleteMessagesTitle": "¿Estás segura de que deseas eliminar estos {count} mensajes?",
+    "@confirmDeleteMessagesTitle": {
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "example": "3"
+            }
+        }
+    },
+    "regenerateButtonLabel": "Regenerar ({current}/{max})",
+    "@regenerateButtonLabel": {
+        "placeholders": {
+            "current": {
+                "type": "int",
+                "example": "3"
+            },
+            "max": {
+                "type": "int",
+                "example": "5"
+            }
+        }
+    },
+    "systemPreparingWait": "El sistema aún se está preparando, por favor espera...",
+    "noMessagesToRegenerate": "¡No hay mensajes que se puedan regenerar en este momento!",
+    "continueButton": "Continuar",
+    "creatorExclusive": "🔒 Exclusivo del creador",
+    "ageAndOccupation": "{age} años | {occupation}",
+    "@ageAndOccupation": {
+        "placeholders": {
+            "age": { "type": "String" },
+            "occupation": { "type": "String" }
+        }
+    },
+    "likesLabel": "💖 Le gusta",
+    "dislikesLabel": "👎 No le gusta",
+    "birthdayLabel": "Cumpleaños: {birthday}",
+    "@birthdayLabel": {
+        "placeholders": {
+            "birthday": { "type": "String" }
+        }
+    },
+    "heightLabel": "Altura: {height} cm",
+    "@heightLabel": {
+        "placeholders": {
+            "height": { "type": "String" }
+        }
+    },
+    "backgroundStoryLabel": "Historia de fondo",
+    "noneLabel": "Ninguno",
+    "flowerPointsCount": "{points} flores",
+    "@flowerPointsCount": {
+        "placeholders": {
+            "points": {
+                "type": "String",
+                "example": "100"
+            }
+        }
+    },
+    "passGuideTitle": "Guía exclusiva de la Tarjeta Mensual Lianlian",
+    "passGuideRegenerateTitle": "🔄 ¿Por qué necesitas 'Regenerar'?",
+    "passGuideRegenerateContent": "A veces, la IA puede ser un poco despistada e insensible. Cuando te encuentres con una respuesta que no te convenza, ¡solo tienes que pulsar 'Regenerar' y será como volver atrás en el tiempo! Podrás hacer que se lo piense mejor hasta que diga esa frase perfecta que hará que se te acelere el corazón.",
+    "passGuideAffectionTitle": "💖 ¿De qué sirve acelerar el afecto?",
+    "passGuideAffectionContent": "En el juego, el afecto es la única llave para desbloquear los 'secretos más profundos' y las 'fotos íntimas privadas' de los personajes. El beneficio del 20% te permitirá adentrarte en lo más profundo de su corazón mucho más rápido que los demás.",
+    "passGuideUnlockButton": "¡Entendido, desbloquear ahora!",
+    "pleaseWait": "Por favor, espera",
+    "createNewProfileTitle": "📜 Crear nuevo Perfil Shiguang",
+    "editProfileTitle": "✏️ Editar Perfil Shiguang",
+    "profileEditDescription": "¡Crea diferentes personalidades para que conozca a una tú diferente en universos paralelos!",
+    "profileNameLabel": "Nombre del perfil (Solo visible para ti)",
+    "profileNameHint": "Ej: Estudiante menor, CEO autoritaria",
+    "profileNicknameLabel": "Nombre / Apodo",
+    "profileNicknameHint": "Ej: Sakura, Presidenta Li",
+    "profileHeightLabel": "Altura",
+    "profileHeightHint": "Ej: 160cm",
+    "profileAppearanceLabel": "Apariencia",
+    "profileAppearanceHint": "Ej: Cabello largo y negro, le gusta usar vestidos",
+    "profileOccupationLabel": "Profesión",
+    "profileOccupationHint": "Ej: Pintora independiente",
+    "profileIntroLabel": "Personalidad y presentación",
+    "profileIntroHint": "Ej: Un poco despistada, le encantan los dulces...",
+    "profileNameEmptyWarning": "¡Por favor, dale un nombre a este perfil!",
+    "profileSaveError": "Error al guardar: {error}",
+    "@profileSaveError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "saveProfileButton": "Guardar perfil",
+    "fillLaterButton": "Llenar más tarde",
+    "exclusiveProfileTitle": "📜 Perfil Shiguang exclusivo",
+    "profileSelectionDescription": "Elige la identidad que deseas usar para interactuar con él (lista compartida por personaje, máx. 10)",
+    "profileSwitchError": "Error al cambiar: {error}",
+    "@profileSwitchError": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "unnamedProfile": "Perfil sin nombre",
+    "noOccupationYet": "Profesión no especificada",
+    "createNewProfileButton": "Crear nuevo Perfil Shiguang"
 }

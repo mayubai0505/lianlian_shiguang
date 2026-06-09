@@ -3775,4 +3775,211 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get shop_preview_mode =>
       '⚠️ Actualmente en modo de vista previa de la tienda';
+
+  @override
+  String get friendlyReminderTitle => '☁️ Recordatorio amigable';
+
+  @override
+  String get editProfileHint =>
+      '¡De acuerdo! Si deseas editar tu identidad, por favor haz clic en \'Perfil Shiguang\' dentro de la nube en la esquina inferior izquierda para completarlo.';
+
+  @override
+  String get starlightContractTitle => 'Contrato de Luz Estelar activado';
+
+  @override
+  String get dailyLimitReachedPrefix => '¡El límite de hoy se ha agotado!\n\n';
+
+  @override
+  String get monthlyPassExhausted =>
+      'El límite de tu tarjeta mensual se ha agotado.';
+
+  @override
+  String get subscribeMonthlyPassPrompt =>
+      'Contrata la 【Tarjeta Mensual Lianlian】 para disfrutar de 20 oportunidades de regeneración al día, haciendo que cada una de sus respuestas se acerque más a tu corazón.';
+
+  @override
+  String get goToSubscribeButton => 'Ir a activar';
+
+  @override
+  String get profileUpdatedSuccess => '¡Perfil Shiguang actualizado!';
+
+  @override
+  String get continueChatTitle => 'Continuar conversación';
+
+  @override
+  String continueChatCostWarning(int cost) {
+    return 'Permitirle continuar consumirá $cost flores 🌸\n¿Estás segura de que deseas continuar?';
+  }
+
+  @override
+  String get dontShowAgainToday => 'No volver a mostrar hoy';
+
+  @override
+  String get confirmContinue => 'Confirmar';
+
+  @override
+  String get hiddenPromptContinue => 'Por favor, continúa';
+
+  @override
+  String confirmDeleteMessagesTitle(int count) {
+    return '¿Estás segura de que deseas eliminar estos $count mensajes?';
+  }
+
+  @override
+  String regenerateButtonLabel(int current, int max) {
+    return 'Regenerar ($current/$max)';
+  }
+
+  @override
+  String get systemPreparingWait =>
+      'El sistema aún se está preparando, por favor espera...';
+
+  @override
+  String get noMessagesToRegenerate =>
+      '¡No hay mensajes que se puedan regenerar en este momento!';
+
+  @override
+  String get continueButton => 'Continuar';
+
+  @override
+  String get creatorExclusive => '🔒 Exclusivo del creador';
+
+  @override
+  String ageAndOccupation(String age, String occupation) {
+    return '$age años | $occupation';
+  }
+
+  @override
+  String get likesLabel => '💖 Le gusta';
+
+  @override
+  String get dislikesLabel => '👎 No le gusta';
+
+  @override
+  String birthdayLabel(String birthday) {
+    return 'Cumpleaños: $birthday';
+  }
+
+  @override
+  String heightLabel(String height) {
+    return 'Altura: $height cm';
+  }
+
+  @override
+  String get backgroundStoryLabel => 'Historia de fondo';
+
+  @override
+  String get noneLabel => 'Ninguno';
+
+  @override
+  String flowerPointsCount(String points) {
+    return '$points flores';
+  }
+
+  @override
+  String get passGuideTitle => 'Guía exclusiva de la Tarjeta Mensual Lianlian';
+
+  @override
+  String get passGuideRegenerateTitle => '🔄 ¿Por qué necesitas \'Regenerar\'?';
+
+  @override
+  String get passGuideRegenerateContent =>
+      'A veces, la IA puede ser un poco despistada e insensible. Cuando te encuentres con una respuesta que no te convenza, ¡solo tienes que pulsar \'Regenerar\' y será como volver atrás en el tiempo! Podrás hacer que se lo piense mejor hasta que diga esa frase perfecta que hará que se te acelere el corazón.';
+
+  @override
+  String get passGuideAffectionTitle => '💖 ¿De qué sirve acelerar el afecto?';
+
+  @override
+  String get passGuideAffectionContent =>
+      'En el juego, el afecto es la única llave para desbloquear los \'secretos más profundos\' y las \'fotos íntimas privadas\' de los personajes. El beneficio del 20% te permitirá adentrarte en lo más profundo de su corazón mucho más rápido que los demás.';
+
+  @override
+  String get passGuideUnlockButton => '¡Entendido, desbloquear ahora!';
+
+  @override
+  String get pleaseWait => 'Por favor, espera';
+
+  @override
+  String get createNewProfileTitle => '📜 Crear nuevo Perfil Shiguang';
+
+  @override
+  String get editProfileTitle => '✏️ Editar Perfil Shiguang';
+
+  @override
+  String get profileEditDescription =>
+      '¡Crea diferentes personalidades para que conozca a una tú diferente en universos paralelos!';
+
+  @override
+  String get profileNameLabel => 'Nombre del perfil (Solo visible para ti)';
+
+  @override
+  String get profileNameHint => 'Ej: Estudiante menor, CEO autoritaria';
+
+  @override
+  String get profileNicknameLabel => 'Nombre / Apodo';
+
+  @override
+  String get profileNicknameHint => 'Ej: Sakura, Presidenta Li';
+
+  @override
+  String get profileHeightLabel => 'Altura';
+
+  @override
+  String get profileHeightHint => 'Ej: 160cm';
+
+  @override
+  String get profileAppearanceLabel => 'Apariencia';
+
+  @override
+  String get profileAppearanceHint =>
+      'Ej: Cabello largo y negro, le gusta usar vestidos';
+
+  @override
+  String get profileOccupationLabel => 'Profesión';
+
+  @override
+  String get profileOccupationHint => 'Ej: Pintora independiente';
+
+  @override
+  String get profileIntroLabel => 'Personalidad y presentación';
+
+  @override
+  String get profileIntroHint =>
+      'Ej: Un poco despistada, le encantan los dulces...';
+
+  @override
+  String get profileNameEmptyWarning =>
+      '¡Por favor, dale un nombre a este perfil!';
+
+  @override
+  String profileSaveError(String error) {
+    return 'Error al guardar: $error';
+  }
+
+  @override
+  String get saveProfileButton => 'Guardar perfil';
+
+  @override
+  String get fillLaterButton => 'Llenar más tarde';
+
+  @override
+  String get exclusiveProfileTitle => '📜 Perfil Shiguang exclusivo';
+
+  @override
+  String get profileSelectionDescription =>
+      'Elige la identidad que deseas usar para interactuar con él (lista compartida por personaje, máx. 10)';
+
+  @override
+  String profileSwitchError(String error) {
+    return 'Error al cambiar: $error';
+  }
+
+  @override
+  String get unnamedProfile => 'Perfil sin nombre';
+
+  @override
+  String get noOccupationYet => 'Profesión no especificada';
+
+  @override
+  String get createNewProfileButton => 'Crear nuevo Perfil Shiguang';
 }
