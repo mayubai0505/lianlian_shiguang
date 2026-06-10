@@ -2350,6 +2350,17 @@ class _ChatPageState extends State<ChatPage> {
       }
 
       // --- B. 寫入用戶訊息到 Firestore ---
+      // 🌟🌟🌟 總裁微創手術 1：按下去的瞬間，立刻亮起打字燈號！零延遲！
+      generatingRooms.add(widget.character.id);
+      setState(() {
+        _isGenerating = true;
+      });
+
+      // 🌟🌟🌟 總裁微創手術 2：強制畫面滾動到底部，確保玩家一定能看到男主的「...」！
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // 請確認您原本用來滾動的函式名稱是不是這個，如果叫其他名字 (如 _scrollController.animateTo) 請替換掉
+        _scrollToBottom();
+      });
       // 🛡️ 防彈版：只要有集合存在，就直接寫入資料庫
       if (showInChat) {
       if (_messagesCollection != null) {
@@ -2692,6 +2703,20 @@ class _ChatPageState extends State<ChatPage> {
       });
     } catch (e) {
       debugPrint('⚠️ 記憶捕捉呼叫失敗: $e');
+    }
+  }
+
+  // ==========================================
+  // 🌟 總裁專屬小工具：強制畫面滾動到底部 (完美適配版)
+  // ==========================================
+  void _scrollToBottom() {
+    // 確保控制器有綁定到畫面上的 ListView，避免報錯
+    if (_chatScrollController.hasClients) {
+      _chatScrollController.animateTo(
+        0.0, // 因為清單是反向的，所以 0.0 就是最底部！
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
