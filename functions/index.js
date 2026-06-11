@@ -18,7 +18,8 @@ if (admin.apps.length === 0) {
 
 // 🌟 全域變數定義
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
-const ELEVENLABS_API_KEY = "sk_ac547721d8ff700babefd42c96ae76e4eb685ce2d313f87f";
+const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
+const crypto = require("crypto");
 const APP_ID = "lianlianshiguang";
 
 let converter = null;
@@ -38,21 +39,218 @@ const formatTimeDisplay = (date) => {
 
 exports.generateVoice = onRequest({
     region: "asia-east1",
-    memory: "512MiB",
-    secrets: [openRouterApiKey], // 如果有用到 secret 要加上這行
-}, async (req, res) => { // 修正：把最後一個多餘的 async 參數刪掉
-    // 這裡處理 CORS
-    res.set('Access-Control-Allow-Origin', '*');
-    if (req.method === 'OPTIONS') {
-        res.set('Access-Control-Allow-Methods', 'POST');
-        res.set('Access-Control-Allow-Headers', 'Content-Type');
-        return res.status(204).send('');
+    memory: "1GiB",
+    timeoutSeconds: 120,
+    secrets: [elevenLabsApiKey],
+}, async (req, res) => {
+    // CORS
+    res.set("Access-Control-Allow-Origin", "*");
+
+    if (req.method === "OPTIONS") {
+        res.set("Access-Control-Allow-Methods", "POST");
+        res.set("Access-Control-Allow-Headers", "Content-Type");
+        return res.status(204).send("");
     }
 
-    // 當真的需要用到翻譯或轉換時，才在這裡初始化：
-    // if (!converter) converter = OpenCC.Converter({ from: 'cn', to: 'tw' });
+    try {
+        if (req.method !== "POST") {
+            return res.status(405).json({ error: "Method not allowed" });
+        }
 
-    res.status(200).send("Service is running!");
+        const {
+            sessionId,
+            messageId,
+            voiceId,
+            stability = 0.33,
+            style = 0.75,
+        } = req.body || {};
+
+        if (!sessionId || !messageId || !voiceId) {
+            return res.status(400).json({
+                error: "缺少 sessionId、messageId 或 voiceId",
+            });
+        }
+
+        const db = admin.firestore();
+        const bucket = admin.storage().bucket();
+
+        const messageRef = db
+            .collection("artifacts")
+            .doc("lianlianshiguang")
+            .collection("chat_sessions")
+            .doc(sessionId)
+            .collection("messages")
+            .doc(messageId);
+
+        const messageSnap = await messageRef.get();
+
+        if (!messageSnap.exists) {
+            return res.status(404).json({ error: "找不到這則訊息" });
+        }
+
+        const messageData = messageSnap.data();
+
+        // 第一層快取：這則訊息已經有 audioUrl
+        if (messageData.audioUrl) {
+            console.log("🎧 使用 Firestore 既有 audioUrl，不重新生成語音");
+
+            return res.status(200).json({
+                status: "cached",
+                audioUrl: messageData.audioUrl,
+            });
+        }
+
+        let text =
+            messageData.voiceText ||
+            messageData.text ||
+            messageData.content ||
+            "";
+
+        text = cleanVoiceText(text);
+        text = limitVoiceText(text, 260);
+
+        if (!text) {
+            return res.status(400).json({
+                error: "這則訊息沒有可生成語音的文字",
+            });
+        }
+
+        const cacheSource = [
+            voiceId,
+            Number(stability).toFixed(2),
+            Number(style).toFixed(2),
+            text,
+        ].join("|");
+
+        const cacheKey = crypto
+            .createHash("sha256")
+            .update(cacheSource)
+            .digest("hex");
+
+        const filePath = `voice_cache/${voiceId}/${cacheKey}.mp3`;
+        const file = bucket.file(filePath);
+
+        const [exists] = await file.exists();
+
+        // 第二層快取：Storage 已有同聲線、同文字、同參數音檔
+        if (exists) {
+            console.log("🎧 使用 Storage 語音快取，不重新呼叫 ElevenLabs");
+
+            const [metadata] = await file.getMetadata();
+            let token = metadata?.metadata?.firebaseStorageDownloadTokens;
+
+            if (!token) {
+                token = crypto.randomUUID();
+                await file.setMetadata({
+                    metadata: {
+                        firebaseStorageDownloadTokens: token,
+                    },
+                });
+            }
+
+            const audioUrl = createStorageDownloadUrl(
+                bucket.name,
+                filePath,
+                token
+            );
+
+            await messageRef.update({
+                audioUrl,
+                audioPath: filePath,
+                voiceCacheKey: cacheKey,
+                voiceGeneratedAt: admin.firestore.FieldValue.serverTimestamp(),
+                voiceStatus: "cached",
+            });
+
+            return res.status(200).json({
+                status: "cached",
+                audioUrl,
+            });
+        }
+
+        // 走到這裡才真的呼叫 ElevenLabs
+        console.log("🎙️ 呼叫 ElevenLabs 生成新語音");
+
+        const elevenResponse = await fetch(
+            `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=3`,
+            {
+                method: "POST",
+                headers: {
+                    "accept": "audio/mpeg",
+                    "xi-api-key": elevenLabsApiKey.value(),
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    text,
+                    model_id: "eleven_multilingual_v2",
+                    voice_settings: {
+                        stability: Number(stability),
+                        similarity_boost: 0.80,
+                        style: Number(style),
+                        use_speaker_boost: true,
+                    },
+                }),
+            }
+        );
+
+        if (!elevenResponse.ok) {
+            const errorText = await elevenResponse.text();
+
+            console.error(
+                "🚨 ElevenLabs 錯誤:",
+                elevenResponse.status,
+                errorText
+            );
+
+            return res.status(500).json({
+                error: "ElevenLabs 語音生成失敗",
+                detail: errorText,
+            });
+        }
+
+        const audioBuffer = Buffer.from(await elevenResponse.arrayBuffer());
+
+        const token = crypto.randomUUID();
+
+        await file.save(audioBuffer, {
+            metadata: {
+                contentType: "audio/mpeg",
+                metadata: {
+                    firebaseStorageDownloadTokens: token,
+                },
+            },
+        });
+
+        const audioUrl = createStorageDownloadUrl(
+            bucket.name,
+            filePath,
+            token
+        );
+
+        await messageRef.update({
+            audioUrl,
+            audioPath: filePath,
+            voiceCacheKey: cacheKey,
+            voiceTextUsed: text,
+            voiceId,
+            voiceStability: Number(stability),
+            voiceStyle: Number(style),
+            voiceGeneratedAt: admin.firestore.FieldValue.serverTimestamp(),
+            voiceStatus: "generated",
+        });
+
+        return res.status(200).json({
+            status: "generated",
+            audioUrl,
+        });
+
+    } catch (err) {
+        console.error("generateVoice 發生錯誤:", err);
+
+        return res.status(500).json({
+            error: err.message,
+        });
+    }
 });
 
 exports.getAiResponse = onRequest({
@@ -74,11 +272,38 @@ exports.getAiResponse = onRequest({
 
             const body = req.body || {};
             const {
-                characterProfile = {}, sessionId,chatHistory = [], userMessage = "", chatMode = "daily",
-                isBirthdayFreebie = false, userProfile = "未提供", systemDirective = "",
-                aboutMeNotes = [], memos = [], periodStatus = "未知", mood = "一般",
-                lastStoryTime, lastStoryLocation, overrideSystemPrompt = ""
+                characterProfile = {},
+                sessionId,
+                chatHistory = [],
+                userMessage = "",
+                chatMode = "daily",
+                isContinue = false,
+                isBirthdayFreebie = false,
+                userProfile = "未提供",
+                systemDirective = "",
+                aboutMeNotes = [],
+                memos = [],
+                periodStatus = "未知",
+                mood = "一般",
+                lastStoryTime,
+                lastStoryLocation,
+                overrideSystemPrompt = ""
             } = body;
+
+            let finalUserMessage = userMessage;
+
+            if (isContinue === true) {
+                finalUserMessage = `【續寫指令】
+            請從上一則 assistant 回覆的結尾自然接續。
+            不要重新回應玩家上一句輸入。
+            不要重複上一段內容。
+            不要重新打招呼。
+            不要重新開場。
+            保持同一個場景、同一個情緒、同一個角色狀態，直接往下寫。`;
+            }
+
+            console.log("🔁 isContinue:", isContinue);
+            console.log("🔁 finalUserMessage:", finalUserMessage.slice(0, 200));
 
             const modelConfig = {
                 "gemini": { cost: 0, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.7 },
@@ -707,7 +932,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
        `;
 
        // 準備訊息
-       let finalUserMessage = userMessage;
        const checkMsg = userMessage.trim().toLowerCase();
 
        // ✨ 偷天換日 1：隨機開局 (把「玩家」換成 `${playerName}`)
@@ -2062,8 +2286,20 @@ exports.extractUserMemory = onRequest({
             const decodedToken = await admin.auth().verifyIdToken(idToken);
             const userId = decodedToken.uid;
 
-            const { characterId, userMessage } = req.body;
-            if (!characterId || !userMessage) return res.status(400).json({ error: "缺少參數" });
+            const { characterId, userMessage, isContinue = false } = req.body;
+
+            if (!characterId || !userMessage) {
+                return res.status(400).json({ error: "缺少參數" });
+            }
+
+            if (isContinue === true) {
+                console.log("🔁 續寫指令不進入記憶捕捉");
+                return res.status(200).json({
+                    success: true,
+                    memory: null,
+                    skipped: "continue"
+                });
+            }
 
             // 2. 🌟 核心記憶捕捉 Prompt
             const systemPrompt = `

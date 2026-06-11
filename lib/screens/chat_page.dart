@@ -1128,6 +1128,7 @@ class _ChatPageState extends State<ChatPage> {
     String? audioPath,
     String? secretPrompt,
     bool showInChat = true,
+    bool isContinue = false,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     if (_isGenerating || _sessionId == null) return;
@@ -1139,11 +1140,10 @@ class _ChatPageState extends State<ChatPage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('chat_draft_${widget.sessionId}');
 
-    if (_currentMode != ChatMode.gemini) { // 假設 gemini 模式不算進度
-      if (_currentMode == ChatMode.story) { // 如果妳的劇情模式叫做 story
+    if (!isContinue && _currentMode != ChatMode.gemini) {
+      if (_currentMode == ChatMode.story) {
         _increaseTaskProgress('storyChatProgress', 1);
       } else {
-        // 其他當作日常聊天
         _increaseTaskProgress('dailyChatProgress', 3);
       }
     }
@@ -1154,8 +1154,7 @@ class _ChatPageState extends State<ChatPage> {
     dynamic triggeredEgg; // 這裡用 dynamic 或 妳的 EasterEgg 類別
 
     // ✨ 1. 彩蛋雷達掃描 (加入防重複觸發機制！)
-    if (text.isNotEmpty && _currentMode != ChatMode.gemini && secretPrompt == null) {
-      // 假設 _currentCharacter 是從 widget.character 來的
+    if (!isContinue && text.isNotEmpty && _currentMode != ChatMode.gemini && secretPrompt == null) {      // 假設 _currentCharacter 是從 widget.character 來的
       final easterEggs = widget.character?.easterEggs ?? [];
 
       for (var egg in easterEggs) {
@@ -1176,7 +1175,8 @@ class _ChatPageState extends State<ChatPage> {
         imagePath: imagePath,
         audioPath: audioPath,
         secretPrompt: l10n.chat_hidden_event_trigger(triggeredEgg.title, triggeredEgg.setScene),
-        showInChat: showInChat, // 🌟 把開關往下傳
+        showInChat: showInChat,
+        isContinue: isContinue,
       );
 
     } else {
@@ -1186,7 +1186,8 @@ class _ChatPageState extends State<ChatPage> {
         imagePath: imagePath,
         audioPath: audioPath,
         secretPrompt: secretPrompt,
-        showInChat: showInChat, // 🌟 把開關往下傳
+        showInChat: showInChat,
+        isContinue: isContinue,
       );
     }
   }
@@ -1349,7 +1350,11 @@ class _ChatPageState extends State<ChatPage> {
     // 1. 如果玩家今天已經勾選過「不再提示」，就直接發送！
     if (hideDate == todayStr) {
       // 🚀 改用字典檔的隱形指令
-      _sendMessage(text: l10n.hiddenPromptContinue, showInChat: false);
+      _sendMessage(
+        text: l10n.hiddenPromptContinue,
+        showInChat: false,
+        isContinue: true,
+      );
       return;
     }
 
@@ -1441,7 +1446,11 @@ class _ChatPageState extends State<ChatPage> {
                     }
                     Navigator.pop(context); // 關閉彈窗
                     // 🚀 改用字典檔的隱形指令
-                    _sendMessage(text: l10n.hiddenPromptContinue, showInChat: false);
+                    _sendMessage(
+                      text: l10n.hiddenPromptContinue,
+                      showInChat: false,
+                      isContinue: true,
+                    );
                   },
                   child: Text(l10n.confirmContinue), // 💡 拿掉 const
                 ),
@@ -2211,6 +2220,7 @@ class _ChatPageState extends State<ChatPage> {
     String? overridePrompt,
     String? secretPrompt,
     bool showInChat = true,
+    bool isContinue = false,
   }) async {
     // 🌟 1. 身分檢查
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -2459,8 +2469,11 @@ class _ChatPageState extends State<ChatPage> {
         }
       }
 
-      if (!showInChat) {
-        actualChatHistory.insert(0, {"role": "user", "text": userText.trim()});
+      if (!showInChat && !isContinue) {
+        actualChatHistory.add({
+          "role": "user",
+          "text": secretPrompt ?? userText.trim(),
+        });
       }
 
       // --- 喚醒靈魂：讀取玩家記憶與生理期 ---
@@ -2488,16 +2501,21 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       }
-      _triggerMemoryExtraction(userText);
+      if (!isContinue) {
+        _triggerMemoryExtraction(userText);
+      }
       // --- 🚀 D. 呼叫雲端 AI 大腦 ---
       final idToken = await currentUser.getIdToken();
       int currentScore = _currentFriendship;
       String dynamicRelationship = currentScore.relationshipTitle(l10n);
       String dynamicProfile = _buildDynamicUserProfileString();
-
+      final String effectiveUserMessage = isContinue
+          ? l10n.hiddenPromptContinue
+          : userText.trim();
       final Map<String, dynamic> requestBody = {
         "audioUrl": storagePath ?? "",
-        "userMessage": userText.trim(),
+        "userMessage": effectiveUserMessage,
+        "isContinue": isContinue,
         "chatMode": _currentMode?.name ?? "daily",
         "isBirthdayFreebie": isFreeToday,
         "overrideSystemPrompt": overridePrompt ?? "",
