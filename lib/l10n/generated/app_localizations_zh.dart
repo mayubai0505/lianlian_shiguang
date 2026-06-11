@@ -3721,6 +3721,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get createNewProfileButton => '建立新拾光檔案';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return '已將 $characterName 加為好友';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7440,6 +7445,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get createNewProfileButton => '建立新拾光档案';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return '已将 $characterName 加为好友';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11159,4 +11169,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get createNewProfileButton => '建立新拾光檔案';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return '已將 $characterName 加為好友';
+  }
 }

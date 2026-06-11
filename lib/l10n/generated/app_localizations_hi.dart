@@ -3956,4 +3956,9 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get createNewProfileButton => 'नई शिगुआंग प्रोफ़ाइल बनाएं';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return '$characterName को मित्र के रूप में जोड़ा गया है';
+  }
 }

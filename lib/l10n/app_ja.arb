@@ -1701,5 +1701,14 @@
   },
   "unnamedProfile": "未命名のファイル",
   "noOccupationYet": "職業未入力",
-  "createNewProfileButton": "拾光ファイルを新規作成"
+  "createNewProfileButton": "拾光ファイルを新規作成",
+  "snackbar_friend_added": "{characterName} をフレンドに追加しました",
+  "@snackbar_friend_added": {
+    "description": "好友添加成功提示",
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  }
 }

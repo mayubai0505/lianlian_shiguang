@@ -6909,6 +6909,12 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'建立新拾光檔案'**
   String get createNewProfileButton;
+
+  /// 好友添加成功提示
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已將 {characterName} 加為好友'**
+  String snackbar_friend_added(String characterName);
 }
 
 class _AppLocalizationsDelegate

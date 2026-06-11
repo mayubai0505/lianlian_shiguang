@@ -30,6 +30,9 @@ class CharacterProfilePage extends StatefulWidget {
 // ✨ 加上 SingleTickerProviderStateMixin 才能使用 TabController
 class _CharacterProfilePageState extends State<CharacterProfilePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  // ✨ 總裁新增：用來控制「加好友」狀態與讀取動畫
+  bool _isFriend = false;
+  bool _isFriendLoading = false;
   bool _hasLiked = false;
   bool _isNavigating = false;
   bool _isFollowing = false; // 放在 State 類別的最上方
@@ -76,6 +79,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         _fetchCurrentPlayerName();
         _autoRecordEncounter();
         _checkIfLiked();
+        _checkIfFriend();
         _migrateLegacyAffection(); // 啟動搬家小精靈
       }
     });
@@ -194,6 +198,108 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     }
   }
 
+  // ==========================================
+  // 🫂 總裁新增：好友/聯絡人系統邏輯
+  // ==========================================
+
+  // ✨ 1. 檢查是否已經是好友
+  Future<void> _checkIfFriend() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      // 💡 總裁提醒：請將 'added_friends' 換成妳實際存好友的集合名稱！
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('friends') // 👈 這裡！
+          .doc(widget.character.id)
+          .get();
+
+      if (doc.exists && mounted) {
+        setState(() {
+          _isFriend = true; // 已經加過了，點亮按鈕！
+        });
+      }
+    } catch (e) {
+      print("檢查好友狀態失敗: $e");
+    }
+  }
+
+  // ✨ 2. 按鈕點擊：切換好友狀態 (新增/移除)
+  Future<void> _toggleFriendStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
+    if (user == null) return;
+
+    // 啟動按鈕的轉圈圈動畫，防止玩家連點
+    setState(() => _isFriendLoading = true);
+
+    try {
+      // 💡 總裁提醒：一樣要注意這裡的集合名稱！
+      final friendRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('friends') // 👈 這裡！
+          .doc(widget.character.id);
+
+      if (_isFriend) {
+        // ❌ 原本是好友 -> 執行刪除
+        try {
+          // 1. 執行刪除指令
+          await friendRef.delete();
+
+          // 2. 只有在刪除成功後，才更新 UI 與提示
+          if (mounted) {
+            setState(() {
+              _isFriend = false; // 按鈕變回「加好友」狀態
+            });
+
+            ToastUtils.showCenterToast(
+              context,
+              l10n.snackbar_friend_removed(widget.character.name), // 確保妳的 l10n 檔案裡有定義這個 Key
+              customIcon: Icons.person_remove_rounded,
+            );
+          }
+        } catch (e) {
+          // 3. 🛡️ 防禦工事：如果資料庫刪除失敗，優雅地報錯，不讓玩家誤以為刪成功了
+          print("❌ 刪除好友失敗: $e");
+          if (mounted) {
+            ToastUtils.showCenterToast(
+              context,
+              "刪除失敗，請檢查網路後再試", // 這裡可以用 l10n.common_delete_failed
+              isError: true,
+            );
+          }
+        }
+      }else {
+        // 💖 原本不是好友 -> 執行新增
+        await friendRef.set({
+          'characterId': widget.character.id,
+          'characterName': widget.character.name, // 順便存個名字，以後列表好讀取
+          'addedAt': FieldValue.serverTimestamp(),
+        });
+        if (mounted) {
+          setState(() => _isFriend = true);
+          ToastUtils.showCenterToast(
+            context,
+            l10n.snackbar_friend_added(widget.character.name),
+            customIcon: Icons.person_add_alt_1_rounded,
+          );
+        }
+      }
+    } catch (e) {
+      print("切換好友狀態失敗: $e");
+      if (mounted) {
+        ToastUtils.showCenterToast(context, '操作失敗，請稍後再試', isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isFriendLoading = false); // 關閉轉圈圈
+      }
+    }
+  }
+
   Future<void> _migrateLegacyAffection() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -212,8 +318,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     if (!mounted) return;
     // 💡 如果已經有分數（大於 0），我們就不動它
     if (globalDoc.exists && (globalDoc.data()?['affection'] ?? 0) > 0) return;
-
-    print("🕵️‍♀️ 正在為總裁掃描舊房間的高分紀錄...");
 
     // 2. 去所有房間找這個角色的最高分
     final sessionsSnapshot = await FirebaseFirestore.instance
@@ -1379,6 +1483,41 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   Text(l10n.dislike_label, style: TextStyle(
                       color: Colors.blueGrey, fontWeight: FontWeight.bold))
                 ]),
+              ),
+            ),
+            const Spacer(), // ✨ 把加好友按鈕推到畫面的最右邊！
+
+            // 🫂 總裁新增：加好友按鈕
+            InkWell(
+              onTap: _isFriendLoading ? null : _toggleFriendStatus,
+              // ✨ 秘訣：數值調到 50，確保按鈕永遠是完美的橢圓膠囊形狀
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _isFriend ? theme.colorScheme.surfaceVariant.withValues(alpha:0.8) : theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(50), // ✨ 這裡也要改成 50
+                ),
+                child: _isFriendLoading
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    : Row(
+                  children: [
+                    Icon(
+                      // ✨ 替換圖示：已添加顯示「打勾」，未添加顯示「加號」
+                      _isFriend ? Icons.check_rounded : Icons.add_rounded,
+                      size: 20,
+                      color: _isFriend ? Colors.grey : theme.colorScheme.onPrimaryContainer,
+                    ),
+                    const SizedBox(width: 4), // 稍微縮減間距，讓膠囊內的元素更緊湊好看
+                    Text(
+                      l10n.tab_friends, // ✨ 無論狀態為何，通通只顯示「好友」兩個字
+                      style: TextStyle(
+                        color: _isFriend ? Colors.grey : theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

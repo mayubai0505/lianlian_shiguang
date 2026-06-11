@@ -1839,5 +1839,14 @@
   },
   "unnamedProfile": "未命名檔案",
   "noOccupationYet": "尚未填寫職業",
-  "createNewProfileButton": "建立新拾光檔案"
+  "createNewProfileButton": "建立新拾光檔案",
+  "snackbar_friend_added": "已將 {characterName} 加為好友",
+  "@snackbar_friend_added": {
+    "description": "好友添加成功提示",
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  }
 }

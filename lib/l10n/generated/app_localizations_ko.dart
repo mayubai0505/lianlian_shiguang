@@ -3773,4 +3773,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get createNewProfileButton => '새 시광 프로필 만들기';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return '$characterName 님이 친구로 추가되었습니다';
+  }
 }

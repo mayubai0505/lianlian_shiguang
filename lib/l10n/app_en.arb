@@ -1915,5 +1915,14 @@
   },
   "unnamedProfile": "Unnamed Profile",
   "noOccupationYet": "No occupation filled yet",
-  "createNewProfileButton": "Create New Shiguang Profile"
+  "createNewProfileButton": "Create New Shiguang Profile",
+  "snackbar_friend_added": "{characterName} has been added as a friend",
+  "@snackbar_friend_added": {
+    "description": "好友添加成功提示",
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  }
 }

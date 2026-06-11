@@ -1701,5 +1701,14 @@
     },
     "unnamedProfile": "अनाम प्रोफ़ाइल",
     "noOccupationYet": "अभी तक कोई व्यवसाय नहीं भरा गया",
-    "createNewProfileButton": "नई शिगुआंग प्रोफ़ाइल बनाएं"
+    "createNewProfileButton": "नई शिगुआंग प्रोफ़ाइल बनाएं",
+    "snackbar_friend_added": "{characterName} को मित्र के रूप में जोड़ा गया है",
+    "@snackbar_friend_added": {
+        "description": "好友添加成功提示",
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    }
 }

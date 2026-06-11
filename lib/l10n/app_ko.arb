@@ -1700,5 +1700,14 @@
   },
   "unnamedProfile": "이름 없는 프로필",
   "noOccupationYet": "직업 미작성",
-  "createNewProfileButton": "새 시광 프로필 만들기"
+  "createNewProfileButton": "새 시광 프로필 만들기",
+  "snackbar_friend_added": "{characterName} 님이 친구로 추가되었습니다",
+  "@snackbar_friend_added": {
+    "description": "好友添加成功提示",
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -3902,4 +3902,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get createNewProfileButton => 'إنشاء ملف شقوانغ جديد';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return 'تمت إضافة $characterName إلى الأصدقاء';
+  }
 }

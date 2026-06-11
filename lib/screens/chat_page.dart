@@ -1132,7 +1132,11 @@ class _ChatPageState extends State<ChatPage> {
   }) async {
     final l10n = AppLocalizations.of(context)!;
     if (_isGenerating || _sessionId == null) return;
-    if (text.trim().isEmpty && imagePath == null && audioPath == null && secretPrompt == null) return;
+
+    setState(() {
+      _isGenerating = true;
+    });
+    generatingRooms.add(widget.character.id);    if (text.trim().isEmpty && imagePath == null && audioPath == null && secretPrompt == null) return;
 
     // 發送後清空輸入框
     _textController.clear();
@@ -2142,6 +2146,9 @@ class _ChatPageState extends State<ChatPage> {
       print("抓取自訂背景失敗: $e");
     }
 
+    final finalBg = customBgUrl ?? widget.character.avatarPath;
+    print("🌟 準備傳進 CallOverlay 的背景圖片是: $finalBg");
+
 // 🌟 2. 拿到網址後，再打開通話畫面
     if (mounted) {
       await Navigator.push(
@@ -2559,7 +2566,7 @@ class _ChatPageState extends State<ChatPage> {
           const Duration(seconds: 90), // ⏳ 總裁級防護：最多只等 15 秒！
           onTimeout: () {
             // 超時的話，丟出一個特製的 TimeoutException
-            throw TimeoutException('AI 思考太久了');
+            throw TimeoutException('他思考太久了');
           },
         );
       } catch (e) {
@@ -2674,7 +2681,32 @@ class _ChatPageState extends State<ChatPage> {
             _showCenterToast(l10n.error_system_busy, isError: true);
           }
         }
+      } else if (response.statusCode == 400) {
+        // 🛑 退款防護網啟動：攔截到 400 錯誤！
+        generatingRooms.remove(widget.character.id);
+
+        if (mounted) {
+          setState(() => _isGenerating = false);
+
+          try {
+            final errorData = jsonDecode(utf8.decode(response.bodyBytes));
+
+            if (errorData['error'] == 'CENSORED') {
+              // 🛡️ 觸發道德審查：用輕量 Toast 顯示男神害羞提示，絕對不扣花花！
+              // 這裡 isError 設為 false 或 true 看妳的 Toast 樣式設計，通常用個溫和的顏色
+              _showCenterToast(errorData['message'] ?? '男神的思緒被干擾了，請換個溫和的說法喔！', isError: false);
+
+            } else {
+              // 其他一般的 400 錯誤（例如缺少參數）
+              _showCenterToast(errorData['message'] ?? l10n.error_system_busy, isError: true);
+            }
+          } catch (e) {
+            _showCenterToast(l10n.error_system_confusion, isError: true);
+          }
+        }
       } else {
+        // 其他狀態碼 (例如 500) 或網路異常
+        generatingRooms.remove(widget.character.id);
         if (mounted) {
           setState(() => _isGenerating = false);
           // ✨ 總裁級：網路或傳送異常，輕量錯誤提示

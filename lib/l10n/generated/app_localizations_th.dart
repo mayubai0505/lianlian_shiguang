@@ -3905,4 +3905,9 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get createNewProfileButton => 'สร้างโปรไฟล์สือกวางใหม่';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return 'เพิ่ม $characterName เป็นเพื่อนเรียบร้อยแล้ว';
+  }
 }

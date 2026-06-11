@@ -3756,4 +3756,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get createNewProfileButton => '拾光ファイルを新規作成';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return '$characterName をフレンドに追加しました';
+  }
 }

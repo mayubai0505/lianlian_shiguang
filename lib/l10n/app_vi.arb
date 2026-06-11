@@ -1701,5 +1701,14 @@
   },
   "unnamedProfile": "Hồ sơ chưa đặt tên",
   "noOccupationYet": "Chưa điền nghề nghiệp",
-  "createNewProfileButton": "Tạo Hồ Sơ Thập Quang Mới"
+  "createNewProfileButton": "Tạo Hồ Sơ Thập Quang Mới",
+  "snackbar_friend_added": "Đã thêm {characterName} vào danh sách bạn bè",
+  "@snackbar_friend_added": {
+    "description": "好友添加成功提示",
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  }
 }

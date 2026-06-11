@@ -1742,5 +1742,14 @@
     },
     "unnamedProfile": "ملف غير مسمى",
     "noOccupationYet": "لم يتم إدخال المهنة بعد",
-    "createNewProfileButton": "إنشاء ملف شقوانغ جديد"
+    "createNewProfileButton": "إنشاء ملف شقوانغ جديد",
+    "snackbar_friend_added": "تمت إضافة {characterName} إلى الأصدقاء",
+    "@snackbar_friend_added": {
+        "description": "好友添加成功提示",
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    }
 }

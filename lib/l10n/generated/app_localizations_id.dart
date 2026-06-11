@@ -3955,4 +3955,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get createNewProfileButton => 'Buat Profil Shiguang Baru';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return '$characterName telah ditambahkan sebagai teman';
+  }
 }

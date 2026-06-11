@@ -1700,5 +1700,14 @@
     },
     "unnamedProfile": "Profil Tanpa Nama",
     "noOccupationYet": "Belum mengisi pekerjaan",
-    "createNewProfileButton": "Buat Profil Shiguang Baru"
+    "createNewProfileButton": "Buat Profil Shiguang Baru",
+    "snackbar_friend_added": "{characterName} telah ditambahkan sebagai teman",
+    "@snackbar_friend_added": {
+        "description": "好友添加成功提示",
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    }
 }

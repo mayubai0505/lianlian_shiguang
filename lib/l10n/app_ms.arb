@@ -1701,5 +1701,14 @@
     },
     "unnamedProfile": "Profil Tanpa Nama",
     "noOccupationYet": "Belum mengisi pekerjaan",
-    "createNewProfileButton": "Bina Profil Shiguang Baharu"
+    "createNewProfileButton": "Bina Profil Shiguang Baharu",
+    "snackbar_friend_added": "{characterName} telah ditambah sebagai rakan",
+    "@snackbar_friend_added": {
+        "description": "好友添加成功提示",
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    }
 }

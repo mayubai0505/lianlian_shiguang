@@ -3955,4 +3955,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get createNewProfileButton => 'Tạo Hồ Sơ Thập Quang Mới';
+
+  @override
+  String snackbar_friend_added(String characterName) {
+    return 'Đã thêm $characterName vào danh sách bạn bè';
+  }
 }

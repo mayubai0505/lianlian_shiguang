@@ -14,8 +14,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+
 
 // 通話介面
 
@@ -47,8 +46,6 @@ class _CallOverlayState extends State<CallOverlay> {
   StreamSubscription<QuerySnapshot>? _replySubscription;
   late stt.SpeechToText _speech;
   bool _isListening = false;
-
-  // ✨ 巧妙修改：改成 String?，不用在 initState 寫死中文
   String? _sttText;
 
   List<Map<String, String>> _callHistory = [];
@@ -58,13 +55,13 @@ class _CallOverlayState extends State<CallOverlay> {
   Timer? _timer;
   bool _isPlayerInitialized = false;
 
-  Future<void> _initAudioPlayer() async {
-    _audioPlayer = AudioPlayer();
-    _isPlayerInitialized = true;
-    debugPrint("✅ AudioPlayer 換心成功！");
-  }
+  // 🌟 串流與音訊排隊專用變數
+  final List<String> _audioPlaybackQueue = []; // 音訊網址排隊長龍
+  bool _isAudioQueuePlaying = false;           // 檢查目前是不是正在播佇列音訊
+  String _streamTextBuffer = "";               // 文字碎布緩衝區
+  http.Client? _streamingHttpClient;           // 方便隨時中斷的 HTTP 客戶端
 
-  late ImageProvider _callBackgroundImage;
+  ImageProvider? _callBackgroundImage;
   bool _isChatMode = false;
   final TextEditingController _chatController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -78,7 +75,6 @@ class _CallOverlayState extends State<CallOverlay> {
     globalActiveCharacterId = widget.character.id;
     _setBackground();
 
-    // 因為這兩個函數裡面會用到 l10n，我們用 Future.microtask 確保畫面準備好再執行
     Future.microtask(() {
       if (mounted) {
         _startFirstGreeting();
@@ -87,38 +83,91 @@ class _CallOverlayState extends State<CallOverlay> {
     });
   }
 
-  void _setBackground() async {
-    String? targetUrl = widget.selectedBackgroundUrl;
-    if (targetUrl != null && targetUrl.isNotEmpty) {
-      if (targetUrl.startsWith('gs://')) {
-        try {
-          targetUrl = await FirebaseStorage.instance.refFromURL(targetUrl).getDownloadURL();
-        } catch (e) {
-          targetUrl = null;
-        }
-      }
+  Future<void> _initAudioPlayer() async {
+    _audioPlayer = AudioPlayer();
+    _isPlayerInitialized = true;
+    debugPrint("✅ AudioPlayer 換心成功！");
+  }
+
+  @override
+  void dispose() {
+    _streamingHttpClient?.close(); // 🌟 挂斷電話時，光速打斷正在下載的文字串流
+    _timer?.cancel();
+    _chatController.dispose();
+    _scrollController.dispose();
+    _audioPlayer.stop();
+    if (_isPlayerInitialized) {
+      _audioPlayer.dispose();
+      _isPlayerInitialized = false;
     }
+    globalActiveCharacterId = null;
+    _replySubscription?.cancel();
+    super.dispose();
+  }
+
+  // ==================== 🖼️ 背景圖片處理中樞 ====================
+
+  Future<String?> _validateImageUrl(String? rawUrl) async {
+    if (rawUrl == null || rawUrl.trim().isEmpty) return null;
+    String targetUrl = rawUrl.trim();
+
+    try {
+      if (targetUrl.startsWith('/')) {
+        targetUrl = await FirebaseStorage.instance.ref(targetUrl).getDownloadURL();
+      } else if (targetUrl.startsWith('gs://')) {
+        targetUrl = await FirebaseStorage.instance.refFromURL(targetUrl).getDownloadURL();
+      }
+
+      final uri = Uri.tryParse(targetUrl);
+      if (uri == null || !targetUrl.startsWith('http')) return null;
+
+      final response = await http.head(uri).timeout(const Duration(seconds: 5));
+      if (response.statusCode >= 200 && response.statusCode < 400) {
+        return targetUrl;
+      }
+      return null;
+    } catch (e) {
+      debugPrint("☎️ 通畫圖片檢查失敗：$e");
+      return null;
+    }
+  }
+
+  void _setBackground() async {
+    final bgUrl = widget.selectedBackgroundUrl;
+    final avatarUrl = widget.character.avatarPath;
+
+    Future<ImageProvider?> resolveImage(String? url) async {
+      if (url == null || url.trim().isEmpty) return null;
+      if (url.startsWith('http') || url.startsWith('gs://') || url.startsWith('/')) {
+        final validUrl = await _validateImageUrl(url);
+        if (validUrl != null) return CachedNetworkImageProvider(validUrl);
+      } else if (url.startsWith('assets/')) {
+        return AssetImage(url);
+      }
+      return null;
+    }
+
+    ImageProvider? finalProvider = await resolveImage(bgUrl);
+    if (finalProvider == null) {
+      finalProvider = await resolveImage(avatarUrl);
+    }
+
     if (mounted) {
       setState(() {
-        if (targetUrl != null && targetUrl.isNotEmpty) {
-          _callBackgroundImage = CachedNetworkImageProvider(targetUrl);
-        } else {
-          _callBackgroundImage = const AssetImage('assets/images/default_avatar.png');
-        }
+        _callBackgroundImage = finalProvider;
       });
     }
   }
+
+  // ==================== ⏱️ 通話計時器中樞 ====================
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_timeElapsed < _maxCallTime) {
         if (mounted) setState(() => _timeElapsed++);
-
-        // ✨ 關鍵邏輯：在第 50 秒觸發溫柔道別 (還剩 10 秒時)
         if (_timeElapsed == 50) {
           _playGentleHangupVoice();
         }
-
       } else {
         _handleTimeUp();
       }
@@ -126,12 +175,12 @@ class _CallOverlayState extends State<CallOverlay> {
   }
 
   void _handleTimeUp() {
-    final l10n = AppLocalizations.of(context)!; // ✨ 取得翻譯
+    final l10n = AppLocalizations.of(context)!;
     _timer?.cancel();
     if (_isListening) _speech.stop();
 
     setState(() {
-      _inCallMessages.add({'isSystem': true, 'text': l10n.call_ended}); // ✨ 替換：通話已結束
+      _inCallMessages.add({'isSystem': true, 'text': l10n.call_ended});
     });
 
     _scrollToBottom();
@@ -144,11 +193,210 @@ class _CallOverlayState extends State<CallOverlay> {
     _timer?.cancel();
     if (_isListening) _speech.stop();
     _audioPlayer.stop();
+    _streamingHttpClient?.close();
     widget.onCallEnded(_timeElapsed, _inCallMessages);
   }
 
+  // ==================== 🚀 核心秒回串流管線 (Streaming Pipeline) ====================
+
+  Future<void> _startCallStreamingPipeline(String userText, {bool isFirstGreeting = false}) async {
+    try {
+      final l10n = AppLocalizations.of(context)!;
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      final idToken = await currentUser.getIdToken();
+
+      // 清空上一輪的殘留緩衝與排隊
+      _streamTextBuffer = "";
+      _audioPlaybackQueue.clear();
+      _streamingHttpClient?.close();
+      _streamingHttpClient = http.Client();
+
+      // 🧠 終極洗腦口語化 Prompt 系統
+      String callOverridePrompt = """
+【通話模式最高準則】
+你現在正與玩家進行「實時語音通話」。請完全沉浸於角色設定 [characterProfile] 中，並嚴格遵守以下對話規範：
+
+1. 【絕對口語與極短】：每句話嚴格控制在 10~25 個字以內！絕對禁止長篇大論、禁止像在寫作文。像真人講電話一樣，一次只說一兩句就停頓。
+2. 【消除機器人感（關鍵）】：請在句子中自然加入人類講電話的習慣與語氣。適當加入短暫的停頓「...」、或微弱的口語猶豫詞（如：呃、那個、唔...）。這對語音生成表現力至關重要。
+3. 【語氣與人設】：完全遵守 [toneAndStyle]。
+   - 如果人設高冷，禁止使用任何語尾助動詞，語氣簡短冰冷，以「。」結尾。
+   - 如果人設溫柔或陽光，請自然使用助詞（如：啦、喔、呢），多用「？」結尾來引導語音引擎產生自然的尾音上揚。
+4. 【格式規範】：絕對禁止輸出任何表情符號（如 😊, 😭）。
+""";
+
+      callOverridePrompt += """
+\n⚠️ 【語言強制覆寫】：
+玩家目前選擇的對話語言是：「${widget.selectedLanguage}」。
+請你「完全且只使用」${widget.selectedLanguage} 來思考與回答。
+即使玩家用中文跟你說話，你也必須用 ${widget.selectedLanguage} 回應，並維持角色個性。
+\n⚠️ 【雙語字幕模式（極度重要）】：
+語音必須使用：「${widget.selectedLanguage}」。
+字幕必須使用：「玩家輸入的語言」（請你自動偵測玩家上一句話是用什麼語言打字的。若為開場白，字幕請預設使用繁體中文）。
+你的回覆「必須」同時包含這兩種語言，並嚴格使用「|」符號隔開！
+格式：[${widget.selectedLanguage}語音台詞] | [玩家輸入語言的字幕台詞]
+絕對禁止破壞此格式，且不要加任何多餘的說明。
+""";
+
+      String greeting = "Wéi";
+      if (widget.selectedLanguage == 'English') greeting = "Hello";
+      if (widget.selectedLanguage == '日本語') greeting = "もしもし";
+      if (widget.selectedLanguage == '한국어') greeting = "여보세요";
+      if (widget.selectedLanguage == 'Tiếng Việt') greeting = "A lô";
+
+      String promptText = userText.trim();
+      if (isFirstGreeting) {
+        promptText = "（玩家剛剛接起了你的電話）";
+        callOverridePrompt += "\n👉 【特別：開場指令】解：必須嚴格遵守以下開場格式：\n$greeting？ + [${widget.selectedLanguage}正文] | 喂？ + [繁體中文正文]";
+      }
+
+      final request = http.Request(
+        'POST',
+        Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/directCallAiStream'),
+      );
+      request.headers['Content-Type'] = 'application/json';
+      request.headers['Authorization'] = 'Bearer $idToken';
+      request.body = jsonEncode({
+        "userMessage": promptText,
+        "history": _callHistory,
+        "chatMode": "call",
+        "overrideSystemPrompt": callOverridePrompt,
+        "characterProfile": {
+          "name": widget.character.name,
+          "toneAndStyle": widget.character.toneAndStyle?.replaceAll('{{玩家名字}}', '玩家') ?? "",
+          "background": widget.character.background?.replaceAll('{{玩家名字}}', '玩家') ?? "",
+          "detailedPersonality": widget.character.detailedPersonality?.replaceAll('{{玩家名字}}', '玩家') ?? "",
+        },
+      });
+
+      // 發送並監聽串流
+      final response = await _streamingHttpClient!.send(request);
+      String fullReplyForHistory = "";
+
+      response.stream.transform(utf8.decoder).listen((textChunk) {
+        fullReplyForHistory += textChunk;
+        _streamTextBuffer += textChunk;
+
+        // 雙語字幕智慧分流：畫面上只向玩家展示後半段的純字幕
+        String displayText = _streamTextBuffer;
+        if (_streamTextBuffer.contains('|')) {
+          displayText = _streamTextBuffer.split('|').last.trim();
+        }
+
+        if (mounted) {
+          setState(() {
+            _sttText = displayText; // 打字機效果流暢更新
+          });
+        }
+
+        // 🎯 正則斷句：一看到標點符號，立刻神速切下來去轉語音
+        final regExp = RegExp(r'([^。！？\n]+[。！？\n])');
+        Iterable<Match> matches = regExp.allMatches(_streamTextBuffer);
+
+        if (matches.isNotEmpty) {
+          for (var match in matches) {
+            String singleSentence = match.group(0)!;
+            _streamTextBuffer = _streamTextBuffer.substring(singleSentence.length);
+
+            // 🔥 送去後端排隊轉語音（此時 AI 還在後方繼續生文字，達成並行！）
+            _processSentenceToVoice(singleSentence);
+          }
+        }
+      }, onDone: () async {
+        // 串流收尾，把最後殘留沒標點符號的尾巴也送去轉語音
+        if (_streamTextBuffer.trim().isNotEmpty) {
+          _processSentenceToVoice(_streamTextBuffer);
+          _streamTextBuffer = "";
+        }
+
+        // 把完整帶有 | 的原文塞入歷史紀錄，讓下一次對話有脈絡
+        if (!isFirstGreeting) {
+          _callHistory.add({"role": "user", "content": promptText});
+        }
+        _callHistory.add({"role": "assistant", "content": fullReplyForHistory});
+
+        if (mounted) {
+          setState(() {
+            _inCallMessages.removeWhere((msg) => msg['text'] == l10n.character_thinking(widget.character.name));
+            _inCallMessages.add({
+              'isMe': false,
+              'isSystem': false,
+              'text': fullReplyForHistory.contains('|') ? fullReplyForHistory.split('|').last.trim() : fullReplyForHistory
+            });
+          });
+          _scrollToBottom();
+        }
+      });
+
+    } catch (e) {
+      debugPrint("串流核心出錯: $e");
+    }
+  }
+
+  // 🌟 後台默默把單句交給全新的 Cloud Function 後端
+  Future<void> _processSentenceToVoice(String sentenceText) async {
+    if (sentenceText.trim().isEmpty) return;
+
+    final url = Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/generateVoice');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "text": sentenceText,
+          "voiceId": widget.character.voiceId,
+          "stability": widget.character.voiceStability ?? 0.40,
+          "style": widget.character.voiceStyle ?? 0.75,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final String audioUrl = data['audioUrl'];
+
+        _audioPlaybackQueue.add(audioUrl);
+        _startQueuePlaybackIfNeeded();
+      }
+    } catch (e) {
+      debugPrint('單句語音排隊生成失敗: $e');
+    }
+  }
+
+  // 🌟 排隊播放核心：一句播完才能播下一句，充滿真人說話的呼吸節奏
+  void _startQueuePlaybackIfNeeded() async {
+    if (_isAudioQueuePlaying || _audioPlaybackQueue.isEmpty) return;
+    _isAudioQueuePlaying = true;
+
+    while (_audioPlaybackQueue.isNotEmpty) {
+      String nextAudioUrl = _audioPlaybackQueue.removeAt(0);
+      if (mounted) {
+        try {
+          await _audioPlayer.play(UrlSource(nextAudioUrl));
+          await _audioPlayer.onPlayerComplete.first; // 🛑 牢牢卡住，播完才放行下一句
+        } catch (e) {
+          debugPrint("播放佇列音訊失敗: $e");
+        }
+      }
+    }
+    _isAudioQueuePlaying = false;
+  }
+
+  // ==================== 🎤 玩家與系統互動事件 ====================
+
+  Future<void> _startFirstGreeting() async {
+    // 播放電話接通的嘟聲特效
+    final sfxPlayer = AudioPlayer();
+    sfxPlayer.play(AssetSource('audio/pickup.mp3'));
+
+    // 🚀 開啟秒回串流管線！
+    await _startCallStreamingPipeline("", isFirstGreeting: true);
+
+    _startTimer();
+  }
+
   void _listen() async {
-    final l10n = AppLocalizations.of(context)!; // ✨ 取得翻譯
+    final l10n = AppLocalizations.of(context)!;
     if (!_isListening) {
       var status = await Permission.microphone.request();
       if (status != PermissionStatus.granted) return;
@@ -161,7 +409,7 @@ class _CallOverlayState extends State<CallOverlay> {
         });
         _speech.listen(
           onResult: (val) => setState(() => _sttText = val.recognizedWords),
-          localeId: 'zh_TW',
+          listenOptions: stt.SpeechListenOptions(localeId: 'zh_TW'),
         );
       }
     } else {
@@ -172,31 +420,11 @@ class _CallOverlayState extends State<CallOverlay> {
       if (textToSend.isEmpty) return;
 
       setState(() {
-        _sttText = l10n.character_thinking(widget.character.name); // ✨ 替換：正在思考...
+        _sttText = l10n.character_thinking(widget.character.name);
       });
 
-      final aiReply = await _fetchAIResponse(textToSend, isFirstGreeting: false);
-      if (mounted) {
-        setState(() {
-          _sttText = aiReply;
-        });
-      }
-      await _generateAndPlayAudio(aiReply);
-    }
-  }
-
-  Future<String?> _uploadVoiceToStorage(Uint8List audioBytes) async {
-    try {
-      final String fileName = "call_rec_${widget.characterId}_${DateTime.now().millisecondsSinceEpoch}.mp3";
-      final storageRef = FirebaseStorage.instance.ref().child('call_recordings').child(widget.characterId).child(fileName);
-      final uploadTask = storageRef.putData(
-        audioBytes,
-        SettableMetadata(contentType: 'audio/mpeg'),
-      );
-      final snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
-    } catch (e) {
-      return null;
+      // 🚀 語音說話：直接丟進串流大管線
+      await _startCallStreamingPipeline(textToSend, isFirstGreeting: false);
     }
   }
 
@@ -211,25 +439,8 @@ class _CallOverlayState extends State<CallOverlay> {
     _chatController.clear();
     _scrollToBottom();
 
-    final aiReplyRaw = await _fetchAIResponse(text, isFirstGreeting: false);
-    if (aiReplyRaw.isEmpty) return;
-
-    String spokenText = aiReplyRaw;
-    String displayText = aiReplyRaw;
-
-    if (aiReplyRaw.contains('|')) {
-      final parts = aiReplyRaw.split('|');
-      spokenText = parts[0].trim();
-      displayText = parts[1].trim();
-    }
-
-    if (mounted) {
-      setState(() {
-        _inCallMessages.add({'isMe': false, 'isSystem': false, 'text': displayText});
-      });
-      _scrollToBottom();
-      await _generateAndPlayAudio(spokenText);
-    }
+    // 🚀 打字發送：一樣丟進串流大管線，讓它秒回
+    await _startCallStreamingPipeline(text, isFirstGreeting: false);
   }
 
   void _listenToRealAIReply() {
@@ -256,240 +467,79 @@ class _CallOverlayState extends State<CallOverlay> {
         if (mounted) {
           final l10n = AppLocalizations.of(context)!;
           setState(() {
-            // ✨ 替換並解決 Bug：自動帶入男主名字，不會再死記程安了！
             _inCallMessages.removeWhere((msg) => msg['text'] == l10n.character_thinking(widget.character.name));
             _inCallMessages.add({'isMe': false, 'isSystem': false, 'text': text});
           });
           _scrollToBottom();
+
+          // 這裡做為降級備用：如果第三方事件觸發了純文字，依舊用舊後台發聲
           _generateAndPlayAudio(text);
         }
       }
     });
   }
 
-  Future<void> _startFirstGreeting() async {
-    final l10n = AppLocalizations.of(context)!; // ✨ 取得翻譯
-    setState(() {
-      _sttText = l10n.character_picking_up(widget.character.name); // ✨ 替換：正在接起電話...
-    });
+  // ==================== 🛠️ 備用與溫柔掛斷 (非串流) ====================
 
-    final aiReplyRaw = await _fetchAIResponse("", isFirstGreeting: true);
-    String spokenText = aiReplyRaw;
-    String displayText = aiReplyRaw;
-
-    if (aiReplyRaw.contains('|')) {
-      final parts = aiReplyRaw.split('|');
-      spokenText = parts[0].trim();
-      displayText = parts[1].trim();
-    }
-
-    final stopwatch = Stopwatch()..start();
-    final sfxPlayer = AudioPlayer();
-    sfxPlayer.play(AssetSource('audio/pickup.mp3'));
-
-
-    int timeLeft = 5000 - stopwatch.elapsedMilliseconds;
-    if (timeLeft > 0) {
-      await Future.delayed(Duration(milliseconds: timeLeft));
-    }
-
-    await _generateAndPlayAudio(spokenText);
-
-    if (mounted) {
-      setState(() {
-        _sttText = displayText;
-      });
-    }
-    _startTimer();
-  }
-
+  // 這裡保留原有的非串流呼叫，專門留給第 50 秒的「溫柔道別機制」使用
   Future<String> _fetchAIResponse(String userText, {bool isFirstGreeting = false}) async {
     try {
-      final l10n = AppLocalizations.of(context)!; // ✨ 取得翻譯
+      final l10n = AppLocalizations.of(context)!;
       final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) return l10n.call_interrupted_login; // ✨ 替換：請先登入喔
-
+      if (currentUser == null) return l10n.call_interrupted_login;
       final idToken = await currentUser.getIdToken();
-
-      // ⚠️ 注意：給 AI 的系統提示詞 (Prompt) 必須保持中文，這樣 AI 才能聽懂指令，不需 l10n！
-      String callOverridePrompt = """
-【通話模式最高準則】
-你現在正在跟玩家「講電話」。請根據傳入的 [characterProfile] 進行表演：
-
-1. 【格式規範】：絕對禁止使用表情符號。句子必須簡短（15~30字），嚴禁長篇大論。
-2. 【語氣引導】：請完全遵守 [toneAndStyle] 定義的性格。
-   - 如果人設是「高冷/嚴肅/禁慾/理智」，請禁止使用語尾助詞。
-   - 如果人設是「陽光/活潑/溫柔」,請根據性格自然使用助詞（如：啦、喔、呢）。
-3. 【節奏感】：善用「...」表現呼吸、停頓或情緒轉折。
-4. 【邏輯防禦】：通話初期嚴禁對玩家的聲音或長相進行具體評價。
-5. 【自然收尾】：語句結束時自然停頓，不需刻意轉折。
-6. 【語調與句型連動（最高指導）】：
-   - 當產生「疑問句」時：句尾必須使用「？」結尾，可適當加入短促的「嗯？」或「對吧？」，以觸發語音引擎的尾音上揚。
-   - 當產生「命令句/祈使句」時：必須使用簡短有力的肯定句並以「。」結尾（例如：「過來。」、「去睡覺。」），以觸發堅定、嚴肅的低沉語音。
-""";
-
-      callOverridePrompt += """
-\n⚠️ 【語言強制覆寫】：
-玩家目前選擇的對話語言是：「${widget.selectedLanguage}」。
-請你「完全且只使用」${widget.selectedLanguage} 來思考與回答。
-即使玩家用中文跟你說話，你也必須用 ${widget.selectedLanguage} 回應，並維持角色個性。
-\n⚠️ 【雙語字幕模式（極度重要）】：
-語音必須使用：「${widget.selectedLanguage}」。
-字幕必須使用：「玩家輸入的語言」（請你自動偵測玩家上一句話是用什麼語言打字的。若為開場白，字幕請預設使用繁體中文）。
-你的回覆「必須」同時包含這兩種語言，並嚴格使用「|」符號隔開！
-格式：[${widget.selectedLanguage}語音台詞] | [玩家輸入語言的字幕台詞]
-例如 (若玩家打韓文，想聽日文)：[日本語] | [한국어]
-絕對禁止破壞此格式，且不要加任何多餘的說明。
-""";
-      String greeting = "Wéi";
-      if (widget.selectedLanguage == 'English') greeting = "Hello";
-      if (widget.selectedLanguage == '日本語') greeting = "もしもし";
-      if (widget.selectedLanguage == '한국어') greeting = "여보세요";
-      if (widget.selectedLanguage == 'Tiếng Việt') greeting = "A lô";
-
-      String promptText = userText.trim();
-
-      if (isFirstGreeting) {
-        promptText = "（玩家剛剛接起了你的電話）";
-        callOverridePrompt += """
-  \n👉 【特別：開場指令】：
-  必須嚴格遵守以下開場格式：
-  $greeting？ + [${widget.selectedLanguage}正文] | 喂？ + [繁體中文正文]
-  """;
-      }
-
-      final Map<String, dynamic> requestBody = {
-        "userMessage": promptText,
-        "history": _callHistory,
-        "chatMode": "call",
-        "overrideSystemPrompt": callOverridePrompt,
-        "characterProfile": {
-          "name": widget.character.name,
-          "toneAndStyle": widget.character.toneAndStyle?.replaceAll('{{玩家名字}}', '玩家') ?? "",
-          "background": widget.character.background?.replaceAll('{{玩家名字}}', '玩家') ?? "",
-          "detailedPersonality": widget.character.detailedPersonality?.replaceAll('{{玩家名字}}', '玩家') ?? "",
-        },
-      };
 
       final response = await http.post(
         Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/directCallAi'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
-        body: jsonEncode(requestBody),
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $idToken'},
+        body: jsonEncode({
+          "userMessage": userText,
+          "history": _callHistory,
+          "chatMode": "call",
+          "characterProfile": {"name": widget.character.name}
+        }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
-        String rawReply = data['reply'] ?? l10n.silence; // ✨ 替換：沈默
-
-        if (rawReply.contains("回覆中")) return "";
-
-        if (!isFirstGreeting) {
-          _callHistory.add({"role": "user", "content": promptText});
-        }
-        _callHistory.add({"role": "assistant", "content": rawReply});
-
-        return rawReply;
-      } else {
-        return l10n.bad_signal; // ✨ 替換：訊號不好
+        return data['reply'] ?? l10n.silence;
       }
+      return l10n.bad_signal;
     } catch (e) {
-      final l10n = AppLocalizations.of(context)!;
-      return l10n.static_noise; // ✨ 替換：沙沙聲聽不清楚
+      return AppLocalizations.of(context)!.static_noise;
     }
   }
 
   Future<void> _generateAndPlayAudio(String text) async {
     if (!_isPlayerInitialized) return;
-
-    final String apiKey = 'sk_ac547721d8ff700babefd42c96ae76e4eb685ce2d313f87f';
     final String? voiceId = widget.character.voiceId;
-
     if (voiceId == null || voiceId.isEmpty) return;
 
-    String cleanAudioText = text.replaceAll(RegExp(r'\(.*?\)|（.*?）|\[.*?\]|【.*?】'), '').trim();
-    cleanAudioText = cleanAudioText.replaceFirst(RegExp(r'^嗯'), 'Hm-m... ');
-    cleanAudioText = cleanAudioText.replaceAll('你', 'nǐ');
-    cleanAudioText = cleanAudioText.replaceAll('妳', 'nǐ');
-    cleanAudioText = cleanAudioText.replaceAll('嗯', ' hm-m? ');
-    cleanAudioText = cleanAudioText.replaceAll('安安', '');
-    cleanAudioText = cleanAudioText.replaceAll('喂', 'Wéi');
-
-    if (cleanAudioText.isEmpty) return;
-
-    final url = Uri.parse('https://api.elevenlabs.io/v1/text-to-speech/$voiceId?optimize_streaming_latency=3');
-
+    final url = Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/generateVoice');
     try {
       final response = await http.post(
         url,
-        headers: {
-          'accept': 'audio/mpeg',
-          'xi-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          "text": cleanAudioText,
-          "model_id": "eleven_multilingual_v2",
-          "voice_settings": {
-            "stability": widget.character.voiceStability ?? 0.33,
-            "similarity_boost": 0.80,
-            "style": widget.character.voiceStyle ?? 0.75,
-            "use_speaker_boost": true
-          }
+          "text": text,
+          "voiceId": voiceId,
+          "stability": widget.character.voiceStability ?? 0.40,
+          "style": widget.character.voiceStyle ?? 0.80,
         }),
       );
-
       if (response.statusCode == 200) {
-        final audioBytes = response.bodyBytes;
-        if (!mounted) return;
-
-        // 🌟 總裁防快取神技：確保每一句通話都是最新鮮的！
-        if (kIsWeb) {
-          await _audioPlayer.play(BytesSource(audioBytes));
-        } else {
-          final directory = await getTemporaryDirectory();
-          // 🔑 加上時間戳記，確保每句話的實體檔名都不同 (例如: call_voice_171746201823.mp3)
-          final String uniqueFileName = 'call_voice_${DateTime.now().millisecondsSinceEpoch}.mp3';
-          final file = File('${directory.path}/$uniqueFileName');
-          await file.writeAsBytes(audioBytes);
-          await _audioPlayer.play(DeviceFileSource(file.path));
-        }
-
-        // 🚨 總裁搶救：幫妳把剛剛不小心刪掉的雲端上傳和畫面更新補回來了！
-        String? cloudUrl = await _uploadVoiceToStorage(audioBytes);
-
-        if (cloudUrl != null && mounted) {
-          setState(() {
-            for (var i = _inCallMessages.length - 1; i >= 0; i--) {
-              if (_inCallMessages[i]['isMe'] == false && _inCallMessages[i]['text'] == text) {
-                _inCallMessages[i]['audioUrl'] = cloudUrl;
-                break;
-              }
-            }
-          });
-        }
-      } // 👈 剛剛就是少了這個括號！
+        final data = jsonDecode(response.body);
+        if (mounted) await _audioPlayer.play(UrlSource(data['audioUrl']));
+      }
     } catch (e) {
-      print('語音處理失敗: $e');
+      debugPrint('備用單次語音播放失敗: $e');
     }
   }
 
-  // 在 _CallOverlayState 內部新增：
-
-// ✨ 新增函數：產生並播放道別台詞
   Future<void> _playGentleHangupVoice() async {
-    // 提示詞指令
     final prompt = "現在通話即將結束，請根據我們剛才的對話與你的人設（${widget.character.toneAndStyle}），用極度溫柔且不捨的語氣，說一句約 10-15 字的結束語。請確保每次說法都有變化，不要與上次重複。";
-
-    // 呼叫 AI 生成
     final goodbyeText = await _fetchAIResponse(prompt, isFirstGreeting: false);
-
-    // 清理格式 (只取語音台詞)
     String spokenGoodbye = goodbyeText.contains('|') ? goodbyeText.split('|')[0].trim() : goodbyeText;
-
-    // 播放
     await _generateAndPlayAudio(spokenGoodbye);
   }
 
@@ -505,20 +555,7 @@ class _CallOverlayState extends State<CallOverlay> {
     });
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _chatController.dispose();
-    _scrollController.dispose();
-    _audioPlayer.stop();
-    if (_isPlayerInitialized) {
-      _audioPlayer.dispose();
-      _isPlayerInitialized = false;
-    }
-    globalActiveCharacterId = null;
-    _replySubscription?.cancel();
-    super.dispose();
-  }
+  // ==================== 🎨 畫面 UI 渲染中樞 ====================
 
   @override
   Widget build(BuildContext context) {
@@ -527,15 +564,19 @@ class _CallOverlayState extends State<CallOverlay> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image(image: _callBackgroundImage, fit: BoxFit.cover),
+          // 1. 底圖或高質感深灰色過場
+          _callBackgroundImage != null
+              ? Image(image: _callBackgroundImage!, fit: BoxFit.cover)
+              : Container(color: const Color(0xFF1E1E1E)),
+
+          // 2. 絲滑毛玻璃濾鏡
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-            child: Container(color: Colors.black.withValues(alpha:0.6)),
+            child: Container(color: Colors.black.withValues(alpha: 0.6)),
           ),
-          if (!_isChatMode)
-            _buildCallUI(context)
-          else
-            _buildInCallChatUI(context),
+
+          // 3. 根據模式切換 UI
+          if (!_isChatMode) _buildCallUI(context) else _buildInCallChatUI(context),
         ],
       ),
     );
@@ -543,7 +584,7 @@ class _CallOverlayState extends State<CallOverlay> {
 
   Widget _buildCallUI(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!; // ✨ 取得翻譯
+    final l10n = AppLocalizations.of(context)!;
     String minutesStr = (_timeElapsed / 60).floor().toString().padLeft(2, '0');
     String secondsStr = (_timeElapsed % 60).toString().padLeft(2, '0');
 
@@ -556,21 +597,24 @@ class _CallOverlayState extends State<CallOverlay> {
               width: 120, height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha:0.4), width: 2),
-                image: DecorationImage(image: _callBackgroundImage, fit: BoxFit.cover),
+                color: Colors.black45,
+                border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 2),
+                image: _callBackgroundImage != null
+                    ? DecorationImage(image: _callBackgroundImage!, fit: BoxFit.cover)
+                    : null,
               ),
             ),
             const SizedBox(height: 20),
             Text(widget.character.name, style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            Text('$minutesStr:$secondsStr', style: TextStyle(color: Colors.white.withValues(alpha:0.9), fontSize: 20, letterSpacing: 2)),
+            Text('$minutesStr:$secondsStr', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 20, letterSpacing: 2)),
             const SizedBox(height: 60),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: Colors.white.withValues(alpha:0.15), borderRadius: BorderRadius.circular(16)),
-                child: Text(_sttText ?? l10n.press_mic_to_speak, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16)), // ✨ 替換：請按下麥克風開始說話
+                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(16)),
+                child: Text(_sttText ?? l10n.press_mic_to_speak, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 40),
@@ -579,7 +623,7 @@ class _CallOverlayState extends State<CallOverlay> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildControlButton(icon: Icons.chat_bubble_rounded, color: Colors.white.withValues(alpha:0.2), onTap: () => setState(() => _isChatMode = true)),
+                  _buildControlButton(icon: Icons.chat_bubble_rounded, color: Colors.white.withValues(alpha: 0.2), onTap: () => setState(() => _isChatMode = true)),
                   GestureDetector(
                     onTapDown: (_) => _listen(),
                     onTapUp: (_) => _listen(),
@@ -589,7 +633,7 @@ class _CallOverlayState extends State<CallOverlay> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: _isListening ? Colors.redAccent : theme.colorScheme.primary,
-                        boxShadow: [if (_isListening) BoxShadow(color: Colors.redAccent.withValues(alpha:0.6), blurRadius: 15, spreadRadius: 5)],
+                        boxShadow: [if (_isListening) BoxShadow(color: Colors.redAccent.withValues(alpha: 0.6), blurRadius: 15, spreadRadius: 5)],
                       ),
                       child: Icon(_isListening ? Icons.mic : Icons.mic_none, color: Colors.white, size: 28),
                     ),
@@ -606,7 +650,7 @@ class _CallOverlayState extends State<CallOverlay> {
 
   Widget _buildInCallChatUI(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!; // ✨ 取得翻譯
+    final l10n = AppLocalizations.of(context)!;
     String minutesStr = (_timeElapsed / 60).floor().toString().padLeft(2, '0');
     String secondsStr = (_timeElapsed % 60).toString().padLeft(2, '0');
 
@@ -621,7 +665,7 @@ class _CallOverlayState extends State<CallOverlay> {
                   icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 32),
                   onPressed: () => setState(() => _isChatMode = false),
                 ),
-                CircleAvatar(radius: 20, backgroundImage: _callBackgroundImage),
+                CircleAvatar(radius: 20, backgroundColor: Colors.black45, backgroundImage: _callBackgroundImage),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -639,7 +683,7 @@ class _CallOverlayState extends State<CallOverlay> {
               ],
             ),
           ),
-          Divider(color: Colors.white.withValues(alpha:0.2), height: 1),
+          Divider(color: Colors.white.withValues(alpha: 0.2), height: 1),
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -664,7 +708,7 @@ class _CallOverlayState extends State<CallOverlay> {
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      color: isMe ? theme.colorScheme.primary : Colors.white.withValues(alpha:0.2),
+                      color: isMe ? theme.colorScheme.primary : Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(msg['text'], style: const TextStyle(color: Colors.white, fontSize: 16)),
@@ -675,7 +719,7 @@ class _CallOverlayState extends State<CallOverlay> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(color: Colors.black.withValues(alpha:0.4)),
+            decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.4)),
             child: Row(
               children: [
                 Expanded(
@@ -683,10 +727,10 @@ class _CallOverlayState extends State<CallOverlay> {
                     controller: _chatController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: l10n.type_message_hint, // ✨ 替換：輸入文字...
-                      hintStyle: TextStyle(color: Colors.white.withValues(alpha:0.5)),
+                      hintText: l10n.type_message_hint,
+                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                       filled: true,
-                      fillColor: Colors.white.withValues(alpha:0.1),
+                      fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     ),

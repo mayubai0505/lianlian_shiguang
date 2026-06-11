@@ -1701,5 +1701,14 @@
     },
     "unnamedProfile": "Perfil sin nombre",
     "noOccupationYet": "Profesión no especificada",
-    "createNewProfileButton": "Crear nuevo Perfil Shiguang"
+    "createNewProfileButton": "Crear nuevo Perfil Shiguang",
+    "snackbar_friend_added": "{characterName} ha sido añadido a tus amigos",
+    "@snackbar_friend_added": {
+        "description": "好友添加成功提示",
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    }
 }

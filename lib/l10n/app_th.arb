@@ -1700,5 +1700,14 @@
     },
     "unnamedProfile": "โปรไฟล์ที่ไม่ได้ตั้งชื่อ",
     "noOccupationYet": "ยังไม่ได้กรอกอาชีพ",
-    "createNewProfileButton": "สร้างโปรไฟล์สือกวางใหม่"
+    "createNewProfileButton": "สร้างโปรไฟล์สือกวางใหม่",
+    "snackbar_friend_added": "เพิ่ม {characterName} เป็นเพื่อนเรียบร้อยแล้ว",
+    "@snackbar_friend_added": {
+        "description": "好友添加成功提示",
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    }
 }

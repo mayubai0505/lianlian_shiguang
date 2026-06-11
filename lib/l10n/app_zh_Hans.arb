@@ -1715,5 +1715,14 @@
   },
   "unnamedProfile": "未命名档案",
   "noOccupationYet": "尚未填写职业",
-  "createNewProfileButton": "建立新拾光档案"
+  "createNewProfileButton": "建立新拾光档案",
+  "snackbar_friend_added": "已将 {characterName} 加为好友",
+  "@snackbar_friend_added": {
+    "description": "好友添加成功提示",
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  }
 }
