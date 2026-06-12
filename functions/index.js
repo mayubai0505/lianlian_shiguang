@@ -17,6 +17,8 @@ if (admin.apps.length === 0) {
 // 🌟 全域變數定義
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
+const deepseekApiKey = defineSecret('DEEPSEEK_API_KEY');
+const geminiApiKey = defineSecret('GEMINI_API_KEY');
 const crypto = require("crypto");
 const APP_ID = "lianlianshiguang";
 
@@ -45,7 +47,7 @@ exports.generateVoice = onRequest({
     region: "asia-east1",
     memory: "1GiB",
     timeoutSeconds: 120,
-    secrets: ["elevenLabsApiKey"], // 確保妳的 Secret 名稱正確
+    secrets: [elevenLabsApiKey], // ✅ 這樣它才會去抓最上面宣告的那個大寫保險箱
 }, async (req, res) => {
     // CORS 設定
     res.set("Access-Control-Allow-Origin", "*");
@@ -161,7 +163,7 @@ exports.generateVoice = onRequest({
 });
 exports.getAiResponse = onRequest({
     region: "asia-east1",
-    secrets: [openRouterApiKey],
+    secrets: [openRouterApiKey, deepseekApiKey, elevenLabsApiKey, geminiApiKey],
     memory: "1GiB",
     timeoutSeconds: 300,
 }, (req, res) => {
@@ -1161,27 +1163,57 @@ function scoreChineseText(str) {
                                                                            // 🔄 總裁的惡鬼催稿迴圈：防爆 + 防亂碼版
                                                                            // ==========================================
                                                                            while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
-                                                                               const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                                                                                   method: "POST",
-                                                                                   headers: {
-                                                                                       "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                                                                                       "Content-Type": "application/json",
-                                                                                   },
-                                                                                   body: JSON.stringify({
-                                                                                       model: config.modelId || "deepseek/deepseek-v4-pro",
-                                                                                       messages: currentMessages,
+                                                                               // 🚄 1. 預設走 OpenRouter 軌道 (給 Gemini 或其他模型用)
+                                                                               let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+                                                                               let apiKey = openRouterApiKey.value();
+                                                                               let targetModel = config.modelId || "deepseek/deepseek-v4-pro";
 
-                                                                                       // ✅ 防爆：限制 token，不讓 immersive 一口氣噴 2500 tokens
-                                                                                       max_tokens:
-                                                                                           config.maxTokens && config.maxTokens > 150
-                                                                                               ? Math.min(config.maxTokens, SAFE_MAX_TOKENS)
-                                                                                               : SAFE_MAX_TOKENS,
+                                                                               // 🚀 2. 智慧轉轍器：只要發現是 DeepSeek，立刻切換到官方軌道！
+                                                                               if (targetModel.includes("deepseek")) {
+                                                                                   console.log("🛤️ 偵測到 DeepSeek 模型，切換至官方直連高鐵！");
+                                                                                   apiUrl = "https://api.deepseek.com/chat/completions";
+                                                                                   apiKey = deepseekApiKey.value();
+                                                                                   targetModel = "deepseek-chat"; // 官方 V3 模型的專屬代號
 
-                                                                                       temperature: config.temperature || 0.7,
-                                                                                       response_format: { type: "json_object" }
-                                                                                   }),
-                                                                                   signal: abortController.signal
-                                                                               });
+                                                                                   // 🚀 強制注入 JSON 醒腦劑：只在第一輪發動，專治 DeepSeek 留白病
+                                                                                   if (loopCount === 0) {
+                                                                                       currentMessages.push({
+                                                                                           role: "system",
+                                                                                           content: `【強制指令】請你務必、絕對只能回傳合法的 JSON 格式。請依照以下格式回傳：\n{\n  "response": "男神的對話與動作描述",\n  "affectionChange": 數字,\n  "voiceText": "男神語音"\n}\n絕對不可以回傳空白或其他的廢話。`
+                                                                                       });
+                                                                                   }
+                                                                               }
+                                                                               else if (targetModel.includes("gemini")) {
+                                                                                           console.log("🛤️ 偵測到 Gemini 模型，切換至 Google 官方直連高鐵！");
+                                                                                           // Google 最新支援的 OpenAI 相容通道，超好用！
+                                                                                           apiUrl = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+                                                                                           apiKey = geminiApiKey.value();
+
+                                                                                           // 把 OpenRouter 格式的 "google/gemini-2.5-flash" 自動切成官方認得的 "gemini-2.5-flash"
+                                                                                           targetModel = targetModel.replace("google/", "");
+                                                                                       }
+                                                                                       // 📦 3. 發送請求 (自動切換 URL、Key 和 Model)
+                                                                                       const response = await fetch(apiUrl, {
+                                                                                           method: "POST",
+                                                                                           headers: {
+                                                                                               "Authorization": `Bearer ${apiKey}`,
+                                                                                               "Content-Type": "application/json",
+                                                                                           },
+                                                                                           body: JSON.stringify({
+                                                                                               model: targetModel,
+                                                                                               messages: currentMessages,
+
+                                                                                               // ✅ 防爆：限制 token，不讓 immersive 一口氣噴 2500 tokens
+                                                                                               max_tokens:
+                                                                                                   config.maxTokens && config.maxTokens > 150
+                                                                                                       ? Math.min(config.maxTokens, SAFE_MAX_TOKENS)
+                                                                                                       : SAFE_MAX_TOKENS,
+
+                                                                                               temperature: config.temperature || 0.7,
+
+                                                                                               ...(loopCount === 0 && { response_format: { type: "json_object" } })                                                                                           }),
+                                                                                           signal: abortController.signal
+                                                                                       });
 
                                                                                const aiResult = await response.json();
 
@@ -1214,35 +1246,62 @@ function scoreChineseText(str) {
                                                                                    );
                                                                                }
 
-                                                                               const rawContent =
-                                                                                   aiResult.choices?.[0]?.message?.content ||
-                                                                                   aiResult.choices?.[0]?.delta?.content ||
-                                                                                   "";
-                                                                               console.log("🧪 RAW OPENROUTER:", rawContent?.slice(0, 500));
+                                                                               // ==========================================
+                                                                                   // 🕵️‍♂️ 抓漏系統：擷取內容與 X光機檢查
+                                                                                   // ==========================================
+                                                                                   let rawContent =
+                                                                                       aiResult.choices?.[0]?.message?.content ||
+                                                                                       aiResult.choices?.[0]?.delta?.content ||
+                                                                                       "";
 
+                                                                                   // 🚨 如果 content 是空的，但明明有花費 tokens，立刻啟動 X光機！
+                                                                                   if (!rawContent || rawContent.trim() === "") {
+                                                                                       console.warn("⚠️ 警告：抓不到 content！印出完整 choice 結構檢查：", JSON.stringify(aiResult.choices?.[0]));
+
+                                                                                       // 1. 檢查是不是 DeepSeek 把內容放在了思考欄位 (reasoning_content)
+                                                                                       const reasoning = aiResult.choices?.[0]?.message?.reasoning_content;
+                                                                                       if (reasoning) {
+                                                                                           rawContent = reasoning;
+                                                                                           console.log("💡 抓到了！DeepSeek 把回覆藏在 reasoning_content 裡！");
+                                                                                       }
+
+                                                                                       // 2. 檢查是不是被官方強制靜音
+                                                                                       if (aiResult.choices?.[0]?.finish_reason === "content_filter") {
+                                                                                           console.warn("🛑 DeepSeek 官方 API 觸發了底層靜音過濾！");
+                                                                                           rawContent = "（男神欲言又止，似乎被某種不可抗力限制了發言...）";
+                                                                                       }
+                                                                                   }
+
+                                                                                   console.log("🧪 RAW OPENROUTER:", rawContent?.slice(0, 500));
 
                                                                                // ==========================================
-                                                                               // 🛡️ 總裁級防護網：攔截 AI 道德審查 (保護花花)
-                                                                               // ==========================================
-                                                                               const safetyKeywords = [
-                                                                                   "无法给到相关内容",
-                                                                                   "無法提供",
-                                                                                   "我是人工智能",
-                                                                                   "违反",
-                                                                                   "不适当",
-                                                                                   "请注意"
-                                                                               ];
+                                                                                   // 🛡️ 總裁級防護網 2.0：精準攔截，拒絕誤殺
+                                                                                   // ==========================================
+                                                                                   const safetyKeywords = [
+                                                                                       "无法给到相关内容",
+                                                                                       "無法提供",
+                                                                                       "我是人工智能",
+                                                                                       "作为一个人工智能",
+                                                                                       "作為一個AI",
+                                                                                       "违反了使用政策", // 改為精準長詞
+                                                                                       "违反了安全",
+                                                                                       "违背了伦理",
+                                                                                       "涉及不适当的内容" // 改為精準長詞
+                                                                                   ];
 
-                                                                               const isRefused = safetyKeywords.some(keyword => rawContent.includes(keyword)) || rawContent.trim() === "";
+                                                                                   // 抓出到底是哪個關鍵字觸發的
+                                                                                   const triggeredKeyword = safetyKeywords.find(keyword => rawContent.includes(keyword));
 
-                                                                               if (isRefused) {
-                                                                                   console.warn("🛑 [防禦系統] 偵測到 AI 審查擋刀！攔截寫入與扣款！");
-                                                                                   // 直接中斷，把 400 錯誤丟回給 Flutter，讓 Flutter 顯示溫柔提示
-                                                                                   return res.status(400).json({
-                                                                                       error: "CENSORED",
-                                                                                       message: "男神的心跳漏了一拍... 系統被不可抗力干擾了，請試著換個溫和一點的說法喔！(本則不扣花花)"
-                                                                                   });
-                                                                               }
+                                                                                   const isRefused = triggeredKeyword || rawContent.trim() === "";
+
+                                                                                   if (isRefused) {
+                                                                                       console.warn(`🛑 [防禦系統] 偵測到 AI 審查擋刀！(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"}) 攔截寫入與扣款！`);
+                                                                                       // 直接中斷，把 400 錯誤丟回給 Flutter，讓 Flutter 顯示溫柔提示
+                                                                                       return res.status(400).json({
+                                                                                           error: "CENSORED",
+                                                                                           message: "男神的心跳漏了一拍... 系統被不可抗力干擾了，請試著換個溫和一點的說法喔！(本則不扣花花)"
+                                                                                       });
+                                                                                   }
 
                                                                                // ==========================================
                                                                                // 🛡️ 三段式 JSON 淨化器
