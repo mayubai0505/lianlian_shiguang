@@ -7,6 +7,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
 import '../services/toast_utils.dart'; // 🌟 用來判斷是不是網頁版 (kIsWeb)
+import 'package:cloud_functions/cloud_functions.dart';
 
 // 🌟 回放室：需要動態狀態來播放音樂
 class CallMemoryDetailPage extends StatefulWidget {
@@ -23,6 +24,8 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
   bool _isPlayerInitialized = false;
   String? _currentlyPlayingText; // 記錄正在播放哪一句，用來顯示特效
   final Map<String, Uint8List> _voiceAudioCache = {};
+  final FirebaseFunctions _functions =
+  FirebaseFunctions.instanceFor(region: 'asia-east1');
   @override
   void initState() {
     super.initState();
@@ -39,11 +42,17 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
   // 🎙️ 核心功能：呼叫 ElevenLabs 重新播放男神的聲音！
   Future<void> _playVoice(String text) async {
     final l10n = AppLocalizations.of(context)!;
+
     if (!_isPlayerInitialized) return;
-    final voiceId = widget.memoryData['voiceId'];
-    if (voiceId == null || voiceId.isEmpty) {
+
+    // ✅ 兼容兩種欄位名稱：voiceId / voice_id
+    final String voiceId =
+        widget.memoryData['voiceId']?.toString() ??
+            widget.memoryData['voice_id']?.toString() ??
+            '';
+
+    if (voiceId.isEmpty) {
       if (mounted) {
-        // ✨ 總裁級：專屬語音從缺的溫柔提醒，用輕盈的視覺回饋安撫聽覺的期待！
         ToastUtils.showCenterToast(
           context,
           l10n.no_exclusive_voice,
@@ -52,18 +61,26 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
       return;
     }
 
-    setState(() => _currentlyPlayingText = text);
+    String cleanAudioText = text
+        .replaceAll(RegExp(r'\(.*?\)|（.*?）|\[.*?\]|【.*?】'), '')
+        .trim();
 
-    // 🛑 總裁請注意：記得把這裡的 API Key 換成妳自己的！
-    final String apiKey = 'sk_ac547721d8ff700babefd42c96ae76e4eb685ce2d313f87f';
-    String cleanAudioText = text.replaceAll(RegExp(r'\(.*?\)|（.*?）|\[.*?\]|【.*?】'), '').trim();
     if (cleanAudioText.isEmpty) {
-      setState(() => _currentlyPlayingText = null);
+      if (mounted) {
+        setState(() => _currentlyPlayingText = null);
+      }
       return;
     }
 
-    final double targetStability = widget.memoryData['voiceStability']?.toDouble() ?? 0.33;
-    final double targetStyle = widget.memoryData['voiceStyle']?.toDouble() ?? 0.75;
+    final double targetStability =
+    (widget.memoryData['voiceStability'] is num)
+        ? (widget.memoryData['voiceStability'] as num).toDouble()
+        : 0.33;
+
+    final double targetStyle =
+    (widget.memoryData['voiceStyle'] is num)
+        ? (widget.memoryData['voiceStyle'] as num).toDouble()
+        : 0.75;
 
     final String cacheKey = [
       voiceId,
@@ -72,15 +89,49 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
       cleanAudioText,
     ].join('|');
 
-    if (_voiceAudioCache.containsKey(cacheKey)) {
-      debugPrint("🎧 使用語音快取，不重新呼叫 ElevenLabs");
+    setState(() => _currentlyPlayingText = text);
 
-      final Uint8List cachedAudioBytes = _voiceAudioCache[cacheKey]!;
+    try {
+      Uint8List audioBytes;
+
+      // ✅ 先看快取，有快取就不呼叫 Cloud Function
+      if (_voiceAudioCache.containsKey(cacheKey)) {
+        debugPrint("🎧 使用語音快取，不重新呼叫 Cloud Function");
+        audioBytes = _voiceAudioCache[cacheKey]!;
+      } else {
+        debugPrint("☁️ 呼叫 Cloud Function 產生語音");
+
+        final callable = _functions.httpsCallable('testVoiceSettings');
+
+        final result = await callable.call({
+          'voiceId': voiceId,
+          'text': cleanAudioText,
+          'stability': targetStability,
+          'style': targetStyle,
+        });
+
+        final data = Map<String, dynamic>.from(result.data);
+
+        final String audioBase64 =
+            data['audio_base_64']?.toString() ?? '';
+
+        if (audioBase64.isEmpty) {
+          throw Exception("Cloud Function 沒有回傳音檔");
+        }
+
+        audioBytes = base64Decode(audioBase64);
+
+        _voiceAudioCache[cacheKey] = audioBytes;
+        debugPrint("🎧 語音已存入快取");
+      }
 
       try {
         await _audioPlayer.stop();
-      } catch (e) {}
+      } catch (e) {
+        debugPrint("停止舊播放器失敗，可忽略: $e");
+      }
 
+      // ✅ 網頁版避免播放器卡住，直接換新播放器
       _audioPlayer = AudioPlayer();
 
       _audioPlayer.onPlayerComplete.listen((event) {
@@ -91,80 +142,24 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
       });
 
       if (kIsWeb) {
-        final base64Audio = base64Encode(cachedAudioBytes);
+        final base64Audio = base64Encode(audioBytes);
         final dataUri = 'data:audio/mpeg;base64,$base64Audio';
         await _audioPlayer.play(UrlSource(dataUri));
       } else {
-        await _audioPlayer.play(BytesSource(cachedAudioBytes));
-      }
-
-      return;
-    }
-
-    // ✨✨✨ 關鍵更新：從 memoryData 裡面直接抓出當時存下的「演技數字」！ ✨✨✨
-    // 加上 .toDouble() 確保型別安全，若沒抓到則套用霸總預設值 (0.33, 0.75)
-    final url = Uri.parse('https://api.elevenlabs.io/v1/text-to-speech/$voiceId?optimize_streaming_latency=3');
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'accept': 'audio/mpeg',
-          'xi-api-key': apiKey,
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          "text": cleanAudioText,
-          "model_id": "eleven_multilingual_v2",
-          "voice_settings": {
-            // 🌟 完美套用當時的演技設定！
-            "stability": targetStability,
-            "similarity_boost": 0.80,
-            "style": targetStyle,
-            "use_speaker_boost": true
-          }
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        debugPrint(l10n.voice_download_success);
-
-        final Uint8List audioBytes = response.bodyBytes;
-        _voiceAudioCache[cacheKey] = audioBytes;
-        debugPrint("🎧 語音已存入快取");
-        // 💥【網頁版終極大絕招：鳳凰涅槃】💥
-        // 既然舊的播放器在網頁上會卡陰，我們直接換一顆全新的！
-        try {
-          await _audioPlayer.stop(); // 先嘗試讓舊的閉嘴
-        } catch (e) {
-          // 壞掉就算了，不管它
-        }
-
-        _audioPlayer = AudioPlayer(); // ✨ 暴力解法：直接產生一個全新的播放器實體！
-        // 🌟 把播完的監聽器，裝在這個「新心臟」上面
-        _audioPlayer.onPlayerComplete.listen((event) {
-          if (mounted) {
-            setState(() => _currentlyPlayingText = null);
-            debugPrint("🎵 播完了，解除特效");
-          }
-        });
-
-        // 🎵 開始播放！
-        if (kIsWeb) {
-          final base64Audio = base64Encode(audioBytes);
-          final dataUri = 'data:audio/mpeg;base64,$base64Audio';
-          await _audioPlayer.play(UrlSource(dataUri));
-        } else {
-          await _audioPlayer.play(BytesSource(audioBytes));
-        }
-
-      } else {
-        print('播放失敗，狀態碼: ${response.statusCode}');
-        if (mounted) setState(() => _currentlyPlayingText = null);
+        await _audioPlayer.play(BytesSource(audioBytes));
       }
     } catch (e) {
-      print('播放發生錯誤: $e');
-      if (mounted) setState(() => _currentlyPlayingText = null);
+      debugPrint('播放發生錯誤: $e');
+
+      if (mounted) {
+        setState(() => _currentlyPlayingText = null);
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.voice_test_failed,
+          isError: true,
+        );
+      }
     }
   }
 

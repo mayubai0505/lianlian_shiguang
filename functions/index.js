@@ -113,7 +113,7 @@ exports.generateVoice = onRequest({
 
         // 🎙️ 快取沒中，安全地呼秘書ElevenLabs
         console.log("🎙️ 呼叫 ElevenLabs 生成新語音");
-        const apiKey = process.env.elevenLabsApiKey; // 讀取 Secret
+        const apiKey = elevenLabsApiKey.value(); // 讀取 Secret
 
         const elevenResponse = await fetch(
             `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=3`,
@@ -1164,32 +1164,30 @@ function scoreChineseText(str) {
                                                                            // ==========================================
                                                                            while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
                                                                                // 🚄 1. 預設走 OpenRouter 軌道 (給 Gemini 或其他模型用)
-                                                                               let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
-                                                                               let apiKey = openRouterApiKey.value();
-                                                                               let targetModel = config.modelId || "deepseek/deepseek-v4-pro";
+                                                                               // 🚄 1. 預設走 OpenRouter 中轉站
+                                                                                       let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+                                                                                       let apiKey = openRouterApiKey.value();
+                                                                                       let targetModel = config.modelId || "deepseek/deepseek-chat";
 
-                                                                               // 🚀 2. 智慧轉轍器：只要發現是 DeepSeek，立刻切換到官方軌道！
-                                                                               if (targetModel.includes("deepseek")) {
-                                                                                   console.log("🛤️ 偵測到 DeepSeek 模型，切換至官方直連高鐵！");
-                                                                                   apiUrl = "https://api.deepseek.com/chat/completions";
-                                                                                   apiKey = deepseekApiKey.value();
-                                                                                   targetModel = "deepseek-chat"; // 官方 V3 模型的專屬代號
+                                                                                       // 🚀 2. 轉轍器一號：DeepSeek 改回走 OpenRouter 深夜專車！
+                                                                                       if (targetModel.includes("deepseek")) {
+                                                                                           console.log("🛤️ 偵測到 DeepSeek 模型，維持 OpenRouter 路線發車，準備狂飆！");
+                                                                                           // 💡 這裡把原本切換 apiUrl 和 apiKey 的程式碼刪掉了，讓它乖乖走上面的 OpenRouter 預設路線！
 
-                                                                                   // 🚀 強制注入 JSON 醒腦劑：只在第一輪發動，專治 DeepSeek 留白病
-                                                                                   if (loopCount === 0) {
-                                                                                       currentMessages.push({
-                                                                                           role: "system",
-                                                                                           content: `【強制指令】請你務必、絕對只能回傳合法的 JSON 格式。請依照以下格式回傳：\n{\n  "response": "男神的對話與動作描述",\n  "affectionChange": 數字,\n  "voiceText": "男神語音"\n}\n絕對不可以回傳空白或其他的廢話。`
-                                                                                       });
-                                                                                   }
-                                                                               }
-                                                                               else if (targetModel.includes("gemini")) {
+                                                                                           // 🚀 強制注入 JSON 醒腦劑：把指令偷偷綁在玩家最後一句話的尾巴（這段要留著防空白當機）
+                                                                                           // 🚀 強制注入：JSON 醒腦劑 ＋ 角色扮演動作解析規則！
+                                                                                                       if (loopCount === 0 && currentMessages.length > 0) {
+                                                                                                           const lastIndex = currentMessages.length - 1;
+                                                                                                           currentMessages[lastIndex].content += `\n\n【系統強制指令】\n1. 玩家訊息中，括號 () 內的文字代表「玩家的動作、表情、環境或內心獨白」，絕對不是開口說出的話！請理解這些動作並做出合理的劇情反應。\n2. 請務必只回傳合法的 JSON 格式：{"response": "男神的對話與動作描述", "affectionChange": 數字, "voiceText": "男神語音"}。絕對不可以回傳空白！`;
+                                                                                                       }
+                                                                                       }
+                                                                                       // ✨ 3. 轉轍器二號：Gemini 官方專屬 VIP 通道（白天日常或老師專用）
+                                                                                       else if (targetModel.includes("gemini")) {
                                                                                            console.log("🛤️ 偵測到 Gemini 模型，切換至 Google 官方直連高鐵！");
-                                                                                           // Google 最新支援的 OpenAI 相容通道，超好用！
                                                                                            apiUrl = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
                                                                                            apiKey = geminiApiKey.value();
 
-                                                                                           // 把 OpenRouter 格式的 "google/gemini-2.5-flash" 自動切成官方認得的 "gemini-2.5-flash"
+                                                                                           // 把 OpenRouter 格式的 "google/gemini-..." 自動切成官方認得的名稱
                                                                                            targetModel = targetModel.replace("google/", "");
                                                                                        }
                                                                                        // 📦 3. 發送請求 (自動切換 URL、Key 和 Model)
@@ -2667,3 +2665,165 @@ exports.directCallAiStream = onRequest({
         res.status(500).end();
     }
 });
+
+const REGION = "asia-east1";
+
+function requireLogin(request) {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "請先登入後再使用語音功能");
+  }
+}
+
+async function postElevenLabsJson(path, body) {
+  const response = await fetch(`https://api.elevenlabs.io${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "xi-api-key": elevenLabsApiKey.value(),
+    },
+    body: JSON.stringify(body),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    console.error("ElevenLabs error:", response.status, text);
+    throw new HttpsError(
+      "internal",
+      "ElevenLabs 請求失敗",
+      { status: response.status }
+    );
+  }
+
+  return JSON.parse(text);
+}
+
+// 1. 生成 3 個聲音 preview
+exports.createVoicePreviews = onCall(
+  {
+    region: REGION,
+    secrets: [elevenLabsApiKey],
+  },
+  async (request) => {
+    requireLogin(request);
+
+    const { sampleScript, voiceDescription } = request.data || {};
+
+    if (!sampleScript || !voiceDescription) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少 sampleScript 或 voiceDescription"
+      );
+    }
+
+    const result = await postElevenLabsJson(
+      "/v1/text-to-voice/create-previews",
+      {
+        text: sampleScript,
+        voice_description: voiceDescription,
+      }
+    );
+
+    return {
+      previews: result.previews || [],
+    };
+  }
+);
+
+// 2. 把 preview 正式存成 voice
+exports.createVoiceFromPreview = onCall(
+  {
+    region: REGION,
+    secrets: [elevenLabsApiKey],
+  },
+  async (request) => {
+    requireLogin(request);
+
+    const {
+      voiceName,
+      voiceDescription,
+      generatedVoiceId,
+    } = request.data || {};
+
+    if (!voiceName || !generatedVoiceId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少 voiceName 或 generatedVoiceId"
+      );
+    }
+
+    const result = await postElevenLabsJson(
+      "/v1/text-to-voice/create-voice-from-preview",
+      {
+        voice_name: voiceName,
+        voice_description: voiceDescription || "",
+        generated_voice_id: generatedVoiceId,
+      }
+    );
+
+    return result;
+  }
+);
+
+// 3. 試聽目前 voice 設定
+exports.testVoiceSettings = onCall(
+  {
+    region: REGION,
+    secrets: [elevenLabsApiKey],
+  },
+  async (request) => {
+    requireLogin(request);
+
+    const {
+      voiceId,
+      text,
+      stability,
+      style,
+    } = request.data || {};
+
+    if (!voiceId || !text) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少 voiceId 或 text"
+      );
+    }
+
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": elevenLabsApiKey.value(),
+        },
+        body: JSON.stringify({
+          text,
+          model_id: "eleven_multilingual_v2",
+          voice_settings: {
+            stability: stability ?? 0.33,
+            similarity_boost: 0.75,
+            style: style ?? 0.75,
+            use_speaker_boost: true,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("ElevenLabs TTS error:", response.status, errorText);
+      throw new HttpsError(
+        "internal",
+        "ElevenLabs 試聽失敗",
+        { status: response.status }
+      );
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBase64 = Buffer.from(arrayBuffer).toString("base64");
+
+    return {
+      audio_base_64: audioBase64,
+    };
+  }
+);

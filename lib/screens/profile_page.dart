@@ -1774,59 +1774,73 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildCharacterGridItem(Character character,
-      {bool isMyCharacter = false}) {
+  Widget _buildCharacterGridItem(
+      Character character, {
+        bool isMyCharacter = false,
+      }) {
     final theme = Theme.of(context);
+
     return InkWell(
       borderRadius: BorderRadius.circular(12.0),
-      // ✨✨✨ 核心修改處 ✨✨✨
-      onTap: () {
+
+      onTap: () async {
         if (isMyCharacter) {
-          // 🌟 路線 A：從「我創建的角色」點擊，維持原本去編輯頁面的設定
-          // (因為現在有了秘密工作室，妳也可以考慮以後把這裡改成去主頁，但先維持現狀最安全)
-          Navigator.push(
+          // 🌟 路線 A：從「我創建的角色」點擊，進入編輯頁
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => CharacterEditPage(character: character)),
-          ).then((didUpdate) {
-            if (didUpdate == true) {
-              _refreshData();
-            }
-          });
+              builder: (context) => CharacterEditPage(character: character),
+            ),
+          );
+
+          if (!mounted) return;
+
+          if (result is Map && result['changed'] == true) {
+            await _refreshData();
+          }
+
+          if (result is Map && result['goProfile'] == true) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const ProfilePage(),
+              ),
+                  (route) => false,
+            );
+          }
         } else {
           // 🌟 路線 B：從「我的好友」點擊，啟動親權鑑定與主頁分流系統！
           final currentUser = FirebaseAuth.instance.currentUser;
 
           if (character.isPublic) {
-            // 🌍 1. 公開角色：直接去原本的完整主頁
-            // ✨ 總裁升級版寫法：直接去角色的個人首頁
+            // 🌍 1. 公開角色：直接去角色的個人首頁
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => CharacterProfilePage(
-                  // ✨ 總裁急救：把 character 裡面的 id 拔出來，交給它要的 characterId 參數！
                   characterId: character.id,
                   character: character,
                 ),
               ),
             );
           } else {
-            // 🔒 2. 私人角色：進行親權鑑定！
+            // 🔒 2. 私人角色：進行親權鑑定
             if (currentUser != null && character.createdBy == currentUser.uid) {
-              // 👩‍👦 鑑定通過：是自己親生的！放行去我們剛寫好的「專屬私密檔案頁面」
+              // 👩‍👦 是自己創建的私人角色
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => PrivateCharacterProfilePage(character: character)),
+                  builder: (context) =>
+                      PrivateCharacterProfilePage(character: character),
+                ),
               );
             } else {
-              // 🚫 鑑定失敗：別人的私人角色，不准看！
-              // 這裡彈出截圖一那個「機密檔案」的對話框
+              // 🚫 別人的私人角色，不准看
               _showSecretDialog(character);
             }
           }
         }
       },
+
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -1837,12 +1851,12 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 8),
           Text(
-              character.name,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface
-              )
+            character.name,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
           ),
         ],
       ),

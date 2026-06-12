@@ -200,13 +200,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
           final fileName = '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
           final storageRef = FirebaseStorage.instance.ref().child('user_avatars').child(fileName);
 
+          Uint8List bytes;
+
           if (kIsWeb) {
             final response = await http.get(Uri.parse(_avatarPath));
-            final bytes = response.bodyBytes;
-            await storageRef.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
+            bytes = response.bodyBytes;
           } else {
-            await storageRef.putFile(File(_avatarPath));
+            final file = File(_avatarPath);
+
+            if (!await file.exists()) {
+              throw Exception("找不到選取的頭像檔案：$_avatarPath");
+            }
+
+            bytes = await file.readAsBytes();
           }
+
+          if (bytes.isEmpty) {
+            throw Exception("頭像圖片資料是空的");
+          }
+
+          await storageRef.putData(
+            bytes,
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
 
           finalAvatarPath = await storageRef.getDownloadURL();
           print("☁️ 新圖片上傳成功：$finalAvatarPath");
@@ -286,7 +302,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   // --- 修正後的完整儲存函式 (加入舊 ID 徹底移除機制) ---
-  // --- 修正後的完整儲存函式 (讓 ID 變成選填) ---
   Future<void> _performFullSave() async {
     final l10n = AppLocalizations.of(context)!;
     if (mounted) setState(() => _isSaving = true);
@@ -449,14 +464,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   }),
                   ListTile(
                     leading: const Icon(Icons.photo_library),
-                    title:Text(l10n.action_choose_from_gallery),
+                    title: Text(l10n.action_choose_from_gallery),
                     onTap: () async {
                       Navigator.pop(context);
-                      final XFile? image = await _picker.pickImage(
-                          source: ImageSource.gallery);
-                      if (image != null) {
-                        // ✅ 不要直接換，先送去「裁切部門」加工！
-                        _cropImage(image.path);
+
+                      try {
+                        final XFile? image = await _picker.pickImage(
+                          source: ImageSource.gallery,
+                          maxWidth: 1024,
+                          maxHeight: 1024,
+                          imageQuality: 85,
+                        );
+
+                        if (image == null) return;
+
+                        await _cropImage(image.path);
+                      } catch (e) {
+                        debugPrint("❌ 選擇相簿頭像失敗: $e");
+
+                        if (!mounted) return;
+
+                        ToastUtils.showCenterToast(
+                          context,
+                          '選擇圖片失敗，請重新選擇一張圖片',
+                          isError: true,
+                        );
                       }
                     },
                   ),
@@ -468,61 +500,77 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _cropImage(String filePath) async {
+    if (!mounted) return;
+
     final theme = Theme.of(context);
-    // 🛡️ 拿掉驚嘆號，改用安全讀取 (l10n 現在是可空的)
     final l10n = AppLocalizations.of(context);
 
     try {
+      // ✅ 手機版先確認檔案真的存在
+      if (!kIsWeb) {
+        final file = File(filePath);
+        if (!await file.exists()) {
+          throw Exception("找不到圖片檔案：$filePath");
+        }
+      }
+
       final croppedFile = await ImageCropper().cropImage(
         sourcePath: filePath,
         maxWidth: 512,
         maxHeight: 512,
         aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-        compressQuality: 90,
+        compressQuality: 85,
         uiSettings: [
           AndroidUiSettings(
-            // ✨ 修正 1：加上 `?.` 安全呼叫，並給予保底文字
             toolbarTitle: l10n?.title_adjust_avatar ?? '調整您的時光頭像',
             toolbarColor: theme.colorScheme.primary,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.square,
             lockAspectRatio: true,
+            hideBottomControls: false,
           ),
           IOSUiSettings(
-            // ✨ 修正 2：同樣加上保底文字
             title: l10n?.title_adjust_avatar ?? '調整您的時光頭像',
-            cancelButtonTitle: '取消', // 如果 l10n 裡面沒有 cancelButton，可以直接寫死
+            cancelButtonTitle: '取消',
             doneButtonTitle: '確定',
             aspectRatioLockEnabled: true,
+            resetAspectRatioEnabled: false,
           ),
-          // 🌐 Web 介面設定 (終極完美版)
-          WebUiSettings(
-            context: context,
-            presentStyle: WebPresentStyle.page,
-          ),
+          if (kIsWeb)
+            WebUiSettings(
+              context: context,
+              presentStyle: WebPresentStyle.page,
+            ),
         ],
       );
 
-      if (croppedFile != null && mounted) {
-        setState(() {
-          _avatarPath = croppedFile.path;
-        });
+      if (!mounted) return;
+
+      if (croppedFile == null) {
+        debugPrint("玩家取消裁切");
+        return;
       }
+
+      setState(() {
+        _avatarPath = croppedFile.path;
+      });
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n?.avatar_updated_success ?? '已為您換上頭像 🍃',
+        customIcon: Icons.face_retouching_natural_rounded,
+      );
     } catch (e) {
-      debugPrint("❌ 裁切部門發生錯誤: $e");
-      if (mounted) {
-        setState(() {
-          _avatarPath = filePath; // 裁切失敗就用原圖保底
-        });
-        // ✨ 總裁級：大頭貼更新成功的絕美過場，完美守護你的原創畫作！
-        ToastUtils.showCenterToast(
-          context, // 💡 若在 async 之後，記得包一層 if (mounted)
-          l10n?.avatar_updated_success ?? '已為您換上頭像 🍃',
-          customIcon: Icons.face_retouching_natural_rounded, // 💡 總裁精選：帶有「煥然一新、精緻臉龐」意涵的完美圖示
-          // 💡 總裁秘技：如果想強調「圖片/畫作」的感覺，
-          // 換成 Icons.wallpaper_rounded 或 Icons.photo_camera_front_rounded 也非常適合！
-        );
-      }
+      debugPrint("❌ 裁切頭像失敗: $e");
+
+      if (!mounted) return;
+
+      // ✅ 不要用原圖保底，避免超大圖造成閃退
+      ToastUtils.showCenterToast(
+        context,
+        '圖片處理失敗，請重新選擇一張圖片',
+        isError: true,
+      );
     }
   }
 

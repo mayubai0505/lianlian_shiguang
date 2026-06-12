@@ -109,6 +109,8 @@ class _SelectChatPageState extends State<SelectChatPage> {
           .collection('artifacts')
           .doc(AppConfig.appId)
           .collection('public_characters')
+          .where('isPublic', isEqualTo: true)
+          .where('status', isEqualTo: 'published')
           .get();
       List<Character> characters = await Future.wait(
           querySnapshot.docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()

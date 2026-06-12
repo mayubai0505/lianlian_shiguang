@@ -19,6 +19,7 @@ import '../services/app_constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:typed_data';
+import 'package:cloud_functions/cloud_functions.dart';
 
 // ✨ 這是一個既能「創建」也能「編輯」的萬能頁面
 class CharacterEditPage extends StatefulWidget {
@@ -55,10 +56,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         return key;
     }
   }
+  bool _isSaving = false;
   bool _isGeneratingVoice = false;
   bool _isInit = false; // ✨ 專屬防護旗標
   bool _isTestingSettings = false;
-  final String _apiKey = "sk_ac547721d8ff700babefd42c96ae76e4eb685ce2d313f87f";
+  final FirebaseFunctions _functions =
+  FirebaseFunctions.instanceFor(region: 'asia-east1');
   Map<String, String> _relationships = {};
   List<Map<String, dynamic>> _voiceSamples = [];
   List<Map<String, dynamic>> newSamples = [];
@@ -108,7 +111,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   l10n.relationship_other,     // 這裡用翻譯的「其他」
   ];}
   // --- State Variables ---
-  bool _isSaving = false;
   bool _isDeleting = false; // 刪除狀態
   String _gender = '';
   List<String> _personalityTags = [];
@@ -454,9 +456,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       List<String> identitiesArray = _occupationController.text.trim().isEmpty
           ? []
           : _occupationController.text.split(RegExp(r'[/,，/／]')).map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
-      final String finalRelationship = (_selectedRelationship == l10n?.relationship_other)
+      final String finalRelationship = (_selectedRelationship == 'relationship_other')
           ? _customRelationshipController.text.trim()
-          : _selectedRelationship ?? '';
+          : (_selectedRelationship ?? '');
 
       // 🌟 2. 確保在草稿模式下，如果還沒上傳，優先抓取本機路徑 (localFile.path)
       _galleryPhotos.sort((a, b) => a.requiredAffection.compareTo(b.requiredAffection));
@@ -549,10 +551,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'storySummary': _storySummaryController.text.trim(),
         'story': _storyController.text.trim(),
         'storyModeFirstLine': _firstLineController.text.trim(),
-        'isPublic': _isPublic,
+        'isPublic': false,
+        'isDraft': true,
+        'isCompleted': false,
+        'status': 'draft',
         'createdBy': user.uid,
         'extraInfoItems': _extraInfoItems,
-        'content_language': l10n?.localeName ?? 'zh',
+        'content_language': l10n.localeName,
         'stageStranger': _stageStrangerController.text.trim(),
         'stageAcquaintance': _stageAcquaintanceController.text.trim(),
         'stageIntimate': _stageIntimateController.text.trim(),
@@ -563,8 +568,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voice_preview_url': _finalVoicePreviewUrl,
         'voiceStability': _voiceStability,
         'voiceStyle': _voiceStyle,
-        'lastEditTime': FieldValue.serverTimestamp(),
-        'isCompleted': false,
         'relationships': _relationships, // 🌟 補上這行，Tab 3 的關係就不會消失了！
         'multiCharacters': multiCharactersString,
       };
@@ -627,7 +630,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
             onPressed: () async {
               // 這裡呼叫我們剛才寫好的儲存草稿函數
               await _saveToDraft();
-              if (context.mounted) Navigator.pop(context, true);
+              if (context.mounted) Navigator.of(context).pop({
+                'changed': true,
+                'goProfile': true,
+              });
             },
             child:Text(l10n.save_draft),
           ),
@@ -655,48 +661,101 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
   Future<void> _deleteCharacter() async {
     if (!isEditing || widget.character == null) return;
+
     final l10n = AppLocalizations.of(context)!;
-    final bool confirm = await showDialog(
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      ToastUtils.showCenterToast(
+        context,
+        l10n.user_not_found,
+        isError: true,
+      );
+      return;
+    }
+
+    final bool confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('⚠️'+ l10n.confirm_delete_title, style: TextStyle(color: Colors.red)),
-        content: Text(l10n.confirm_delete_char_content(widget.character!.name)),
+        title: Text(
+          '⚠️${l10n.confirm_delete_title}',
+          style: const TextStyle(color: Colors.red),
+        ),
+        content: Text(
+          l10n.confirm_delete_char_content(widget.character!.name),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child:  Text(l10n.cancelButton
-            ),
+            child: Text(l10n.cancelButton),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () => Navigator.pop(context, true),
-            child:Text(l10n.confirm_delete_title),
+            child: Text(l10n.confirm_delete_title),
           ),
         ],
       ),
-    ) ?? false;
+    ) ??
+        false;
+
     if (!confirm) return;
+
     setState(() => _isDeleting = true);
+
     try {
-      // 刪除 Firestore 文件
-      await _db.collection('artifacts').doc(AppConfig.appId).collection('public_characters').doc(widget.character!.id).delete();
+      final batch = _db.batch();
 
-      if (mounted) {
-        // ✨ 總裁級：刪除成功後的俐落退場，伴隨畫面返回的完美過場！
-        ToastUtils.showCenterToast(
-          context,
-          l10n.char_deleted,
-          customIcon: Icons.person_remove_rounded, // 💡 總裁精選：「移除角色/人員」專用圖示。如果不是人物，也可以用 Icons.delete_sweep_rounded
-        );
+      // ✅ 關鍵：依照角色原本是公開/私密，刪正確位置
+      final DocumentReference charDocRef = widget.character!.isPublic
+          ? _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('public_characters')
+          .doc(widget.character!.id)
+          : _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('users')
+          .doc(user.uid)
+          .collection('private_characters')
+          .doc(widget.character!.id);
 
-        Navigator.pop(context, true); // 回到上一頁並刷新
+      // ✅ 順便刪 photos 子集合，不然會留下孤兒資料
+      final photosSnapshot = await charDocRef.collection('photos').get();
+      for (final doc in photosSnapshot.docs) {
+        batch.delete(doc.reference);
       }
+
+      batch.delete(charDocRef);
+
+      await batch.commit();
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.char_deleted,
+        customIcon: Icons.person_remove_rounded,
+      );
+
+      // ✅ 回傳給上一頁：我刪掉了，請刷新列表
+      Navigator.of(context).pop({
+        'changed': true,
+        'deleted': true,
+        'goProfile': true,
+      });
     } catch (e) {
       if (mounted) {
         _showErrorDialog(l10n.delete_failed_msg, e.toString());
       }
     } finally {
-      if (mounted) setState(() => _isDeleting = false);
+      if (mounted) {
+        setState(() => _isDeleting = false);
+      }
     }
   }
 
@@ -755,7 +814,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     }
   }
 
-  Future<void> _saveCharacter(AppLocalizations l10n) async {
+  Future<void> _saveCharacter() async {
     final l10n = AppLocalizations.of(context)!;
     // 🌟 1. 基礎防呆與字數檢查 (維持妳原本的優良設計)
     final allImages = _galleryPhotos.length;
@@ -859,9 +918,24 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         }
       } else {
         final collectionRef = _isPublic
-            ? _db.collection('artifacts').doc(AppConfig.appId).collection('public_characters')
-            : _db.collection('artifacts').doc(AppConfig.appId).collection('users').doc(currentUser.uid).collection('private_characters');
-        charDocRef = collectionRef.doc(); // 預支一個新 ID
+            ? _db
+            .collection('artifacts')
+            .doc(AppConfig.appId)
+            .collection('public_characters')
+            : _db
+            .collection('artifacts')
+            .doc(AppConfig.appId)
+            .collection('users')
+            .doc(currentUser.uid)
+            .collection('private_characters');
+
+        // ✅ 關鍵：如果是從草稿發布，就用草稿 id 當角色 id
+        // 這樣同一份草稿不會每按一次就生一個新角色
+        if (widget.draftDoc != null) {
+          charDocRef = collectionRef.doc(widget.draftDoc!.id);
+        } else {
+          charDocRef = collectionRef.doc();
+        }
       }
 
       // 🚀 【極速優化】：照片平行上傳大法！
@@ -989,6 +1063,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'story': _storyController.text.trim(),
         'storyModeFirstLine': _firstLineController.text.trim(),
         'isPublic': _isPublic,
+        'isDraft': false,
+        'isCompleted': true,
+        'status': 'published',
         'createdBy': currentUser.uid,
         'extraInfoItems': _extraInfoItems,
         'content_language': l10n.localeName,
@@ -1031,7 +1108,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         characterData['createdAt'] = FieldValue.serverTimestamp();
         characterData['playCount'] = 0;
         characterData['isNew'] = true;
-        batch.set(charDocRef, characterData);
+        batch.set(charDocRef, characterData, SetOptions(merge: true));
       }
 
       // 🌟 6. 管家，執行 Batch 寫入！
@@ -1083,21 +1160,24 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       if (mounted) { // 💡 若有報錯，請記得替換為 context.mounted
         Navigator.pop(context); // 關閉 loading dialog
 
-        // ✨ 總裁級：雙重視覺細節拉滿！根據新增或編輯給予專屬的圖示回饋
         ToastUtils.showCenterToast(
           context,
           l10n.char_saved_success(
-              characterData['name'],
-              isEditing ? l10n.update_action : l10n.createButton
+            characterData['name'],
+            isEditing ? l10n.update_action : l10n.createButton,
           ),
-          // 💡 總裁秘技：動態圖示！新增用「加入人物」，編輯用「管理人物」
-          customIcon: isEditing ? Icons.manage_accounts_rounded : Icons.person_add_rounded,
+          customIcon: isEditing ? Icons.manage_accounts_rounded : Icons
+              .person_add_rounded,
         );
 
-        Navigator.pop(context, true); // 帶著成功狀態，優雅地回到上一頁
+// ✅ 先把成功結果傳回去
+        Navigator.of(context).pop({
+          'changed': true,
+          'goProfile': true,
+          'action': isEditing ? 'updated' : 'created',
+        });
       }
-
-    } catch (e) {
+      } catch (e) {
       if (mounted) Navigator.pop(context); // 關閉 loading dialog
       print("!!! 儲存角色時發生錯誤: ${e.toString()}");
       if (mounted) _showErrorDialog(l10n.cannot_save_title, l10n.save_error_detail(e.toString()));
@@ -1418,11 +1498,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         String gender = 'male',
         String age = 'young',
       }) async {
-
-    // 🌟 2. 翻譯官在大括號裡面的第一行報到！
     final l10n = AppLocalizations.of(context)!;
 
-    // 🌟 3. 在這裡才進行替換：如果有傳名字就用，沒傳就用 l10n.me
     final String finalCharacterName = characterName ?? l10n.me;
 
     setState(() {
@@ -1431,81 +1508,87 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _selectedSampleIndex = null;
     });
 
-
     try {
       final String sampleScript = l10n.voice_sample_script;
-// ✨ 終極魔法：只保留基底與高音質要求，剩下的情緒跟口音全交給玩家的 Prompt！
-      final String voiceDescription = "A $age $gender voice. $prompt Studio quality recording, clear pronunciation.";      // ✨ 2. 移除 for 迴圈！現在只要呼叫一次，就會拿到 3 個聲音！
-      final response = await http.post(
-        // 🚀 換上全新版本的 API 網址！
-        Uri.parse('https://api.elevenlabs.io/v1/text-to-voice/create-previews'),
-        headers: {
-          'Content-Type': 'application/json',
-          'xi-api-key': _apiKey,
-        },
-        body: jsonEncode({
-          "text": sampleScript,
-          "voice_description": voiceDescription, // 👈 丟給它這句描述
-        }),
-      );
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        final previews = responseData['previews'] as List<dynamic>;
-        List<Map<String, dynamic>> newSamples = [];
-        for (int i = 0; i < previews.length; i++) {
-          final preview = previews[i];
-          final String generatedVoiceId = preview['generated_voice_id'];
-          // 1. 💧 將文字解碼回二進位音檔
-          final Uint8List audioBytes = base64Decode(preview['audio_base_64']);
-          // 2. 🌟 只有手機版才需要存檔備份
-          if (!kIsWeb) {
-            try {
-              final directory = await getTemporaryDirectory();
-              final filePath = '${directory.path}/temp_voice_${i}.mp3';
-              final file = File(filePath);
-              await file.writeAsBytes(audioBytes);
-              debugPrint("手機版：已存檔至 $filePath");
-            } catch (e) {
-              debugPrint("手機版存檔失敗: $e");
-            }
-          } else {
-            debugPrint("網頁版：略過存檔，直接使用記憶體數據");
-          }
-          // 3. ✨ 唯一正確的存入方式（每次迴圈只准 add 一次！）
-          newSamples.add({
-            'generated_voice_id': generatedVoiceId, // 這是給 ElevenLabs 確定的 ID
-            'audio_bytes': audioBytes, // 🌟 統一叫這個名字！UI 那邊也要用這個名字讀取
-            'preview_url': '', // 先留空沒關係
-          });
-        }
-        // ✨✨✨ 請把那段加在這裡！ ✨✨✨
-        if (newSamples.isNotEmpty) {
-          _selectedSampleIndex = 0; // 預設選中第一個樣本
-          _selectedVoiceId = newSamples[0]['generated_voice_id']; // 預先把 ID 給試聽按鈕
-        }
-        setState(() {
-          _voiceSamples = newSamples; // 🌟 成功把 3 個聲音裝進去！
-          _isGeneratingVoice = false;
-        });
-      } else {
-        // 如果還是失敗，把原因印出來
-        debugPrint("聲音生成失敗: ${response.body}");
-        setState(() => _isGeneratingVoice = false);
 
-        if (mounted) { // 💡 總裁防護罩：非同步操作回來後，一定要確認畫面還在！
-          // ✨ 總裁級：語音生成失敗的優雅提示，明確且不具恐嚇性
-          ToastUtils.showCenterToast(
-            context,
-            l10n.elevenlabs_error(response.statusCode.toString()),
-            isError: true, // 💡 紅色驚嘆號，讓玩家知道是系統出錯
-            // 💡 總裁秘技：如果想讓語意更專屬，可以拿掉 isError，改用：
-            // customIcon: Icons.volume_off_rounded, // 喇叭打叉的圖示，直覺告訴玩家「現在沒聲音」
-          );
+      final String voiceDescription =
+          "A $age $gender voice for a character named $finalCharacterName. "
+          "$prompt Studio quality recording, clear pronunciation.";
+
+      final callable = _functions.httpsCallable('createVoicePreviews');
+
+      final result = await callable.call({
+        'sampleScript': sampleScript,
+        'voiceDescription': voiceDescription,
+      });
+
+      final responseData = Map<String, dynamic>.from(result.data);
+      final previews = responseData['previews'] as List<dynamic>;
+
+      final List<Map<String, dynamic>> newSamples = [];
+
+      for (int i = 0; i < previews.length; i++) {
+        final preview = Map<String, dynamic>.from(previews[i]);
+
+        final String generatedVoiceId =
+            preview['generated_voice_id']?.toString() ?? '';
+
+        final String audioBase64 =
+            preview['audio_base_64']?.toString() ?? '';
+
+        if (generatedVoiceId.isEmpty || audioBase64.isEmpty) {
+          debugPrint("⚠️ 第 $i 個語音樣本資料不完整，已略過");
+          continue;
         }
+
+        final Uint8List audioBytes = base64Decode(audioBase64);
+
+        if (!kIsWeb) {
+          try {
+            final directory = await getTemporaryDirectory();
+            final filePath = '${directory.path}/temp_voice_$i.mp3';
+            final file = File(filePath);
+            await file.writeAsBytes(audioBytes);
+            debugPrint("手機版：已存檔至 $filePath");
+          } catch (e) {
+            debugPrint("手機版存檔失敗: $e");
+          }
+        } else {
+          debugPrint("網頁版：略過存檔，直接使用記憶體數據");
+        }
+
+        newSamples.add({
+          'generated_voice_id': generatedVoiceId,
+          'audio_bytes': audioBytes,
+          'preview_url': '',
+        });
       }
+
+      if (!mounted) return;
+
+      if (newSamples.isNotEmpty) {
+        _selectedSampleIndex = 0;
+        _selectedVoiceId = newSamples[0]['generated_voice_id'];
+      }
+
+      setState(() {
+        _voiceSamples = newSamples;
+        _isGeneratingVoice = false;
+      });
     } catch (e) {
-      debugPrint("API 請求發生錯誤: $e");
-      setState(() => _isGeneratingVoice = false);
+      debugPrint("聲音生成失敗: $e");
+
+      if (!mounted) return;
+
+      setState(() {
+        _isGeneratingVoice = false;
+      });
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.elevenlabs_error(e.toString()),
+        isError: true,
+      );
     }
   }
 
@@ -1529,42 +1612,33 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     // 1. 上鎖！讓按鈕轉圈圈
     setState(() => _isTestingSettings = true);
     try {
-      // 🌟 針對指定的 voice_id 進行朗讀
-      final url = Uri.parse('https://api.elevenlabs.io/v1/text-to-speech/$targetVoiceId');
+      final callable = _functions.httpsCallable('testVoiceSettings');
 
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'xi-api-key': _apiKey, // 妳的金鑰
-        },
-        body: jsonEncode({
-          "text": l10n.voice_test_script,
-          "model_id": "eleven_multilingual_v2", // 支援中文的 v2 模型
-          "voice_settings": {
-            "stability": _voiceStability, // 🌟 帶入滑桿的數字
-            "similarity_boost": 0.75,     // 官方建議保持在 0.75 左右
-            "style": _voiceStyle,         // 🌟 帶入滑桿的數字
-            "use_speaker_boost": true     // 提升聲音清晰度
-          }
-        }),
-      );
+      final result = await callable.call({
+        'voiceId': targetVoiceId,
+        'text': l10n.voice_test_script,
+        'stability': _voiceStability,
+        'style': _voiceStyle,
+      });
 
-      if (response.statusCode == 200) {
-        if (!mounted) return;
-        // 🌟 大成功！餵給幽靈免疫播放器
-        await _playVoice(response.bodyBytes);
-      } else {
-        debugPrint("❌ 試聽失敗: ${response.body}");
-        // 🌟 潛規則防護：如果 API 報錯，通常是因為只聽了樣本，還沒正式建立聲音
-        // 💡 總裁防護罩提醒：因為試聽通常是 async（非同步）請求，
+      final data = Map<String, dynamic>.from(result.data);
+      final Uint8List audioBytes = base64Decode(data['audio_base_64']);
+
+      if (!mounted) return;
+
+      // 🌟 大成功！餵給幽靈免疫播放器
+      await _playVoice(audioBytes);
+    } catch (e) {
+      debugPrint("❌ 試聽失敗: $e");
+
+      if (mounted) {
         ToastUtils.showCenterToast(
           context,
           l10n.voice_test_failed,
-          isError: true, // 💡 完美取代原本的 redAccent，用全域統一的紅驚嘆號精緻呈現
+          isError: true,
         );
       }
-    } catch (e) {
+    }catch (e) {
       debugPrint("❌ 發生錯誤: $e");
     } finally {
       // 3. 不管怎樣，最後一定要解鎖
@@ -1576,107 +1650,130 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   Future<void> _confirmVoiceSelection() async {
     if (_selectedSampleIndex == null || _voiceSamples.isEmpty) return;
 
-    setState(() => _isSaving = true);
     final l10n = AppLocalizations.of(context)!;
+
+    setState(() => _isSaving = true);
+
     final selectedSample = _voiceSamples[_selectedSampleIndex!];
-    // 1. 抓出這個暫時的「臨時試聽券 ID」
-    final String previewVoiceId = selectedSample['generated_voice_id'];
-    final Uint8List selectedAudioBytes = selectedSample['audio_bytes'];
-    final String previewUrl = selectedSample['preview_url'] ?? '';
+
+    final String previewVoiceId =
+        selectedSample['generated_voice_id']?.toString() ?? '';
+
+    final Uint8List? selectedAudioBytes =
+    selectedSample['audio_bytes'] as Uint8List?;
+
+    final String previewUrl =
+        selectedSample['preview_url']?.toString() ?? '';
+
+    if (previewVoiceId.isEmpty || selectedAudioBytes == null) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.voice_bind_failed,
+          isError: true,
+        );
+      }
+      return;
+    }
 
     try {
-      // ✨✨✨ 關鍵新增：打電話給 ElevenLabs，正式把聲音存進妳的帳號庫！
-      final url = Uri.parse('https://api.elevenlabs.io/v1/text-to-voice/create-voice-from-preview');
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'xi-api-key': _apiKey, // 確保這裡會帶入妳的 API Key
-        },
-        body: jsonEncode({
-          "voice_name": l10n.voice_name_default(_nameController.text.trim().isNotEmpty ? _nameController.text.trim() :l10n.default_unnamed_character),
-          "voice_description":l10n.voice_description_default,
-          "generated_voice_id": previewVoiceId, // 繳交剛拿到的臨時試聽券
-        }),
-      );
+      // ✅ Cloud Function：把 preview voice 轉成正式永久 voice
+      final callable = _functions.httpsCallable('createVoiceFromPreview');
 
-      // 如果 ElevenLabs 拒絕兌換（例如 API 額度不夠或網路問題）
-      if (response.statusCode != 200) {
-        debugPrint("❌ ElevenLabs 儲存聲音失敗: ${response.body}");
-        if (mounted) {
-          // ✨ 總裁級：語音綁定失敗的精準攔截，用高級感取代原生大紅底色！
-          ToastUtils.showCenterToast(
-            context,
-            l10n.voice_bind_failed,
-            isError: true, // 💡 全域統一的紅驚嘆號，清楚傳達錯誤，同時維持 UI 質感
-          );
-        }
-        setState(() => _isSaving = false);
-        return;
-      }
-      // ✨ 兌換大成功！拿到「真正的永久聲音 ID」！
-      final responseData = jsonDecode(response.body);
-      final String realVoiceId = responseData['voice_id'];
+      final result = await callable.call({
+        'voiceName': l10n.voice_name_default(
+          _nameController.text.trim().isNotEmpty
+              ? _nameController.text.trim()
+              : l10n.default_unnamed_character,
+        ),
+        'voiceDescription': l10n.voice_description_default,
+        'generatedVoiceId': previewVoiceId,
+      });
+
+      final data = Map<String, dynamic>.from(result.data);
+
+      // ✅ 成功時直接從 Cloud Function 回傳資料拿正式 voice_id
+      final String realVoiceId =
+          data['voice_id']?.toString() ??
+              data['voiceId']?.toString() ??
+              previewVoiceId;
+
       debugPrint("✅ 成功獲得正式 Voice ID: $realVoiceId");
+
+      if (!mounted) return;
+
+      // ✅ 先更新本頁狀態，讓後續儲存角色時會帶到 voice_id
+      setState(() {
+        _generatedVoiceId = realVoiceId;
+        _selectedVoiceId = realVoiceId;
+        _finalAudioBytes = selectedAudioBytes;
+        _finalVoicePreviewUrl = previewUrl;
+        _voiceSamples = []; // 清空三張樣本卡片
+      });
+
+      // ✅ 如果是編輯既有角色，立刻同步到 Firebase
       if (widget.character != null) {
-        // ☁️ 同步到 Firebase：連同滑桿參數與「真正的 ID」一起存進去！
-        await FirebaseFirestore.instance
+        final currentUser = FirebaseAuth.instance.currentUser;
+
+        if (!widget.character!.isPublic && currentUser == null) {
+          throw Exception("找不到使用者，無法更新私人角色語音");
+        }
+
+        final DocumentReference characterRef = widget.character!.isPublic
+            ? FirebaseFirestore.instance
             .collection('artifacts')
-            .doc(AppConfig.appId) // 🎯 修正：統一使用 AppConfig.appId
+            .doc(AppConfig.appId)
             .collection('public_characters')
             .doc(widget.character!.id)
-            .update({
-          'voice_id': realVoiceId,              // 🎯 存入真正的 ID
-          'voice_preview_url': previewUrl,      // 🎯 存入預覽網址
+            : FirebaseFirestore.instance
+            .collection('artifacts')
+            .doc(AppConfig.appId)
+            .collection('users')
+            .doc(currentUser!.uid)
+            .collection('private_characters')
+            .doc(widget.character!.id);
+
+        await characterRef.update({
+          'voice_id': realVoiceId,
+          'voice_preview_url': previewUrl,
           'voiceStability': _voiceStability,
           'voiceStyle': _voiceStyle,
           'lastUpdated': FieldValue.serverTimestamp(),
         });
-        // ✨ 華麗的成功提示
-        if (mounted) {
-          // ✨ 總裁級：語音綁定成功的完美收尾！將原本複雜的 UI 封裝成極致的一行程式碼。
-          ToastUtils.showCenterToast(
-            context,
-            l10n.voice_bind_success(widget.character!.name),
-            customIcon: Icons.cloud_done_rounded, // 💡 完美繼承你原本的「雲端同步成功」圖示！
-            // 💡 總裁秘技：如果想更強調「聲音」，也可以換成 Icons.record_voice_over_rounded
-          );
-        }
-      } else {
-        // 如果是新建角色的草稿階段，也給個綠色小提示
-        if (mounted) {
-          // ✨ 總裁級：語音草稿儲存的輕量回饋，給予玩家毫無壓力的安心感！
-          ToastUtils.showCenterToast(
-            context,
-            l10n.voice_bind_success_draft,
-            customIcon: Icons.edit_note_rounded, // 💡 總裁精選：帶有筆記與草稿意味的圖示，語意滿分。
-            // 💡 若想強調「已經安全存入磁碟」的感覺，使用 Icons.save_rounded 也是絕佳選擇！
-          );
-        }
-      }
 
-      // 🌟 更新 UI 狀態，把真正的 ID 牢牢存起來
-      setState(() {
-        _generatedVoiceId = realVoiceId; // 🎯 綁定給畫面與後續儲存使用
-        _finalVoicePreviewUrl = previewUrl;
-        _finalAudioBytes = selectedAudioBytes;
-        _voiceSamples = []; // 清空三張樣本卡片
-      });
+        if (!mounted) return;
 
-    } catch (e) {
-      debugPrint("儲存失敗: $e");
-      if (mounted) {
-        // ✨ 總裁級防護：同步失敗的優雅迫降，用精緻的警告取代驚悚的紅色警報！
         ToastUtils.showCenterToast(
           context,
-          l10n.sync_failed(e.toString()),
-          isError: true, // 💡 全域統一的紅色驚嘆號，清楚告知錯誤但不引發焦慮
-          // 💡 總裁秘技：如果你的錯誤訊息 e.toString() 通常很長，
-          // CenterToast 的版面配置會比底部 SnackBar 更適合閱讀，不會把 UI 頂得亂七八糟！
+          l10n.voice_bind_success(widget.character!.name),
+          customIcon: Icons.cloud_done_rounded,
+        );
+      } else {
+        // ✅ 新建角色階段：只存在本頁狀態，等按「儲存角色」時一起寫進 characterData
+        if (!mounted) return;
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.voice_bind_success_draft,
+          customIcon: Icons.edit_note_rounded,
+        );
+      }
+    } catch (e) {
+      debugPrint("❌ 語音綁定失敗: $e");
+
+      if (mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          l10n.voice_bind_failed,
+          isError: true,
         );
       }
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
@@ -1833,7 +1930,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                         elevation: 4,
                       ),
-                      onPressed: _isSaving ? null : () => _saveCharacter(l10n),
+                      onPressed: _isSaving ? null : _saveCharacter,
                       child: _isSaving
                           ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                           : Text(isEditing ? l10n.save_changes_button : l10n.createButton, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
@@ -2828,9 +2925,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     // 🌟 瘦身魔法陣：直接在源頭把圖片壓縮！
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 50, // 👈 畫質壓到 50%
-      maxWidth: 600,    // 👈 限制寬度為 600px
-      maxHeight: 600,   // 👈 限制高度為 600px
+      imageQuality: 90,
+      maxWidth: 1600,
+      maxHeight: 1600,
     );
 
     if (image == null || !mounted) return;
