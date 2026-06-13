@@ -369,13 +369,32 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // 如果上次重置日期不是今天，代表所有進度都是 0，所有獎勵都未領取
     if (lastResetDateString != todayString) {
+      await userDocRef.set({
+        'lastTasksResetDate': FieldValue.serverTimestamp(),
+        'dailyTasks': {
+          'dailyChatProgress': 0,
+          'dailyChatClaimed': false,
+          'storyChatProgress': 0,
+          'storyChatClaimed': false,
+          'likeProgress': 0,
+          'likeClaimed': false,
+          'monthlyCardClaimed': false,
+        },
+      }, SetOptions(merge: true));
+
+      if (!mounted) return;
+
       setState(() {
-        _dailyChatProgress = 0; _isDailyChatClaimed = false;
-        _storyChatProgress = 0; _isStoryChatClaimed = false;
-        _likeProgress = 0; _isLikeClaimed = false;
-        _hasActiveMonthlyCard = isCardValid; // 🌟 載入月卡身分
-        _isMonthlyRewardClaimed = false;     // 🌟 新的一天，月卡獎勵重置為未領取
+        _dailyChatProgress = 0;
+        _isDailyChatClaimed = false;
+        _storyChatProgress = 0;
+        _isStoryChatClaimed = false;
+        _likeProgress = 0;
+        _isLikeClaimed = false;
+        _hasActiveMonthlyCard = isCardValid;
+        _isMonthlyRewardClaimed = false;
       });
+
       return;
     }
 
@@ -399,50 +418,73 @@ class _ProfilePageState extends State<ProfilePage> {
       String progressField,
       String claimedField,
       int rewardAmount,
-      VoidCallback onDialogSetState) async {
+      VoidCallback onDialogSetState,
+      ) async {
     if (_userId == null) return;
 
     final userDocRef = _db.collection('users').doc(_userId);
+    final l10n = AppLocalizations.of(context)!;
 
     try {
-      final l10n = AppLocalizations.of(context)!;
-      final batch = _db.batch();
-      // 增加花花點數
-      batch.update(userDocRef, {'flowerPoints': FieldValue.increment(rewardAmount)});
-      // 將對應任務的 claimed 狀態設為 true
-      batch.update(userDocRef, {'dailyTasks.$claimedField': true});
+      await _db.runTransaction((transaction) async {
+        final userSnapshot = await transaction.get(userDocRef);
 
-      // ✨✨✨ 總裁看這裡！把記帳也加入這個「打包作業 (batch)」裡！ ✨✨✨
-      final logRef = userDocRef.collection('flower_logs').doc(); // 建立一張新的明細空白表單
-      batch.set(logRef, {
-        'title': l10n.task_completed(taskName), // 這樣明細就會顯示「完成任務：閒話家常」
-        'amount': rewardAmount,      // 動態抓取這個任務給了多少花花
-        'createdAt': FieldValue.serverTimestamp(),
+        if (!userSnapshot.exists) {
+          throw Exception('找不到玩家資料');
+        }
+
+        final data = userSnapshot.data() ?? {};
+        final dailyTasks =
+        Map<String, dynamic>.from(data['dailyTasks'] ?? {});
+
+        final bool alreadyClaimed = dailyTasks[claimedField] == true;
+
+        // 🔒 Firebase 層級防重複領取
+        if (alreadyClaimed) {
+          throw Exception('今天已經領取過這個任務獎勵');
+        }
+
+        // 1. 增加花花
+        transaction.update(userDocRef, {
+          'flowerPoints': FieldValue.increment(rewardAmount),
+          'dailyTasks.$claimedField': true,
+        });
+
+        // 2. 寫入花花明細
+        final logRef = userDocRef.collection('flower_logs').doc();
+
+        transaction.set(logRef, {
+          'title': l10n.task_completed(taskName),
+          'amount': rewardAmount,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
       });
 
-      // 一口氣把 增加花花、更新任務進度、寫入明細 全部送出！
-      await batch.commit();
-      if (mounted) { // 💡 如果報錯，記得換成 context.mounted
-        // ✨ 總裁級：領取獎勵的專屬優雅回饋，給予玩家滿滿的成就感
-        ToastUtils.showCenterToast(
-          context,
-          l10n.task_reward_claimed(taskName, rewardAmount.toString()),
-          customIcon: Icons.emoji_events_rounded, // 💡 用「獎盃/禮物」圖示，完美強化獲得獎勵的喜悅感！
-        );
-        // 更新彈窗內的 UI
-        onDialogSetState();
-      }
-    } catch (e) {
-      if (mounted) { // 💡 同樣地，如果報錯記得換成 context.mounted
-        final l10n = AppLocalizations.of(context)!;
+      if (!mounted) return;
 
-        // ✨ 總裁級：領取失敗的溫柔防護，清楚告知異常狀況
-        ToastUtils.showCenterToast(
-          context,
-          l10n.claim_failed_error(e.toString()),
-          isError: true, // 💡 紅色驚嘆號，在任務彈窗上方明確提示異常
-        );
-      }
+      // ✅ 交易成功後，才更新畫面
+      onDialogSetState();
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.task_reward_claimed(taskName, rewardAmount.toString()),
+        customIcon: Icons.emoji_events_rounded,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.claim_failed_error(
+          e.toString().replaceFirst('Exception: ', ''),
+        ),
+        isError: true,
+      );
+
+      // ⚠️ 如果前面有樂觀更新，失敗後最好重新讀資料
+      // 如果你的頁面有這種函式，可以打開：
+      // await _loadUserData();
+      // await _loadDailyTasks();
     }
   }
 
@@ -472,16 +514,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       progress: _dailyChatProgress, goal: 3,
                       isClaimed: _isDailyChatClaimed,
                       onClaim: () {
-                        // 🔒 1. 防禦塔：如果已經領過了，直接擋掉！
                         if (_isDailyChatClaimed) return;
+                        if (_dailyChatProgress < 3) return;
 
-                        // ⚡ 2. 瞬間鎖門：不等後台，畫面先立刻切換成「已領取」
-                        setStateInDialog(() => _isDailyChatClaimed = true);
-                        setState(() => _isDailyChatClaimed = true);
-                        // 🎁 3. 慢慢去後台發花花
-                        _claimTaskReward(l10n.tab_daily_chit_chat, 'dailyChatProgress', 'dailyChatClaimed', 5, () {
-                          // 因為前面已經鎖了，這裡的 callback 甚至可以留空
-                        });
+                        _claimTaskReward(
+                          l10n.tab_daily_chit_chat,
+                          'dailyChatProgress',
+                          'dailyChatClaimed',
+                          5,
+                              () {
+                            setStateInDialog(() => _isDailyChatClaimed = true);
+                            setState(() => _isDailyChatClaimed = true);
+                          },
+                        );
                       },
                     ),
 
@@ -491,12 +536,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       progress: _storyChatProgress, goal: 1,
                       isClaimed: _isStoryChatClaimed,
                       onClaim: () {
-                        if (_isStoryChatClaimed) return; // 🔒 防禦
+                        if (_isStoryChatClaimed) return;
+                        if (_storyChatProgress < 1) return;
 
-                        setStateInDialog(() => _isStoryChatClaimed = true); // ⚡ 瞬間鎖門
-                        setState(() => _isStoryChatClaimed = true);
-
-                        _claimTaskReward(l10n.tab_story_progression, 'storyChatProgress', 'storyChatClaimed', 5, () {});
+                        _claimTaskReward(
+                          l10n.tab_story_progression,
+                          'storyChatProgress',
+                          'storyChatClaimed',
+                          5,
+                              () {
+                            setStateInDialog(() => _isStoryChatClaimed = true);
+                            setState(() => _isStoryChatClaimed = true);
+                          },
+                        );
                       },
                     ),
 
@@ -506,12 +558,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       progress: _likeProgress, goal: 3,
                       isClaimed: _isLikeClaimed,
                       onClaim: () {
-                        if (_isLikeClaimed) return; // 🔒 防禦
+                        if (_isLikeClaimed) return;
+                        if (_likeProgress < 3) return;
 
-                        setStateInDialog(() => _isLikeClaimed = true); // ⚡ 瞬間鎖門
-                        setState(() => _isLikeClaimed = true);
-
-                        _claimTaskReward(l10n.tab_social_tour, 'likeProgress', 'likeClaimed', 5, () {});
+                        _claimTaskReward(
+                          l10n.tab_social_tour,
+                          'likeProgress',
+                          'likeClaimed',
+                          5,
+                              () {
+                            setStateInDialog(() => _isLikeClaimed = true);
+                            setState(() => _isLikeClaimed = true);
+                          },
+                        );
                       },
                     ),
                     // 🏆 4. ✨✨✨ 第四個獨立任務（星之契約特權）- 全多國語系版 ✨✨✨
@@ -527,11 +586,17 @@ class _ProfilePageState extends State<ProfilePage> {
                       customIncompleteText: l10n.task_monthly_locked,
                       onClaim: () {
                         if (!_hasActiveMonthlyCard || _isMonthlyRewardClaimed) return;
-                        setStateInDialog(() => _isMonthlyRewardClaimed = true);
-                        setState(() => _isMonthlyRewardClaimed = true);
 
-                        // 🌟 將第一個參數也換成 l10n.task_monthly_log_name
-                        _claimTaskReward(l10n.task_monthly_log_name, '', 'monthlyCardClaimed', 10, () {});
+                        _claimTaskReward(
+                          l10n.task_monthly_log_name,
+                          '',
+                          'monthlyCardClaimed',
+                          10,
+                              () {
+                            setStateInDialog(() => _isMonthlyRewardClaimed = true);
+                            setState(() => _isMonthlyRewardClaimed = true);
+                          },
+                        );
                       },
                     ),
                   ],
@@ -557,9 +622,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }) {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
+
     final int displayedProgress = progress > goal ? goal : progress;
     final bool isCompleted = progress >= goal;
-    final l10n = AppLocalizations.of(context)!;
+    final bool canClaim = isCompleted && !isClaimed;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -568,33 +635,48 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
-            title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             subtitle: Text('$subtitle ($displayedProgress / $goal)'),
-        trailing: isClaimed
-            ?  Text(l10n.btn_claimed, style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))
-            : ElevatedButton(
-          onPressed: isCompleted ? onClaim : null,
-          style: ElevatedButton.styleFrom(
-            // 🌟 核心改進：完成時用主題色，未完成時用超淡灰色
-            backgroundColor: isCompleted ? primaryColor : Colors.grey[200],
-            // 🌟 核心改進：完成時文字強制白色，未完成時用深灰色
-            foregroundColor: isCompleted ? Colors.white : Colors.grey[600],
-            elevation: isCompleted ? 3 : 0, // 完成後才有一點陰影，增加「可點擊感」
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            trailing: isClaimed
+                ? Text(
+              l10n.btn_claimed,
+              style: const TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+                : ElevatedButton(
+              onPressed: canClaim ? onClaim : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                canClaim ? primaryColor : Colors.grey[200],
+                foregroundColor:
+                canClaim ? Colors.white : Colors.grey[600],
+                disabledBackgroundColor: Colors.grey[200],
+                disabledForegroundColor: Colors.grey[600],
+                elevation: canClaim ? 3 : 0,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: Text(
+                canClaim
+                    ? l10n.btn_claim
+                    : (customIncompleteText ?? l10n.btn_incomplete),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
           ),
-          child: Text(
-            isCompleted ? l10n.btn_claim : l10n.btn_incomplete,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-          ),
-          // ✨ 新增：進度條，讓玩家更有目標感
+
           ClipRRect(
             borderRadius: BorderRadius.circular(5),
             child: LinearProgressIndicator(
-              value: displayedProgress / goal,
-              backgroundColor: primaryColor.withValues(alpha:0.1),
+              value: goal <= 0 ? 0 : displayedProgress / goal,
+              backgroundColor: primaryColor.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
               minHeight: 6,
             ),

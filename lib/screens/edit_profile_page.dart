@@ -43,6 +43,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _hasChangedID = false;
   bool _isSaving = false;
   String _originalID = '';
+  String _originalNickname = '';
+  String _originalGender = '未選擇';
+  String _originalAvatarPath = 'assets/images/avatar1.png';
+  DateTime? _originalBirthDate;
 
   // --- Services ---
   final ImagePicker _picker = ImagePicker();
@@ -92,6 +96,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _originalID = data['playerID'] ?? '';
               _playerIDController.text = _originalID;
               _hasChangedID = data['hasChangedID'] ?? false;
+              _originalNickname = _nicknameController.text.trim();
+              _originalGender = _gender;
+              _originalAvatarPath = _avatarPath;
+              _originalBirthDate = _birthDate;
             });
           }
           return; // 雲端有資料就結束
@@ -122,6 +130,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
           _hasChangedID = prefs.getBool('hasChangedID') ?? false;
         }
         _playerIDController.text = _originalID; // 👈 隨機 ID 就會被塞進框框裡了！
+        _originalNickname = _nicknameController.text.trim();
+        _originalGender = _gender;
+        _originalAvatarPath = _avatarPath;
+        _originalBirthDate = _birthDate;
       });
     }
   }
@@ -135,13 +147,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  bool _isSameDate(DateTime? a, DateTime? b) {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  bool _hasAnyProfileChanged() {
+    final currentNickname = _nicknameController.text.trim();
+    final currentID = _playerIDController.text.trim();
+
+    return currentNickname != _originalNickname ||
+        currentID != _originalID ||
+        _gender != _originalGender ||
+        _avatarPath != _originalAvatarPath ||
+        !_isSameDate(_birthDate, _originalBirthDate);
+  }
+
   Future<void> _saveProfile() async {
     final l10n = AppLocalizations.of(context)!;
 
-    if (_isSaving) return; // 已經在存檔中就擋下來
+    if (_isSaving) return;
 
-    // ✨ 關鍵修復 1：強制作業前先收起鍵盤！
-    // 避免按鈕變成「轉圈圈」時，Flutter 底層發生 Focus 焦點遺失的卡死問題。
     FocusScope.of(context).unfocus();
 
     final newNickname = _nicknameController.text.trim();
@@ -156,13 +184,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return;
     }
 
-    if (!widget.isCreating && !_hasChangedID && newID == _originalID) {
-      _showIdNotSetDialog();
-    } else {
-      // ✨ 關鍵修復 2：加上 await！
-      // 確保 _performFullSave 徹底跑完、錯誤提示顯示完後，_isSaving 狀態才不會錯亂！
-      await _performFullSave();
+    if (!_hasAnyProfileChanged()) {
+      ToastUtils.showCenterToast(
+        context,
+        '沒有需要儲存的變更',
+        customIcon: Icons.info_outline_rounded,
+      );
+      return;
     }
+
+    final bool idChanged = newID.isNotEmpty && newID != _originalID;
+
+    // ID 有改，而且玩家還有改 ID 的權限，才走完整 ID 檢查流程
+    if (idChanged && !_hasChangedID) {
+      await _performFullSave();
+      return;
+    }
+
+    // ID 沒改，或 ID 已經鎖定，就只儲存其他個人資料
+    await _saveProfileDataOnly(
+      popOnSuccess: true,
+      newID: null,
+      hasChangedID: null,
+    );
   }
 
   // --- NEW: 這是只儲存非ID資料的函式 ---
@@ -377,36 +421,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // 非常推薦換成 Icons.drafts_rounded 或 Icons.edit_note_rounded，語意會更精準、更有沉浸感！
     );
   }
-
-  // --- NEW: 這是我們的「溫柔提醒」對話框 ---
-  void _showIdNotSetDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (context) =>
-          AlertDialog(
-            title:Text(l10n.dialog_reminder_title),
-            content:Text(l10n.warning_id_not_edited),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child:Text(l10n.action_continue_editing),
-              ),
-              ElevatedButton(
-                // ✨ 加上 async
-                onPressed: () async {
-                  Navigator.pop(context);
-                  // ✨ 加上 await
-                  await _saveProfileDataOnly();
-                },
-                child: Text(l10n.action_edit_later),
-              ),
-            ],
-          ),
-    );
-  }
-
-  // --- UI 輔助函式 (保持不變) ---
 
   Future<void> _selectDate() async {
     final l10n = AppLocalizations.of(context)!;
@@ -768,7 +782,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 children: [
                   // 主要儲存按鈕
                   ElevatedButton(
-                    onPressed: _hasChangedID ? null : _saveProfile,
+                    onPressed: _isSaving ? null : _saveProfile,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
                       foregroundColor: theme.colorScheme.onPrimary,

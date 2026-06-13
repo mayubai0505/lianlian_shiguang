@@ -711,8 +711,17 @@ class _CharacterCardState extends State<CharacterCard> {
     final l10n = AppLocalizations.of(context)!;
 
     final displaySummary = _translatedSummary ?? (sharedTranslation?['storySummary'] as String?) ?? widget.character.storySummary;
-    final displayTags = _translatedTags ?? (sharedTranslation?['personalityTags'] as List?)?.cast<String>() ?? widget.character.personalityTags;
-    final String displayIdentities = (widget.character.identities != null && widget.character.identities!.isNotEmpty)
+    final rawDisplayTags = _translatedTags ??
+        (sharedTranslation?['personalityTags'] as List?)?.cast<String>() ??
+        widget.character.personalityTags;
+
+    final seenTags = <String>{};
+
+    final displayTags = rawDisplayTags
+        .map((tag) => tag.trim().replaceAll(RegExp(r'^#+'), '').trim())
+        .where((tag) => tag.isNotEmpty)
+        .where((tag) => seenTags.add(tag))
+        .toList();    final String displayIdentities = (widget.character.identities != null && widget.character.identities!.isNotEmpty)
         ? widget.character.identities!.join(' / ')
         : (widget.character.occupation);
     final bool showTranslateButton = (currentAppLang != contentLang) &&

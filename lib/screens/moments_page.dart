@@ -46,56 +46,72 @@ class _MomentsPageState extends State<MomentsPage> {
     final l10n = AppLocalizations.of(context)!;
     if (_userId == null) return;
 
-    // 1. 本地更新：讓 UI 先動，給使用者即時回饋
-    setState(() {
-      _likeProgress++;
-    });
-
-    // 2. 背景處理雲端邏輯（不要用 await 等待所有刷新，除非有絕對必要）
     final userDocRef = _db.collection('users').doc(_userId);
 
-    // 這裡的邏輯保持不動，但把 _loadDailyTaskProgress 拿掉！
+    // 1. 本地先更新，讓 UI 有即時感
+    setState(() {
+      _likeProgress++;
+      if (_likeProgress > 3) {
+        _likeProgress = 3;
+      }
+    });
+
     try {
-      await userDocRef.update({
+      // 2. 更新雲端任務進度
+      // 重點：要一起更新 lastTasksResetDate
+      await userDocRef.set({
+        'lastTasksResetDate': FieldValue.serverTimestamp(),
         'dailyTasks.likeProgress': FieldValue.increment(1),
-      });
-      // 使用妳剛定義好的 moment.createdBy 找出這篇貼文的「親媽」
-        final String recipientId = moment.createdBy;
-        if (recipientId.isNotEmpty && recipientId != _userId) {
-          // ✨ 總裁關鍵判斷：決定信件內容
-          String mailBody;
-          if (moment.isCreatorPost) {
-            // 💡 狀況 A：對方按讚的是妳本人發的動態
-            mailBody = l10n.moment_like_self(_nickname ?? "某位朋友");
-          } else {
-            // 💡 狀況 B：對方按讚的是妳創造的「角色」動態
-            // 這裡會抓取 moment.authorName (例如：程宇)
-            mailBody = l10n.moment_like_other(_nickname ?? "某位朋友", moment.authorName);
-          }
-          await _sendNotificationLetter(
-            recipientId: recipientId,
-            postId: moment.id,
-            type: 'like',
-            senderName: _nickname ?? l10n.friend_unknown,
-            body: mailBody,
+      }, SetOptions(merge: true));
+
+      // 3. 發送按讚通知
+      final String recipientId = moment.createdBy;
+
+      if (recipientId.isNotEmpty && recipientId != _userId) {
+        String mailBody;
+
+        if (moment.isCreatorPost) {
+          mailBody = l10n.moment_like_self(_nickname ?? "某位朋友");
+        } else {
+          mailBody = l10n.moment_like_other(
+            _nickname ?? "某位朋友",
+            moment.authorName,
           );
         }
 
+        await _sendNotificationLetter(
+          recipientId: recipientId,
+          postId: moment.id,
+          type: 'like',
+          senderName: _nickname ?? l10n.friend_unknown,
+          body: mailBody,
+        );
+      }
+
+      // 4. 重新讀取任務狀態
       await _loadDailyTaskProgress();
-      // 3. 檢查是否達標 (目標 3 次)
-      if (_likeProgress == 3 && !_isLikeClaimed) {
-        if (mounted) {
-          // ✨ 總裁級：社交導覽完成的榮譽印記，將綠色色塊轉化為質感圖示！
-          ToastUtils.showCenterToast(
-            context,
-            l10n.task_social_tour_complete,
-            customIcon: Icons.tour_rounded, // 💡 總裁精選：用「旗幟」圖示象徵導覽與巡迴的圓滿達成！
-          );
-        }
+
+      // 5. 達標提示
+      if (_likeProgress >= 3 && !_isLikeClaimed) {
+        if (!mounted) return;
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.task_social_tour_complete,
+          customIcon: Icons.tour_rounded,
+        );
       }
     } catch (e) {
-      print('更新按讚進度失敗: $e');
-      setState(() => _likeProgress--);
+      debugPrint('更新按讚進度失敗: $e');
+
+      if (!mounted) return;
+
+      setState(() {
+        _likeProgress--;
+        if (_likeProgress < 0) {
+          _likeProgress = 0;
+        }
+      });
     }
   }
   Future<void> _loadDailyTaskProgress() async {
