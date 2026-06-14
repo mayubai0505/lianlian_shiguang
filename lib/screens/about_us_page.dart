@@ -70,24 +70,36 @@ class _AboutUsPageState extends State<AboutUsPage> {
           .orderBy('timestamp', descending: true)
           .get();
 
+      if (!mounted) return;
+
       setState(() {
-        _memories = snapshot.docs.map((doc) => SharedMemory.fromDocument(doc)).toList();
+        _memories = snapshot.docs
+            .map((doc) => SharedMemory.fromDocument(doc))
+            .toList();
         _isLoading = false;
       });
     } catch (e) {
       debugPrint('讀取回憶失敗: $e');
+
+      if (!mounted) return;
+
       setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _addMemoryToFirebase(String title, String subtitle, String content) async {
+  Future<void> _addMemoryToFirebase(
+      String title,
+      String subtitle,
+      String content,
+      ) async {
     try {
       await _memoriesRef.add({
-        'title': title,
-        'subtitle': subtitle,
-        'content': content,
+        'title': title.trim(),
+        'subtitle': subtitle.trim(),
+        'content': content.trim(),
         'timestamp': FieldValue.serverTimestamp(),
       });
+
       _fetchMemories();
     } catch (e) {
       debugPrint('新增回憶失敗: $e');
@@ -180,17 +192,23 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
               onPressed: () {
-                if (titleController.text.isEmpty || controllerContent.text.isEmpty) {
+                final title = titleController.text.trim();
+                final subtitle = subtitleController.text.trim();
+                final content = controllerContent.text.trim();
+
+                if (title.isEmpty || content.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(l10n.lore_empty_error)),
                   );
                   return;
                 }
+
                 _addMemoryToFirebase(
-                  titleController.text,
-                  subtitleController.text,
-                  controllerContent.text,
+                  title,
+                  subtitle,
+                  content,
                 );
+
                 Navigator.pop(context);
               },
               child: Text(l10n.about_us_add_button, style: const TextStyle(fontWeight: FontWeight.bold)), // ✨ 多國語言化

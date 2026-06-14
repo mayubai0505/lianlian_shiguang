@@ -45,6 +45,7 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
+import 'package:intl/intl.dart';
 
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive , gemini}
@@ -276,6 +277,7 @@ class _ChatPageState extends State<ChatPage> {
     _loadDraft();
     _initHardware();
     _initRegenerateCount();
+    _loadRegenerateCount();
 // 🛡️ 總裁級防護罩：第一，確保畫面已經畫完 (保護 context 跟多國語言 l10n)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -886,7 +888,6 @@ class _ChatPageState extends State<ChatPage> {
         'chatMode': chatMode,
         'unreadCount': 0,
       };
-
       // 將建立房間的動作加入 batch
       batch.set(newSessionRef, newSessionData);
 
@@ -4088,6 +4089,115 @@ class _ChatPageState extends State<ChatPage> {
       orElse: () => _flowerStages.first,
     );
   }
+
+  Future<void> _loadRegenerateCount() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null || widget.sessionId == null) {
+      return;
+    }
+
+    final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('aiRequests')
+        .doc(widget.sessionId!);
+
+    try {
+      final doc = await docRef.get();
+      final data = doc.data();
+
+      if (data == null || data['lastRegenerateDate'] != todayStr) {
+        // 新的一天，重置回滿
+        await docRef.set({
+          'regenerateCount': _maxRegenerateCount,
+          'lastRegenerateDate': todayStr,
+        }, SetOptions(merge: true));
+
+        if (!mounted) return;
+
+        setState(() {
+          _freeRegenerateCount = _maxRegenerateCount;
+        });
+
+        return;
+      }
+
+      final savedCount = data['regenerateCount'];
+
+      if (!mounted) return;
+
+      setState(() {
+        _freeRegenerateCount = savedCount is int
+            ? savedCount
+            : _maxRegenerateCount;
+      });
+    } catch (e) {
+      debugPrint('⚠️ 讀取重新生成次數失敗: $e');
+    }
+  }
+
+  Future<bool> _consumeRegenerateCount() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null || widget.sessionId == null) {
+      return false;
+    }
+
+    final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('aiRequests')
+        .doc(widget.sessionId!);
+
+    try {
+      int newCount = 0;
+
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final doc = await transaction.get(docRef);
+        final data = doc.data() ?? {};
+
+        final String? lastDate = data['lastRegenerateDate']?.toString();
+
+        int currentCount;
+
+        if (lastDate != todayStr) {
+          currentCount = _maxRegenerateCount;
+        } else {
+          final savedCount = data['regenerateCount'];
+          currentCount = savedCount is int ? savedCount : _maxRegenerateCount;
+        }
+
+        if (currentCount <= 0) {
+          throw Exception('今日重新生成次數已用完');
+        }
+
+        newCount = currentCount - 1;
+
+        transaction.set(docRef, {
+          'regenerateCount': newCount,
+          'lastRegenerateDate': todayStr,
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      });
+
+      if (!mounted) return true;
+
+      setState(() {
+        _freeRegenerateCount = newCount;
+      });
+
+      return true;
+    } catch (e) {
+      debugPrint('⚠️ 扣除重新生成次數失敗: $e');
+      return false;
+    }
+  }
+
   // ✨✨✨ 彈出模式選擇視窗 ✨✨✨
   Future<void> _showModeSelectionDialog() async {
     final l10n = AppLocalizations.of(context)!;
@@ -5948,51 +6058,27 @@ class _ChatPageState extends State<ChatPage> {
                             _showSubscriptionDialog();
                             return;
                           }
-
                           // 2. 檢測對話條件 (直接檢查 _messagesCollection 是否就緒)
                           if (_messagesCollection == null) {
                             // 🚀 2. 替換準備中的提示
                             _showCenterToast(l10n.systemPreparingWait, isError: true);
                             return;
                           }
-
                           final querySnapshot = await _messagesCollection!.orderBy('timestamp', descending: true).limit(2).get();
                           if (querySnapshot.docs.length < 2) {
                             // 🚀 3. 替換沒有對話可生成的提示
                             _showCenterToast(l10n.noMessagesToRegenerate, isError: true);
                             return;
                           }
-
                           // 取得 ID 與 Text
                           final aiMessageId = querySnapshot.docs[0].id;
                           final userMessageText = (querySnapshot.docs[1].data() as Map<String, dynamic>)['text'] ?? '';
-
                           // 3. 扣次數與同步更新
-                          setState(() {
-                            _freeRegenerateCount--;
-                          });
-
-                          final user = FirebaseAuth.instance.currentUser;
-                          if (user != null) {
-                            try {
-                              final todayStr = DateTime.now().toString().substring(0, 10);
-
-                              await FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(user.uid)
-                                  .collection('aiRequests')
-                                  .doc(widget.sessionId!)
-                                  .set({
-                                'regenerateCount': _freeRegenerateCount,
-                                'lastRegenerateDate': todayStr,
-                              }, SetOptions(merge: true));
-
-                              debugPrint("✅ 已同步更新對話 ${widget.sessionId} 的次數: $_freeRegenerateCount");
-                            } catch (e) {
-                              debugPrint('⚠️ 更新次數失敗: $e');
-                            }
+                          final consumed = await _consumeRegenerateCount();
+                          if (!consumed) {
+                            _showSubscriptionDialog();
+                            return;
                           }
-
                           // 4. 呼叫重新生成
                           _regenerateAIResponse(aiMessageId, userMessageText);
                         },

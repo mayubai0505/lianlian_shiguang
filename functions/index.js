@@ -492,8 +492,8 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                 }
 
                                                 // =========================================================================
-                                                                                                // 👥 多人角色狀態管理 - 總裁黃金升級版
-                                                                                                // =========================================================================
+                                                // 👥 多人角色狀態管理 - 總裁黃金升級版
+                                                // =========================================================================
 
                                                                                                 // 取得所有可用角色卡列表（從 Flutter 端傳入）
                                                                                                 const charactersList = characterProfile.charactersList
@@ -521,6 +521,46 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                     "空氣突然安靜了一秒，理智與衝動在腦海中劇烈拉扯"
                                                                                                 ];
                                                                                                 const currentStateDice = randomStates[Math.floor(Math.random() * randomStates.length)];
+
+                                                                                                // ✨✨✨ 總裁新增：讀取專屬回憶 (關於我們)
+                                                                                                let sharedMemoriesText = "";
+                                                                                                try {
+                                                                                                    // 💡 注意：這裡的變數名稱請對應您實際接收到的參數
+                                                                                                    // 例如如果前端傳來的是 body.userId，請確保替換正確！
+                                                                                                    const uid = body.userId || body.uid || userId;
+                                                                                                    const charId = body.characterId || body.botId || characterProfile.id;
+                                                                                                    console.log("🧪 [shared_memories] uid =", uid);
+                                                                                                    console.log("🧪 [shared_memories] charId =", charId);
+                                                                                                    console.log(
+                                                                                                      "🧪 [shared_memories] path =",
+                                                                                                      `users/${uid}/characters/${charId}/shared_memories`
+                                                                                                    );
+
+                                                                                                    if (uid && charId) {
+                                                                                                        const sharedMemoriesSnapshot = await admin.firestore()
+                                                                                                            .collection('users').doc(uid)
+                                                                                                            .collection('characters').doc(charId)
+                                                                                                            .collection('shared_memories')
+                                                                                                            .orderBy('timestamp', 'desc')
+                                                                                                            .limit(10)
+                                                                                                            .get();
+
+                                                                                                            console.log("🧪 [shared_memories] count =", sharedMemoriesSnapshot.size);
+
+                                                                                                        if (!sharedMemoriesSnapshot.empty) {
+                                                                                                            sharedMemoriesText = "\n\n【重要劇情與共同回憶】：\n請務必將以下設定視為「既定事實」，並在對話中自然地展現出你們已經經歷過這些事：\n";
+                                                                                                            let index = 1;
+                                                                                                            sharedMemoriesSnapshot.forEach(doc => {
+                                                                                                                const memory = doc.data();
+                                                                                                                sharedMemoriesText += `${index}. [${memory.title}] ${memory.subtitle ? '(' + memory.subtitle + ')' : ''}\n細節：${memory.content}\n`;
+                                                                                                                index++;
+                                                                                                            });
+                                                                                                        }
+                                                                                                    }
+                                                                                                } catch (error) {
+                                                                                                    console.error("讀取專屬回憶失敗:", error);
+                                                                                                    // 就算讀取失敗也不要讓程式崩潰，繼續空字串往下走
+                                                                                                }
 
                                                                                                 // =========================================================================
                                                                                                 // 🎭 智慧多重宇宙分流：決定當前模式的 System Prompt
@@ -630,23 +670,15 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
         [輸出格式]
         時間：${currentStoryTimeDisplay}
-
         （簡短動作描寫）
-
         「角色台詞」
-
         或：
-
         時間：${currentStoryTimeDisplay}
-
         「角色台詞」
-
         （簡短動作描寫）
-
         再次提醒：總字數 100～150 字以內。
         `;
         }
-
     else if (chatMode === "story") {
         systemPrompt = `
         📢 【系統最高強制指令】：你輸出的 JSON 中，\`response\` 欄位內的文字，**第一行絕對必須是**「時間：XXX | 地點：XXX」，沒有任何例外！即使場景與時間完全沒變，也絕對不允許省略！
@@ -831,6 +863,15 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             3. 【玩家加戲承認】順應玩家在彩蛋中的互動。
             `;
         }
+
+        //關於我們
+        if (sharedMemoriesText && sharedMemoriesText.trim() !== "") {
+              systemPrompt += `
+
+            ${sharedMemoriesText.trim()}
+            `;
+        }
+
 
         // ✨✨✨ 全域：最終輸出格式與心動 KPI 結算 (取代妳原本的 <VOICE> 邏輯) ✨✨✨
 
