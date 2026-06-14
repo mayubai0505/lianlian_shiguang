@@ -4024,4 +4024,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get do_not_show_again_today => 'आज फिर न दिखाएं';
+
+  @override
+  String add_friend_success(String characterName) {
+    return '$characterName a été ajouté(e) avec succès en tant qu\'ami(e) !';
+  }
 }

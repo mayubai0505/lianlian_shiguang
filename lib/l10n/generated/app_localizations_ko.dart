@@ -3789,4 +3789,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get do_not_show_again_today => '오늘 하루 동안 보지 않기';
+
+  @override
+  String add_friend_success(String characterName) {
+    return '$characterName 님을 친구로 추가했습니다!';
+  }
 }

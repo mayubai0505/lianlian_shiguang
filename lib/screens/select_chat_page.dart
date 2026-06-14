@@ -150,7 +150,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.favorite, size: 60, color: theme.colorScheme.primary),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Text(l10n.add_friend_success(characterName),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),

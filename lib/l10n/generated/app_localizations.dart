@@ -6933,6 +6933,12 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'今日不再出現'**
   String get do_not_show_again_today;
+
+  /// 成功添加好友時的提示
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'成功添加 {characterName} 为好友！'**
+  String add_friend_success(String characterName);
 }
 
 class _AppLocalizationsDelegate

@@ -3772,4 +3772,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get do_not_show_again_today => '本日再非表示';
+
+  @override
+  String add_friend_success(String characterName) {
+    return '$characterName をフレンドに登録しました！';
+  }
 }

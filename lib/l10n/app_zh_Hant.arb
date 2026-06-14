@@ -1866,5 +1866,15 @@
       "do_not_show_again_today": "今日不再出現",
         "@do_not_show_again_today": {
           "description": "彈窗或公告的今日不再顯示勾選框文字"
-        }
+        },
+        "add_friend_success": "成功添加 {characterName} 为好友！",
+          "@add_friend_success": {
+          "description": "成功添加好友時的提示",
+          "placeholders": {
+          "characterName": {
+          "type": "String",
+          "example": "小明"
+          }
+          }
+          }
 }

@@ -3922,4 +3922,9 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get do_not_show_again_today => 'ไม่ต้องแสดงอีกในวันนี้';
+
+  @override
+  String add_friend_success(String characterName) {
+    return 'เพิ่ม $characterName เป็นเพื่อนสำเร็จแล้ว!';
+  }
 }

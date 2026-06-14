@@ -3972,4 +3972,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get do_not_show_again_today => 'Không hiển thị lại trong hôm nay';
+
+  @override
+  String add_friend_success(String characterName) {
+    return 'Đã thêm thành công $characterName làm bạn bè!';
+  }
 }

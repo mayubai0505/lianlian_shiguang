@@ -3737,6 +3737,11 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get do_not_show_again_today => '今日不再出現';
+
+  @override
+  String add_friend_success(String characterName) {
+    return '成功添加 $characterName 为好友！';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7472,6 +7477,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get do_not_show_again_today => '今日不再出现';
+
+  @override
+  String add_friend_success(String characterName) {
+    return '成功添加 $characterName 为好友！';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11207,4 +11217,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get do_not_show_again_today => '今日不再出現';
+
+  @override
+  String add_friend_success(String characterName) {
+    return '成功添加 $characterName 为好友！';
+  }
 }

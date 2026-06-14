@@ -3999,4 +3999,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get do_not_show_again_today => 'No volver a mostrar hoy';
+
+  @override
+  String add_friend_success(String characterName) {
+    return '¡$characterName ha sido añadido con éxito como amigo!';
+  }
 }
