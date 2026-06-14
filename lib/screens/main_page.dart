@@ -164,7 +164,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             .doc(user.uid)
                             .collection('flower_logs')
                             .add({
-                          'title': '每日簽到',
+                          'title': l10n.title_daily_check_in,
                           'amount': rewardAmount,
                           'createdAt': FieldValue.serverTimestamp(),
                         });
@@ -303,6 +303,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
   Future<void> _showBirthdayDialog() async {
     if (!mounted) return;
+
+    // ✨ 在 showDialog 外面先呼叫 l10n，這樣裡面就可以直接用！
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
 
@@ -312,15 +315,16 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         return AlertDialog(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24)),
-          title: Text('🎂 生日驚喜', style: TextStyle(color: primaryColor)),
+          title: Text(l10n.birthday_dialog_title, style: TextStyle(color: primaryColor)), // ✨ 替換標題
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // ✅ 圖示顏色連動
               Icon(Icons.cake, size: 60, color: primaryColor),
               const SizedBox(height: 16),
-              const Text(
-                '今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！✨',
+              // ✨ 替換內文，並記得把原本這裡的 const 拿掉！
+              Text(
+                l10n.birthday_dialog_content,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -335,8 +339,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                       borderRadius: BorderRadius.circular(20)),
                 ),
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text(
-                    '開啟浪漫的一天', style: TextStyle(color: Colors.white)),
+                // ✨ 替換按鈕文字，同樣把 const 拿掉！
+                child: Text(
+                    l10n.birthday_dialog_button, style: const TextStyle(color: Colors.white)),
               ),
             ),
           ],
@@ -358,7 +363,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     return Consumer<ThemeNotifier>(
       builder: (context, themeNotifier, child) {
         final theme = Theme.of(context);
-
+        final l10n = AppLocalizations.of(context)!;
         return Container(
           decoration: themeNotifier.currentBackground,
           child: Scaffold(
@@ -385,36 +390,36 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
               unselectedItemColor: theme.colorScheme.onSurface.withOpacity(0.6),
               items: [
                 // 1. 聊天
-                const BottomNavigationBarItem(
+                 BottomNavigationBarItem(
                   icon: ImageIcon(
                     AssetImage('assets/images/chat_icon.png'),
                     size: 24,
                   ),
-                  label: '聊天',
+                  label: l10n.mode_chat,
                 ),
                 // 2. 邂逅
-                const BottomNavigationBarItem(
-                  icon: ImageIcon(
+                BottomNavigationBarItem(
+                  icon: const ImageIcon(
                     AssetImage('assets/images/select_chat_icon.png'),
                     size: 24,
                   ),
-                  label: '邂逅',
+                  label: l10n.nav_encounter, // ✨ 換成多國語言
                 ),
                 // 3. 瞬間
-                const BottomNavigationBarItem(
-                  icon: ImageIcon(
+                BottomNavigationBarItem(
+                  icon: const ImageIcon(
                     AssetImage('assets/images/moment_outline.png'),
                     size: 24,
                   ),
-                  label: '瞬間',
+                  label: l10n.nav_moments, // ✨ 換成多國語言
                 ),
                 // 4. 個人主頁
-                const BottomNavigationBarItem(
+                BottomNavigationBarItem(
                   icon: ImageIcon(
                     AssetImage('assets/images/profile_icon.png'),
                     size: 24,
                   ),
-                  label: '個人主頁',
+                  label: l10n.title_personal_homepage,
                 ),
               ],
               currentIndex: _selectedIndex,

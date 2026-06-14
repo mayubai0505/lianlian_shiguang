@@ -3945,4 +3945,144 @@ class AppLocalizationsEn extends AppLocalizations {
   String add_friend_success(String characterName) {
     return 'Successfully added $characterName as a friend!';
   }
+
+  @override
+  String get chat_menu_aboutus => 'About Us';
+
+  @override
+  String get about_us_empty_hint =>
+      'Add important memories / storylines in the top-right corner\nto move forward together hand in hand';
+
+  @override
+  String get about_us_limit_error =>
+      'Exclusive memories have reached the limit of 10. Please delete old memories first!';
+
+  @override
+  String get about_us_add_title => 'Add Exclusive Memory';
+
+  @override
+  String get about_us_field_title => 'Title';
+
+  @override
+  String get about_us_hint_title => 'e.g., First Encounter';
+
+  @override
+  String get about_us_field_subtitle => 'Subtitle';
+
+  @override
+  String get about_us_hint_subtitle => 'e.g., Early Summer 2025';
+
+  @override
+  String get about_us_field_content => 'Content';
+
+  @override
+  String get about_us_hint_content =>
+      'Write down your important storylines or promises...';
+
+  @override
+  String get about_us_add_button => 'Add';
+
+  @override
+  String get about_us_delete_tooltip => 'Delete this memory';
+
+  @override
+  String get about_us_delete_title => 'Delete Memory';
+
+  @override
+  String get about_us_delete_confirm =>
+      'Are you sure you want to delete this memory? It cannot be recovered once deleted!';
+
+  @override
+  String get about_us_delete_success => 'Memory deleted';
+
+  @override
+  String get pack_first_meet => 'First Encounter Pack';
+
+  @override
+  String get pack_crush => 'Ambiguous Romance Pack';
+
+  @override
+  String get pack_heartbeat => 'Heart-Fluttering Pack';
+
+  @override
+  String get pack_passionate => 'Passionate Love Pack';
+
+  @override
+  String get pack_soulmate => 'Soulmate Pack';
+
+  @override
+  String get pack_waiting => 'Waiting for You Pack';
+
+  @override
+  String get pack_trust => 'Trust & Reliance Pack';
+
+  @override
+  String get pack_iloveyou => 'I Love You Pack';
+
+  @override
+  String get pack_honeymoon => 'Honeymoon Pack';
+
+  @override
+  String get pack_promise => 'Commitment Pack';
+
+  @override
+  String get pack_companion => 'Companionship Pack';
+
+  @override
+  String get pack_deep_love => 'Deep Love Pack';
+
+  @override
+  String get pack_long_lasting => 'Everlasting Pack';
+
+  @override
+  String get pack_the_one => 'The Only One Pack';
+
+  @override
+  String get pack_beloved => 'Dearest Love Pack';
+
+  @override
+  String get pack_lifetime => 'Lifetime Devotion Pack';
+
+  @override
+  String get pack_vow => 'Sacred Vow Pack';
+
+  @override
+  String get pack_eternal => 'Eternal Lovers Pack';
+
+  @override
+  String get pack_exclusive => 'Exclusive Pack';
+
+  @override
+  String get monthly_privilege_reroll_title =>
+      'Unlock Exclusive \'Regenerate\'';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      'Up to 20 reroll opportunities daily, until he says the words you want to hear most!';
+
+  @override
+  String get monthly_privilege_affinity_title => 'Rapid Affection Boost';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      'Get a 20% bonus on interaction affection points to unlock exclusive private photos and easter eggs faster!';
+
+  @override
+  String get monthly_manual_button => 'Why do I need a Monthly Pass?';
+
+  @override
+  String get nav_encounter => 'Encounter';
+
+  @override
+  String get nav_moments => 'Moments';
+
+  @override
+  String get birthday_dialog_title => '🎂 Birthday Surprise';
+
+  @override
+  String get birthday_dialog_content =>
+      'Today is your exclusive anniversary!\n\nPlease accept this gift:\nAll chats today are C.O.M.P.L.E.T.E.L.Y F.R.E.E! ✨';
+
+  @override
+  String get birthday_dialog_button => 'Start a Romantic Day';
 }

@@ -22,7 +22,8 @@ class StorySummary {
     Map data = doc.data() as Map<String, dynamic>;
     return StorySummary(
       id: doc.id,
-      content: data['content'] ?? '摘要內容為空。',
+      // ✨ 退回最純淨的狀態：找不到就給空字串，不要在這裡用 l10n 或 :
+      content: data['content'] ?? '',
       createdAt: (data['createdAt'] as Timestamp).toDate(),
     );
   }

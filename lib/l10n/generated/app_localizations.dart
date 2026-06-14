@@ -6939,6 +6939,270 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'成功添加 {characterName} 为好友！'**
   String add_friend_success(String characterName);
+
+  /// 聊天選單中的關於我們
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關於我們'**
+  String get chat_menu_aboutus;
+
+  /// 關於我們頁面空白時的提示語
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'右上角新增重要回憶／劇情\n讓你們一起攜手前進'**
+  String get about_us_empty_hint;
+
+  /// 回憶滿10則時的防呆提示
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬回憶已達 10 則上限，請先刪除舊回憶喔！'**
+  String get about_us_limit_error;
+
+  /// 新增回憶彈窗的標題
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增專屬回憶'**
+  String get about_us_add_title;
+
+  /// 輸入框標籤：標題
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'標題'**
+  String get about_us_field_title;
+
+  /// 輸入框提示：標題範例
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：第一次相遇'**
+  String get about_us_hint_title;
+
+  /// 輸入框標籤：副標題
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'副標題'**
+  String get about_us_field_subtitle;
+
+  /// 輸入框提示：副標題範例
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：2025初夏'**
+  String get about_us_hint_subtitle;
+
+  /// 輸入框標籤：內容
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'內容'**
+  String get about_us_field_content;
+
+  /// 輸入框提示：內容範例
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寫下你們的重要劇情或約定...'**
+  String get about_us_hint_content;
+
+  /// 新增按鈕文字
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增'**
+  String get about_us_add_button;
+
+  /// 垃圾桶按鈕的提示文字
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除此回憶'**
+  String get about_us_delete_tooltip;
+
+  /// 確認刪除對話框的標題
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除回憶'**
+  String get about_us_delete_title;
+
+  /// 確認刪除對話框的內文
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要刪除這段回憶嗎？刪除後無法恢復喔！'**
+  String get about_us_delete_confirm;
+
+  /// 刪除成功後的提示
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回憶已刪除'**
+  String get about_us_delete_success;
+
+  /// 90 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'初見禮包'**
+  String get pack_first_meet;
+
+  /// 215 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'曖昧禮包'**
+  String get pack_crush;
+
+  /// 370 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'心動禮包'**
+  String get pack_heartbeat;
+
+  /// 590 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'熱戀禮包'**
+  String get pack_passionate;
+
+  /// 780 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'知己禮包'**
+  String get pack_soulmate;
+
+  /// 1030 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'守候禮包'**
+  String get pack_waiting;
+
+  /// 1420 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'信賴禮包'**
+  String get pack_trust;
+
+  /// 1650 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我愛你禮包'**
+  String get pack_iloveyou;
+
+  /// 2200 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'蜜月禮包'**
+  String get pack_honeymoon;
+
+  /// 2300 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'承諾禮包'**
+  String get pack_promise;
+
+  /// 2400 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'相伴禮包'**
+  String get pack_companion;
+
+  /// 2680 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'深愛禮包'**
+  String get pack_deep_love;
+
+  /// 3200 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'長久禮包'**
+  String get pack_long_lasting;
+
+  /// 3400 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'唯一禮包'**
+  String get pack_the_one;
+
+  /// 4200 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'摯愛禮包'**
+  String get pack_beloved;
+
+  /// 4300 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'一生一世包'**
+  String get pack_lifetime;
+
+  /// 6400 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'誓約禮包'**
+  String get pack_vow;
+
+  /// 10000 禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'永恆戀人包'**
+  String get pack_eternal;
+
+  /// 防呆預設禮包名稱
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬禮包'**
+  String get pack_exclusive;
+
+  /// 月卡特權：重新生成標題
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解鎖專屬「重新生成」'**
+  String get monthly_privilege_reroll_title;
+
+  /// 月卡特權：重新生成說明
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每天高達 20 次重抽機會，直到他說出妳最想聽的那句話！'**
+  String get monthly_privilege_reroll_desc;
+
+  /// 月卡特權：好感度標題
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好感度極速升溫'**
+  String get monthly_privilege_affinity_title;
+
+  /// 月卡特權：好感度說明
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'互動好感度加成 20%，更快解鎖專屬私密照片與彩蛋！'**
+  String get monthly_privilege_affinity_desc;
+
+  /// 月卡說明書入口按鈕
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'為什麼需要月卡？'**
+  String get monthly_manual_button;
+
+  /// 底部導航欄：邂逅標籤
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'邂逅'**
+  String get nav_encounter;
+
+  /// 底部導航欄：瞬間標籤
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'瞬間'**
+  String get nav_moments;
+
+  /// 生日彈窗的標題
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🎂 生日驚喜'**
+  String get birthday_dialog_title;
+
+  /// 生日彈窗的驚喜內文
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！✨'**
+  String get birthday_dialog_content;
+
+  /// 生日彈窗的確認按鈕
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開啟浪漫的一天'**
+  String get birthday_dialog_button;
 }
 
 class _AppLocalizationsDelegate

@@ -3977,4 +3977,144 @@ class AppLocalizationsId extends AppLocalizations {
   String add_friend_success(String characterName) {
     return 'Berhasil menambahkan $characterName sebagai teman!';
   }
+
+  @override
+  String get chat_menu_aboutus => 'Tentang Kami';
+
+  @override
+  String get about_us_empty_hint =>
+      'Tambahkan kenangan penting / jalan cerita di sudut kanan atas\nuntuk melangkah maju bersama sambil bergandengan tangan';
+
+  @override
+  String get about_us_limit_error =>
+      'Kenangan eksklusif telah mencapai batas maksimal 10. Silakan hapus kenangan lama terlebih dahulu!';
+
+  @override
+  String get about_us_add_title => 'Tambah Kenangan Eksklusif';
+
+  @override
+  String get about_us_field_title => 'Judul';
+
+  @override
+  String get about_us_hint_title => 'Contoh: Pertemuan Pertama';
+
+  @override
+  String get about_us_field_subtitle => 'Subjudul';
+
+  @override
+  String get about_us_hint_subtitle => 'Contoh: Awal Musim Panas 2025';
+
+  @override
+  String get about_us_field_content => 'Konten';
+
+  @override
+  String get about_us_hint_content =>
+      'Tuliskan jalan cerita penting atau janji kalian...';
+
+  @override
+  String get about_us_add_button => 'Tambah';
+
+  @override
+  String get about_us_delete_tooltip => 'Hapus kenangan ini';
+
+  @override
+  String get about_us_delete_title => 'Hapus Kenangan';
+
+  @override
+  String get about_us_delete_confirm =>
+      'Apakah Anda yakin ingin menghapus kenangan ini? Kenangan yang dihapus tidak dapat dipulihkan!';
+
+  @override
+  String get about_us_delete_success => 'Kenangan telah dihapus';
+
+  @override
+  String get pack_first_meet => 'Paket Pertemuan Pertama';
+
+  @override
+  String get pack_crush => 'Paket Hubungan Ambigu';
+
+  @override
+  String get pack_heartbeat => 'Paket Debaran Hati';
+
+  @override
+  String get pack_passionate => 'Paket Cinta Membara';
+
+  @override
+  String get pack_soulmate => 'Paket Belahan Jiwa';
+
+  @override
+  String get pack_waiting => 'Paket Setia Menanti';
+
+  @override
+  String get pack_trust => 'Paket Rasa Kepercayaan';
+
+  @override
+  String get pack_iloveyou => 'Paket Aku Cinta Kamu';
+
+  @override
+  String get pack_honeymoon => 'Paket Bulan Madu';
+
+  @override
+  String get pack_promise => 'Paket Janji Suci';
+
+  @override
+  String get pack_companion => 'Paket Pendamping Setia';
+
+  @override
+  String get pack_deep_love => 'Paket Cinta Mendalam';
+
+  @override
+  String get pack_long_lasting => 'Paket Cinta Abadi';
+
+  @override
+  String get pack_the_one => 'Paket Satu-Satunya';
+
+  @override
+  String get pack_beloved => 'Paket Kekasih Tercinta';
+
+  @override
+  String get pack_lifetime => 'Paket Sehidup Semati';
+
+  @override
+  String get pack_vow => 'Paket Sumpah Setia';
+
+  @override
+  String get pack_eternal => 'Paket Kekasih Selamanya';
+
+  @override
+  String get pack_exclusive => 'Paket Eksklusif';
+
+  @override
+  String get monthly_privilege_reroll_title =>
+      'Buka Kunci \'Buat Ulang\' Eksklusif';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      'Hingga 20 kali kesempatan membuat ulang setiap hari, sampai dia mengucapkan kalimat yang paling ingin Anda dengar!';
+
+  @override
+  String get monthly_privilege_affinity_title => 'Peningkatan Afeksi Kilat';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      'Bonus poin afeksi interaksi sebesar 20%, buka foto pribadi eksklusif dan kejutan misterius dengan lebih cepat!';
+
+  @override
+  String get monthly_manual_button => 'Mengapa memerlukan Kartu Bulanan?';
+
+  @override
+  String get nav_encounter => 'Pertemuan';
+
+  @override
+  String get nav_moments => 'Momen';
+
+  @override
+  String get birthday_dialog_title => '🎂 Kejutan Ulang Tahun';
+
+  @override
+  String get birthday_dialog_content =>
+      'Hari ini adalah hari peringatan eksklusif Anda!\n\nSilakan terima hadiah ini:\nSemua obrolan hari ini S.E.M.U.A.N.Y.A G.R.A.T.I.S! ✨';
+
+  @override
+  String get birthday_dialog_button => 'Mulailah Hari yang Romantis';
 }

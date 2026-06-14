@@ -526,9 +526,9 @@ class MonthlyCardBanner extends StatelessWidget {
           Container(height: 1, color: onPrimary.withValues(alpha: 0.2)), // 絕美的半透明分隔線
           const SizedBox(height: 16),
 
-          _buildPrivilegeRow(Icons.refresh, '解鎖專屬「重新生成」', '每天高達 20 次重抽機會，直到他說出妳最想聽的那句話！', onPrimary),
+          _buildPrivilegeRow(Icons.refresh, l10n.monthly_privilege_reroll_title, l10n.monthly_privilege_reroll_desc, onPrimary),
           const SizedBox(height: 12),
-          _buildPrivilegeRow(Icons.favorite, '好感度極速升溫', '互動好感度加成 20%，更快解鎖專屬私密照片與彩蛋！', onPrimary),
+          _buildPrivilegeRow(Icons.favorite, l10n.monthly_privilege_affinity_title, l10n.monthly_privilege_affinity_desc, onPrimary),
 
           const SizedBox(height: 8),
 
@@ -537,7 +537,7 @@ class MonthlyCardBanner extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: TextButton.icon(
               icon: Icon(Icons.help_outline, size: 16, color: onPrimary.withValues(alpha: 0.9)),
-              label: Text('為什麼需要月卡？', style: TextStyle(
+              label: Text(l10n.monthly_manual_button, style: TextStyle(
                   color: onPrimary.withValues(alpha: 0.9),
                   decoration: TextDecoration.underline,
                   decorationColor: onPrimary.withValues(alpha: 0.9)
@@ -593,26 +593,26 @@ class ProductCard extends StatelessWidget {
   });
 
   // 🌸 總裁專屬：浪漫禮包名稱對照表
-  String _getRomanticName(String id) {
-    if (id.contains('90')) return '初見禮包';
-    if (id.contains('215')) return '曖昧禮包';
-    if (id.contains('370')) return '心動禮包';
-    if (id.contains('590')) return '熱戀禮包';
-    if (id.contains('780')) return '知己禮包';
-    if (id.contains('1030')) return '守候禮包';
-    if (id.contains('1420')) return '信賴禮包';
-    if (id.contains('1650')) return '我愛你禮包';
-    if (id.contains('2200')) return '蜜月禮包';
-    if (id.contains('2300')) return '承諾禮包';
-    if (id.contains('2400')) return '相伴禮包';
-    if (id.contains('2680')) return '深愛禮包';
-    if (id.contains('3200')) return '長久禮包';
-    if (id.contains('3400')) return '唯一禮包';
-    if (id.contains('4200')) return '摯愛禮包';
-    if (id.contains('4300')) return '一生一世包';
-    if (id.contains('6400')) return '誓約禮包';
-    if (id.contains('10000')) return '永恆戀人包';
-    return '專屬禮包'; // 防呆預設值
+  String _getRomanticName(String id, AppLocalizations l10n) {
+    if (id.contains('90')) return l10n.pack_first_meet;
+    if (id.contains('215')) return l10n.pack_crush;
+    if (id.contains('370')) return l10n.pack_heartbeat;
+    if (id.contains('590')) return l10n.pack_passionate;
+    if (id.contains('780')) return l10n.pack_soulmate;
+    if (id.contains('1030')) return l10n.pack_waiting;
+    if (id.contains('1420')) return l10n.pack_trust;
+    if (id.contains('1650')) return l10n.pack_iloveyou;
+    if (id.contains('2200')) return l10n.pack_honeymoon;
+    if (id.contains('2300')) return l10n.pack_promise;
+    if (id.contains('2400')) return l10n.pack_companion;
+    if (id.contains('2680')) return l10n.pack_deep_love;
+    if (id.contains('3200')) return l10n.pack_long_lasting;
+    if (id.contains('3400')) return l10n.pack_the_one;
+    if (id.contains('4200')) return l10n.pack_beloved;
+    if (id.contains('4300')) return l10n.pack_lifetime;
+    if (id.contains('6400')) return l10n.pack_vow;
+    if (id.contains('10000')) return l10n.pack_eternal;
+    return l10n.pack_exclusive; // 防呆預設值
   }
 
   @override
@@ -624,7 +624,7 @@ class ProductCard extends StatelessWidget {
 
     // 🌟 使用底線切割：因為產品 ID 是 com_lianlian_points_90
     final String points = productWrapper.productDetails.id.split('_').last;
-    final String romanticName = _getRomanticName(productWrapper.productDetails.id);
+    final String romanticName = _getRomanticName(productWrapper.productDetails.id, l10n);
 
     return Card(
       elevation: 0,

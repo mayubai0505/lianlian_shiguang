@@ -1738,5 +1738,139 @@
   "do_not_show_again_today": "Không hiển thị lại trong hôm nay",
   "@do_not_show_again_today": {
   "description": "彈窗或公告的今日不再顯示勾選框文字"
+  },
+  "chat_menu_aboutus": "Về chúng tôi",
+  "@chat_menu_aboutus": {
+  "description": "聊天選單中的關於我們"
+  },
+  "about_us_empty_hint": "Thêm kỷ niệm quan trọng / cốt truyện ở góc trên bên phải\nđể hai bạn cùng nắm tay bước tiếp về phía trước nhé",
+  "@about_us_empty_hint": {
+  "description": "關於我們頁面空白時的提示語"
+  },
+  "about_us_limit_error": "Kỷ niệm độc quyền đã đạt giới hạn tối đa 10 mục, vui lòng xóa bớt kỷ niệm cũ nhé!",
+  "@about_us_limit_error": {
+  "description": "回憶滿10則時的防呆提示"
+  },
+  "about_us_add_title": "Thêm kỷ niệm độc quyền",
+  "@about_us_add_title": {
+  "description": "新增回憶彈窗的標題"
+  },
+  "about_us_field_title": "Tiêu đề",
+  "@about_us_field_title": {
+  "description": "輸入框標籤：標題"
+  },
+  "about_us_hint_title": "Ví dụ: Lần đầu gặp gỡ",
+  "@about_us_hint_title": {
+  "description": "輸入框提示：標題範例"
+  },
+  "about_us_field_subtitle": "Tiêu đề phụ",
+  "@about_us_field_subtitle": {
+  "description": "輸入框標籤：副標題"
+  },
+  "about_us_hint_subtitle": "Ví dụ: Đầu hè năm 2025",
+  "@about_us_hint_subtitle": {
+  "description": "輸入框提示：副標題範例"
+  },
+  "about_us_field_content": "Nội dung",
+  "@about_us_field_content": {
+  "description": "輸入框標籤：內容"
+  },
+  "about_us_hint_content": "Viết nên những tình tiết quan trọng hoặc lời hẹn ước của hai bạn...",
+  "@about_us_hint_content": {
+  "description": "輸入框提示：內容範例"
+  },
+  "about_us_add_button": "Thêm mới",
+  "@about_us_add_button": {
+  "description": "新增按鈕文字"
+  },
+  "about_us_delete_tooltip": "Xóa kỷ niệm này",
+  "@about_us_delete_tooltip": {
+  "description": "垃圾桶按鈕的提示文字"
+  },
+  "about_us_delete_title": "Xóa kỷ niệm",
+  "@about_us_delete_title": {
+  "description": "確認刪除對話框的標題"
+  },
+  "about_us_delete_confirm": "Bạn có chắc chắn muốn xóa ký ức này không? Xóa rồi sẽ không thể khôi phục lại đâu nhé!",
+  "@about_us_delete_confirm": {
+  "description": "確認刪除對話框的內文"
+  },
+  "about_us_delete_success": "Đã xóa kỷ niệm",
+  "@about_us_delete_success": {
+  "description": "刪除成功後的提示"
+  },
+  "pack_first_meet": "Gói Gặp Gỡ Đầu Tiên",
+  "@pack_first_meet": {"description": "90 禮包名稱"},
+  "pack_crush": "Gói Mập Mờ",
+  "@pack_crush": {"description": "215 禮包名稱"},
+  "pack_heartbeat": "Gói Rung Động",
+  "@pack_heartbeat": {"description": "370 禮包名稱"},
+  "pack_passionate": "Gói Yêu Nhau Cuồng Nhiệt",
+  "@pack_passionate": {"description": "590 禮包名稱"},
+  "pack_soulmate": "Gói Tri Kỷ",
+  "@pack_soulmate": {"description": "780 禮包名稱"},
+  "pack_waiting": "Gói Chờ Đợi",
+  "@pack_waiting": {"description": "1030 禮包名稱"},
+  "pack_trust": "Gói Tin Tưởng",
+  "@pack_trust": {"description": "1420 禮包名稱"},
+  "pack_iloveyou": "Gói Anh Yêu Em",
+  "@pack_iloveyou": {"description": "1650 禮包名稱"},
+  "pack_honeymoon": "Gói Tuần Trăng Mật",
+  "@pack_honeymoon": {"description": "2200 禮包名稱"},
+  "pack_promise": "Gói Lời Hứa",
+  "@pack_promise": {"description": "2300 禮包名稱"},
+  "pack_companion": "Gói Đồng Hành",
+  "@pack_companion": {"description": "2400 禮包名稱"},
+  "pack_deep_love": "Gói Sâu Đậm",
+  "@pack_deep_love": {"description": "2680 禮包名稱"},
+  "pack_long_lasting": "Gói Lâu Dài",
+  "@pack_long_lasting": {"description": "3200 禮包名稱"},
+  "pack_the_one": "Gói Duy Nhất",
+  "@pack_the_one": {"description": "3400 禮包名稱"},
+  "pack_beloved": "Gói Chí Ái",
+  "@pack_beloved": {"description": "4200 禮包名稱"},
+  "pack_lifetime": "Gói Trọn Đời Trọn Kiếp",
+  "@pack_lifetime": {"description": "4300 禮包名稱"},
+  "pack_vow": "Gói Lời Thề",
+  "@pack_vow": {"description": "6400 禮包名稱"},
+  "pack_eternal": "Gói Người Tình Vĩnh Cửu",
+  "@pack_eternal": {"description": "10000 禮包名稱"},
+  "pack_exclusive": "Gói Độc Quyền",
+  "@pack_exclusive": {"description": "防呆預設禮包名稱"},
+  "monthly_privilege_reroll_title": "Mở khóa đặc quyền \"Tạo lại\"",
+  "@monthly_privilege_reroll_title": {
+  "description": "月卡特權：重新生成標題"
+  },
+  "monthly_privilege_reroll_desc": "Lên đến 20 cơ hội rút lại mỗi ngày, cho đến khi anh ấy nói ra câu nói mà bạn muốn nghe nhất!",
+  "@monthly_privilege_reroll_desc": {
+  "description": "月卡特權：重新生成說明"
+  },
+  "monthly_privilege_affinity_title": "Tăng tốc độ hảo cảm cực nhanh",
+  "@monthly_privilege_affinity_title": {
+  "description": "月卡特權：好感度標題"
+  },
+  "monthly_privilege_affinity_desc": "Cộng thêm 20% điểm hảo cảm khi tương tác, giúp mở khóa những bức ảnh riêng tư độc quyền và quà tặng bất ngờ nhanh hơn!",
+  "@monthly_privilege_affinity_desc": {
+  "description": "月卡特權：好感度說明"
+  },
+  "monthly_manual_button": "Tại sao bạn cần có Thẻ Tháng?",
+  "@monthly_manual_button": {
+  "description": "月卡說明書入口按鈕"
+  },
+  "nav_encounter": "Gặp gỡ",
+  "@nav_encounter": { "description": "底部導航欄：邂逅標籤" },
+  "nav_moments": "Khoảnh khắc",
+  "@nav_moments": { "description": "底部導航欄：瞬間標籤" },
+  "birthday_dialog_title": "🎂 Bất ngờ sinh nhật",
+  "@birthday_dialog_title": {
+  "description": "生日彈窗的標題"
+  },
+  "birthday_dialog_content": "Hôm nay là ngày kỷ niệm dành riêng cho bạn!\n\nXin vui lòng nhận món quà này:\nHôm nay trò chuyện H.O.À.N T.O.À.N M.I.Ễ.N P.H.Í! ✨",
+  "@birthday_dialog_content": {
+  "description": "生日彈窗的驚喜內文"
+  },
+  "birthday_dialog_button": "Mở đầu một ngày lãng mạn",
+  "@birthday_dialog_button": {
+  "description": "生日彈窗的確認按鈕"
   }
 }

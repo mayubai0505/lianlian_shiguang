@@ -3777,4 +3777,141 @@ class AppLocalizationsJa extends AppLocalizations {
   String add_friend_success(String characterName) {
     return '$characterName をフレンドに登録しました！';
   }
+
+  @override
+  String get chat_menu_aboutus => '私たちについて';
+
+  @override
+  String get about_us_empty_hint =>
+      '右上角から大切な思い出／ストーリーを追加して\n二人の未来へ一緒に歩んでいきましょう';
+
+  @override
+  String get about_us_limit_error =>
+      '専属の思い出は上限の10件に達しています。古い思い出を削除してから追加してください！';
+
+  @override
+  String get about_us_add_title => '専属の思い出を追加';
+
+  @override
+  String get about_us_field_title => 'タイトル';
+
+  @override
+  String get about_us_hint_title => '例：初めての出会い';
+
+  @override
+  String get about_us_field_subtitle => 'サブタイトル';
+
+  @override
+  String get about_us_hint_subtitle => '例：2025年 初夏';
+
+  @override
+  String get about_us_field_content => '内容';
+
+  @override
+  String get about_us_hint_content => '二人の大切なストーリーや約束を書き留めましょう...';
+
+  @override
+  String get about_us_add_button => '追加';
+
+  @override
+  String get about_us_delete_tooltip => 'この思い出を削除';
+
+  @override
+  String get about_us_delete_title => '思い出を削除';
+
+  @override
+  String get about_us_delete_confirm => '本当にこの思い出を削除しますか？削除すると復元できません！';
+
+  @override
+  String get about_us_delete_success => '思い出を削除しました';
+
+  @override
+  String get pack_first_meet => '初対面パック';
+
+  @override
+  String get pack_crush => '曖昧な関係パック';
+
+  @override
+  String get pack_heartbeat => '胸キュンパック';
+
+  @override
+  String get pack_passionate => '熱愛パック';
+
+  @override
+  String get pack_soulmate => '知己パック';
+
+  @override
+  String get pack_waiting => '見守りパック';
+
+  @override
+  String get pack_trust => '信頼パック';
+
+  @override
+  String get pack_iloveyou => 'アイ・ラブ・ユーパック';
+
+  @override
+  String get pack_honeymoon => 'ハネムーンパック';
+
+  @override
+  String get pack_promise => '約束パック';
+
+  @override
+  String get pack_companion => '寄り添いパック';
+
+  @override
+  String get pack_deep_love => '深愛パック';
+
+  @override
+  String get pack_long_lasting => '末永くパック';
+
+  @override
+  String get pack_the_one => '唯一無二パック';
+
+  @override
+  String get pack_beloved => '最愛パック';
+
+  @override
+  String get pack_lifetime => '一生一世パック';
+
+  @override
+  String get pack_vow => '誓約パック';
+
+  @override
+  String get pack_eternal => '永遠の恋人パック';
+
+  @override
+  String get pack_exclusive => '専属パック';
+
+  @override
+  String get monthly_privilege_reroll_title => '専属「再生成」を解放';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      '毎日最大20回の引き直しチャンス！彼があなたの一番聞きたい言葉を口にするまで試せます！';
+
+  @override
+  String get monthly_privilege_affinity_title => '好感度急上昇ブースト';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      '交流による好感度獲得が20%アップ！専属のプライベート写真やシークレット特典をより早く解放できます！';
+
+  @override
+  String get monthly_manual_button => 'なぜ月間カードが必要なの？';
+
+  @override
+  String get nav_encounter => '出会い';
+
+  @override
+  String get nav_moments => '瞬間';
+
+  @override
+  String get birthday_dialog_title => '🎂 バースデーサプライズ';
+
+  @override
+  String get birthday_dialog_content =>
+      '今日はあなただけの特別な記念日です！\n\nこのプレゼントを受け取ってください：\n今日のチャットは、全・部・無・料・です！✨';
+
+  @override
+  String get birthday_dialog_button => 'ロマンチックな一日を始める';
 }

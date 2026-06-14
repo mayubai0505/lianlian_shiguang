@@ -3996,4 +3996,144 @@ class AppLocalizationsPt extends AppLocalizations {
   String add_friend_success(String characterName) {
     return '$characterName foi adicionado como amigo com sucesso!';
   }
+
+  @override
+  String get chat_menu_aboutus => 'Sobre nós';
+
+  @override
+  String get about_us_empty_hint =>
+      'Adicione memórias importantes / tramas no canto superior direito\npara caminharem juntos lado a lado em direção ao futuro';
+
+  @override
+  String get about_us_limit_error =>
+      'As memórias exclusivas atingiram o limite de 10. Por favor, exclua as memórias antigas primeiro!';
+
+  @override
+  String get about_us_add_title => 'Adicionar memória exclusiva';
+
+  @override
+  String get about_us_field_title => 'Título';
+
+  @override
+  String get about_us_hint_title => 'Ex: Primeiro encontro';
+
+  @override
+  String get about_us_field_subtitle => 'Subtítulo';
+
+  @override
+  String get about_us_hint_subtitle => 'Ex: Início do verão de 2025';
+
+  @override
+  String get about_us_field_content => 'Conteúdo';
+
+  @override
+  String get about_us_hint_content =>
+      'Escreva suas tramas importantes ou promessas...';
+
+  @override
+  String get about_us_add_button => 'Adicionar';
+
+  @override
+  String get about_us_delete_tooltip => 'Excluir esta memória';
+
+  @override
+  String get about_us_delete_title => 'Excluir memória';
+
+  @override
+  String get about_us_delete_confirm =>
+      'Tem certeza de que deseja excluir esta memória? Não será possível recuperá-la após a exclusão!';
+
+  @override
+  String get about_us_delete_success => 'Memória excluída';
+
+  @override
+  String get pack_first_meet => 'Pacote de Primeiro Encontro';
+
+  @override
+  String get pack_crush => 'Pacote de Romance Ambíguo';
+
+  @override
+  String get pack_heartbeat => 'Pacote de Coração Pulsante';
+
+  @override
+  String get pack_passionate => 'Pacote de Amor Apaixonado';
+
+  @override
+  String get pack_soulmate => 'Pacote de Almas Gêmeas';
+
+  @override
+  String get pack_waiting => 'Pacote de Doce Espera';
+
+  @override
+  String get pack_trust => 'Pacote de Confiança';
+
+  @override
+  String get pack_iloveyou => 'Pacote de Eu Te Amo';
+
+  @override
+  String get pack_honeymoon => 'Pacote de Lua de Mel';
+
+  @override
+  String get pack_promise => 'Pacote de Compromisso';
+
+  @override
+  String get pack_companion => 'Pacote de Companheirismo';
+
+  @override
+  String get pack_deep_love => 'Pacote de Amor Profundo';
+
+  @override
+  String get pack_long_lasting => 'Pacote de Amor Duradouro';
+
+  @override
+  String get pack_the_one => 'Pacote de Único Amor';
+
+  @override
+  String get pack_beloved => 'Pacote de Amor Adorado';
+
+  @override
+  String get pack_lifetime => 'Pacote de Uma Vida Inteira';
+
+  @override
+  String get pack_vow => 'Pacote de Voto Sagrado';
+
+  @override
+  String get pack_eternal => 'Pacote de Amantes Eternos';
+
+  @override
+  String get pack_exclusive => 'Pacote exclusivo';
+
+  @override
+  String get monthly_privilege_reroll_title =>
+      'Desbloquear \'Regenerar\' Exclusivo';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      'Até 20 chances de regeneração por dia, até que ele diga a frase que você mais deseja ouvir!';
+
+  @override
+  String get monthly_privilege_affinity_title => 'Aumento Rápido de Afinidade';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      'Bônus de 20% de afinidade nas interações, desbloqueie fotos privadas exclusivas e surpresas muito mais rápido!';
+
+  @override
+  String get monthly_manual_button => 'Por que preciso do Cartão Mensal?';
+
+  @override
+  String get nav_encounter => 'Encontro';
+
+  @override
+  String get nav_moments => 'Momentos';
+
+  @override
+  String get birthday_dialog_title => '🎂 Surpresa de Aniversário';
+
+  @override
+  String get birthday_dialog_content =>
+      'Hoje é o seu dia especial exclusivo!\n\nPor favor, aceite este presente:\nTodas as conversas de hoje são T.O.T.A.L.M.E.N.T.E G.R.Á.T.I.S! ✨';
+
+  @override
+  String get birthday_dialog_button => 'Iniciar um Dia Romântico';
 }

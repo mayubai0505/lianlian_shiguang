@@ -3927,4 +3927,144 @@ class AppLocalizationsTh extends AppLocalizations {
   String add_friend_success(String characterName) {
     return 'เพิ่ม $characterName เป็นเพื่อนสำเร็จแล้ว!';
   }
+
+  @override
+  String get chat_menu_aboutus => 'เกี่ยวกับเรา';
+
+  @override
+  String get about_us_empty_hint =>
+      'เพิ่มความทรงจำสำคัญ / เนื้อเรื่องหลักที่มุมขวาบน\nเพื่อจับมือร่วมก้าวเดินไปด้วยกันนะ';
+
+  @override
+  String get about_us_limit_error =>
+      'บันทึกความทรงจำเฉพาะตัวเต็มขีดจำกัด 10 ข้อความแล้ว กรุณาลบความทรงจำเก่าออกก่อนนะคะ!';
+
+  @override
+  String get about_us_add_title => 'เพิ่มความทรงจำเฉพาะตัว';
+
+  @override
+  String get about_us_field_title => 'หัวข้อ';
+
+  @override
+  String get about_us_hint_title => 'เช่น: เจอกันครั้งแรก';
+
+  @override
+  String get about_us_field_subtitle => 'หัวข้อย่อย';
+
+  @override
+  String get about_us_hint_subtitle => 'เช่น: ต้นฤดูร้อนปี 2025';
+
+  @override
+  String get about_us_field_content => 'เนื้อหา';
+
+  @override
+  String get about_us_hint_content =>
+      'บันทึกเรื่องราวหลักที่สำคัญหรือคำสัญญาของคุณและเขา...';
+
+  @override
+  String get about_us_add_button => 'เพิ่ม';
+
+  @override
+  String get about_us_delete_tooltip => 'ลบความทรงจำนี้';
+
+  @override
+  String get about_us_delete_title => 'ลบความทรงจำ';
+
+  @override
+  String get about_us_delete_confirm =>
+      'แน่ใจไหมว่าต้องการลบความทรงจำนี้? ลบแล้วไม่สามารถกู้คืนได้นะ!';
+
+  @override
+  String get about_us_delete_success => 'ลบความทรงจำเรียบร้อยแล้ว';
+
+  @override
+  String get pack_first_meet => 'แพ็กเกจแรกพบ';
+
+  @override
+  String get pack_crush => 'แพ็กเกจความสัมพันธ์คลุมเครือ';
+
+  @override
+  String get pack_heartbeat => 'แพ็กเกจใจเต้นรัว';
+
+  @override
+  String get pack_passionate => 'แพ็กเกจรักร้อนแรง';
+
+  @override
+  String get pack_soulmate => 'แพ็กเกจคนรู้ใจ';
+
+  @override
+  String get pack_waiting => 'แพ็กเกจเฝ้ารอ';
+
+  @override
+  String get pack_trust => 'แพ็กเกจความเชื่อใจ';
+
+  @override
+  String get pack_iloveyou => 'แพ็กเกจบอกรักเธอ';
+
+  @override
+  String get pack_honeymoon => 'แพ็กเกจฮันนีมูน';
+
+  @override
+  String get pack_promise => 'แพ็กเกจคำมั่นสัญญา';
+
+  @override
+  String get pack_companion => 'แพ็กเกจเคียงข้างกัน';
+
+  @override
+  String get pack_deep_love => 'แพ็กเกจรักลึกซึ้ง';
+
+  @override
+  String get pack_long_lasting => 'แพ็กเกจรักยืนยาว';
+
+  @override
+  String get pack_the_one => 'แพ็กเกจหนึ่งเดียวในใจ';
+
+  @override
+  String get pack_beloved => 'แพ็กเกจยอดรัก';
+
+  @override
+  String get pack_lifetime => 'แพ็กเกจรักแท้ชั่วชีวิต';
+
+  @override
+  String get pack_vow => 'แพ็กเกจคำสัตย์สาบาน';
+
+  @override
+  String get pack_eternal => 'แพ็กเกจคนรักชั่วนิรันดร์';
+
+  @override
+  String get pack_exclusive => 'แพ็กเกจเฉพาะตัว';
+
+  @override
+  String get monthly_privilege_reroll_title =>
+      'ปลดล็อกระบบ \"สร้างใหม่\" เฉพาะตัว';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      'รับสิทธิ์สุ่มคำตอบใหม่สูงสุดถึง 20 ครั้งต่อวัน จนกว่าเขาจะพูดประโยคที่คุณอยากได้ยินที่สุด!';
+
+  @override
+  String get monthly_privilege_affinity_title => 'เร่งค่าความสนิทให้พุ่งกระฉูด';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      'เพิ่มโบนัสค่าความสนิทจากการโต้ตอบอีก 20% ปลดล็อกรูปถ่ายส่วนตัวสุดพิเศษและคอนเทนต์ลับได้เร็วยิ่งขึ้น!';
+
+  @override
+  String get monthly_manual_button => 'ทำไมถึงต้องมีบัตรรายเดือน?';
+
+  @override
+  String get nav_encounter => 'แรกพบ';
+
+  @override
+  String get nav_moments => 'ช่วงเวลา';
+
+  @override
+  String get birthday_dialog_title => '🎂 เซอร์ไพรส์วันเกิด';
+
+  @override
+  String get birthday_dialog_content =>
+      'วันนี้เป็นวันครบรอบสุดพิเศษของคุณนะ!\n\nโปรดรับของขวัญชิ้นนี้ไว้ด้วยนะคะ:\nวันนี้คุยกับเขาได้ ฟรี.ทั้Group.หมด.เลย! ✨';
+
+  @override
+  String get birthday_dialog_button => 'เริ่มต้นวันแห่งความโรแมนติก';
 }

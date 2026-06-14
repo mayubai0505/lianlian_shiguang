@@ -3794,4 +3794,141 @@ class AppLocalizationsKo extends AppLocalizations {
   String add_friend_success(String characterName) {
     return '$characterName 님을 친구로 추가했습니다!';
   }
+
+  @override
+  String get chat_menu_aboutus => '우리 이야기';
+
+  @override
+  String get about_us_empty_hint =>
+      '우측 상단에서 중요한 추억／스토리를 추가하여\n두 사람이 함께 손을 잡고 앞으로 나아가 보세요';
+
+  @override
+  String get about_us_limit_error =>
+      '전용 추억이 최대 한도인 10개에 도달했습니다. 먼저 이전 추억을 삭제해 주세요!';
+
+  @override
+  String get about_us_add_title => '전용 추억 추가';
+
+  @override
+  String get about_us_field_title => '제목';
+
+  @override
+  String get about_us_hint_title => '예: 첫 만남';
+
+  @override
+  String get about_us_field_subtitle => '부제목';
+
+  @override
+  String get about_us_hint_subtitle => '예: 2025년 초여름';
+
+  @override
+  String get about_us_field_content => '내용';
+
+  @override
+  String get about_us_hint_content => '두 사람의 중요한 스토리나 약속을 적어보세요...';
+
+  @override
+  String get about_us_add_button => '추가';
+
+  @override
+  String get about_us_delete_tooltip => '이 추억 삭제';
+
+  @override
+  String get about_us_delete_title => '추억 삭제';
+
+  @override
+  String get about_us_delete_confirm => '이 추억을 정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다!';
+
+  @override
+  String get about_us_delete_success => '추억이 삭제되었습니다';
+
+  @override
+  String get pack_first_meet => '첫 만남 패키지';
+
+  @override
+  String get pack_crush => '썸 패키지';
+
+  @override
+  String get pack_heartbeat => '심쿵 패키지';
+
+  @override
+  String get pack_passionate => '열애 패키지';
+
+  @override
+  String get pack_soulmate => '소울메이트 패키지';
+
+  @override
+  String get pack_waiting => '기다림 패키지';
+
+  @override
+  String get pack_trust => '신뢰 패키지';
+
+  @override
+  String get pack_iloveyou => '사랑해 패키지';
+
+  @override
+  String get pack_honeymoon => '허니문 패키지';
+
+  @override
+  String get pack_promise => '약속 패키지';
+
+  @override
+  String get pack_companion => '동반 패키지';
+
+  @override
+  String get pack_deep_love => '깊은 사랑 패키지';
+
+  @override
+  String get pack_long_lasting => '영원히 함께 패키지';
+
+  @override
+  String get pack_the_one => '유일한 사랑 패키지';
+
+  @override
+  String get pack_beloved => '최애 패키지';
+
+  @override
+  String get pack_lifetime => '평생토록 패키지';
+
+  @override
+  String get pack_vow => '서약 패키지';
+
+  @override
+  String get pack_eternal => '영원한 연인 패키지';
+
+  @override
+  String get pack_exclusive => '전용 패키지';
+
+  @override
+  String get monthly_privilege_reroll_title => '전용 \'재생성\' 기능 해제';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      '매일 최대 20회의 재생성 기회 제공! 그가 당신이 가장 듣고 싶어 하는 말을 할 때까지 시도해 보세요!';
+
+  @override
+  String get monthly_privilege_affinity_title => '호감도 초고속 상승';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      '소통 시 호감도 20% 추가 혜택! 전용 시크릿 사진과 숨겨진 보너스를 더 빠르게 해제해 보세요!';
+
+  @override
+  String get monthly_manual_button => '월간 카드가 왜 필요할까요?';
+
+  @override
+  String get nav_encounter => '만남';
+
+  @override
+  String get nav_moments => '순간';
+
+  @override
+  String get birthday_dialog_title => '🎂 생일 서프라이즈';
+
+  @override
+  String get birthday_dialog_content =>
+      '오늘은 당신만을 위한 특별한 기념일입니다!\n\n이 선물을 받아주세요:\n오늘 하루 대화는 전.부.무.료.입니다! ✨';
+
+  @override
+  String get birthday_dialog_button => '로맨틱한 하루 시작하기';
 }

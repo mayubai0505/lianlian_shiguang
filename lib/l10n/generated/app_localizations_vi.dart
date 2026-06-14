@@ -3977,4 +3977,144 @@ class AppLocalizationsVi extends AppLocalizations {
   String add_friend_success(String characterName) {
     return 'Đã thêm thành công $characterName làm bạn bè!';
   }
+
+  @override
+  String get chat_menu_aboutus => 'Về chúng tôi';
+
+  @override
+  String get about_us_empty_hint =>
+      'Thêm kỷ niệm quan trọng / cốt truyện ở góc trên bên phải\nđể hai bạn cùng nắm tay bước tiếp về phía trước nhé';
+
+  @override
+  String get about_us_limit_error =>
+      'Kỷ niệm độc quyền đã đạt giới hạn tối đa 10 mục, vui lòng xóa bớt kỷ niệm cũ nhé!';
+
+  @override
+  String get about_us_add_title => 'Thêm kỷ niệm độc quyền';
+
+  @override
+  String get about_us_field_title => 'Tiêu đề';
+
+  @override
+  String get about_us_hint_title => 'Ví dụ: Lần đầu gặp gỡ';
+
+  @override
+  String get about_us_field_subtitle => 'Tiêu đề phụ';
+
+  @override
+  String get about_us_hint_subtitle => 'Ví dụ: Đầu hè năm 2025';
+
+  @override
+  String get about_us_field_content => 'Nội dung';
+
+  @override
+  String get about_us_hint_content =>
+      'Viết nên những tình tiết quan trọng hoặc lời hẹn ước của hai bạn...';
+
+  @override
+  String get about_us_add_button => 'Thêm mới';
+
+  @override
+  String get about_us_delete_tooltip => 'Xóa kỷ niệm này';
+
+  @override
+  String get about_us_delete_title => 'Xóa kỷ niệm';
+
+  @override
+  String get about_us_delete_confirm =>
+      'Bạn có chắc chắn muốn xóa ký ức này không? Xóa rồi sẽ không thể khôi phục lại đâu nhé!';
+
+  @override
+  String get about_us_delete_success => 'Đã xóa kỷ niệm';
+
+  @override
+  String get pack_first_meet => 'Gói Gặp Gỡ Đầu Tiên';
+
+  @override
+  String get pack_crush => 'Gói Mập Mờ';
+
+  @override
+  String get pack_heartbeat => 'Gói Rung Động';
+
+  @override
+  String get pack_passionate => 'Gói Yêu Nhau Cuồng Nhiệt';
+
+  @override
+  String get pack_soulmate => 'Gói Tri Kỷ';
+
+  @override
+  String get pack_waiting => 'Gói Chờ Đợi';
+
+  @override
+  String get pack_trust => 'Gói Tin Tưởng';
+
+  @override
+  String get pack_iloveyou => 'Gói Anh Yêu Em';
+
+  @override
+  String get pack_honeymoon => 'Gói Tuần Trăng Mật';
+
+  @override
+  String get pack_promise => 'Gói Lời Hứa';
+
+  @override
+  String get pack_companion => 'Gói Đồng Hành';
+
+  @override
+  String get pack_deep_love => 'Gói Sâu Đậm';
+
+  @override
+  String get pack_long_lasting => 'Gói Lâu Dài';
+
+  @override
+  String get pack_the_one => 'Gói Duy Nhất';
+
+  @override
+  String get pack_beloved => 'Gói Chí Ái';
+
+  @override
+  String get pack_lifetime => 'Gói Trọn Đời Trọn Kiếp';
+
+  @override
+  String get pack_vow => 'Gói Lời Thề';
+
+  @override
+  String get pack_eternal => 'Gói Người Tình Vĩnh Cửu';
+
+  @override
+  String get pack_exclusive => 'Gói Độc Quyền';
+
+  @override
+  String get monthly_privilege_reroll_title => 'Mở khóa đặc quyền \"Tạo lại\"';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      'Lên đến 20 cơ hội rút lại mỗi ngày, cho đến khi anh ấy nói ra câu nói mà bạn muốn nghe nhất!';
+
+  @override
+  String get monthly_privilege_affinity_title =>
+      'Tăng tốc độ hảo cảm cực nhanh';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      'Cộng thêm 20% điểm hảo cảm khi tương tác, giúp mở khóa những bức ảnh riêng tư độc quyền và quà tặng bất ngờ nhanh hơn!';
+
+  @override
+  String get monthly_manual_button => 'Tại sao bạn cần có Thẻ Tháng?';
+
+  @override
+  String get nav_encounter => 'Gặp gỡ';
+
+  @override
+  String get nav_moments => 'Khoảnh khắc';
+
+  @override
+  String get birthday_dialog_title => '🎂 Bất ngờ sinh nhật';
+
+  @override
+  String get birthday_dialog_content =>
+      'Hôm nay là ngày kỷ niệm dành riêng cho bạn!\n\nXin vui lòng nhận món quà này:\nHôm nay trò chuyện H.O.À.N T.O.À.N M.I.Ễ.N P.H.Í! ✨';
+
+  @override
+  String get birthday_dialog_button => 'Mở đầu một ngày lãng mạn';
 }

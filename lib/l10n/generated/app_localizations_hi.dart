@@ -3978,4 +3978,144 @@ class AppLocalizationsHi extends AppLocalizations {
   String add_friend_success(String characterName) {
     return 'सफलतापूर्वक $characterName को मित्र के रूप में जोड़ा गया!';
   }
+
+  @override
+  String get chat_menu_aboutus => 'हमारे बारे में';
+
+  @override
+  String get about_us_empty_hint =>
+      'ऊपरी-दाएं कोने में महत्वपूर्ण यादें / कहानी जोड़ें\nताकि आप दोनों हाथ में हाथ डालकर आगे बढ़ सकें';
+
+  @override
+  String get about_us_limit_error =>
+      'विशेष यादें 10 की अधिकतम सीमा तक पहुँच गई हैं, कृपया पहले पुरानी यादें हटाएँ!';
+
+  @override
+  String get about_us_add_title => 'नई विशेष याद जोड़ें';
+
+  @override
+  String get about_us_field_title => 'शीर्षक';
+
+  @override
+  String get about_us_hint_title => 'जैसे: पहली मुलाकात';
+
+  @override
+  String get about_us_field_subtitle => 'उपशीर्षक';
+
+  @override
+  String get about_us_hint_subtitle => 'जैसे: 2025 की शुरुआत की गर्मियां';
+
+  @override
+  String get about_us_field_content => 'सामग्री';
+
+  @override
+  String get about_us_hint_content =>
+      'अपनी महत्वपूर्ण कहानी या वादे यहाँ लिखें...';
+
+  @override
+  String get about_us_add_button => 'जोड़ें';
+
+  @override
+  String get about_us_delete_tooltip => 'इस याद को हटाएं';
+
+  @override
+  String get about_us_delete_title => 'याद हटाएं';
+
+  @override
+  String get about_us_delete_confirm =>
+      'क्या आप सच में इस याद को हटाना चाहते हैं? हटाने के बाद इसे वापस नहीं लाया जा सकता!';
+
+  @override
+  String get about_us_delete_success => 'याद हटा दी गई है';
+
+  @override
+  String get pack_first_meet => 'प्रथम मुलाकात पैक';
+
+  @override
+  String get pack_crush => 'अधूरी दास्तान पैक';
+
+  @override
+  String get pack_heartbeat => 'दिल की धड़कन पैक';
+
+  @override
+  String get pack_passionate => 'दीवानगी पैक';
+
+  @override
+  String get pack_soulmate => 'हमसफ़र पैक';
+
+  @override
+  String get pack_waiting => 'इंतज़ार पैक';
+
+  @override
+  String get pack_trust => 'विश्वास पैक';
+
+  @override
+  String get pack_iloveyou => 'आई लव यू पैक';
+
+  @override
+  String get pack_honeymoon => 'हनीमून पैक';
+
+  @override
+  String get pack_promise => 'कमिटमेंट पैक';
+
+  @override
+  String get pack_companion => 'सच्चा साथ पैक';
+
+  @override
+  String get pack_deep_love => 'गहरा प्यार पैक';
+
+  @override
+  String get pack_long_lasting => 'सदाबहार प्यार पैक';
+
+  @override
+  String get pack_the_one => 'इकलौता प्यार पैक';
+
+  @override
+  String get pack_beloved => 'प्रियतम पैक';
+
+  @override
+  String get pack_lifetime => 'जनम-जनम का साथ पैक';
+
+  @override
+  String get pack_vow => 'पवित्र कसम पैक';
+
+  @override
+  String get pack_eternal => 'अमर प्रेम पैक';
+
+  @override
+  String get pack_exclusive => 'विशेष पैक';
+
+  @override
+  String get monthly_privilege_reroll_title =>
+      'विशेष \'पुनः उत्पन्न करें\' अनलॉक करें';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      'दैनिक 20 री-रोल अवसरों तक, जब तक कि वह वह बात न कह दे जो आप सबसे ज्यादा सुनना चाहते हैं!';
+
+  @override
+  String get monthly_privilege_affinity_title => 'स्नेह में तेजी से बढ़ोतरी';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      'बातचीत में 20% अतिरिक्त स्नेह अंक पाएं, ताकि विशेष निजी तस्वीरें और छिपे हुए सरप्राइज तेजी से अनलॉक हो सकें!';
+
+  @override
+  String get monthly_manual_button => 'मासिक कार्ड की आवश्यकता क्यों है?';
+
+  @override
+  String get nav_encounter => 'मुलाकात';
+
+  @override
+  String get nav_moments => 'पल';
+
+  @override
+  String get birthday_dialog_title => '🎂 जन्मदिन का सरप्राइज';
+
+  @override
+  String get birthday_dialog_content =>
+      'आज आपका विशेष वर्षगांठ का दिन है!\n\nकृपया यह उपहार स्वीकार करें:\nआज की सारी बातचीत पू.र्ण.त.या मु.फ्त है! ✨';
+
+  @override
+  String get birthday_dialog_button => 'एक रोमांटिक दिन की शुरुआत करें';
 }

@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../services/toast_utils.dart';
+import 'about_us_page.dart';
 import 'call_screen.dart';
 import 'login_page.dart';
 import 'user_profile_popup.dart';
@@ -5346,6 +5347,19 @@ class _ChatPageState extends State<ChatPage> {
                     case 'about_me':
                       Navigator.push(context, MaterialPageRoute(builder: (context) => AboutMePage(character: _currentCharacter)));
                       break;
+                    case 'about_us':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AboutUsPage(
+                            // 帶入目前的玩家 ID
+                            currentUserId: FirebaseAuth.instance.currentUser!.uid,
+                            // ✨ 這裡要加上底線，改成 _currentCharacter.id 喔！
+                            characterId: _currentCharacter.id,
+                          ),
+                        ),
+                      );
+                      break;
                     case 'memo':
                       Navigator.push(context, MaterialPageRoute(builder: (context) => MemoPage(character: _currentCharacter)));
                       break;
@@ -5357,59 +5371,69 @@ class _ChatPageState extends State<ChatPage> {
                       break;
                   }
                 },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>(
-                    value: 'search',
-                    child: ListTile(
-                      leading: const Icon(Icons.search),
-                      title: Text(l10n.chat_menu_search),
-                      contentPadding: EdgeInsets.zero,
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                    PopupMenuItem<String>(
+                      value: 'search',
+                      child: ListTile(
+                        leading: const Icon(Icons.search),
+                        title: Text(l10n.chat_menu_search),
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem<String>(
-                    value: 'gallery',
-                    child: ListTile(
-                      leading: const Icon(Icons.wallpaper, color: Colors.purple),
-                      title: Text(l10n.chat_menu_gallery),
-                      contentPadding: EdgeInsets.zero,
+                    const PopupMenuDivider(),
+                    PopupMenuItem<String>(
+                      value: 'gallery',
+                      child: ListTile(
+                        leading: const Icon(Icons.wallpaper, color: Colors.purple),
+                        title: Text(l10n.chat_menu_gallery),
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem<String>(
-                    value: 'about_me',
-                    child: ListTile(
-                      leading: const Icon(Icons.face_retouching_natural, color: Colors.pinkAccent),
-                      title: Text(l10n.chat_menu_aboutme),
-                      contentPadding: EdgeInsets.zero,
+                    const PopupMenuDivider(),
+                    PopupMenuItem<String>(
+                      value: 'about_me',
+                      child: ListTile(
+                        leading: const Icon(Icons.face_retouching_natural, color: Colors.pinkAccent),
+                        title: Text(l10n.chat_menu_aboutme),
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  PopupMenuItem<String>(
-                    value: 'memo',
-                    child: ListTile(
-                      leading: const Icon(Icons.note_alt_outlined, color: Colors.orange),
-                      title: Text(l10n.chat_menu_memo),
-                      contentPadding: EdgeInsets.zero,
+                    // ✨ 新增在這裡：關於我們 (專屬回憶與劇情設定)
+                    PopupMenuItem<String>(
+                      value: 'about_us',
+                      child: ListTile(
+                        // ✨ 這裡換成了愛心圖示，並配上浪漫的淡藍色！
+                        leading: const Icon(Icons.favorite, color: Color(0xFF7BD1FF)),
+                        title: Text(l10n.chat_menu_aboutus),
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  PopupMenuItem<String>(
-                    value: 'period',
-                    child: ListTile(
-                      leading: const Icon(Icons.water_drop_outlined, color: Colors.redAccent),
-                      title: Text(l10n.chat_menu_period),
-                      contentPadding: EdgeInsets.zero,
+                    PopupMenuItem<String>(
+                      value: 'memo',
+                      child: ListTile(
+                        leading: const Icon(Icons.note_alt_outlined, color: Colors.orange),
+                        title: Text(l10n.chat_menu_memo),
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem<String>(
-                    value: 'reset',
-                    child: ListTile(
-                      leading: const Icon(Icons.restart_alt_rounded, color: Colors.red),
-                      title: Text(l10n.chat_menu_reset, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-                      contentPadding: EdgeInsets.zero,
+                    PopupMenuItem<String>(
+                      value: 'period',
+                      child: ListTile(
+                        leading: const Icon(Icons.water_drop_outlined, color: Colors.redAccent),
+                        title: Text(l10n.chat_menu_period),
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                ],
+                    const PopupMenuDivider(),
+                    PopupMenuItem<String>(
+                      value: 'reset',
+                      child: ListTile(
+                        leading: const Icon(Icons.restart_alt_rounded, color: Colors.red),
+                        title: Text(l10n.chat_menu_reset, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ]
               ),
             ],
           ),

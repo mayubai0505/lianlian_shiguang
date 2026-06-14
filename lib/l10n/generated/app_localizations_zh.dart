@@ -3742,6 +3742,139 @@ class AppLocalizationsZh extends AppLocalizations {
   String add_friend_success(String characterName) {
     return '成功添加 $characterName 为好友！';
   }
+
+  @override
+  String get chat_menu_aboutus => '關於我們';
+
+  @override
+  String get about_us_empty_hint => '右上角新增重要回憶／劇情\n讓你們一起攜手前進';
+
+  @override
+  String get about_us_limit_error => '專屬回憶已達 10 則上限，請先刪除舊回憶喔！';
+
+  @override
+  String get about_us_add_title => '新增專屬回憶';
+
+  @override
+  String get about_us_field_title => '標題';
+
+  @override
+  String get about_us_hint_title => '例如：第一次相遇';
+
+  @override
+  String get about_us_field_subtitle => '副標題';
+
+  @override
+  String get about_us_hint_subtitle => '例如：2025初夏';
+
+  @override
+  String get about_us_field_content => '內容';
+
+  @override
+  String get about_us_hint_content => '寫下你們的重要劇情或約定...';
+
+  @override
+  String get about_us_add_button => '新增';
+
+  @override
+  String get about_us_delete_tooltip => '刪除此回憶';
+
+  @override
+  String get about_us_delete_title => '刪除回憶';
+
+  @override
+  String get about_us_delete_confirm => '確定要刪除這段回憶嗎？刪除後無法恢復喔！';
+
+  @override
+  String get about_us_delete_success => '回憶已刪除';
+
+  @override
+  String get pack_first_meet => '初見禮包';
+
+  @override
+  String get pack_crush => '曖昧禮包';
+
+  @override
+  String get pack_heartbeat => '心動禮包';
+
+  @override
+  String get pack_passionate => '熱戀禮包';
+
+  @override
+  String get pack_soulmate => '知己禮包';
+
+  @override
+  String get pack_waiting => '守候禮包';
+
+  @override
+  String get pack_trust => '信賴禮包';
+
+  @override
+  String get pack_iloveyou => '我愛你禮包';
+
+  @override
+  String get pack_honeymoon => '蜜月禮包';
+
+  @override
+  String get pack_promise => '承諾禮包';
+
+  @override
+  String get pack_companion => '相伴禮包';
+
+  @override
+  String get pack_deep_love => '深愛禮包';
+
+  @override
+  String get pack_long_lasting => '長久禮包';
+
+  @override
+  String get pack_the_one => '唯一禮包';
+
+  @override
+  String get pack_beloved => '摯愛禮包';
+
+  @override
+  String get pack_lifetime => '一生一世包';
+
+  @override
+  String get pack_vow => '誓約禮包';
+
+  @override
+  String get pack_eternal => '永恆戀人包';
+
+  @override
+  String get pack_exclusive => '專屬禮包';
+
+  @override
+  String get monthly_privilege_reroll_title => '解鎖專屬「重新生成」';
+
+  @override
+  String get monthly_privilege_reroll_desc => '每天高達 20 次重抽機會，直到他說出妳最想聽的那句話！';
+
+  @override
+  String get monthly_privilege_affinity_title => '好感度極速升溫';
+
+  @override
+  String get monthly_privilege_affinity_desc => '互動好感度加成 20%，更快解鎖專屬私密照片與彩蛋！';
+
+  @override
+  String get monthly_manual_button => '為什麼需要月卡？';
+
+  @override
+  String get nav_encounter => '邂逅';
+
+  @override
+  String get nav_moments => '瞬間';
+
+  @override
+  String get birthday_dialog_title => '🎂 生日驚喜';
+
+  @override
+  String get birthday_dialog_content =>
+      '今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！✨';
+
+  @override
+  String get birthday_dialog_button => '開啟浪漫的一天';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7482,6 +7615,139 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String add_friend_success(String characterName) {
     return '成功添加 $characterName 为好友！';
   }
+
+  @override
+  String get chat_menu_aboutus => '关于我们';
+
+  @override
+  String get about_us_empty_hint => '右上角新增重要回忆／剧情\n让你们一起携手前进';
+
+  @override
+  String get about_us_limit_error => '专属回忆已达 10 则上限，请先删除旧回忆喔！';
+
+  @override
+  String get about_us_add_title => '新增专属回忆';
+
+  @override
+  String get about_us_field_title => '标题';
+
+  @override
+  String get about_us_hint_title => '例如：第一次相遇';
+
+  @override
+  String get about_us_field_subtitle => '副标题';
+
+  @override
+  String get about_us_hint_subtitle => '例如：2025初夏';
+
+  @override
+  String get about_us_field_content => '内容';
+
+  @override
+  String get about_us_hint_content => '写下你们的重要剧情或约定...';
+
+  @override
+  String get about_us_add_button => '新增';
+
+  @override
+  String get about_us_delete_tooltip => '删除此回忆';
+
+  @override
+  String get about_us_delete_title => '删除回忆';
+
+  @override
+  String get about_us_delete_confirm => '确定要删除这段回忆吗？删除后无法恢复喔！';
+
+  @override
+  String get about_us_delete_success => '回忆已删除';
+
+  @override
+  String get pack_first_meet => '初见礼包';
+
+  @override
+  String get pack_crush => '暧昧礼包';
+
+  @override
+  String get pack_heartbeat => '心动礼包';
+
+  @override
+  String get pack_passionate => '热恋礼包';
+
+  @override
+  String get pack_soulmate => '知己礼包';
+
+  @override
+  String get pack_waiting => '守候礼包';
+
+  @override
+  String get pack_trust => '信赖礼包';
+
+  @override
+  String get pack_iloveyou => '我爱你礼包';
+
+  @override
+  String get pack_honeymoon => '蜜月礼包';
+
+  @override
+  String get pack_promise => '承诺礼包';
+
+  @override
+  String get pack_companion => '相伴礼包';
+
+  @override
+  String get pack_deep_love => '深爱礼包';
+
+  @override
+  String get pack_long_lasting => '长久礼包';
+
+  @override
+  String get pack_the_one => '唯一礼包';
+
+  @override
+  String get pack_beloved => '挚爱礼包';
+
+  @override
+  String get pack_lifetime => '一生一世包';
+
+  @override
+  String get pack_vow => '誓约礼包';
+
+  @override
+  String get pack_eternal => '永恒恋人包';
+
+  @override
+  String get pack_exclusive => '专属礼包';
+
+  @override
+  String get monthly_privilege_reroll_title => '解锁专属「重新生成」';
+
+  @override
+  String get monthly_privilege_reroll_desc => '每天高达 20 次重抽机会，直到他说出妳最想听的那句话！';
+
+  @override
+  String get monthly_privilege_affinity_title => '好感度极速升温';
+
+  @override
+  String get monthly_privilege_affinity_desc => '互动好感度加成 20%，更快解锁专属私密照片与彩蛋！';
+
+  @override
+  String get monthly_manual_button => '为什么需要月卡？';
+
+  @override
+  String get nav_encounter => '邂逅';
+
+  @override
+  String get nav_moments => '瞬间';
+
+  @override
+  String get birthday_dialog_title => '🎂 生日惊喜';
+
+  @override
+  String get birthday_dialog_content =>
+      '今天是您的专属纪念日！\n\n这份礼物请收下：\n今天聊天全。部。免。费！✨';
+
+  @override
+  String get birthday_dialog_button => '开启浪漫的一天';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11222,4 +11488,137 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String add_friend_success(String characterName) {
     return '成功添加 $characterName 为好友！';
   }
+
+  @override
+  String get chat_menu_aboutus => '關於我們';
+
+  @override
+  String get about_us_empty_hint => '右上角新增重要回憶／劇情\n讓你們一起攜手前進';
+
+  @override
+  String get about_us_limit_error => '專屬回憶已達 10 則上限，請先刪除舊回憶喔！';
+
+  @override
+  String get about_us_add_title => '新增專屬回憶';
+
+  @override
+  String get about_us_field_title => '標題';
+
+  @override
+  String get about_us_hint_title => '例如：第一次相遇';
+
+  @override
+  String get about_us_field_subtitle => '副標題';
+
+  @override
+  String get about_us_hint_subtitle => '例如：2025初夏';
+
+  @override
+  String get about_us_field_content => '內容';
+
+  @override
+  String get about_us_hint_content => '寫下你們的重要劇情或約定...';
+
+  @override
+  String get about_us_add_button => '新增';
+
+  @override
+  String get about_us_delete_tooltip => '刪除此回憶';
+
+  @override
+  String get about_us_delete_title => '刪除回憶';
+
+  @override
+  String get about_us_delete_confirm => '確定要刪除這段回憶嗎？刪除後無法恢復喔！';
+
+  @override
+  String get about_us_delete_success => '回憶已刪除';
+
+  @override
+  String get pack_first_meet => '初見禮包';
+
+  @override
+  String get pack_crush => '曖昧禮包';
+
+  @override
+  String get pack_heartbeat => '心動禮包';
+
+  @override
+  String get pack_passionate => '熱戀禮包';
+
+  @override
+  String get pack_soulmate => '知己禮包';
+
+  @override
+  String get pack_waiting => '守候禮包';
+
+  @override
+  String get pack_trust => '信賴禮包';
+
+  @override
+  String get pack_iloveyou => '我愛你禮包';
+
+  @override
+  String get pack_honeymoon => '蜜月禮包';
+
+  @override
+  String get pack_promise => '承諾禮包';
+
+  @override
+  String get pack_companion => '相伴禮包';
+
+  @override
+  String get pack_deep_love => '深愛禮包';
+
+  @override
+  String get pack_long_lasting => '長久禮包';
+
+  @override
+  String get pack_the_one => '唯一禮包';
+
+  @override
+  String get pack_beloved => '摯愛禮包';
+
+  @override
+  String get pack_lifetime => '一生一世包';
+
+  @override
+  String get pack_vow => '誓約禮包';
+
+  @override
+  String get pack_eternal => '永恆戀人包';
+
+  @override
+  String get pack_exclusive => '專屬禮包';
+
+  @override
+  String get monthly_privilege_reroll_title => '解鎖專屬「重新生成」';
+
+  @override
+  String get monthly_privilege_reroll_desc => '每天高達 20 次重抽機會，直到他說出妳最想聽的那句話！';
+
+  @override
+  String get monthly_privilege_affinity_title => '好感度極速升溫';
+
+  @override
+  String get monthly_privilege_affinity_desc => '互動好感度加成 20%，更快解鎖專屬私密照片與彩蛋！';
+
+  @override
+  String get monthly_manual_button => '為什麼需要月卡？';
+
+  @override
+  String get nav_encounter => '邂逅';
+
+  @override
+  String get nav_moments => '瞬間';
+
+  @override
+  String get birthday_dialog_title => '🎂 生日驚喜';
+
+  @override
+  String get birthday_dialog_content =>
+      '今天是您的專屬紀念日！\n\n這份禮物請收下：\n今天聊天全。部。免。費！✨';
+
+  @override
+  String get birthday_dialog_button => '開啟浪漫的一天';
 }

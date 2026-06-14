@@ -4004,4 +4004,144 @@ class AppLocalizationsEs extends AppLocalizations {
   String add_friend_success(String characterName) {
     return '¡$characterName ha sido añadido con éxito como amigo!';
   }
+
+  @override
+  String get chat_menu_aboutus => 'Sobre nosotros';
+
+  @override
+  String get about_us_empty_hint =>
+      'Añade recuerdos importantes / tramas en la esquina superior derecha\npara seguir avanzando juntos de la mano';
+
+  @override
+  String get about_us_limit_error =>
+      'Los recuerdos exclusivos han alcanzado el límite de 10. ¡Por favor, elimina los recuerdos antiguos primero!';
+
+  @override
+  String get about_us_add_title => 'Añadir recuerdo exclusivo';
+
+  @override
+  String get about_us_field_title => 'Título';
+
+  @override
+  String get about_us_hint_title => 'Ej: Primer encuentro';
+
+  @override
+  String get about_us_field_subtitle => 'Subtítulo';
+
+  @override
+  String get about_us_hint_subtitle => 'Ej: Principios del verano de 2025';
+
+  @override
+  String get about_us_field_content => 'Contenido';
+
+  @override
+  String get about_us_hint_content =>
+      'Escribe vuestras tramas importantes o promesas...';
+
+  @override
+  String get about_us_add_button => 'Añadir';
+
+  @override
+  String get about_us_delete_tooltip => 'Eliminar este recuerdo';
+
+  @override
+  String get about_us_delete_title => 'Eliminar recuerdo';
+
+  @override
+  String get about_us_delete_confirm =>
+      '¿Estás segura de que deseas eliminar este recuerdo? ¡No se podrá recuperar después de eliminarlo!';
+
+  @override
+  String get about_us_delete_success => 'Recuerdo eliminado';
+
+  @override
+  String get pack_first_meet => 'Paquete de Primer encuentro';
+
+  @override
+  String get pack_crush => 'Paquete de Romance ambiguo';
+
+  @override
+  String get pack_heartbeat => 'Paquete de Latido sutil';
+
+  @override
+  String get pack_passionate => 'Paquete de Amor apasionado';
+
+  @override
+  String get pack_soulmate => 'Paquete de Almas gemelas';
+
+  @override
+  String get pack_waiting => 'Paquete de Dulce espera';
+
+  @override
+  String get pack_trust => 'Paquete de Confianza plena';
+
+  @override
+  String get pack_iloveyou => 'Paquete de Te amo';
+
+  @override
+  String get pack_honeymoon => 'Paquete de Luna de miel';
+
+  @override
+  String get pack_promise => 'Paquete de Compromiso';
+
+  @override
+  String get pack_companion => 'Paquete de Compañía eterna';
+
+  @override
+  String get pack_deep_love => 'Paquete de Amor profundo';
+
+  @override
+  String get pack_long_lasting => 'Paquete de Amor duradero';
+
+  @override
+  String get pack_the_one => 'Paquete de Mi único amor';
+
+  @override
+  String get pack_beloved => 'Paquete de Amor adorado';
+
+  @override
+  String get pack_lifetime => 'Paquete de Toda una vida juntos';
+
+  @override
+  String get pack_vow => 'Paquete de Voto sagrado';
+
+  @override
+  String get pack_eternal => 'Paquete de Amantes eternos';
+
+  @override
+  String get pack_exclusive => 'Paquete exclusivo';
+
+  @override
+  String get monthly_privilege_reroll_title =>
+      'Desbloquear \'Regenerar\' exclusivo';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      '¡Hasta 20 oportunidades de regeneración al día, hasta que diga la frase que más deseas escuchar!';
+
+  @override
+  String get monthly_privilege_affinity_title => 'Aumento rápido de afecto';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      '¡Consigue un 20% más de puntos de afecto en tus interacciones para desbloquear fotos privadas exclusivas y sorpresas mucho más rápido!';
+
+  @override
+  String get monthly_manual_button => '¿Por qué necesitas la Tarjeta Mensual?';
+
+  @override
+  String get nav_encounter => 'Encuentro';
+
+  @override
+  String get nav_moments => 'Momentos';
+
+  @override
+  String get birthday_dialog_title => '🎂 Sorpresa de cumpleaños';
+
+  @override
+  String get birthday_dialog_content =>
+      '¡Hoy es tu aniversario exclusivo!\n\nPor favor, acepta este regalo:\n¡Hoy todos los chats son T.O.T.A.L.M.E.N.T.E G.R.A.T.I.S! ✨';
+
+  @override
+  String get birthday_dialog_button => 'Comenzar un día romántico';
 }

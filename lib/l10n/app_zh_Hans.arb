@@ -1752,5 +1752,139 @@
   "do_not_show_again_today": "今日不再出现",
   "@do_not_show_again_today": {
   "description": "彈窗或公告的今日不再顯示勾選框文字"
+  },
+  "chat_menu_aboutus": "关于我们",
+  "@chat_menu_aboutus": {
+  "description": "聊天選單中的關於我們"
+  },
+  "about_us_empty_hint": "右上角新增重要回忆／剧情\n让你们一起携手前进",
+  "@about_us_empty_hint": {
+  "description": "關於我們頁面空白時的提示語"
+  },
+  "about_us_limit_error": "专属回忆已达 10 则上限，请先删除旧回忆喔！",
+  "@about_us_limit_error": {
+  "description": "回憶滿10則時的防呆提示"
+  },
+  "about_us_add_title": "新增专属回忆",
+  "@about_us_add_title": {
+  "description": "新增回憶彈窗的標題"
+  },
+  "about_us_field_title": "标题",
+  "@about_us_field_title": {
+  "description": "輸入框標籤：標題"
+  },
+  "about_us_hint_title": "例如：第一次相遇",
+  "@about_us_hint_title": {
+  "description": "輸入框提示：標題範例"
+  },
+  "about_us_field_subtitle": "副标题",
+  "@about_us_field_subtitle": {
+  "description": "輸入框標籤：副標題"
+  },
+  "about_us_hint_subtitle": "例如：2025初夏",
+  "@about_us_hint_subtitle": {
+  "description": "輸入框提示：副標題範例"
+  },
+  "about_us_field_content": "内容",
+  "@about_us_field_content": {
+  "description": "輸入框標籤：內容"
+  },
+  "about_us_hint_content": "写下你们的重要剧情或约定...",
+  "@about_us_hint_content": {
+  "description": "輸入框提示：內容範例"
+  },
+  "about_us_add_button": "新增",
+  "@about_us_add_button": {
+  "description": "新增按鈕文字"
+  },
+  "about_us_delete_tooltip": "删除此回忆",
+  "@about_us_delete_tooltip": {
+  "description": "垃圾桶按鈕的提示文字"
+  },
+  "about_us_delete_title": "删除回忆",
+  "@about_us_delete_title": {
+  "description": "確認刪除對話框的標題"
+  },
+  "about_us_delete_confirm": "确定要删除这段回忆吗？删除后无法恢复喔！",
+  "@about_us_delete_confirm": {
+  "description": "確認刪除對話框的內文"
+  },
+  "about_us_delete_success": "回忆已删除",
+  "@about_us_delete_success": {
+  "description": "刪除成功後的提示"
+  },
+  "pack_first_meet": "初见礼包",
+  "@pack_first_meet": {"description": "90 礼包名称"},
+  "pack_crush": "暧昧礼包",
+  "@pack_crush": {"description": "215 礼包名称"},
+  "pack_heartbeat": "心动礼包",
+  "@pack_heartbeat": {"description": "370 礼包名称"},
+  "pack_passionate": "热恋礼包",
+  "@pack_passionate": {"description": "590 礼包名称"},
+  "pack_soulmate": "知己礼包",
+  "@pack_soulmate": {"description": "780 礼包名称"},
+  "pack_waiting": "守候礼包",
+  "@pack_waiting": {"description": "1030 礼包名称"},
+  "pack_trust": "信赖礼包",
+  "@pack_trust": {"description": "1420 礼包名称"},
+  "pack_iloveyou": "我爱你礼包",
+  "@pack_iloveyou": {"description": "1650 礼包名称"},
+  "pack_honeymoon": "蜜月礼包",
+  "@pack_honeymoon": {"description": "2200 礼包名称"},
+  "pack_promise": "承诺礼包",
+  "@pack_promise": {"description": "2300 礼包名称"},
+  "pack_companion": "相伴礼包",
+  "@pack_companion": {"description": "2400 礼包名称"},
+  "pack_deep_love": "深爱礼包",
+  "@pack_deep_love": {"description": "2680 礼包名称"},
+  "pack_long_lasting": "长久礼包",
+  "@pack_long_lasting": {"description": "3200 礼包名称"},
+  "pack_the_one": "唯一礼包",
+  "@pack_the_one": {"description": "3400 礼包名称"},
+  "pack_beloved": "挚爱礼包",
+  "@pack_beloved": {"description": "4200 礼包名称"},
+  "pack_lifetime": "一生一世包",
+  "@pack_lifetime": {"description": "4300 礼包名称"},
+  "pack_vow": "誓约礼包",
+  "@pack_vow": {"description": "6400 礼包名称"},
+  "pack_eternal": "永恒恋人包",
+  "@pack_eternal": {"description": "10000 礼包名称"},
+  "pack_exclusive": "专属礼包",
+  "@pack_exclusive": {"description": "防呆预设礼包名称"},
+  "monthly_privilege_reroll_title": "解锁专属「重新生成」",
+  "@monthly_privilege_reroll_title": {
+  "description": "月卡特权：重新生成标题"
+  },
+  "monthly_privilege_reroll_desc": "每天高达 20 次重抽机会，直到他说出妳最想听的那句话！",
+  "@monthly_privilege_reroll_desc": {
+  "description": "月卡特权：重新生成说明"
+  },
+  "monthly_privilege_affinity_title": "好感度极速升温",
+  "@monthly_privilege_affinity_title": {
+  "description": "月卡特权：好感度标题"
+  },
+  "monthly_privilege_affinity_desc": "互动好感度加成 20%，更快解锁专属私密照片与彩蛋！",
+  "@monthly_privilege_affinity_desc": {
+  "description": "月卡特权：好感度说明"
+  },
+  "monthly_manual_button": "为什么需要月卡？",
+  "@monthly_manual_button": {
+  "description": "月卡说明书入口按钮"
+  },
+  "nav_encounter": "邂逅",
+  "@nav_encounter": { "description": "底部导航栏：邂逅标签" },
+  "nav_moments": "瞬间",
+  "@nav_moments": { "description": "底部导航栏：瞬间标签" },
+  "birthday_dialog_title": "🎂 生日惊喜",
+  "@birthday_dialog_title": {
+  "description": "生日弹窗的标题"
+  },
+  "birthday_dialog_content": "今天是您的专属纪念日！\n\n这份礼物请收下：\n今天聊天全。部。免。费！✨",
+  "@birthday_dialog_content": {
+  "description": "生日弹窗的惊喜内文"
+  },
+  "birthday_dialog_button": "开启浪漫的一天",
+  "@birthday_dialog_button": {
+  "description": "生日弹窗的确认按钮"
   }
 }

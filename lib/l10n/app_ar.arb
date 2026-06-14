@@ -1779,5 +1779,140 @@
     "do_not_show_again_today": "عدم الإظهار مرة أخرى اليوم",
     "@do_not_show_again_today": {
     "description": "彈窗或公告的今日不再顯示勾選框文字"
+    },
+    "chat_menu_aboutus": "من نحن",
+    "@chat_menu_aboutus": {
+    "description": "聊天選單中的關於我們"
+    },
+    "about_us_empty_hint": "أضيفي ذكريات مهمة／قصصاً من الزاوية العلوية اليمنى\nلتسيروا معاً يداً بيد نحو الأمام",
+    "@about_us_empty_hint": {
+    "description": "關於我們頁面空白時的提示語"
+    },
+    "about_us_limit_error": "لقد وصلتِ إلى الحد الأقصى للذكريات الحصرية وهو 10 ذكريات، يرجى حذف الذكريات القديمة أولاً!",
+    "@about_us_limit_error": {
+    "description": "回憶滿10則時的防呆提示"
+    },
+    "about_us_add_title": "إضافة ذكرى حصرية",
+    "@about_us_add_title": {
+    "description": "新增回憶彈窗的標題"
+    },
+    "about_us_field_title": "العنوان",
+    "@about_us_field_title": {
+    "description": "輸入框標籤：標題"
+    },
+    "about_us_hint_title": "مثال: اللقاء الأول",
+    "@about_us_hint_title": {
+    "description": "輸入框提示：標題範例"
+    },
+    "about_us_field_subtitle": "العنوان الفرعي",
+    "@about_us_field_subtitle": {
+    "description": "輸入框標籤：副標題"
+    },
+    "about_us_hint_subtitle": "مثال: بداية صيف 2025",
+    "@about_us_hint_subtitle": {
+    "description": "輸入框提示：副標題範例"
+    },
+    "about_us_field_content": "المحتوى",
+    "@about_us_field_content": {
+    "description": "輸入框標籤：內容"
+    },
+    "about_us_hint_content": "اكتبي قصة مهمة أو وعداً بينكما...",
+    "@about_us_hint_content": {
+    "description": "輸入框提示：內容範例"
+    },
+    "about_us_add_button": "إضافة",
+    "@about_us_add_button": {
+    "description": "新增按鈕文字"
+    },
+    "about_us_delete_tooltip": "حذف هذه الذكرى",
+    "@about_us_delete_tooltip": {
+    "description": "垃圾桶按鈕的提示文字"
+    },
+    "about_us_delete_title": "حذف الذكرى",
+    "@about_us_delete_title": {
+    "description": "確認刪除對話框的標題"
+    },
+    "about_us_delete_confirm": "هل أنتِ متأكدة من حذف هذه الذكرى؟ لا يمكن استعادتها بعد الحذف!",
+    "@about_us_delete_confirm": {
+    "description": "確認刪除對話框的內文"
+    },
+    "about_us_delete_success": "تم حذف الذكرى",
+    "@about_us_delete_success": {
+    "description": "刪除成功後的提示"
+    },
+    "pack_first_meet": "حزمة اللقاء الأول",
+    "@pack_first_meet": {"description": "90 禮包名稱"},
+    "pack_crush": "حزمة الغزل والغموض",
+    "@pack_crush": {"description": "215 禮包名稱"},
+    "pack_heartbeat": "حزمة خفقان القلب",
+    "@pack_heartbeat": {"description": "370 禮包名稱"},
+    "pack_passionate": "حزمة الحب العاطفي",
+    "@pack_passionate": {"description": "590 禮包名稱"},
+    "pack_soulmate": "حزمة الصديق الروحاني",
+    "@pack_soulmate": {"description": "780 禮包名稱"},
+    "pack_waiting": "حزمة الانتظار المخلص",
+    "@pack_waiting": {"description": "1030 禮包名稱"},
+    "pack_trust": "حزمة الثقة المتبادلة",
+    "@pack_trust": {"description": "1420 禮包名稱"},
+    "pack_iloveyou": "حزمة أنا أحبك",
+    "@pack_iloveyou": {"description": "1650 禮包名稱"},
+    "pack_honeymoon": "حزمة شهر العسل",
+    "@pack_honeymoon": {"description": "2200 禮包名稱"},
+    "pack_promise": "حزمة الوعد الصادق",
+    "@pack_promise": {"description": "2300 禮包名稱"},
+    "pack_companion": "حزمة الرفقة الدائمة",
+    "@pack_companion": {"description": "2400 禮包名稱"},
+    "pack_deep_love": "حزمة الحب العميق",
+    "@pack_deep_love": {"description": "2680 禮包名稱"},
+    "pack_long_lasting": "حزمة الحب الأبدي",
+    "@pack_long_lasting": {"description": "3200 禮包名稱"},
+    "pack_the_one": "حزمة الحب الوحيد",
+    "@pack_the_one": {"description": "3400 禮包名稱"},
+    "pack_beloved": "حزمة الحب العزيز",
+    "@pack_beloved": {"description": "4200 禮包名稱"},
+    "pack_lifetime": "حزمة مدى الحياة والدهر",
+    "@pack_lifetime": {"description": "4300 禮包名稱"},
+    "pack_vow": "حزمة عهد الحب",
+    "@pack_vow": {"description": "6400 禮包名稱"},
+    "pack_eternal": "حزمة العشاق الأبديين",
+    "@pack_eternal": {"description": "10000 禮包名稱"},
+    "pack_exclusive": "الحزمة الحصرية",
+    "@pack_exclusive": {"description": "防呆預設禮包名稱"},
+    "monthly_privilege_reroll_title": "فتح ميزة \"إعادة التوليد\" الحصرية",
+    "@monthly_privilege_reroll_title": {
+    "description": "月卡特權：重新生成標題"
+    },
+    "monthly_privilege_reroll_desc": "ما يصل إلى 20 فرصة إعادة سحب يومياً، حتى يقول تلك العبارة التي تودين سماعها أكثر من غيرها!",
+    "@monthly_privilege_reroll_desc": {
+    "description": "月卡特權：重新生成說明"
+    },
+    "monthly_privilege_affinity_title": "زيادة سريعة لدرجة الإعجاب",
+    "@monthly_privilege_affinity_title": {
+    "description": "月卡特權：好感度標題"
+    },
+    "monthly_privilege_affinity_desc": "زيادة بنسبة 20% على نقاط الإعجاب عند التفاعل، لفتح الصور الخاصة الحصرية والمفاجآت بسرعة أكبر!",
+    "@monthly_privilege_affinity_desc": {
+    "description": "月卡特權：好感度說明"
+    },
+    "monthly_manual_button": "لماذا تحتاجين إلى البطاقة الشهرية؟",
+    "@monthly_manual_button": {
+    "description": "月卡說明書入口按鈕"
+    },
+    "nav_encounter": "لقاء",
+    "@nav_encounter": { "description": "底部導航欄：邂逅標籤" },
+    "nav_moments": "لحظات",
+    "@nav_moments": { "description": "底部導航欄：瞬間標籤" },
+    "birthday_dialog_title": "🎂 مفاجأة عيد الميلاد",
+    "@birthday_dialog_title": {
+    "description": "生日彈窗的標題"
+    },
+    "birthday_dialog_content": "اليوم هو يومكِ المميز الخاص!\n\nيرجى قبول هذه الهدية:\nجميع المحادثات اليوم مـجـانـيـة بـالـكـامـل! ✨",
+    "@birthday_dialog_content": {
+    "description": "生日彈窗的驚喜內文"
+    },
+    "birthday_dialog_button": "ابدئي يوماً رومانسياً",
+    "@birthday_dialog_button": {
+    "description": "生日彈窗的確認按鈕"
     }
+
 }

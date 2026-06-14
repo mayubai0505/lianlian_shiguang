@@ -1737,5 +1737,139 @@
   "do_not_show_again_today": "오늘 하루 동안 보지 않기",
   "@do_not_show_again_today": {
   "description": "彈窗或公告的今日不再顯示勾選框文字"
+  },
+  "chat_menu_aboutus": "우리 이야기",
+  "@chat_menu_aboutus": {
+  "description": "聊天選單中的關於我們"
+  },
+  "about_us_empty_hint": "우측 상단에서 중요한 추억／스토리를 추가하여\n두 사람이 함께 손을 잡고 앞으로 나아가 보세요",
+  "@about_us_empty_hint": {
+  "description": "關於我們頁面空白時的提示語"
+  },
+  "about_us_limit_error": "전용 추억이 최대 한도인 10개에 도달했습니다. 먼저 이전 추억을 삭제해 주세요!",
+  "@about_us_limit_error": {
+  "description": "回憶滿10則時的防呆提示"
+  },
+  "about_us_add_title": "전용 추억 추가",
+  "@about_us_add_title": {
+  "description": "新增回憶彈窗的標題"
+  },
+  "about_us_field_title": "제목",
+  "@about_us_field_title": {
+  "description": "輸入框標籤：標題"
+  },
+  "about_us_hint_title": "예: 첫 만남",
+  "@about_us_hint_title": {
+  "description": "輸入框提示：標題範例"
+  },
+  "about_us_field_subtitle": "부제목",
+  "@about_us_field_subtitle": {
+  "description": "輸入框標籤：副標題"
+  },
+  "about_us_hint_subtitle": "예: 2025년 초여름",
+  "@about_us_hint_subtitle": {
+  "description": "輸入框提示：副標題範例"
+  },
+  "about_us_field_content": "내용",
+  "@about_us_field_content": {
+  "description": "輸入框標籤：內容"
+  },
+  "about_us_hint_content": "두 사람의 중요한 스토리나 약속을 적어보세요...",
+  "@about_us_hint_content": {
+  "description": "輸入框提示：內容範例"
+  },
+  "about_us_add_button": "추가",
+  "@about_us_add_button": {
+  "description": "新增按鈕文字"
+  },
+  "about_us_delete_tooltip": "이 추억 삭제",
+  "@about_us_delete_tooltip": {
+  "description": "垃圾桶按鈕的提示文字"
+  },
+  "about_us_delete_title": "추억 삭제",
+  "@about_us_delete_title": {
+  "description": "確認刪除對話框的標題"
+  },
+  "about_us_delete_confirm": "이 추억을 정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다!",
+  "@about_us_delete_confirm": {
+  "description": "確認刪除對話框的內文"
+  },
+  "about_us_delete_success": "추억이 삭제되었습니다",
+  "@about_us_delete_success": {
+  "description": "刪除成功後的提示"
+  },
+  "pack_first_meet": "첫 만남 패키지",
+  "@pack_first_meet": {"description": "90 禮包名稱"},
+  "pack_crush": "썸 패키지",
+  "@pack_crush": {"description": "215 禮包名稱"},
+  "pack_heartbeat": "심쿵 패키지",
+  "@pack_heartbeat": {"description": "370 禮包名稱"},
+  "pack_passionate": "열애 패키지",
+  "@pack_passionate": {"description": "590 禮包名稱"},
+  "pack_soulmate": "소울메이트 패키지",
+  "@pack_soulmate": {"description": "780 禮包名稱"},
+  "pack_waiting": "기다림 패키지",
+  "@pack_waiting": {"description": "1030 禮包名稱"},
+  "pack_trust": "신뢰 패키지",
+  "@pack_trust": {"description": "1420 禮包名稱"},
+  "pack_iloveyou": "사랑해 패키지",
+  "@pack_iloveyou": {"description": "1650 禮包名稱"},
+  "pack_honeymoon": "허니문 패키지",
+  "@pack_honeymoon": {"description": "2200 禮包名稱"},
+  "pack_promise": "약속 패키지",
+  "@pack_promise": {"description": "2300 禮包名稱"},
+  "pack_companion": "동반 패키지",
+  "@pack_companion": {"description": "2400 禮包名稱"},
+  "pack_deep_love": "깊은 사랑 패키지",
+  "@pack_deep_love": {"description": "2680 禮包名稱"},
+  "pack_long_lasting": "영원히 함께 패키지",
+  "@pack_long_lasting": {"description": "3200 禮包名稱"},
+  "pack_the_one": "유일한 사랑 패키지",
+  "@pack_the_one": {"description": "3400 禮包名稱"},
+  "pack_beloved": "최애 패키지",
+  "@pack_beloved": {"description": "4200 禮包名稱"},
+  "pack_lifetime": "평생토록 패키지",
+  "@pack_lifetime": {"description": "4300 禮包名稱"},
+  "pack_vow": "서약 패키지",
+  "@pack_vow": {"description": "6400 禮包名稱"},
+  "pack_eternal": "영원한 연인 패키지",
+  "@pack_eternal": {"description": "10000 禮包名稱"},
+  "pack_exclusive": "전용 패키지",
+  "@pack_exclusive": {"description": "防呆預設禮包名稱"},
+  "monthly_privilege_reroll_title": "전용 '재생성' 기능 해제",
+  "@monthly_privilege_reroll_title": {
+  "description": "月卡特權：重新生成標題"
+  },
+  "monthly_privilege_reroll_desc": "매일 최대 20회의 재생성 기회 제공! 그가 당신이 가장 듣고 싶어 하는 말을 할 때까지 시도해 보세요!",
+  "@monthly_privilege_reroll_desc": {
+  "description": "月卡特權：重新生成說明"
+  },
+  "monthly_privilege_affinity_title": "호감도 초고속 상승",
+  "@monthly_privilege_affinity_title": {
+  "description": "月卡特權：好감도 標題"
+  },
+  "monthly_privilege_affinity_desc": "소통 시 호감도 20% 추가 혜택! 전용 시크릿 사진과 숨겨진 보너스를 더 빠르게 해제해 보세요!",
+  "@monthly_privilege_affinity_desc": {
+  "description": "月卡特權：好感度說明"
+  },
+  "monthly_manual_button": "월간 카드가 왜 필요할까요?",
+  "@monthly_manual_button": {
+  "description": "月卡說明書入口按鈕"
+  },
+  "nav_encounter": "만남",
+  "@nav_encounter": { "description": "底部導航欄：邂逅標籤" },
+  "nav_moments": "순간",
+  "@nav_moments": { "description": "底部導航欄：瞬間標籤" },
+  "birthday_dialog_title": "🎂 생일 서프라이즈",
+  "@birthday_dialog_title": {
+  "description": "生日彈窗的標題"
+  },
+  "birthday_dialog_content": "오늘은 당신만을 위한 특별한 기념일입니다!\n\n이 선물을 받아주세요:\n오늘 하루 대화는 전.부.무.료.입니다! ✨",
+  "@birthday_dialog_content": {
+  "description": "生日彈窗的驚喜內文"
+  },
+  "birthday_dialog_button": "로맨틱한 하루 시작하기",
+  "@birthday_dialog_button": {
+  "description": "生日彈窗의 확인 버튼"
   }
 }

@@ -3924,4 +3924,143 @@ class AppLocalizationsAr extends AppLocalizations {
   String add_friend_success(String characterName) {
     return 'تمت إضافة $characterName كصديق بنجاح!';
   }
+
+  @override
+  String get chat_menu_aboutus => 'من نحن';
+
+  @override
+  String get about_us_empty_hint =>
+      'أضيفي ذكريات مهمة／قصصاً من الزاوية العلوية اليمنى\nلتسيروا معاً يداً بيد نحو الأمام';
+
+  @override
+  String get about_us_limit_error =>
+      'لقد وصلتِ إلى الحد الأقصى للذكريات الحصرية وهو 10 ذكريات، يرجى حذف الذكريات القديمة أولاً!';
+
+  @override
+  String get about_us_add_title => 'إضافة ذكرى حصرية';
+
+  @override
+  String get about_us_field_title => 'العنوان';
+
+  @override
+  String get about_us_hint_title => 'مثال: اللقاء الأول';
+
+  @override
+  String get about_us_field_subtitle => 'العنوان الفرعي';
+
+  @override
+  String get about_us_hint_subtitle => 'مثال: بداية صيف 2025';
+
+  @override
+  String get about_us_field_content => 'المحتوى';
+
+  @override
+  String get about_us_hint_content => 'اكتبي قصة مهمة أو وعداً بينكما...';
+
+  @override
+  String get about_us_add_button => 'إضافة';
+
+  @override
+  String get about_us_delete_tooltip => 'حذف هذه الذكرى';
+
+  @override
+  String get about_us_delete_title => 'حذف الذكرى';
+
+  @override
+  String get about_us_delete_confirm =>
+      'هل أنتِ متأكدة من حذف هذه الذكرى؟ لا يمكن استعادتها بعد الحذف!';
+
+  @override
+  String get about_us_delete_success => 'تم حذف الذكرى';
+
+  @override
+  String get pack_first_meet => 'حزمة اللقاء الأول';
+
+  @override
+  String get pack_crush => 'حزمة الغزل والغموض';
+
+  @override
+  String get pack_heartbeat => 'حزمة خفقان القلب';
+
+  @override
+  String get pack_passionate => 'حزمة الحب العاطفي';
+
+  @override
+  String get pack_soulmate => 'حزمة الصديق الروحاني';
+
+  @override
+  String get pack_waiting => 'حزمة الانتظار المخلص';
+
+  @override
+  String get pack_trust => 'حزمة الثقة المتبادلة';
+
+  @override
+  String get pack_iloveyou => 'حزمة أنا أحبك';
+
+  @override
+  String get pack_honeymoon => 'حزمة شهر العسل';
+
+  @override
+  String get pack_promise => 'حزمة الوعد الصادق';
+
+  @override
+  String get pack_companion => 'حزمة الرفقة الدائمة';
+
+  @override
+  String get pack_deep_love => 'حزمة الحب العميق';
+
+  @override
+  String get pack_long_lasting => 'حزمة الحب الأبدي';
+
+  @override
+  String get pack_the_one => 'حزمة الحب الوحيد';
+
+  @override
+  String get pack_beloved => 'حزمة الحب العزيز';
+
+  @override
+  String get pack_lifetime => 'حزمة مدى الحياة والدهر';
+
+  @override
+  String get pack_vow => 'حزمة عهد الحب';
+
+  @override
+  String get pack_eternal => 'حزمة العشاق الأبديين';
+
+  @override
+  String get pack_exclusive => 'الحزمة الحصرية';
+
+  @override
+  String get monthly_privilege_reroll_title =>
+      'فتح ميزة \"إعادة التوليد\" الحصرية';
+
+  @override
+  String get monthly_privilege_reroll_desc =>
+      'ما يصل إلى 20 فرصة إعادة سحب يومياً، حتى يقول تلك العبارة التي تودين سماعها أكثر من غيرها!';
+
+  @override
+  String get monthly_privilege_affinity_title => 'زيادة سريعة لدرجة الإعجاب';
+
+  @override
+  String get monthly_privilege_affinity_desc =>
+      'زيادة بنسبة 20% على نقاط الإعجاب عند التفاعل، لفتح الصور الخاصة الحصرية والمفاجآت بسرعة أكبر!';
+
+  @override
+  String get monthly_manual_button => 'لماذا تحتاجين إلى البطاقة الشهرية؟';
+
+  @override
+  String get nav_encounter => 'لقاء';
+
+  @override
+  String get nav_moments => 'لحظات';
+
+  @override
+  String get birthday_dialog_title => '🎂 مفاجأة عيد الميلاد';
+
+  @override
+  String get birthday_dialog_content =>
+      'اليوم هو يومكِ المميز الخاص!\n\nيرجى قبول هذه الهدية:\nجميع المحادثات اليوم مـجـانـيـة بـالـكـامـل! ✨';
+
+  @override
+  String get birthday_dialog_button => 'ابدئي يوماً رومانسياً';
 }
