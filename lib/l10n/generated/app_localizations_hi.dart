@@ -3961,4 +3961,16 @@ class AppLocalizationsHi extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return '$characterName को मित्र के रूप में जोड़ा गया है';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount फूल';
+  }
+
+  @override
+  String get task_reward_already_claimed =>
+      'इस कार्य का पुरस्कार आज पहले ही लिया जा चुका है';
+
+  @override
+  String get do_not_show_again_today => 'आज फिर न दिखाएं';
 }

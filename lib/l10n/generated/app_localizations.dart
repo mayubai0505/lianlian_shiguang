@@ -6915,6 +6915,24 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'已將 {characterName} 加為好友'**
   String snackbar_friend_added(String characterName);
+
+  /// 獲得花花點數時的提示
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'+{amount} 花花'**
+  String reward_points_added(Object amount);
+
+  /// 任務已領取過的防呆提示
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天已經領取過這個任務獎勵'**
+  String get task_reward_already_claimed;
+
+  /// 彈窗或公告的今日不再顯示勾選框文字
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日不再出現'**
+  String get do_not_show_again_today;
 }
 
 class _AppLocalizationsDelegate

@@ -3761,4 +3761,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return '$characterName をフレンドに追加しました';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return 'お花 +$amount 個';
+  }
+
+  @override
+  String get task_reward_already_claimed => 'この任務報酬は本日すでに受け取り済みです';
+
+  @override
+  String get do_not_show_again_today => '本日再非表示';
 }

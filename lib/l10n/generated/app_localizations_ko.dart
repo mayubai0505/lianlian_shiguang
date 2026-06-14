@@ -3778,4 +3778,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return '$characterName 님이 친구로 추가되었습니다';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '꽃 +$amount송이';
+  }
+
+  @override
+  String get task_reward_already_claimed => '오늘 이 미션 보상을 이미 수령하셨습니다';
+
+  @override
+  String get do_not_show_again_today => '오늘 하루 동안 보지 않기';
 }

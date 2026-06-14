@@ -3907,4 +3907,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return 'تمت إضافة $characterName إلى الأصدقاء';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount زهرة';
+  }
+
+  @override
+  String get task_reward_already_claimed =>
+      'لقد حصلتِ على مكافأة هذه المهمة اليوم بالفعل';
+
+  @override
+  String get do_not_show_again_today => 'عدم الإظهار مرة أخرى اليوم';
 }

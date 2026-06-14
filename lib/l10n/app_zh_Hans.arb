@@ -1724,5 +1724,33 @@
         "type": "String"
       }
     }
+  },
+  "reward_points_added": "+{amount} 点花花",
+  "@reward_points_added": {
+  "description": "獲得花花點數時的提示",
+  "placeholders": {
+  "amount": {
+  "type": "Object",
+  "example": "5"
+  }
+  }
+  },
+  "task_reward_already_claimed": "今天已经领取过这个任务奖励",
+  "@task_reward_already_claimed": {
+  "description": "任務已領取過的防呆提示"
+  },
+  "add_friend_success": "成功添加 {characterName} 为好友！",
+  "@add_friend_success": {
+  "description": "成功添加好友時的提示",
+  "placeholders": {
+  "characterName": {
+  "type": "String",
+  "example": "小明"
+  }
+  }
+  },
+  "do_not_show_again_today": "今日不再出现",
+  "@do_not_show_again_today": {
+  "description": "彈窗或公告的今日不再顯示勾選框文字"
   }
 }

@@ -3960,4 +3960,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return 'Đã thêm $characterName vào danh sách bạn bè';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount Hoa';
+  }
+
+  @override
+  String get task_reward_already_claimed =>
+      'Hôm nay bạn đã nhận phần thưởng nhiệm vụ này rồi';
+
+  @override
+  String get do_not_show_again_today => 'Không hiển thị lại trong hôm nay';
 }

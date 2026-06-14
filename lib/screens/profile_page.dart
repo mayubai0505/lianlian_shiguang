@@ -287,9 +287,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
-                    '+$rewardAmount 花花', // 動態顯示拿到了多少點（例如 +20 花花）
+                    l10n.reward_points_added(rewardAmount), // 動態顯示拿到了多少點（例如 +20 花花）
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
@@ -441,7 +441,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
         // 🔒 Firebase 層級防重複領取
         if (alreadyClaimed) {
-          throw Exception('今天已經領取過這個任務獎勵');
+          throw Exception(l10n.task_reward_already_claimed);
         }
 
         // 1. 增加花花
@@ -1861,7 +1861,6 @@ class _ProfilePageState extends State<ProfilePage> {
         bool isMyCharacter = false,
       }) {
     final theme = Theme.of(context);
-
     return InkWell(
       borderRadius: BorderRadius.circular(12.0),
 
@@ -1946,6 +1945,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
   // 🔒 總裁還原版：機密檔案彈窗
   void _showSecretDialog(Character character) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) {
@@ -1956,12 +1956,12 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               // 標題：機密檔案
-              const Row(
+               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.lock, color: Colors.amber), // 金色鎖頭
                   SizedBox(width: 8),
-                  Text('機密檔案', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  Text(l10n.chat_secret_file_title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ],
               ),
               const SizedBox(height: 24),
@@ -1987,8 +1987,8 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 16),
 
               // 拒絕訪問說明
-              const Text(
-                '該角色的靈魂檔案已被封存或轉為私人權限，暫時無法查看詳細資料。',
+              Text(
+                l10n.chat_secret_file_desc,
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey, height: 1.5, fontSize: 14),
               ),
@@ -1997,7 +1997,7 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('了解', style: TextStyle(color: Colors.blueAccent, fontSize: 16)),
+              child: Text(l10n.chat_understood, style: TextStyle(color: Colors.blueAccent, fontSize: 16)),
             ),
           ],
         );

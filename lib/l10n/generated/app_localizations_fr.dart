@@ -4012,4 +4012,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return '$characterName a été ajouté(e) en tant qu\'ami(e)';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount fleurs';
+  }
+
+  @override
+  String get task_reward_already_claimed =>
+      'La récompense de cette quête a déjà été récupérée aujourd\'hui';
+
+  @override
+  String get do_not_show_again_today => 'आज फिर न दिखाएं';
 }

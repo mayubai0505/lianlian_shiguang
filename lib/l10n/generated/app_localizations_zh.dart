@@ -3726,6 +3726,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return '已將 $characterName 加為好友';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount 花花';
+  }
+
+  @override
+  String get task_reward_already_claimed => '今天已經領取過這個任務獎勵';
+
+  @override
+  String get do_not_show_again_today => '今日不再出現';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7450,6 +7461,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String snackbar_friend_added(String characterName) {
     return '已将 $characterName 加为好友';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount 点花花';
+  }
+
+  @override
+  String get task_reward_already_claimed => '今天已经领取过这个任务奖励';
+
+  @override
+  String get do_not_show_again_today => '今日不再出现';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11174,4 +11196,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String snackbar_friend_added(String characterName) {
     return '已將 $characterName 加為好友';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount 花花';
+  }
+
+  @override
+  String get task_reward_already_claimed => '今天已經領取過這個任務獎勵';
+
+  @override
+  String get do_not_show_again_today => '今日不再出現';
 }

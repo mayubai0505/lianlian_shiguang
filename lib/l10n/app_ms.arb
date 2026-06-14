@@ -1710,5 +1710,33 @@
                 "type": "String"
             }
         }
+    },
+    "reward_points_added": "+{amount} Bunga",
+    "@reward_points_added": {
+    "description": "獲得花花點數時的提示",
+    "placeholders": {
+    "amount": {
+    "type": "Object",
+    "example": "5"
+    }
+    }
+    },
+    "task_reward_already_claimed": "Ganjaran tugasan ini telah diambil hari ini",
+    "@task_reward_already_claimed": {
+    "description": "任務已領取過的防呆提示"
+    },
+    "add_friend_success": "Berjaya menambah {characterName} sebagai rakan!",
+    "@add_friend_success": {
+    "description": "成功添加好友時的提示",
+    "placeholders": {
+    "characterName": {
+    "type": "String",
+    "example": "小明"
+    }
+    }
+    },
+    "do_not_show_again_today": "Jangan tunjuk lagi hari ini",
+    "@do_not_show_again_today": {
+    "description": "彈窗或公告的今日不再顯示勾選框文字"
     }
 }

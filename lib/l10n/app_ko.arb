@@ -1709,5 +1709,33 @@
         "type": "String"
       }
     }
+  },
+  "reward_points_added": "꽃 +{amount}송이",
+  "@reward_points_added": {
+  "description": "獲得花花點數時的提示",
+  "placeholders": {
+  "amount": {
+  "type": "Object",
+  "example": "5"
+  }
+  }
+  },
+  "task_reward_already_claimed": "오늘 이 미션 보상을 이미 수령하셨습니다",
+  "@task_reward_already_claimed": {
+  "description": "任務已領取過的防呆提示"
+  },
+  "add_friend_success": "{characterName} 님을 친구로 추가했습니다!",
+  "@add_friend_success": {
+  "description": "成功添加好友時的提示",
+  "placeholders": {
+  "characterName": {
+  "type": "String",
+  "example": "小明"
+  }
+  }
+  },
+  "do_not_show_again_today": "오늘 하루 동안 보지 않기",
+  "@do_not_show_again_today": {
+  "description": "彈窗或公告的今日不再顯示勾選框文字"
   }
 }

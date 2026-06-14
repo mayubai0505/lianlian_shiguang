@@ -131,7 +131,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
   Future<void> _showAddFriendSuccessDialog(String characterName) async {
     final prefs = await SharedPreferences.getInstance();
     final todayStr = DateTime.now().toString().substring(0, 10);
-
+    final l10n = AppLocalizations.of(context)!;
     if (prefs.getString('hideAddFriendDate') == todayStr) return;
     if (!mounted) return;
 
@@ -151,7 +151,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                         children: [
                           Icon(Icons.favorite, size: 60, color: theme.colorScheme.primary),
                           const SizedBox(height: 16),
-                          Text('成功添加 $characterName 為好友！',
+                          Text(l10n.add_friend_success(characterName),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 16),
@@ -170,7 +170,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                const Text('今日不再出現', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                Text(l10n.do_not_show_again_today, style: TextStyle(color: Colors.grey, fontSize: 12)),
                               ]
                           ),
                           const SizedBox(height: 20),
@@ -190,7 +190,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                                   }
                                   Navigator.pop(context);
                                 },
-                                child: const Text('太棒了！', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                child: Text(l10n.ok_button, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                               )
                           )
                         ]
@@ -204,6 +204,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
 
   // 2. 通用結果彈窗
   void _showResultDialog(String message, {bool isError = false}) {
+    final l10n = AppLocalizations.of(context)!;
     if (!mounted) return;
     final theme = Theme.of(context);
     showDialog(
@@ -230,7 +231,7 @@ class _SelectChatPageState extends State<SelectChatPage> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('確定', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(l10n.deleteAccountDialogActionConfirm, style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     )
                   ]

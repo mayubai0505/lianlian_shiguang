@@ -3987,4 +3987,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return '$characterName ha sido añadido a tus amigos';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount flores';
+  }
+
+  @override
+  String get task_reward_already_claimed =>
+      'Ya has reclamado la recompensa de esta misión hoy';
+
+  @override
+  String get do_not_show_again_today => 'No volver a mostrar hoy';
 }

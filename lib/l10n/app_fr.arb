@@ -1879,5 +1879,37 @@
                 "type": "String"
             }
         }
+    },
+    "reward_points_added": "+{amount} fleurs",
+    "@reward_points_added": {
+    "description": "獲得花花點數時的提示",
+    "placeholders": {
+    "amount": {
+    "type": "Object",
+    "example": "5"
+    }
+    }
+    },
+    "task_reward_already_claimed": "La récompense de cette quête a déjà été récupérée aujourd'hui",
+    "@task_reward_already_claimed": {
+    "description": "任務已領取過的防呆提示"
+    },
+    "add_friend_success": "{characterName} a été ajouté(e) avec succès en tant qu'ami(e) !",
+    "@add_friend_success": {
+    "description": "成功添加好友時的提示",
+    "placeholders": {
+    "characterName": {
+    "type": "String",
+    "example": "小明"
+    }
+    }
+    },
+    "do_not_show_again_today": "Ne plus afficher aujourd'hui",
+    "@do_not_show_again_today": {
+    "description": "彈窗或公告的今日不再顯示勾選框文字"
+    },
+    "do_not_show_again_today": "आज फिर न दिखाएं",
+    "@do_not_show_again_today": {
+    "description": "彈窗或公告的今日不再顯示勾選框文字"
     }
 }

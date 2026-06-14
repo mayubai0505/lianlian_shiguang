@@ -1848,5 +1848,23 @@
         "type": "String"
       }
     }
-  }
+  },
+  "reward_points_added": "+{amount} 花花",
+    "@reward_points_added": {
+      "description": "獲得花花點數時的提示",
+      "placeholders": {
+        "amount": {
+          "type": "Object",
+          "example": "5"
+        }
+      }
+    },
+    "task_reward_already_claimed": "今天已經領取過這個任務獎勵",
+      "@task_reward_already_claimed": {
+        "description": "任務已領取過的防呆提示"
+      },
+      "do_not_show_again_today": "今日不再出現",
+        "@do_not_show_again_today": {
+          "description": "彈窗或公告的今日不再顯示勾選框文字"
+        }
 }

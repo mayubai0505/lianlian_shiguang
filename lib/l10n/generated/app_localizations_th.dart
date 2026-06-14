@@ -3910,4 +3910,16 @@ class AppLocalizationsTh extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return 'เพิ่ม $characterName เป็นเพื่อนเรียบร้อยแล้ว';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount ดอกไม้';
+  }
+
+  @override
+  String get task_reward_already_claimed =>
+      'วันนี้คุณได้รับรางวัลของภารกิจนี้ไปเรียบร้อยแล้ว';
+
+  @override
+  String get do_not_show_again_today => 'ไม่ต้องแสดงอีกในวันนี้';
 }

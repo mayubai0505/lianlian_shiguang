@@ -3928,4 +3928,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String snackbar_friend_added(String characterName) {
     return '$characterName has been added as a friend';
   }
+
+  @override
+  String reward_points_added(Object amount) {
+    return '+$amount Flowers';
+  }
+
+  @override
+  String get task_reward_already_claimed =>
+      'This task reward has already been claimed today';
+
+  @override
+  String get do_not_show_again_today => 'Don\'t show again today';
 }
