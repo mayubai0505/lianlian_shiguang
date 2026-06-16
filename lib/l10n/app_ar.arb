@@ -1347,8 +1347,7 @@
     "tab_story_progression": "تقدم القصة",
     "task_desc_story_1_time": "أكمل تفاعل واحد في وضع القصة",
     "tab_social_tour": "جولة اجتماعية",
-    "task_desc_like_3_moments": "سجل إعجابك بـ 3 منشورات في اللحظات",
-    "btn_claimed": "تم الاستلام",
+    "task_like_three_moments": "أعجبي بـ 3 من اللحظات للحصول على أوراق الشجر",    "btn_claimed": "تم الاستلام",
     "btn_claim": "استلام",
     "btn_incomplete": "غير مكتمل",
     "network_unstable_retry": "اتصال الشبكة غير مستقر، يرجى المحاولة لاحقاً 🍃",
@@ -1913,6 +1912,8 @@
     "birthday_dialog_button": "ابدئي يوماً رومانسياً",
     "@birthday_dialog_button": {
     "description": "生日彈窗的確認按鈕"
-    }
-
+    },
+    "about_us_edit_title": "تعديل الذكرى",
+    "about_us_edit_confirm": "تأكيد التعديل",
+    "save": "حفظ"
 }

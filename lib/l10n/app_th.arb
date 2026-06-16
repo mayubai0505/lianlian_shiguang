@@ -1305,7 +1305,7 @@
     "tab_story_progression": "การดำเนินเนื้อเรื่อง",
     "task_desc_story_1_time": "โต้ตอบในโหมดเนื้อเรื่อง 1 ครั้ง",
     "tab_social_tour": "ทัวร์โซเชียล",
-    "task_desc_like_3_moments": "กดถูกใจโพสต์ในโมเมนต์ 3 ครั้ง",
+    "task_like_three_moments": "กดถูกใจ 3 ช่วงเวลา เพื่อรับใบไม้",
     "btn_claimed": "รับแล้ว",
     "btn_claim": "รับ",
     "btn_incomplete": "ยังไม่เสร็จ",
@@ -1871,5 +1871,8 @@
     "birthday_dialog_button": "เริ่มต้นวันแห่งความโรแมนติก",
     "@birthday_dialog_button": {
     "description": "生日彈窗的確認按鈕"
-    }
+    },
+    "about_us_edit_title": "แก้ไขความทรงจำ",
+    "about_us_edit_confirm": "ยืนยันการแก้ไข",
+    "save": "บันทึก"
 }

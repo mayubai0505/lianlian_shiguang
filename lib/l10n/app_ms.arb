@@ -1305,8 +1305,7 @@
     "tab_story_progression": "Kemajuan Cerita",
     "task_desc_story_1_time": "Selesaikan 1 interaksi mod cerita",
     "tab_social_tour": "Jelajah Sosial",
-    "task_desc_like_3_moments": "Suka 3 siaran Momen",
-    "btn_claimed": "Dituntut",
+    "task_like_three_moments": "Suka 3 Detik untuk mendapatkan Daun",    "btn_claimed": "Dituntut",
     "btn_claim": "Tuntut",
     "btn_incomplete": "Tidak Lengkap",
     "network_unstable_retry": "Sambungan rangkaian tidak stabil, sila cuba lagi nanti 🍃",
@@ -1872,5 +1871,8 @@
     "birthday_dialog_button": "Mulakan Hari yang Romantik",
     "@birthday_dialog_button": {
     "description": "生日彈窗的確認按鈕"
-    }
+    },
+    "about_us_edit_title": "Edit Kenangan",
+    "about_us_edit_confirm": "Sahkan Pengubahan",
+    "save": "Simpan"
 }

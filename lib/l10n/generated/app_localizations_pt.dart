@@ -3254,7 +3254,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tab_social_tour => 'Tour Social';
 
   @override
-  String get task_desc_like_3_moments => 'Curta 3 postagens nos Momentos';
+  String get task_like_three_moments => 'Curta 3 Momentos para obter Folhas';
 
   @override
   String get btn_claimed => 'Resgatado';
@@ -4136,4 +4136,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'Iniciar um Dia Romântico';
+
+  @override
+  String get about_us_edit_title => 'Editar Memória';
+
+  @override
+  String get about_us_edit_confirm => 'Confirmar Alteração';
+
+  @override
+  String get save => 'Salvar';
 }

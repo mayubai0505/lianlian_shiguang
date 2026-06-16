@@ -1305,8 +1305,7 @@
     "tab_story_progression": "Progreso de la historia",
     "task_desc_story_1_time": "Completa 1 interacción en el modo historia",
     "tab_social_tour": "Tour social",
-    "task_desc_like_3_moments": "Dale me gusta a 3 publicaciones de Momentos",
-    "btn_claimed": "Reclamado",
+    "task_like_three_moments": "Dale me gusta a 3 Momentos para obtener Hojas",    "btn_claimed": "Reclamado",
     "btn_claim": "Reclamar",
     "btn_incomplete": "Incompleto",
     "network_unstable_retry": "Conexión inestable, inténtalo de nuevo más tarde 🍃",
@@ -1872,5 +1871,8 @@
     "birthday_dialog_button": "Comenzar un día romántico",
     "@birthday_dialog_button": {
     "description": "生日彈窗的確認按鈕"
-    }
+    },
+    "about_us_edit_title": "Editar recuerdo",
+    "about_us_edit_confirm": "Confirmar modificación",
+    "save": "Guardar"
 }

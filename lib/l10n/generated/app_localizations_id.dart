@@ -3241,7 +3241,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get tab_social_tour => 'Tur Sosial';
 
   @override
-  String get task_desc_like_3_moments => 'Sukai 3 postingan Momen';
+  String get task_like_three_moments => 'Sukai 3 Momen untuk mendapatkan Daun';
 
   @override
   String get btn_claimed => 'Diklaim';
@@ -4117,4 +4117,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'Mulailah Hari yang Romantis';
+
+  @override
+  String get about_us_edit_title => 'Edit Kenangan';
+
+  @override
+  String get about_us_edit_confirm => 'Konfirmasi Perubahan';
+
+  @override
+  String get save => 'Simpan';
 }

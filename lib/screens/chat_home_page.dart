@@ -141,6 +141,125 @@ class _ChatHomePageState extends State<ChatHomePage> {
     }
   }
 
+  Future<void> _deleteChatRoom(String sessionId, String characterName) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(l10n.confirm_delete_title),
+          content: Text(l10n.confirm_delete_chat(characterName)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(l10n.cancelButton),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(
+                l10n.delete_btn,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('chat_sessions')
+          .doc(sessionId)
+          .delete();
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.delete_success,
+        customIcon: Icons.delete_outline_rounded,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.update_failed(e.toString()),
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _showChatRoomOptions({
+    required String sessionId,
+    required String displayRoomName,
+    required String characterName,
+  }) async {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    await showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 42,
+                  height: 5,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.edit_note_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
+                  title: Text(l10n.rename_chat_title),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _renameChatRoom(sessionId, displayRoomName);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.redAccent,
+                  ),
+                  title: Text(
+                    l10n.delete_btn,
+                    style: const TextStyle(color: Colors.redAccent),
+                  ),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _deleteChatRoom(sessionId, characterName);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<Character?> _getCharacterById(String characterId) async {
     try {
       var doc = await FirebaseFirestore.instance.collection('artifacts').doc(_appId).collection('public_characters').doc(characterId).get();
@@ -318,53 +437,23 @@ class _ChatHomePageState extends State<ChatHomePage> {
                     final chatMode = sessionData['chatMode'] ?? 'daily';
                     final unreadCount = sessionData['unreadCount'] ?? 0;
 
-                    return Dismissible(
-                      key: Key(sessionId),
-                      direction: DismissDirection.endToStart,
-                      confirmDismiss: (direction) async {
-                        return await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text(l10n.confirm_delete_title),
-                              content: Text(l10n.confirm_delete_chat(characterName)),
-                              actions: <Widget>[
-                                TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancelButton)),
-                                TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.delete_btn, style: const TextStyle(color: Colors.red))),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      onDismissed: (direction) async {
-                        await FirebaseFirestore.instance
-                            .collection('artifacts')
-                            .doc(_appId)
-                            .collection('chat_sessions')
-                            .doc(sessionId)
-                            .delete();
-                      },
-                      background: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(16)),
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        child: const Icon(Icons.delete_outline, color: Colors.white, size: 30),
-                      ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          // 1. 外層 Container 現在只負責「陰影」
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
                           ),
-                          // 2. 🌟 總裁補丁：加入 Material 畫布
-                          child: Material(
-                            color: theme.cardColor.withOpacity(0.8), // 顏色搬到這裡
-                            borderRadius: BorderRadius.circular(16), // 圓角搬到這裡
-                            clipBehavior: Clip.antiAlias,            // 確保水波紋動畫不會超出圓角範圍！
-
-                            child: ListTile(
+                        ],
+                      ),
+                      child: Material(
+                        color: theme.cardColor.withOpacity(0.8),
+                        borderRadius: BorderRadius.circular(16),
+                        clipBehavior: Clip.antiAlias,
+                        child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           leading: Stack(
                             children: [
@@ -379,10 +468,20 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                   top: 0,
                                   child: Container(
                                     padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                                    child: Text('$unreadCount', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Text(
+                                      '$unreadCount',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
-                                )
+                                ),
                             ],
                           ),
                           title: Row(
@@ -393,14 +492,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    // 🌟 總裁補丁：強迫名字文字跟著主題走！
-                                    // 用 onSurface 保證文字在深淺色背景上都清晰可見
                                     color: theme.colorScheme.onSurface,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              // ... 後面是聊天模式標籤 ...
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
@@ -408,8 +504,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
-                                  _getModeLabel(chatMode, l10n), // ✨ 傳入翻譯官！
-                                  style: TextStyle(fontSize: 10, color: theme.colorScheme.onPrimaryContainer),
+                                  _getModeLabel(chatMode, l10n),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: theme.colorScheme.onPrimaryContainer,
+                                  ),
                                 ),
                               ),
                             ],
@@ -420,7 +519,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
                               sessionData['lastMessage'] ?? '',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: unreadCount > 0 ? theme.colorScheme.onSurface : Colors.grey),
+                              style: TextStyle(
+                                color: unreadCount > 0
+                                    ? theme.colorScheme.onSurface
+                                    : Colors.grey,
+                              ),
                             ),
                           ),
                           trailing: Column(
@@ -429,18 +532,39 @@ class _ChatHomePageState extends State<ChatHomePage> {
                             children: [
                               Text(
                                 _formatTimestamp(sessionData['lastActivity'] as Timestamp?),
-                                style: TextStyle(fontSize: 12, color: unreadCount > 0 ? theme.colorScheme.primary : Colors.grey),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: unreadCount > 0
+                                      ? theme.colorScheme.primary
+                                      : Colors.grey,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               if (sessionData['friendshipScore'] != null)
-                                Text(l10n.affection_score_short(sessionData['friendshipScore'].toString()), style: const TextStyle(fontSize: 10, color: Colors.pinkAccent)),
+                                Text(
+                                  l10n.affection_score_short(
+                                    sessionData['friendshipScore'].toString(),
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.pinkAccent,
+                                  ),
+                                ),
                             ],
                           ),
-                          onTap: () => _navigateToChat(sessionId, sessionData['characterId'] ?? ''),
-                          onLongPress: () => _renameChatRoom(sessionId, displayRoomName),
+                          onTap: () => _navigateToChat(
+                            sessionId,
+                            sessionData['characterId'] ?? '',
+                          ),
+
+                          // ✅ 改這裡：長按不再直接改名，而是跳出選單
+                          onLongPress: () => _showChatRoomOptions(
+                            sessionId: sessionId,
+                            displayRoomName: displayRoomName,
+                            characterName: characterName,
+                          ),
                         ),
                       ),
-                        ),
                     );
                   },
                 );

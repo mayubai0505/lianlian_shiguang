@@ -3081,7 +3081,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tab_social_tour => 'コミュニティ巡回';
 
   @override
-  String get task_desc_like_3_moments => 'タイムラインの投稿に3回「いいね」する';
+  String get task_like_three_moments => '瞬間を3件「いいね」してリーフを獲得';
 
   @override
   String get btn_claimed => '受け取り済み';
@@ -3914,4 +3914,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'ロマンチックな一日を始める';
+
+  @override
+  String get about_us_edit_title => '思い出を修正';
+
+  @override
+  String get about_us_edit_confirm => '変更を確定';
+
+  @override
+  String get save => '保存';
 }

@@ -3240,7 +3240,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get tab_social_tour => 'Dạo quanh mạng xã hội';
 
   @override
-  String get task_desc_like_3_moments => 'Thích 3 bài viết trên Vòng bạn bè';
+  String get task_like_three_moments => 'Thích 3 Khoảnh khắc để nhận Lá cây';
 
   @override
   String get btn_claimed => 'Đã nhận';
@@ -4117,4 +4117,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'Mở đầu một ngày lãng mạn';
+
+  @override
+  String get about_us_edit_title => 'Chỉnh sửa kỷ niệm';
+
+  @override
+  String get about_us_edit_confirm => 'Xác nhận chỉnh sửa';
+
+  @override
+  String get save => 'Lưu';
 }

@@ -3194,7 +3194,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tab_social_tour => 'جولة اجتماعية';
 
   @override
-  String get task_desc_like_3_moments => 'سجل إعجابك بـ 3 منشورات في اللحظات';
+  String get task_like_three_moments =>
+      'أعجبي بـ 3 من اللحظات للحصول على أوراق الشجر';
 
   @override
   String get btn_claimed => 'تم الاستلام';
@@ -4063,4 +4064,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'ابدئي يوماً رومانسياً';
+
+  @override
+  String get about_us_edit_title => 'تعديل الذكرى';
+
+  @override
+  String get about_us_edit_confirm => 'تأكيد التعديل';
+
+  @override
+  String get save => 'حفظ';
 }

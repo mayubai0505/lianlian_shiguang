@@ -3240,7 +3240,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get tab_social_tour => 'Jelajah Sosial';
 
   @override
-  String get task_desc_like_3_moments => 'Suka 3 siaran Momen';
+  String get task_like_three_moments => 'Suka 3 Detik untuk mendapatkan Daun';
 
   @override
   String get btn_claimed => 'Dituntut';
@@ -4122,4 +4122,13 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'Mulakan Hari yang Romantik';
+
+  @override
+  String get about_us_edit_title => 'Edit Kenangan';
+
+  @override
+  String get about_us_edit_confirm => 'Sahkan Pengubahan';
+
+  @override
+  String get save => 'Simpan';
 }

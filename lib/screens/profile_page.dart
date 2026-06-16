@@ -226,19 +226,42 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
-      final l10n = AppLocalizations.of(context)!;
-      final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
-      final int rewardAmount = AppConfig.dailyCheckIn;
 
-      // 2. 執行領取邏輯 (與彈窗邏輯同步)
+      final l10n = AppLocalizations.of(context)!;
+      final userDocRef =
+      FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+      final int rewardAmount = AppConfig.dailyCheckIn;
+      final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+      // 2. Transaction：真正防止重複簽到
       await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(userDocRef);
+
+        if (!snapshot.exists) {
+          throw Exception('找不到玩家資料');
+        }
+
+        final data = snapshot.data() as Map<String, dynamic>? ?? {};
+        final lastCheckInTimestamp = data['lastCheckInDate'] as Timestamp?;
+
+        if (lastCheckInTimestamp != null) {
+          final lastCheckInString = DateFormat('yyyy-MM-dd').format(
+            lastCheckInTimestamp.toDate(),
+          );
+
+          if (lastCheckInString == todayString) {
+            throw Exception('今天已經簽到過了');
+          }
+        }
+
         transaction.update(userDocRef, {
           'flowerPoints': FieldValue.increment(rewardAmount),
           'lastCheckInDate': FieldValue.serverTimestamp(),
         });
       });
 
-      // 3. 寫入收支明細 (記帳本)
+      // 3. 寫入收支明細
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -250,93 +273,112 @@ class _ProfilePageState extends State<ProfilePage> {
       });
 
       // 4. 更新畫面狀態
-      if (mounted) {
-        setState(() {
-          _hasCheckedInToday = true;
-          _hasCheckedInToday = true; // 同步彈窗用的變數
-        });
+      if (!mounted) return;
 
-        // 🌟 總裁補丁：把底部的 SnackBar 改為螢幕正中間的夢幻彈窗！
-        showDialog(
-          context: context,
-          barrierDismissible: false, // 點擊旁邊空白處不會消失，強迫玩家按下「太棒了」
-          builder: (BuildContext context) {
-            final theme = Theme.of(context);
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24), // 圓角跟妳的變色龍按鈕完美呼應
-              ),
-              backgroundColor: Colors.white, // 確保大廠級純白乾淨底色
-              content: Column(
-                mainAxisSize: MainAxisSize.min, // 緊貼內容，不會肥大
-                children: [
-                  const SizedBox(height: 16),
-                  // 🌸 放入妳親手在 iPad 上畫的超美花花圖示（如果檔名不同記得換掉喔）
-                  Image.asset(
-                    'assets/images/flower_gift.png',
-                    height: 80,
-                    width: 80,
+      setState(() {
+        _hasCheckedInToday = true;
+      });
+
+      // 5. 顯示恭喜獲得彈窗
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext rewardDialogContext) {
+          final theme = Theme.of(rewardDialogContext);
+
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            backgroundColor: Colors.white,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 16),
+                Image.asset(
+                  'assets/images/flower_gift.png',
+                  height: 80,
+                  width: 80,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  l10n.daily_gift_success,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.daily_gift_success, // 「恭喜獲得今日花花！」或類似的文字
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.reward_points_added(rewardAmount),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: theme.colorScheme.primary,
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    l10n.reward_points_added(rewardAmount), // 動態顯示拿到了多少點（例如 +20 花花）
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: theme.colorScheme.primary, // 亮眼的主題色（櫻花粉/湛藍海）
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  // 👆 太棒了確認按鈕
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary, // 填滿主題色
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop(); // 關閉彈窗
-                      },
-                      child: Text(
-                        l10n.shop_purchase_awesome,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
                     ),
+                    onPressed: () {
+                      Navigator.of(rewardDialogContext).pop();
+                    },
+                    child: Text(
+                      l10n.shop_purchase_awesome,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
-                ],
-              ),
-            );
-          },
-        );
-      }
-
+                ),
+              ],
+            ),
+          );
+        },
+      );
     } catch (e) {
       final l10n = AppLocalizations.of(context)!;
       debugPrint("❌ 手動簽到失敗: $e");
-      if (mounted) {
-        // ✨ 總裁級：網路異常的輕量錯誤提示，俐落告知，不增加玩家的煩躁感
+
+      if (!mounted) return;
+
+      final errorText = e.toString();
+      final bool alreadyCheckedIn = errorText.contains('今天已經簽到過了');
+
+      if (alreadyCheckedIn) {
+        final todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+        setState(() {
+          _hasCheckedInToday = true;
+        });
+
         ToastUtils.showCenterToast(
           context,
-          l10n.check_in_fail_network,
-          isError: true, // 💡 紅色驚嘆號能立刻讓玩家意識到是異常狀況，進而主動重試
+          '今天已經簽到過囉',
+          isError: true,
         );
+
+        return;
       }
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.check_in_fail_network,
+        isError: true,
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -554,7 +596,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     _buildTaskItem(
                       title: l10n.tab_social_tour,
-                      subtitle: l10n.task_desc_like_3_moments,
+                      subtitle: l10n.task_like_three_moments,
                       progress: _likeProgress, goal: 3,
                       isClaimed: _isLikeClaimed,
                       onClaim: () {

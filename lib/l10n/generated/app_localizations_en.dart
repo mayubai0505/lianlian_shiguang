@@ -3210,7 +3210,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tab_social_tour => 'Social Tour';
 
   @override
-  String get task_desc_like_3_moments => 'Like 3 Moments posts';
+  String get task_like_three_moments => 'Like 3 Moments to get Leaves';
 
   @override
   String get btn_claimed => 'Claimed';
@@ -4085,4 +4085,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'Start a Romantic Day';
+
+  @override
+  String get about_us_edit_title => 'Edit Memory';
+
+  @override
+  String get about_us_edit_confirm => 'Confirm Edit';
+
+  @override
+  String get save => 'Save';
 }

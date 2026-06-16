@@ -119,6 +119,38 @@ class _AboutUsPageState extends State<AboutUsPage> {
     }
   }
 
+  Future<void> _updateMemoryInFirebase(
+      String memoryId,
+      String title,
+      String subtitle,
+      String content,
+      ) async {
+    try {
+      await _memoriesRef.doc(memoryId).update({
+        'title': title.trim(),
+        'subtitle': subtitle.trim(),
+        'content': content.trim(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      await _fetchMemories();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('修改成功')),
+      );
+    } catch (e) {
+      debugPrint('修改回憶失敗: $e');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('修改失敗，請稍後再試')),
+      );
+    }
+  }
+
   void _showAddMemoryDialog(AppLocalizations l10n) {
     if (_memories.length >= 10) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -219,95 +251,288 @@ class _AboutUsPageState extends State<AboutUsPage> {
     );
   }
 
+  Future<Map<String, String>?> _showEditMemoryDialog(
+      SharedMemory memory,
+      AppLocalizations l10n,
+      ) async {
+    final TextEditingController titleController =
+    TextEditingController(text: memory.title);
+    final TextEditingController subtitleController =
+    TextEditingController(text: memory.subtitle);
+    final TextEditingController contentController =
+    TextEditingController(text: memory.content);
+
+    return showDialog<Map<String, String>>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Row(
+            children: [
+              Icon(Icons.edit_rounded, color: themeColor),
+              const SizedBox(width: 8),
+              // ✨ 1. 這裡替換成 l10n.about_us_edit_title
+              Text(
+                l10n.about_us_edit_title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  maxLength: 20,
+                  decoration: InputDecoration(
+                    labelText: l10n.about_us_field_title,
+                    hintText: l10n.about_us_hint_title,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: themeColor),
+                    ),
+                  ),
+                ),
+                TextField(
+                  controller: subtitleController,
+                  maxLength: 10,
+                  decoration: InputDecoration(
+                    labelText: l10n.about_us_field_subtitle,
+                    hintText: l10n.about_us_hint_subtitle,
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: themeColor),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: contentController,
+                  maxLength: 500,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    labelText: l10n.about_us_field_content,
+                    hintText: l10n.about_us_hint_content,
+                    alignLabelWithHint: true,
+                    border: const OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: themeColor),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: themeColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () async {
+                final title = titleController.text.trim();
+                final subtitle = subtitleController.text.trim();
+                final content = contentController.text.trim();
+
+                if (title.isEmpty || content.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.lore_empty_error)),
+                  );
+                  return;
+                }
+
+                await _updateMemoryInFirebase(
+                  memory.id,
+                  title,
+                  subtitle,
+                  content,
+                );
+
+                if (!mounted) return;
+
+                Navigator.pop(dialogContext, {
+                  'title': title,
+                  'subtitle': subtitle,
+                  'content': content,
+                });
+              },
+              // ✨ 2. 這裡替換成 l10n.about_us_edit_confirm
+              // (如果您想單純顯示 "儲存"，可以直接改成 l10n.save)
+              child: Text(
+                l10n.about_us_edit_confirm,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showMemoryDetail(SharedMemory memory, AppLocalizations l10n) {
+    String currentTitle = memory.title;
+    String currentSubtitle = memory.subtitle;
+    String currentContent = memory.content;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.7,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          padding: const EdgeInsets.only(top: 12, left: 24, right: 24, bottom: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+      builder: (bottomSheetContext) {
+        return StatefulBuilder(
+          builder: (context, setStateInSheet) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.7,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
-              const SizedBox(height: 20),
-              Row(
+              padding: const EdgeInsets.only(
+                top: 12,
+                left: 24,
+                right: 24,
+                bottom: 24,
+              ),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          memory.title,
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-                        ),
-                        if (memory.subtitle.isNotEmpty) ...[
-                          const SizedBox(height: 6),
-                          Text(
-                            memory.subtitle,
-                            style: TextStyle(fontSize: 15, color: themeColor, fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ],
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                    tooltip: l10n.about_us_delete_tooltip, // ✨ 多國語言化
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text(l10n.about_us_delete_title), // ✨ 多國語言化
-                          content: Text(l10n.about_us_delete_confirm), // ✨ 多國語言化
-                          actions: [
-                            TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                _deleteMemory(memory.id, l10n);
-                              },
-                              child: Text(l10n.action_confirm_delete, style: const TextStyle(color: Colors.red)),
+                  const SizedBox(height: 20),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              currentTitle,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
                             ),
+                            if (currentSubtitle.isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                currentSubtitle,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: themeColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
-                      );
-                    },
+                      ),
+
+                      // ✏️ 新增：修改按鈕
+                      IconButton(
+                        icon: Icon(Icons.edit_outlined, color: themeColor),
+                        tooltip: l10n.save,
+                        onPressed: () async {
+                          final editedData = await _showEditMemoryDialog(
+                            SharedMemory(
+                              id: memory.id,
+                              title: currentTitle,
+                              subtitle: currentSubtitle,
+                              content: currentContent,
+                              timestamp: memory.timestamp,
+                            ),
+                            l10n,
+                          );
+
+                          if (editedData == null) return;
+
+                          setStateInSheet(() {
+                            currentTitle = editedData['title'] ?? currentTitle;
+                            currentSubtitle =
+                                editedData['subtitle'] ?? currentSubtitle;
+                            currentContent =
+                                editedData['content'] ?? currentContent;
+                          });
+                        },
+                      ),
+
+                      // 🗑️ 原本的刪除按鈕
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete_outline,
+                          color: Colors.redAccent,
+                        ),
+                        tooltip: l10n.about_us_delete_tooltip,
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(l10n.about_us_delete_title),
+                              content: Text(l10n.about_us_delete_confirm),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(l10n.cancel),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    _deleteMemory(memory.id, l10n);
+                                  },
+                                  child: Text(
+                                    l10n.action_confirm_delete,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.grey),
+                        onPressed: () => Navigator.pop(bottomSheetContext),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.grey),
-                    onPressed: () => Navigator.pop(context),
+
+                  const Divider(height: 32, thickness: 1),
+
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Text(
+                        currentContent,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          height: 1.8,
+                          color: Colors.black87,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              const Divider(height: 32, thickness: 1),
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Text(
-                    memory.content,
-                    style: const TextStyle(fontSize: 16, height: 1.8, color: Colors.black87, letterSpacing: 0.5),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

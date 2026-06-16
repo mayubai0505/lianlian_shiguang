@@ -3051,7 +3051,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tab_social_tour => '社群巡禮';
 
   @override
-  String get task_desc_like_3_moments => '為 3 則朋友圈動態按讚';
+  String get task_like_three_moments => '讚三則瞬間動態葉子';
 
   @override
   String get btn_claimed => '已領取';
@@ -3875,6 +3875,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => '開啟浪漫的一天';
+
+  @override
+  String get about_us_edit_title => '修改回憶';
+
+  @override
+  String get about_us_edit_confirm => '確認修改';
+
+  @override
+  String get save => '儲存';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6924,7 +6933,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get tab_social_tour => '社群巡礼';
 
   @override
-  String get task_desc_like_3_moments => '为 3 则朋友圈动态按赞';
+  String get task_like_three_moments => '赞三则瞬间动态获得叶子';
 
   @override
   String get btn_claimed => '已领取';
@@ -7748,6 +7757,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get birthday_dialog_button => '开启浪漫的一天';
+
+  @override
+  String get about_us_edit_title => '修改回忆';
+
+  @override
+  String get about_us_edit_confirm => '确认修改';
+
+  @override
+  String get save => '储存';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -10797,7 +10815,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get tab_social_tour => '社群巡禮';
 
   @override
-  String get task_desc_like_3_moments => '為 3 則朋友圈動態按讚';
+  String get task_like_three_moments => '讚三則瞬間動態葉子';
 
   @override
   String get btn_claimed => '已領取';
@@ -11621,4 +11639,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get birthday_dialog_button => '開啟浪漫的一天';
+
+  @override
+  String get about_us_edit_title => '修改回憶';
+
+  @override
+  String get about_us_edit_confirm => '確認修改';
+
+  @override
+  String get save => '儲存';
 }

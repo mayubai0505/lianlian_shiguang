@@ -1426,7 +1426,7 @@
   "tab_story_progression": "劇情推進",
   "task_desc_story_1_time": "完成 1 次劇情模式互動",
   "tab_social_tour": "社群巡禮",
-  "task_desc_like_3_moments": "為 3 則朋友圈動態按讚",
+  "task_like_three_moments": "讚三則瞬間動態葉子",
   "btn_claimed": "已領取",
   "btn_claim": "領取",
   "btn_incomplete": "未完成",
@@ -2015,5 +2015,8 @@
                     "birthday_dialog_button": "開啟浪漫的一天",
                     "@birthday_dialog_button": {
                       "description": "生日彈窗的確認按鈕"
-                    }
+                    },
+  "about_us_edit_title": "修改回憶",
+  "about_us_edit_confirm": "確認修改",
+  "save": "儲存"
 }

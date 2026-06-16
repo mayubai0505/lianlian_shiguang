@@ -3279,7 +3279,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tab_social_tour => 'Tournée sociale';
 
   @override
-  String get task_desc_like_3_moments => 'Aimez 3 publications des Moments';
+  String get task_like_three_moments =>
+      'Aimer 3 Moments pour obtenir des Feuilles';
 
   @override
   String get btn_claimed => 'Récupéré';
@@ -4170,4 +4171,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'Commencer une journée romantique';
+
+  @override
+  String get about_us_edit_title => 'Modifier le souvenir';
+
+  @override
+  String get about_us_edit_confirm => 'Confirmer la modification';
+
+  @override
+  String get save => 'Enregistrer';
 }

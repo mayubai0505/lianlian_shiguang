@@ -1305,7 +1305,7 @@
   "tab_story_progression": "ストーリー進行",
   "task_desc_story_1_time": "ストーリーモードでの交流を1回完了する",
   "tab_social_tour": "コミュニティ巡回",
-  "task_desc_like_3_moments": "タイムラインの投稿に3回「いいね」する",
+  "task_like_three_moments": "瞬間を3件「いいね」してリーフを獲得",
   "btn_claimed": "受け取り済み",
   "btn_claim": "受け取る",
   "btn_incomplete": "未完了",
@@ -1872,5 +1872,8 @@
   "birthday_dialog_button": "ロマンチックな一日を始める",
   "@birthday_dialog_button": {
   "description": "生日彈窗的確認按鈕"
-  }
+  },
+  "about_us_edit_title": "思い出を修正",
+  "about_us_edit_confirm": "変更を確定",
+  "save": "保存"
 }

@@ -3097,7 +3097,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tab_social_tour => '소셜 투어';
 
   @override
-  String get task_desc_like_3_moments => '모먼트 포스트 3개에 좋아요 누르기';
+  String get task_like_three_moments => '순간 3개에 \'좋아요\'를 누르고 나뭇잎 획득';
 
   @override
   String get btn_claimed => '수령 완료';
@@ -3931,4 +3931,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => '로맨틱한 하루 시작하기';
+
+  @override
+  String get about_us_edit_title => '추억 수정';
+
+  @override
+  String get about_us_edit_confirm => '수정 확인';
+
+  @override
+  String get save => '저장';
 }

@@ -1306,8 +1306,7 @@
   "tab_story_progression": "Tiến triển cốt truyện",
   "task_desc_story_1_time": "Hoàn thành 1 lần tương tác chế độ cốt truyện",
   "tab_social_tour": "Dạo quanh mạng xã hội",
-  "task_desc_like_3_moments": "Thích 3 bài viết trên Vòng bạn bè",
-  "btn_claimed": "Đã nhận",
+  "task_like_three_moments": "Thích 3 Khoảnh khắc để nhận Lá cây",  "btn_claimed": "Đã nhận",
   "btn_claim": "Nhận",
   "btn_incomplete": "Chưa hoàn thành",
   "network_unstable_retry": "Kết nối mạng không ổn định, vui lòng thử lại sau 🍃",
@@ -1872,5 +1871,7 @@
   "birthday_dialog_button": "Mở đầu một ngày lãng mạn",
   "@birthday_dialog_button": {
   "description": "生日彈窗的確認按鈕"
-  }
+  },"about_us_edit_title": "Chỉnh sửa kỷ niệm",
+  "about_us_edit_confirm": "Xác nhận chỉnh sửa",
+  "save": "Lưu"
 }

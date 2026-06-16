@@ -1304,8 +1304,7 @@
   "tab_story_progression": "스토리 진행",
   "task_desc_story_1_time": "스토리 모드 상호작용 1회 완료",
   "tab_social_tour": "소셜 투어",
-  "task_desc_like_3_moments": "모먼트 포스트 3개에 좋아요 누르기",
-  "btn_claimed": "수령 완료",
+  "task_like_three_moments": "순간 3개에 '좋아요'를 누르고 나뭇잎 획득",  "btn_claimed": "수령 완료",
   "btn_claim": "수령",
   "btn_incomplete": "미완료",
   "network_unstable_retry": "네트워크 연결이 불안정합니다. 나중에 다시 시도해 주세요 🍃",
@@ -1871,5 +1870,8 @@
   "birthday_dialog_button": "로맨틱한 하루 시작하기",
   "@birthday_dialog_button": {
   "description": "生日彈窗의 확인 버튼"
-  }
+  },
+  "about_us_edit_title": "추억 수정",
+  "about_us_edit_confirm": "수정 확인",
+  "save": "저장"
 }

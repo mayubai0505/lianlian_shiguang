@@ -1305,8 +1305,7 @@
     "tab_story_progression": "कहानी की प्रगति",
     "task_desc_story_1_time": "1 कहानी मोड इंटरेक्शन पूरा करें",
     "tab_social_tour": "सोशल टूर",
-    "task_desc_like_3_moments": "3 मोमेंट्स पोस्ट को लाइक करें",
-    "btn_claimed": "प्राप्त किया",
+    "task_like_three_moments": "पत्तियां पाने के लिए 3 पलों को लाइक करें",    "btn_claimed": "प्राप्त किया",
     "btn_claim": "प्राप्त करें",
     "btn_incomplete": "अपूर्ण",
     "network_unstable_retry": "अस्थिर नेटवर्क कनेक्शन, कृपया बाद में पुनः प्रयास करें 🍃",
@@ -1872,5 +1871,8 @@
     "birthday_dialog_button": "एक रोमांटिक दिन की शुरुआत करें",
     "@birthday_dialog_button": {
     "description": "生日彈窗的確認按鈕"
-    }
+    },
+    "about_us_edit_title": "याद संपादित करें",
+    "about_us_edit_confirm": "संशोधन की पुष्टि करें",
+    "save": "सहेजें"
 }

@@ -5698,11 +5698,11 @@ abstract class AppLocalizations {
   /// **'社群巡禮'**
   String get tab_social_tour;
 
-  /// No description provided for @task_desc_like_3_moments.
+  /// No description provided for @task_like_three_moments.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'為 3 則朋友圈動態按讚'**
-  String get task_desc_like_3_moments;
+  /// **'讚三則瞬間動態葉子'**
+  String get task_like_three_moments;
 
   /// No description provided for @btn_claimed.
   ///
@@ -7203,6 +7203,24 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'開啟浪漫的一天'**
   String get birthday_dialog_button;
+
+  /// No description provided for @about_us_edit_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'修改回憶'**
+  String get about_us_edit_title;
+
+  /// No description provided for @about_us_edit_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認修改'**
+  String get about_us_edit_confirm;
+
+  /// No description provided for @save.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存'**
+  String get save;
 }
 
 class _AppLocalizationsDelegate

@@ -3200,7 +3200,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get tab_social_tour => 'ทัวร์โซเชียล';
 
   @override
-  String get task_desc_like_3_moments => 'กดถูกใจโพสต์ในโมเมนต์ 3 ครั้ง';
+  String get task_like_three_moments => 'กดถูกใจ 3 ช่วงเวลา เพื่อรับใบไม้';
 
   @override
   String get btn_claimed => 'รับแล้ว';
@@ -4067,4 +4067,13 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'เริ่มต้นวันแห่งความโรแมนติก';
+
+  @override
+  String get about_us_edit_title => 'แก้ไขความทรงจำ';
+
+  @override
+  String get about_us_edit_confirm => 'ยืนยันการแก้ไข';
+
+  @override
+  String get save => 'บันทึก';
 }

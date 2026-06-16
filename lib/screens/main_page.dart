@@ -25,8 +25,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   int _selectedIndex = 0; // 預設頁面索引 (0=聊天, 1=邂逅...)
   late List<bool> _isPageActivated;
-  bool _hasClaimedToday = false; // 👈 負責記錄今天領過沒
-  bool _hasCheckedInToday = false; // 👈 加上這行，它是用來記錄今天是否按過按鈕的
+  bool _hasClaimedToday = false;
+  bool _hasCheckedInToday = false;
+  bool _isShowingCheckInDialog = false;
   // ✨ 效能優化：紀錄最後一次檢查日期，避免頻繁讀取資料庫
   String _lastCheckedDateString = "";
 
@@ -105,103 +106,182 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
   // --- 簽到彈窗 UI ---
   Future<void> _showCheckInDialog(DocumentReference userDocRef) async {
-    final int rewardAmount = AppConfig.dailyCheckIn;
-    bool isClaiming = false; // 由 StatefulBuilder 管理內部狀態
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
+    // 防止兩個入口同時彈出簽到視窗
+    if (_isShowingCheckInDialog) return;
 
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setStateInDialog) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: Row(
-                children: [
-                  Text('✨', style: TextStyle(fontSize: 20)),
-                  const SizedBox(width: 8),
-                  Text(l10n.daily_gift_title,
-                      style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
-                ],
-              ),
-              content: Text(
-                l10n.daily_login_welcome('戀戀拾光', rewardAmount.toString()),
-                style: const TextStyle(height: 1.5),
-              ),
-              actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              actions: [
-                if (isClaiming)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 16, bottom: 8),
-                    child: SizedBox(
-                      width: 24, height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor),
+    // 如果本地狀態已經知道今天領過，就不要再彈
+    if (_hasCheckedInToday || _hasClaimedToday) {
+      return;
+    }
+
+    _isShowingCheckInDialog = true;
+
+    try {
+      final int rewardAmount = AppConfig.dailyCheckIn;
+      bool isClaiming = false;
+
+      final l10n = AppLocalizations.of(context)!;
+      final theme = Theme.of(context);
+      final primaryColor = theme.colorScheme.primary;
+
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (context, setStateInDialog) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: Row(
+                  children: [
+                    const Text('✨', style: TextStyle(fontSize: 20)),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.daily_gift_title,
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  )
-                else
-                  TextButton(
-                    onPressed: () async {
-                      // 🛡️ 門禁第一關：防止鬼畜連點
-                      if (isClaiming) return;
-                      setStateInDialog(() => isClaiming = true);
-                      try {
-                        final user = FirebaseAuth.instance.currentUser;
-                        if (user == null) throw Exception("使用者未登入");
-                        // 1. 同步執行：更新點數與日期 (Transaction)
-                        await FirebaseFirestore.instance.runTransaction((transaction) async {
-                          transaction.update(userDocRef, {
-                            'flowerPoints': FieldValue.increment(rewardAmount),
-                            'lastCheckInDate': FieldValue.serverTimestamp(),
-                          });
+                  ],
+                ),
+                content: Text(
+                  l10n.daily_login_welcome(
+                    '戀戀拾光',
+                    rewardAmount.toString(),
+                  ),
+                  style: const TextStyle(height: 1.5),
+                ),
+                actionsPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                actions: [
+                  if (isClaiming)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16, bottom: 8),
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: primaryColor,
+                        ),
+                      ),
+                    )
+                  else
+                    TextButton(
+                      onPressed: () async {
+                        if (isClaiming) return;
+
+                        setStateInDialog(() {
+                          isClaiming = true;
                         });
 
-                        // 2. 寫入明細帳本 (flower_logs)
-                        await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(user.uid)
-                            .collection('flower_logs')
-                            .add({
-                          'title': l10n.title_daily_check_in,
-                          'amount': rewardAmount,
-                          'createdAt': FieldValue.serverTimestamp(),
-                        });
-                        // 3. 成功後的 UI 反饋
-                        if (mounted) {
-                          // 🌟 一次性更新主頁面狀態
+                        try {
+                          final user = FirebaseAuth.instance.currentUser;
+
+                          if (user == null) {
+                            throw Exception('使用者未登入');
+                          }
+
+                          final todayString =
+                          DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+                          // 1. Transaction：真正防止重複簽到
+                          await FirebaseFirestore.instance
+                              .runTransaction((transaction) async {
+                            final snapshot = await transaction.get(userDocRef);
+
+                            if (!snapshot.exists) {
+                              throw Exception('找不到玩家資料');
+                            }
+
+                            final data =
+                                snapshot.data() as Map<String, dynamic>? ?? {};
+
+                            final lastCheckInTimestamp =
+                            data['lastCheckInDate'] as Timestamp?;
+
+                            if (lastCheckInTimestamp != null) {
+                              final lastCheckInString =
+                              DateFormat('yyyy-MM-dd').format(
+                                lastCheckInTimestamp.toDate(),
+                              );
+
+                              if (lastCheckInString == todayString) {
+                                throw Exception('今天已經簽到過了');
+                              }
+                            }
+
+                            transaction.update(userDocRef, {
+                              'flowerPoints':
+                              FieldValue.increment(rewardAmount),
+                              'lastCheckInDate':
+                              FieldValue.serverTimestamp(),
+                            });
+                          });
+
+                          // 2. 寫入花花明細
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user.uid)
+                              .collection('flower_logs')
+                              .add({
+                            'title': l10n.title_daily_check_in,
+                            'amount': rewardAmount,
+                            'createdAt': FieldValue.serverTimestamp(),
+                          });
+
+                          if (!mounted) return;
+
+                          // 3. 更新本地狀態
                           setState(() {
                             _hasClaimedToday = true;
                             _hasCheckedInToday = true;
-                            _lastCheckedDateString = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                            _lastCheckedDateString = todayString;
                           });
 
-                          // 先關閉原本的「每日簽到」大彈窗
-                          Navigator.pop(dialogContext);
+                          // 4. 關閉簽到彈窗
+                          if (Navigator.of(dialogContext).canPop()) {
+                            Navigator.of(dialogContext).pop();
+                          }
 
-                          // 🌟 總裁補丁：把底下的 SnackBar 刪掉，直接在正中間召喚「恭喜獲得」小彈窗！
+                          // 5. 顯示恭喜獲得彈窗
+                          if (!mounted) return;
+
                           showDialog(
                             context: context,
-                            builder: (BuildContext context) {
+                            builder: (rewardDialogContext) {
                               return AlertDialog(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
                                 backgroundColor: Colors.white,
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const SizedBox(height: 16),
-                                    // 🌸 放上可愛的花花圖示
-                                    Image.asset('assets/images/flower_gift.png', height: 80, width: 80),
+                                    Image.asset(
+                                      'assets/images/flower_gift.png',
+                                      height: 80,
+                                      width: 80,
+                                    ),
                                     const SizedBox(height: 16),
-                                    // 🎉 恭喜獲得文字
                                     Text(
-                                      l10n.success_claim_reward(rewardAmount.toString()),
+                                      l10n.success_claim_reward(
+                                        rewardAmount.toString(),
+                                      ),
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
                                     ),
                                     const SizedBox(height: 24),
-                                    // 👆 收下獎勵的確認按鈕
                                     SizedBox(
                                       width: double.infinity,
                                       child: ElevatedButton(
@@ -209,11 +289,24 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                                           backgroundColor: primaryColor,
                                           foregroundColor: Colors.white,
                                           elevation: 0,
-                                          padding: const EdgeInsets.symmetric(vertical: 12),
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                            BorderRadius.circular(16),
+                                          ),
                                         ),
-                                        onPressed: () => Navigator.pop(context), // 關閉這個恭喜彈窗
-                                        child: Text(l10n.shop_purchase_awesome, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                        onPressed: () {
+                                          Navigator.of(rewardDialogContext).pop();
+                                        },
+                                        child: Text(
+                                          l10n.shop_purchase_awesome,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -221,29 +314,67 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                               );
                             },
                           );
-                        }
-                      } catch (e) {
-                        print("❌ 簽到失敗: $e");
-                        if (mounted) {
-                          // ✨ 總裁級防護：領取失敗的優雅迫降，用最高級的視覺回饋安撫玩家的失落！
+                        } catch (e) {
+                          debugPrint('❌ 簽到失敗: $e');
+
+                          if (!mounted) return;
+
+                          final errorText = e.toString();
+                          final bool alreadyCheckedIn =
+                          errorText.contains('今天已經簽到過了');
+
+                          if (alreadyCheckedIn) {
+                            final todayString =
+                            DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+                            setState(() {
+                              _hasClaimedToday = true;
+                              _hasCheckedInToday = true;
+                              _lastCheckedDateString = todayString;
+                            });
+
+                            if (Navigator.of(dialogContext).canPop()) {
+                              Navigator.of(dialogContext).pop();
+                            }
+
+                            ToastUtils.showCenterToast(
+                              context,
+                              '今天已經簽到過囉',
+                              isError: true,
+                            );
+
+                            return;
+                          }
+
                           ToastUtils.showCenterToast(
                             context,
                             l10n.error_claim_failed,
-                            isError: true, // 💡 全域統一的紅色驚嘆號，清楚告知異常，但不引發焦慮
+                            isError: true,
                           );
-                          setStateInDialog(() => isClaiming = false); // 開放按鈕重試
+
+                          setStateInDialog(() {
+                            isClaiming = false;
+                          });
                         }
-                      }
-                    },
-                    child: Text(l10n.action_claim_now,
-                        style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
-                  ),
-              ],
-            );
-          },
-        );
-      },
-    );
+                      },
+                      child: Text(
+                        l10n.action_claim_now,
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    } finally {
+      _isShowingCheckInDialog = false;
+    }
   }
 
   // --- 生日檢查邏輯 (精簡版) ---
@@ -387,7 +518,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
               type: BottomNavigationBarType.fixed,
               // 🌟 這裡會自動幫 ImageIcon 染上玩家自訂的主題色
               selectedItemColor: theme.colorScheme.primary,
-              unselectedItemColor: theme.colorScheme.onSurface.withOpacity(0.6),
+              unselectedItemColor: theme.colorScheme.onSurface.withValues(alpha:0.6),
               items: [
                 // 1. 聊天
                  BottomNavigationBarItem(

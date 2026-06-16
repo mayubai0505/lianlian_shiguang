@@ -1319,7 +1319,7 @@
   "tab_story_progression": "剧情推进",
   "task_desc_story_1_time": "完成 1 次剧情模式互动",
   "tab_social_tour": "社群巡礼",
-  "task_desc_like_3_moments": "为 3 则朋友圈动态按赞",
+  "task_like_three_moments": "赞三则瞬间动态获得叶子",
   "btn_claimed": "已领取",
   "btn_claim": "领取",
   "btn_incomplete": "未完成",
@@ -1886,5 +1886,8 @@
   "birthday_dialog_button": "开启浪漫的一天",
   "@birthday_dialog_button": {
   "description": "生日弹窗的确认按钮"
-  }
+  },
+  "about_us_edit_title": "修改回忆",
+  "about_us_edit_confirm": "确认修改",
+  "save": "储存"
 }

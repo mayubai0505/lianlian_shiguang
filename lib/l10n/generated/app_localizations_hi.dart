@@ -3240,7 +3240,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get tab_social_tour => 'सोशल टूर';
 
   @override
-  String get task_desc_like_3_moments => '3 मोमेंट्स पोस्ट को लाइक करें';
+  String get task_like_three_moments =>
+      'पत्तियां पाने के लिए 3 पलों को लाइक करें';
 
   @override
   String get btn_claimed => 'प्राप्त किया';
@@ -4118,4 +4119,13 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get birthday_dialog_button => 'एक रोमांटिक दिन की शुरुआत करें';
+
+  @override
+  String get about_us_edit_title => 'याद संपादित करें';
+
+  @override
+  String get about_us_edit_confirm => 'संशोधन की पुष्टि करें';
+
+  @override
+  String get save => 'सहेजें';
 }

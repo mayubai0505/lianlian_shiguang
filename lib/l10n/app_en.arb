@@ -1520,7 +1520,7 @@
   "tab_story_progression": "Story Progression",
   "task_desc_story_1_time": "Complete 1 story mode interaction",
   "tab_social_tour": "Social Tour",
-  "task_desc_like_3_moments": "Like 3 Moments posts",
+  "task_like_three_moments": "Like 3 Moments to get Leaves",
   "btn_claimed": "Claimed",
   "btn_claim": "Claim",
   "btn_incomplete": "Incomplete",
@@ -2086,5 +2086,8 @@
   "birthday_dialog_button": "Start a Romantic Day",
   "@birthday_dialog_button": {
   "description": "生日彈窗的確認按鈕"
-  }
+  },
+  "about_us_edit_title": "Edit Memory",
+  "about_us_edit_confirm": "Confirm Edit",
+  "save": "Save"
 }
