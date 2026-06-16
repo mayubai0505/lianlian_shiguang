@@ -33,6 +33,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
   // ✨ 總裁新增：用來控制「加好友」狀態與讀取動畫
   bool _isFriend = false;
   bool _isFriendLoading = false;
+  bool _isTogglingLike = false;
   bool _hasLiked = false;
   bool _isNavigating = false;
   bool _isFollowing = false; // 放在 State 類別的最上方
@@ -400,96 +401,126 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
   void _handleLike() async {
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) return;
-    // 🛑 防禦機制 1：創作者不能按自己的讚
+
+    // 防止連點造成重複寫入
+    if (_isTogglingLike) return;
+
     if (_isCreator) {
-      // ✨ 總裁級：溫柔的遊戲規則提醒，取代冰冷的系統警告！
       ToastUtils.showCenterToast(
         context,
         l10n.like_own_char_warning,
-        customIcon: Icons.front_hand_rounded, // 給個「等等，請停手」的可愛圖示，或用 Icons.info_outline
+        customIcon: Icons.front_hand_rounded,
       );
       return;
     }
-    // ✨ 紀錄原本的狀態 (用來判斷現在是要「按讚」還是「收回」)
+
     final bool wasLiked = _hasLiked;
-    // 💡 樂觀更新：不管網路多慢，畫面上的愛心先秒切換，讓玩家覺得超順暢！
-    setState(() => _hasLiked = !wasLiked);
+
+    setState(() {
+      _isTogglingLike = true;
+      _hasLiked = !wasLiked;
+    });
+
     try {
       final charRef = FirebaseFirestore.instance
           .collection('artifacts')
           .doc(AppConfig.appId)
           .collection('public_characters')
           .doc(widget.character.id);
-      // 這是玩家專屬的「簽到簿」
+
       final likerRef = charRef.collection('likers').doc(user.uid);
-      final batch = FirebaseFirestore.instance.batch();
-      if (!wasLiked) {
-        // 1. 抓取玩家暱稱
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        final playerName = userDoc.data()?['nickname'] ?? user.displayName ??
-           l10n.chat_mysterious_player;
 
-        // 2. 總讚數 +1
-        batch.update(charRef, {'likesCount': FieldValue.increment(1)});
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
 
-        // 3. 登記到「已按讚名單」
-        batch.set(likerRef, {
-          'timestamp': FieldValue.serverTimestamp(),
-        });
+      final playerName =
+          userDoc.data()?['nickname'] ??
+              user.displayName ??
+              l10n.chat_mysterious_player;
 
-        // 4. 發送通知給創作者
-        final notificationRef = FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.character.createdBy)
-            .collection('mailbox')
-            .doc();
+      // 固定通知 ID：同一個玩家對同一個角色按讚，只會有一封通知
+      final notificationId = 'character_like_${widget.character.id}_${user.uid}';
 
-        batch.set(notificationRef, {
-          'type': 'like',
-          'title': l10n.char_exclusive_guardian,
-          'body': l10n.mailbox_like_body(playerName, widget.character.name),
-          'fromUserId': user.uid,
-          'characterId': widget.character.id,
-          'isRead': false,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
+      final notificationRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.character.createdBy)
+          .collection('mailbox')
+          .doc(notificationId);
 
-        await batch.commit(); // 🚀 送出包裹
+      final bool nowLiked =
+      await FirebaseFirestore.instance.runTransaction<bool>((transaction) async {
+        final likerSnapshot = await transaction.get(likerRef);
 
-        if (mounted) {
-          // ✨ 總裁級：點讚成功的極致回饋！一行程式碼搞定圖示加文字！
-          ToastUtils.showCenterToast(
-            context,
-            l10n.like_success_msg,
-            customIcon: Icons.favorite, // 直接傳入愛心圖示，工具會幫你排得漂漂亮亮
+        final bool alreadyLikedInDb = likerSnapshot.exists;
+
+        if (!alreadyLikedInDb) {
+          transaction.update(charRef, {
+            'likesCount': FieldValue.increment(1),
+          });
+
+          transaction.set(likerRef, {
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+
+          transaction.set(
+            notificationRef,
+            {
+              'type': 'like',
+              'title': l10n.char_exclusive_guardian,
+              'body': l10n.mailbox_like_body(
+                playerName,
+                widget.character.name,
+              ),
+              'fromUserId': user.uid,
+              'fromName': playerName,
+              'characterId': widget.character.id,
+              'isRead': false,
+              'createdAt': FieldValue.serverTimestamp(),
+            },
+            SetOptions(merge: true),
           );
+
+          return true;
+        } else {
+          transaction.update(charRef, {
+            'likesCount': FieldValue.increment(-1),
+          });
+
+          transaction.delete(likerRef);
+
+          return false;
         }
-      } else {
-        // 1. 總讚數 -1 (偷偷扣回來)
-        batch.update(charRef, {'likesCount': FieldValue.increment(-1)});
+      });
 
-        // 2. 把玩家從「已按讚名單」裡擦掉
-        batch.delete(likerRef);
+      if (!mounted) return;
 
-        await batch.commit(); // 🚀 送出包裹
+      setState(() {
+        _hasLiked = nowLiked;
+      });
 
-        if (mounted) {
-          // ✨ 總裁級：收回讚的優雅提示，輕巧不留痕跡！
-          ToastUtils.showCenterToast(
-            context,
-            l10n.unlike_success_msg,
-            customIcon: Icons.favorite_border, // 💡 用空心愛心完美暗示「讚已收回」的狀態！
-          );
-        }
-      }
+      ToastUtils.showCenterToast(
+        context,
+        nowLiked ? l10n.like_success_msg : l10n.unlike_success_msg,
+        customIcon: nowLiked ? Icons.favorite : Icons.favorite_border,
+      );
     } catch (e) {
-      // 🚨 如果網路異常導致寫入失敗，就把畫面的愛心「退回」原本的樣子，避免畫面跟資料庫不同步
-      if (mounted) setState(() => _hasLiked = wasLiked);
-      print("按讚切換失敗: $e");
+      if (mounted) {
+        setState(() {
+          _hasLiked = wasLiked;
+        });
+      }
+
+      debugPrint("按讚切換失敗: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isTogglingLike = false;
+        });
+      }
     }
   }
 

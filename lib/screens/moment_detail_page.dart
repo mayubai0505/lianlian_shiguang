@@ -127,54 +127,81 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     required String type,
     required String senderName,
     required String body,
+    String? commentId,
   }) async {
     final l10n = AppLocalizations.of(context)!;
+
+    // 自己不要寄通知給自己
+    if (recipientId == _userId) return;
+
     try {
+      String notificationId;
+
+      if (type == 'like') {
+        // 同一個人對同一篇貼文按讚，只會有一封
+        notificationId = 'moment_like_${postId}_${_userId}';
+      } else if (type == 'comment' && commentId != null) {
+        // 同一則留言，只會有一封
+        notificationId = 'moment_comment_${postId}_$commentId';
+      } else {
+        // 其他通知保底
+        notificationId = '${type}_${postId}_${_userId}_${DateTime.now().millisecondsSinceEpoch}';
+      }
+
       await FirebaseFirestore.instance
           .collection('users')
           .doc(recipientId)
           .collection('mailbox')
-          .add({
+          .doc(notificationId)
+          .set({
         'type': type,
         'fromId': _userId,
-        'title': l10n.moment_notification_new_like, // 專屬按讚標題
+        'fromName': senderName,
+        'title': type == 'like'
+            ? l10n.moment_notification_new_like
+            : '新留言',
         'body': body,
         'postId': postId,
+        if (commentId != null) 'commentId': commentId,
         'createdAt': FieldValue.serverTimestamp(),
         'isRead': false,
-      });
+      }, SetOptions(merge: true));
     } catch (e) {
-      print("❌ 投遞信件失敗: $e");
+      debugPrint("❌ 投遞信件失敗: $e");
     }
   }
 
   // 3. ⚠️ 留言邏輯 (這段絕對不能刪掉喔！)
   Future<void> _saveCommentToDb(String content, Moment moment) async {
     if (content.trim().isEmpty) return;
+
     try {
-      // 🚀 存進留言子集合
-      await _db
+      final commentRef = _db
           .collection('artifacts')
           .doc(AppConfig.appId)
           .collection('moments')
           .doc(widget.postId)
           .collection('comments')
-          .add({
+          .doc();
+
+      await commentRef.set({
         'content': content.trim(),
         'authorId': _userId,
         'authorName': _myNickname ?? '某位朋友',
         'createdAt': FieldValue.serverTimestamp(),
-        'parentCommentId': _replyTarget?['commentId'], // 如果是一般留言，這裡會是 null
+        'parentCommentId': _replyTarget?['commentId'],
         'replyToName': _replyTarget?['authorName'],
       });
 
-      // 🌟 觸發寄信通知 (呼叫 Moment 模型裡的方法)
+      // 🌟 這裡要注意：
+      // 如果 moment.sendCommentNotification 裡面也是寫 mailbox.add()
+      // 那它也會造成重複通知。
       await moment.sendCommentNotification(
         commentText: content.trim(),
         senderNickname: _myNickname ?? '某位朋友',
+        commentId: commentRef.id, // 如果 Moment 方法支援，就加這個
       );
 
-      // 🎯 ✨ 新增：解析留言內容，看看有沒有人被 @Tag！
       await _handleMentions(
         text: content.trim(),
         postId: widget.postId,
@@ -182,11 +209,12 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
 
       _commentController.clear();
       FocusScope.of(context).unfocus();
+
       setState(() {
-        _replyTarget = null; // ✨ 留言成功後，清空回覆狀態！
+        _replyTarget = null;
       });
     } catch (e) {
-      print("❌ 留言失敗: $e");
+      debugPrint("❌ 留言失敗: $e");
     }
   }
 

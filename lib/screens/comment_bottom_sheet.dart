@@ -43,6 +43,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
   String _currentAuthorAvatar = '';
   List<Comment> _comments = [];
   bool _isLoadingComments = true;
+  bool _isPostingComment = false;
   void _cancelReply() {
     setState(() {
       _replyTarget = null;
@@ -142,8 +143,13 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
 
   Future<void> _postComment() async {
     final l10n = AppLocalizations.of(context)!;
+
+    // 防止連點送出多次留言 / 多封通知
+    if (_isPostingComment) return;
+
     final String text = _commentController.text.trim();
     if (text.isEmpty) return;
+
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
 
@@ -151,33 +157,50 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     final String? parentId = _replyTarget?.id;
     final String? replyName = _replyTarget?.authorName;
 
-    _commentController.clear();
-    setState(() => _replyTarget = null);
-    FocusScope.of(context).unfocus();
+    final momentRef = _db
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('moments')
+        .doc(widget.moment.id);
 
-    final momentRef = _db.collection('artifacts').doc(AppConfig.appId).collection('moments').doc(widget.moment.id);
+    // ✅ 先手動建立 commentRef，這樣我們可以拿到固定 commentId
     final newCommentRef = momentRef.collection('comments').doc();
+    final String commentId = newCommentRef.id;
+
+    final String safeAuthorId =
+    _currentAuthorId.isNotEmpty ? _currentAuthorId : currentUser.uid;
+
+    final String safeAuthorName = _currentAuthorName.isNotEmpty
+        ? _currentAuthorName
+        : l10n.comment_loading_author;
 
     final tempComment = Comment(
-      id: newCommentRef.id,
+      id: commentId,
       content: finalContent,
-      authorId: _currentAuthorId,
-      authorName: _currentAuthorName.isNotEmpty ? _currentAuthorName : l10n.comment_loading_author,
+      authorId: safeAuthorId,
+      authorName: safeAuthorName,
       authorAvatar: _currentAuthorAvatar,
       createdAt: Timestamp.now(),
       parentCommentId: parentId,
       replyToName: replyName,
     );
 
-    setState(() => _comments.add(tempComment));
+    setState(() {
+      _isPostingComment = true;
+      _replyTarget = null;
+      _comments.add(tempComment);
+    });
+
+    _commentController.clear();
+    FocusScope.of(context).unfocus();
 
     try {
       final batch = _db.batch();
 
       batch.set(newCommentRef, {
         'content': finalContent,
-        'authorId': _currentAuthorId,
-        'authorName': _currentAuthorName.isNotEmpty ? _currentAuthorName : l10n.comment_loading_author,
+        'authorId': safeAuthorId,
+        'authorName': safeAuthorName,
         'authorAvatar': _currentAuthorAvatar,
         'createdAt': FieldValue.serverTimestamp(),
         'parentCommentId': parentId,
@@ -185,26 +208,37 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         'isPlayer': true,
       });
 
-      batch.update(momentRef, {'commentCount': FieldValue.increment(1)});
+      batch.update(momentRef, {
+        'commentCount': FieldValue.increment(1),
+      });
 
       await batch.commit();
 
+      // ✅ 這裡補上 commentId，讓通知用固定 docId，不會重複寄三封
       await widget.moment.sendCommentNotification(
         commentText: replyName != null ? "@$replyName $finalContent" : finalContent,
-        senderNickname: _currentAuthorName.isNotEmpty ? _currentAuthorName : l10n.comment_loading_author,
+        senderNickname: safeAuthorName,
+        commentId: commentId,
       );
 
       print("✅ 留言與通知發送成功！");
-
     } catch (e) {
-      setState(() => _comments.removeWhere((c) => c.id == tempComment.id));
+      setState(() {
+        _comments.removeWhere((c) => c.id == tempComment.id);
+      });
+
       if (mounted) {
-        // ✨ 總裁級：評論發布失敗的輕量錯誤提示，俐落取代刺眼的大紅方塊！
         ToastUtils.showCenterToast(
           context,
           l10n.comment_post_failed(e.toString()),
-          isError: true, // 💡 總裁細節：系統自動帶入紅驚嘆號，優雅提示錯誤
+          isError: true,
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPostingComment = false;
+        });
       }
     }
   }
@@ -595,10 +629,14 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                       maxLines: 4,
                     ),
                   ),
-
                   IconButton(
-                    icon: Icon(Icons.send, color: Theme.of(context).colorScheme.primary),
-                    onPressed: _postComment,
+                    icon: Icon(
+                      Icons.send,
+                      color: _isPostingComment
+                          ? Colors.grey
+                          : Theme.of(context).colorScheme.primary,
+                    ),
+                    onPressed: _isPostingComment ? null : _postComment,
                   ),
                 ],
               ),

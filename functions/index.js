@@ -14,6 +14,7 @@ if (admin.apps.length === 0) {
     admin.initializeApp();
     admin.firestore().settings({ ignoreUndefinedProperties: true });
 }
+const REGION = "asia-east1";
 // 🌟 全域變數定義
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
@@ -161,24 +162,149 @@ exports.generateVoice = onRequest({
         return res.status(500).json({ error: err.message });
     }
 });
+
+// Windows-1252 反向表，用來處理 â€™、â€œ、â€ 等情況
+const CP1252_REVERSE_MAP = {
+    "€": 0x80,
+    "‚": 0x82,
+    "ƒ": 0x83,
+    "„": 0x84,
+    "…": 0x85,
+    "†": 0x86,
+    "‡": 0x87,
+    "ˆ": 0x88,
+    "‰": 0x89,
+    "Š": 0x8A,
+    "‹": 0x8B,
+    "Œ": 0x8C,
+    "Ž": 0x8E,
+    "‘": 0x91,
+    "’": 0x92,
+    "“": 0x93,
+    "”": 0x94,
+    "•": 0x95,
+    "–": 0x96,
+    "—": 0x97,
+    "˜": 0x98,
+    "™": 0x99,
+    "š": 0x9A,
+    "›": 0x9B,
+    "œ": 0x9C,
+    "ž": 0x9E,
+    "Ÿ": 0x9F,
+};
+
+function fixMojibake(text) {
+    if (!text || typeof text !== "string") return text;
+
+    const looksBroken =
+        /[æåçèéäöüïãâ¤¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿]/.test(text) ||
+        text.includes("ï¼") ||
+        text.includes("ã") ||
+        text.includes("â") ||
+        text.includes("�");
+
+    if (!looksBroken) return text;
+
+    const candidates = [];
+
+    candidates.push(text);
+
+    try {
+        candidates.push(decodeMojibakeOnce(text));
+    } catch (e) {
+        console.error("mojibake 一次修復失敗:", e);
+    }
+
+    try {
+        const once = decodeMojibakeOnce(text);
+        candidates.push(decodeMojibakeOnce(once));
+    } catch (e) {
+        // 不用中斷
+    }
+
+    let best = text;
+    let bestScore = scoreChineseText(text);
+
+    for (const candidate of candidates) {
+        const score = scoreChineseText(candidate);
+        if (score > bestScore) {
+            best = candidate;
+            bestScore = score;
+        }
+    }
+
+    return best.replace(/�/g, "");
+}
+
+function decodeMojibakeOnce(str) {
+    const bytes = [];
+
+    for (const ch of str) {
+        const code = ch.codePointAt(0);
+
+        if (code <= 0xFF) {
+            bytes.push(code);
+            continue;
+        }
+
+        const cp1252 = CP1252_REVERSE_MAP[ch];
+        if (cp1252 !== undefined) {
+            bytes.push(cp1252);
+            continue;
+        }
+
+        const buf = Buffer.from(ch, "utf8");
+        for (const b of buf) bytes.push(b);
+    }
+
+    return Buffer.from(bytes).toString("utf8");
+}
+
+function scoreChineseText(str) {
+    if (!str || typeof str !== "string") return -999999;
+
+    const cjkCount = (str.match(/[\u4e00-\u9fff]/g) || []).length;
+    const zhPunctCount = (str.match(/[，。！？：「」『』（）——、]/g) || []).length;
+
+    const mojibakeCount =
+        (str.match(/[æåçèéäöüïãâ¤¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿]/g) || []).length;
+
+    const replacementCount = (str.match(/�/g) || []).length;
+    const controlCount = (str.match(/[\u0000-\u001F\u007F-\u009F]/g) || []).length;
+
+    return (
+        cjkCount * 5 +
+        zhPunctCount * 2 -
+        mojibakeCount * 8 -
+        replacementCount * 20 -
+        controlCount * 20
+    );
+}
+
+
 exports.getAiResponse = onRequest({
-    region: "asia-east1",
-    secrets: [openRouterApiKey, deepseekApiKey, elevenLabsApiKey, geminiApiKey],
-    memory: "1GiB",
-    timeoutSeconds: 300,
+    region: REGION,
+        minInstances: 0,
+        memory: "1GiB",
+        timeoutSeconds: 120,
+        secrets: [openRouterApiKey, geminiApiKey],
 }, (req, res) => {
     return cors(req, res, async () => {
         try {
-            const playerLanguage = req.body.language || "台灣繁體中文";
+            const body = req.body || {};
+            const playerLanguage = body.language || "台灣繁體中文";
+
             const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: "未授權" });
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                return res.status(401).json({ error: "未授權" });
+            }
 
             const idToken = authHeader.split('Bearer ')[1];
             const decodedToken = await admin.auth().verifyIdToken(idToken);
             const userId = decodedToken.uid;
             const userDocRef = admin.firestore().collection("users").doc(userId);
 
-            const body = req.body || {};
             const {
                 characterProfile = {},
                 sessionId,
@@ -197,6 +323,68 @@ exports.getAiResponse = onRequest({
                 lastStoryLocation,
                 overrideSystemPrompt = ""
             } = body;
+
+            // ==========================================
+            // 🧷 同一玩家 AI 請求鎖：防止連點 / 重送 / 同時多個 AI 請求
+            // ==========================================
+            const aiLockRef = userDocRef.collection("locks").doc("aiResponse");
+            let aiLockReleased = false;
+            let aiLockAcquired = false;
+
+            async function releaseAiLock() {
+                if (!aiLockAcquired) return;
+                if (aiLockReleased) return;
+
+                aiLockReleased = true;
+
+                try {
+                    await aiLockRef.delete();
+                    console.log("🔓 AI lock released");
+                } catch (e) {
+                    console.warn("⚠️ AI lock release failed:", e);
+                }
+            }
+
+            // 確保正常回應或連線中斷時都會釋放 lock
+            res.on("finish", () => {
+                releaseAiLock();
+            });
+
+            try {
+                await admin.firestore().runTransaction(async (tx) => {
+                    const lockSnap = await tx.get(aiLockRef);
+                    const now = Date.now();
+
+                    if (lockSnap.exists) {
+                        const lockData = lockSnap.data() || {};
+                        const lockedAt = lockData.lockedAtMillis || 0;
+
+                        // 60 秒內還有請求在跑，就擋掉
+                        if (now - lockedAt < 60000) {
+                            throw new Error("AI_REQUEST_IN_PROGRESS");
+                        }
+                    }
+
+                    tx.set(aiLockRef, {
+                        lockedAtMillis: now,
+                        userId,
+                        sessionId: sessionId || null,
+                        chatMode,
+                        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    });
+                });
+
+                aiLockAcquired = true;
+            } catch (e) {
+                if (e.message === "AI_REQUEST_IN_PROGRESS") {
+                    return res.status(429).json({
+                        error: "AI_REQUEST_IN_PROGRESS",
+                        message: "上一則回覆還在生成中，請稍等一下喔。",
+                    });
+                }
+
+                throw e;
+            }
 
             let finalUserMessage = userMessage;
 
@@ -523,43 +711,52 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                 const currentStateDice = randomStates[Math.floor(Math.random() * randomStates.length)];
 
                                                                                                 // ✨✨✨ 總裁新增：讀取專屬回憶 (關於我們)
+                                                                                                function limitMemoryText(text, maxLength = 300) {
+                                                                                                    if (!text || typeof text !== "string") return "";
+
+                                                                                                    const cleaned = fixMojibake(text).trim();
+
+                                                                                                    return cleaned.length > maxLength
+                                                                                                        ? cleaned.slice(0, maxLength).trim() + "……"
+                                                                                                        : cleaned;
+                                                                                                }
+
                                                                                                 let sharedMemoriesText = "";
+
                                                                                                 try {
-                                                                                                    // 💡 注意：這裡的變數名稱請對應您實際接收到的參數
-                                                                                                    // 例如如果前端傳來的是 body.userId，請確保替換正確！
                                                                                                     const uid = body.userId || body.uid || userId;
                                                                                                     const charId = body.characterId || body.botId || characterProfile.id;
-                                                                                                    console.log("🧪 [shared_memories] uid =", uid);
-                                                                                                    console.log("🧪 [shared_memories] charId =", charId);
-                                                                                                    console.log(
-                                                                                                      "🧪 [shared_memories] path =",
-                                                                                                      `users/${uid}/characters/${charId}/shared_memories`
-                                                                                                    );
 
                                                                                                     if (uid && charId) {
                                                                                                         const sharedMemoriesSnapshot = await admin.firestore()
-                                                                                                            .collection('users').doc(uid)
-                                                                                                            .collection('characters').doc(charId)
-                                                                                                            .collection('shared_memories')
-                                                                                                            .orderBy('timestamp', 'desc')
-                                                                                                            .limit(10)
+                                                                                                            .collection("users").doc(uid)
+                                                                                                            .collection("characters").doc(charId)
+                                                                                                            .collection("shared_memories")
+                                                                                                            .orderBy("timestamp", "desc")
+                                                                                                            .limit(5)
                                                                                                             .get();
 
-                                                                                                            console.log("🧪 [shared_memories] count =", sharedMemoriesSnapshot.size);
-
                                                                                                         if (!sharedMemoriesSnapshot.empty) {
-                                                                                                            sharedMemoriesText = "\n\n【重要劇情與共同回憶】：\n請務必將以下設定視為「既定事實」，並在對話中自然地展現出你們已經經歷過這些事：\n";
+                                                                                                            sharedMemoriesText =
+                                                                                                                "\n\n【重要劇情與共同回憶】：\n請務必將以下設定視為「既定事實」，並在對話中自然地展現出你們已經經歷過這些事：\n";
+
                                                                                                             let index = 1;
+
                                                                                                             sharedMemoriesSnapshot.forEach(doc => {
                                                                                                                 const memory = doc.data();
-                                                                                                                sharedMemoriesText += `${index}. [${memory.title}] ${memory.subtitle ? '(' + memory.subtitle + ')' : ''}\n細節：${memory.content}\n`;
+
+                                                                                                                const memoryTitle = limitMemoryText(memory.title, 30);
+                                                                                                                const memorySubtitle = limitMemoryText(memory.subtitle, 30);
+                                                                                                                const memoryContent = limitMemoryText(memory.content, 300);
+
+                                                                                                                sharedMemoriesText += `${index}. [${memoryTitle}] ${memorySubtitle ? "(" + memorySubtitle + ")" : ""}\n細節：${memoryContent}\n`;
+
                                                                                                                 index++;
                                                                                                             });
                                                                                                         }
                                                                                                     }
                                                                                                 } catch (error) {
                                                                                                     console.error("讀取專屬回憶失敗:", error);
-                                                                                                    // 就算讀取失敗也不要讓程式崩潰，繼續空字串往下走
                                                                                                 }
 
                                                                                                 // =========================================================================
@@ -938,16 +1135,17 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                           // 🧠 根據模式壓縮聊天紀錄，降低 Prompt Token 成本
                           // ==========================================
                           const HISTORY_LIMIT =
-                              chatMode === "immersive" ? 8 :
-                              chatMode === "story" ? 6 :
+                              chatMode === "immersive" ? 6 :
+                              chatMode === "story" ? 5 :
                               chatMode === "daily" ? 4 :
-                              6;
+                              4;
 
                           const HISTORY_TEXT_LIMIT =
-                              chatMode === "immersive" ? 600 :
-                              chatMode === "story" ? 500 :
+                              chatMode === "immersive" ? 450 :
+                              chatMode === "story" ? 400 :
                               chatMode === "daily" ? 250 :
-                              400;
+                              300;
+
 
                           function limitPromptText(text, maxLength) {
                               if (!text || typeof text !== "string") return "";
@@ -981,139 +1179,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                           cost: cost, isBirthdayFreebie: isBirthdayFreebie
                                       });
 
-
-function fixMojibake(text) {
-    if (!text || typeof text !== "string") return text;
-
-    // 常見 mojibake 特徵
-    const looksBroken =
-        /[æåçèéäöüïãâ¤¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿]/.test(text) ||
-        text.includes("ï¼") ||
-        text.includes("ã") ||
-        text.includes("â") ||
-        text.includes("�");
-
-    if (!looksBroken) return text;
-
-    const candidates = [];
-
-    // 原文也放進候選，避免越修越壞
-    candidates.push(text);
-
-    // 嘗試修一次
-    try {
-        candidates.push(decodeMojibakeOnce(text));
-    } catch (e) {
-        console.error("mojibake 一次修復失敗:", e);
-    }
-
-    // 嘗試修兩次，處理雙重亂碼
-    try {
-        const once = decodeMojibakeOnce(text);
-        candidates.push(decodeMojibakeOnce(once));
-    } catch (e) {
-        // 不用中斷
-    }
-
-    // 從候選中挑最像正常中文的版本
-    let best = text;
-    let bestScore = scoreChineseText(text);
-
-    for (const candidate of candidates) {
-        const score = scoreChineseText(candidate);
-        if (score > bestScore) {
-            best = candidate;
-            bestScore = score;
-        }
-    }
-
-    // 最後清掉殘留的 replacement char
-    return best.replace(/�/g, "");
-}
-
-
-// 把 mojibake 字串重新當成 bytes，再用 UTF-8 解回來
-function decodeMojibakeOnce(str) {
-    const bytes = [];
-
-    for (const ch of str) {
-        const code = ch.codePointAt(0);
-
-        // 普通 Latin-1 範圍
-        if (code <= 0xFF) {
-            bytes.push(code);
-            continue;
-        }
-
-        // Windows-1252 常見特殊字元對應
-        const cp1252 = CP1252_REVERSE_MAP[ch];
-        if (cp1252 !== undefined) {
-            bytes.push(cp1252);
-            continue;
-        }
-
-        // 其他正常中文字、日文、韓文、emoji 等，不強行轉
-        // 直接保留原字的 UTF-8 bytes
-        const buf = Buffer.from(ch, "utf8");
-        for (const b of buf) bytes.push(b);
-    }
-
-    return Buffer.from(bytes).toString("utf8");
-}
-
-
-// Windows-1252 反向表，用來處理 â€™、â€œ、â€ 等情況
-const CP1252_REVERSE_MAP = {
-    "€": 0x80,
-    "‚": 0x82,
-    "ƒ": 0x83,
-    "„": 0x84,
-    "…": 0x85,
-    "†": 0x86,
-    "‡": 0x87,
-    "ˆ": 0x88,
-    "‰": 0x89,
-    "Š": 0x8A,
-    "‹": 0x8B,
-    "Œ": 0x8C,
-    "Ž": 0x8E,
-    "‘": 0x91,
-    "’": 0x92,
-    "“": 0x93,
-    "”": 0x94,
-    "•": 0x95,
-    "–": 0x96,
-    "—": 0x97,
-    "˜": 0x98,
-    "™": 0x99,
-    "š": 0x9A,
-    "›": 0x9B,
-    "œ": 0x9C,
-    "ž": 0x9E,
-    "Ÿ": 0x9F,
-};
-
-
-// 評分：越像正常中文分數越高，亂碼越多分數越低
-function scoreChineseText(str) {
-    if (!str || typeof str !== "string") return -999999;
-
-    const cjkCount = (str.match(/[\u4e00-\u9fff]/g) || []).length;
-    const zhPunctCount = (str.match(/[，。！？：「」『』（）——、]/g) || []).length;
-
-    const mojibakeCount = (str.match(/[æåçèéäöüïãâ¤¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿]/g) || []).length;
-    const replacementCount = (str.match(/�/g) || []).length;
-    const controlCount = (str.match(/[\u0000-\u001F\u007F-\u009F]/g) || []).length;
-
-    return (
-        cjkCount * 5 +
-        zhPunctCount * 2 -
-        mojibakeCount * 8 -
-        replacementCount * 20 -
-        controlCount * 20
-    );
-}
-
                                    // ==========================================
                                    // 🌟🌟🌟 啟動引擎：直通車變數初始化 🌟🌟🌟
                                    // ==========================================
@@ -1128,19 +1193,15 @@ function scoreChineseText(str) {
                                    let MAX_LOOPS = 1;
 
                                    if (chatMode === "immersive") {
-                                       // 沉浸模式：要求真的寫到沉浸長度，但最多催一次
-                                       TARGET_LENGTH = 750;
-                                       MAX_LOOPS = 2;
+                                       TARGET_LENGTH = 650;
+                                       MAX_LOOPS = 1;
                                    } else if (chatMode === "story") {
-                                       // 劇情模式：中長篇即可，不要像 immersive 那麼貴
-                                       TARGET_LENGTH = 550;
-                                       MAX_LOOPS = 2;
+                                       TARGET_LENGTH = 450;
+                                       MAX_LOOPS = 1;
                                    } else if (chatMode === "daily") {
-                                       // 日常短聊
                                        TARGET_LENGTH = 80;
                                        MAX_LOOPS = 1;
                                    } else if (chatMode === "gemini") {
-                                       // LINE 聊天模式
                                        TARGET_LENGTH = 40;
                                        MAX_LOOPS = 1;
                                    }
@@ -1310,9 +1371,6 @@ function scoreChineseText(str) {
                                                                                            rawContent = "（男神欲言又止，似乎被某種不可抗力限制了發言...）";
                                                                                        }
                                                                                    }
-
-                                                                                   console.log("🧪 RAW OPENROUTER:", rawContent?.slice(0, 500));
-
                                                                                // ==========================================
                                                                                    // 🛡️ 總裁級防護網 2.0：精準攔截，拒絕誤殺
                                                                                    // ==========================================
@@ -1536,15 +1594,18 @@ function scoreChineseText(str) {
                                                                                    content: "（系統強制指令：目前的篇幅不足以達到沉浸要求。請保持 JSON 格式回傳，接著最後一句話繼續即可。不要重寫，不要原封不動重複，總長度不要超過限制。）"
                                                                                });
                                                                            } // 👈 迴圈在這裡完美閉合！
-
 // ==========================================
 // 🛑 總裁鐵門：防堵幽靈回覆與幽靈扣款
+// 放在「扣花花」和「寫入聊天紀錄」之前
 // ==========================================
-if (isAborted) {
-    console.log("🛑 玩家已經離開或按下停止，取消扣款與資料庫寫入！");
-    return res.status(499).json({ status: "aborted", message: "Client closed request" });
-}
+if (isAborted || res.writableEnded || res.destroyed || req.destroyed) {
+    console.log("🛑 請求已中斷或回應已結束，跳過扣款與資料庫寫入，避免幽靈扣款。");
 
+    // 如果妳有 releaseAiLock()，這裡要手動釋放
+    await releaseAiLock();
+
+    return;
+}
                                      // ==========================================
                                      // 💰💰💰 新增：總裁的雲端收銀台 (絕對不漏接) 💰💰💰
                                      // ==========================================
@@ -1581,7 +1642,6 @@ if (isAborted) {
                                                        // 我們要確保存入 text 的內容是「純對話」，不帶任何 JSON 符號
                                                        let cleanDisplayText = finalResponseText;
                                                        let cleanVoiceText = finalVoiceText;
-                                                       console.log("🧪 BEFORE CLEAN:", cleanDisplayText?.slice(0, 500));
                                                        // 檢查內容是否還帶著 JSON 的殼
                                                        if (cleanDisplayText.includes('"response":')) {
                                                            try {
@@ -2706,8 +2766,6 @@ exports.directCallAiStream = onRequest({
         res.status(500).end();
     }
 });
-
-const REGION = "asia-east1";
 
 function requireLogin(request) {
   if (!request.auth) {

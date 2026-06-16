@@ -33,36 +33,45 @@ class Moment {
     this.parentCommentId,
     this.replyToName,
   });
-
   bool get isCreatorPost => authorId.startsWith('creator_');
+
   Future<void> sendCommentNotification({
     required String commentText,
     required String senderNickname,
+    required String commentId,
   }) async {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
-    // 門檻檢查：收件人必須存在，且不能是自己留言給自己
-    if (createdBy.isEmpty || createdBy == currentUserId) return;
+    // 門檻檢查：收件人必須存在，寄件人必須存在，且不能是自己留言給自己
+    if (createdBy.isEmpty || currentUserId == null || createdBy == currentUserId) {
+      return;
+    }
 
     try {
-      // ✨ 根據身分決定文案 (直接利用類別內的 isCreatorPost 和 authorName)
-      String mailBody = isCreatorPost
+      // ✨ 根據身分決定文案
+      final String mailBody = isCreatorPost
           ? '$senderNickname在妳的動態下留言：「$commentText」'
           : '$senderNickname給$authorName留了話：「$commentText」';
+
+      // ✅ 固定通知 ID：同一則留言只會有一封通知
+      final String notificationId = 'moment_comment_${id}_$commentId';
 
       await FirebaseFirestore.instance
           .collection('users')
           .doc(createdBy)
           .collection('mailbox')
-          .add({
+          .doc(notificationId)
+          .set({
         'type': 'comment',
         'fromId': currentUserId,
+        'fromName': senderNickname,
         'title': isCreatorPost ? '動態有新回應！💬' : '角色人氣爆發！🔥',
         'body': mailBody,
-        'postId': id, // 這篇貼文的 ID
+        'postId': id,
+        'commentId': commentId,
         'createdAt': FieldValue.serverTimestamp(),
         'isRead': false,
-      });
+      }, SetOptions(merge: true));
 
       print("📫 留言通知信已寄出！收件人：$createdBy");
     } catch (e) {
