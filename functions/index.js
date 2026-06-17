@@ -282,86 +282,219 @@ function scoreChineseText(str) {
     );
 }
 
-async function callOpenRouter(modelId, requestBody, abortController) {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${openRouterApiKey.value()}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            ...requestBody,
-            model: modelId,
-        }),
-        signal: abortController?.signal,
-    });
+async function callOpenRouter({
+    apiUrl,
+    apiKey,
+    modelId,
+    requestBody,
+    abortController,
+    timeoutMs = 95_000,
+}) {
+    const timeoutController = new AbortController();
 
-    let result;
-    try {
-        result = await response.json();
-    } catch (e) {
-        result = null;
+    const timer = setTimeout(() => {
+        timeoutController.abort();
+    }, timeoutMs);
+
+    let finalSignal = timeoutController.signal;
+
+    if (abortController?.signal) {
+        finalSignal = AbortSignal.any([
+            abortController.signal,
+            timeoutController.signal,
+        ]);
     }
 
-    console.log("🧪 OPENROUTER STATUS:", response.status);
+    let response;
+    let rawText = "";
+
+    try {
+        const finalBody = {
+            ...requestBody,
+            model: modelId,
+        };
+
+        console.log("🚀 AI REQUEST:", {
+            apiUrl,
+            model: modelId,
+            timeoutMs,
+            messageCount: finalBody.messages?.length,
+            max_tokens: finalBody.max_tokens,
+        });
+
+        response = await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(finalBody),
+            signal: finalSignal,
+        });
+
+        rawText = await response.text();
+
+        console.log("🧪 AI HTTP STATUS:", response.status);
+        console.log("🧪 AI RAW TEXT PREVIEW:", rawText.slice(0, 2000));
+    } catch (err) {
+        console.error("🚨 AI fetch failed:", {
+            name: err?.name,
+            message: err?.message,
+            model: modelId,
+            playerDisconnected: abortController?.signal?.aborted === true,
+        });
+
+        if (err?.name === "AbortError") {
+            if (abortController?.signal?.aborted) {
+                throw new Error("PLAYER_DISCONNECTED");
+            }
+
+            throw new Error("AI 回覆時間太久，已主動中止");
+        }
+
+        throw new Error("AI 連線暫時不穩");
+    } finally {
+        clearTimeout(timer);
+    }
+
+    let data = null;
+
+    try {
+        data = rawText ? JSON.parse(rawText) : null;
+    } catch (err) {
+        console.error("🚨 AI returned non-JSON:", {
+            status: response?.status,
+            rawText: rawText.slice(0, 2000),
+            parseMessage: err?.message,
+        });
+
+        throw new Error("AI 回傳格式異常");
+    }
 
     if (!response.ok) {
-        console.error("🚨 OPENROUTER ERROR RESULT:", JSON.stringify(result));
+        const errorMessage =
+            data?.error?.message ||
+            data?.message ||
+            `AI HTTP ERROR ${response.status}`;
 
-        const error = new Error(
-            response.status === 503 || response.status === 429
-                ? "AI_PROVIDER_BUSY"
-                : `OpenRouter HTTP ${response.status}`
-        );
+        console.error("🚨 AI HTTP ERROR:", {
+            status: response.status,
+            errorMessage,
+            data,
+            rawText: rawText.slice(0, 2000),
+        });
 
+        const error = new Error(errorMessage);
         error.statusCode = response.status;
-        error.result = result;
+        error.result = data;
+
         throw error;
     }
 
-    return result;
+    if (!data?.choices || data.choices.length === 0) {
+        console.error("🚨 AI 沒有 choices:", {
+            status: response.status,
+            data,
+            rawText: rawText.slice(0, 2000),
+        });
+
+        throw new Error(
+            data?.error?.message ||
+            data?.message ||
+            "AI 斷線或沒有回傳 choices"
+        );
+    }
+
+    return data;
 }
 
 async function callAiWithRetry({
+    apiUrl,
+    apiKey,
     modelId,
     fallbackModelId,
     requestBody,
     abortController,
+    timeoutMs = 95_000,
 }) {
     try {
-        return await callOpenRouter(modelId, requestBody, abortController);
+        return await callOpenRouter({
+            apiUrl,
+            apiKey,
+            modelId,
+            requestBody,
+            abortController,
+            timeoutMs,
+        });
     } catch (error) {
         const retryable =
-            error.statusCode === 503 ||
             error.statusCode === 429 ||
-            error.message === "AI_PROVIDER_BUSY";
+            error.statusCode === 500 ||
+            error.statusCode === 502 ||
+            error.statusCode === 503 ||
+            error.statusCode === 504 ||
+            error.message === "AI_PROVIDER_BUSY" ||
+            error.message?.includes("AI 回覆時間太久") ||
+            error.message?.includes("AI 服務暫時忙碌") ||
+            error.message?.includes("AI 連線暫時不穩") ||
+            error.message?.includes("AI 回傳格式異常") ||
+            error.message?.includes("AI 斷線或沒有回傳 choices");
+
+        if (error.message === "PLAYER_DISCONNECTED") {
+            throw error;
+        }
 
         if (!retryable) throw error;
 
-        console.warn("🌧️ 主模型忙線，先重試一次:", modelId);
+        console.warn("🌧️ 主模型忙線、逾時或回傳異常，先重試一次:", {
+            modelId,
+            message: error?.message,
+            statusCode: error?.statusCode,
+        });
 
         await new Promise(resolve => setTimeout(resolve, 1200));
 
         try {
-            return await callOpenRouter(modelId, requestBody, abortController);
+            return await callOpenRouter({
+                apiUrl,
+                apiKey,
+                modelId,
+                requestBody,
+                abortController,
+                timeoutMs,
+            });
         } catch (retryError) {
+            if (retryError.message === "PLAYER_DISCONNECTED") {
+                throw retryError;
+            }
+
             if (!fallbackModelId) {
                 throw retryError;
             }
 
-            console.warn("🚑 主模型重試失敗，切換 fallback:", fallbackModelId);
+            console.warn("🚑 主模型重試失敗，切換 fallback:", {
+                fallbackModelId,
+                message: retryError?.message,
+                statusCode: retryError?.statusCode,
+            });
 
-            return await callOpenRouter(fallbackModelId, requestBody, abortController);
+            return await callOpenRouter({
+                apiUrl,
+                apiKey,
+                modelId: fallbackModelId,
+                requestBody,
+                abortController,
+                timeoutMs,
+            });
         }
     }
 }
-
 
 exports.getAiResponse = onRequest({
     region: REGION,
         minInstances: 0,
         memory: "1GiB",
-        timeoutSeconds: 120,
+        timeoutSeconds: 300,
         secrets: [openRouterApiKey, geminiApiKey],
 }, (req, res) => {
     return cors(req, res, async () => {
@@ -508,7 +641,9 @@ exports.getAiResponse = onRequest({
                     temperature: 0.85,
                 },
             };
-            const config = modelConfig[chatMode] || modelConfig["daily"];
+
+            const config = modeConfig[chatMode] || modeConfig["daily"];
+            const targetModel = config.modelId;
             const cost = isBirthdayFreebie ? 0 : config.cost;
 
             const userDoc = await userDocRef.get();
@@ -1226,29 +1361,29 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
            finalUserMessage = `${userMessage}\n\n【系統強制指令】：1. 稱呼對方為「${playerName}」。2. 歷史連貫。3. 首行含時間地點。`;
        }
 
-                   let isAborted = false;
                    const abortController = new AbortController();
+                   let playerConnectionClosed = false;
+
                    res.on("close", () => {
                        if (!res.writableEnded) {
-                           isAborted = true;
-                           abortController.abort();
-                           console.log("🛑 玩家連線中斷，取消 AI 請求");
+                           playerConnectionClosed = true;
+                           console.log("⚠️ 玩家連線已關閉，但不立刻取消 AI，避免誤殺回覆");
                        }
                    });
-                          // 🧠 根據模式壓縮聊天紀錄，降低 Prompt Token 成本
+                          // 🧠 根據模式壓縮聊天紀錄，確保話題連貫性 (1 輪 = User + AI 共 2 條)
                           // ==========================================
                           const HISTORY_LIMIT =
-                              chatMode === "immersive" ? 6 :
-                              chatMode === "story" ? 5 :
-                              chatMode === "daily" ? 4 :
-                              4;
+                              chatMode === "immersive" ? 14 : // 保留最近 7 輪對話 (足夠深入探討一個話題、調情)
+                              chatMode === "story"     ? 10 : // 保留最近 5 輪對話 (劇情推進剛好)
+                              chatMode === "daily"     ? 6  : // 保留最近 3 輪對話 (日常早晚安打招呼很夠了)
+                              6;
 
+                          // ✂️ 單則訊息的防爆字數限制 (避免玩家貼一整篇論文進來，而不是限制總字數)
                           const HISTORY_TEXT_LIMIT =
-                              chatMode === "immersive" ? 450 :
-                              chatMode === "story" ? 400 :
-                              chatMode === "daily" ? 250 :
-                              300;
-
+                              chatMode === "immersive" ? 800 : // 允許較長的內心戲與動作描述
+                              chatMode === "story"     ? 600 :
+                              chatMode === "daily"     ? 300 :
+                              400;
 
                           function limitPromptText(text, maxLength) {
                               if (!text || typeof text !== "string") return "";
@@ -1308,14 +1443,40 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                        TARGET_LENGTH = 40;
                                        MAX_LOOPS = 1;
                                    }
-                                   // 準備對話紀錄
-                                   let currentMessages = [...trimmedHistory];
+                                   // ==========================================
+                                   // 🛡️ 總裁專屬防爆網：單則訊息精準截斷
+                                   // ==========================================
+                                   // 1. 清洗歷史紀錄
+                                   const safeTrimmedHistory = trimmedHistory.map(msg => {
+                                       let safeContent = msg.content || "";
+                                       if (safeContent.length > HISTORY_TEXT_LIMIT) {
+                                           // 保留到限制字數，並在結尾加上提示，讓 AI 知道這句話被省略了
+                                           safeContent = safeContent.substring(0, HISTORY_TEXT_LIMIT) + "\n...(系統省略過長文字)";
+                                           console.log(`⚠️ 截斷歷史紀錄: ${msg.role} 從 ${msg.content.length} 縮減至 ${HISTORY_TEXT_LIMIT}`);
+                                       }
+                                       return { role: msg.role, content: safeContent };
+                                   });
+
+                                   // 2. 清洗玩家最新輸入的這句話 (避免玩家這輪發送小論文)
+                                   let safeFinalUserMessage = finalUserMessage || "";
+                                   if (safeFinalUserMessage.length > HISTORY_TEXT_LIMIT) {
+                                       safeFinalUserMessage = safeFinalUserMessage.substring(0, HISTORY_TEXT_LIMIT) + "\n...(系統省略過長文字)";
+                                       console.log(`⚠️ 截斷最新訊息: user 從 ${finalUserMessage.length} 縮減至 ${HISTORY_TEXT_LIMIT}`);
+                                   }
+
+                                   // ==========================================
+                                   // 🧩 正式組裝 currentMessages
+                                   // ==========================================
+                                   let currentMessages = [...safeTrimmedHistory]; // ✨ 這裡換成洗乾淨的 safeTrimmedHistory
                                    currentMessages.unshift({ role: "system", content: systemPrompt }); // 塞入大劇本
-                                   // 🌟🌟🌟 正確接球：把加強版的 finalUserMessage 送給 AI！ 🌟🌟🌟
-                                   currentMessages.push({ role: "user", content: finalUserMessage });
+
+                                   // 🌟🌟🌟 正確接球：把加強過濾版的 safeFinalUserMessage 送給 AI！ 🌟🌟🌟
+                                   currentMessages.push({ role: "user", content: safeFinalUserMessage }); // ✨ 這裡換成洗乾淨的 safeFinalUserMessage
+
+                                   // 以下保留總裁原本超棒的除錯 log：
                                    console.log("📏 CHAT MODE:", chatMode);
                                    console.log("📏 HISTORY LIMIT:", HISTORY_LIMIT);
-                                   console.log("📏 TRIMMED HISTORY COUNT:", trimmedHistory.length);
+                                   console.log("📏 TRIMMED HISTORY COUNT:", safeTrimmedHistory.length);
                                    console.log(
                                        "📏 MESSAGE LENGTHS:",
                                        currentMessages.map(m => ({
@@ -1397,49 +1558,43 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                        }
                                                                                        // 📦 3. 發送請求 (自動切換 URL、Key 和 Model)
                                                                                        const aiResult = await callAiWithRetry({
-                                                                                           modelId: targetModel,
-                                                                                           fallbackModelId: config.fallbackModelId || null,
-                                                                                           abortController,
-                                                                                           requestBody: {
-                                                                                               messages: currentMessages,
-
-                                                                                               max_tokens:
-                                                                                                   config.maxTokens && config.maxTokens > 150
-                                                                                                       ? Math.min(config.maxTokens, SAFE_MAX_TOKENS)
-                                                                                                       : SAFE_MAX_TOKENS,
-
-                                                                                               temperature: config.temperature || 0.7,
-
-                                                                                               reasoning: {
-                                                                                                   effort: "none",
-                                                                                               },
-
-                                                                                               ...(loopCount === 0 && {
-                                                                                                   response_format: { type: "json_object" },
-                                                                                               }),
-                                                                                           },
+                                                                                         apiUrl,
+                                                                                         apiKey,
+                                                                                         modelId: targetModel,
+                                                                                         fallbackModelId: config.fallbackModelId || null,
+                                                                                         abortController,
+                                                                                         timeoutMs: 95_000,
+                                                                                         requestBody: {
+                                                                                           messages: currentMessages,
+                                                                                           max_tokens: config.maxTokens && config.maxTokens > 150
+                                                                                             ? Math.min(config.maxTokens, SAFE_MAX_TOKENS)
+                                                                                             : SAFE_MAX_TOKENS,
+                                                                                           temperature: config.temperature || 0.7,
+                                                                                           reasoning: { effort: "none" },
+                                                                                           ...(loopCount === 0 && { response_format: { type: "json_object" } }),
+                                                                                         },
                                                                                        });
 
-                                                                               console.log("🧪 OPENROUTER STATUS:", response.status);
+                                                                                       // ✨ 1. 拿掉 response.status 的 log，改成印出 aiResult 是否成功拿到
+                                                                                       console.log("🧪 AI CALL COMPLETED!");
 
-                                                                               if (!response.ok || !aiResult.choices || aiResult.choices.length === 0) {
-                                                                                   console.log(
-                                                                                       "🚨 OPENROUTER ERROR RESULT:",
-                                                                                       JSON.stringify(aiResult).slice(0, 2000)
-                                                                                   );
-                                                                               }
-                                                                               console.log("🧾 OPENROUTER USAGE:", aiResult.usage);
+                                                                                       // ✨ 2. 拿掉 !response.ok 的判斷，直接檢查 aiResult 裡有沒有我們要的資料
+                                                                                       if (!aiResult || !aiResult.choices || aiResult.choices.length === 0) {
+                                                                                           console.log(
+                                                                                               "🚨 OPENROUTER ERROR RESULT:",
+                                                                                               JSON.stringify(aiResult || {}).slice(0, 2000)
+                                                                                           );
+                                                                                       }
+                                                                                       console.log("🧾 OPENROUTER USAGE:", aiResult?.usage);
 
-                                                                               if (!aiResult.choices || aiResult.choices.length === 0) {
-                                                                                   console.error("🚨 OpenRouter 沒有 choices，完整回傳:", aiResult);
-
-                                                                                   throw new Error(
-                                                                                       aiResult?.error?.message ||
-                                                                                       aiResult?.message ||
-                                                                                       "AI 斷線或沒有回傳 choices"
-                                                                                   );
-                                                                               }
-
+                                                                                       if (!aiResult || !aiResult.choices || aiResult.choices.length === 0) {
+                                                                                           console.error("🚨 OpenRouter 沒有 choices，完整回傳:", aiResult);
+                                                                                           throw new Error(
+                                                                                               aiResult?.error?.message ||
+                                                                                               aiResult?.message ||
+                                                                                               "AI 斷線或沒有回傳 choices"
+                                                                                           );
+                                                                                       }
                                                                                // ==========================================
                                                                                    // 🕵️‍♂️ 抓漏系統：擷取內容與 X光機檢查
                                                                                    // ==========================================
