@@ -25,7 +25,6 @@ import 'login_page.dart';
 import 'user_profile_popup.dart';
 import 'package:lianlian_shiguang/main.dart';
 import '../services/theme_notifier.dart';
-import 'package:firebase_ai/firebase_ai.dart';
 import '../utils/image_utils.dart';
 import 'about_me_page.dart';
 import 'character_model.dart';
@@ -45,7 +44,6 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
-import 'package:intl/intl.dart';
 
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive , gemini}
@@ -1018,26 +1016,6 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
     );
-  }
-
-  Future<bool> _isThisMyBestFriend(String currentSessionId) async {final l10n = AppLocalizations.of(context)!;
-  final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return false;
-
-    // 1. 抓取所有聊天室，按好感度從高到低排
-    final snapshot = await FirebaseFirestore.instance
-        .collection('artifacts')
-        .doc(_appId)
-        .collection('chat_sessions')
-        .where('userId', isEqualTo: userId)
-        .orderBy('friendshipScore', descending: true)
-        .limit(1) // 我只要最高分的那一個
-        .get();
-
-    if (snapshot.docs.isEmpty) return false;
-
-    // 2. 如果最高分的那間 ID，跟現在這間一樣，那就是你啦！
-    return snapshot.docs.first.id == currentSessionId;
   }
 
   Future<String?> _uploadFileToStorage(String filePath, String fileType) async {
@@ -2744,21 +2722,17 @@ class _ChatPageState extends State<ChatPage> {
 
   // 🌟 總裁秘技：在前端寫一個小幫手函式，丟在背後跑
   Future<void> _triggerMemoryExtraction(String text) async {
-    final bool enableMemoryExtraction = false;
-
-    if (!enableMemoryExtraction) {
-      debugPrint('🧠 記憶捕捉功能暫時關閉');
-      return;
-    }
-
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+
+    final cleanText = text.trim();
+    if (cleanText.isEmpty) return;
 
     try {
       final idToken = await user.getIdToken();
 
       final url = Uri.parse(
-        'https://asia-east1-妳的專案ID.cloudfunctions.net/extractUserMemory',
+        'https://asia-east1-lianlianshiguang.cloudfunctions.net/extractUserMemory',
       );
 
       http.post(
@@ -2768,14 +2742,16 @@ class _ChatPageState extends State<ChatPage> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'characterId': widget.characterId,
-          'userMessage': text,
+          'characterId': _currentCharacter.id,
+          'userMessage': cleanText,
         }),
       ).then((response) {
         debugPrint('🧠 記憶捕捉任務結束, 狀態碼: ${response.statusCode}');
+      }).catchError((e) {
+        debugPrint('⚠️ 記憶捕捉背景失敗，不影響聊天: $e');
       });
     } catch (e) {
-      debugPrint('🧠 記憶捕捉啟動失敗: $e');
+      debugPrint('⚠️ 記憶捕捉啟動失敗，不影響聊天: $e');
     }
   }
 

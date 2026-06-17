@@ -3207,3 +3207,214 @@ exports.testVoiceSettings = onCall(
     };
   }
 );
+
+exports.extractUserMemory = onRequest({
+    region: REGION,
+    minInstances: 0,
+    memory: "512MiB",
+    timeoutSeconds: 60,
+    secrets: [openRouterApiKey],
+}, (req, res) => {
+    return cors(req, res, async () => {
+        try {
+            if (req.method === "OPTIONS") {
+                return res.status(204).send("");
+            }
+
+            if (req.method !== "POST") {
+                return res.status(405).json({
+                    status: "error",
+                    errorMessage: "Method not allowed",
+                });
+            }
+
+            const authHeader = req.headers.authorization || "";
+            const idToken = authHeader.startsWith("Bearer ")
+                ? authHeader.substring("Bearer ".length)
+                : null;
+
+            if (!idToken) {
+                return res.status(401).json({
+                    status: "error",
+                    errorMessage: "Missing Authorization token",
+                });
+            }
+
+            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const userId = decodedToken.uid;
+
+            const body = req.body || {};
+            const characterId = body.characterId;
+            const userMessage = String(body.userMessage || "").trim();
+
+            if (!characterId || !userMessage) {
+                return res.status(400).json({
+                    status: "error",
+                    errorMessage: "Missing characterId or userMessage",
+                });
+            }
+
+            // 太短、太普通的句子不用浪費 AI 成本
+            if (userMessage.length < 4) {
+                return res.status(200).json({
+                    status: "success",
+                    saved: false,
+                    reason: "too_short",
+                });
+            }
+
+            const prompt = `
+你是乙女聊天遊戲的「玩家長期記憶整理器」。
+
+請判斷下面這句玩家訊息，是否包含值得長期記住的資訊。
+
+只記住這些：
+- 玩家穩定的喜好、討厭、習慣
+- 玩家對角色的稱呼偏好
+- 玩家希望角色怎麼對待她
+- 玩家長期設定、身份、人設、背景
+- 對未來互動有幫助的資訊
+
+不要記住這些：
+- 一次性的劇情行動
+- 當下情緒
+- 單純撒嬌、問候、玩笑
+- 重複資訊
+- 太私密或敏感、但對角色互動沒有必要的內容
+
+請只回 JSON，不要加解釋。
+
+格式：
+{
+  "shouldSave": true 或 false,
+  "memory": "要保存的繁體中文記憶，30字內；如果不保存就空字串"
+}
+
+玩家訊息：
+${userMessage}
+`;
+
+            const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    model: "deepseek/deepseek-v4-pro",
+                    messages: [
+                        {
+                            role: "user",
+                            content: prompt,
+                        },
+                    ],
+                    temperature: 0.2,
+                    max_tokens: 200,
+                    reasoning: { effort: "none" },
+                    response_format: { type: "json_object" },
+                }),
+            });
+
+            const rawText = await aiResponse.text();
+
+            if (!aiResponse.ok) {
+                console.error("🧠 記憶擷取 AI 失敗:", {
+                    status: aiResponse.status,
+                    rawText: rawText.slice(0, 1000),
+                });
+
+                return res.status(200).json({
+                    status: "success",
+                    saved: false,
+                    reason: "ai_failed_but_ignored",
+                });
+            }
+
+            let parsed;
+            try {
+                const data = JSON.parse(rawText);
+                let content = data?.choices?.[0]?.message?.content || "";
+
+                content = content
+                    .replace(/```json/g, "")
+                    .replace(/```/g, "")
+                    .trim();
+
+                parsed = JSON.parse(content);
+            } catch (parseError) {
+                console.error("🧠 記憶 JSON 解析失敗:", {
+                    rawText: rawText.slice(0, 1000),
+                    message: parseError?.message,
+                });
+
+                return res.status(200).json({
+                    status: "success",
+                    saved: false,
+                    reason: "parse_failed",
+                });
+            }
+
+            const shouldSave = parsed?.shouldSave === true;
+            const memoryText = String(parsed?.memory || "").trim();
+
+            if (!shouldSave || !memoryText) {
+                return res.status(200).json({
+                    status: "success",
+                    saved: false,
+                    reason: "not_worth_saving",
+                });
+            }
+
+            const memoriesRef = admin.firestore()
+                .collection("users")
+                .doc(userId)
+                .collection("characters")
+                .doc(characterId)
+                .collection("memories");
+
+            // 簡單防重複：一樣的 text 不再存
+            const duplicateSnapshot = await memoriesRef
+                .where("text", "==", memoryText)
+                .limit(1)
+                .get();
+
+            if (!duplicateSnapshot.empty) {
+                return res.status(200).json({
+                    status: "success",
+                    saved: false,
+                    reason: "duplicate",
+                    memory: memoryText,
+                });
+            }
+
+            await memoriesRef.add({
+                text: memoryText,
+                source: "chat",
+                sourceMessagePreview: userMessage.slice(0, 120),
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+
+            console.log("🧠 已儲存玩家長期記憶:", {
+                userId,
+                characterId,
+                memoryText,
+            });
+
+            return res.status(200).json({
+                status: "success",
+                saved: true,
+                memory: memoryText,
+            });
+        } catch (error) {
+            console.error("🧠 extractUserMemory 發生錯誤:", error);
+
+            // 記憶擷取失敗不要影響聊天主流程，所以回 200
+            return res.status(200).json({
+                status: "success",
+                saved: false,
+                reason: "server_error_but_ignored",
+            });
+        }
+    });
+});
