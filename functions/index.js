@@ -282,6 +282,80 @@ function scoreChineseText(str) {
     );
 }
 
+async function callOpenRouter(modelId, requestBody, abortController) {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${openRouterApiKey.value()}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            ...requestBody,
+            model: modelId,
+        }),
+        signal: abortController?.signal,
+    });
+
+    let result;
+    try {
+        result = await response.json();
+    } catch (e) {
+        result = null;
+    }
+
+    console.log("🧪 OPENROUTER STATUS:", response.status);
+
+    if (!response.ok) {
+        console.error("🚨 OPENROUTER ERROR RESULT:", JSON.stringify(result));
+
+        const error = new Error(
+            response.status === 503 || response.status === 429
+                ? "AI_PROVIDER_BUSY"
+                : `OpenRouter HTTP ${response.status}`
+        );
+
+        error.statusCode = response.status;
+        error.result = result;
+        throw error;
+    }
+
+    return result;
+}
+
+async function callAiWithRetry({
+    modelId,
+    fallbackModelId,
+    requestBody,
+    abortController,
+}) {
+    try {
+        return await callOpenRouter(modelId, requestBody, abortController);
+    } catch (error) {
+        const retryable =
+            error.statusCode === 503 ||
+            error.statusCode === 429 ||
+            error.message === "AI_PROVIDER_BUSY";
+
+        if (!retryable) throw error;
+
+        console.warn("🌧️ 主模型忙線，先重試一次:", modelId);
+
+        await new Promise(resolve => setTimeout(resolve, 1200));
+
+        try {
+            return await callOpenRouter(modelId, requestBody, abortController);
+        } catch (retryError) {
+            if (!fallbackModelId) {
+                throw retryError;
+            }
+
+            console.warn("🚑 主模型重試失敗，切換 fallback:", fallbackModelId);
+
+            return await callOpenRouter(fallbackModelId, requestBody, abortController);
+        }
+    }
+}
+
 
 exports.getAiResponse = onRequest({
     region: REGION,
@@ -401,11 +475,38 @@ exports.getAiResponse = onRequest({
             console.log("🔁 isContinue:", isContinue);
             console.log("🔁 finalUserMessage:", finalUserMessage.slice(0, 200));
 
-            const modelConfig = {
-                "gemini": { cost: 0, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.7 },
-                "daily": { cost: 1, modelId: "google/gemini-2.5-flash-lite", maxTokens: 150, temperature: 0.5 },
-                "story": { cost: 5, modelId: "deepseek/deepseek-v4-flash", maxTokens: 2000, temperature: 0.9 },
-                "immersive": { cost: 7, modelId: "deepseek/deepseek-v4-pro", maxTokens: 2500, temperature: 0.8 },
+            const modeConfig = {
+                gemini: {
+                    cost: 0,
+                    modelId: "google/gemini-2.5-flash-lite",
+                    fallbackModelId: "deepseek/deepseek-v4-flash",
+                    maxTokens: 150,
+                    temperature: 0.7,
+                },
+
+                daily: {
+                    cost: 1,
+                    modelId: "google/gemini-2.5-flash-lite",
+                    fallbackModelId: "deepseek/deepseek-v4-flash",
+                    maxTokens: 180,
+                    temperature: 0.5,
+                },
+
+                story: {
+                    cost: 5,
+                    modelId: "deepseek/deepseek-v4-flash",
+                    fallbackModelId: "deepseek/deepseek-v4-pro",
+                    maxTokens: 1200,
+                    temperature: 0.85,
+                },
+
+                immersive: {
+                    cost: 7,
+                    modelId: "deepseek/deepseek-v4-pro",
+                    fallbackModelId: null,
+                    maxTokens: 2200,
+                    temperature: 0.85,
+                },
             };
             const config = modelConfig[chatMode] || modelConfig["daily"];
             const cost = isBirthdayFreebie ? 0 : config.cost;
@@ -1127,10 +1228,12 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
                    let isAborted = false;
                    const abortController = new AbortController();
-                   req.on('close', () => {
-                       isAborted = true;
-                       abortController.abort();
-                       console.log("煞車成功，省錢成功！💰");
+                   res.on("close", () => {
+                       if (!res.writableEnded) {
+                           isAborted = true;
+                           abortController.abort();
+                           console.log("🛑 玩家連線中斷，取消 AI 請求");
+                       }
                    });
                           // 🧠 根據模式壓縮聊天紀錄，降低 Prompt Token 成本
                           // ==========================================
@@ -1293,17 +1396,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                            targetModel = targetModel.replace("google/", "");
                                                                                        }
                                                                                        // 📦 3. 發送請求 (自動切換 URL、Key 和 Model)
-                                                                                       const response = await fetch(apiUrl, {
-                                                                                           method: "POST",
-                                                                                           headers: {
-                                                                                               "Authorization": `Bearer ${apiKey}`,
-                                                                                               "Content-Type": "application/json",
-                                                                                           },
-                                                                                           body: JSON.stringify({
-                                                                                               model: targetModel,
+                                                                                       const aiResult = await callAiWithRetry({
+                                                                                           modelId: targetModel,
+                                                                                           fallbackModelId: config.fallbackModelId || null,
+                                                                                           abortController,
+                                                                                           requestBody: {
                                                                                                messages: currentMessages,
 
-                                                                                               // ✅ 防爆：限制 token，不讓 immersive 一口氣噴 2500 tokens
                                                                                                max_tokens:
                                                                                                    config.maxTokens && config.maxTokens > 150
                                                                                                        ? Math.min(config.maxTokens, SAFE_MAX_TOKENS)
@@ -1311,11 +1410,15 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
                                                                                                temperature: config.temperature || 0.7,
 
-                                                                                               ...(loopCount === 0 && { response_format: { type: "json_object" } })                                                                                           }),
-                                                                                           signal: abortController.signal
-                                                                                       });
+                                                                                               reasoning: {
+                                                                                                   effort: "none",
+                                                                                               },
 
-                                                                               const aiResult = await response.json();
+                                                                                               ...(loopCount === 0 && {
+                                                                                                   response_format: { type: "json_object" },
+                                                                                               }),
+                                                                                           },
+                                                                                       });
 
                                                                                console.log("🧪 OPENROUTER STATUS:", response.status);
 
@@ -1326,15 +1429,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                    );
                                                                                }
                                                                                console.log("🧾 OPENROUTER USAGE:", aiResult.usage);
-                                                                               if (!response.ok) {
-                                                                                   console.error("🚨 OpenRouter HTTP 錯誤:", response.status, aiResult);
-
-                                                                                   throw new Error(
-                                                                                       aiResult?.error?.message ||
-                                                                                       aiResult?.message ||
-                                                                                       `OpenRouter HTTP ${response.status}`
-                                                                                   );
-                                                                               }
 
                                                                                if (!aiResult.choices || aiResult.choices.length === 0) {
                                                                                    console.error("🚨 OpenRouter 沒有 choices，完整回傳:", aiResult);
@@ -1598,12 +1692,9 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 // 🛑 總裁鐵門：防堵幽靈回覆與幽靈扣款
 // 放在「扣花花」和「寫入聊天紀錄」之前
 // ==========================================
-if (isAborted || res.writableEnded || res.destroyed || req.destroyed) {
+if (isAborted || res.writableEnded || res.destroyed) {
     console.log("🛑 請求已中斷或回應已結束，跳過扣款與資料庫寫入，避免幽靈扣款。");
-
-    // 如果妳有 releaseAiLock()，這裡要手動釋放
     await releaseAiLock();
-
     return;
 }
                                      // ==========================================
@@ -1726,6 +1817,7 @@ console.log(
 
                                    console.log(`✅ 任務完成！總字數: ${finalResponseText.length}，給了 ${finalAffectionChange} 分！`);
                                    res.set('Content-Type', 'application/json; charset=utf-8');
+                                   console.log("🚀 準備回傳 200 給 Flutter");
                                    // 最後回傳給手機端 (這必須是整個 try 區塊的最後一行！)
                                    return res.status(200).json({
                                        status: "success",
