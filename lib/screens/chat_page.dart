@@ -1021,7 +1021,6 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<bool> _isThisMyBestFriend(String currentSessionId) async {final l10n = AppLocalizations.of(context)!;
-
   final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return false;
 
@@ -1133,68 +1132,99 @@ class _ChatPageState extends State<ChatPage> {
     bool isContinue = false,
   }) async {
     final l10n = AppLocalizations.of(context)!;
-    if (_isGenerating || _sessionId == null) return;
+    final messageText = text.trim();
 
-    setState(() {
-      _isGenerating = true;
-    });
-    generatingRooms.add(widget.character.id);    if (text.trim().isEmpty && imagePath == null && audioPath == null && secretPrompt == null) return;
+    if (_isGenerating || _isLoading || _sessionId == null) return;
 
-    // 發送後清空輸入框
-    _textController.clear();
-    FocusScope.of(context).unfocus();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('chat_draft_${widget.sessionId}');
+    // 先檢查是不是空訊息，不要先進入 generating
+    if (messageText.isEmpty &&
+        imagePath == null &&
+        audioPath == null &&
+        secretPrompt == null) {
+      return;
+    }
 
-    if (!isContinue && _currentMode != ChatMode.gemini) {
-      if (_currentMode == ChatMode.story) {
-        _increaseTaskProgress('storyChatProgress', 1);
-      } else {
-        _increaseTaskProgress('dailyChatProgress', 3);
+    // 一按送出，立刻切成「回覆中 / 停止鍵」
+    if (mounted) {
+      setState(() {
+        _isGenerating = true;
+        _isLoading = false;
+      });
+    }
+
+    generatingRooms.add(widget.character.id);
+
+    try {
+      // 發送後清空輸入框
+      _textController.clear();
+      FocusScope.of(context).unfocus();
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('chat_draft_${widget.sessionId}');
+
+      if (_isReferralTrackerActive) {
+        await _triggerReferralCounter();
       }
-    }
-    if (_isReferralTrackerActive) {
-      await _triggerReferralCounter();
-    }
 
-    dynamic triggeredEgg; // 這裡用 dynamic 或 妳的 EasterEgg 類別
+      dynamic triggeredEgg;
 
-    // ✨ 1. 彩蛋雷達掃描 (加入防重複觸發機制！)
-    if (!isContinue && text.isNotEmpty && _currentMode != ChatMode.gemini && secretPrompt == null) {      // 假設 _currentCharacter 是從 widget.character 來的
-      final easterEggs = widget.character?.easterEggs ?? [];
+      // ✨ 1. 彩蛋雷達掃描
+      if (!isContinue &&
+          messageText.isNotEmpty &&
+          _currentMode != ChatMode.gemini &&
+          secretPrompt == null) {
+        final easterEggs = widget.character?.easterEggs ?? [];
 
-      for (var egg in easterEggs) {
-        // 條件：包含關鍵字 且 這次對話還沒觸發過
-        if (text.contains(egg.keyword) && !_triggeredEggKeywords.contains(egg.keyword)) {
-          triggeredEgg = egg;
-          break;
+        for (var egg in easterEggs) {
+          if (messageText.contains(egg.keyword) &&
+              !_triggeredEggKeywords.contains(egg.keyword)) {
+            triggeredEgg = egg;
+            break;
+          }
         }
       }
-    }
 
-    // ✨ 2. 觸發彩蛋的「無縫接軌」與「掉落」
-    if (triggeredEgg != null) {
-      _triggeredEggKeywords.add(triggeredEgg.keyword);
-      await _dropEggToBackpack(triggeredEgg);
-      await _executeMessageSending(
-        userText: text,
-        imagePath: imagePath,
-        audioPath: audioPath,
-        secretPrompt: l10n.chat_hidden_event_trigger(triggeredEgg.title, triggeredEgg.setScene),
-        showInChat: showInChat,
-        isContinue: isContinue,
-      );
+      // ✨ 2. 觸發彩蛋或正常發送
+      if (triggeredEgg != null) {
+        _triggeredEggKeywords.add(triggeredEgg.keyword);
+        await _dropEggToBackpack(triggeredEgg);
 
-    } else {
-      // 😐 沒觸發彩蛋：交給基層員工正常發送
-      await _executeMessageSending(
-        userText: text,
-        imagePath: imagePath,
-        audioPath: audioPath,
-        secretPrompt: secretPrompt,
-        showInChat: showInChat,
-        isContinue: isContinue,
-      );
+        await _executeMessageSending(
+          userText: messageText,
+          imagePath: imagePath,
+          audioPath: audioPath,
+          secretPrompt: l10n.chat_hidden_event_trigger(
+            triggeredEgg.title,
+            triggeredEgg.setScene,
+          ),
+          showInChat: showInChat,
+          isContinue: isContinue,
+        );
+      } else {
+        await _executeMessageSending(
+          userText: messageText,
+          imagePath: imagePath,
+          audioPath: audioPath,
+          secretPrompt: secretPrompt,
+          showInChat: showInChat,
+          isContinue: isContinue,
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ _sendMessage 發生錯誤: $e');
+
+      if (mounted) {
+        _showCenterToast('送出失敗，請稍後再試 😢', isError: true);
+      }
+    } finally {
+      generatingRooms.remove(widget.character.id);
+
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -1317,27 +1347,38 @@ class _ChatPageState extends State<ChatPage> {
                 _currentFriendship += finalAffectionChange;
                 _checkForLevelUp(oldScore, _currentFriendship);
               }
+
               _isGenerating = false;
+              _isLoading = false;
             });
           }
         } else {
           // ❌ 伺服器回傳狀態不是 success (系統忙碌中)
           if (mounted) {
-            setState(() => _isGenerating = false);
+            setState(() {
+              _isGenerating = false;
+              _isLoading = false;
+            });
             _showCenterToast(l10n.error_system_busy, isError: true);
           }
         }
       } else {
         // ❌ HTTP 狀態碼不是 200 (網路異常或伺服器崩潰)
         if (mounted) {
-          setState(() => _isGenerating = false);
+          setState(() {
+            _isGenerating = false;
+            _isLoading = false;
+          });
           _showCenterToast(l10n.error_msg_send_failed, isError: true);
         }
       }
     } catch (e) {
       debugPrint('重新生成發生錯誤: $e');
       if (mounted) {
-        setState(() => _isGenerating = false);
+        setState(() {
+          _isGenerating = false;
+          _isLoading = false;
+        });
 // 如果是錯誤或警示，記得把 isError 設為 true，這樣就會帶個紅色驚嘆號！
         _showCenterToast('重新生成失敗，請稍後再試 😢', isError: true);      }
     } finally {
@@ -1702,42 +1743,6 @@ class _ChatPageState extends State<ChatPage> {
       }
     } catch (e) {
       print('寫入系統公告失敗: $e');
-    }
-  }
-
-  // 🎒 3. 處理「存入背包」與「畫面通知」的終極函數
-  Future<void> _saveEggToBackpack(dynamic egg) async {
-    final l10n = AppLocalizations.of(context)!;
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    try {
-      // ✨ 1. 妳原本完美對齊 BackpackPage 的資料庫寫入邏輯
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('characters')
-          .doc(_currentCharacter.id) // 確保對應到當前男神
-          .collection('backpack')
-          .add({
-        'title': l10n.chat_exclusive_story(egg.title ?? egg.keyword), // 使用彩蛋標題，沒有就用關鍵字
-        'teaser': l10n.chat_teaser_exclusive(_currentCharacter.name),
-        'keyword': egg.keyword,
-        'prompt': egg.prompt, // 🌟 妳的彩蛋劇本變數叫做 prompt！
-        'setScene': egg.setScene,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      // ✨ 2. 加上頂級乙女遊戲的「Email 橫幅掉落特效」
-      if (mounted) {
-        // ✨ 總裁級：呼叫成就解鎖專屬彈窗，儀式感拉滿！
-        _showAchievementDialog(
-          l10n.chat_egg_unlocked_dynamic(egg.title ?? egg.keyword),
-          l10n.chat_egg_saved_his_backpack,
-        );
-      }
-      print("🎒 彩蛋已成功存入 ${_currentCharacter.name} 的專屬背包！");
-    } catch (e) {
-      print('存入背包失敗: $e');
     }
   }
 
@@ -2255,7 +2260,7 @@ class _ChatPageState extends State<ChatPage> {
       if (_currentMode == ChatMode.gemini)
         messageCost = AppConfig.costGeminiChat;
 
-      if (myActualFlowers < messageCost) {
+      if (!isFreeToday && myActualFlowers < messageCost) {
         if (mounted) {
           // ✨ 總裁級：無縫接軌商城的專屬互動彈窗
           showDialog(
@@ -2565,7 +2570,7 @@ class _ChatPageState extends State<ChatPage> {
           headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $idToken'},
           body: jsonEncode(requestBody),
         ).timeout(
-          const Duration(seconds: 90), // ⏳ 總裁級防護：最多只等 15 秒！
+          const Duration(seconds: 110), // ⏳ 總裁級防護：最多只等 15 秒！
           onTimeout: () {
             // 超時的話，丟出一個特製的 TimeoutException
             throw TimeoutException('他思考太久了');
@@ -2576,6 +2581,7 @@ class _ChatPageState extends State<ChatPage> {
         if (mounted) {
           setState(() {
             _isGenerating = false;
+            _isLoading = false;
             generatingRooms.remove(widget.character.id);
           });
           // 溫柔安撫玩家，不要顯示駭人的英文錯誤
@@ -2642,22 +2648,9 @@ class _ChatPageState extends State<ChatPage> {
           generatingRooms.remove(widget.character.id);
           if (mounted) {
             setState(() {
-              // 2. 本地 UI 扣除花花點數
-// 新邏輯：先扣 UI，但緊接著重新從資料庫同步
-              setState(() {
-                _flowerPoints = (_flowerPoints - messageCost).clamp(0, 999999);
-              });
+              final int uiCost = isFreeToday ? 0 : messageCost;
+              _flowerPoints = (_flowerPoints - uiCost).clamp(0, 999999);
 
-// 💡 關鍵：扣完後，過 1 秒強制重新從雲端拉取一次最新餘額，確保 UI 永遠是對的
-              Future.delayed(const Duration(seconds: 1), () async {
-                final updatedDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-                if (mounted && updatedDoc.exists) {
-                  setState(() {
-                    _flowerPoints = updatedDoc.data()?['flowerPoints'] ?? _flowerPoints;
-                  });
-                }
-              });
-              // 3. 處理本地好感度與升級動畫
               if (finalAffectionChange != 0) {
                 int oldScore = _currentFriendship;
                 _currentFriendship += finalAffectionChange;
@@ -2670,15 +2663,18 @@ class _ChatPageState extends State<ChatPage> {
                 }
               }
 
-              // 4. 關閉「對方正在輸入...」的轉圈圈
               _isGenerating = false;
+              _isLoading = false;
             });
           }
 
         } else {
           generatingRooms.remove(widget.character.id);
           if (mounted) {
-            setState(() => _isGenerating = false);
+            setState(() {
+              _isGenerating = false;
+              _isLoading = false;
+            });
             // ✨ 總裁級：伺服器忙碌，輕量錯誤提示
             _showCenterToast(l10n.error_system_busy, isError: true);
           }
@@ -2688,8 +2684,10 @@ class _ChatPageState extends State<ChatPage> {
         generatingRooms.remove(widget.character.id);
 
         if (mounted) {
-          setState(() => _isGenerating = false);
-
+          setState(() {
+            _isGenerating = false;
+            _isLoading = false;
+          });
           try {
             final errorData = jsonDecode(utf8.decode(response.bodyBytes));
 
@@ -2710,7 +2708,10 @@ class _ChatPageState extends State<ChatPage> {
         // 其他狀態碼 (例如 500) 或網路異常
         generatingRooms.remove(widget.character.id);
         if (mounted) {
-          setState(() => _isGenerating = false);
+          setState(() {
+            _isGenerating = false;
+            _isLoading = false;
+          });
           // ✨ 總裁級：網路或傳送異常，輕量錯誤提示
           _showCenterToast(l10n.error_msg_send_failed, isError: true);
         }
@@ -2719,27 +2720,47 @@ class _ChatPageState extends State<ChatPage> {
       print('❌ 發送訊息時發生嚴重錯誤: $e');
       print('📍 錯誤堆疊: $stack');
       if (mounted) {
-        setState(() => _isGenerating = false);
+        setState(() {
+          _isGenerating = false;
+          _isLoading = false;
+        });
         // ✨ 總裁級：優雅地攔截崩潰，用輕量小彈窗安撫玩家！
         _showCenterToast(l10n.error_system_confusion, isError: true);
       }
     } finally {
       _httpClient?.close();
       _httpClient = null;
+
+      generatingRooms.remove(widget.character.id);
+
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+          _isLoading = false;
+        });
+      }
     }
   }
 
   // 🌟 總裁秘技：在前端寫一個小幫手函式，丟在背後跑
   Future<void> _triggerMemoryExtraction(String text) async {
+    final bool enableMemoryExtraction = false;
+
+    if (!enableMemoryExtraction) {
+      debugPrint('🧠 記憶捕捉功能暫時關閉');
+      return;
+    }
+
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null || text.isEmpty) return;
+    if (user == null) return;
 
     try {
       final idToken = await user.getIdToken();
-      // 記得把 URL 換成妳自己的 Firebase Cloud Functions 網址！
-      final url = Uri.parse('https://asia-east1-妳的專案ID.cloudfunctions.net/extractUserMemory');
 
-      // 射後不理，不用等它回傳，讓它自己在雲端慢慢分析
+      final url = Uri.parse(
+        'https://asia-east1-妳的專案ID.cloudfunctions.net/extractUserMemory',
+      );
+
       http.post(
         url,
         headers: {
@@ -2747,14 +2768,14 @@ class _ChatPageState extends State<ChatPage> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'characterId': widget.characterId, // 或 _currentCharacter.id
+          'characterId': widget.characterId,
           'userMessage': text,
         }),
       ).then((response) {
         debugPrint('🧠 記憶捕捉任務結束, 狀態碼: ${response.statusCode}');
       });
     } catch (e) {
-      debugPrint('⚠️ 記憶捕捉呼叫失敗: $e');
+      debugPrint('🧠 記憶捕捉啟動失敗: $e');
     }
   }
 
@@ -2892,19 +2913,19 @@ class _ChatPageState extends State<ChatPage> {
   // ✨ 進化版煞車系統
   void _stopGenerating() {
     final l10n = AppLocalizations.of(context)!;
-    if (_isGenerating && _httpClient != null) {
-      // 🛑 直接切斷網路連線！雲端收到斷線通知，就會停止運算並退還點數！
-      _httpClient!.close();
-      _httpClient = null;
 
-      if (mounted) {
-        setState(() {
-          _isGenerating = false;
-        });
+    _httpClient?.close();
+    _httpClient = null;
 
-        // ✨ 總裁級：俐落的回饋提示，告訴玩家已經成功停止
-        _showCenterToast(l10n.chat_stop_generating_msg);
-      }
+    generatingRooms.remove(widget.character.id);
+
+    if (mounted) {
+      setState(() {
+        _isGenerating = false;
+        _isLoading = false;
+      });
+
+      _showCenterToast(l10n.chat_stop_generating_msg);
     }
   }
 
@@ -2959,11 +2980,6 @@ class _ChatPageState extends State<ChatPage> {
         ),
       ),
     );
-  }
-
-  Future<void> _initRecorder() async {
-    await _recorder!.openRecorder();
-    await _player!.openPlayer();
   }
   Future<void> _checkFirstTimeEntry() async {
     if (_hasTriggeredCheck) return;
@@ -5820,9 +5836,23 @@ class _ChatPageState extends State<ChatPage> {
                       IconButton(
                         icon: _isGenerating
                             ? const Icon(Icons.stop_circle_outlined, color: Colors.red)
-                            : Icon(Icons.send, color: Theme.of(context).colorScheme.primary),
-                        // 🌟 載入中也不要讓玩家點發送
-                        onPressed: (_isGenerating || _isLoading) ? _stopGenerating : () => _sendMessage(text: _textController.text),
+                            : Icon(
+                          Icons.send,
+                          color: _isLoading
+                              ? Colors.grey
+                              : Theme.of(context).colorScheme.primary,
+                        ),
+
+                        onPressed: _isGenerating
+                            ? _stopGenerating
+                            : (_isLoading
+                            ? null
+                            : () {
+                          final text = _textController.text.trim();
+                          if (text.isEmpty) return;
+
+                          _sendMessage(text: text);
+                        }),
                       ),
                     ],
                   ),

@@ -1847,10 +1847,8 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 // 🛑 總裁鐵門：防堵幽靈回覆與幽靈扣款
 // 放在「扣花花」和「寫入聊天紀錄」之前
 // ==========================================
-if (isAborted || res.writableEnded || res.destroyed) {
-    console.log("🛑 請求已中斷或回應已結束，跳過扣款與資料庫寫入，避免幽靈扣款。");
-    await releaseAiLock();
-    return;
+if (playerConnectionClosed || res.writableEnded || res.destroyed) {
+    console.log("⚠️ 玩家連線已關閉或 HTTP 回應已結束，但 AI 已完成，仍繼續寫入資料庫，避免玩家重送與重複燒錢。");
 }
                                      // ==========================================
                                      // 💰💰💰 新增：總裁的雲端收銀台 (絕對不漏接) 💰💰💰
@@ -1883,110 +1881,146 @@ if (isAborted || res.writableEnded || res.destroyed) {
                                    // 🌟🌟🌟 總裁專屬：雲端代寫系統正式啟動 🌟🌟🌟
                                    // ==========================================
                                    if (sessionId) {
-                                                   try {
-                                                       // 🌟 總裁修正：脫殼手術
-                                                       // 我們要確保存入 text 的內容是「純對話」，不帶任何 JSON 符號
-                                                       let cleanDisplayText = finalResponseText;
-                                                       let cleanVoiceText = finalVoiceText;
-                                                       // 檢查內容是否還帶著 JSON 的殼
-                                                       if (cleanDisplayText.includes('"response":')) {
-                                                           try {
-                                                               // 嘗試抓取 "response":"..." 之間的內容
-                                                               // 使用正則表達式是最穩的，因為直通車迴圈可能會把多個 JSON 串在一起
-                                                               const matches = [...cleanDisplayText.matchAll(/"response"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
-                                                               if (matches.length > 0) {
-                                                                   // 把所有片段組合起來，並處理反斜槓轉義
-                                                                   cleanDisplayText = matches.map(m => m[1]).join("\n\n")
-                                                                       .replace(/\\n/g, "\n")
-                                                                       .replace(/\\"/g, '"');
-                                                               }
-                                                           } catch (e) {
-                                                               console.error("脫殼失敗，維持原樣", e);
-                                                           }
-                                                       }
+                                       // 🌟 總裁修正：脫殼手術
+                                       // 確保存入 text 的內容是「純對話」，不帶任何 JSON 符號
+                                       let cleanDisplayText = String(finalResponseText || "");
+                                       let cleanVoiceText = String(finalVoiceText || "");
 
-                                                       // 對語音文字也做同樣處理
-                                                       if (cleanVoiceText.includes('"voiceText":')) {
-                                                           const vMatches = [...cleanVoiceText.matchAll(/"voiceText"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
-                                                           if (vMatches.length > 0) {
-                                                               cleanVoiceText = vMatches.map(m => m[1]).join(" ")
-                                                                   .replace(/\\n/g, " ")
-                                                                   .replace(/\\"/g, '"');
-                                                           }
-                                                       }
+                                       // 檢查內容是否還帶著 JSON 的殼
+                                       if (cleanDisplayText.includes('"response":')) {
+                                           try {
+                                               const matches = [...cleanDisplayText.matchAll(/"response"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
 
-                                                       const appId = body.appId || "lianlianshiguang";
-                                                       const sessionRef = admin.firestore().collection('artifacts').doc(appId).collection('chat_sessions').doc(sessionId);
-
-
-// ==========================================
-// 🛡️ 總裁防空包彈過濾器：如果文字是空的，拒絕寫入！
-// ==========================================
-if (!cleanDisplayText || cleanDisplayText.trim() === "") {
-    console.log("🛑 [防禦系統] 偵測到 AI 回傳內容為空字串，攔截寫入，避免產生空白泡泡！");
-
-    return res.status(200).json({
-        status: "error",
-        errorMessage: "AI 回覆生成異常，已成功攔截空訊息。"
-    });
-}
-
-cleanDisplayText = fixMojibake(cleanDisplayText);
-cleanVoiceText = fixMojibake(cleanVoiceText);
-
-cleanDisplayText = limitTextLength(cleanDisplayText, MAX_RESPONSE_LENGTH);
-cleanVoiceText = limitTextLength(cleanVoiceText, MAX_RESPONSE_LENGTH);
-
-cleanDisplayText = cleanDisplayText.replace(/�/g, "");
-cleanVoiceText = cleanVoiceText.replace(/�/g, "");
-console.log(
-    "🧪 FINAL SAVE CHECK:",
-    cleanDisplayText?.slice(0, 300)
-);
-                                                       // ☁️ 寫入資料庫 (這會觸發您的 notifyPlayerNewMessage 推播)
-                                                       await sessionRef.collection('messages').add({
-                                                           sender: 'ai',
-                                                           text: cleanDisplayText.trim(),      // 👈 這裡是給通知和聊天室看的「乾淨文字」
-                                                           voiceText: cleanVoiceText.trim(),
-                                                           type: 'text',
-                                                           timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                                                           characterId: characterProfile.id,
-                                                           characterName: name,
-                                                           role: 'assistant',
-                                                           content: finalResponseText          // 👈 這裡保留原始 JSON 做備份沒關係
-                                                       });
-
-                                                       // ☁️ 更新外層房間資料
-                                                       await sessionRef.update({
-                                                           lastMessage: cleanDisplayText.trim(), // 👈 房間列表也要顯示乾淨的文字
-                                                           lastActivity: admin.firestore.FieldValue.serverTimestamp(),
-                                                           friendshipScore: admin.firestore.FieldValue.increment(finalAffectionChange),
-                                                           unreadCount: admin.firestore.FieldValue.increment(1)
-                                                       });
-
-                                                       console.log(`✅ [雲端代寫成功] 已經存入乾淨的文字！`);
-                                                   } catch (dbError) {
-                                                       console.error("🔴 [雲端代寫崩潰]:", dbError);
-                                                   }
+                                               if (matches.length > 0) {
+                                                   cleanDisplayText = matches
+                                                       .map(m => m[1])
+                                                       .join("\n\n")
+                                                       .replace(/\\n/g, "\n")
+                                                       .replace(/\\"/g, '"');
                                                }
+                                           } catch (e) {
+                                               console.error("脫殼失敗，維持原樣", e);
+                                           }
+                                       }
+
+                                       // 對語音文字也做同樣處理
+                                       if (cleanVoiceText.includes('"voiceText":')) {
+                                           try {
+                                               const vMatches = [...cleanVoiceText.matchAll(/"voiceText"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
+
+                                               if (vMatches.length > 0) {
+                                                   cleanVoiceText = vMatches
+                                                       .map(m => m[1])
+                                                       .join(" ")
+                                                       .replace(/\\n/g, " ")
+                                                       .replace(/\\"/g, '"');
+                                               }
+                                           } catch (e) {
+                                               console.error("語音文字脫殼失敗，維持原樣", e);
+                                           }
+                                       }
+
+                                       const appId = body.appId || "lianlianshiguang";
+                                       const sessionRef = admin.firestore()
+                                           .collection("artifacts")
+                                           .doc(appId)
+                                           .collection("chat_sessions")
+                                           .doc(sessionId);
+
+                                       // ==========================================
+                                       // 🛡️ 防空包彈過濾器：如果文字是空的，拒絕寫入
+                                       // ==========================================
+                                       if (!cleanDisplayText || cleanDisplayText.trim() === "") {
+                                           console.log("🛑 [防禦系統] 偵測到 AI 回傳內容為空字串，攔截寫入，避免產生空白泡泡！");
+
+                                           const emptyPayload = {
+                                               status: "error",
+                                               errorMessage: "AI 回覆生成異常，已成功攔截空訊息。",
+                                           };
+
+                                           if (!res.writableEnded && !res.destroyed) {
+                                               return res.status(200).json(emptyPayload);
+                                           }
+
+                                           console.log("📦 空回覆已攔截，但玩家 HTTP 連線已關閉，略過 res.json。");
+                                           return;
+                                       }
+
+                                       cleanDisplayText = fixMojibake(cleanDisplayText);
+                                       cleanVoiceText = fixMojibake(cleanVoiceText);
+
+                                       cleanDisplayText = limitTextLength(cleanDisplayText, MAX_RESPONSE_LENGTH);
+                                       cleanVoiceText = limitTextLength(cleanVoiceText, MAX_RESPONSE_LENGTH);
+
+                                       cleanDisplayText = cleanDisplayText.replace(/�/g, "");
+                                       cleanVoiceText = cleanVoiceText.replace(/�/g, "");
+
+                                       console.log("🧪 FINAL SAVE CHECK:", cleanDisplayText.slice(0, 300));
+
+                                       // ☁️ 寫入資料庫，這會觸發 notifyPlayerNewMessage 推播
+                                       try {
+                                           await sessionRef.collection("messages").add({
+                                               sender: "ai",
+                                               text: cleanDisplayText.trim(),
+                                               voiceText: cleanVoiceText.trim(),
+                                               type: "text",
+                                               timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                                               characterId: characterProfile.id,
+                                               characterName: name,
+                                               role: "assistant",
+                                               content: finalResponseText,
+                                           });
+
+                                           await sessionRef.update({
+                                               lastMessage: cleanDisplayText.trim(),
+                                               lastActivity: admin.firestore.FieldValue.serverTimestamp(),
+                                               friendshipScore: admin.firestore.FieldValue.increment(finalAffectionChange),
+                                               unreadCount: admin.firestore.FieldValue.increment(1),
+                                           });
+
+                                           console.log("✅ [雲端代寫成功] 已經存入乾淨的文字！");
+                                       } catch (dbError) {
+                                           console.error("🔴 [雲端代寫崩潰]:", dbError);
+                                           throw dbError;
+                                       }
+                                   } else {
+                                       console.log("⚠️ 沒有 sessionId，略過雲端代寫。");
+                                   }
 
                                    console.log(`✅ 任務完成！總字數: ${finalResponseText.length}，給了 ${finalAffectionChange} 分！`);
-                                   res.set('Content-Type', 'application/json; charset=utf-8');
-                                   console.log("🚀 準備回傳 200 給 Flutter");
-                                   // 最後回傳給手機端 (這必須是整個 try 區塊的最後一行！)
-                                   return res.status(200).json({
+
+                                   const resultPayload = {
                                        status: "success",
                                        response: finalResponseText,
                                        voiceText: finalVoiceText,
-                                       affectionChange: finalAffectionChange
-                                   });
+                                       affectionChange: finalAffectionChange,
+                                   };
 
-                               } catch (error) {
-                                   console.error(`❌ 任務發生災難:`, error);
-                                   return res.status(500).json({ status: "error", errorMessage: error.message });
-                               }
-                           }); // 👈 確保有這個 cors 的結尾
-                       }); // 👈 確保有這個 onRequest 的結尾
+                                   if (!res.writableEnded && !res.destroyed) {
+                                       res.set("Content-Type", "application/json; charset=utf-8");
+                                       console.log("🚀 準備回傳 200 給 Flutter");
+                                       return res.status(200).json(resultPayload);
+                                   }
+
+                                   console.log("📦 AI 回覆已完成，但玩家 HTTP 連線已關閉，略過 res.json。");
+                                   return;
+
+                                   } catch (error) {
+                                       console.error("❌ 任務發生災難:", error);
+
+                                       if (!res.writableEnded && !res.destroyed) {
+                                           return res.status(500).json({
+                                               status: "error",
+                                               errorMessage: error.message,
+                                           });
+                                       }
+
+                                       console.log("📦 發生錯誤，但玩家 HTTP 連線已關閉，略過 res.status(500)。");
+                                       return;
+                                   }
+
+                                       }); // 👈 cors 結尾
+                                   });     // 👈 getAiResponse onRequest 結尾
 
                           exports.onPostCreated = onDocumentCreated({
                               region: "asia-east1",
