@@ -3478,7 +3478,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ 我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://yourgame.url/download';
+    return '✨ 我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n下載連結：\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -3884,6 +3884,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get save => '儲存';
+
+  @override
+  String get openSourceLicenses => '開源授權';
+
+  @override
+  String get openSourceLicensesDescription => '查看第三方開源軟體授權';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7360,7 +7366,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ 我在《恋恋拾光》与$character展开了心动旅程！快下载 App 并在个人主页填写我的星之邀请码：【$code】，我们双方都能免费获得 50 点花花喔！🎁\n\n 下载链接：\nhttps://yourgame.url/download';
+    return '✨ 我在《恋恋拾光》与$character展开了心动旅程！快下载 App 并在个人主页填写我的星之邀请码：【$code】，我们双方都能免费获得 50 点花花喔！🎁\n\n 下载链接：\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -7766,6 +7772,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get save => '储存';
+
+  @override
+  String get openSourceLicenses => '开源授权';
+
+  @override
+  String get openSourceLicensesDescription => '查看第三方开源软件授权';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11242,7 +11254,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ 我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://yourgame.url/download';
+    return '✨ 我在《戀戀拾光》與$character展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【$code】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -11648,4 +11660,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get save => '儲存';
+
+  @override
+  String get openSourceLicenses => '開源授權';
+
+  @override
+  String get openSourceLicensesDescription => '查看第三方開源軟體授權';
 }

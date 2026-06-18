@@ -3527,7 +3527,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ 지금 《Lianlian ShiGuang》에서 $character님과 설레는 여정을 시작했어요! 지금 앱을 다운로드하고 프로필 페이지에 저의 별의 초대 코드 【$code】를 입력해 보세요. 우리 둘 다 꽃 50송이를 무료로 받을 수 있어요! 🎁\n\n 다운로드 링크:\n https://yourgame.url/download';
+    return '✨ 지금 《Lianlian ShiGuang》에서 $character님과 설레는 여정을 시작했어요! 지금 앱을 다운로드하고 프로필 페이지에 저의 별의 초대 코드 【$code】를 입력해 보세요. 우리 둘 다 꽃 50송이를 무료로 받을 수 있어요! 🎁\n\n 다운로드 링크:\n https://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -3940,4 +3940,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get save => '저장';
+
+  @override
+  String get openSourceLicenses => '오픈소스 라이선스';
+
+  @override
+  String get openSourceLicensesDescription => '제3자 오픈소스 소프트웨어 라이선스 보기';
 }

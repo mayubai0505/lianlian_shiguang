@@ -1540,7 +1540,7 @@
     "profile_referral_err_not_found": "ไม่พบผู้เล่นคนนี้ โปรดตรวจสอบรหัสเชิญอีกครั้ง!",
     "profile_referral_success": "ผูกสำเร็จแล้ว! รีบไปคุยกับตัวละครกันเถอะ!",
     "profile_referral_err_expired": "ขออภัย รหัสเชิญผู้เล่นใหม่ต้องผูกภายใน 3 วันหลังจากการลงทะเบียนนะ!",
-    "profile_share_message": "✨ ฉันได้เริ่มการเดินทางที่น่าตื่นเต้นกับ {character} ใน 'Lianlian ShiGuang' แล้วนะ! ดาวน์โหลดแอปตอนนี้แล้วกรอกรหัสเชิญแห่งดวงดาวของฉัน: 【{code}】 ในหน้าโปรไฟล์ของคุณ เราทั้งคู่จะได้รับดอกไม้ฟรี 50 ดอกเลยนะ! 🎁\n\n ลิงก์ดาวน์โหลด:\n https://yourgame.url/download",
+    "profile_share_message": "✨ ฉันได้เริ่มการเดินทางที่น่าตื่นเต้นกับ {character} ใน 'Lianlian ShiGuang' แล้วนะ! ดาวน์โหลดแอปตอนนี้แล้วกรอกรหัสเชิญแห่งดวงดาวของฉัน: 【{code}】 ในหน้าโปรไฟล์ของคุณ เราทั้งคู่จะได้รับดอกไม้ฟรี 50 ดอกเลยนะ! 🎁\n\n ลิงก์ดาวน์โหลด:\n https://lianlianshiguang.web.app/download/",
     "@profile_share_message": {
         "placeholders": {
             "character": { "type": "String" },
@@ -1874,5 +1874,7 @@
     },
     "about_us_edit_title": "แก้ไขความทรงจำ",
     "about_us_edit_confirm": "ยืนยันการแก้ไข",
-    "save": "บันทึก"
+    "save": "บันทึก",
+    "openSourceLicenses": "สัญญาอนุญาตโอเพนซอร์ส",
+    "openSourceLicensesDescription": "ดูสัญญาอนุญาตซอฟต์แวร์โอเพนซอร์สของบุคคลที่สาม"
 }

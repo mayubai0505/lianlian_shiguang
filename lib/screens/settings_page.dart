@@ -439,6 +439,20 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                     },
                   ),
+                  _buildSettingsTile(
+                    icon: Icons.article_outlined,
+                    title: l10n.openSourceLicenses,
+                    subtitle: l10n.openSourceLicensesDescription,
+                    theme: theme,
+                    onTap: () {
+                      showLicensePage(
+                        context: context,
+                        applicationName: '戀戀拾光',
+                        applicationVersion: '1.0.0',
+                        applicationLegalese: '© 2026 默語白',
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

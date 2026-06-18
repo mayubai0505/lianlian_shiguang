@@ -6475,7 +6475,7 @@ abstract class AppLocalizations {
   /// No description provided for @profile_share_message.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 我在《戀戀拾光》與{character}展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【{code}】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://yourgame.url/download'**
+  /// **'✨ 我在《戀戀拾光》與{character}展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【{code}】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://lianlianshiguang.web.app/download/'**
   String profile_share_message(String character, String code);
 
   /// No description provided for @chat_levelup_share_btn.
@@ -7221,6 +7221,18 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'儲存'**
   String get save;
+
+  /// No description provided for @openSourceLicenses.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開源授權'**
+  String get openSourceLicenses;
+
+  /// No description provided for @openSourceLicensesDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'查看第三方開源軟體授權'**
+  String get openSourceLicensesDescription;
 }
 
 class _AppLocalizationsDelegate

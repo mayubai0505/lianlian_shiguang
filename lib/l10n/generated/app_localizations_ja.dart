@@ -3510,7 +3510,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨『恋恋拾光』で$characterときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【$code】を入力してね。二人とも無料でお花50ポイントがもらえるよ！🎁\n\n ダウンロードリンク：\nhttps://yourgame.url/download';
+    return '✨『恋恋拾光』で$characterときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【$code】を入力してね。二人とも無料でお花50ポイントがもらえるよ！🎁\n\n ダウンロードリンク：\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -3923,4 +3923,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get save => '保存';
+
+  @override
+  String get openSourceLicenses => 'オープンソースライセンス';
+
+  @override
+  String get openSourceLicensesDescription =>
+      'サードパーティのオープンソースソフトウェアライセンスを表示します';
 }

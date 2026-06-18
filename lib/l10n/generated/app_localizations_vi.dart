@@ -3700,7 +3700,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ Mình đã bắt đầu hành trình rung động cùng $character trong 《Luyến Luyến Thập Quang》 rồi đấy! Hãy tải ngay App và nhập mã Tinh Chi Mời Gọi của mình: 【$code】 tại trang cá nhân nhé, cả hai chúng mình đều sẽ nhận được 50 điểm Hoa miễn phí đấy! 🎁\n\n Link tải:\n https://yourgame.url/download';
+    return '✨ Mình đã bắt đầu hành trình rung động cùng $character trong 《Luyến Luyến Thập Quang》 rồi đấy! Hãy tải ngay App và nhập mã Tinh Chi Mời Gọi của mình: 【$code】 tại trang cá nhân nhé, cả hai chúng mình đều sẽ nhận được 50 điểm Hoa miễn phí đấy! 🎁\n\n Link tải:\n https://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -4126,4 +4126,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get save => 'Lưu';
+
+  @override
+  String get openSourceLicenses => 'Giấy phép mã nguồn mở';
+
+  @override
+  String get openSourceLicensesDescription =>
+      'Xem giấy phép phần mềm mã nguồn mở của bên thứ ba';
 }

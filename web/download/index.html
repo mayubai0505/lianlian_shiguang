@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>下載戀戀拾光</title>
+    <meta name="description" content="下載或遊玩戀戀拾光，與你心中的角色展開專屬對話。" />
+
+    <style>
+        body {
+          margin: 0;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+          background: linear-gradient(160deg, #fff1f6, #f7eaff, #eef6ff);
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #3a2a35;
+        }
+
+        .card {
+          width: min(92%, 430px);
+          background: rgba(255, 255, 255, 0.84);
+          border-radius: 28px;
+          padding: 30px 24px;
+          box-shadow: 0 18px 45px rgba(120, 70, 120, 0.18);
+          text-align: center;
+          backdrop-filter: blur(12px);
+          box-sizing: border-box;
+        }
+
+        .logo {
+          width: 92px;
+          height: 92px;
+          border-radius: 24px;
+          object-fit: cover;
+          margin-bottom: 18px;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+          background: #fff;
+        }
+
+        h1 {
+          margin: 0;
+          font-size: 28px;
+          letter-spacing: 1px;
+        }
+
+        .tagline {
+          margin: 12px 0 24px;
+          line-height: 1.7;
+          color: #6f5d68;
+          font-size: 15px;
+        }
+
+        .notice {
+          margin: 0 0 20px;
+          padding: 12px 14px;
+          border-radius: 18px;
+          background: rgba(255, 111, 174, 0.10);
+          color: #7a425d;
+          font-size: 13px;
+          line-height: 1.6;
+        }
+
+        .button {
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 14px 18px;
+          margin: 12px 0;
+          border-radius: 999px;
+          text-decoration: none;
+          font-weight: 700;
+          font-size: 16px;
+          transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .button:active {
+          transform: scale(0.98);
+        }
+
+        .primary {
+          background: #ff6fae;
+          color: white;
+          box-shadow: 0 10px 20px rgba(255, 111, 174, 0.28);
+        }
+
+        .secondary {
+          background: white;
+          color: #ff5a9e;
+          border: 1px solid #ffd1e5;
+        }
+
+        .disabled {
+          background: #eeeeee;
+          color: #999999;
+          pointer-events: none;
+          cursor: default;
+        }
+
+        .small {
+          margin-top: 20px;
+          font-size: 12px;
+          line-height: 1.6;
+          color: #9a8993;
+        }
+
+        .footer-link {
+          color: #9a5d7a;
+          text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+<main class="card">
+    <!-- 如果妳 web/icons/Icon-192.png 存在，這行就能顯示 App icon -->
+    <img class="logo" src="/icons/Icon-192.png" alt="戀戀拾光 App Icon" />
+
+    <h1>戀戀拾光</h1>
+
+    <p class="tagline">
+        與你心中的角色展開專屬對話。<br />
+        在每一次訊息裡，收藏只屬於你的時光。
+    </p>
+
+    <div class="notice">
+        iOS 版將優先開放。<br />
+        Android 版因 Google Play 測試規範，將稍後開放。
+    </div>
+
+    <!--
+      ✅ 還沒有 TestFlight 連結時，先用 disabled。
+      等妳有 TestFlight Public Link 後，把下面這顆換成：
+
+      <a class="button primary" href="https://testflight.apple.com/join/妳的TestFlight代碼">
+        參加 iOS 測試版
+      </a>
+    -->
+    <a class="button disabled" href="#">
+        iOS 版即將開放
+    </a>
+
+    <!-- 網頁版入口 -->
+    <a class="button secondary" href="/">
+        立即遊玩網頁版
+    </a>
+
+    <!-- Android 暫時關閉 -->
+    <a class="button disabled" href="#">
+        Android 版準備中
+    </a>
+
+    <div class="small">
+        © 2026 默語白<br />
+        <a class="footer-link" href="/">返回戀戀拾光首頁</a>
+    </div>
+</main>
+</body>
+</html>

@@ -1680,7 +1680,7 @@
   "profile_referral_err_not_found": "找不到這位玩家，請確認邀請碼！",
   "profile_referral_success": "綁定成功！快去和角色聊天吧！",
   "profile_referral_err_expired": "抱歉，新手邀請碼必須在註冊 3 天內綁定喔！",
-  "profile_share_message": "✨ 我在《戀戀拾光》與{character}展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【{code}】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n 下載連結：\nhttps://yourgame.url/download",
+  "profile_share_message": "✨ 我在《戀戀拾光》與{character}展開了心動旅程！快下載 App 並在個人主頁填寫我的星之邀約碼：【{code}】，我們雙方都能免費獲得 50 點花花喔！🎁\n\n下載連結：\nhttps://lianlianshiguang.web.app/download/",
   "@profile_share_message": {
     "placeholders": {
       "character": { "type": "String" },
@@ -2018,5 +2018,7 @@
                     },
   "about_us_edit_title": "修改回憶",
   "about_us_edit_confirm": "確認修改",
-  "save": "儲存"
+  "save": "儲存",
+  "openSourceLicenses": "開源授權",
+  "openSourceLicensesDescription": "查看第三方開源軟體授權"
 }

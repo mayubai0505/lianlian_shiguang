@@ -1539,7 +1539,7 @@
   "profile_referral_err_not_found": "해당 플레이어를 찾을 수 없습니다. 초대 코드를 확인해 주세요!",
   "profile_referral_success": "연동 성공! 지금 바로 캐릭터와 대화해 보세요!",
   "profile_referral_err_expired": "죄송합니다. 신규 유저 초대 코드는 가입 후 3일 이내에 연동해야 합니다!",
-  "profile_share_message": "✨ 지금 《Lianlian ShiGuang》에서 {character}님과 설레는 여정을 시작했어요! 지금 앱을 다운로드하고 프로필 페이지에 저의 별의 초대 코드 【{code}】를 입력해 보세요. 우리 둘 다 꽃 50송이를 무료로 받을 수 있어요! 🎁\n\n 다운로드 링크:\n https://yourgame.url/download",
+  "profile_share_message": "✨ 지금 《Lianlian ShiGuang》에서 {character}님과 설레는 여정을 시작했어요! 지금 앱을 다운로드하고 프로필 페이지에 저의 별의 초대 코드 【{code}】를 입력해 보세요. 우리 둘 다 꽃 50송이를 무료로 받을 수 있어요! 🎁\n\n 다운로드 링크:\n https://lianlianshiguang.web.app/download/",
   "@profile_share_message": {
     "placeholders": {
       "character": { "type": "String" },
@@ -1873,5 +1873,7 @@
   },
   "about_us_edit_title": "추억 수정",
   "about_us_edit_confirm": "수정 확인",
-  "save": "저장"
+  "save": "저장",
+  "openSourceLicenses": "오픈소스 라이선스",
+  "openSourceLicensesDescription": "제3자 오픈소스 소프트웨어 라이선스 보기"
 }

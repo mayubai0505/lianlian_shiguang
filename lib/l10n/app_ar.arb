@@ -1582,7 +1582,7 @@
     "profile_referral_err_not_found": "تعذر العثور على هذا اللاعب، يرجى التحقق من الرمز!",
     "profile_referral_success": "تم الربط بنجاح! اذهبي وتحدثي مع الشخصية الآن!",
     "profile_referral_err_expired": "عذراً، يجب ربط رمز دعوة المبتدئين في غغضون 3 أيام من التسجيل!",
-    "profile_share_message": "✨ لقد بدأتُ رحلة خفقان القلب مع {character} في 'Lianlian ShiGuang'! حمّلي التطبيق الآن وأدخلي رمز دعوة النجوم الخاص بي: 【{code}】 في الصفحة الشخصية، وسنحصل كلانا على 50 زهرة مجاناً! 🎁\n\nرابط التحميل:\nhttps://yourgame.url/download",    "@profile_share_message": {
+    "profile_share_message": "✨ لقد بدأتُ رحلة خفقان القلب مع {character} في 'Lianlian ShiGuang'! حمّلي التطبيق الآن وأدخلي رمز دعوة النجوم الخاص بي: 【{code}】 في الصفحة الشخصية، وسنحصل كلانا على 50 زهرة مجاناً! 🎁\n\nرابط التحميل:\nhttps://lianlianshiguang.web.app/download/",    "@profile_share_message": {
         "placeholders": {
             "character": { "type": "String" },
             "code": { "type": "String" }
@@ -1915,5 +1915,7 @@
     },
     "about_us_edit_title": "تعديل الذكرى",
     "about_us_edit_confirm": "تأكيد التعديل",
-    "save": "حفظ"
+    "save": "حفظ",
+    "openSourceLicenses": "تراخيص البرمجيات مفتوحة المصدر",
+    "openSourceLicensesDescription": "عرض تراخيص البرمجيات مفتوحة المصدر التابعة لجهات خارجية"
 }

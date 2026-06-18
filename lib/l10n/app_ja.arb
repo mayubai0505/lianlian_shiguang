@@ -1541,7 +1541,7 @@
   "profile_referral_err_not_found": "プレイヤーが見つかりません。招待コードを確認してください！",
   "profile_referral_success": "連携成功！さっそくキャラクターとチャットしましょう！",
   "profile_referral_err_expired": "申し訳ありません。新規招待コードは登録後3日以内に連携する必要があります！",
-  "profile_share_message": "✨『恋恋拾光』で{character}ときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【{code}】を入力してね。二人とも無料でお花50ポイントがもらえるよ！🎁\n\n ダウンロードリンク：\nhttps://yourgame.url/download",
+  "profile_share_message": "✨『恋恋拾光』で{character}ときめきに満ちた旅を始めました！今すぐアプリをダウンロードして、マイページで私の星の招待コード【{code}】を入力してね。二人とも無料でお花50ポイントがもらえるよ！🎁\n\n ダウンロードリンク：\nhttps://lianlianshiguang.web.app/download/",
   "@profile_share_message": {
     "placeholders": {
       "character": { "type": "String" },
@@ -1875,5 +1875,7 @@
   },
   "about_us_edit_title": "思い出を修正",
   "about_us_edit_confirm": "変更を確定",
-  "save": "保存"
+  "save": "保存",
+  "openSourceLicenses": "オープンソースライセンス",
+  "openSourceLicensesDescription": "サードパーティのオープンソースソフトウェアライセンスを表示します"
 }

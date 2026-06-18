@@ -1541,7 +1541,7 @@
   "profile_referral_err_not_found": "Không tìm thấy người chơi này, vui lòng kiểm tra lại mã mời!",
   "profile_referral_success": "Liên kết thành công! Mau đi trò chuyện cùng nhân vật thôi nào!",
   "profile_referral_err_expired": "Xin lỗi, mã mời người mới phải được liên kết trong vòng 3 ngày sau khi đăng ký nhé!",
-  "profile_share_message": "✨ Mình đã bắt đầu hành trình rung động cùng {character} trong 《Luyến Luyến Thập Quang》 rồi đấy! Hãy tải ngay App và nhập mã Tinh Chi Mời Gọi của mình: 【{code}】 tại trang cá nhân nhé, cả hai chúng mình đều sẽ nhận được 50 điểm Hoa miễn phí đấy! 🎁\n\n Link tải:\n https://yourgame.url/download",
+  "profile_share_message": "✨ Mình đã bắt đầu hành trình rung động cùng {character} trong 《Luyến Luyến Thập Quang》 rồi đấy! Hãy tải ngay App và nhập mã Tinh Chi Mời Gọi của mình: 【{code}】 tại trang cá nhân nhé, cả hai chúng mình đều sẽ nhận được 50 điểm Hoa miễn phí đấy! 🎁\n\n Link tải:\n https://lianlianshiguang.web.app/download/",
   "@profile_share_message": {
     "placeholders": {
       "character": { "type": "String" },
@@ -1871,7 +1871,10 @@
   "birthday_dialog_button": "Mở đầu một ngày lãng mạn",
   "@birthday_dialog_button": {
   "description": "生日彈窗的確認按鈕"
-  },"about_us_edit_title": "Chỉnh sửa kỷ niệm",
+  },
+  "about_us_edit_title": "Chỉnh sửa kỷ niệm",
   "about_us_edit_confirm": "Xác nhận chỉnh sửa",
-  "save": "Lưu"
+  "save": "Lưu",
+  "openSourceLicenses": "Giấy phép mã nguồn mở",
+  "openSourceLicensesDescription": "Xem giấy phép phần mềm mã nguồn mở của bên thứ ba"
 }

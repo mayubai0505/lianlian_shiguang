@@ -3650,7 +3650,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ لقد بدأتُ رحلة خفقان القلب مع $character في \'Lianlian ShiGuang\'! حمّلي التطبيق الآن وأدخلي رمز دعوة النجوم الخاص بي: 【$code】 في الصفحة الشخصية، وسنحصل كلانا على 50 زهرة مجاناً! 🎁\n\nرابط التحميل:\nhttps://yourgame.url/download';
+    return '✨ لقد بدأتُ رحلة خفقان القلب مع $character في \'Lianlian ShiGuang\'! حمّلي التطبيق الآن وأدخلي رمز دعوة النجوم الخاص بي: 【$code】 في الصفحة الشخصية، وسنحصل كلانا على 50 زهرة مجاناً! 🎁\n\nرابط التحميل:\nhttps://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -4073,4 +4073,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get save => 'حفظ';
+
+  @override
+  String get openSourceLicenses => 'تراخيص البرمجيات مفتوحة المصدر';
+
+  @override
+  String get openSourceLicensesDescription =>
+      'عرض تراخيص البرمجيات مفتوحة المصدر التابعة لجهات خارجية';
 }

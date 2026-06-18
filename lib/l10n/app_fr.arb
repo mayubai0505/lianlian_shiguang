@@ -1710,7 +1710,7 @@
     "profile_referral_err_not_found": "Joueur introuvable. Veuillez vérifier le code d'invitation !",
     "profile_referral_success": "Liaison réussie ! Allez discuter avec les personnages !",
     "profile_referral_err_expired": "Désolé, le code d'invitation de nouveau joueur doit être lié dans les 3 jours suivant l'inscription !",
-    "profile_share_message": "✨ Je viens de commencer une aventure palpitante avec {character} sur 'Lianlian ShiGuang' ! Télécharge l'application dès maintenant et entre mon code d'invitation stellaire : 【{code}】 sur ta page de profil. Nous recevrons tous les deux 50 fleurs gratuites ! 🎁\n\n Lien de téléchargement :\n https://yourgame.url/download",
+    "profile_share_message": "✨ Je viens de commencer une aventure palpitante avec {character} sur 'Lianlian ShiGuang' ! Télécharge l'application dès maintenant et entre mon code d'invitation stellaire : 【{code}】 sur ta page de profil. Nous recevrons tous les deux 50 fleurs gratuites ! 🎁\n\n Lien de téléchargement :\n https://lianlianshiguang.web.app/download/",
     "@profile_share_message": {
         "placeholders": {
             "character": { "type": "String" },
@@ -2047,5 +2047,7 @@
     },
     "about_us_edit_title": "Modifier le souvenir",
     "about_us_edit_confirm": "Confirmer la modification",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "openSourceLicenses": "Licences open source",
+    "openSourceLicensesDescription": "Afficher les licences des logiciels open source tiers"
 }

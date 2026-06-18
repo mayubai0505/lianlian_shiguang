@@ -1541,7 +1541,7 @@
    "profile_referral_err_not_found": "Jogador não encontrado, por favor verifique o código de convite!",
    "profile_referral_success": "Vinculado com sucesso! Vá conversar com os personagens!",
    "profile_referral_err_expired": "Desculpe, o código de convite de novo usuário deve ser vinculado dentro de 3 dias após o registro!",
-   "profile_share_message": "✨ Comecei uma jornada emocionante com {character} em 'Lianlian ShiGuang'! Baixe o aplicativo agora e insira o meu Código de Convite Estelar: 【{code}】 na sua página de perfil. Nós dois ganharemos 50 Flores gratuitamente! 🎁\n\n Link para download:\n https://yourgame.url/download",
+   "profile_share_message": "✨ Comecei uma jornada emocionante com {character} em 'Lianlian ShiGuang'! Baixe o aplicativo agora e insira o meu Código de Convite Estelar: 【{code}】 na sua página de perfil. Nós dois ganharemos 50 Flores gratuitamente! 🎁\n\n Link para download:\n https://lianlianshiguang.web.app/download/",
    "@profile_share_message": {
       "placeholders": {
          "character": { "type": "String" },
@@ -1875,5 +1875,7 @@
    },
    "about_us_edit_title": "Editar Memória",
    "about_us_edit_confirm": "Confirmar Alteração",
-   "save": "Salvar"
+   "save": "Salvar",
+   "openSourceLicenses": "Licenças de código aberto",
+   "openSourceLicensesDescription": "Visualizar licenças de softwares de código aberto de terceiros"
 }

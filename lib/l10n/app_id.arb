@@ -1540,7 +1540,7 @@
     "profile_referral_err_not_found": "Pemain tidak ditemukan, silakan periksa kembali kode undangan!",
     "profile_referral_success": "Berhasil mengikat! Ayo segera mengobrol dengan karakter!",
     "profile_referral_err_expired": "Maaf, kode undangan pengguna baru harus diikat dalam waktu 3 hari setelah pendaftaran!",
-    "profile_share_message": "✨ Aku telah memulai perjalanan yang mendebarkan bersama {character} di 'Lianlian ShiGuang'! Unduh aplikasinya sekarang dan masukkan Kode Undangan Bintangku: 【{code}】 di halaman profilmu. Kita berdua akan mendapatkan 50 Bunga gratis! 🎁\n\n Tautan unduh:\n https://yourgame.url/download",
+    "profile_share_message": "✨ Aku telah memulai perjalanan yang mendebarkan bersama {character} di 'Lianlian ShiGuang'! Unduh aplikasinya sekarang dan masukkan Kode Undangan Bintangku: 【{code}】 di halaman profilmu. Kita berdua akan mendapatkan 50 Bunga gratis! 🎁\n\n Tautan unduh:\n https://lianlianshiguang.web.app/download/",
     "@profile_share_message": {
         "placeholders": {
             "character": { "type": "String" },
@@ -1873,5 +1873,7 @@
     },
     "about_us_edit_title": "Edit Kenangan",
     "about_us_edit_confirm": "Konfirmasi Perubahan",
-    "save": "Simpan"
+    "save": "Simpan",
+    "openSourceLicenses": "Lisensi Sumber Terbuka",
+    "openSourceLicensesDescription": "Lihat lisensi perangkat lunak sumber terbuka pihak ketiga"
 }

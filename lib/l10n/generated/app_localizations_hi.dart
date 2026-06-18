@@ -3701,7 +3701,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ मैंने \'Lianlian ShiGuang\' में $character के साथ एक दिल दहला देने वाली यात्रा शुरू की है! अभी ऐप डाउनलोड करें और अपने प्रोफ़ाइल पेज पर मेरा स्टार इनविटेशन कोड: 【$code】 दर्ज करें। हम दोनों को मुफ्त में 50 फूल मिलेंगे! 🎁\n\n डाउनलोड लिंक:\n https://yourgame.url/download';
+    return '✨ मैंने \'Lianlian ShiGuang\' में $character के साथ एक दिल दहला देने वाली यात्रा शुरू की है! अभी ऐप डाउनलोड करें और अपने प्रोफ़ाइल पेज पर मेरा स्टार इनविटेशन कोड: 【$code】 दर्ज करें। हम दोनों को मुफ्त में 50 फूल मिलेंगे! 🎁\n\n डाउनलोड लिंक:\n https://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -4128,4 +4128,11 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get save => 'सहेजें';
+
+  @override
+  String get openSourceLicenses => 'ओपन सोर्स लाइसेंस';
+
+  @override
+  String get openSourceLicensesDescription =>
+      'थर्ड-पार्टी ओपन-सोर्स सॉफ़्टवेयर लाइसेंस देखें';
 }

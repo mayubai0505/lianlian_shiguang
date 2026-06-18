@@ -1755,7 +1755,7 @@
   "profile_referral_err_not_found": "Player not found. Please check the invitation code!",
   "profile_referral_success": "Linked successfully! Go chat with the characters now!",
   "profile_referral_err_expired": "Sorry, newbie invitation codes must be linked within 3 days of registration!",
-  "profile_share_message": "✨ I've started a heart-fluttering journey with {character} in 'Lianlian ShiGuang'! Download the app now and enter my Star Invitation Code: 【{code}】 on your profile page. Both of us will get 50 Flowers for free! 🎁\n\n Download link:\n https://yourgame.url/download",
+  "profile_share_message": "✨ I've started a heart-fluttering journey with {character} in 'Lianlian ShiGuang'! Download the app now and enter my Star Invitation Code: 【{code}】 on your profile page. Both of us will get 50 Flowers for free! 🎁\n\n Download link:\n https://lianlianshiguang.web.app/download/",
   "@profile_share_message": {
     "placeholders": {
       "character": { "type": "String" },
@@ -2089,5 +2089,7 @@
   },
   "about_us_edit_title": "Edit Memory",
   "about_us_edit_confirm": "Confirm Edit",
-  "save": "Save"
+  "save": "Save",
+  "openSourceLicenses": "Open Source Licenses",
+  "openSourceLicensesDescription": "View third-party open-source software licenses"
 }

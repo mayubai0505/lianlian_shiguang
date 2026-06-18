@@ -3699,7 +3699,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String profile_share_message(String character, String code) {
-    return '✨ Saya telah memulakan perjalanan yang mendebarkan bersama $character di \'Lianlian ShiGuang\'! Muat turun aplikasi sekarang dan masukkan Kod Undangan Bintang saya: 【$code】 di halaman profil awak. Kita berdua akan mendapat 50 Bunga secara percuma! 🎁\n\n Pautan muat turun:\n https://yourgame.url/download';
+    return '✨ Saya telah memulakan perjalanan yang mendebarkan bersama $character di \'Lianlian ShiGuang\'! Muat turun aplikasi sekarang dan masukkan Kod Undangan Bintang saya: 【$code】 di halaman profil awak. Kita berdua akan mendapat 50 Bunga secara percuma! 🎁\n\n Pautan muat turun:\n https://lianlianshiguang.web.app/download/';
   }
 
   @override
@@ -4131,4 +4131,11 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get save => 'Simpan';
+
+  @override
+  String get openSourceLicenses => 'Lesen Sumber Terbuka';
+
+  @override
+  String get openSourceLicensesDescription =>
+      'Lihat lesen perisian sumber terbuka pihak ketiga';
 }
