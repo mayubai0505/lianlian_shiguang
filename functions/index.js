@@ -1557,6 +1557,23 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                            targetModel = targetModel.replace("google/", "");
                                                                                        }
                                                                                        // 📦 3. 發送請求 (自動切換 URL、Key 和 Model)
+                                                                                       // 📦 3. 發送請求 (自動切換 URL、Key 和 Model)
+
+                                                                                       // 🌟 先把共用的 requestBody 準備好
+                                                                                       const finalRequestBody = {
+                                                                                           messages: currentMessages,
+                                                                                           max_tokens: config.maxTokens && config.maxTokens > 150
+                                                                                             ? Math.min(config.maxTokens, SAFE_MAX_TOKENS)
+                                                                                             : SAFE_MAX_TOKENS,
+                                                                                           temperature: config.temperature || 0.7,
+                                                                                           ...(loopCount === 0 && { response_format: { type: "json_object" } }),
+                                                                                       };
+
+                                                                                       // 🌟 轉轍器防呆：如果不是走 Google 官方直連（例如是 OpenRouter），才加上 reasoning 參數
+                                                                                       if (!apiUrl.includes("generativelanguage.googleapis.com")) {
+                                                                                           finalRequestBody.reasoning = { effort: "none" };
+                                                                                       }
+
                                                                                        const aiResult = await callAiWithRetry({
                                                                                          apiUrl,
                                                                                          apiKey,
@@ -1564,15 +1581,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                          fallbackModelId: config.fallbackModelId || null,
                                                                                          abortController,
                                                                                          timeoutMs: 95_000,
-                                                                                         requestBody: {
-                                                                                           messages: currentMessages,
-                                                                                           max_tokens: config.maxTokens && config.maxTokens > 150
-                                                                                             ? Math.min(config.maxTokens, SAFE_MAX_TOKENS)
-                                                                                             : SAFE_MAX_TOKENS,
-                                                                                           temperature: config.temperature || 0.7,
-                                                                                           reasoning: { effort: "none" },
-                                                                                           ...(loopCount === 0 && { response_format: { type: "json_object" } }),
-                                                                                         },
+                                                                                         requestBody: finalRequestBody, // 帶入整理好的 payload
                                                                                        });
 
                                                                                        // ✨ 1. 拿掉 response.status 的 log，改成印出 aiResult 是否成功拿到
