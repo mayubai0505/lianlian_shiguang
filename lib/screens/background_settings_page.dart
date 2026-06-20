@@ -220,34 +220,34 @@ class BackgroundSettingsPage extends StatelessWidget {
     );
   }
 
-  void _showConfirmDialog(BuildContext context, CharacterPhoto cg) {
-    final l10n = AppLocalizations.of(context)!;
+  void _showConfirmDialog(BuildContext pageContext, CharacterPhoto cg) {
+    final l10n = AppLocalizations.of(pageContext)!;
 
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+      context: pageContext,
+      builder: (dialogContext) => AlertDialog(
         title: Text(l10n.change_chat_bg),
         content: Text(l10n.confirm_change_chat_bg(cg.description, character.name)),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancelButton, style: const TextStyle(color: Colors.grey)),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              l10n.cancelButton,
+              style: const TextStyle(color: Colors.grey),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
-              Provider.of<ThemeNotifier>(context, listen: false)
+              Provider.of<ThemeNotifier>(pageContext, listen: false)
                   .setCharacterBackground(character.name, cg.imageUrl);
 
-              Navigator.pop(context);
-              Navigator.pop(context);
+              // 只用 dialogContext 關掉彈窗
+              Navigator.pop(dialogContext);
 
-              // ✨ 總裁級：解鎖稀有 CG 的專屬高光時刻！
-              ToastUtils.showCenterToast(
-                context, // 💡 若這是在 async 之後，請確保外層有 if (context.mounted)
-                l10n.gallery_unlocked_msg(cg.description),
-                customIcon: Icons.auto_awesome_rounded, // 💡 總裁精選圖示：「閃耀的星芒」，完美取代紫色的神祕驚喜感！
-                // 另一個好選擇是 Icons.collections_bookmark_rounded (象徵成功收錄進畫廊)
-              );
+              // 用 pageContext 離開背景設定頁，回到聊天室
+              if (pageContext.mounted) {
+                Navigator.pop(pageContext);
+              }
             },
             child: Text(l10n.confirm_change),
           ),

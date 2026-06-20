@@ -5,7 +5,6 @@ import 'package:intl/intl.dart'; // 記得確保有 import 這個來格式化時
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../screens/moment_detail_page.dart'; // 🌟 記得匯入這頁！
 
-
 class InboxPage extends StatelessWidget {
   const InboxPage({super.key});
 
@@ -66,11 +65,11 @@ class InboxPage extends StatelessWidget {
               final data = docs[index].data() as Map<String, dynamic>;
               final DateTime? date = (data['createdAt'] as Timestamp?)?.toDate();
               final bool isRead = data['isRead'] ?? false; // 判斷已讀/未讀
-
+              final String bodyText = (data['body'] ?? '').toString();
               return ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 // 未讀的信件，給一個淡淡的粉色背景
-                tileColor: isRead ? null : Colors.pinkAccent.withOpacity(0.05),
+                tileColor: isRead ? null : Colors.pinkAccent.withValues(alpha:0.05),
                 leading: Stack(
                   children: [
                     CircleAvatar(
@@ -112,8 +111,8 @@ class InboxPage extends StatelessWidget {
                   children: [
                     const SizedBox(height: 4),
                     Text(
-                      data['body'] ?? '', // 這裡會顯示 "$playerName 喜歡了..."
-                      maxLines: 1, // 限制只顯示一行，太長會變成...
+                      bodyText,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: isRead ? Colors.grey[500] : Colors.black87,

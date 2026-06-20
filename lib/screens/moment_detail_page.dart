@@ -81,42 +81,67 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     return false;
   }
 
+  Future<String> _getMyPlayerIdDisplayName() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    try {
+      if (_userId.isEmpty) return l10n.friend_unknown;
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userId)
+          .get();
+
+      final data = userDoc.data();
+
+      final rawPlayerID = (data?['playerID'] ?? '').toString().trim();
+
+      if (rawPlayerID.isNotEmpty) {
+        final cleanPlayerID = rawPlayerID.startsWith('@')
+            ? rawPlayerID.substring(1)
+            : rawPlayerID;
+
+        return '@$cleanPlayerID';
+      }
+    } catch (e) {
+      debugPrint('取得 playerID 失敗: $e');
+    }
+
+    return l10n.friend_unknown;
+  }
+
   // 1. 詳情頁的按讚邏輯 (跟大廳完全同步)
   Future<void> _handleLikeTaskProgress(Moment moment) async {
     final l10n = AppLocalizations.of(context)!;
-    final String currentNickname = _myNickname ?? l10n.friend_unknown;
+
     if (_userId.isEmpty) return;
 
     try {
       final String recipientId = moment.createdBy;
 
       if (recipientId.isNotEmpty && recipientId != _userId) {
-        // ✨ 完美的專屬文案判斷
-        String mailBody = moment.isCreatorPost
+        final String currentNickname = await _getMyPlayerIdDisplayName();
+
+        final String mailBody = moment.isCreatorPost
             ? l10n.moment_like_yours(currentNickname)
             : l10n.moment_like_others(currentNickname, moment.authorName);
 
-        // 🌟 呼叫專屬的寄信函式 (不要借用留言的)
         await _sendNotificationLetter(
           recipientId: recipientId,
           postId: moment.id,
           type: 'like',
-          senderName: _myNickname ?? '某位朋友',
+          senderName: currentNickname,
           body: mailBody,
         );
       }
 
-      // ✨ 總裁級：動態按讚的溫暖回饋，讓你的心意絲滑呈現！
       ToastUtils.showCenterToast(
         context,
         l10n.moment_like_success,
-        customIcon: Icons.favorite_rounded, // 💡 總裁精選：用「愛心」圖示，與按讚動作完美呼應！
-        // 💡 總裁秘技：因為按讚動作非常頻繁，ToastUtils 的中央懸浮感會讓玩家覺得：「這 App 真的懂我的喜好！」
+        customIcon: Icons.favorite_rounded,
       );
     } catch (e) {
-      print("按讚失敗: $e");
-      // 💡 總裁秘技：如果失敗了，除了 print，也可以補上一個 Toast 提醒，
-      // 讓玩家知道「剛剛那一顆心可能沒送出去喔」，提升互動的真實感。
+      debugPrint("按讚失敗: $e");
     }
   }
 
@@ -176,6 +201,8 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     if (content.trim().isEmpty) return;
 
     try {
+      final String currentDisplayName = await _getMyPlayerIdDisplayName();
+
       final commentRef = _db
           .collection('artifacts')
           .doc(AppConfig.appId)
@@ -187,19 +214,19 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       await commentRef.set({
         'content': content.trim(),
         'authorId': _userId,
-        'authorName': _myNickname ?? '某位朋友',
+
+        // 如果妳希望留言列表也顯示 @playerID，就用 currentDisplayName
+        'authorName': currentDisplayName,
+
         'createdAt': FieldValue.serverTimestamp(),
         'parentCommentId': _replyTarget?['commentId'],
         'replyToName': _replyTarget?['authorName'],
       });
 
-      // 🌟 這裡要注意：
-      // 如果 moment.sendCommentNotification 裡面也是寫 mailbox.add()
-      // 那它也會造成重複通知。
       await moment.sendCommentNotification(
         commentText: content.trim(),
-        senderNickname: _myNickname ?? '某位朋友',
-        commentId: commentRef.id, // 如果 Moment 方法支援，就加這個
+        senderNickname: currentDisplayName,
+        commentId: commentRef.id,
       );
 
       await _handleMentions(
@@ -224,7 +251,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     required String postId,
   }) async {
     final l10n = AppLocalizations.of(context)!;
-    final currentNickname = _myNickname ?? l10n.friend_unknown;
+    final currentDisplayName = await _getMyPlayerIdDisplayName();
     if (_userId.isEmpty) return;
     // 利用 Regex 抓取所有以 @ 開頭的字串,例如輸入 "@程宇"，會把 "程宇" 這個名字單獨抓出來
     Iterable<RegExpMatch> matches = RegExp(r'@(\S+)').allMatches(text);
@@ -246,12 +273,12 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
           // 3. 🎯 核心重點：判斷是否為親媽 Tag 自己的小孩
            if (motherUid.isNotEmpty && motherUid != _userId) {
             // 不是親媽！代表是其他玩家或角色 Tag 的，可以發送通知信！
-            String mailBody =l10n.moment_mention_mail_body(currentNickname, name);
+             String mailBody = l10n.moment_mention_mail_body(currentDisplayName, name);
             await _sendNotificationLetter(
               recipientId: motherUid, // 信件精準投遞給親媽的 UID
               postId: postId,
               type: 'mention',
-              senderName: _myNickname ?? '某位朋友',
+              senderName: currentDisplayName,
               body: mailBody,
             );
             print("💌 已發送 Tag 通知給 $name 的親媽 ($motherUid)");

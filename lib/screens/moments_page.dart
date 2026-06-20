@@ -41,6 +41,37 @@ class _MomentsPageState extends State<MomentsPage> {
     }
   }
 
+  Future<String> _getMyNotificationDisplayName() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    try {
+      if (_userId == null || _userId!.isEmpty) {
+        return l10n.friend_unknown;
+      }
+
+      final userDoc = await _db
+          .collection('users')
+          .doc(_userId)
+          .get();
+
+      final data = userDoc.data();
+
+      final rawPlayerID = (data?['playerID'] ?? '').toString().trim();
+
+      if (rawPlayerID.isNotEmpty) {
+        final cleanPlayerID = rawPlayerID.startsWith('@')
+            ? rawPlayerID.substring(1)
+            : rawPlayerID;
+
+        return '@$cleanPlayerID';
+      }
+    } catch (e) {
+      debugPrint('取得通知顯示名稱失敗: $e');
+    }
+
+    return l10n.friend_unknown;
+  }
+
 
   Future<void> _handleLikeTaskProgress(Moment moment) async {
     final l10n = AppLocalizations.of(context)!;
@@ -68,13 +99,15 @@ class _MomentsPageState extends State<MomentsPage> {
       final String recipientId = moment.createdBy;
 
       if (recipientId.isNotEmpty && recipientId != _userId) {
+        final String currentDisplayName = await _getMyNotificationDisplayName();
+
         String mailBody;
 
         if (moment.isCreatorPost) {
-          mailBody = l10n.moment_like_self(_nickname ?? "某位朋友");
+          mailBody = l10n.moment_like_self(currentDisplayName);
         } else {
           mailBody = l10n.moment_like_other(
-            _nickname ?? "某位朋友",
+            currentDisplayName,
             moment.authorName,
           );
         }
@@ -83,11 +116,10 @@ class _MomentsPageState extends State<MomentsPage> {
           recipientId: recipientId,
           postId: moment.id,
           type: 'like',
-          senderName: _nickname ?? l10n.friend_unknown,
+          senderName: currentDisplayName,
           body: mailBody,
         );
       }
-
       // 4. 重新讀取任務狀態
       await _loadDailyTaskProgress();
 
@@ -274,11 +306,14 @@ class _MomentsPageState extends State<MomentsPage> {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(recipientId)
-          .collection('mailbox') // 🌟 注意：要跟妳的信箱頁面讀取的資料夾名稱一致喔！
+          .collection('mailbox')
           .add({
         'type': type,
         'fromId': _userId,
-        'title': type == 'like' ? l10n.moment_notification_new_like : l10n.notification_new_comment,
+        'fromName': senderName,
+        'title': type == 'like'
+            ? l10n.moment_notification_new_like
+            : l10n.notification_new_comment,
         'body': body ?? l10n.notification_like_from_sender(senderName),
         'postId': postId,
         'createdAt': FieldValue.serverTimestamp(),
