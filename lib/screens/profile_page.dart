@@ -1806,20 +1806,23 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Text(l10n.empty_no_characters_created,
                     style: TextStyle(color: theme.colorScheme.onSurface
                             .withValues(alpha:0.7)))))
-            : GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 0.8,
+             : SizedBox(
+          height: 230,
+          child: GridView.builder(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // 上下兩排
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 1.25,
+            ),
+            itemCount: _myCharacters.length, // 不再限制 6 個
+            itemBuilder: (context, index) {
+              final character = _myCharacters[index];
+              return _buildCharacterGridItem(character, isMyCharacter: true);
+            },
           ),
-          itemCount: _myCharacters.length > 6 ? 6 : _myCharacters.length,
-          itemBuilder: (context, index) {
-            final character = _myCharacters[index];
-            return _buildCharacterGridItem(character, isMyCharacter: true);
-          },
         ),
 
         const SizedBox(height: 16), // 給上方列表一點呼吸空間

@@ -20,6 +20,8 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
   List<Character> _displayFriends = []; // ✨ 真正顯示出來的列表（過濾後）
   bool _isLoading = true;
   int _selectedCategory = 0; // 0: 全部, 1: 官方推薦, 2: 我的專屬
+  Set<String> _officialFriendIds = {};
+  Set<String> _exclusiveFriendIds = {};
 
   // --- Firebase 變數 ---
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -32,49 +34,109 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
 
   Future<void> _loadAllFriends() async {
     if (!mounted) return;
+
     final User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
       setState(() => _isLoading = false);
       return;
     }
+
     final String userId = currentUser.uid;
 
     try {
-      // 1. 🌟 關鍵：去抓使用者的「friends 子集合」 (也就是妳存 +好友 的地方)
-      final friendsSnapshot = await _db.collection('users').doc(userId)
-          .collection('friends').get();
+      // 1. 使用者加過好友的角色
+      final friendsSnapshot = await _db
+          .collection('users')
+          .doc(userId)
+          .collection('friends')
+          .get();
 
-      // 2. 抓玩家「自己的私藏角色」 (維持不變)
-      final privateSnapshot = await _db.collection('artifacts').doc(_appId)
-          .collection('users').doc(userId).collection('private_characters').get();
+      // 2. 使用者自己的非公開角色
+      final privateSnapshot = await _db
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('users')
+          .doc(userId)
+          .collection('private_characters')
+          .get();
 
-      final List<Character> tempAll = [];
+      // 3. 使用者自己創建的公開角色
+      // 即使之後邂逅頁不顯示創作者自己的角色，這裡還是會抓得到
+      final myPublicSnapshot = await _db
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('public_characters')
+          .where('createdBy', isEqualTo: userId)
+          .get();
 
-      // 處理私藏角色
-      for (var doc in privateSnapshot.docs) {
-        final char = await Character.fromFirestoreAsync(doc);
-        char.isPublic = false;
-        tempAll.add(char);
+      final Map<String, Character> tempMap = {};
+      final Set<String> officialIds = {};
+      final Set<String> exclusiveIds = {};
+
+      void addCharacter(
+          Character character, {
+            required bool showInOfficial,
+          }) {
+        tempMap[character.id] = character;
+
+        if (showInOfficial) {
+          officialIds.add(character.id);
+          exclusiveIds.remove(character.id);
+        } else {
+          exclusiveIds.add(character.id);
+          officialIds.remove(character.id);
+        }
       }
 
-      // 3. 🌟 根據 friends 子集合裡的 ID，去抓官方角色的完整資料
-      for (var friendDoc in friendsSnapshot.docs) {
-        final charId = friendDoc.id; // 妳是用 character.id 當作 doc 名稱
+      // A. 自己的非公開角色 → 我的專屬
+      for (var doc in privateSnapshot.docs) {
+        final char = await Character.fromFirestoreAsync(doc);
+        addCharacter(char, showInOfficial: false);
+      }
 
-        final charDoc = await _db.collection('artifacts').doc(_appId)
-            .collection('public_characters').doc(charId).get();
+      // B. 自己創建的公開角色 → 我的專屬
+      for (var doc in myPublicSnapshot.docs) {
+        final char = await Character.fromFirestoreAsync(doc);
+        addCharacter(char, showInOfficial: false);
+      }
+
+      // C. 加過好友的公開角色
+      for (var friendDoc in friendsSnapshot.docs) {
+        final charId = friendDoc.id;
+
+        final charDoc = await _db
+            .collection('artifacts')
+            .doc(_appId)
+            .collection('public_characters')
+            .doc(charId)
+            .get();
 
         if (charDoc.exists) {
           final char = await Character.fromFirestoreAsync(charDoc);
-          char.isPublic = true;
-          tempAll.add(char);
+          final data = charDoc.data() as Map<String, dynamic>?;
+
+          final bool isCreatedByMe = data?['createdBy'] == userId;
+
+          // 建議妳在真正官方角色上加 isOfficial: true
+          final bool isOfficial = data?['isOfficial'] == true;
+
+          // 官方推薦：只有官方角色，且不是我自己創建的角色
+          // 其他都進我的專屬
+          addCharacter(
+            char,
+            showInOfficial: isOfficial && !isCreatedByMe,
+          );
         }
       }
 
       if (mounted) {
         setState(() {
-          _allFriends = tempAll;
+          _allFriends = tempMap.values.toList();
           _allFriends.sort((a, b) => b.lastChatTime.compareTo(a.lastChatTime));
+
+          _officialFriendIds = officialIds;
+          _exclusiveFriendIds = exclusiveIds;
+
           _applyFilter();
           _isLoading = false;
         });
@@ -91,9 +153,13 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
       if (_selectedCategory == 0) {
         _displayFriends = _allFriends;
       } else if (_selectedCategory == 1) {
-        _displayFriends = _allFriends.where((c) => c.isPublic).toList();
+        _displayFriends = _allFriends
+            .where((c) => _officialFriendIds.contains(c.id))
+            .toList();
       } else {
-        _displayFriends = _allFriends.where((c) => !c.isPublic).toList();
+        _displayFriends = _allFriends
+            .where((c) => _exclusiveFriendIds.contains(c.id))
+            .toList();
       }
     });
   }
@@ -305,7 +371,9 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                friend.isPublic ? l10n.official : l10n.private,
+                  _officialFriendIds.contains(friend.id)
+                      ? l10n.official
+                      : l10n.my_exclusive,
                 style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
               ),
             ),

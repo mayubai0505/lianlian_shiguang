@@ -875,6 +875,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       return;
     }
 
+    const Set<String> officialCreatorUids = {
+      'B71k2kyooubYsOtIO1nkiBwyBXt2',
+    };
+
+    final bool isOfficialCreator = officialCreatorUids.contains(currentUser.uid);
+
     // 顯示轉圈圈 (避免儲存中途被干擾)
     showDialog(
       context: context,
@@ -1063,6 +1069,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'story': _storyController.text.trim(),
         'storyModeFirstLine': _firstLineController.text.trim(),
         'isPublic': _isPublic,
+        'isOfficial': _isPublic && isOfficialCreator,
         'isDraft': false,
         'isCompleted': true,
         'status': 'published',
