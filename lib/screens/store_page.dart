@@ -5,6 +5,42 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/purchase_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'package:flutter/foundation.dart';
+import '../services/paypal_purchase_service.dart';
+
+String _getPayPalProductId(String storeProductId) {
+  if (storeProductId.contains('monthly_card')) {
+    return 'paypal_monthly_card_250';
+  }
+
+  if (storeProductId.contains('points_90') || storeProductId == 'paypal_points_90') {
+    return 'paypal_points_90';
+  }
+
+  if (storeProductId.contains('points_215') || storeProductId == 'paypal_points_215') {
+    return 'paypal_points_215';
+  }
+
+  if (storeProductId.contains('points_590') || storeProductId == 'paypal_points_590') {
+    return 'paypal_points_590';
+  }
+
+  throw Exception('找不到對應的 PayPal 商品：$storeProductId');
+}
+
+Future<void> _buyStoreProductByPlatform(
+    BuildContext context,
+    dynamic productWrapper,
+    ) async {
+  if (kIsWeb) {
+    final paypalProductId = _getPayPalProductId(productWrapper.productDetails.id);
+    await PayPalPurchaseService().buyWebProduct(paypalProductId);
+    return;
+  }
+
+  final purchaseService = Provider.of<PurchaseService>(context, listen: false);
+  await purchaseService.buyProduct(productWrapper.productDetails);
+}
 
 class StorePage extends StatefulWidget {
   const StorePage({super.key});
@@ -246,10 +282,42 @@ class _StorePageState extends State<StorePage> {
     if (user == null) return const SizedBox.shrink();
 
     List<dynamic> displayProducts = service.products;
-    bool isTestingMode = displayProducts.isEmpty;
+    bool isTestingMode = false;
 
-    // 如果抓不到真實商品，就用測試假商品展示 (🌟 已更新為總裁的真實 ID)
-    if (displayProducts.isEmpty) {
+// Web 版不走 App Store / Google Play 內購，直接顯示 PayPal 商品
+    if (kIsWeb) {
+      displayProducts = [
+        ProductDetailsWrapper(
+          productDetails: MockProductDetails(
+            id: 'paypal_monthly_card_250',
+            price: 'US\$4.99',
+          ),
+        ),
+        ProductDetailsWrapper(
+          productDetails: MockProductDetails(
+            id: 'paypal_points_90',
+            price: 'US\$0.99',
+          ),
+        ),
+        ProductDetailsWrapper(
+          productDetails: MockProductDetails(
+            id: 'paypal_points_215',
+            price: 'US\$1.99',
+          ),
+        ),
+        ProductDetailsWrapper(
+          productDetails: MockProductDetails(
+            id: 'paypal_points_590',
+            price: 'US\$4.99',
+          ),
+        ),
+      ];
+    } else {
+      isTestingMode = displayProducts.isEmpty;
+    }
+
+// 如果手機版抓不到真實商品，就顯示補貨中
+    if (!kIsWeb && displayProducts.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.only(top: 80),
@@ -269,10 +337,14 @@ class _StorePageState extends State<StorePage> {
       );
     }
 
-    final monthlyCard = displayProducts.where((p) => p.productDetails.id == 'com_lianlian_monthly_card_250').firstOrNull ?? displayProducts.first;
-    final regularProducts = displayProducts.where(
-            (p) => p.productDetails.id != 'com_lianlian_monthly_card_250'
-    ).toList();
+    final monthlyCard = displayProducts
+        .where((p) => p.productDetails.id.contains('monthly_card'))
+        .firstOrNull ??
+        displayProducts.first;
+
+    final regularProducts = displayProducts
+        .where((p) => !p.productDetails.id.contains('monthly_card'))
+        .toList();
 
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
@@ -496,10 +568,11 @@ class MonthlyCardBanner extends StatelessWidget {
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: canPurchase ? () async {
-                    final purchaseService = Provider.of<PurchaseService>(context, listen: false);
-                    await purchaseService.buyProduct(productWrapper.productDetails);
-                  } : null,
+                  onTap: canPurchase
+                      ? () async {
+                    await _buyStoreProductByPlatform(context, productWrapper);
+                  }
+                      : null,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
@@ -636,8 +709,7 @@ class ProductCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         onTap: () async {
-          final purchaseService = Provider.of<PurchaseService>(context, listen: false);
-          await purchaseService.buyProduct(productWrapper.productDetails);
+          await _buyStoreProductByPlatform(context, productWrapper);
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -685,7 +757,12 @@ class ProductCard extends StatelessWidget {
 // ==========================================
 class ProductDetailsWrapper {
   final dynamic productDetails;
-  ProductDetailsWrapper({required this.productDetails});
+  bool isPending;
+
+  ProductDetailsWrapper({
+    required this.productDetails,
+    this.isPending = false,
+  });
 }
 
 class MockProductDetails {

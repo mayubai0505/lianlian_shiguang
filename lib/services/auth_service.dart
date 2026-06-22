@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'dart:math';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -222,8 +223,18 @@ class AuthService {
       );
 
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
-      final bool isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
-      return {'user': userCredential.user, 'isNewUser': isNewUser};
+
+      if (userCredential.user == null) {
+        return null;
+      }
+
+// ✅ Apple 登入也要建立 users/{uid}，才會送新手 50 點
+      final bool isNewUser = await createNewUser(userCredential.user!);
+
+      return {
+        'user': userCredential.user,
+        'isNewUser': isNewUser,
+      };
     } catch (e) {
       print('Apple 登入報錯: $e');
       rethrow;
@@ -258,28 +269,62 @@ Future<String?> deleteAccount() async {
   }
 }
 
+  String _generateRandomPlayerID() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random.secure();
+
+    return List.generate(
+      8,
+          (_) => chars[random.nextInt(chars.length)],
+    ).join();
+  }
+
 
 // 📡 監聽登入狀態變化 (讓 App 知道現在是誰在線)
 Stream<User?> get authStateChanges => _auth.authStateChanges();
 
 // 📝 建立新使用者資料 (當玩家第一次登入《戀戀拾光》時執行)
-Future<bool> createNewUser(User user) async {
-  final userDocRef = _firestore.collection('users').doc(user.uid);
-  final userDoc = await userDocRef.get();
+  Future<bool> createNewUser(User user) async {
+    final userDocRef = _firestore.collection('users').doc(user.uid);
+    final userDoc = await userDocRef.get();
 
-  if (!userDoc.exists) {
-    // 如果資料庫還沒這筆資料，就幫他開一個新的戶頭
-    await userDocRef.set({
-      'uid': user.uid,
-      'displayName': user.displayName ?? "初識的旅人", // 如果 FB/Apple 沒抓到名字，就給個浪漫的代稱
-      'email': user.email,
-      'photoURL': user.photoURL,
-      'createdAt': FieldValue.serverTimestamp(),
-      'flowerPoints': 50, // 總裁大方送：新手入坑即贈 50 點花語點數！🌸
-    });
+    if (!userDoc.exists) {
+      // 如果資料庫還沒這筆資料，就幫他開一個新的戶頭
+      await userDocRef.set({
+        'uid': user.uid,
+        'displayName': user.displayName ?? "初識的旅人",
+        'email': user.email,
+        'photoURL': user.photoURL,
+        'createdAt': FieldValue.serverTimestamp(),
+        'flowerPoints': 50,
+        'playerID': _generateRandomPlayerID(),
+      });
 
-    return true; // 是新玩家
+      return true; // 是新玩家
+    }
+
+    // ✅ 舊帳號補洞：如果以前建立過，但缺 flowerPoints 或 playerID，就補上
+    final data = userDoc.data() ?? {};
+    final Map<String, dynamic> patchData = {};
+
+    if (!data.containsKey('flowerPoints')) {
+      patchData['flowerPoints'] = 50;
+    }
+
+    final String existingPlayerID = (data['playerID'] ?? '').toString().trim();
+    if (existingPlayerID.isEmpty) {
+      patchData['playerID'] = _generateRandomPlayerID();
+    }
+
+    if (!data.containsKey('uid')) {
+      patchData['uid'] = user.uid;
+    }
+
+    if (patchData.isNotEmpty) {
+      patchData['updatedAt'] = FieldValue.serverTimestamp();
+      await userDocRef.set(patchData, SetOptions(merge: true));
+    }
+
+    return false; // 是老玩家
   }
-  return false; // 是老玩家
- }
 }

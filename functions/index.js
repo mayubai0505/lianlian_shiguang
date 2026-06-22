@@ -9,6 +9,7 @@ const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const functions = require("firebase-functions");
 const axios = require('axios');
 const { onSchedule } = require("firebase-functions/v2/scheduler");
+const Stripe = require("stripe");
 const { TranslationServiceClient } = require('@google-cloud/translate');
 if (admin.apps.length === 0) {
     admin.initializeApp();
@@ -20,8 +21,82 @@ const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
 const deepseekApiKey = defineSecret('DEEPSEEK_API_KEY');
 const geminiApiKey = defineSecret('GEMINI_API_KEY');
+const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
+const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
+const paypalClientId = defineSecret("PAYPAL_CLIENT_ID");
+const paypalClientSecret = defineSecret("PAYPAL_CLIENT_SECRET");
 const crypto = require("crypto");
 const APP_ID = "lianlianshiguang";
+
+const WEB_PRODUCTS = {
+  web_monthly_card_250: {
+    name: "星光契約月卡",
+    amount: 499,
+    currency: "usd",
+    points: 250,
+    type: "monthly_card",
+  },
+  web_points_90: {
+    name: "90 點花花",
+    amount: 99,
+    currency: "usd",
+    points: 90,
+    type: "points",
+  },
+  web_points_215: {
+    name: "215 點花花",
+    amount: 199,
+    currency: "usd",
+    points: 215,
+    type: "points",
+  },
+  web_points_590: {
+    name: "590 點花花",
+    amount: 499,
+    currency: "usd",
+    points: 590,
+    type: "points",
+  },
+};
+
+const PAYPAL_IS_SANDBOX = true; // 測試先 true；正式上線改 false
+
+const PAYPAL_PRODUCTS = {
+  paypal_monthly_card_250: {
+    name: "星光契約月卡",
+    amount: "4.99",
+    currency: "USD",
+    points: 250,
+    type: "monthly_card",
+  },
+  paypal_points_90: {
+    name: "90 點花花",
+    amount: "0.99",
+    currency: "USD",
+    points: 90,
+    type: "points",
+  },
+  paypal_points_215: {
+    name: "215 點花花",
+    amount: "1.99",
+    currency: "USD",
+    points: 215,
+    type: "points",
+  },
+  paypal_points_590: {
+    name: "590 點花花",
+    amount: "4.99",
+    currency: "USD",
+    points: 590,
+    type: "points",
+  },
+};
+
+function getPayPalBaseUrl() {
+  return PAYPAL_IS_SANDBOX
+    ? "https://api-m.sandbox.paypal.com"
+    : "https://api-m.paypal.com";
+}
 
 let converter = null;
 let translateClient = null;
@@ -3427,3 +3502,492 @@ ${userMessage}
         }
     });
 });
+
+exports.createStripeCheckoutSession = onCall(
+  {
+    region: REGION,
+    secrets: [stripeSecretKey],
+  },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "請先登入");
+    }
+
+    const uid = request.auth.uid;
+    const productId = request.data.productId;
+    const product = WEB_PRODUCTS[productId];
+
+    if (!product) {
+      throw new HttpsError("invalid-argument", "未知的商品");
+    }
+
+    const stripe = new Stripe(stripeSecretKey.value());
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      client_reference_id: uid,
+      success_url: "https://lianlianshiguang.web.app/?payment=success",
+      cancel_url: "https://lianlianshiguang.web.app/?payment=cancel",
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: product.currency,
+            unit_amount: product.amount,
+            product_data: {
+              name: product.name,
+            },
+          },
+        },
+      ],
+      metadata: {
+        uid,
+        productId,
+      },
+    });
+
+    return {
+      url: session.url,
+    };
+  }
+);
+
+exports.stripeWebhook = onRequest(
+  {
+    region: REGION,
+    secrets: [stripeSecretKey, stripeWebhookSecret],
+  },
+  async (req, res) => {
+    const stripe = new Stripe(stripeSecretKey.value());
+
+    let event;
+
+    try {
+      const signature = req.headers["stripe-signature"];
+
+      event = stripe.webhooks.constructEvent(
+        req.rawBody,
+        signature,
+        stripeWebhookSecret.value()
+      );
+    } catch (err) {
+      console.error("Stripe webhook 驗證失敗:", err.message);
+      res.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
+
+    if (event.type !== "checkout.session.completed") {
+      res.status(200).send("ignored");
+      return;
+    }
+
+    const session = event.data.object;
+
+    const uid = session.metadata?.uid;
+    const productId = session.metadata?.productId;
+    const product = WEB_PRODUCTS[productId];
+
+    if (!uid || !productId || !product) {
+      console.error("Stripe webhook metadata 不完整", {
+        uid,
+        productId,
+        metadata: session.metadata,
+      });
+      res.status(400).send("Invalid metadata");
+      return;
+    }
+
+    const db = admin.firestore();
+
+    const eventRef = db.collection("stripe_events").doc(event.id);
+    const userRef = db.collection("users").doc(uid);
+
+    await db.runTransaction(async (transaction) => {
+      const eventDoc = await transaction.get(eventRef);
+
+      // 防止 Stripe webhook 重送造成重複加點
+      if (eventDoc.exists) {
+        return;
+      }
+
+      const userDoc = await transaction.get(userRef);
+      const userData = userDoc.exists ? userDoc.data() : {};
+
+      const purchaseHistory = Array.isArray(userData.purchaseHistory)
+        ? userData.purchaseHistory
+        : [];
+
+      const isFirstTime = !purchaseHistory.includes(productId);
+
+      let pointsToAdd = 0;
+      const updateData = {
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+
+      if (product.type === "monthly_card") {
+        pointsToAdd = product.points;
+
+        const now = new Date();
+        const currentEndDate = userData.monthlySubEndDate
+          ? new Date(userData.monthlySubEndDate)
+          : now;
+
+        const wasAlreadySubscribed = currentEndDate > now;
+        const baseDate = currentEndDate < now ? now : currentEndDate;
+
+        let newEndDate = new Date(baseDate);
+        newEndDate.setDate(newEndDate.getDate() + 30);
+
+        const maxEndDate = new Date(now);
+        maxEndDate.setDate(maxEndDate.getDate() + 180);
+
+        if (newEndDate > maxEndDate) {
+          newEndDate = maxEndDate;
+        }
+
+        updateData.isMonthlySubscribed = true;
+        updateData.monthlySubEndDate = newEndDate.toISOString();
+        updateData.monthlyCardStatus = "active";
+        updateData.maxRegenerateCount = 20;
+
+        if (!wasAlreadySubscribed) {
+          updateData.regenerateCount = 20;
+        }
+      } else if (product.type === "points") {
+        pointsToAdd = isFirstTime ? product.points * 2 : product.points;
+      }
+
+      if (pointsToAdd <= 0) {
+        throw new Error("pointsToAdd invalid");
+      }
+
+      updateData.flowerPoints = admin.firestore.FieldValue.increment(pointsToAdd);
+
+      if (isFirstTime) {
+        updateData.purchaseHistory = admin.firestore.FieldValue.arrayUnion(productId);
+      }
+
+      transaction.set(eventRef, {
+        uid,
+        productId,
+        points: pointsToAdd,
+        productType: product.type,
+        stripeSessionId: session.id,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      transaction.set(userRef, updateData, { merge: true });
+
+      transaction.set(userRef.collection("flower_logs").doc(), {
+        title:
+          product.type === "monthly_card"
+            ? "網頁啟動：星光契約月卡 🌙"
+            : isFirstTime
+              ? `網頁儲值：${pointsToAdd} 點花花（首購雙倍 🎁）`
+              : `網頁儲值：${pointsToAdd} 點花花`,
+        amount: pointsToAdd,
+        productId,
+        source: "stripe_web",
+        stripeSessionId: session.id,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
+    res.status(200).send("ok");
+  }
+);
+
+async function getPayPalAccessToken() {
+  const auth = Buffer.from(
+    `${paypalClientId.value()}:${paypalClientSecret.value()}`
+  ).toString("base64");
+
+  const response = await axios.post(
+    `${getPayPalBaseUrl()}/v1/oauth2/token`,
+    "grant_type=client_credentials",
+    {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  return response.data.access_token;
+}
+
+exports.createPayPalOrder = onCall(
+  {
+    region: REGION,
+    secrets: [paypalClientId, paypalClientSecret],
+  },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "請先登入");
+    }
+
+    const uid = request.auth.uid;
+    const productId = request.data.productId;
+    const product = PAYPAL_PRODUCTS[productId];
+
+    if (!product) {
+      throw new HttpsError("invalid-argument", "未知的 PayPal 商品");
+    }
+
+    const db = admin.firestore();
+    const accessToken = await getPayPalAccessToken();
+
+    const localOrderId = `PP${Date.now()}${Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, "0")}`;
+
+    await db.collection("paypal_orders").doc(localOrderId).set({
+      uid,
+      productId,
+      productName: product.name,
+      amount: product.amount,
+      currency: product.currency,
+      points: product.points,
+      type: product.type,
+      status: "created",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    const orderResponse = await axios.post(
+      `${getPayPalBaseUrl()}/v2/checkout/orders`,
+      {
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            reference_id: localOrderId,
+            description: product.name,
+            amount: {
+              currency_code: product.currency,
+              value: product.amount,
+            },
+          },
+        ],
+        application_context: {
+          brand_name: "戀戀拾光",
+          landing_page: "LOGIN",
+          user_action: "PAY_NOW",
+          return_url:
+            `https://${REGION}-${APP_ID}.cloudfunctions.net/paypalReturn` +
+            `?localOrderId=${encodeURIComponent(localOrderId)}`,
+          cancel_url: "https://lianlianshiguang.web.app/?payment=paypal_cancel",
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const paypalOrderId = orderResponse.data.id;
+    const approveLink = orderResponse.data.links.find(
+      (link) => link.rel === "approve"
+    );
+
+    if (!approveLink) {
+      throw new HttpsError("internal", "找不到 PayPal 付款連結");
+    }
+
+    await db.collection("paypal_orders").doc(localOrderId).set(
+      {
+        paypalOrderId,
+        approveUrl: approveLink.href,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+
+    return {
+      approveUrl: approveLink.href,
+    };
+  }
+);
+
+exports.paypalReturn = onRequest(
+  {
+    region: REGION,
+    secrets: [paypalClientId, paypalClientSecret],
+  },
+  async (req, res) => {
+    try {
+      const localOrderId = req.query.localOrderId;
+      const paypalOrderIdFromReturn = req.query.token;
+
+      if (!localOrderId || !paypalOrderIdFromReturn) {
+        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_missing");
+        return;
+      }
+
+      const db = admin.firestore();
+      const orderRef = db.collection("paypal_orders").doc(localOrderId);
+      const orderDoc = await orderRef.get();
+
+      if (!orderDoc.exists) {
+        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_order_not_found");
+        return;
+      }
+
+      const order = orderDoc.data();
+
+      if (order.status === "paid") {
+        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_already_paid");
+        return;
+      }
+
+      if (order.paypalOrderId !== paypalOrderIdFromReturn) {
+        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_order_mismatch");
+        return;
+      }
+
+      const accessToken = await getPayPalAccessToken();
+
+      const captureResponse = await axios.post(
+        `${getPayPalBaseUrl()}/v2/checkout/orders/${paypalOrderIdFromReturn}/capture`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const captureData = captureResponse.data;
+
+      if (captureData.status !== "COMPLETED") {
+        await orderRef.set(
+          {
+            status: "capture_failed",
+            paypalRaw: captureData,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        );
+
+        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_failed");
+        return;
+      }
+
+      const userRef = db.collection("users").doc(order.uid);
+      const eventRef = db
+        .collection("paypal_events")
+        .doc(paypalOrderIdFromReturn);
+
+      await db.runTransaction(async (transaction) => {
+        const eventDoc = await transaction.get(eventRef);
+
+        // 防止重複導回造成重複加點
+        if (eventDoc.exists) {
+          return;
+        }
+
+        const userDoc = await transaction.get(userRef);
+        const userData = userDoc.exists ? userDoc.data() : {};
+
+        const purchaseHistory = Array.isArray(userData.purchaseHistory)
+          ? userData.purchaseHistory
+          : [];
+
+        const isFirstTime = !purchaseHistory.includes(order.productId);
+
+        let pointsToAdd = 0;
+        const updateData = {
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        };
+
+        if (order.type === "monthly_card") {
+          pointsToAdd = order.points;
+
+          const now = new Date();
+          const currentEndDate = userData.monthlySubEndDate
+            ? new Date(userData.monthlySubEndDate)
+            : now;
+
+          const wasAlreadySubscribed = currentEndDate > now;
+          const baseDate = currentEndDate < now ? now : currentEndDate;
+
+          let newEndDate = new Date(baseDate);
+          newEndDate.setDate(newEndDate.getDate() + 30);
+
+          const maxEndDate = new Date(now);
+          maxEndDate.setDate(maxEndDate.getDate() + 180);
+
+          if (newEndDate > maxEndDate) {
+            newEndDate = maxEndDate;
+          }
+
+          updateData.isMonthlySubscribed = true;
+          updateData.monthlySubEndDate = newEndDate.toISOString();
+          updateData.monthlyCardStatus = "active";
+          updateData.maxRegenerateCount = 20;
+
+          if (!wasAlreadySubscribed) {
+            updateData.regenerateCount = 20;
+          }
+        } else if (order.type === "points") {
+          pointsToAdd = isFirstTime ? order.points * 2 : order.points;
+        }
+
+        if (pointsToAdd <= 0) {
+          throw new Error("pointsToAdd invalid");
+        }
+
+        updateData.flowerPoints =
+          admin.firestore.FieldValue.increment(pointsToAdd);
+
+        if (isFirstTime) {
+          updateData.purchaseHistory =
+            admin.firestore.FieldValue.arrayUnion(order.productId);
+        }
+
+        transaction.set(eventRef, {
+          localOrderId,
+          paypalOrderId: paypalOrderIdFromReturn,
+          uid: order.uid,
+          productId: order.productId,
+          points: pointsToAdd,
+          raw: captureData,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        transaction.set(
+          orderRef,
+          {
+            status: "paid",
+            paidAt: admin.firestore.FieldValue.serverTimestamp(),
+            paypalRaw: captureData,
+          },
+          { merge: true }
+        );
+
+        transaction.set(userRef, updateData, { merge: true });
+
+        transaction.set(userRef.collection("flower_logs").doc(), {
+          title:
+            order.type === "monthly_card"
+              ? "網頁啟動：星光契約月卡 🌙"
+              : isFirstTime
+                ? `網頁儲值：${pointsToAdd} 點花花（首購雙倍 🎁）`
+                : `網頁儲值：${pointsToAdd} 點花花`,
+          amount: pointsToAdd,
+          productId: order.productId,
+          source: "paypal_web",
+          localOrderId,
+          paypalOrderId: paypalOrderIdFromReturn,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      });
+
+      res.redirect("https://lianlianshiguang.web.app/?payment=paypal_success");
+    } catch (err) {
+      console.error("PayPal 付款處理失敗:", err.response?.data || err);
+      res.redirect("https://lianlianshiguang.web.app/?payment=paypal_error");
+    }
+  }
+);

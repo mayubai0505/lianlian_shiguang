@@ -74,27 +74,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final user = FirebaseAuth.instance.currentUser;
     final prefs = await SharedPreferences.getInstance();
     final l10n = AppLocalizations.of(context)!;
+
     if (user != null) {
       try {
         final doc = await _db.collection('users').doc(user.uid).get();
+
         if (doc.exists) {
           final data = doc.data()!;
+
+          // ✅ cloudPlayerID 要放在 data 出現之後
+          final String cloudPlayerID =
+          (data['playerID'] ?? '').toString().trim();
+
           if (mounted) {
             setState(() {
               _nicknameController.text = data['nickname'] ?? '';
               _gender = data['gender'] ?? l10n.genderNotSelected;
               _avatarPath = data['avatarPath'] ?? 'assets/images/avatar1.png';
+
               final bool isAgeSetCloud = data['isAgeSet'] ?? false;
               _isAgeEditable = !isAgeSetCloud;
+
               String? birthdayStr = data['birthday'];
               if (birthdayStr != null && birthdayStr != l10n.authMethodUnknown) {
                 try {
                   _birthDate = DateTime.parse(birthdayStr);
-                } catch (e) { print("日期解析錯誤"); }
+                } catch (e) {
+                  print("日期解析錯誤");
+                }
               }
 
-              _originalID = data['playerID'] ?? '';
+              _originalID = cloudPlayerID.isNotEmpty
+                  ? cloudPlayerID
+                  : (widget.isCreating ? _generateRandomID() : '');
+
               _playerIDController.text = _originalID;
+
               _hasChangedID = data['hasChangedID'] ?? false;
               _originalNickname = _nicknameController.text.trim();
               _originalGender = _gender;
@@ -102,34 +117,46 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _originalBirthDate = _birthDate;
             });
           }
+
           return; // 雲端有資料就結束
         }
       } catch (e) {
         print("讀取雲端資料失敗: $e");
       }
     }
-    // 🌟 關鍵修改：如果是新玩家，或是雲端沒資料，就根據情況決定要不要讀暫存
+
+    // 🌟 如果是新玩家，或是雲端沒資料，就根據情況決定要不要讀暫存
     if (mounted) {
       setState(() {
-        // 如果是「第一次創建 (isCreating)」，所有的值都必須是空的或預設值
-        _nicknameController.text = widget.isCreating ? '' : (prefs.getString('nickname') ?? '');
-        _gender = widget.isCreating ? '未選擇' : (prefs.getString('gender') ??l10n.genderNotSelected);
-        _avatarPath = widget.isCreating ? 'assets/images/avatar1.png' : (prefs.getString('avatarPath') ?? 'assets/images/avatar1.png');
-        // ... 前面的程式碼不變 ...
+        _nicknameController.text =
+        widget.isCreating ? '' : (prefs.getString('nickname') ?? '');
+
+        _gender = widget.isCreating
+            ? '未選擇'
+            : (prefs.getString('gender') ?? l10n.genderNotSelected);
+
+        _avatarPath = widget.isCreating
+            ? 'assets/images/avatar1.png'
+            : (prefs.getString('avatarPath') ?? 'assets/images/avatar1.png');
+
         if (widget.isCreating) {
           _birthDate = null;
           _isAgeEditable = true;
-          // ✨ 關鍵修改：如果是新玩家，自動給他一組隨機 ID！
+
+          // 新玩家自動給一組隨機 ID
           _originalID = _generateRandomID();
           _hasChangedID = false;
         } else {
           String? birthDateStr = prefs.getString('birthDate');
-          _birthDate = birthDateStr != null ? DateTime.parse(birthDateStr) : null;
+          _birthDate =
+          birthDateStr != null ? DateTime.parse(birthDateStr) : null;
+
           _isAgeEditable = !(prefs.getBool('isAgeSet') ?? false);
           _originalID = prefs.getString('playerID') ?? '';
           _hasChangedID = prefs.getBool('hasChangedID') ?? false;
         }
-        _playerIDController.text = _originalID; // 👈 隨機 ID 就會被塞進框框裡了！
+
+        _playerIDController.text = _originalID;
         _originalNickname = _nicknameController.text.trim();
         _originalGender = _gender;
         _originalAvatarPath = _avatarPath;
@@ -145,6 +172,65 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return String.fromCharCodes(
         Iterable.generate(8, (_) => chars.codeUnitAt(rnd.nextInt(chars.length)))
     );
+  }
+
+  Future<String> _ensureValidPlayerIDForCurrentUser() async {
+    final l10n = AppLocalizations.of(context)!;
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception("找不到使用者");
+    }
+
+    String currentID = _playerIDController.text.trim();
+
+    // 如果畫面上完全沒有 ID，就自動產生一組沒有被使用過的 ID
+    if (currentID.isEmpty) {
+      for (int i = 0; i < 10; i++) {
+        final candidateID = _generateRandomID();
+        final idRef = _db.collection('playerIDs').doc(candidateID);
+        final idDoc = await idRef.get();
+
+        if (!idDoc.exists) {
+          await idRef.set({
+            'uid': user.uid,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+
+          if (mounted) {
+            setState(() {
+              _playerIDController.text = candidateID;
+              _originalID = candidateID;
+            });
+          }
+
+          return candidateID;
+        }
+      }
+
+      throw Exception("產生玩家 ID 失敗，請再試一次");
+    }
+
+    // 如果玩家有填 ID，就檢查這個 ID 有沒有被別人用走
+    final idRef = _db.collection('playerIDs').doc(currentID);
+    final idDoc = await idRef.get();
+
+    if (!idDoc.exists) {
+      await idRef.set({
+        'uid': user.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      return currentID;
+    }
+
+    final data = idDoc.data();
+    final ownerUid = data?['uid'];
+
+    if (ownerUid != user.uid) {
+      throw Exception(l10n.error_id_already_used);
+    }
+
+    return currentID;
   }
 
   bool _isSameDate(DateTime? a, DateTime? b) {
@@ -172,6 +258,47 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     FocusScope.of(context).unfocus();
 
+    // =========================
+    // 首次建立：允許空白，系統自動補預設值
+    // =========================
+    if (widget.isCreating) {
+      try {
+        String nickname = _nicknameController.text.trim();
+
+        if (nickname.isEmpty) {
+          nickname = '初識的旅人';
+          _nicknameController.text = nickname;
+        }
+
+        final String beforeID = _originalID;
+        final String finalID = await _ensureValidPlayerIDForCurrentUser();
+
+        // 如果玩家有手動把系統隨機 ID 改成別的，就視為使用過改 ID 機會
+        final bool shouldLockID = beforeID.isNotEmpty && finalID != beforeID;
+
+        await _saveProfileDataOnly(
+          popOnSuccess: true,
+          newID: finalID,
+          hasChangedID: shouldLockID,
+        );
+      } catch (e) {
+        if (mounted) {
+          ToastUtils.showCenterToast(
+            context,
+            l10n.profile_save_failed(
+              e.toString().replaceFirst("Exception: ", ""),
+            ),
+            isError: true,
+          );
+        }
+      }
+
+      return;
+    }
+
+    // =========================
+    // 一般編輯：維持原本比較嚴格的規則
+    // =========================
     final newNickname = _nicknameController.text.trim();
     final newID = _playerIDController.text.trim();
 
@@ -406,20 +533,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   // --- ✨ 新增：稍後編輯按鈕的邏輯 ---
-  void _skipEditing() {
-    final l10n = AppLocalizations.of(context)!;
-    // 這裡我們直接關閉視窗回到上一頁 (通常是主畫面)
-    // 或是如果這是第一次建立，則引導玩家進入主畫面
-    Navigator.pop(context);
+  Future<void> _skipEditing() async {
+    // 如果不是首次建立，這顆按鈕就是「取消變更」
+    if (!widget.isCreating) {
+      Navigator.pop(context, false);
+      return;
+    }
 
-    // ✨ 總裁級：草稿儲存的安心回饋，徹底告別容易被鍵盤擋住的底部彈窗！
-    ToastUtils.showCenterToast(
-      context, // 💡 若在 async 之後，記得包一層 if (mounted) 喔！
-      l10n.draft_saved_success_msg,
-      customIcon: Icons.save_rounded, // 💡 總裁精選：最直覺的「儲存/安全」圖示，瞬間消除玩家怕心血白費的焦慮
-      // 💡 總裁秘技：如果是偏向「寫信/傳訊息」的草稿，
-      // 非常推薦換成 Icons.drafts_rounded 或 Icons.edit_note_rounded，語意會更精準、更有沉浸感！
-    );
+    if (_isSaving) return;
+
+    FocusScope.of(context).unfocus();
+
+    try {
+      String nickname = _nicknameController.text.trim();
+
+      // 玩家沒填名字，就給預設名字
+      if (nickname.isEmpty) {
+        nickname = '初識的旅人';
+        _nicknameController.text = nickname;
+      }
+
+      // 玩家沒填 ID，就自動產生並登記一組
+      final String finalID = await _ensureValidPlayerIDForCurrentUser();
+
+      await _saveProfileDataOnly(
+        popOnSuccess: true,
+        newID: finalID,
+        hasChangedID: false,
+      );
+    } catch (e) {
+      if (mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          '建立資料失敗: ${e.toString().replaceFirst("Exception: ", "")}',
+          isError: true,
+        );
+      }
+    }
   }
 
   Future<void> _selectDate() async {
