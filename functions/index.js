@@ -1358,6 +1358,36 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                  `;
              }
 
+                     // ✨✨✨ 全模式通用：對話承接與防鬼打牆規則 ✨✨✨
+                     systemPrompt += `
+
+                     【🧭 對話承接與防鬼打牆規則｜最高優先級】
+                     1. 你必須優先理解玩家「最新一句話」的真正意圖，而不是只重複上一輪的情緒或句型。
+                     2. 如果上一輪你問了問題，而玩家最新一句話已經回答，例如：
+                        「巧克力鬆餅」
+                        「我想吃巧克力鬆餅」
+                        「就這個」
+                        「好」
+                        「可以」
+                        「不要」
+                        「嗯」
+                        你必須視為玩家已經回答，並立刻承接她的選擇往下推進。
+                     3. 嚴禁再次詢問同一個已經被回答的問題。
+                     4. 嚴禁重複上一輪的句子、語意、動作描寫或情緒模板。
+                     5. 如果玩家已經給出具體選項，你不可以再問「妳想吃哪種？」、「妳想去哪？」、「妳要哪個？」這類同樣問題。
+                     6. 當玩家給出明確選擇時，請直接接住選擇，安排下一步行動、反應、互動或情緒變化。
+
+                     錯誤範例：
+                     玩家：巧克力鬆餅！
+                     角色：巧克力鬆餅……聽起來不錯。妳想吃哪種？
+
+                     正確範例：
+                     玩家：巧克力鬆餅！
+                     角色：那就巧克力鬆餅。妳坐著等我一下，我去點。要不要再加一杯熱可可？
+
+                     你必須避免讓玩家覺得你沒有讀懂她剛剛說的話。
+                     `;
+
         // ✨✨✨ 處理 Override System Prompt (彩蛋用) ✨✨✨
         if (overrideSystemPrompt && overrideSystemPrompt.trim() !== "") {
             systemPrompt += `
@@ -2472,6 +2502,85 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                               }
                           });
 
+async function getUserFcmTokens(userId) {
+    const db = admin.firestore();
+    const userRef = db.collection("users").doc(userId);
+
+    const tokensSnapshot = await userRef.collection("fcmTokens").get();
+
+    const tokens = tokensSnapshot.docs
+        .map((doc) => {
+            const data = doc.data() || {};
+            return data.token || doc.id;
+        })
+        .filter((token) => typeof token === "string" && token.length > 20);
+
+    if (tokens.length > 0) {
+        return [...new Set(tokens)];
+    }
+
+    // 舊版相容：如果還沒有 fcmTokens 子集合，就退回讀 users/{uid}.fcmToken
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) return [];
+
+    const legacyToken = userDoc.data().fcmToken;
+
+    if (typeof legacyToken === "string" && legacyToken.length > 20) {
+        return [legacyToken];
+    }
+
+    return [];
+}
+
+async function sendToUserDevices(userId, messageBase) {
+    const tokens = await getUserFcmTokens(userId);
+
+    if (tokens.length === 0) {
+        console.log(`玩家 ${userId} 沒有任何 FCM token，無法發送推播`);
+        return;
+    }
+
+    const response = await admin.messaging().sendEachForMulticast({
+        tokens,
+        notification: messageBase.notification,
+        data: messageBase.data || {},
+        android: messageBase.android,
+        apns: messageBase.apns,
+    });
+
+    console.log(`✅ 推播發送完成 user=${userId}, success=${response.successCount}, failure=${response.failureCount}`);
+
+    const db = admin.firestore();
+    const deleteTasks = [];
+
+    response.responses.forEach((result, index) => {
+        if (!result.success) {
+            const code = result.error?.code || "";
+            const badToken = tokens[index];
+
+            console.error(`❌ 推播 token 失敗 user=${userId}, code=${code}`);
+
+            if (
+                code === "messaging/registration-token-not-registered" ||
+                code === "messaging/invalid-registration-token"
+            ) {
+                deleteTasks.push(
+                    db.collection("users")
+                        .doc(userId)
+                        .collection("fcmTokens")
+                        .doc(badToken)
+                        .delete()
+                        .catch(() => null)
+                );
+            }
+        }
+    });
+
+    if (deleteTasks.length > 0) {
+        await Promise.all(deleteTasks);
+    }
+}
+
 exports.notifyPlayerNewMessage = onDocumentCreated({
     region: "asia-east1",
     // 🌟 修正 1：對準真正的聊天室信箱路徑！（原本已正確）
@@ -2499,16 +2608,6 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
         if (!sessionDoc.exists) return null;
         const sessionData = sessionDoc.data();
         const userId = sessionData.userId;
-
-        // 2. 獲取玩家的 FCM Token
-        const userDoc = await admin.firestore().collection("users").doc(userId).get();
-        if (!userDoc.exists) return null;
-
-        const fcmToken = userDoc.data().fcmToken;
-        if (!fcmToken) {
-            console.log(`玩家 ${userId} 沒有 Token，無法發送推播。`);
-            return null;
-        }
 
         let previewText = "妳收到了一則新訊息 ✨";
         // 🌟 優先從 cleanDisplayText (text 欄位) 拿資料，如果沒有才去解析 content
@@ -2565,7 +2664,6 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
         // 🚀 【修正 3：將正確的名字與圖片塞入 Payload】
         // ==========================================
         const payload = {
-            token: fcmToken,
             notification: {
                 title: charName,    // 👈 這裡現在會顯示「程安」或「霍君耀」
                 body: previewText,  // 👈 這裡現在會顯示「(視線從蛋糕移到妳...)」
@@ -2594,8 +2692,8 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
         };
 
         console.log(`叮咚！準備發送推播給用戶: ${userId}，來自角色的通知: ${charName}`);
-        return await admin.messaging().send(payload);
-
+        return await sendToUserDevices(userId, payload);
+               return null;
     } catch (error) {
         console.error("推播接線生發生錯誤:", error);
     }
@@ -2605,129 +2703,50 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
 // 🌟 總裁萬能郵差 (v2 升級版)：只要信箱有新信，直接無腦發推播！
 // =========================================================================
 exports.sendMailboxNotification = onDocumentCreated({
-    region: "asia-east1", // 保持跟妳原本一樣的亞洲伺服器
+    region: "asia-east1",
     document: "users/{userId}/mailbox/{mailId}"
 }, async (event) => {
     const snap = event.data;
-    if (!snap) return;
+    if (!snap) return null;
 
     const mailData = snap.data();
     const userId = event.params.userId;
+    const mailId = event.params.mailId;
 
-    // 1. 去抓這位玩家的推播金鑰 (fcmToken)
-    const userDoc = await admin.firestore().collection('users').doc(userId).get();
-    if (!userDoc.exists) {
-        console.log(`找不到玩家 ${userId} 的資料，取消推播`);
-        return null;
-    }
-
-    const fcmToken = userDoc.data().fcmToken;
-    if (!fcmToken) {
-        console.log(`玩家 ${userId} 未註冊 fcmToken，無法發送手機通知`);
-        return null;
-    }
-
-    // 2. 準備推播內容
     const payload = {
-        token: fcmToken, // 指定收件人的手機金鑰
         notification: {
-            title: mailData.title || '您有新通知！',
-            body: mailData.body || '點擊查看詳細內容 💌',
+            title: mailData.title || "您有新通知！",
+            body: mailData.body || "點擊查看詳細內容 💌",
         },
         data: {
-            type: mailData.type || 'system',
-            postId: mailData.postId || '',
-            mailId: event.params.mailId
-        }
+            type: String(mailData.type || "system"),
+            postId: String(mailData.postId || ""),
+            mailId: String(mailId || ""),
+            click_action: "FLUTTER_NOTIFICATION_CLICK",
+        },
+        android: {
+            priority: "high",
+            notification: {
+                channelId: "high_importance_channel",
+                sound: "default",
+                defaultVibrateTimings: true,
+            },
+        },
+        apns: {
+            payload: {
+                aps: {
+                    sound: "default",
+                    badge: 1,
+                },
+            },
+        },
     };
 
-    // 3. 正式發射推播！
     try {
-        await admin.messaging().send(payload);
-        console.log(`✅ 推播成功發送給 ${userId}！信件類型: ${mailData.type}`);
+        await sendToUserDevices(userId, payload);
+        console.log(`✅ 信箱推播已送出給 ${userId}，類型: ${mailData.type}`);
     } catch (error) {
-        console.error('❌ 郵差推播發送失敗:', error);
-    }
-
-    return null;
-});
-
-// =========================================================================
-// 🌟 總裁廣播電台：創作者發文時，自動塞信給所有粉絲！
-// =========================================================================
-exports.notifyFollowersOnNewPost = onDocumentCreated({
-    region: "asia-east1",
-    // 🎯 監聽妳的朋友圈貼文大廳 (請確認路徑是否正確)
-    document: "artifacts/lianlianshiguang/moments/{momentId}"
-}, async (event) => {
-    const snap = event.data;
-    if (!snap) return;
-
-    const postData = snap.data();
-    const momentId = event.params.momentId;
-
-    // 1. 檢查這是不是創作者發的文 (利用妳原本就有的 isCreatorPost 欄位)
-    if (postData.isCreatorPost !== true) {
-        return null; // 一般玩家發文不廣播，避免吵死人
-    }
-
-    const creatorId = postData.createdBy;
-    const creatorName = postData.authorName || "妳關注的創作者";
-
-    // 2. 擷取內文預覽 (吸塵器邏輯：太長就截斷加...)
-    let previewContent = postData.content || "發佈了一張新照片 📷";
-    if (previewContent.length > 25) {
-        previewContent = previewContent.substring(0, 25) + "...";
-    }
-
-    try {
-        // 3. 🔍 找出這個創作者的所有粉絲！
-        // ⚠️ 總裁提醒：這裡要換成妳實際存放粉絲名單的路徑！
-        // 假設妳是存在 users/{creatorId}/followers 裡面：
-        const followersSnap = await admin.firestore()
-            .collection('users')
-            .doc(creatorId)
-            .collection('followers')
-            .get();
-
-        if (followersSnap.empty) {
-            console.log(`創作者 ${creatorName} 目前還沒有粉絲，不需廣播。`);
-            return null;
-        }
-
-        // 4. 準備一次性群發信件 (使用 Batch 批次寫入提升效能)
-        const batch = admin.firestore().batch();
-        let count = 0;
-
-        followersSnap.forEach(doc => {
-            const followerId = doc.id; // 取得粉絲的 UID
-
-            // 準備塞進粉絲信箱的信封
-            const mailboxRef = admin.firestore()
-                .collection('users')
-                .doc(followerId)
-                .collection('mailbox')
-                .doc(); // 自動產生一個信件 ID
-
-            batch.set(mailboxRef, {
-                type: 'new_post', // ✨ 新的信件類型！
-                title: `${creatorName} 發佈了新動態！✨`, // 標題
-                body: `「${previewContent}」`,         // 內文預覽
-                postId: momentId, // 把貼文 ID 傳過去，才能用任意門！
-                fromId: creatorId,
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                isRead: false
-            });
-
-            count++;
-        });
-
-        // 5. 轟！一鍵發送所有信件
-        await batch.commit();
-        console.log(`✅ 成功將 ${creatorName} 的新動態，派發給 ${count} 位粉絲的信箱！`);
-
-    } catch (error) {
-        console.error("❌ 廣播發文通知時發生錯誤:", error);
+        console.error("❌ 郵差推播發送失敗:", error);
     }
 
     return null;
@@ -3989,5 +4008,167 @@ exports.paypalReturn = onRequest(
       console.error("PayPal 付款處理失敗:", err.response?.data || err);
       res.redirect("https://lianlianshiguang.web.app/?payment=paypal_error");
     }
+  }
+);
+
+exports.createMomentNotification = onCall(
+  {
+    region: REGION,
+  },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "請先登入");
+    }
+
+    const uid = request.auth.uid;
+    const db = admin.firestore();
+
+    const appId = (request.data.appId || APP_ID).toString();
+    const momentId = (request.data.momentId || "").toString().trim();
+    const type = (request.data.type || "").toString().trim();
+    const commentId = request.data.commentId
+      ? request.data.commentId.toString().trim()
+      : null;
+
+    if (!momentId) {
+      throw new HttpsError("invalid-argument", "缺少 momentId");
+    }
+
+    if (!["like", "comment"].includes(type)) {
+      throw new HttpsError("invalid-argument", "不支援的通知類型");
+    }
+
+    const momentRef = db
+      .collection("artifacts")
+      .doc(appId)
+      .collection("moments")
+      .doc(momentId);
+
+    const momentDoc = await momentRef.get();
+
+    if (!momentDoc.exists) {
+      throw new HttpsError("not-found", "找不到這篇動態");
+    }
+
+    const momentData = momentDoc.data() || {};
+    const recipientId = (momentData.createdBy || "").toString().trim();
+
+    if (!recipientId) {
+      return {
+        ok: false,
+        skipped: "missing_recipient",
+      };
+    }
+
+    // 自己按自己的文，不寄信
+    if (recipientId === uid) {
+      return {
+        ok: true,
+        skipped: "self_notification",
+      };
+    }
+
+    // 防止亂呼叫：按讚通知必須真的有 like 文件
+    if (type === "like") {
+      const likeDoc = await momentRef.collection("likes").doc(uid).get();
+
+      if (!likeDoc.exists) {
+        return {
+          ok: false,
+          skipped: "like_not_found",
+        };
+      }
+    }
+
+    // 防止亂呼叫：留言通知必須真的有 comment 文件，而且作者是本人
+    if (type === "comment") {
+      if (!commentId) {
+        throw new HttpsError("invalid-argument", "留言通知缺少 commentId");
+      }
+
+      const commentDoc = await momentRef
+        .collection("comments")
+        .doc(commentId)
+        .get();
+
+      if (!commentDoc.exists) {
+        return {
+          ok: false,
+          skipped: "comment_not_found",
+        };
+      }
+
+      const commentData = commentDoc.data() || {};
+
+      if (commentData.authorId !== uid) {
+        return {
+          ok: false,
+          skipped: "comment_author_mismatch",
+        };
+      }
+    }
+
+    const senderDoc = await db.collection("users").doc(uid).get();
+    const senderData = senderDoc.exists ? senderDoc.data() || {} : {};
+
+    const rawPlayerID = (senderData.playerID || "").toString().trim();
+    const nickname = (senderData.nickname || "").toString().trim();
+    const displayName = (senderData.displayName || "").toString().trim();
+
+    let senderName = "某位朋友";
+
+    if (rawPlayerID) {
+      const cleanPlayerID = rawPlayerID.startsWith("@")
+        ? rawPlayerID.substring(1)
+        : rawPlayerID;
+      senderName = `@${cleanPlayerID}`;
+    } else if (nickname) {
+      senderName = nickname;
+    } else if (displayName) {
+      senderName = displayName;
+    }
+
+    let notificationId;
+    let title;
+    let body;
+
+    if (type === "like") {
+      notificationId = `moment_like_${momentId}_${uid}`;
+      title = "新的按讚";
+      body = `${senderName} 喜歡了妳的瞬間動態。`;
+    } else {
+      notificationId = `moment_comment_${momentId}_${commentId}`;
+      title = "新留言";
+      body = `${senderName} 回覆了妳的瞬間動態。`;
+    }
+
+        const mailboxData = {
+          type,
+          fromId: uid,
+          fromName: senderName,
+          title,
+          body,
+          postId: momentId,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          isRead: false,
+          source: "cloud_function",
+        };
+
+        if (commentId) {
+          mailboxData.commentId = commentId;
+        }
+
+        await db
+          .collection("users")
+          .doc(recipientId)
+          .collection("mailbox")
+          .doc(notificationId)
+          .set(mailboxData, { merge: true });
+
+    return {
+      ok: true,
+      recipientId,
+      notificationId,
+    };
   }
 );

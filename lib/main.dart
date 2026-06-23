@@ -318,6 +318,31 @@ void _handleNotificationClick(RemoteMessage message) {
   }
 }
 
+Future<void> _saveFcmTokenForCurrentUser(String token) async {
+  final user = FirebaseAuth.instance.currentUser;
+  if (user == null) {
+    debugPrint("⚠️ 尚未登入，略過 FCM token 儲存");
+    return;
+  }
+
+  final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+  // 1. 保留舊欄位，避免舊版 Cloud Function 仍在讀 fcmToken
+  await userRef.set({
+    'fcmToken': token,
+    'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+  }, SetOptions(merge: true));
+
+  // 2. 新增多裝置 token，每台手機 / 平板各一筆
+  await userRef.collection('fcmTokens').doc(token).set({
+    'token': token,
+    'platform': defaultTargetPlatform.name,
+    'updatedAt': FieldValue.serverTimestamp(),
+  }, SetOptions(merge: true));
+
+  debugPrint("✅ FCM token 已儲存：${defaultTargetPlatform.name}");
+}
+
 Future<void> setupPushNotifications() async {
   if (kIsWeb) {
     debugPrint("🌐 網頁版：暫不初始化推播（避免 Service Worker 錯誤）");
@@ -340,12 +365,15 @@ Future<void> setupPushNotifications() async {
     await messaging.requestPermission(alert: true, badge: true, sound: true);
 
     String? token = await messaging.getToken();
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId != null && token != null) {
-      await FirebaseFirestore.instance.collection('users').doc(userId).set({
-        'fcmToken': token,
-      }, SetOptions(merge: true));
+
+    if (token != null) {
+      await _saveFcmTokenForCurrentUser(token);
     }
+
+// Token 有時候會被 Firebase 更新，這裡也要同步存回去
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+      await _saveFcmTokenForCurrentUser(newToken);
+    });
 
     FirebaseMessaging.instance.getInitialMessage().then((msg) {
       if (msg != null) _handleNotificationClick(msg);

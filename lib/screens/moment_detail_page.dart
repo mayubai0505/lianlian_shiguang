@@ -8,6 +8,7 @@ import 'moment_card.dart';
 import '../models/moment_model.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import '../services/moment_notification_service.dart';
 
 class MomentDetailPage extends StatefulWidget {
   final String postId; // 接收從外面傳進來的貼文 ID
@@ -117,23 +118,10 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     if (_userId.isEmpty) return;
 
     try {
-      final String recipientId = moment.createdBy;
-
-      if (recipientId.isNotEmpty && recipientId != _userId) {
-        final String currentNickname = await _getMyPlayerIdDisplayName();
-
-        final String mailBody = moment.isCreatorPost
-            ? l10n.moment_like_yours(currentNickname)
-            : l10n.moment_like_others(currentNickname, moment.authorName);
-
-        await _sendNotificationLetter(
-          recipientId: recipientId,
-          postId: moment.id,
-          type: 'like',
-          senderName: currentNickname,
-          body: mailBody,
-        );
-      }
+      await MomentNotificationService().createMomentNotification(
+        momentId: moment.id,
+        type: 'like',
+      );
 
       ToastUtils.showCenterToast(
         context,

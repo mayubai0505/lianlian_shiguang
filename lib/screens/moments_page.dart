@@ -13,6 +13,7 @@ import '../page/interaction_history_page.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'character_profile_page.dart';
+import '../services/moment_notification_service.dart';
 //動態牆(朋友圈)
 class MomentsPage extends StatefulWidget {
   const MomentsPage({super.key});
@@ -95,31 +96,11 @@ class _MomentsPageState extends State<MomentsPage> {
         'dailyTasks.likeProgress': FieldValue.increment(1),
       }, SetOptions(merge: true));
 
-      // 3. 發送按讚通知
-      final String recipientId = moment.createdBy;
-
-      if (recipientId.isNotEmpty && recipientId != _userId) {
-        final String currentDisplayName = await _getMyNotificationDisplayName();
-
-        String mailBody;
-
-        if (moment.isCreatorPost) {
-          mailBody = l10n.moment_like_self(currentDisplayName);
-        } else {
-          mailBody = l10n.moment_like_other(
-            currentDisplayName,
-            moment.authorName,
-          );
-        }
-
-        await _sendNotificationLetter(
-          recipientId: recipientId,
-          postId: moment.id,
-          type: 'like',
-          senderName: currentDisplayName,
-          body: mailBody,
-        );
-      }
+      // 3. 發送按讚通知：改由 Cloud Function 寫入對方信箱
+      await MomentNotificationService().createMomentNotification(
+        momentId: moment.id,
+        type: 'like',
+      );
       // 4. 重新讀取任務狀態
       await _loadDailyTaskProgress();
 

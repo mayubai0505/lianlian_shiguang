@@ -1849,13 +1849,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 borderRadius: BorderRadius.circular(16), // 圓角跟上面的卡片呼應
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CreatorStudioPage()
-                  )
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CreatorStudioPage(),
+                ),
               );
+
+              if (!mounted) return;
+
+              if (result is Map && result['changed'] == true) {
+                await _refreshData(); // 如果妳沒有 _refreshData，就換成 _fetchMyCharacters()
+              } else {
+                // 保險：就算工作室沒有回傳 changed，也回來刷新一次
+                await _refreshData(); // 如果紅線，換成 _fetchMyCharacters()
+              }
             },
           ),
         ),
@@ -1918,21 +1927,25 @@ class _ProfilePageState extends State<ProfilePage> {
               builder: (context) => CharacterEditPage(character: character),
             ),
           );
-
           if (!mounted) return;
+          if (result is Map) {
+            final bool changed = result['changed'] == true;
+            final bool deleted = result['deleted'] == true;
+            // ✅ 刪除成功時，先立刻從畫面上的本地列表移除
+            if (deleted) {
+              setState(() {
+                _myCharacters.removeWhere((c) => c.id == character.id);
+              });
+            }
+            // ✅ 再重新跟 Firestore 同步一次
+            if (changed) {
+              await _refreshData();
 
-          if (result is Map && result['changed'] == true) {
-            await _refreshData();
+              if (!mounted) return;
+              setState(() {});
+            }
           }
-
-          if (result is Map && result['goProfile'] == true) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                builder: (context) => const ProfilePage(),
-              ),
-                  (route) => false,
-            );
-          }
+          return;
         } else {
           // 🌟 路線 B：從「我的好友」點擊，啟動親權鑑定與主頁分流系統！
           final currentUser = FirebaseAuth.instance.currentUser;

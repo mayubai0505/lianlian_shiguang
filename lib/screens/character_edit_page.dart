@@ -112,6 +112,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   ];}
   // --- State Variables ---
   bool _isDeleting = false; // 刪除狀態
+  DocumentReference? _newCharacterDocRef; // 防止新建角色重複產生多筆
   String _gender = '';
   List<String> _personalityTags = [];
   bool _isPublic = true;
@@ -707,30 +708,44 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     setState(() => _isDeleting = true);
 
     try {
-      final batch = _db.batch();
+      if (_isDeleting) return;
 
-      // ✅ 關鍵：依照角色原本是公開/私密，刪正確位置
-      final DocumentReference charDocRef = widget.character!.isPublic
-          ? _db
+      final batch = _db.batch();
+      final characterId = widget.character!.id;
+
+      final publicRef = _db
           .collection('artifacts')
           .doc(AppConfig.appId)
           .collection('public_characters')
-          .doc(widget.character!.id)
-          : _db
+          .doc(characterId);
+
+      final privateRef = _db
           .collection('artifacts')
           .doc(AppConfig.appId)
           .collection('users')
           .doc(user.uid)
           .collection('private_characters')
-          .doc(widget.character!.id);
+          .doc(characterId);
 
-      // ✅ 順便刪 photos 子集合，不然會留下孤兒資料
-      final photosSnapshot = await charDocRef.collection('photos').get();
-      for (final doc in photosSnapshot.docs) {
-        batch.delete(doc.reference);
+      final legacyPrivateRef = _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('private_characters')
+          .doc(characterId);
+
+      Future<void> deleteDocAndPhotos(DocumentReference ref) async {
+        final photosSnapshot = await ref.collection('photos').get();
+        for (final doc in photosSnapshot.docs) {
+          batch.delete(doc.reference);
+        }
+        batch.delete(ref);
       }
 
-      batch.delete(charDocRef);
+      // ✅ 公開、私人、舊私人路徑都刪一次
+      // 不存在的 doc delete 不會出事
+      await deleteDocAndPhotos(publicRef);
+      await deleteDocAndPhotos(privateRef);
+      await deleteDocAndPhotos(legacyPrivateRef);
 
       await batch.commit();
 
@@ -742,13 +757,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         customIcon: Icons.person_remove_rounded,
       );
 
-      // ✅ 回傳給上一頁：我刪掉了，請刷新列表
       Navigator.of(context).pop({
         'changed': true,
         'deleted': true,
         'goProfile': true,
       });
     } catch (e) {
+      debugPrint('❌ 刪除角色失敗: $e');
+
       if (mounted) {
         _showErrorDialog(l10n.delete_failed_msg, e.toString());
       }
@@ -815,6 +831,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   }
 
   Future<void> _saveCharacter() async {
+    if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     // 🌟 1. 基礎防呆與字數檢查 (維持妳原本的優良設計)
     final allImages = _galleryPhotos.length;
@@ -940,7 +957,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         if (widget.draftDoc != null) {
           charDocRef = collectionRef.doc(widget.draftDoc!.id);
         } else {
-          charDocRef = collectionRef.doc();
+          _newCharacterDocRef ??= collectionRef.doc();
+          charDocRef = _newCharacterDocRef!;
         }
       }
 
@@ -1164,28 +1182,30 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         await _clearDraft();
       }
       // 關閉轉圈圈並跳出成功訊息
-      if (mounted) { // 💡 若有報錯，請記得替換為 context.mounted
-        Navigator.pop(context); // 關閉 loading dialog
+      if (!mounted) return;
 
-        ToastUtils.showCenterToast(
-          context,
-          l10n.char_saved_success(
-            characterData['name'],
-            isEditing ? l10n.update_action : l10n.createButton,
-          ),
-          customIcon: isEditing ? Icons.manage_accounts_rounded : Icons
-              .person_add_rounded,
-        );
+// 先關掉 loading dialog
+      Navigator.of(context, rootNavigator: true).pop();
 
-// ✅ 先把成功結果傳回去
-        Navigator.of(context).pop({
-          'changed': true,
-          'goProfile': true,
-          'action': isEditing ? 'updated' : 'created',
-        });
-      }
+      ToastUtils.showCenterToast(
+        context,
+        l10n.char_saved_success(
+          characterData['name'],
+          isEditing ? l10n.update_action : l10n.createButton,
+        ),
+        customIcon: isEditing
+            ? Icons.manage_accounts_rounded
+            : Icons.person_add_rounded,
+      );
+
+// 再把成功結果傳回上一頁
+      Navigator.of(context).pop({
+        'changed': true,
+        'goProfile': true,
+        'action': isEditing ? 'updated' : 'created',
+      });
       } catch (e) {
-      if (mounted) Navigator.pop(context); // 關閉 loading dialog
+      if (mounted) Navigator.of(context, rootNavigator: true).pop();
       print("!!! 儲存角色時發生錯誤: ${e.toString()}");
       if (mounted) _showErrorDialog(l10n.cannot_save_title, l10n.save_error_detail(e.toString()));
     } finally {
