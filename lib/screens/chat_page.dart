@@ -1101,6 +1101,76 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Future<void> _saveUserMessageOnly({
+    required String userText,
+    String? imagePath,
+    String? audioPath,
+  }) async {
+    if (_messagesCollection == null) return;
+
+    String messageType = 'text';
+    String lastMessageText = userText.trim();
+    String? storagePath;
+
+    if (imagePath != null) {
+      storagePath = await _uploadFileToStorage(imagePath, 'image');
+      messageType = 'image';
+      lastMessageText = '[圖片]';
+    }
+
+    if (audioPath != null) {
+      storagePath = await _uploadFileToStorage(audioPath, 'audio');
+      messageType = 'audio';
+      lastMessageText = '[錄音]';
+    }
+
+    await _messagesCollection!.add({
+      'sender': 'user',
+      'text': userText.trim(),
+      'content': userText.trim(),
+      'type': messageType,
+      'path': storagePath ?? '',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    await _sessionDocRef?.update({
+      'lastMessage': lastMessageText,
+      'lastActivity': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<bool> _showUseEasterEggDialog(dynamic egg) async {
+    if (!mounted) return false;
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text('發現隱藏彩蛋 ✨'),
+          content: Text(
+            '你觸發了「${egg.title}」。\n\n要使用這個特殊劇情嗎？',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('不使用'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('使用彩蛋'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return result == true;
+  }
+
   Future<void> _sendMessage({
     String text = '',
     String? imagePath,
@@ -1115,7 +1185,8 @@ class _ChatPageState extends State<ChatPage> {
     if (_isGenerating || _isLoading || _sessionId == null) return;
 
     // 先檢查是不是空訊息，不要先進入 generating
-    if (messageText.isEmpty &&
+    if (!isContinue &&
+        messageText.isEmpty &&
         imagePath == null &&
         audioPath == null &&
         secretPrompt == null) {
@@ -1164,20 +1235,52 @@ class _ChatPageState extends State<ChatPage> {
 
       // ✨ 2. 觸發彩蛋或正常發送
       if (triggeredEgg != null) {
-        _triggeredEggKeywords.add(triggeredEgg.keyword);
-        await _dropEggToBackpack(triggeredEgg);
-
-        await _executeMessageSending(
+        // 1. 先把玩家真正輸入的文字顯示在畫面上
+        await _saveUserMessageOnly(
           userText: messageText,
           imagePath: imagePath,
           audioPath: audioPath,
-          secretPrompt: l10n.chat_hidden_event_trigger(
-            triggeredEgg.title,
-            triggeredEgg.setScene,
-          ),
-          showInChat: showInChat,
-          isContinue: isContinue,
         );
+
+        if (mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _scrollToBottom();
+          });
+        }
+
+        // 2. 一旦「發現彩蛋」，就先標記已觸發，避免下次一直跳
+        _triggeredEggKeywords.add(triggeredEgg.keyword);
+        await _dropEggToBackpack(triggeredEgg);
+
+        // 3. 再詢問玩家要不要使用這次特殊劇情
+        final useEgg = await _showUseEasterEggDialog(triggeredEgg);
+
+        if (useEgg) {
+          // 使用彩蛋：AI 讀彩蛋劇情
+          await _executeMessageSending(
+            userText: messageText,
+            imagePath: null,
+            audioPath: null,
+            overridePrompt: l10n.chat_hidden_event_trigger(
+              triggeredEgg.title,
+              triggeredEgg.setScene,
+            ),
+            showInChat: false,
+            isContinue: isContinue,
+            userMessageAlreadySaved: true,
+          );
+        } else {
+          // 不使用彩蛋：AI 照原本文字正常回覆
+          await _executeMessageSending(
+            userText: messageText,
+            imagePath: null,
+            audioPath: null,
+            secretPrompt: null,
+            showInChat: false,
+            isContinue: isContinue,
+            userMessageAlreadySaved: true,
+          );
+        }
       } else {
         await _executeMessageSending(
           userText: messageText,
@@ -1375,7 +1478,7 @@ class _ChatPageState extends State<ChatPage> {
     // 1. 如果玩家今天已經勾選過「不再提示」，就直接發送！
     if (hideDate == todayStr) {
       // 🚀 改用字典檔的隱形指令
-      _sendMessage(
+      await _sendMessage(
         text: l10n.hiddenPromptContinue,
         showInChat: false,
         isContinue: true,
@@ -1393,7 +1496,7 @@ class _ChatPageState extends State<ChatPage> {
     bool dontShowAgain = false;
 
     if (!mounted) return;
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) {
         // 🌟 在這裡再取一次對話框的 l10n
@@ -1464,20 +1567,24 @@ class _ChatPageState extends State<ChatPage> {
                     foregroundColor: Colors.white,
                     shape: const StadiumBorder(),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     // 如果有打勾，就把今天日期存起來，今天就不會再吵他了！
                     if (dontShowAgain) {
-                      prefs.setString('hide_continue_warning_date', todayStr);
+                      await prefs.setString('hide_continue_warning_date', todayStr);
                     }
+
+                    if (!context.mounted) return;
+
                     Navigator.pop(context); // 關閉彈窗
+
                     // 🚀 改用字典檔的隱形指令
-                    _sendMessage(
+                    await _sendMessage(
                       text: l10n.hiddenPromptContinue,
                       showInChat: false,
                       isContinue: true,
                     );
                   },
-                  child: Text(l10n.confirmContinue), // 💡 拿掉 const
+                  child: Text(l10n.confirmContinue),
                 ),
               ],
             );
@@ -2213,6 +2320,7 @@ class _ChatPageState extends State<ChatPage> {
     String? secretPrompt,
     bool showInChat = true,
     bool isContinue = false,
+    bool userMessageAlreadySaved = false,
   }) async {
     // 🌟 1. 身分檢查
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -2364,7 +2472,7 @@ class _ChatPageState extends State<ChatPage> {
         _scrollToBottom();
       });
       // 🛡️ 防彈版：只要有集合存在，就直接寫入資料庫
-      if (showInChat) {
+      if (showInChat && !userMessageAlreadySaved) {
       if (_messagesCollection != null) {
         await _messagesCollection!.add({
           'sender': 'user',
@@ -2461,7 +2569,7 @@ class _ChatPageState extends State<ChatPage> {
         }
       }
 
-      if (!showInChat && !isContinue) {
+      if (!showInChat && !isContinue && !userMessageAlreadySaved) {
         actualChatHistory.add({
           "role": "user",
           "text": secretPrompt ?? userText.trim(),
@@ -3654,7 +3762,14 @@ class _ChatPageState extends State<ChatPage> {
     // 如果玩家有修改內容且按下確認，就更新到資料庫
     if (newText != null && newText.trim().isNotEmpty && newText.trim() != message.text) {
       try {
-        await collection.doc(message.id).update({'text': newText.trim()});
+        final trimmedText = newText.trim();
+
+        await collection.doc(message.id).update({
+          'text': trimmedText,
+          'content': trimmedText,
+          'isEdited': true,
+          'editedAt': FieldValue.serverTimestamp(),
+        });
       } catch (e) {
         if (mounted) {
           // ✨ 總裁級：編輯失敗的輕量錯誤提示，為聊天室淨化行動完美收尾！
@@ -6081,8 +6196,21 @@ class _ChatPageState extends State<ChatPage> {
                           final userMessageText = (querySnapshot.docs[1].data() as Map<String, dynamic>)['text'] ?? '';
                           // 3. 扣次數與同步更新
                           final consumed = await _consumeRegenerateCount();
+
                           if (!consumed) {
-                            _showSubscriptionDialog();
+                            // 先重新同步一次真正的剩餘次數
+                            await _loadRegenerateCount();
+
+                            if (!mounted) return;
+
+                            // 同步後真的沒次數，才叫玩家開月卡
+                            if (_freeRegenerateCount <= 0) {
+                              _showSubscriptionDialog();
+                            } else {
+                              // 還有次數卻扣失敗，代表是同步 / 網路 / 權限問題，不要誤導玩家開月卡
+                              _showCenterToast('重新生成次數同步失敗，請再試一次 😢', isError: true);
+                            }
+
                             return;
                           }
                           // 4. 呼叫重新生成
@@ -6093,21 +6221,34 @@ class _ChatPageState extends State<ChatPage> {
                       // ▶️ 繼續按鈕 (也順便幫妳改成一樣的橢圓風格)
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey.withValues(alpha: 0.15),
-                          foregroundColor: Colors.grey[700],
+                          backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.18),
+                          foregroundColor: Theme.of(context).colorScheme.primary,
+                          disabledBackgroundColor: Colors.grey.withValues(alpha: 0.12),
+                          disabledForegroundColor: Colors.grey,
                           elevation: 0,
                           shape: const StadiumBorder(),
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        icon: const Icon(Icons.play_arrow, size: 16),
+                        icon: _isGenerating || _isLoading
+                            ? const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                            : const Icon(Icons.play_arrow, size: 16),
                         label: Text(
-                            l10n.continueButton,
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
-                        ),                        onPressed: () {
-                          // ✨ 總裁換線：呼叫專屬的智能繼續函數！
-                          _handleContinueButton();
+                          l10n.continueButton,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: (_isGenerating || _isLoading)
+                            ? null
+                            : () async {
+                          await _handleContinueButton();
                         },
                       ),
                     ],

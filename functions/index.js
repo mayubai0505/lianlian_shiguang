@@ -1759,7 +1759,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                        // 直接中斷，把 400 錯誤丟回給 Flutter，讓 Flutter 顯示溫柔提示
                                                                                        return res.status(400).json({
                                                                                            error: "CENSORED",
-                                                                                           message: "男神的心跳漏了一拍... 系統被不可抗力干擾了，請試著換個溫和一點的說法喔！(本則不扣花花)"
+                                                                                           message: "回覆失敗,請重新傳送訊息,本則訊息不扣點數"
                                                                                        });
                                                                                    }
 
