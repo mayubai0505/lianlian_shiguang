@@ -609,7 +609,37 @@ exports.getAiResponse = onRequest({
             // ==========================================
             // 🧷 同一玩家 AI 請求鎖：防止連點 / 重送 / 同時多個 AI 請求
             // ==========================================
-            const aiLockRef = userDocRef.collection("locks").doc("aiResponse");
+            // ==========================================
+            // 🧷 同一玩家、同一聊天室 AI 請求鎖
+            // 規則：
+            // 1. 同一玩家 + 同一 sessionId：擋重複送出
+            // 2. 同一玩家 + 不同 sessionId：可以同時送
+            // 3. 不同玩家：本來就互不影響
+            // ==========================================
+
+            const AI_LOCK_TTL_MS = 5 * 60 * 1000; // 5 分鐘，避免 AI 跑超過 60 秒時被誤判過期
+
+            const rawSessionId = String(sessionId || "").trim();
+
+            if (!rawSessionId) {
+                return res.status(400).json({
+                    error: "MISSING_SESSION_ID",
+                    message: "缺少聊天室 ID，請重新進入聊天室後再試。",
+                });
+            }
+
+            // Firestore doc id 不能包含 /，保守一點也把特殊符號處理掉
+            const safeSessionId = rawSessionId
+                .replace(/[\/\\#?\[\]\s]/g, "_")
+                .slice(0, 150);
+
+            const aiLockRef = userDocRef
+                .collection("locks")
+                .doc(`aiResponse_${safeSessionId}`);
+
+            // 本次請求專屬 lock id，避免舊請求誤刪新 lock
+            const aiLockId = `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+
             let aiLockReleased = false;
             let aiLockAcquired = false;
 
@@ -620,14 +650,46 @@ exports.getAiResponse = onRequest({
                 aiLockReleased = true;
 
                 try {
-                    await aiLockRef.delete();
-                    console.log("🔓 AI lock released");
+                    let didDelete = false;
+
+                    await admin.firestore().runTransaction(async (tx) => {
+                        const lockSnap = await tx.get(aiLockRef);
+
+                        if (!lockSnap.exists) {
+                            return;
+                        }
+
+                        const lockData = lockSnap.data() || {};
+
+                        // 安全防護：
+                        // 如果這個 lock 已經被新的請求覆蓋，舊請求不能刪掉新 lock
+                        if (lockData.lockId !== aiLockId) {
+                            console.warn("⚠️ 跳過釋放 AI lock：目前 lock 不屬於本次請求", {
+                                userId,
+                                sessionId: rawSessionId,
+                                currentLockId: lockData.lockId,
+                                myLockId: aiLockId,
+                            });
+                            return;
+                        }
+
+                        tx.delete(aiLockRef);
+                        didDelete = true;
+                    });
+
+                    if (didDelete) {
+                        console.log("🔓 AI lock released", {
+                            userId,
+                            sessionId: rawSessionId,
+                            lockId: aiLockId,
+                        });
+                    }
                 } catch (e) {
                     console.warn("⚠️ AI lock release failed:", e);
                 }
             }
 
-            // 確保正常回應或連線中斷時都會釋放 lock
+            // 正常回應完成時釋放 lock
             res.on("finish", () => {
                 releaseAiLock();
             });
@@ -641,27 +703,42 @@ exports.getAiResponse = onRequest({
                         const lockData = lockSnap.data() || {};
                         const lockedAt = lockData.lockedAtMillis || 0;
 
-                        // 60 秒內還有請求在跑，就擋掉
-                        if (now - lockedAt < 60000) {
+                        // 同一聊天室 5 分鐘內還有請求在跑，就擋掉
+                        if (now - lockedAt < AI_LOCK_TTL_MS) {
                             throw new Error("AI_REQUEST_IN_PROGRESS");
                         }
+
+                        // 超過 5 分鐘，視為殭屍 lock，允許覆蓋
+                        console.warn("🧹 發現過期 AI lock，允許覆蓋", {
+                            userId,
+                            sessionId: rawSessionId,
+                            lockedAt,
+                            ageMs: now - lockedAt,
+                        });
                     }
 
                     tx.set(aiLockRef, {
+                        lockId: aiLockId,
                         lockedAtMillis: now,
                         userId,
-                        sessionId: sessionId || null,
+                        sessionId: rawSessionId,
                         chatMode,
                         createdAt: admin.firestore.FieldValue.serverTimestamp(),
                     });
                 });
 
                 aiLockAcquired = true;
+
+                console.log("🔒 AI lock acquired", {
+                    userId,
+                    sessionId: rawSessionId,
+                    lockId: aiLockId,
+                });
             } catch (e) {
                 if (e.message === "AI_REQUEST_IN_PROGRESS") {
                     return res.status(429).json({
                         error: "AI_REQUEST_IN_PROGRESS",
-                        message: "上一則回覆還在生成中，請稍等一下喔。",
+                        message: "這個聊天室上一則回覆還在生成中，請稍等一下喔。",
                     });
                 }
 
@@ -1754,7 +1831,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
                                                                                    const isRefused = triggeredKeyword || rawContent.trim() === "";
 
-                                                                                   if (isRefused) {
+                                                                                  if (isRefused) {
                                                                                        console.warn(`🛑 [防禦系統] 偵測到 AI 審查擋刀！(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"}) 攔截寫入與扣款！`);
                                                                                        // 直接中斷，把 400 錯誤丟回給 Flutter，讓 Flutter 顯示溫柔提示
                                                                                        return res.status(400).json({

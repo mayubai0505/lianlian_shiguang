@@ -190,6 +190,10 @@ class _ChatPageState extends State<ChatPage> {
   List<ChatMessage> _localMessages = [];
   String? _userId;
   Map<String, dynamic> _currentAiProfile = {'type': 'basic', 'name': '玩家'};
+  String get _roomLockKey {
+    final sid = (_sessionId ?? widget.sessionId ?? '').trim();
+    return sid.isNotEmpty ? sid : widget.character.id;
+  }
 
 
   // 🌟 在 _ChatPageState 裡面補上這個工具
@@ -233,14 +237,15 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+
     _checkFirstTimeEntry();
-    _isGenerating = generatingRooms.contains(widget.character.id);
+
+    _isGenerating = generatingRooms.contains(_roomLockKey);
+
     _currentCharacter = widget.character;
-    // 在頁面渲染後立刻去尋找這個角色的專屬照片
-    // 🌟 1. 先在「同步」且 context 絕對安全的時候，把 Provider 抓下來放到變數裡
+
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
 
-// 🌟 2. 只有「執行動作」需要延遲到畫面畫完之後
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         themeNotifier.loadCharacterBackground(_currentCharacter.name);
@@ -1181,18 +1186,20 @@ class _ChatPageState extends State<ChatPage> {
   }) async {
     final l10n = AppLocalizations.of(context)!;
     final messageText = text.trim();
-
-    if (_isGenerating || _isLoading || _sessionId == null) return;
-
-    // 先檢查是不是空訊息，不要先進入 generating
-    if (!isContinue &&
-        messageText.isEmpty &&
-        imagePath == null &&
-        audioPath == null &&
-        secretPrompt == null) {
+    final roomLockKey = _sessionId ?? widget.sessionId ?? widget.character.id;
+    if (_isGenerating ||
+        _isLoading ||
+        generatingRooms.contains(roomLockKey) ||
+        _sessionId == null) {
+      debugPrint(
+        '⛔ 擋掉重複送出：'
+            'isGenerating=$_isGenerating, '
+            'isLoading=$_isLoading, '
+            'roomGenerating=${generatingRooms.contains(roomLockKey)}, '
+            'sessionId=$_sessionId',
+      );
       return;
     }
-
     // 一按送出，立刻切成「回覆中 / 停止鍵」
     if (mounted) {
       setState(() {
@@ -1201,7 +1208,7 @@ class _ChatPageState extends State<ChatPage> {
       });
     }
 
-    generatingRooms.add(widget.character.id);
+    generatingRooms.remove(roomLockKey);
 
     try {
       // 發送後清空輸入框
@@ -1298,7 +1305,7 @@ class _ChatPageState extends State<ChatPage> {
         _showCenterToast('送出失敗，請稍後再試 😢', isError: true);
       }
     } finally {
-      generatingRooms.remove(widget.character.id);
+      generatingRooms.remove(roomLockKey);
 
       if (mounted) {
         setState(() {
@@ -2328,7 +2335,7 @@ class _ChatPageState extends State<ChatPage> {
     final l10n = AppLocalizations.of(context)!;
     final userId = currentUser.uid;
     final characterId = _currentCharacter.id;
-
+    final roomLockKey = _sessionId ?? widget.sessionId ?? widget.character.id;
     try {
       // 🌟 2. 暴力現抓點數：解決 9325 點卻報不夠的問題
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(
@@ -2459,13 +2466,6 @@ class _ChatPageState extends State<ChatPage> {
         lastMessageText = '[錄音]';
       }
 
-      // --- B. 寫入用戶訊息到 Firestore ---
-      // 🌟🌟🌟 總裁微創手術 1：按下去的瞬間，立刻亮起打字燈號！零延遲！
-      generatingRooms.add(widget.character.id);
-      setState(() {
-        _isGenerating = true;
-      });
-
       // 🌟🌟🌟 總裁微創手術 2：強制畫面滾動到底部，確保玩家一定能看到男主的「...」！
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // 請確認您原本用來滾動的函式名稱是不是這個，如果叫其他名字 (如 _scrollController.animateTo) 請替換掉
@@ -2523,10 +2523,6 @@ class _ChatPageState extends State<ChatPage> {
 
       await Future.delayed(const Duration(milliseconds: 300));
       _handleTaskProgressAfterSendingMessage();
-      generatingRooms.add(widget.character.id);
-      setState(() {
-        _isGenerating = true;
-      });
 
       // --- C. 喚醒真正的長期記憶 ---
       List<Map<String, String>> actualChatHistory = [];
@@ -2668,7 +2664,7 @@ class _ChatPageState extends State<ChatPage> {
           setState(() {
             _isGenerating = false;
             _isLoading = false;
-            generatingRooms.remove(widget.character.id);
+            generatingRooms.remove(roomLockKey);
           });
           // 溫柔安撫玩家，不要顯示駭人的英文錯誤
           _showCenterToast('他似乎在沉思，請稍後再試...', isError: true);
@@ -2731,7 +2727,7 @@ class _ChatPageState extends State<ChatPage> {
           // ========================================================
           // 🟡 第二區：【UI 溫室防線】只有當玩家還在房間畫面上，才需要處理 setState 與升級動畫
           // ========================================================
-          generatingRooms.remove(widget.character.id);
+          generatingRooms.remove(roomLockKey);
           if (mounted) {
             setState(() {
               final int uiCost = isFreeToday ? 0 : messageCost;
@@ -2755,7 +2751,7 @@ class _ChatPageState extends State<ChatPage> {
           }
 
         } else {
-          generatingRooms.remove(widget.character.id);
+          generatingRooms.remove(roomLockKey);
           if (mounted) {
             setState(() {
               _isGenerating = false;
@@ -2765,9 +2761,22 @@ class _ChatPageState extends State<ChatPage> {
             _showCenterToast(l10n.error_system_busy, isError: true);
           }
         }
+      } else if (response.statusCode == 429) {
+        generatingRooms.remove(roomLockKey);
+
+        if (mounted) {
+          setState(() {
+            _isGenerating = true;
+            _isLoading = false;
+          });
+
+          _showCenterToast('他正在回覆中，請稍候一下，不要重複送出', isError: false);
+        }
+
+        return;
       } else if (response.statusCode == 400) {
         // 🛑 退款防護網啟動：攔截到 400 錯誤！
-        generatingRooms.remove(widget.character.id);
+        generatingRooms.remove(roomLockKey);
 
         if (mounted) {
           setState(() {
@@ -2792,7 +2801,7 @@ class _ChatPageState extends State<ChatPage> {
         }
       } else {
         // 其他狀態碼 (例如 500) 或網路異常
-        generatingRooms.remove(widget.character.id);
+        generatingRooms.remove(roomLockKey);
         if (mounted) {
           setState(() {
             _isGenerating = false;
@@ -2817,7 +2826,7 @@ class _ChatPageState extends State<ChatPage> {
       _httpClient?.close();
       _httpClient = null;
 
-      generatingRooms.remove(widget.character.id);
+      generatingRooms.remove(roomLockKey);
 
       if (mounted) {
         setState(() {
@@ -2997,11 +3006,11 @@ class _ChatPageState extends State<ChatPage> {
   // ✨ 進化版煞車系統
   void _stopGenerating() {
     final l10n = AppLocalizations.of(context)!;
-
+    final roomLockKey = (_sessionId ?? widget.sessionId ?? widget.character.id).trim();
     _httpClient?.close();
     _httpClient = null;
 
-    generatingRooms.remove(widget.character.id);
+    generatingRooms.remove(roomLockKey);
 
     if (mounted) {
       setState(() {
@@ -5499,6 +5508,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final roomLockKey = (_sessionId ?? widget.sessionId ?? widget.character.id).trim();
     // 🚨 只有極端情況才給全螢幕載入
     if (widget.character.name == l10n.chat_loading_status) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -5817,7 +5827,7 @@ class _ChatPageState extends State<ChatPage> {
                             setState(() {
                               _isGenerating = false;
                             });
-                            generatingRooms.remove(widget.character.id);
+                            generatingRooms.remove(roomLockKey);
                             debugPrint("✨ 偵測到 AI 最新回覆，強制解除鎖定狀態！");
                           }
                         });
