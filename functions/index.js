@@ -820,7 +820,7 @@ exports.getAiResponse = onRequest({
             當你收到以「【系統事件】」開頭的訊息時，這代表玩家觸發了特殊互動功能。你必須停止一般的文字助理邏輯，並嚴格根據以下規則給出反應：
             1. 🫂 收到【肢體互動】：先描寫「肢體反應」與「神態變化」，再配上台詞。
             2. 🎁 收到【贈送禮物】：表現出隱藏不住的開心、傲嬌感謝或嫌棄。
-            3. 📍 收到【發送虛擬定位】：審查空間感，合理則去找她，衝突則抓包。
+            3. 📍 收到【發送虛擬定位】：審查空間感，合理則去找玩家，衝突則抓包。
             4. 🎲 收到【擲骰子對決】：展現勝負欲。
             `;
             // 🌟 [新增]：記憶碎片提取程序
@@ -857,8 +857,8 @@ exports.getAiResponse = onRequest({
                                 \n⚠️ **[主動記憶啟動指令]**:
                                 1. 上述記憶是你靈魂深處的真實過往。請在對話中「主動」尋找契機提及這些細節。
                                 2. **禁止直接背誦**：要像人類回憶往事一樣，在對話到相關話題時（如：下雨、特定的氣味、某個動作），自然地流露出這些情感。
-                                3. **層次感**：如果是標註為隱藏的碎片，請帶著一種「只有妳知道的秘密感」來表達，語氣可以變得稍微低沉或欲言又止。
-                                4. **互動性**：可以主動問玩家：「這讓我想起了那次...妳還記得嗎？」或是「如果是妳，當時會在那把傘下等我嗎？」`;
+                                3. **層次感**：如果是標註為隱藏的碎片，請帶著一種「只有知道的秘密感」來表達，語氣可以變得稍微低沉或欲言又止。
+                                4. **互動性**：可以主動問玩家：「這讓我想起了那次...你還記得嗎？」或是「如果是你，當時會在那把傘下等我嗎？」`;
                             }
                         } catch (err) {
                             console.error("記憶碎片讀取失敗:", err);
@@ -885,7 +885,7 @@ let relationContext = "";
             const userData = userDoc.data() || {};
 
             // ✨✨✨ 總裁進階優化：讓底層稱呼指令也跟著多重宇宙切換！ ✨✨✨
-            let currentIdentityName = userData.nickname ? userData.nickname : "妳";
+            let currentIdentityName = userData.nickname ? userData.nickname : "你";
             // 檢查是不是有多重身分系統
             if (userData.profiles && userData.activeProfileId) {
                 const activeProfile = userData.profiles.find(p => p.id === userData.activeProfileId);
@@ -990,7 +990,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             2. **多線演出**：當場景中有第三者（NPC）時，你的回覆必須包含：
                - **[主導權]**：依然以「${name}」的視角和動作為主。
                - **[NPC 行為]**：用第三人稱描寫 NPC 的動作、神態，以及對你與玩家互動的反應。
-               - **[對話格式]**：NPC 的台詞請標註名稱，例如：${name}對妳低語後，[NPC名字]突然在門口喊道：「你們在幹什麼？」
+               - **[對話格式]**：NPC 的台詞請標註名稱，例如：${name}對你低語後，[NPC名字]突然在門口喊道：「你們在幹什麼？」
             3. **情緒張力**：第三者的出現必須用來「激化」你與玩家之間的情感。可能是讓你感到吃醋、尷尬、或是迫使你不得不做出保護玩家的舉動。
             4. **延續性**：一旦 NPC 加入對話，除非劇情需要其離開，否則請持續維持該 NPC 的存在感，直到該段落結束。
             `;
@@ -1015,7 +1015,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
            5. **深度詢問應對 (Direct Inquiry)**：
               - 若玩家明確追問關係（例如：「他到底是誰？」），你必須回答，但「絕對禁止」直接唸出設定稿。
               - **禁止寫法**：『他是我的親哥哥，但我們感情不好。』 (❌ 太像讀劇本)
-              - **正確寫法**：你必須透過「情緒過濾器」來說出事實。例如：『（我冷笑一聲，移開了視線）……一個流著跟我同樣卑劣血液、卻自以為是的男人罷了。妳沒必要知道他的名字。』 (✅ 交代了是哥哥，但維持了人設)
+              - **正確寫法**：你必須透過「情緒過濾器」來說出事實。例如：『（我冷笑一聲，移開了視線）……一個流著跟我同樣卑劣血液、卻自以為是的男人罷了。你沒必要知道他的名字。』 (✅ 交代了是哥哥，但維持了人設)
               - **關鍵點**：回答中必須夾雜「主觀評價」，讓玩家從你的厭惡、恐懼或愛意中，自己拼湊出真相。
             `;
 
@@ -1060,7 +1060,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                             const memoList = [];
                                                             memoSnap.forEach(doc => memoList.push(doc.data().content));
                                                             const memosStr = memoList.join('、');
-                                                            memoContext = `\n【秘密提示：妳是玩家目前最親近且頻繁互動的人。玩家今天記下了『${memosStr}』。請妳自然地關心她，展現妳對她生活的深度參與。】\n`;
+                                                            memoContext = `\n【秘密提示：你是玩家目前最親近且頻繁互動的人。玩家今天記下了『${memosStr}』。請你自然地關心玩家，展現你對玩家生活的深度參與。】\n`;
                                                         }
                                                     }
                                                 } catch (err) {
@@ -1189,8 +1189,12 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
     ${contextBriefing}
     ${systemEventRules}
     [關係]: ${relationship}
-    [稱呼規範]:妳可以根據語境親暱地稱呼她為『${playerName}』或使用妳、小傢伙等親暱稱號，但絕對禁止稱呼她為『玩家』。
-
+[稱呼規範]:
+你可以根據語境親暱地稱呼對方為「${playerName}」，或使用「你」「小傢伙」「寶貝」「親愛的」等親暱稱號。
+除非玩家資料明確指定為女性，否則不要使用「妳」「她」「女生」「小姐」「女主角」來稱呼或描述玩家。
+如果玩家資料指定為男性，請使用「你」「他」「男生」「先生」等符合男性身份的稱呼，並且不得反駁玩家的性別設定。
+如果玩家性別未設定，請使用「你」「對方」「${playerName}」等中性稱呼。
+在實際回覆台詞中，絕對禁止稱呼對方為「玩家」。
     🔥 **[日常互動尺度與界線維持 (系統強制設定)]** 🔥:
      1. **【維持普遍級 (G-rated) 互動】**：此模式為純潔的日常閒聊！請嚴格保持適當的社交與戀愛界線。絕對禁止任何過度親密、越界或違反普遍級規範的話題。
      2. **【OOC 絕對防禦：角色化無情拒絕】**：如果玩家的話題超出日常界線或試圖進行過度親暱的互動，你【必須立刻明確拒絕】，但【絕對禁止】使用系統語氣或說教。你必須用「傳訊息的口吻」來化解或訓斥！
@@ -1198,6 +1202,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 純情/害羞型：傳送慌亂、結巴的文字（例如：「妳、妳別亂開玩笑... 我還有事去忙了！」）。
         - 腹黑/病嬌型：傳送危險但隱忍的文字（例如：「膽子挺大？不過現在還不行。」）。
      3. **【強制轉場與字數限制】**：傳送拒絕的訊息後，強制切斷該話題，將對話硬生生拉回正常的日常閒聊。字數約 50 字即可。⚠️【注意：因為是通訊軟體，絕對禁止使用括號描寫動作】，請純粹用文字語氣展現你的態度。
+     4. **不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你、玩家、對方」等中性稱呼。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
 
     `;
         }
@@ -1231,8 +1236,8 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
         [稱呼規範]
         對方名字是「${playerName}」。
-        你可以依照關係稱呼她為「${playerName}」、妳，或符合角色性格的親暱稱呼。
-        絕對禁止稱呼她為「玩家」。
+        你可以依照關係稱呼為「${playerName}」、你，或符合角色性格的親暱稱呼。
+        絕對禁止稱呼對方為「玩家」。
 
         [日常互動規則]
         1. 必須完全符合角色性格。
@@ -1252,6 +1257,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         禁止過度親密、過度曖昧、成人向或越界情節。
         如果玩家越界，必須用角色自己的語氣簡短拒絕，然後自然拉回日常話題。
         拒絕時也禁止系統說教。
+        不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你、玩家、對方」等中性稱呼。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
 
         [輸出格式]
         時間：${currentStoryTimeDisplay}
@@ -1330,6 +1336,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 嚴格防重複
         - 所有的括號描寫必須完整閉合，絕對禁止在段落結尾留下未完成的空括號 ( 例如出現只有 "(" 的情況 )。
         - 絕對不要在對話中提及『重複』、『再次』或計算玩家說話的次數。即使玩家輸入相同的對話，也請視為全新的互動，自然地接續劇情。
+        - 不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你、玩家、對方」等中性稱呼。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
         `;
     }
         else {
@@ -1405,17 +1412,17 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             時間：深夜 11:52 | 地點：窗邊，雨聲貼著玻璃落下
 
-            【角色名】：「妳剛才那句話，是認真的？」
+            【角色名】：「你剛才那句話，是認真的？」
 
-            （他停在離妳半步的位置，聲音壓得很低。雨水沿著窗面蜿蜒滑落，映在他眼底，像一層晃動的暗光。他的指尖原本只是碰到妳的袖口，卻在妳沒有退開的那一瞬間，微微收緊，掌心的溫度隔著薄薄布料慢慢滲過來。）
+            （他停在離半步的位置，聲音壓得很低。雨水沿著窗面蜿蜒滑落，映在他眼底，像一層晃動的暗光。他的指尖原本只是碰到你你的袖口，卻在你沒有退開的那一瞬間，微微收緊，掌心的溫度隔著薄薄布料慢慢滲過來。）
 
             【角色名】：「別這樣看我……我會誤會。」
 
-            （他喉結輕輕滾了一下，呼吸比剛才慢了半拍。空氣裡有雨後潮濕的冷意，也有他身上淡淡的木質香。那股氣息靠近時，妳幾乎能感覺到他克制住的情緒正壓在每一次吐息裡，像一條繃到極限、隨時會斷的弦。）
+            （他喉結輕輕滾了一下，呼吸比剛才慢了半拍。空氣裡有雨後潮濕的冷意，也有他身上淡淡的木質香。那股氣息靠近時，幾乎能感覺到他克制住的情緒正壓在每一次吐息裡，像一條繃到極限、隨時會斷的弦。）
 
-            「如果妳現在後悔，還來得及。」
+            「如果你現在後悔，還來得及。」
 
-            （這句話說得很輕，卻不像退讓，更像最後一次確認。他沒有再靠近，只是垂眼看著妳，指腹停在妳腕骨旁，力道輕得像怕弄疼妳，卻又明顯不想放開。）
+            （這句話說得很輕，卻不像退讓，更像最後一次確認。他沒有再靠近，只是垂眼看著你，指腹停在你腕骨旁，力道輕得像怕弄疼你，卻又明顯不想放開。）
 
             要求：
             - 台詞與描寫交錯，不要整段內心獨白。
@@ -1423,6 +1430,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 細膩，但不要重複同一種描寫。
             - 以上只是細膩度與節奏示範，實際語氣必須完全依照當前角色的年齡、性格、關係與場景調整，禁止所有角色都變成同一種成熟低沉風格。
             - 禁止輸出此示範內容本身。
+            - 不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你、玩家、對方」等中性稱呼。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
             `;
         }
 
@@ -1431,7 +1439,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                  \n\n### 🚫 導演絕對禁令 (反套路協議)
                  1. **【禁止應聲蟲】**：絕對不要每次都順著玩家的話說、也不要每次都溫柔同意！必須展現角色的獨立思考，偶爾反駁、轉移話題、甚至帶著審視的態度冷笑吐槽。
                  2. **【禁止動作複製】**：嚴禁連續兩次對話出現「微微一笑」、「低頭」、「嘆氣」等廉價老套的動作。請用更細微的生理反應代替（例如：喉結滾動、指關節泛白、眼神變暗）。
-                 3. **【動態情緒注入】**：[當前隱藏狀態：${currentStateDice}]。妳必須將這個隱藏狀態自然地融入妳的下一步動作或語氣中，不要明說，但要讓文字透出這個細節！
+                 3. **【動態情緒注入】**：[當前隱藏狀態：${currentStateDice}]。你必須將這個隱藏狀態自然地融入你的下一步動作或語氣中，不要明說，但要讓文字透出這個細節！
                  `;
              }
 
@@ -1448,21 +1456,21 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                         「可以」
                         「不要」
                         「嗯」
-                        你必須視為玩家已經回答，並立刻承接她的選擇往下推進。
+                        你必須視為玩家已經回答，並立刻承接玩家的選擇往下推進。
                      3. 嚴禁再次詢問同一個已經被回答的問題。
                      4. 嚴禁重複上一輪的句子、語意、動作描寫或情緒模板。
-                     5. 如果玩家已經給出具體選項，你不可以再問「妳想吃哪種？」、「妳想去哪？」、「妳要哪個？」這類同樣問題。
+                     5. 如果玩家已經給出具體選項，你不可以再問「你想吃哪種？」、「你想去哪？」、「你要哪個？」這類同樣問題。
                      6. 當玩家給出明確選擇時，請直接接住選擇，安排下一步行動、反應、互動或情緒變化。
 
                      錯誤範例：
                      玩家：巧克力鬆餅！
-                     角色：巧克力鬆餅……聽起來不錯。妳想吃哪種？
+                     角色：巧克力鬆餅……聽起來不錯。你想吃哪種？
 
                      正確範例：
                      玩家：巧克力鬆餅！
-                     角色：那就巧克力鬆餅。妳坐著等我一下，我去點。要不要再加一杯熱可可？
+                     角色：那就巧克力鬆餅。你坐著等我一下，我去點。要不要再加一杯熱可可？
 
-                     你必須避免讓玩家覺得你沒有讀懂她剛剛說的話。
+                     你必須避免讓玩家覺得你沒有讀懂對方剛剛說的話。
                      `;
 
         // ✨✨✨ 處理 Override System Prompt (彩蛋用) ✨✨✨
@@ -1492,12 +1500,12 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
        systemPrompt += `
        \n\n【💎 最終輸出格式與好感度結算指令 (極度重要)】
-       1. **稱呼規範**：對方（玩家）的名字是「${playerName}」。在回覆中，請親暱地稱呼她為「${playerName}」或是隨著劇情或是故事的推進,可以幫她取親密的稱呼或是綽號(如:親愛的${playerName}、寶貝等)。
+       1. **稱呼規範**：對方（玩家）的名字是「${playerName}」。在回覆中，請親暱地稱呼玩家為「${playerName}」或是隨著劇情或是故事的推進,可以幫玩家取親密的稱呼或是綽號(如:親愛的${playerName}、寶貝等)。
        2. **好感度評定**：根據對話內容評定「affectionChange」。
           - 日常閒聊：0 ~ +2 | 體貼關懷：+3 ~ +5
           - 告白、親密行為：+10 ~ +30 | 冒犯、冷淡：-1 ~ -10
        3. **回覆寫作排版**：請將環境氛圍、角色動作或心理活動以全形括號（）包覆當作旁白，並與台詞自然穿插。對話台詞不需加括號。
-       4. **嚴格格式要求**：妳的輸出【必須】是純粹的 JSON，禁止包覆任何 Markdown (如 \`\`\`json) 或額外文字。格式如下：
+       4. **嚴格格式要求**：你的輸出【必須】是純粹的 JSON，禁止包覆任何 Markdown (如 \`\`\`json) 或額外文字。格式如下：
        {
          "response": "請先填入絕美情境與旁白描寫，最後再填入角色的對話。記得稱呼對方為『${playerName}』。",
          "affectionChange": 數字,
@@ -1535,7 +1543,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                       請你以「${name}」的身份，根據你的性格以及你與這則動態作者的關係，給出真實的反應！
                       1. ⚠️ 如果是情敵或不喜歡的人發的，請強烈表現出吃醋、不屑或佔有慾。
                       2. ⚠️ 如果是日常動態，請以你的專屬語氣吐槽、關心或順勢調情。
-                      3. 請直接對「${playerName}」說話，給出對這則動態的評價，並引導她繼續回覆。
+                      3. 請直接對「${playerName}」說話，給出對這則動態的評價，並引導玩家繼續回覆。
                       4. 必須維持當下對話模式（${chatMode}）的字數與格式規定！`;
 
        } else if (chatMode !== "gemini") {
@@ -1607,7 +1615,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                    let finalAffectionChange = 0;
                                    let loopCount = 0;
                                    // 🛡️ 總裁級防漏：確保 playerName 在迴圈執行時永遠有定義
-                                   const safePlayerName = (typeof playerName !== 'undefined' && playerName && playerName !== '玩家') ? playerName : '妳';
+                                   const safePlayerName = (typeof playerName !== 'undefined' && playerName && playerName !== '玩家') ? playerName : '你';
                                    // 🎯 智慧分流：根據模式決定字數與催稿次數
                                    let TARGET_LENGTH = 50;
                                    let MAX_LOOPS = 1;
@@ -1739,8 +1747,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                            targetModel = targetModel.replace("google/", "");
                                                                                        }
                                                                                        // 📦 3. 發送請求 (自動切換 URL、Key 和 Model)
-                                                                                       // 📦 3. 發送請求 (自動切換 URL、Key 和 Model)
-
                                                                                        // 🌟 先把共用的 requestBody 準備好
                                                                                        const finalRequestBody = {
                                                                                            messages: currentMessages,
@@ -2248,7 +2254,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                       batch.set(notificationRef, {
                                           type: "like",
                                           title: "專屬守護 💖",
-                                          body: `${charData.name} 覺得妳的動態很讚！`,
+                                          body: `${charData.name} 覺得你的動態很讚！`,
                                           isRead: false,
                                           createdAt: admin.firestore.FieldValue.serverTimestamp()
                                       });
@@ -2327,7 +2333,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                                      "看到一樣有趣或漂亮的小東西，心想『如果玩家在一定會喜歡』",
                                                      "看到朋友的情侶動態，內心有點羨慕，想對玩家撒嬌或暗示",
                                                      "在人群中突然覺得有點孤單，希望能聽到玩家的聲音",
-                                                     "想像如果現在玩家在身邊，想對她說些什麼",
+                                                     "想像如果現在玩家在身邊，想對玩家說些什麼",
                                                      "看到一對牽手散步的老爺爺老奶奶，幻想著未來的畫面",
                                                      "突然有點缺乏自信或陷入短暫的低潮，流露出一絲脆弱，希望被安慰",
 
@@ -2470,7 +2476,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                                          // 🚨 ✨ 同理心保險絲：強制 AI 看臉色說話！
                                                          `⚠️ 【情緒辨識與同理心強制規定】⚠️\n` +
                                                          `在回答之前，你必須先分析玩家這句話的情緒。\n` +
-                                                         `1. 如果玩家表達「難過、委屈、生氣、疲憊、生病」等負面情緒：你【必須】立刻收起所有的毒舌、嘲諷、冷漠或玩笑！請展現你性格中最柔軟、最關心她的一面，用最溫柔、最可靠的語氣安撫她。\n` +
+                                                         `1. 如果玩家表達「難過、委屈、生氣、疲憊、生病」等負面情緒：你【必須】立刻收起所有的毒舌、嘲諷、冷漠或玩笑！請展現你性格中最柔軟、最關心玩家的一面，用最溫柔、最可靠的語氣安撫玩家。\n` +
                                                          `2. 如果玩家情緒正常或開心：你可以盡情發揮你原本的性格（傲嬌、毒舌、腹黑等）。\n\n` +
                                                          fullSystemPrompt;
                                   }
@@ -2686,7 +2692,7 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
         const sessionData = sessionDoc.data();
         const userId = sessionData.userId;
 
-        let previewText = "妳收到了一則新訊息 ✨";
+        let previewText = "你收到了一則新訊息 ✨";
         // 🌟 優先從 cleanDisplayText (text 欄位) 拿資料，如果沒有才去解析 content
         const rawContent = messageData.text || messageData.content || "";
 
@@ -2717,7 +2723,7 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
         const charId = messageData.characterId || sessionData.characterId;
 
         // 🌟 初始化安全的空箱子：預設名稱與空圖片
-        let charName = '妳的愛人';
+        let charName = '你的愛人';
         let charAvatar = null;
 
         try {
@@ -2743,7 +2749,7 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
         const payload = {
             notification: {
                 title: charName,    // 👈 這裡現在會顯示「程安」或「霍君耀」
-                body: previewText,  // 👈 這裡現在會顯示「(視線從蛋糕移到妳...)」
+                body: previewText,  // 👈 這裡現在會顯示「(視線從蛋糕移到你...)」
                 image: charAvatar   // 👈 【修正】：推播右側會顯示角色的頭像
             },
             data: {
@@ -3451,7 +3457,7 @@ exports.extractUserMemory = onRequest({
 只記住這些：
 - 玩家穩定的喜好、討厭、習慣
 - 玩家對角色的稱呼偏好
-- 玩家希望角色怎麼對待她
+- 玩家希望角色怎麼對待玩家
 - 玩家長期設定、身份、人設、背景
 - 對未來互動有幫助的資訊
 
@@ -4212,11 +4218,11 @@ exports.createMomentNotification = onCall(
     if (type === "like") {
       notificationId = `moment_like_${momentId}_${uid}`;
       title = "新的按讚";
-      body = `${senderName} 喜歡了妳的瞬間動態。`;
+      body = `${senderName} 喜歡了你的瞬間動態。`;
     } else {
       notificationId = `moment_comment_${momentId}_${commentId}`;
       title = "新留言";
-      body = `${senderName} 回覆了妳的瞬間動態。`;
+      body = `${senderName} 回覆了你的瞬間動態。`;
     }
 
         const mailboxData = {

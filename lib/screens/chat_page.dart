@@ -1378,6 +1378,10 @@ class _ChatPageState extends State<ChatPage> {
       final idToken = await currentUser.getIdToken();
       String dynamicRelationship = _currentFriendship.relationshipTitle(l10n);
       String dynamicProfile = _buildDynamicUserProfileString();
+      final String playerGenderForAi = _normalizePlayerGenderForAi(
+        _currentAiProfile['gender']?.toString(),
+      );
+      final String playerPronounGuide = _buildPlayerPronounGuide(playerGenderForAi);
       final Map<String, dynamic> requestBody = {
         "audioUrl": "", // 重新生成通常只針對文字
         "userMessage": lastUserText,
@@ -1387,6 +1391,8 @@ class _ChatPageState extends State<ChatPage> {
         "sessionId": _sessionId,
         // 🌟 同步升級：傳送精準名字！
         "playerName": _playerNickname,
+        "playerGender": playerGenderForAi,
+        "playerPronounGuide": playerPronounGuide,
         // 🌟 同步升級：呼叫動態人設產生器！
         "userProfile": dynamicProfile,
         // 🛑 總裁專屬封口令 + 最高防護指令合併版！
@@ -2608,6 +2614,10 @@ class _ChatPageState extends State<ChatPage> {
       final String effectiveUserMessage = isContinue
           ? l10n.hiddenPromptContinue
           : userText.trim();
+      final String playerGenderForAi = _normalizePlayerGenderForAi(
+        _currentAiProfile['gender']?.toString(),
+      );
+      final String playerPronounGuide = _buildPlayerPronounGuide(playerGenderForAi);
       final Map<String, dynamic> requestBody = {
         "audioUrl": storagePath ?? "",
         "userMessage": effectiveUserMessage,
@@ -2617,12 +2627,13 @@ class _ChatPageState extends State<ChatPage> {
         "overrideSystemPrompt": overridePrompt ?? "",
         "sessionId": _sessionId,
         "playerName": _playerNickname,
+        "playerGender": playerGenderForAi,
+        "playerPronounGuide": playerPronounGuide,
         // 🌟🌟🌟 核心修改點：這裡改呼叫動態人設產生器！ 🌟🌟🌟
         "userProfile": _buildDynamicUserProfileString(),
-
         "systemDirective": (overridePrompt != null && overridePrompt.isNotEmpty)
-            ? "【最高防護指令】與你對話的玩家叫做「$_playerNickname」！玩家已觸發特殊劇情，請配合 overrideSystemPrompt 的指示順暢地演出。以下是她當前的時空設定：\n$dynamicProfile\n\n你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數)。絕對不可以輸出任何其他格式或說明。"
-            : "【最高防護指令】請你「維持當前的聊天情境與場景」。記住，與你對話的主角稱呼是「$_playerNickname」，絕對不能叫錯！以下是她當前的專屬時空設定：\n$dynamicProfile\n\n你必須嚴格根據這些設定與她互動，並以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數)。絕對不可以輸出任何其他格式或說明。","aboutMeNotes": aboutMeNotes,
+            ? "【最高防護指令】與你對話的對象叫做「$_playerNickname」！玩家已觸發特殊劇情，請配合 overrideSystemPrompt 的指示順暢地演出。以下是對方當前的時空設定：\n$dynamicProfile\n\n【玩家性別與稱呼規範】\n玩家性別設定：$playerGenderForAi\n$playerPronounGuide\n\n在實際回覆台詞中，禁止稱呼對方為「玩家」。你可以稱呼對方為「$_playerNickname」或使用符合性別設定的親暱稱呼。\n\n你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數)。絕對不可以輸出任何其他格式或說明。"
+            : "【最高防護指令】請你「維持當前的聊天情境與場景」。記住，與你對話的對象稱呼是「$_playerNickname」，絕對不能叫錯！以下是對方當前的專屬時空設定：\n$dynamicProfile\n\n【玩家性別與稱呼規範】\n玩家性別設定：$playerGenderForAi\n$playerPronounGuide\n\n在實際回覆台詞中，禁止稱呼對方為「玩家」。你可以稱呼對方為「$_playerNickname」或使用符合性別設定的親暱稱呼。\n\n你必須嚴格根據這些設定與對方互動，並以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數)。絕對不可以輸出任何其他格式或說明。",
         "memos": memos,
         "periodStatus": periodStatus,
         "lastStoryTime": _currentStoryTime,
@@ -2834,6 +2845,40 @@ class _ChatPageState extends State<ChatPage> {
           _isLoading = false;
         });
       }
+    }
+  }
+
+  String _normalizePlayerGenderForAi(String? rawGender) {
+    final gender = (rawGender ?? '').trim();
+
+    if (gender == '男' || gender == '男性' || gender == '男生') {
+      return '男性';
+    }
+
+    if (gender == '女' || gender == '女性' || gender == '女生') {
+      return '女性';
+    }
+
+    if (gender == '其他') {
+      return '其他';
+    }
+
+    return '未設定';
+  }
+
+  String _buildPlayerPronounGuide(String playerGender) {
+    switch (playerGender) {
+      case '男性':
+        return '玩家設定為男性。請把對方視為男性，可以使用「你」「他」「男生」「先生」「男友」等稱呼。禁止稱對方為「妳」「她」「女生」「小姐」「女主角」「女友」，除非對方自己明確要求。不得反駁對方的男性身份。';
+
+      case '女性':
+        return '玩家設定為女性。請把對方視為女性，可以使用「妳」「她」「女生」「小姐」「女友」等稱呼。';
+
+      case '其他':
+        return '玩家性別設定為其他。請使用中性稱呼，例如「你」「對方」或玩家名字。不要擅自判定對方是男生或女生。';
+
+      default:
+        return '玩家尚未設定性別。請使用中性稱呼，例如「你」「對方」或玩家名字。不要擅自判定對方是男生或女生。';
     }
   }
 
