@@ -20,6 +20,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:typed_data';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'profile_page.dart';
 
 // ✨ 這是一個既能「創建」也能「編輯」的萬能頁面
 class CharacterEditPage extends StatefulWidget {
@@ -60,6 +61,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   bool _isGeneratingVoice = false;
   bool _isInit = false; // ✨ 專屬防護旗標
   bool _isTestingSettings = false;
+  bool _isLeavingPage = false;
   final FirebaseFunctions _functions =
   FirebaseFunctions.instanceFor(region: 'asia-east1');
   Map<String, String> _relationships = {};
@@ -448,8 +450,17 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   }
 
   Future<void> _saveToDraft() async {
+    debugPrint('🟣 進入 _saveToDraft：isEditing=$isEditing, currentDraftId=$_currentDraftId');
+
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      debugPrint('⛔ _saveToDraft 被擋：user == null');
+      return;
+    }
+
+    debugPrint('👤 _saveToDraft user=${user.uid}');
     if (user == null) return;
     // ✨ 1. 聰明判斷玩家要存哪個聲音 ID
     final String finalVoiceIdToSave = _generatedVoiceId ?? _selectedVoiceId ?? '';
@@ -557,6 +568,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'isCompleted': false,
         'status': 'draft',
         'createdBy': user.uid,
+        'userId': user.uid,
+        'updatedAt': FieldValue.serverTimestamp(),
         'extraInfoItems': _extraInfoItems,
         'content_language': l10n.localeName,
         'stageStranger': _stageStrangerController.text.trim(),
@@ -571,14 +584,47 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voiceStyle': _voiceStyle,
         'relationships': _relationships, // 🌟 補上這行，Tab 3 的關係就不會消失了！
         'multiCharacters': multiCharactersString,
+        'sourceCharacterId': widget.character?.id,
+        'sourceWasPublic': widget.character?.isPublic,
       };
 
+      // 如果目前沒有草稿 ID，但這是從既有角色編輯來的，先查是否已經有草稿
+      if (_currentDraftId == null && widget.character?.id != null) {
+        final existingDraftQuery = await _db
+            .collection('draft_characters')
+            .where('userId', isEqualTo: user.uid)
+            .where('sourceCharacterId', isEqualTo: widget.character!.id)
+            .limit(1)
+            .get();
+
+        if (existingDraftQuery.docs.isNotEmpty) {
+          _currentDraftId = existingDraftQuery.docs.first.id;
+          debugPrint('🟡 找到既有草稿，改為更新：draftId=$_currentDraftId');
+        }
+      }
+
       // 🌟 5. 寫入 Firestore 的草稿區 (draft_characters)
+      debugPrint('🟣 準備寫入草稿：currentDraftId=$_currentDraftId');
+
       if (_currentDraftId != null) {
-        await _db.collection('draft_characters').doc(_currentDraftId).update(draftData);
+        debugPrint('🟣 更新既有草稿：draftId=$_currentDraftId');
+
+        await _db
+            .collection('draft_characters')
+            .doc(_currentDraftId)
+            .set(draftData, SetOptions(merge: true));
+
+        debugPrint('✅ 既有草稿更新成功：draftId=$_currentDraftId');
       } else {
-        final docRef = await _db.collection('draft_characters').add(draftData);
+        debugPrint('🟣 新增草稿中...');
+
+        final docRef = await _db.collection('draft_characters').add({
+          ...draftData,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+
         _currentDraftId = docRef.id;
+        debugPrint('✅ 新草稿建立成功：draftId=$_currentDraftId');
       }
       if (mounted) {
         // ✨ 總裁級：行雲流水的草稿儲存確認，完美避開虛擬鍵盤的干擾！
@@ -604,45 +650,90 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     }
   }
 
-  Future<bool> _showExitConfirmationDialog() async {
+  Future<void> _leaveCharacterEditPage(Map<String, dynamic> result) async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLeavingPage = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if (!mounted) return;
+
+    debugPrint('🚪 儲存草稿完成，準備回到原本主頁架構：result=$result');
+
+    Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+  }
+
+  Future<Map<String, dynamic>?> _showExitConfirmationDialog() async {
     final l10n = AppLocalizations.of(context)!;
-    // 如果內容完全是空的，就直接讓玩家走，不要煩他
+
     if (_nameController.text.isEmpty && _storySummaryController.text.isEmpty) {
-      return true;
+      return {
+        'shouldLeave': true,
+        'changed': false,
+      };
     }
-    final result = await showDialog<bool>(
+
+    final result = await showDialog<Map<String, dynamic>?>(
       context: context,
-      builder: (context) => AlertDialog(
-        title:Text(l10n.draft_save_title),
-        content:Text(l10n.draft_save_content),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.draft_save_title),
+        content: Text(l10n.draft_save_content),
         actions: [
-          // 選項一：不儲存，直接走
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child:Text(l10n.not_save, style: TextStyle(color: Colors.grey)),
-          ),
-          // 選項二：取消，留下來繼續寫
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child:Text(l10n.cancel),
-          ),
-          // 選項三：儲存，存完後再走
-          ElevatedButton(
-            onPressed: () async {
-              // 這裡呼叫我們剛才寫好的儲存草稿函數
-              await _saveToDraft();
-              if (context.mounted) Navigator.of(context).pop({
-                'changed': true,
-                'goProfile': true,
+            onPressed: () {
+              Navigator.of(dialogContext).pop({
+                'shouldLeave': true,
+                'changed': false,
+                'notSaved': true,
               });
             },
-            child:Text(l10n.save_draft),
+            child: Text(
+              l10n.not_save,
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ),
+
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop({
+                'shouldLeave': false,
+                'changed': false,
+              });
+            },
+            child: Text(l10n.cancel),
+          ),
+
+          ElevatedButton(
+            onPressed: () async {
+              debugPrint('🟣 離開確認視窗：儲存草稿按鈕被點擊');
+
+              await _saveToDraft();
+
+              debugPrint('✅ _saveToDraft 已結束，準備關閉確認視窗');
+
+              if (dialogContext.mounted) {
+                Navigator.of(dialogContext).pop(); // 只關儲存確認視窗
+              }
+
+              await Future.delayed(const Duration(milliseconds: 500));
+
+              if (!mounted) return;
+
+              await _leaveCharacterEditPage({
+                'changed': true,
+                'goProfile': true,
+                'draftSaved': true,
+              });
+            },
+            child: Text(l10n.save_draft),
           ),
         ],
       ),
     );
-
-    return result ?? false; // 如果玩家點擊旁邊空白處關閉，視為「取消」
+    return result;
   }
 
   void _scrollToFocus(FocusNode focusNode) {
@@ -708,7 +799,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     setState(() => _isDeleting = true);
 
     try {
-      if (_isDeleting) return;
 
       final batch = _db.batch();
       final characterId = widget.character!.id;
@@ -831,6 +921,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   }
 
   Future<void> _saveCharacter() async {
+    debugPrint('🟡 進入 _saveCharacter：isSaving=$_isSaving, isEditing=$isEditing, isPublic=$_isPublic');
+
+    if (_isSaving) {
+      debugPrint('⛔ _saveCharacter 被擋：_isSaving 已經是 true');
+      return;
+    }
     if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     // 🌟 1. 基礎防呆與字數檢查 (維持妳原本的優良設計)
@@ -1059,7 +1155,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       final String finalRelationship = (_selectedRelationship == 'relationship_other')
           ? _customRelationshipController.text.trim() // 抓手寫內容
           : (_selectedRelationship ?? '');           // 抓選單的 Key
-
+      final String originalCreatedBy =
+      (widget.character?.createdBy ?? '').trim().isNotEmpty
+          ? widget.character!.createdBy
+          : currentUser.uid;
       // 相容舊版，還是把 galleryData 存在主資料夾一份
       final galleryData = _galleryPhotos.map((p) => p.toMap()).toList();
       Map<String, dynamic> characterData = {
@@ -1091,7 +1190,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'isDraft': false,
         'isCompleted': true,
         'status': 'published',
-        'createdBy': currentUser.uid,
+        'createdBy': originalCreatedBy,
         'extraInfoItems': _extraInfoItems,
         'content_language': l10n.localeName,
         'stageStranger': _stageStrangerController.text.trim(),
@@ -1118,8 +1217,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           // ✨ 總裁急救包：搬家的時候，強制把「出生時間」和「親媽身分證」塞進行李箱！
 
           // 1. 確保親媽 ID 不會掉
-          characterData['createdBy'] = FirebaseAuth.instance.currentUser?.uid;
-
+          characterData['createdBy'] = originalCreatedBy;
           // 3. 原本的遊玩次數也順便帶過去，才不會搬個家就被歸零！
           characterData['playCount'] = widget.character?.playCount ?? 0;
 
@@ -1185,25 +1283,29 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       if (!mounted) return;
 
 // 先關掉 loading dialog
-      Navigator.of(context, rootNavigator: true).pop();
+      // 先關掉 loading dialog
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
 
-      ToastUtils.showCenterToast(
-        context,
-        l10n.char_saved_success(
-          characterData['name'],
-          isEditing ? l10n.update_action : l10n.createButton,
-        ),
-        customIcon: isEditing
-            ? Icons.manage_accounts_rounded
-            : Icons.person_add_rounded,
-      );
+      if (!mounted) return;
 
-// 再把成功結果傳回上一頁
-      Navigator.of(context).pop({
+      final result = {
         'changed': true,
         'goProfile': true,
         'action': isEditing ? 'updated' : 'created',
-      });
+        'message': l10n.char_saved_success(
+          characterData['name'],
+          isEditing ? l10n.update_action : l10n.createButton,
+        ),
+      };
+
+      debugPrint('✅ 準備返回上一頁 result=$result');
+
+// 直接回上一頁，不要在這頁先跳 Toast
+      Navigator.of(context).pop(result);
+
+      return;
       } catch (e) {
       if (mounted) Navigator.of(context, rootNavigator: true).pop();
       print("!!! 儲存角色時發生錯誤: ${e.toString()}");
@@ -1854,16 +1956,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
         // 原本的 PopScope 變成 GestureDetector 的 child
       child: PopScope(
-        canPop: false, // 永遠先攔截下來
+        canPop: _isLeavingPage,
         onPopInvokedWithResult: (didPop, result) async {
-          if (didPop) return; // 如果已經退出了就不用管
+          if (didPop) return;
+          if (_isLeavingPage) return;
 
-          // 呼叫我們精心設計的彈窗
-          final shouldPop = await _showExitConfirmationDialog();
-
-          if (shouldPop && context.mounted) {
-            Navigator.of(context).pop(); // 玩家決定要走了，放行！
-          }
+          await _showExitConfirmationDialog();
         },
       // ✨✨✨ 核心升級：加入 DefaultTabController ✨✨✨
       child: DefaultTabController(
@@ -1957,7 +2055,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                         elevation: 4,
                       ),
-                      onPressed: _isSaving ? null : _saveCharacter,
+                      onPressed: () {
+                        debugPrint('🟢 強制儲存按鈕被點擊：isEditing=$isEditing, isSaving=$_isSaving, isPublic=$_isPublic');
+                        _saveCharacter();
+                      },
                       child: _isSaving
                           ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                           : Text(isEditing ? l10n.save_changes_button : l10n.createButton, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),

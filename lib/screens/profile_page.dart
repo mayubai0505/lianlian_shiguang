@@ -1929,20 +1929,31 @@ class _ProfilePageState extends State<ProfilePage> {
           );
           if (!mounted) return;
           if (result is Map) {
+            debugPrint('🔙 CharacterEditPage 回傳 result=$result');
+
             final bool changed = result['changed'] == true;
             final bool deleted = result['deleted'] == true;
-            // ✅ 刪除成功時，先立刻從畫面上的本地列表移除
+            final String? message = result['message']?.toString();
+
             if (deleted) {
               setState(() {
                 _myCharacters.removeWhere((c) => c.id == character.id);
               });
             }
-            // ✅ 再重新跟 Firestore 同步一次
+
             if (changed) {
               await _refreshData();
 
               if (!mounted) return;
               setState(() {});
+
+              if (message != null && message.isNotEmpty) {
+                ToastUtils.showCenterToast(
+                  context,
+                  message,
+                  customIcon: Icons.manage_accounts_rounded,
+                );
+              }
             }
           }
           return;
