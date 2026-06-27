@@ -124,7 +124,9 @@ class _ChatPageState extends State<ChatPage> {
   bool _isLoadingRoom = true;
   bool _isChecking = false; // 也要記得保留原本檢查中的狀態變數
   String _userProfileText = ""; // 用來顯示檔案內容的變數
+  bool _waitingForNewAiReply = false;
   int _watermarkStyle = 0;
+  DateTime? _lastUserSendTime;
   // 🌟 請確保這行加在這裡！這樣整個頁面才都認識它
   int _maxRegenerateCount = 3;
   bool _isMultiSelectMode = false;
@@ -491,9 +493,6 @@ class _ChatPageState extends State<ChatPage> {
           'regenerateCount': maxCount,
           'lastRegenerateDate': todayStr,
         }, SetOptions(merge: true));
-
-        debugPrint("🔄 初始化：重置對話 ${widget.sessionId} 為 $maxCount 次");
-
       } else {
         // 🕰️ 同一天：讀取雲端現有的次數 (已經經過上面的 VIP 霸氣補發了！)
         if (mounted) {
@@ -503,7 +502,6 @@ class _ChatPageState extends State<ChatPage> {
             _freeRegenerateCount = currentCount;
           });
         }
-        debugPrint("📥 讀檔成功：今日對話 ${widget.sessionId} 剩餘 $currentCount 次");
       }
     } catch (e) {
       debugPrint("❌ 讀取對話次數失敗: $e");
@@ -1191,13 +1189,6 @@ class _ChatPageState extends State<ChatPage> {
         _isLoading ||
         generatingRooms.contains(roomLockKey) ||
         _sessionId == null) {
-      debugPrint(
-        '⛔ 擋掉重複送出：'
-            'isGenerating=$_isGenerating, '
-            'isLoading=$_isLoading, '
-            'roomGenerating=${generatingRooms.contains(roomLockKey)}, '
-            'sessionId=$_sessionId',
-      );
       return;
     }
     // 一按送出，立刻切成「回覆中 / 停止鍵」
@@ -1205,11 +1196,12 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         _isGenerating = true;
         _isLoading = false;
+        _lastUserSendTime = DateTime.now();
+        _waitingForNewAiReply = true;
       });
     }
 
-    generatingRooms.remove(roomLockKey);
-
+    generatingRooms.add(_roomLockKey);
     try {
       // 發送後清空輸入框
       _textController.clear();
@@ -1305,7 +1297,7 @@ class _ChatPageState extends State<ChatPage> {
         _showCenterToast('送出失敗，請稍後再試 😢', isError: true);
       }
     } finally {
-      generatingRooms.remove(roomLockKey);
+      generatingRooms.remove(_roomLockKey);
 
       if (mounted) {
         setState(() {
@@ -1813,7 +1805,6 @@ class _ChatPageState extends State<ChatPage> {
             }
           }
         });
-        debugPrint("🎒 已經將 ${_triggeredEggKeywords.length} 個拿過的彩蛋加入黑名單！");
       }
     } catch (e) {
       debugPrint("檢查背包彩蛋失敗: $e");
@@ -2423,8 +2414,6 @@ class _ChatPageState extends State<ChatPage> {
       // ✨ 總裁急救包：給它一點耐心，不要馬上放棄！
       // 🌟 改良後的等待機制：只檢查 Firebase 是否準備好，不管 shouldSave 了
       if (_messagesCollection == null) {
-        debugPrint("⏳ _messagesCollection 還沒準備好，稍等 0.5 秒...");
-
         // 讓程式稍微等一下 Firebase 建置房間
         await Future.delayed(const Duration(milliseconds: 500));
 
@@ -2509,7 +2498,6 @@ class _ChatPageState extends State<ChatPage> {
               'characterName': _currentCharacter.name,
               'lastUpdate': FieldValue.serverTimestamp(),
             }, SetOptions(merge: true));
-            debugPrint("📈 全域最高好感度已同步更新：$_currentFriendship");
           }
         });
       } else {
@@ -2675,7 +2663,7 @@ class _ChatPageState extends State<ChatPage> {
           setState(() {
             _isGenerating = false;
             _isLoading = false;
-            generatingRooms.remove(roomLockKey);
+            generatingRooms.remove(_roomLockKey);
           });
           // 溫柔安撫玩家，不要顯示駭人的英文錯誤
           _showCenterToast('他似乎在沉思，請稍後再試...', isError: true);
@@ -2738,7 +2726,7 @@ class _ChatPageState extends State<ChatPage> {
           // ========================================================
           // 🟡 第二區：【UI 溫室防線】只有當玩家還在房間畫面上，才需要處理 setState 與升級動畫
           // ========================================================
-          generatingRooms.remove(roomLockKey);
+          generatingRooms.remove(_roomLockKey);
           if (mounted) {
             setState(() {
               final int uiCost = isFreeToday ? 0 : messageCost;
@@ -2762,7 +2750,7 @@ class _ChatPageState extends State<ChatPage> {
           }
 
         } else {
-          generatingRooms.remove(roomLockKey);
+          generatingRooms.remove(_roomLockKey);
           if (mounted) {
             setState(() {
               _isGenerating = false;
@@ -2773,7 +2761,7 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       } else if (response.statusCode == 429) {
-        generatingRooms.remove(roomLockKey);
+        generatingRooms.remove(_roomLockKey);
 
         if (mounted) {
           setState(() {
@@ -2787,7 +2775,7 @@ class _ChatPageState extends State<ChatPage> {
         return;
       } else if (response.statusCode == 400) {
         // 🛑 退款防護網啟動：攔截到 400 錯誤！
-        generatingRooms.remove(roomLockKey);
+        generatingRooms.remove(_roomLockKey);
 
         if (mounted) {
           setState(() {
@@ -2812,7 +2800,7 @@ class _ChatPageState extends State<ChatPage> {
         }
       } else {
         // 其他狀態碼 (例如 500) 或網路異常
-        generatingRooms.remove(roomLockKey);
+        generatingRooms.remove(_roomLockKey);
         if (mounted) {
           setState(() {
             _isGenerating = false;
@@ -2837,7 +2825,7 @@ class _ChatPageState extends State<ChatPage> {
       _httpClient?.close();
       _httpClient = null;
 
-      generatingRooms.remove(roomLockKey);
+      generatingRooms.remove(_roomLockKey);
 
       if (mounted) {
         setState(() {
@@ -3055,7 +3043,7 @@ class _ChatPageState extends State<ChatPage> {
     _httpClient?.close();
     _httpClient = null;
 
-    generatingRooms.remove(roomLockKey);
+    generatingRooms.remove(_roomLockKey);
 
     if (mounted) {
       setState(() {
@@ -3189,19 +3177,8 @@ class _ChatPageState extends State<ChatPage> {
           activeProfile = allProfiles.where((p) =>
           p['id'] == targetProfileId && p['characterId'] == characterId
           ).firstOrNull;
-
-          if (activeProfile != null) {
-            debugPrint(
-                "✅ [時空監視] 成功穿上專屬檔案: ${activeProfile!['profileName']}");
-          } else {
-            debugPrint(
-                "❌ [時空監視] 找不到這件衣服！可能 characterId 不對，或是沒有這個 ID");
-          }
-        } else {
-          debugPrint("⚠️ [時空監視] 房間還沒綁定衣服，啟動基本兜底防線！");
         }
         // ✨ 虛擬組裝：沒有指定人設的房間，一律用最原始的名字跟生日！
-        // ✨ 總裁級超簡潔寫法，直接用 ??= 取代 if (activeProfile == null)
         activeProfile ??= {
           'profileName': '基礎檔案',
           'name': nickname,
@@ -3258,9 +3235,7 @@ class _ChatPageState extends State<ChatPage> {
           });
         }
       }
-    } catch (e) {
-      debugPrint("檢查房間 [$roomId] 的專屬拾光檔案失敗: $e");
-    } finally {
+    }finally {
       _isChecking = false;
     }
   }
@@ -5862,20 +5837,34 @@ class _ChatPageState extends State<ChatPage> {
 
                     // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
                     if (messages.isNotEmpty) {
-                      final latestMessage = messages.first; // 抓出最新的一句話
+                      final latestMessage = messages.first;
 
-                      // 檢查：如果最新一句話是 AI 說的，而且畫面居然還卡在轉圈圈
-                      if (latestMessage.sender == 'ai' && _isGenerating) {
-                        // 呼叫 Flutter 系統，在畫面渲染完畢後偷偷把它解鎖
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (mounted) {
+                      if (_isGenerating &&
+                          _waitingForNewAiReply &&
+                          latestMessage.sender == 'ai') {
+                        final lastUserSendTime = _lastUserSendTime;
+                        final DateTime? aiMessageTime = latestMessage.timestamp?.toDate();
+
+                        final bool isNewAiReply =
+                            lastUserSendTime != null &&
+                                aiMessageTime != null &&
+                                aiMessageTime.isAfter(lastUserSendTime);
+
+                        if (isNewAiReply) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!mounted) return;
+
                             setState(() {
                               _isGenerating = false;
+                              _isLoading = false;
+                              _waitingForNewAiReply = false;
                             });
-                            generatingRooms.remove(roomLockKey);
-                            debugPrint("✨ 偵測到 AI 最新回覆，強制解除鎖定狀態！");
-                          }
-                        });
+
+                            generatingRooms.remove(_roomLockKey);
+
+                            debugPrint("✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
+                          });
+                        }
                       }
                     }
                     // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
@@ -6041,25 +6030,37 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildMessageList(List<ChatMessage> messages) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+
+    final bool isAiReplying =
+        _isGenerating ||
+            _isLoading ||
+            generatingRooms.contains(_roomLockKey);
+
     return ListView.builder(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       controller: _chatScrollController,
-      reverse: true, // 👈 畫面是由下往上畫的
+      reverse: true,
       padding: const EdgeInsets.all(8.0),
-      itemCount: messages.length + (_isGenerating ? 1 : 0),
+      itemCount: messages.length + (isAiReplying ? 1 : 0),
       itemBuilder: (context, index) {
-        if (_isGenerating && index == 0) {
+        if (isAiReplying && index == 0) {
           return _buildTypingIndicator();
         }
 
-        final messageIndex = _isGenerating ? index - 1 : index;
-        final message = messages[messageIndex];
+        final realIndex = isAiReplying ? index - 1 : index;
+
+        if (realIndex < 0 || realIndex >= messages.length) {
+          return const SizedBox.shrink();
+        }
+
+        final message = messages[realIndex];
+
+        final messageIndex = realIndex;
         final sender = message.sender;
         final type = message.type;
 
         // 📸 🌟 截圖模式核心變數：判斷這句話有沒有被玩家打勾
         final isSelected = _selectedMessageIds.contains(message.id);
-
         // ✨ 判斷要不要顯示「日期分界線」
         bool showDateHeader = false;
         if (messageIndex == messages.length - 1) {
