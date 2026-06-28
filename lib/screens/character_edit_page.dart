@@ -607,14 +607,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       debugPrint('🟣 準備寫入草稿：currentDraftId=$_currentDraftId');
 
       if (_currentDraftId != null) {
-        debugPrint('🟣 更新既有草稿：draftId=$_currentDraftId');
 
         await _db
             .collection('draft_characters')
             .doc(_currentDraftId)
             .set(draftData, SetOptions(merge: true));
-
-        debugPrint('✅ 既有草稿更新成功：draftId=$_currentDraftId');
       } else {
         debugPrint('🟣 新增草稿中...');
 
@@ -798,8 +795,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     setState(() => _isDeleting = true);
 
-    try {
+    bool shouldSkipResetDeleting = false;
 
+    try {
       final batch = _db.batch();
       final characterId = widget.character!.id;
 
@@ -825,14 +823,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
       Future<void> deleteDocAndPhotos(DocumentReference ref) async {
         final photosSnapshot = await ref.collection('photos').get();
+
         for (final doc in photosSnapshot.docs) {
           batch.delete(doc.reference);
         }
+
         batch.delete(ref);
       }
 
-      // ✅ 公開、私人、舊私人路徑都刪一次
-      // 不存在的 doc delete 不會出事
       await deleteDocAndPhotos(publicRef);
       await deleteDocAndPhotos(privateRef);
       await deleteDocAndPhotos(legacyPrivateRef);
@@ -841,16 +839,18 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
       if (!mounted) return;
 
-      ToastUtils.showCenterToast(
-        context,
-        l10n.char_deleted,
-        customIcon: Icons.person_remove_rounded,
-      );
+      shouldSkipResetDeleting = true;
+
+      setState(() {
+        _isLeavingPage = true;
+      });
 
       Navigator.of(context).pop({
         'changed': true,
         'deleted': true,
+        'characterId': characterId,
         'goProfile': true,
+        'message': l10n.char_deleted,
       });
     } catch (e) {
       debugPrint('❌ 刪除角色失敗: $e');
@@ -859,7 +859,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         _showErrorDialog(l10n.delete_failed_msg, e.toString());
       }
     } finally {
-      if (mounted) {
+      if (mounted && !shouldSkipResetDeleting) {
         setState(() => _isDeleting = false);
       }
     }
@@ -1917,15 +1917,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       {'id': genderIdFemale, 'label': l10n.genderFemale},
       {'id': genderIdOther, 'label': l10n.genderOther},
     ];
-// Dropdown 的改法
-    DropdownButtonFormField<String>(
-      value: _gender.isEmpty ? null : _gender, // 這裡的 _gender 現在存的是 'male' 或 'female'
-      items: genderOptions.map((g) => DropdownMenuItem(
-        value: g['id'],       // 存入資料庫的值：'male'
-        child: Text(g['label']!), // 顯示在畫面上的值：'男性' 或 'Male'
-      )).toList(),
-      onChanged: (val) => setState(() => _gender = val ?? ''),
-    );
     final List<String> relationshipOptions = [
       l10n.relationship_childhood_friend, l10n.relationship_senior_junior,
       l10n.relationship_bickering_couple, l10n.relationship_colleagues,
@@ -2114,11 +2105,21 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     child: DropdownButtonFormField<String>(
                       value: currentValidGender,
                       hint: Text(l10n.genderNotSelected),
-                      decoration: InputDecoration(labelText: l10n.charGenderLabel, border: const OutlineInputBorder()),
-                      items: genderOptions.map((g) => DropdownMenuItem(
+                      decoration: InputDecoration(
+                        labelText: l10n.charGenderLabel,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: genderOptions.map((g) {
+                        return DropdownMenuItem<String>(
                           value: g['id'],
-                          child: Text(g['label']!)
-                      )).toList(),                      onChanged: (newValue) => setState(() => _gender = newValue ?? ''),
+                          child: Text(g['label']!),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          _gender = newValue ?? '';
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(height: 12),

@@ -14,6 +14,7 @@ import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'character_profile_page.dart';
 import '../services/moment_notification_service.dart';
+import 'edit_moment_page.dart';
 //動態牆(朋友圈)
 class MomentsPage extends StatefulWidget {
   const MomentsPage({super.key});
@@ -218,6 +219,7 @@ class _MomentsPageState extends State<MomentsPage> {
               onLikeTapped: _handleLikeTaskProgress,
               onDeleteTapped: _deleteMoment,
               onAvatarTapped: _navigateToCharacterProfile,
+              onEditTapped: _editMoment,
             ),
             PersistentFeed(
               friendIds: friendIds,
@@ -227,12 +229,32 @@ class _MomentsPageState extends State<MomentsPage> {
               onLikeTapped: _handleLikeTaskProgress,
               onDeleteTapped: _deleteMoment,
               onAvatarTapped: _navigateToCharacterProfile,
+              onEditTapped: _editMoment,
             ),
           ],
         );
       },
     );
   }
+
+  Future<void> _editMoment(Moment moment) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EditMomentPage(
+          momentToEdit: moment,
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (result is Map && result['changed'] == true) {
+      // 你的 PersistentFeed 是 StreamBuilder，Firestore 更新後通常會自己刷新
+      // 這裡 setState 只是保險，讓畫面重新整理一次
+      setState(() {});
+    }
+  }
+
   // 🗑️ 刪除動態的執行邏輯
   Future<void> _deleteMoment(String momentId) async {
     final l10n = AppLocalizations.of(context)!;
@@ -324,7 +346,6 @@ class _MomentsPageState extends State<MomentsPage> {
       ),
     );
   }
-
 
   Future<List<Character>> _fetchMyCharacters() async {
     if (_userId == null) return [];
@@ -783,6 +804,7 @@ class PersistentFeed extends StatefulWidget {
   final Function(Moment) onLikeTapped;
   final Function(String) onDeleteTapped;
   final Function(Moment) onAvatarTapped;
+  final Function(Moment) onEditTapped;
 
   const PersistentFeed({
     super.key,
@@ -793,6 +815,7 @@ class PersistentFeed extends StatefulWidget {
     required this.onLikeTapped,
     required this.onDeleteTapped,
     required this.onAvatarTapped,
+    required this.onEditTapped,
   });
 
   @override
@@ -872,6 +895,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
                 onLikeTapped: () => widget.onLikeTapped(moment),
                 onDeleteTapped: () => widget.onDeleteTapped(moment.id),
                 onAvatarTapped: () => widget.onAvatarTapped(moment),
+                onEditTapped: () => widget.onEditTapped(moment),
               );
             },
           );

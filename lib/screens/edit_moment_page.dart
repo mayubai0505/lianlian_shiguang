@@ -62,43 +62,46 @@ class _EditMomentPageState extends State<EditMomentPage> {
 
     final newContent = _contentController.text.trim();
 
-    // 檢查是否有變更，沒變更就直接退回
     if (newContent == widget.momentToEdit.content && !_imageChanged) {
-      // ✨ 總裁級防呆：無效修改的溫柔攔截，伴隨完美的過場退場！
       ToastUtils.showCenterToast(
         context,
         l10n.common_no_changes,
-        customIcon: Icons.history_edu_rounded, // 💡 總裁精選：帶有「維持原案/筆記」意象的輕柔圖示
-        // 💡 總裁秘技：若想表達「一切如常」，也可以使用 Icons.done_all_rounded
-        // 或是 Icons.edit_off_rounded，語意會非常精準。
+        customIcon: Icons.history_edu_rounded,
       );
-      Navigator.pop(context); // 帶著懸浮提示，行雲流水地滑回上一頁
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop({
+        'changed': false,
+        'momentId': widget.momentToEdit.id,
+      });
       return;
     }
 
     setState(() => _isSaving = true);
 
-    // 🌟 1. 先把「舊圖片網址」記下來，等更新成功後再刪除
+    bool shouldSkipResetSaving = false;
+
     final String? oldImageUrlToCleanup = widget.momentToEdit.imageUrl;
 
-    try {
-      String? finalImageUrl = widget.momentToEdit.imageUrl;
+    // ✅ 重點：放在 try 外面，後面 Navigator.pop 才拿得到
+    String? finalImageUrl = widget.momentToEdit.imageUrl;
 
-      // 🌟 2. 如果圖片有變動，處理上傳或清空
+    try {
       if (_imageChanged) {
         if (_imagePath != null && !_imagePath!.startsWith('http')) {
-          // A. 選了新圖：上傳到 Firebase Storage
           final file = File(_imagePath!);
-          final ref = FirebaseStorage.instance.ref('moment_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+          final ref = FirebaseStorage.instance.ref(
+            'moment_images/${DateTime.now().millisecondsSinceEpoch}.jpg',
+          );
+
           await ref.putFile(file);
           finalImageUrl = await ref.getDownloadURL();
         } else if (_imagePath == null) {
-          // B. 點了移除圖片：將 URL 設為 null
           finalImageUrl = null;
         }
       }
 
-      // 🌟 3. 正式更新 Firestore 資料庫
       await FirebaseFirestore.instance
           .collection('artifacts')
           .doc(AppConfig.appId)
@@ -108,36 +111,38 @@ class _EditMomentPageState extends State<EditMomentPage> {
         'content': newContent,
         'imageUrl': finalImageUrl,
         'lastEditedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
 
-      // 🌟 4. 更新成功！現在才叫垃圾車出動清理舊圖 🚛💨
-      if (_imageChanged && oldImageUrlToCleanup != null && oldImageUrlToCleanup.startsWith('http')) {
+      if (_imageChanged &&
+          oldImageUrlToCleanup != null &&
+          oldImageUrlToCleanup.startsWith('http') &&
+          oldImageUrlToCleanup != finalImageUrl) {
         _deleteImageFromStorage(oldImageUrlToCleanup);
       }
 
-      if (mounted) {
-        // ✨ 總裁級：動態更新成功的完美轉場，徹底告別 SnackBar 跨頁面的閃爍災難！
-        ToastUtils.showCenterToast(
-          context,
-          l10n.moment_updated_success,
-          customIcon: Icons.task_alt_rounded, // 💡 總裁精選：帶有「俐落完成、打勾確認」意象的完美圖示
-          // 💡 總裁秘技：如果想強調「圖文已經為您修改好囉」，
-          // 換成 Icons.edit_note_rounded 或 Icons.photo_filter_rounded 也會非常有質感！
-        );
+      if (!mounted) return;
 
-        Navigator.pop(context, true); // 返回上一頁並傳回 true，行雲流水，毫無破綻！
-      }
+      shouldSkipResetSaving = true;
+
+      Navigator.of(context).pop({
+        'changed': true,
+        'momentId': widget.momentToEdit.id,
+        'content': newContent,
+        'imageUrl': finalImageUrl,
+      });
     } catch (e) {
-      if (mounted) {
-        // ✨ 總裁級防護：通用儲存失敗的終極兜底！妥善包裝未知錯誤，維持系統優雅！
-        ToastUtils.showCenterToast(
-          context,
-          l10n.common_save_failed(e.toString()),
-          isError: true, // 💡 全域統一的紅色驚嘆號，清楚傳達異常狀態
-        );
-      }
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.common_save_failed(e.toString()),
+        isError: true,
+      );
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (mounted && !shouldSkipResetSaving) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
@@ -170,7 +175,7 @@ class _EditMomentPageState extends State<EditMomentPage> {
               : IconButton(
             icon: const Icon(Icons.check),
             tooltip: l10n.saveButton,
-            onPressed: _saveChanges,
+            onPressed: _isSaving ? null : _saveChanges,
           ),
         ],
       ),
@@ -206,9 +211,22 @@ class _EditMomentPageState extends State<EditMomentPage> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: _imagePath!.startsWith('http')
-              ? Image.network(_imagePath!, fit: BoxFit.cover)
-              : Image.file(File(_imagePath!), fit: BoxFit.cover),
+          child: Container(
+            constraints: const BoxConstraints(
+              maxHeight: 420,
+            ),
+            width: double.infinity,
+            color: Colors.black12,
+            child: _imagePath!.startsWith('http')
+                ? Image.network(
+              _imagePath!,
+              fit: BoxFit.contain,
+            )
+                : Image.file(
+              File(_imagePath!),
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         const SizedBox(height: 10),
         Row(

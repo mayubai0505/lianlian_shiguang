@@ -522,11 +522,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         isError: true,
       );
-
-      // ⚠️ 如果前面有樂觀更新，失敗後最好重新讀資料
-      // 如果你的頁面有這種函式，可以打開：
-      // await _loadUserData();
-      // await _loadDailyTasks();
     }
   }
 
@@ -1933,12 +1928,26 @@ class _ProfilePageState extends State<ProfilePage> {
 
             final bool changed = result['changed'] == true;
             final bool deleted = result['deleted'] == true;
+            final String? deletedCharacterId = result['characterId']?.toString();
             final String? message = result['message']?.toString();
 
             if (deleted) {
+              final idToRemove = deletedCharacterId ?? character.id;
+
               setState(() {
-                _myCharacters.removeWhere((c) => c.id == character.id);
+                _myCharacters.removeWhere((c) => c.id == idToRemove);
               });
+
+              if (message != null && message.isNotEmpty) {
+                ToastUtils.showCenterToast(
+                  context,
+                  message,
+                  customIcon: Icons.person_remove_rounded,
+                );
+              }
+
+              // 刪除已經即時從畫面移除，不要再立刻 refresh 卡住畫面
+              return;
             }
 
             if (changed) {

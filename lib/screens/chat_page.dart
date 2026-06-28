@@ -45,6 +45,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
 
+
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive , gemini}
 class FlowerStage {
@@ -122,6 +123,8 @@ class _ChatPageState extends State<ChatPage> {
   Map<String, dynamic>? _roomConfig;
   bool _isMonthlyPassActive = false;
   bool _isLoadingRoom = true;
+  final List<Map<String, dynamic>> _pendingMediaMessages = [];
+  final Map<String, String> _audioDownloadUrlCache = {};
   bool _isChecking = false; // 也要記得保留原本檢查中的狀態變數
   String _userProfileText = ""; // 用來顯示檔案內容的變數
   bool _waitingForNewAiReply = false;
@@ -155,6 +158,14 @@ class _ChatPageState extends State<ChatPage> {
   DocumentReference? _sessionDocRef;
   CollectionReference? _messagesCollection;
   late Character _currentCharacter;
+  StreamSubscription? _recorderSub;
+  bool _isRecordingVoice = false;
+  bool _isPreviewPlaying = false;
+  String? _recordingFilePath;
+  String? _pendingAudioPath;
+  double _recordDb = -60.0;
+  Duration _recordDuration = Duration.zero;
+  final AudioPlayer _voicePreviewPlayer = AudioPlayer();
   // --- 狀態變數 ---
   bool _isGenerating = false;           // 正在生成中
   // ✨ 補上我們的遊戲 App ID
@@ -1028,37 +1039,55 @@ class _ChatPageState extends State<ChatPage> {
     try {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
 
-      // 1. 抓取副檔名 (如果是網頁的 blob 網址可能沒副檔名，我們給它預設值)
       String fileExtension = fileType == 'audio' ? 'm4a' : 'png';
+
       if (!kIsWeb && filePath.contains('.')) {
-        fileExtension = filePath.split('.').last;
+        fileExtension = filePath.split('.').last.toLowerCase();
       }
 
-      // 2. 先把「倉庫位置 (ref)」蓋好！
-      final storagePath = 'user_uploads/${user.uid}/$_sessionId/$fileType-$timestamp.$fileExtension';
+      final storagePath =
+          'user_uploads/${user.uid}/$_sessionId/$fileType-$timestamp.$fileExtension';
+
       final ref = FirebaseStorage.instance.ref(storagePath);
 
-      // 3. 判斷平台，把貨物放進倉庫
-      if (kIsWeb) {
-        // 🌐 Web 專用：把檔案讀成二進位資料再上傳
-        final bytes = await XFile(filePath).readAsBytes();
+      String contentType;
 
-        // 告訴 Firebase 這是什麼檔案，網頁播放才不會卡住
-        final metadata = SettableMetadata(
-            contentType: fileType == 'audio' ? 'audio/m4a' : 'image/png'
-        );
-        await ref.putData(bytes, metadata);
+      if (fileType == 'audio') {
+        if (fileExtension == 'aac') {
+          contentType = 'audio/aac';
+        } else if (fileExtension == 'webm') {
+          contentType = 'audio/webm';
+        } else {
+          contentType = 'audio/mp4'; // m4a 建議用 audio/mp4
+        }
       } else {
-        // 📱 手機專用：直接傳實體檔案
-        final file = File(filePath);
-        await ref.putFile(file);
+        if (fileExtension == 'jpg' || fileExtension == 'jpeg') {
+          contentType = 'image/jpeg';
+        } else {
+          contentType = 'image/png';
+        }
       }
 
-      // 4. 成功！回傳路徑給聊天室
-      return storagePath;
+      final metadata = SettableMetadata(contentType: contentType);
 
+      if (kIsWeb) {
+        final bytes = await XFile(filePath).readAsBytes();
+        await ref.putData(bytes, metadata);
+      } else {
+        final file = File(filePath);
+        await ref.putFile(file, metadata);
+      }
+
+      final downloadUrl = await ref.getDownloadURL();
+
+      debugPrint('✅ 上傳 $fileType 成功');
+      debugPrint('📦 storagePath=$storagePath');
+      debugPrint('🔗 downloadUrl=$downloadUrl');
+
+      // 重點：回傳真正可播放 / 可顯示的網址
+      return downloadUrl;
     } catch (e) {
-      print("上傳 $fileType 失敗: $e");
+      debugPrint("❌ 上傳 $fileType 失敗: $e");
       return null;
     }
   }
@@ -1185,13 +1214,30 @@ class _ChatPageState extends State<ChatPage> {
     final l10n = AppLocalizations.of(context)!;
     final messageText = text.trim();
     final roomLockKey = _sessionId ?? widget.sessionId ?? widget.character.id;
+
     if (_isGenerating ||
         _isLoading ||
         generatingRooms.contains(roomLockKey) ||
         _sessionId == null) {
       return;
     }
-    // 一按送出，立刻切成「回覆中 / 停止鍵」
+
+    String? pendingMediaId;
+
+    if ((imagePath != null && imagePath.isNotEmpty) ||
+        (audioPath != null && audioPath.isNotEmpty)) {
+      pendingMediaId = DateTime.now().millisecondsSinceEpoch.toString();
+
+      setState(() {
+        _pendingMediaMessages.insert(0, {
+          'id': pendingMediaId,
+          'type': imagePath != null && imagePath.isNotEmpty ? 'image' : 'audio',
+          'path': imagePath ?? audioPath ?? '',
+          'isUploading': true,
+        });
+      });
+    }
+
     if (mounted) {
       setState(() {
         _isGenerating = true;
@@ -1267,6 +1313,7 @@ class _ChatPageState extends State<ChatPage> {
             showInChat: false,
             isContinue: isContinue,
             userMessageAlreadySaved: true,
+            pendingMediaId: pendingMediaId,
           );
         } else {
           // 不使用彩蛋：AI 照原本文字正常回覆
@@ -1278,6 +1325,7 @@ class _ChatPageState extends State<ChatPage> {
             showInChat: false,
             isContinue: isContinue,
             userMessageAlreadySaved: true,
+            pendingMediaId: pendingMediaId,
           );
         }
       } else {
@@ -1288,6 +1336,7 @@ class _ChatPageState extends State<ChatPage> {
           secretPrompt: secretPrompt,
           showInChat: showInChat,
           isContinue: isContinue,
+          pendingMediaId: pendingMediaId,
         );
       }
     } catch (e) {
@@ -1306,6 +1355,17 @@ class _ChatPageState extends State<ChatPage> {
         });
       }
     }
+  }
+
+  void _removePendingMediaMessage(String? pendingMediaId) {
+    if (pendingMediaId == null) return;
+    if (!mounted) return;
+
+    setState(() {
+      _pendingMediaMessages.removeWhere(
+            (item) => item['id'] == pendingMediaId,
+      );
+    });
   }
 
   // ✨ 總裁秘製：VIP 無痕重新生成通道！
@@ -2322,13 +2382,17 @@ class _ChatPageState extends State<ChatPage> {
     String? audioPath,
     String? overridePrompt,
     String? secretPrompt,
+    String? pendingMediaId,
     bool showInChat = true,
     bool isContinue = false,
     bool userMessageAlreadySaved = false,
   }) async {
     // 🌟 1. 身分檢查
     final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) return;
+    if (currentUser == null) {
+      _removePendingMediaMessage(pendingMediaId);
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
     final userId = currentUser.uid;
     final characterId = _currentCharacter.id;
@@ -2408,6 +2472,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
           );
         }
+        _removePendingMediaMessage(pendingMediaId);
         return;
       }
       // 🌟 3. 防彈檢查：如果連線失敗，不要強行執行，避免 Unexpected null value
@@ -2419,13 +2484,15 @@ class _ChatPageState extends State<ChatPage> {
 
         // 0.5 秒後再檢查一次，如果還是 null，那才是真的出問題了！
         if (_messagesCollection == null) {
-          debugPrint(
-              "❌ 錯誤：等了 0.5 秒 _messagesCollection 還是 Null，無法寫入訊息！");
+          debugPrint("❌ 錯誤：等了 0.5 秒 _messagesCollection 還是 Null，無法寫入訊息！");
+
+          _removePendingMediaMessage(pendingMediaId);
+
           if (mounted) {
-            // ✨ 總裁級：優雅提示系統還在準備中
             _showCenterToast(l10n.chat_room_not_ready, isError: true);
           }
-          return; // 真的不行才中斷
+
+          return;
         }
       }
       String messageType = 'text';
@@ -2461,6 +2528,20 @@ class _ChatPageState extends State<ChatPage> {
         lastMessageText = '[錄音]';
       }
 
+      final bool hasMedia =
+          (imagePath != null && imagePath.isNotEmpty) ||
+              (audioPath != null && audioPath.isNotEmpty);
+
+      if (hasMedia && (storagePath == null || storagePath!.isEmpty)) {
+        _removePendingMediaMessage(pendingMediaId);
+
+        if (mounted) {
+          _showCenterToast('媒體上傳失敗，請再試一次', isError: true);
+        }
+
+        return;
+      }
+
       // 🌟🌟🌟 總裁微創手術 2：強制畫面滾動到底部，確保玩家一定能看到男主的「...」！
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // 請確認您原本用來滾動的函式名稱是不是這個，如果叫其他名字 (如 _scrollController.animateTo) 請替換掉
@@ -2476,6 +2557,8 @@ class _ChatPageState extends State<ChatPage> {
           'path': storagePath ?? '',
           'timestamp': FieldValue.serverTimestamp(),
         });
+// 真正訊息已經寫入 Firestore，移除本機 pending 泡泡
+        _removePendingMediaMessage(pendingMediaId);
         final userCharRef = _db
             .collection('users')
             .doc(userId)
@@ -2501,17 +2584,20 @@ class _ChatPageState extends State<ChatPage> {
           }
         });
       } else {
-        if (mounted) setState(() {
-          _testMessages.insert(0, ChatMessage(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            sender: 'user',
-            text: userText.trim(),
-            type: messageType,
-            path: storagePath ?? '',
-            timestamp: Timestamp.fromDate(DateTime.now()),
-            isAI: false,
-          ));
-        });
+        if (mounted) {
+          setState(() {
+            _testMessages.insert(0, ChatMessage(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              sender: 'user',
+              text: userText.trim(),
+              type: messageType,
+              path: storagePath ?? '',
+              timestamp: Timestamp.fromDate(DateTime.now()),
+              isAI: false,
+            ));
+          });
+        }
+        _removePendingMediaMessage(pendingMediaId);
       }
       }
 
@@ -2811,6 +2897,7 @@ class _ChatPageState extends State<ChatPage> {
         }
       }
     } catch (e, stack) {
+      _removePendingMediaMessage(pendingMediaId);
       print('❌ 發送訊息時發生嚴重錯誤: $e');
       print('📍 錯誤堆疊: $stack');
       if (mounted) {
@@ -2822,6 +2909,7 @@ class _ChatPageState extends State<ChatPage> {
         _showCenterToast(l10n.error_system_confusion, isError: true);
       }
     } finally {
+      _removePendingMediaMessage(pendingMediaId);
       _httpClient?.close();
       _httpClient = null;
 
@@ -3845,45 +3933,228 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Future<void> _playAudio(String rawPath) async {
+    final path = rawPath.trim();
 
-  Future<void> _playAudio(String path) async {
-    if (_player!.isPlaying) {
-      await _player!.stopPlayer();
+    if (path.isEmpty) {
+      debugPrint('⚠️ 音訊 path 是空的');
       return;
     }
-    await _player!.startPlayer(fromURI: path);
+
+    try {
+      debugPrint('🎧 準備播放音訊 path=$path');
+
+      _audioPlayer ??= AudioPlayer();
+
+      await _audioPlayer!.stop();
+
+      // 1. 手機本機檔案，例如 /data/user/0/xxx/cache/xxx.aac
+      if (!kIsWeb && (path.startsWith('/') || path.startsWith('file://'))) {
+        final localPath = path.replaceFirst('file://', '');
+        final file = File(localPath);
+
+        if (!await file.exists()) {
+          debugPrint('❌ 找不到本機音訊檔: $localPath');
+
+          if (!mounted) return;
+          ToastUtils.showCenterToast(
+            context,
+            '找不到錄音檔案',
+            isError: true,
+          );
+          return;
+        }
+
+        final fileSize = await file.length();
+        debugPrint('🎧 本機音訊大小: $fileSize bytes');
+
+        if (fileSize <= 0) {
+          if (!mounted) return;
+          ToastUtils.showCenterToast(
+            context,
+            '錄音檔案是空的',
+            isError: true,
+          );
+          return;
+        }
+
+        await _audioPlayer!.play(
+          DeviceFileSource(localPath),
+        );
+
+        debugPrint('✅ 播放本機音訊');
+        return;
+      }
+
+      // 2. Firebase Storage path，例如 user_uploads/xxx/audio-xxx.aac
+      String playableUrl = path;
+
+      if (path.startsWith('gs://')) {
+        playableUrl = _audioDownloadUrlCache[path] ??
+            await FirebaseStorage.instance.ref(path).getDownloadURL();
+
+        _audioDownloadUrlCache[path] = playableUrl;
+      } else if (!path.startsWith('http') && !path.startsWith('blob:')) {
+        playableUrl = _audioDownloadUrlCache[path] ??
+            await FirebaseStorage.instance.ref(path).getDownloadURL();
+
+        _audioDownloadUrlCache[path] = playableUrl;
+      }
+
+      debugPrint('🎧 最終播放網址: $playableUrl');
+
+      await _audioPlayer!.play(
+        UrlSource(playableUrl),
+      );
+
+      debugPrint('✅ 播放雲端音訊');
+    } catch (e) {
+      debugPrint('❌ 播放音訊失敗: $e');
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '播放音訊失敗：$e',
+        isError: true,
+      );
+    }
   }
 
   Future<void> _pickImage() async {
-    // ✨ VIP 通道：如果是網頁版，直接呼叫 ImagePicker！
-    if (kIsWeb) {
-      final ImagePicker picker = ImagePicker();
-      final XFile? imageFile = await picker.pickImage(
+    await _pickChatImage();
+  }
+
+  Future<void> _pickChatImage() async {
+    if (_isGenerating || _isLoading) return;
+
+    debugPrint('🖼️ 聊天室照片按鈕被點擊');
+
+    try {
+      final XFile? pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
-        imageQuality: 70,    // 🌟 加上這行：畫質壓縮到 70%
-        maxWidth: 1080,      // 🌟 加上這行：限制最大寬度
+        imageQuality: 80,
+        maxWidth: 1080,
       );
-      if (imageFile != null) {
-        _sendMessage(text: "(傳送了一張圖片)", imagePath: imageFile.path);
+
+      debugPrint('🖼️ pickedFile=${pickedFile?.path}');
+
+      if (pickedFile == null) {
+        debugPrint('🖼️ 玩家取消選圖');
+        return;
       }
-      return; // 執行完就提早結束，不要再往下走
+
+      await _sendMessage(
+        text: '',
+        imagePath: pickedFile.path,
+        showInChat: true,
+      );
+    } catch (e) {
+      debugPrint('❌ 選擇聊天室圖片失敗: $e');
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '無法選擇照片：$e',
+        isError: true,
+      );
+    }
+  }
+
+  Widget _buildChatImage(String imagePathOrUrl) {
+    final path = imagePathOrUrl.trim();
+
+    if (path.isEmpty) {
+      return Container(
+        height: 180,
+        alignment: Alignment.center,
+        child: const Icon(Icons.broken_image_outlined),
+      );
     }
 
-    // 📱 原本的通道：如果是手機版，乖乖照舊檢查權限
-    final status = await Permission.photos.request();
-    if (status.isGranted) {
-      final ImagePicker picker = ImagePicker();
-      final XFile? imageFile = await picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 70,    // 🌟 手機版也一模一樣加上壓縮！
-        maxWidth: 1080,      // 🌟 限制最大寬度
+    // 1. 真正的網址，或 Web 的 blob 圖片
+    if (path.startsWith('http') || path.startsWith('blob:')) {
+      return Image.network(
+        path,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 180,
+            alignment: Alignment.center,
+            child: const Icon(Icons.broken_image_outlined),
+          );
+        },
       );
-      if (imageFile != null) {
-        _sendMessage(text: "(傳送了一張圖片)", imagePath: imageFile.path);
-      }
-    } else {
-      print('相簿權限被拒絕');
     }
+
+    // 2. Firebase Storage path，例如 user_uploads/xxx/image.jpg
+    if (path.startsWith('user_uploads/') ||
+        path.startsWith('chat_images/') ||
+        path.startsWith('uploads/')) {
+      return FutureBuilder<String>(
+        future: FirebaseStorage.instance.ref(path).getDownloadURL(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              height: 180,
+              alignment: Alignment.center,
+              child: const CircularProgressIndicator(),
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data == null) {
+            return Container(
+              height: 180,
+              alignment: Alignment.center,
+              child: const Icon(Icons.broken_image_outlined),
+            );
+          }
+
+          return Image.network(
+            snapshot.data!,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                height: 180,
+                alignment: Alignment.center,
+                child: const Icon(Icons.broken_image_outlined),
+              );
+            },
+          );
+        },
+      );
+    }
+
+    // 3. Web 不走 File
+    if (kIsWeb) {
+      return Image.network(
+        path,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 180,
+            alignment: Alignment.center,
+            child: const Icon(Icons.broken_image_outlined),
+          );
+        },
+      );
+    }
+
+    // 4. 手機本機檔案
+    final localPath = path.replaceFirst('file://', '');
+
+    return Image.file(
+      File(localPath),
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          height: 180,
+          alignment: Alignment.center,
+          child: const Icon(Icons.broken_image_outlined),
+        );
+      },
+    );
   }
 
   // ✨ 4. 新增一個 getModeName 函式來處理多國語言
@@ -3897,67 +4168,273 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  String _formatRecordDuration(Duration duration) {
+    final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
+  Widget _buildRecordingWave(double db) {
+    final double normalized = ((db + 60) / 60).clamp(0.08, 1.0);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(18, (index) {
+        final double factor = ((index % 5) + 1) / 5;
+        final double height = 8 + normalized * factor * 32;
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 80),
+          width: 4,
+          height: height,
+          margin: const EdgeInsets.symmetric(horizontal: 2),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(99),
+          ),
+        );
+      }),
+    );
+  }
+
   void _showToolbox() {
     final l10n = AppLocalizations.of(context)!;
+
+    StreamSubscription? recorderSub;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (BuildContext bc) {
         bool showRecordingUI = false;
         bool isCurrentlyRecording = false;
+        bool isPreviewPlaying = false;
+        bool isSendingVoice = false;
         String? finalAudioPath;
+        String? recordingPath;
+
+        double recordDb = -60.0;
+        Duration recordDuration = Duration.zero;
 
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter sheetSetState) {
             final theme = Theme.of(context);
             Future<void> startRecording() async {
               if (isCurrentlyRecording) return;
-              // ✨ VIP 通道：如果是網頁版
-              if (kIsWeb) {
-                await _recorder!.startRecorder(toFile: 'web_audio_record.webm', codec: Codec.opusWebM);
-                if (mounted) setState(() {
+
+              try {
+                if (kIsWeb) {
+                  recordingPath = 'web_audio_record.webm';
+
+                  await _recorder!.setSubscriptionDuration(
+                    const Duration(milliseconds: 80),
+                  );
+
+                  await recorderSub?.cancel();
+                  recorderSub = _recorder!.onProgress?.listen((event) {
+                    final fallbackDb =
+                        -35.0 + ((event.duration.inMilliseconds % 600) / 600) * 18;
+
+                    sheetSetState(() {
+                      recordDb = event.decibels ?? fallbackDb;
+                      recordDuration = event.duration;
+                    });
+                  });
+
+                  await _recorder!.startRecorder(
+                    toFile: recordingPath,
+                    codec: Codec.opusWebM,
+                  );
+
+                  sheetSetState(() {
+                    isCurrentlyRecording = true;
+                    finalAudioPath = null;
+                    recordDb = -60.0;
+                    recordDuration = Duration.zero;
+                  });
+
+                  return;
+                }
+
+                final status = await Permission.microphone.request();
+
+                if (status != PermissionStatus.granted) {
+                  debugPrint('麥克風權限被拒絕');
+
+                  ToastUtils.showCenterToast(
+                    context,
+                    '需要麥克風權限才能錄音',
+                    isError: true,
+                  );
+                  return;
+                }
+
+                final tempDir = await getTemporaryDirectory();
+                recordingPath =
+                '${tempDir.path}/flutter_sound_${DateTime.now().millisecondsSinceEpoch}.aac';
+
+                await _recorder!.setSubscriptionDuration(
+                  const Duration(milliseconds: 80),
+                );
+
+                await recorderSub?.cancel();
+                recorderSub = _recorder!.onProgress?.listen((event) {
+                  final fallbackDb =
+                      -35.0 + ((event.duration.inMilliseconds % 600) / 600) * 18;
+
+                  sheetSetState(() {
+                    recordDb = event.decibels ?? fallbackDb;
+                    recordDuration = event.duration;
+                  });
+                });
+
+                await _recorder!.startRecorder(
+                  toFile: recordingPath,
+                  codec: Codec.aacADTS,
+                );
+
+                sheetSetState(() {
                   isCurrentlyRecording = true;
                   finalAudioPath = null;
+                  recordDb = -60.0;
+                  recordDuration = Duration.zero;
                 });
-                return; // 🚀 執行完網頁版就提早結束，絕對不要往下走！
+
+                debugPrint('🎙️ 開始錄音：$recordingPath');
+              } catch (e) {
+                debugPrint('❌ 開始錄音失敗: $e');
+
+                ToastUtils.showCenterToast(
+                  context,
+                  '無法開始錄音：$e',
+                  isError: true,
+                );
               }
-              // 📱 原本的通道：如果是手機版 (iOS / Android)
-              final status = await Permission.microphone.request();
-              if (status != PermissionStatus.granted) {
-                print('麥克風權限被拒絕');
-                return;
-              }
-              // 手機版才有實體資料夾可以存 AAC 檔案
-              final tempDir = await getTemporaryDirectory();
-              final path = '${tempDir.path}/flutter_sound_${DateTime.now().millisecondsSinceEpoch}.aac';
-              await _recorder!.startRecorder(toFile: path, codec: Codec.aacADTS);
-              if (mounted) setState(() {
-                isCurrentlyRecording = true;
-                finalAudioPath = null;
-              });
             }
 
             Future<void> stopRecording() async {
               if (!isCurrentlyRecording) return;
-              String? path = await _recorder!.stopRecorder();
-              if (mounted) {
-                setState(() {
+
+              try {
+                final String? stoppedPath = await _recorder!.stopRecorder();
+
+                await recorderSub?.cancel();
+                recorderSub = null;
+
+                final String? path =
+                stoppedPath != null && stoppedPath.isNotEmpty
+                    ? stoppedPath
+                    : recordingPath;
+
+                debugPrint('✅ 錄音結束，檔案位置: $path');
+
+                sheetSetState(() {
                   isCurrentlyRecording = false;
                   finalAudioPath = path;
                 });
+
+                if (path == null || path.isEmpty) {
+                  ToastUtils.showCenterToast(
+                    context,
+                    '錄音檔案建立失敗，請重新錄製',
+                    isError: true,
+                  );
+                }
+              } catch (e) {
+                debugPrint('❌ 停止錄音失敗: $e');
+
+                sheetSetState(() {
+                  isCurrentlyRecording = false;
+                });
+
+                ToastUtils.showCenterToast(
+                  context,
+                  '錄音失敗：$e',
+                  isError: true,
+                );
               }
-              debugPrint("✅ 錄音結束，檔案位置: $finalAudioPath");
             }
 
             Future<void> playRecordedAudio() async {
-              if (finalAudioPath == null) return;
+              if (finalAudioPath == null || finalAudioPath!.isEmpty) {
+                debugPrint('⚠️ 沒有錄音檔可以播放');
+                return;
+              }
 
               try {
-                // 🌟 總裁級武器：不管是手機路徑還是網頁 blob，UrlSource 都能直接吃！
-                await _audioPlayer?.play(UrlSource(finalAudioPath!));
-                debugPrint("🎵 正在播放錄音...");
+                final path = finalAudioPath!;
+                debugPrint('🎵 準備播放錄音: $path');
+
+                // 如果 _audioPlayer 是 nullable，保險起見先初始化
+                _audioPlayer ??= AudioPlayer();
+
+                if (isPreviewPlaying) {
+                  await _audioPlayer!.stop();
+
+                  sheetSetState(() {
+                    isPreviewPlaying = false;
+                  });
+
+                  return;
+                }
+
+                await _audioPlayer!.stop();
+
+                if (kIsWeb || path.startsWith('http') || path.startsWith('blob:')) {
+                  await _audioPlayer!.play(
+                    UrlSource(path),
+                  );
+                } else {
+                  final file = File(path);
+
+                  if (!await file.exists()) {
+                    debugPrint('❌ 錄音檔不存在: $path');
+
+                    ToastUtils.showCenterToast(
+                      context,
+                      '找不到錄音檔案，請重新錄製',
+                      isError: true,
+                    );
+                    return;
+                  }
+
+                  final fileSize = await file.length();
+                  debugPrint('🎵 錄音檔大小: $fileSize bytes');
+
+                  if (fileSize <= 0) {
+                    ToastUtils.showCenterToast(
+                      context,
+                      '錄音檔案是空的，請重新錄製',
+                      isError: true,
+                    );
+                    return;
+                  }
+
+                  await _audioPlayer!.play(
+                    DeviceFileSource(path),
+                  );
+                }
+
+                sheetSetState(() {
+                  isPreviewPlaying = true;
+                });
+
+                _audioPlayer!.onPlayerComplete.first.then((_) {
+                  sheetSetState(() {
+                    isPreviewPlaying = false;
+                  });
+                });
+
+                debugPrint('✅ 錄音開始播放');
               } catch (e) {
-                debugPrint("❌ 播放錄音失敗: $e");
+                debugPrint('❌ 播放錄音失敗: $e');
+
+                ToastUtils.showCenterToast(
+                  context,
+                  '播放錄音失敗：$e',
+                  isError: true,
+                );
               }
             }
 
@@ -3976,60 +4453,194 @@ class _ChatPageState extends State<ChatPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                      isCurrentlyRecording
-                          ? l10n.chat_record_recording
-                          : (finalAudioPath == null ? l10n.chat_record_start : l10n.chat_record_done),
-                      style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          if (isCurrentlyRecording) {
-                            stopRecording();
-                          } else {
-                            startRecording();
-                          }
-                        },
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondaryContainer,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            isCurrentlyRecording ? Icons.stop : Icons.mic,
-                            color: Theme.of(context).colorScheme.onSecondaryContainer,
-                            size: 40,
+                    isCurrentlyRecording
+                        ? l10n.chat_record_recording
+                        : (finalAudioPath == null
+                        ? l10n.chat_record_start
+                        : l10n.chat_record_done),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  if (isCurrentlyRecording) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.fiber_manual_record,
+                          color: Colors.redAccent,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 8),
+                        _buildRecordingWave(recordDb),
+                        const SizedBox(width: 12),
+                        Text(
+                          _formatRecordDuration(recordDuration),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 28),
+                    InkWell(
+                      onTap: stopRecording,
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.errorContainer,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.stop_rounded,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 42,
+                        ),
                       ),
-                      if (finalAudioPath != null && !isCurrentlyRecording)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 24.0),
-                          child: _isGenerating
-                              ? IconButton(
-                            icon: const Icon(Icons.stop_circle_outlined,
-                                color: Colors.red, size: 32),
-                            onPressed: _stopGenerating,
-                          )
-                              : IconButton(
-                            icon: Icon(Icons.send, color: Theme.of(context).colorScheme.primary),
-                            onPressed: () {
-                              // 🌟 1. 把文字「和」錄音路徑一起打包送出去！
-                              _sendMessage(
-                                text: _textController.text,
-                                audioPath: finalAudioPath, // 👈 絕對不能漏掉這行！
-                              );
-                              // 🌟 2. 送出後，順便把這個錄音百寶箱關掉，讓玩家看聊天畫面
-                              Navigator.pop(context);
-                            },
+                    ),
+                  ] else if (finalAudioPath != null) ...[
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primaryContainer
+                            .withValues(alpha: 0.55),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              isPreviewPlaying
+                                  ? Icons.pause_rounded
+                                  : Icons.play_arrow_rounded,
+                            ),
+                            onPressed: playRecordedAudio,
                           ),
+                          Expanded(
+                            child: _buildRecordingWave(-25),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _formatRecordDuration(recordDuration),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          color: Colors.redAccent,
+                          iconSize: 32,
+                          onPressed: () async {
+                            await _audioPlayer?.stop();
+
+                            final pathToDelete = finalAudioPath;
+
+                            if (pathToDelete != null && pathToDelete.isNotEmpty && !kIsWeb) {
+                              final file = File(pathToDelete);
+                              if (await file.exists()) {
+                                await file.delete();
+                              }
+                            }
+
+                            sheetSetState(() {
+                              finalAudioPath = null;
+                              recordingPath = null;
+                              isPreviewPlaying = false;
+                              recordDuration = Duration.zero;
+                              recordDb = -60.0;
+                            });
+
+                            debugPrint('🗑️ 已刪除錄音預覽，不會送出');
+                          },
+                        ),
+
+                        const SizedBox(width: 28),
+
+                        _isGenerating
+                            ? IconButton(
+                          icon: const Icon(
+                            Icons.stop_circle_outlined,
+                            color: Colors.red,
+                            size: 36,
+                          ),
+                          onPressed: _stopGenerating,
                         )
-                    ],
-                  ),
+                            : IconButton(
+                          icon: Icon(
+                            Icons.send_rounded,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 36,
+                          ),
+                          onPressed: isSendingVoice
+                              ? null
+                              : () async {
+                            final path = finalAudioPath;
+
+                            if (path == null || path.isEmpty) {
+                              ToastUtils.showCenterToast(
+                                context,
+                                '沒有可傳送的錄音',
+                                isError: true,
+                              );
+                              return;
+                            }
+
+                            sheetSetState(() {
+                              isSendingVoice = true;
+                            });
+
+                            await _audioPlayer?.stop();
+
+                            debugPrint('📤 準備送出語音 path=$path');
+
+                            Navigator.pop(context);
+
+                            await _sendMessage(
+                              text: '[語音訊息]',
+                              audioPath: path,
+                              showInChat: true,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    InkWell(
+                      onTap: startRecording,
+                      child: Container(
+                        width: 88,
+                        height: 88,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondaryContainer,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.mic_rounded,
+                          color: Theme.of(context).colorScheme.onSecondaryContainer,
+                          size: 44,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.chat_record_start,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
                 ],
               )
 
@@ -5375,6 +5986,76 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
+
+  Widget _buildPendingMediaBubble(Map<String, dynamic> item) {
+    final type = item['type']?.toString() ?? '';
+    final path = item['path']?.toString() ?? '';
+
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Opacity(
+              opacity: 0.55,
+              child: type == 'image'
+                  ? ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: _buildChatImage(path),
+              )
+                  : Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.play_arrow_rounded),
+                    const SizedBox(width: 8),
+                    _buildStaticAudioWave(),
+                    const SizedBox(width: 8),
+                    const Text('語音上傳中...'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 26,
+              height: 26,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStaticAudioWave() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(12, (index) {
+        final height = 8.0 + ((index % 5) * 4.0);
+
+        return Container(
+          width: 3,
+          height: height,
+          margin: const EdgeInsets.symmetric(horizontal: 1.5),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            borderRadius: BorderRadius.circular(99),
+          ),
+        );
+      }),
+    );
+  }
+
   // 📸 3. 喀嚓！正式拍照、預覽並分享 (總裁動態重拍版)
   Future<void> _generateAndShareImage() async {
     final theme = Theme.of(context);
@@ -6036,12 +6717,17 @@ class _ChatPageState extends State<ChatPage> {
             _isLoading ||
             generatingRooms.contains(_roomLockKey);
 
+    final List<dynamic> displayMessages = [
+      ..._pendingMediaMessages,
+      ...messages,
+    ];
+
     return ListView.builder(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       controller: _chatScrollController,
       reverse: true,
       padding: const EdgeInsets.all(8.0),
-      itemCount: messages.length + (isAiReplying ? 1 : 0),
+      itemCount: displayMessages.length + (isAiReplying ? 1 : 0),
       itemBuilder: (context, index) {
         if (isAiReplying && index == 0) {
           return _buildTypingIndicator();
@@ -6053,7 +6739,15 @@ class _ChatPageState extends State<ChatPage> {
           return const SizedBox.shrink();
         }
 
-        final message = messages[realIndex];
+        final item = displayMessages[realIndex];
+
+        if (item is Map && item['isUploading'] == true) {
+          return _buildPendingMediaBubble(
+            Map<String, dynamic>.from(item),
+          );
+        }
+
+        final message = item as ChatMessage;
 
         final messageIndex = realIndex;
         final sender = message.sender;
@@ -6119,7 +6813,6 @@ class _ChatPageState extends State<ChatPage> {
                     .colorScheme.onSurfaceVariant).withValues(alpha: 0.7));
 
             // ✨✨✨ 總裁修正處：在這裡把殼脫掉！ ✨✨✨
-            // ✨✨✨ 總裁修正處：在這裡把殼脫掉！ ✨✨✨
 // 先拿到原始文字或脫殼後的文字
             String rawDisplayText = isUserMessage
                 ? message.text
@@ -6155,9 +6848,11 @@ class _ChatPageState extends State<ChatPage> {
                   .width * 0.65),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16.0),
-                child: kIsWeb
-                    ? Image.network(message.path, fit: BoxFit.cover)
-                    : Image.file(File(message.path), fit: BoxFit.cover),
+                child: _buildChatImage(
+                  (message.path != null && message.path!.trim().isNotEmpty)
+                      ? message.path!.trim()
+                      : message.path.trim(),
+                ),
               ),
             );
           }
@@ -6476,7 +7171,6 @@ Future<void> _deleteMessagesFromDB(String aiMessageId, String userMessageId) asy
     final String actualUserId = currentUser.uid; // 這就是絕對正確的 ID！
 
     final db = FirebaseFirestore.instance;
-
     // 鎖定目標房間：/users/玩家ID/chatMessages/
     final chatRef = db.collection('users').doc(actualUserId).collection('chatMessages');
 

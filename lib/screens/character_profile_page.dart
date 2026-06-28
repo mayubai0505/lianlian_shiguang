@@ -1108,6 +1108,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                               // 儲存到 Firestore
                               await echoesRef.add({
                                 'userId': user.uid,
+                                'createdBy': user.uid,
+                                'authorId': user.uid,
                                 'content': textController.text.trim(),
                                 'theme': selectedTheme,
                                 'timestamp': FieldValue.serverTimestamp(),

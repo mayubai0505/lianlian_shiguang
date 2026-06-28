@@ -69,9 +69,13 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
     );
   }
 
+  DocumentReference<StorySummary> _summaryRef(String summaryId) {
+    return _summariesCollection.doc(summaryId);
+  }
+
   // 🔹 新增：刪除邏輯
-  Future<void> _deleteSummary(String id) async {
-    await _summariesCollection.doc(id).delete();
+  Future<void> _deleteSummary(String summaryId) async {
+    await _summaryRef(summaryId).delete();
     if (mounted) {
       // ✨ 總裁級：故事摘要刪除後的輕盈回饋，確認動作已完成，不留視覺殘留！
       ToastUtils.showCenterToast(
@@ -156,6 +160,90 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
     );
   }
 
+  Future<void> _confirmDeleteSummary(dynamic summary, int index) async {
+    final l10n = AppLocalizations.of(context)!;
+    final bool confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.delete_btn),
+        content:  Text(l10n.about_us_delete_confirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child:  Text(l10n.cancelButton),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.confirm_delete_title,
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+
+    if (!confirm) return;
+
+    final removedItem = summary;
+
+    setState(() {
+      _summaries.removeWhere((item) => item.id == removedItem.id);
+    });
+
+    try {
+      await _deleteSummary(removedItem.id);
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _summaries.insert(index, removedItem);
+      });
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.delete_failed_msg,
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _openEditSummaryPage(StorySummary summary) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EditStorySummaryPage(
+          summaryId: summary.id,
+          initialContent: summary.content,
+          summaryRef: _summaryRef(summary.id),
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+
+    if (result is Map && result['changed'] == true) {
+      await _loadSummaries();
+    }
+  }
+
+  Future<void> _loadSummaries() async {
+    try {
+      final snapshot = await _summariesCollection
+          .orderBy('createdAt', descending: false)
+          .get();
+
+      if (!mounted) return;
+
+      setState(() {
+        _summaries
+          ..clear()
+          ..addAll(snapshot.docs.map((doc) => doc.data()).toList());
+      });
+    } catch (e) {
+      debugPrint('❌ 重新讀取我們的故事失敗: $e');
+    }
+  }
+
   // ✨ 新增函數：比對資料並手動插入項目以觸發動畫
   void _handleDataUpdate(List<QueryDocumentSnapshot<StorySummary>> newDocs) {
     if (_isInitialLoad) {
@@ -183,7 +271,7 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
     final theme = Theme.of(context);
     final summary = _summaries[index];
     final colorScheme = theme.colorScheme;
-
+    final l10n = AppLocalizations.of(context)!;
     // 1. 定義進場動畫 (由下而上 + 淡入)
     final slideAnimation = Tween<Offset>(
         begin: const Offset(0, 0.3), end: Offset.zero)
@@ -194,25 +282,6 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
       position: slideAnimation,
       child: FadeTransition(
         opacity: animation,
-        // 2. 加入側滑刪除
-        child: Dismissible(
-          key: Key(summary.id),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20),
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: colorScheme.errorContainer,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(Icons.delete_sweep, color: colorScheme.error),
-          ),
-          onDismissed: (_) {
-            // 注意：這裡除了刪除資料庫，也要處理本地列表
-            final removedItem = _summaries.removeAt(index);
-            _deleteSummary(removedItem.id);
-          },
           // 3. 核心內容：時間線 + 卡片
           child: IntrinsicHeight(
             child: Row(
@@ -261,8 +330,45 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Icon(Icons.edit_note, size: 18,
-                                  color: colorScheme.outline),
+                              PopupMenuButton<String>(
+                                icon: Icon(
+                                  Icons.edit_note,
+                                  size: 20,
+                                  color: colorScheme.outline,
+                                ),
+                                onSelected: (value) async {
+                                  if (value == 'edit') {
+                                    await _openEditSummaryPage(summary);
+                                  } else if (value == 'delete') {
+                                    await _confirmDeleteSummary(summary, index);
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit_outlined, size: 18),
+                                        SizedBox(width: 8),
+                                        Text(l10n.edit_btn),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          l10n.delete_btn,
+                                          style: TextStyle(color: Colors.redAccent),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                           const Divider(height: 24),
@@ -279,6 +385,134 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+    );
+  }
+}
+
+class EditStorySummaryPage extends StatefulWidget {
+  final String summaryId;
+  final String initialContent;
+  final DocumentReference summaryRef;
+
+  const EditStorySummaryPage({
+    super.key,
+    required this.summaryId,
+    required this.initialContent,
+    required this.summaryRef,
+  });
+
+  @override
+  State<EditStorySummaryPage> createState() => _EditStorySummaryPageState();
+}
+
+class _EditStorySummaryPageState extends State<EditStorySummaryPage> {
+  late final TextEditingController _controller;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialContent);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_isSaving) return;
+    final l10n = AppLocalizations.of(context)!;
+    final newContent = _controller.text.trim();
+
+    if (newContent.isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        '故事內容不能是空的',
+        isError: true,
+      );
+      return;
+    }
+
+    if (newContent == widget.initialContent.trim()) {
+      Navigator.of(context).pop({
+        'changed': false,
+        'summaryId': widget.summaryId,
+      });
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      await widget.summaryRef.update({
+        'content': newContent,
+        'updatedAt': FieldValue.serverTimestamp(),
+        'lastEditedAt': FieldValue.serverTimestamp(),
+      });
+
+      if (!mounted) return;
+
+      Navigator.of(context).pop({
+        'changed': true,
+        'summaryId': widget.summaryId,
+        'content': newContent,
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.save_error_detail(e.toString()),
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('編輯我們的故事'),
+        actions: [
+          _isSaving
+              ? const Padding(
+            padding: EdgeInsets.all(16),
+            child: SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          )
+              : IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: _save,
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: TextField(
+          controller: _controller,
+          maxLines: null,
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: '寫下你們的故事...',
+            filled: true,
+            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
             ),
           ),
         ),

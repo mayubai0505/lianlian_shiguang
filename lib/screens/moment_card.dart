@@ -24,6 +24,7 @@ class MomentCard extends StatefulWidget {
   final VoidCallback? onLikeTapped;
   final VoidCallback? onDeleteTapped;
   final VoidCallback? onAvatarTapped;
+  final VoidCallback? onEditTapped;
 
   const MomentCard({
     super.key,
@@ -33,6 +34,7 @@ class MomentCard extends StatefulWidget {
     this.onLikeTapped,
     this.onDeleteTapped,
     this.onAvatarTapped,
+    this.onEditTapped,
   });
 
   @override
@@ -521,18 +523,21 @@ class _MomentCardState extends State<MomentCard> {
               if (widget.moment.createdBy == widget.currentUserId) ...[
                 ListTile(
                   leading: const Icon(Icons.edit_note_outlined),
-                  title:Text(l10n.moment_edit_title),
+                  title: Text(l10n.moment_edit_title),
                   onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => EditMomentPage(momentToEdit: widget.moment)));
+                    Navigator.pop(context); // 關掉三個點選單
+                    widget.onEditTapped?.call(); // 交給外層處理跳頁
                   },
                 ),
                 ListTile(
                   leading: const Icon(Icons.delete_forever_outlined, color: Colors.red),
-                  title:Text(l10n.moment_action_delete, style: TextStyle(color: Colors.red)),
+                  title: Text(
+                    l10n.moment_action_delete,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
-                    _deleteMoment(); // 這裡會觸發妳寫在內部的刪除邏輯
+                    widget.onDeleteTapped?.call();
                   },
                 ),
               ] else ...[
@@ -768,15 +773,36 @@ class _MomentCardState extends State<MomentCard> {
 
           // 🖼️ 3. 照片顯示區
           if (widget.moment.imageUrl != null && widget.moment.imageUrl!.isNotEmpty)
-            Image.network(
-              widget.moment.imageUrl!,
-              fit: BoxFit.cover,
+            Container(
               width: double.infinity,
-              height: 350,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(height: 200, color: Colors.grey[200], child: const Center(child: CircularProgressIndicator()));
-              },
+              color: Colors.black.withValues(alpha: 0.04),
+              constraints: const BoxConstraints(
+                maxHeight: 520,
+              ),
+              child: Image.network(
+                widget.moment.imageUrl!,
+                fit: BoxFit.contain,
+                width: double.infinity,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+
+                  return Container(
+                    height: 200,
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 200,
+                    color: Colors.grey[200],
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image_outlined),
+                  );
+                },
+              ),
             ),
 
           // 🕹️ 4. 底部操作區

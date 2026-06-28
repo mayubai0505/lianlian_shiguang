@@ -483,24 +483,72 @@ async function callOpenRouter({
     return data;
 }
 
+function isGeminiDirectModel(modelId) {
+    const id = String(modelId || "");
+    return id.startsWith("google/gemini") || id.startsWith("gemini-");
+}
+
+function normalizeModelIdForRequest(modelId) {
+    const id = String(modelId || "");
+
+    // Google Gemini 官方 OpenAI 相容端點吃 gemini-xxx
+    // 不吃 google/gemini-xxx
+    if (id.startsWith("google/")) {
+        return id.replace(/^google\//, "");
+    }
+
+    return id;
+}
+
+function getAiProviderConfig(modelId) {
+    const isGemini = isGeminiDirectModel(modelId);
+
+    if (isGemini) {
+        return {
+            provider: "gemini",
+            apiUrl: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+            apiKey: geminiApiKey.value(),
+            modelIdForRequest: normalizeModelIdForRequest(modelId),
+        };
+    }
+
+    return {
+        provider: "openrouter",
+        apiUrl: "https://openrouter.ai/api/v1/chat/completions",
+        apiKey: openRouterApiKey.value(),
+        modelIdForRequest: modelId,
+    };
+}
+
 async function callAiWithRetry({
-    apiUrl,
-    apiKey,
     modelId,
     fallbackModelId,
     requestBody,
     abortController,
     timeoutMs = 95_000,
 }) {
-    try {
+    async function callCurrentAiModel(targetModelId) {
+        const providerConfig = getAiProviderConfig(targetModelId);
+
+        console.log("🧭 AI PROVIDER ROUTE:", {
+            originalModelId: targetModelId,
+            provider: providerConfig.provider,
+            apiUrl: providerConfig.apiUrl,
+            modelIdForRequest: providerConfig.modelIdForRequest,
+        });
+
         return await callOpenRouter({
-            apiUrl,
-            apiKey,
-            modelId,
+            apiUrl: providerConfig.apiUrl,
+            apiKey: providerConfig.apiKey,
+            modelId: providerConfig.modelIdForRequest,
             requestBody,
             abortController,
             timeoutMs,
         });
+    }
+
+    try {
+        return await callCurrentAiModel(modelId);
     } catch (error) {
         const retryable =
             error.statusCode === 429 ||
@@ -519,7 +567,9 @@ async function callAiWithRetry({
             throw error;
         }
 
-        if (!retryable) throw error;
+        if (!retryable) {
+            throw error;
+        }
 
         console.warn("🌧️ 主模型忙線、逾時或回傳異常，先重試一次:", {
             modelId,
@@ -527,17 +577,10 @@ async function callAiWithRetry({
             statusCode: error?.statusCode,
         });
 
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        await new Promise((resolve) => setTimeout(resolve, 1200));
 
         try {
-            return await callOpenRouter({
-                apiUrl,
-                apiKey,
-                modelId,
-                requestBody,
-                abortController,
-                timeoutMs,
-            });
+            return await callCurrentAiModel(modelId);
         } catch (retryError) {
             if (retryError.message === "PLAYER_DISCONNECTED") {
                 throw retryError;
@@ -553,14 +596,7 @@ async function callAiWithRetry({
                 statusCode: retryError?.statusCode,
             });
 
-            return await callOpenRouter({
-                apiUrl,
-                apiKey,
-                modelId: fallbackModelId,
-                requestBody,
-                abortController,
-                timeoutMs,
-            });
+            return await callCurrentAiModel(fallbackModelId);
         }
     }
 }
@@ -1763,8 +1799,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                        }
 
                                                                                        const aiResult = await callAiWithRetry({
-                                                                                         apiUrl,
-                                                                                         apiKey,
                                                                                          modelId: targetModel,
                                                                                          fallbackModelId: config.fallbackModelId || null,
                                                                                          abortController,
