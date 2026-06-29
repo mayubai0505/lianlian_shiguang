@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import '../services/toast_utils.dart';
+import '../widgets/feature_tip_keys.dart';
+import '../widgets/feature_tip_target.dart';
 import 'chat_page.dart';
 import 'character_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -2252,13 +2254,24 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.echo_wall_title, style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold)),
-                TextButton.icon(
-                  onPressed: _showAddEchoDialog,
-                  icon: const Icon(Icons.add, size: 18),
-                  label:Text(l10n.echo_leave_memory),
-                )
+                Text(
+                  l10n.echo_wall_title,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                FeatureTipTarget(
+                  tipKey: '${FeatureTipKeys.timeEchoes}_v2',
+                tipText: '留下經歷後\n搜尋時會出現彈幕',
+                  top: 46,
+                  right: 0,
+                  child: TextButton.icon(
+                    onPressed: _showAddEchoDialog,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: Text(l10n.echo_leave_memory),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 12),

@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/theme_notifier.dart';
 import '../models/moment_model.dart';
 import '../services/toast_utils.dart';
+import '../widgets/feature_tip_keys.dart';
+import '../widgets/feature_tip_target.dart';
 import 'character_model.dart';
 import 'create_moment_page.dart';
 import 'moment_card.dart';
@@ -178,10 +180,26 @@ class _MomentsPageState extends State<MomentsPage> {
                 ),
                 // ✨ 三條線選單
                 actions: [
-                  IconButton(
-                    icon: const Icon(Icons.menu, size: 28), // 🍔 三條線圖示
-                    tooltip: l10n.more_options,
-                    onPressed: () => _showMoreMenuSheet(context),
+                  FeatureTipTarget(
+                    scopeKey: 'moments_page',
+                    tipKey: '${FeatureTipKeys.momentsWallMenu}_v3',
+                    tipText: '點這裡可以\n安排角色發文',
+                    direction: FeatureTipDirection.down,
+                    top: 56,
+                    right: 0,
+                    maxWidth: 156,
+
+                    // 整顆氣泡往右
+                    offset: const Offset(100, -10),
+
+                    // 小尾巴原本往右 48，如果氣泡也往右，尾巴可能要往左一點
+                    arrowOffset:55,
+
+                    child: IconButton(
+                      icon: const Icon(Icons.menu, size: 28),
+                      tooltip: l10n.more_options,
+                      onPressed: () => _showMoreMenuSheet(context),
+                    ),
                   ),
                 ],
               ),
@@ -526,7 +544,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
                 // ❤️ 選項 3：按讚過的內容
                 ListTile(
-                  leading: const Icon(Icons.favorite_border, color: Colors.redAccent),
+                  leading: const Icon(Icons.eco_outlined, color: Color(0xFFAED581)),
                   title: Text(l10n.liked_content),
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                   onTap: () {
@@ -540,7 +558,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
                 // 🔖 選項 4：收藏內容
                 ListTile(
-                  leading: const Icon(Icons.bookmark_border, color: Colors.orangeAccent),
+                  leading: const Icon(Icons.park_outlined, color: Color(0xFFA1887F)),
                   title:Text(l10n.my_favorites),
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                   onTap: () {
@@ -805,7 +823,7 @@ class PersistentFeed extends StatefulWidget {
   final Function(String) onDeleteTapped;
   final Function(Moment) onAvatarTapped;
   final Function(Moment) onEditTapped;
-
+  final bool showFeatureTips;
   const PersistentFeed({
     super.key,
     required this.friendIds,
@@ -816,6 +834,7 @@ class PersistentFeed extends StatefulWidget {
     required this.onDeleteTapped,
     required this.onAvatarTapped,
     required this.onEditTapped,
+    this.showFeatureTips = false,
   });
 
   @override
@@ -887,17 +906,20 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
           return ListView.builder(
             padding: EdgeInsets.zero,
             itemCount: filteredMoments.length,
-            itemBuilder: (context, index) {
-              final moment = filteredMoments[index];
-              return MomentCard(
-                moment: moment,
-                currentUserId: widget.userId,
-                onLikeTapped: () => widget.onLikeTapped(moment),
-                onDeleteTapped: () => widget.onDeleteTapped(moment.id),
-                onAvatarTapped: () => widget.onAvatarTapped(moment),
-                onEditTapped: () => widget.onEditTapped(moment),
-              );
-            },
+              itemBuilder: (context, index) {
+                final moment = filteredMoments[index];
+
+                return MomentCard(
+                  moment: moment,
+                  currentUserId: widget.userId,
+                  // 朋友圈第一篇貼文才顯示按讚 / 收藏提示
+                  showFeatureTips: index == 0,
+                  onLikeTapped: () => widget.onLikeTapped(moment),
+                  onDeleteTapped: () => widget.onDeleteTapped(moment.id),
+                  onAvatarTapped: () => widget.onAvatarTapped(moment),
+                  onEditTapped: () => widget.onEditTapped(moment),
+                );
+              }
           );
         },
       ),

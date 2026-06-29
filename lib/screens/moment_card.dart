@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/moment_model.dart';
 import '../services/toast_utils.dart';
+import '../widgets/feature_tip_keys.dart';
+import '../widgets/feature_tip_target.dart';
 import 'comment_bottom_sheet.dart';
 import 'edit_moment_page.dart';
 import '../services/app_constants.dart';
@@ -25,6 +27,7 @@ class MomentCard extends StatefulWidget {
   final VoidCallback? onDeleteTapped;
   final VoidCallback? onAvatarTapped;
   final VoidCallback? onEditTapped;
+  final bool showFeatureTips;
 
   const MomentCard({
     super.key,
@@ -35,6 +38,7 @@ class MomentCard extends StatefulWidget {
     this.onDeleteTapped,
     this.onAvatarTapped,
     this.onEditTapped,
+    this.showFeatureTips = false,
   });
 
   @override
@@ -316,7 +320,6 @@ class _MomentCardState extends State<MomentCard> {
                         itemCount: characters.length,
                         itemBuilder: (context, index) {
                           final Character char = characters[index];
-
                           return ListTile(
                             leading: CircleAvatar(
                               // 🌟 改用物件的頭像網址
@@ -809,13 +812,30 @@ class _MomentCardState extends State<MomentCard> {
           if (!widget.isDetailView) ...[
             Row(
               children: [
-                IconButton(
-                  // ✅ 按讚圖示：連動主題色
-                  icon: Icon(
-                    _isLiked ? Icons.eco : Icons.eco_outlined, // eco_outlined 在某些版本可能沒有，若報錯請統一用 Icons.eco
-                    color: _isLiked ? const Color(0xFFAED581) : theme.iconTheme.color,
+                FeatureTipTarget(
+                  enabled: widget.showFeatureTips,
+                  scopeKey: 'moments_page',
+                  order: 4,
+                  tipKey: '${FeatureTipKeys.postLike}_v3',
+                  tipText: '按讚後可在\n喜歡內容查看',
+
+                  // 先改 down，確認它一定看得到
+                  direction: FeatureTipDirection.down,
+
+                  top: 56,
+                  maxWidth: 148,
+                  offset: const Offset(160,-10),
+                  arrowOffset: -50,
+
+                  child: IconButton(
+                    icon: Icon(
+                      _isLiked ? Icons.eco : Icons.eco_outlined,
+                      color: _isLiked
+                          ? const Color(0xFFAED581)
+                          : theme.iconTheme.color,
+                    ),
+                    onPressed: _toggleLike,
                   ),
-                  onPressed: _toggleLike,
                 ),
                 IconButton(
                   icon: const Icon(Icons.chat_bubble_outline),
@@ -830,13 +850,30 @@ class _MomentCardState extends State<MomentCard> {
                   onPressed: _onSharePressed,
                 ),
                 const Spacer(),
-                IconButton(
-                  // ✅ 收藏圖示
-                  icon: Icon(
-                    _isBookmarked ? Icons.park : Icons.park_outlined,
-                    color: _isBookmarked ? const Color(0xFFA1887F) : theme.iconTheme.color,
+                FeatureTipTarget(
+                  enabled: widget.showFeatureTips,
+                  scopeKey: 'moments_page',
+                  order: 3,
+                  tipKey: '${FeatureTipKeys.postBookmark}_v3',
+                  tipText: '收藏後可在\n「我的收藏」查看',
+
+                  // 先改 down，確認它一定看得到
+                  direction: FeatureTipDirection.down,
+
+                  top: 56,
+                  maxWidth: 148,
+                  offset: const Offset(55, -10),
+                  arrowOffset: 55,
+
+                  child: IconButton(
+                    icon: Icon(
+                      _isBookmarked ? Icons.park : Icons.park_outlined,
+                      color: _isBookmarked
+                          ? const Color(0xFFA1887F)
+                          : theme.iconTheme.color,
+                    ),
+                    onPressed: _toggleBookmark,
                   ),
-                  onPressed: _toggleBookmark,
                 ),
               ],
             ),

@@ -13,6 +13,8 @@ import 'notification_list_page.dart'; // 記得根據妳的資料夾路徑調整
 import 'call_memory_page.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'package:lianlian_shiguang/widgets/feature_tip_target.dart';
+import 'package:lianlian_shiguang/widgets/feature_tip_keys.dart';
 
 //聊天室的名稱更改
 
@@ -341,15 +343,28 @@ class _ChatHomePageState extends State<ChatHomePage> {
         elevation: 0.0,
         foregroundColor: theme.colorScheme.onBackground,
         actions: [
-          IconButton(
-            tooltip: l10n.call_memory_tooltip,
-            icon: const Icon(Icons.headphones_outlined, size: 26),
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : theme.colorScheme.onBackground,
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const CallMemoryPage()));
-            },
+          FeatureTipTarget(
+            scopeKey: 'chat_home',
+            order: 1,
+          tipKey: '${FeatureTipKeys.callMemory}_v4',
+            tipText: '通話後收藏的\n語音會在這裡!',
+            direction: FeatureTipDirection.down,
+            top: 56,
+            maxWidth: 150,
+            offset: const Offset(110, 0),
+            arrowOffset: 0,
+            child: IconButton(
+              tooltip: l10n.call_memory_tooltip,
+              icon: const Icon(Icons.headphones_outlined, size: 26),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CallMemoryPage(),
+                  ),
+                );
+              },
+            ),
           ),
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
@@ -377,6 +392,16 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   isLabelVisible: unreadCount > 0,
                   backgroundColor: Colors.pinkAccent,
                   smallSize: 10,
+                  child: FeatureTipTarget(
+                  scopeKey: 'chat_home',
+                  order: 2,
+                    tipKey: '${FeatureTipKeys.chatHomeNotifications}_v3',
+                  tipText: '這裡可以\n查看新通知',
+                  direction: FeatureTipDirection.down,
+                  top: 70,
+                  maxWidth: 130,
+                  offset: const Offset(85, -10),
+                  arrowOffset: 25,
                   child: Transform.scale(
                     scale: 1.6,
                     child: Image.asset(
@@ -389,6 +414,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                       fit: BoxFit.contain,
                     ),
                   ),
+                ),
                 ),
               );
             },
