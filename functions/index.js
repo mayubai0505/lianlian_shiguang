@@ -601,6 +601,154 @@ async function callAiWithRetry({
     }
 }
 
+async function downloadMediaAsBase64(mediaUrlOrPath) {
+    if (!mediaUrlOrPath) return null;
+
+    try {
+        if (
+            mediaUrlOrPath.startsWith("http://") ||
+            mediaUrlOrPath.startsWith("https://")
+        ) {
+            const response = await fetch(mediaUrlOrPath);
+
+            if (!response.ok) {
+                console.error("❌ 下載媒體 URL 失敗:", response.status, mediaUrlOrPath);
+                return null;
+            }
+
+            const arrayBuffer = await response.arrayBuffer();
+            const contentType =
+                response.headers.get("content-type") || "application/octet-stream";
+
+            return {
+                base64: Buffer.from(arrayBuffer).toString("base64"),
+                mimeType: contentType,
+            };
+        }
+
+        const bucket = admin.storage().bucket();
+        const file = bucket.file(mediaUrlOrPath);
+        const [buffer] = await file.download();
+        const [metadata] = await file.getMetadata();
+
+        return {
+            base64: buffer.toString("base64"),
+            mimeType: metadata.contentType || "application/octet-stream",
+        };
+    } catch (error) {
+        console.error("❌ downloadMediaAsBase64 失敗:", error);
+        return null;
+    }
+}
+
+async function describeImageWithGemini(imageUrlOrPath) {
+  const media = await downloadMediaAsBase64(imageUrlOrPath);
+
+  if (!media) return "";
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiApiKey.value()}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: "請用台灣繁體中文簡潔描述這張圖片。重點包括：畫面中有什麼、人物表情/動作、氛圍、可能想表達的情緒。不要編造看不到的內容。",
+                },
+                {
+                  inline_data: {
+                    mime_type: media.mimeType,
+                    data: media.base64,
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ Gemini 讀圖失敗:", response.status, errorText);
+      return "";
+    }
+
+    const data = await response.json();
+
+    return (
+      data?.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text || "")
+        .join("")
+        .trim() || ""
+    );
+  } catch (error) {
+    console.error("❌ describeImageWithGemini 失敗:", error);
+    return "";
+  }
+}
+
+async function transcribeAudioWithGemini(audioUrlOrPath) {
+    const media = await downloadMediaAsBase64(audioUrlOrPath);
+
+    if (!media) return "";
+
+    try {
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiApiKey.value()}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                {
+                                    text: "請將這段語音轉成台灣繁體中文文字。只輸出語音內容本身，不要加解釋。如果聽不清楚，請輸出：語音內容聽不清楚。",
+                                },
+                                {
+                                    inline_data: {
+                                        mime_type: media.mimeType,
+                                        data: media.base64,
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("❌ Gemini 語音辨識失敗:", response.status, errorText);
+            return "";
+        }
+
+        const data = await response.json();
+
+        return (
+            data?.candidates?.[0]?.content?.parts
+                ?.map((part) => part.text || "")
+                .join("")
+                .trim() || ""
+        );
+    } catch (error) {
+        console.error("❌ transcribeAudioWithGemini 失敗:", error);
+        return "";
+    }
+}
+
 exports.getAiResponse = onRequest({
     region: REGION,
         minInstances: 0,
@@ -628,6 +776,13 @@ exports.getAiResponse = onRequest({
                 sessionId,
                 chatHistory = [],
                 userMessage = "",
+
+                // 🖼️🎧 新增：玩家傳來的圖片 / 語音
+                imageUrl = "",
+                imagePath = "",
+                audioUrl = "",
+                audioPath = "",
+
                 chatMode = "daily",
                 isContinue = false,
                 isBirthdayFreebie = false,
@@ -781,20 +936,65 @@ exports.getAiResponse = onRequest({
                 throw e;
             }
 
-            let finalUserMessage = userMessage;
+            let finalUserMessage = String(userMessage || "").trim();
+
+            const finalImageUrl = imageUrl || imagePath || "";
+            const finalAudioUrl = audioUrl || audioPath || "";
+
+            if (finalImageUrl && finalAudioUrl && finalImageUrl === finalAudioUrl) {
+                console.warn("⚠️ audioUrl 與 imageUrl 相同，判定為前端誤傳，已忽略 audioUrl");
+                finalAudioUrl = "";
+            }
 
             if (isContinue === true) {
                 finalUserMessage = `【續寫指令】
-            請從上一則 assistant 回覆的結尾自然接續。
-            不要重新回應玩家上一句輸入。
-            不要重複上一段內容。
-            不要重新打招呼。
-            不要重新開場。
-            保持同一個場景、同一個情緒、同一個角色狀態，直接往下寫。`;
+                        請從上一則 assistant 回覆的結尾自然接續。
+                        不要重新回應玩家上一句輸入。
+                        不要重複上一段內容。
+                        不要重新打招呼。
+                        不要重新開場。
+                        保持同一個場景、同一個情緒、同一個角色狀態，直接往下寫。`;
+            } else {
+                let imageDescription = "";
+                let audioTranscript = "";
+
+                if (finalImageUrl) {
+                    console.log("🖼️ 偵測到玩家圖片，開始讀圖...");
+                    imageDescription = await describeImageWithGemini(finalImageUrl);
+                    console.log("🖼️ 圖片描述:", imageDescription);
+                }
+
+                if (finalAudioUrl) {
+                    console.log("🎧 偵測到玩家語音，開始轉文字...");
+                    audioTranscript = await transcribeAudioWithGemini(finalAudioUrl);
+                    console.log("🎧 語音轉文字:", audioTranscript);
+                }
+
+                if (imageDescription) {
+                    finalUserMessage += `\n\n[玩家傳來一張圖片，圖片內容如下：${imageDescription}]`;
+                }
+
+                if (finalImageUrl && !imageDescription) {
+                    finalUserMessage += "\n\n[玩家傳來一張圖片，但系統暫時無法讀取圖片內容。請角色自然地表示自己看不太清楚，並請玩家再傳一次或描述給你聽。]";
+                }
+
+                if (audioTranscript) {
+                    finalUserMessage += `\n\n[玩家傳來一段語音，語音內容如下：${audioTranscript}]`;
+                }
+
+                if (finalAudioUrl && !audioTranscript) {
+                    finalUserMessage += "\n\n[玩家傳來一段語音，但系統暫時無法辨識內容。請角色不要假裝聽懂，請自然地請玩家再說一次。]";
+                }
+
+                if (!finalUserMessage.trim()) {
+                    finalUserMessage = "[玩家傳來了一則訊息，但內容為空。請自然地詢問玩家想說什麼。]";
+                }
             }
 
             console.log("🔁 isContinue:", isContinue);
-            console.log("🔁 finalUserMessage:", finalUserMessage.slice(0, 200));
+            console.log("🖼️ finalImageUrl:", finalImageUrl ? "有圖片" : "無圖片");
+            console.log("🎧 finalAudioUrl:", finalAudioUrl ? "有語音" : "無語音");
+            console.log("🔁 finalUserMessage:", finalUserMessage.slice(0, 500));
 
             const modeConfig = {
                 gemini: {

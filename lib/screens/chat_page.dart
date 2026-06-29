@@ -127,6 +127,7 @@ class _ChatPageState extends State<ChatPage> {
   final Map<String, String> _audioDownloadUrlCache = {};
   bool _isChecking = false; // 也要記得保留原本檢查中的狀態變數
   String _userProfileText = ""; // 用來顯示檔案內容的變數
+  String? _selectedChatImagePath;
   bool _waitingForNewAiReply = false;
   int _watermarkStyle = 0;
   DateTime? _lastUserSendTime;
@@ -168,6 +169,7 @@ class _ChatPageState extends State<ChatPage> {
   final AudioPlayer _voicePreviewPlayer = AudioPlayer();
   // --- 狀態變數 ---
   bool _isGenerating = false;           // 正在生成中
+  String? _selectedImagePath;
   // ✨ 補上我們的遊戲 App ID
   // 🌟 總裁指令：拒絕預設值！統一從 AppConfig 抓取 ID
   final String _appId = AppConfig.appId;
@@ -1233,6 +1235,7 @@ class _ChatPageState extends State<ChatPage> {
           'id': pendingMediaId,
           'type': imagePath != null && imagePath.isNotEmpty ? 'image' : 'audio',
           'path': imagePath ?? audioPath ?? '',
+          'text': messageText, // 👈 新增這行，讓等待上傳時也知道有文字
           'isUploading': true,
         });
       });
@@ -2691,9 +2694,12 @@ class _ChatPageState extends State<ChatPage> {
       final String playerGenderForAi = _normalizePlayerGenderForAi(
         _currentAiProfile['gender']?.toString(),
       );
+      final bool hasImage = imagePath != null && imagePath.isNotEmpty;
+      final bool hasAudio = audioPath != null && audioPath.isNotEmpty;
       final String playerPronounGuide = _buildPlayerPronounGuide(playerGenderForAi);
       final Map<String, dynamic> requestBody = {
-        "audioUrl": storagePath ?? "",
+        "imageUrl": hasImage ? (storagePath ?? "") : "",
+        "audioUrl": hasAudio ? (storagePath ?? "") : "",
         "userMessage": effectiveUserMessage,
         "isContinue": isContinue,
         "chatMode": _currentMode?.name ?? "daily",
@@ -4044,11 +4050,13 @@ class _ChatPageState extends State<ChatPage> {
         return;
       }
 
-      await _sendMessage(
-        text: '',
-        imagePath: pickedFile.path,
-        showInChat: true,
-      );
+      if (!mounted) return;
+
+      setState(() {
+        _selectedChatImagePath = pickedFile.path;
+      });
+
+      debugPrint('🖼️ 已暫存聊天圖片，等待玩家輸入文字後送出');
     } catch (e) {
       debugPrint('❌ 選擇聊天室圖片失敗: $e');
 
@@ -4060,6 +4068,76 @@ class _ChatPageState extends State<ChatPage> {
         isError: true,
       );
     }
+  }
+
+  Widget _buildSelectedChatImagePreview() {
+    final imagePath = _selectedChatImagePath;
+    if (imagePath == null || imagePath.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: kIsWeb
+                  ? Image.network(
+                imagePath,
+                width: 96,
+                height: 96,
+                fit: BoxFit.cover,
+              )
+                  : Image.file(
+                File(imagePath),
+                width: 96,
+                height: 96,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned(
+              top: -8,
+              right: -8,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedChatImagePath = null;
+                  });
+                },
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.18),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildChatImage(String imagePathOrUrl) {
@@ -5990,6 +6068,9 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildPendingMediaBubble(Map<String, dynamic> item) {
     final type = item['type']?.toString() ?? '';
     final path = item['path']?.toString() ?? '';
+    final text = item['text']?.toString().trim() ?? '';
+
+    final theme = Theme.of(context);
 
     return Align(
       alignment: Alignment.centerRight,
@@ -6001,9 +6082,40 @@ class _ChatPageState extends State<ChatPage> {
             Opacity(
               opacity: 0.55,
               child: type == 'image'
-                  ? ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: _buildChatImage(path),
+                  ? Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: _buildChatImage(path),
+                    ),
+
+                    if (text.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          text,
+                          style: TextStyle(
+                            color: theme.colorScheme.onPrimary,
+                            fontSize: 14,
+                            height: 1.35,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               )
                   : Container(
                 padding: const EdgeInsets.symmetric(
@@ -6011,21 +6123,40 @@ class _ChatPageState extends State<ChatPage> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
+                  color: theme.colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.play_arrow_rounded),
-                    const SizedBox(width: 8),
-                    _buildStaticAudioWave(),
-                    const SizedBox(width: 8),
-                    const Text('語音上傳中...'),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.play_arrow_rounded),
+                        const SizedBox(width: 8),
+                        _buildStaticAudioWave(),
+                        const SizedBox(width: 8),
+                        const Text('語音上傳中...'),
+                      ],
+                    ),
+
+                    if (text.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontSize: 14,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
             ),
+
             const SizedBox(
               width: 26,
               height: 26,
@@ -6559,128 +6690,188 @@ class _ChatPageState extends State<ChatPage> {
           if (_isScreenshotMode)
         // 如果是截圖模式，就顯示專屬操作列
         _buildScreenshotBottomBar()
-        else ...[
-              // ✨ 3. 底部()快捷鍵區
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                color: theme.cardColor.withValues(alpha:0.5),
-                child: Row(
-                  children: [
-                    OutlinedButton(
-                      onPressed: (_isGenerating || _isLoading) ? null : () {
-                        final text = _textController.text;
-                        final selection = _textController.selection;
-                        int cursorPosition = selection.baseOffset;
-                        if (cursorPosition == -1) {
-                          cursorPosition = text.length;
-                        }
-                        final newText = text.substring(0, cursorPosition) + '（）' + text.substring(cursorPosition);
-                        _textController.value = TextEditingValue(
-                          text: newText,
-                          selection: TextSelection.collapsed(offset: cursorPosition + 1),
-                        );
-                        _focusNode.requestFocus();
-                      },
-                      style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12)),
-                      child: const Text('（）'),
-                    ),
-                  ],
-                ),
-              ),
-            // 🌟 總裁的多選替換魔法：根據模式決定下方要顯示什麼
-            if (_isMultiSelectMode)
+    else ...[
+    // ✨ 3. 底部（）快捷鍵區
+    Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+    color: theme.cardColor.withValues(alpha: 0.5),
+    child: Row(
+    children: [
+    OutlinedButton(
+    onPressed: (_isGenerating || _isLoading)
+    ? null
+        : () {
+    final text = _textController.text;
+    final selection = _textController.selection;
+    int cursorPosition = selection.baseOffset;
 
-              _buildMultiSelectBottomBar() // 👈 沒錯！就只留這一行！直接呼叫你寫好的完美函數！
+    if (cursorPosition == -1) {
+    cursorPosition = text.length;
+    }
 
-            else
-            // 【平常的聊天輸入框】(一字不漏保留你原本的程式碼)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor, // 稍微修正為 Theme.of(context) 避免抓不到 theme 變數
-                  boxShadow: const [BoxShadow(blurRadius: 2, offset: Offset(0, -1), color: Colors.black12)],
-                ),
-                child: SafeArea(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.cloud_outlined),
-                        onPressed: (_isGenerating || _isLoading) ? null : _showToolbox,
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            ValueListenableBuilder<TextEditingValue>(
-                              valueListenable: _textController,
-                              builder: (context, value, child) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 12.0, top: 4.0),
-                                  child: Text(
-                                    '${value.text.length}/900',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: value.text.length >= 900 ? Colors.red : Colors.grey,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                            TextField(
-                              controller: _textController,
-                              focusNode: _focusNode,
-                              onChanged: (text) {
-                                _saveDraft(text);
-                              },
-                              readOnly: (_isGenerating || _isLoading),
-                              minLines: 1,
-                              maxLines: 4,
-                              maxLength: 900,
-                              keyboardType: TextInputType.multiline,
-                              decoration: InputDecoration(
-                                hintText: _isGenerating ? AppLocalizations.of(context)?.chat_ai_typing ?? '對方正在輸入...' : AppLocalizations.of(context)?.chat_input_hint_default ?? '請輸入...',
-                                border: InputBorder.none,
-                                counterText: "",
-                                contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        icon: _isGenerating
-                            ? const Icon(Icons.stop_circle_outlined, color: Colors.red)
-                            : Icon(
-                          Icons.send,
-                          color: _isLoading
-                              ? Colors.grey
-                              : Theme.of(context).colorScheme.primary,
-                        ),
+    final newText =
+    text.substring(0, cursorPosition) +
+    '（）' +
+    text.substring(cursorPosition);
 
-                        onPressed: _isGenerating
-                            ? _stopGenerating
-                            : (_isLoading
-                            ? null
-                            : () {
-                          final text = _textController.text.trim();
-                          if (text.isEmpty) return;
-
-                          _sendMessage(text: text);
-                        }),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-          ],
-            ],
-          ),
+    _textController.value = TextEditingValue(
+    text: newText,
+    selection: TextSelection.collapsed(
+    offset: cursorPosition + 1,
     ),
-            ],
-        ),
-      ),
+    );
+
+    _focusNode.requestFocus();
+    },
+    style: OutlinedButton.styleFrom(
+    padding: const EdgeInsets.symmetric(horizontal: 12),
+    ),
+    child: const Text('（）'),
+    ),
+    ],
+    ),
+    ),
+
+    // 🌟 多選模式 / 平常輸入框
+    if (_isMultiSelectMode)
+    _buildMultiSelectBottomBar()
+    else
+    Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+    decoration: BoxDecoration(
+    color: Theme.of(context).cardColor,
+    boxShadow: const [
+    BoxShadow(
+    blurRadius: 2,
+    offset: Offset(0, -1),
+    color: Colors.black12,
+    ),
+    ],
+    ),
+    child: SafeArea(
+    child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+    if (_selectedChatImagePath != null)
+    _buildSelectedChatImagePreview(),
+
+    Row(
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+    IconButton(
+    icon: const Icon(Icons.cloud_outlined),
+    onPressed: (_isGenerating || _isLoading)
+    ? null
+        : _showToolbox,
+    ),
+
+    Expanded(
+    child: Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+    ValueListenableBuilder<TextEditingValue>(
+    valueListenable: _textController,
+    builder: (context, value, child) {
+    return Padding(
+    padding: const EdgeInsets.only(
+    right: 12.0,
+    top: 4.0,
+    ),
+    child: Text(
+    '${value.text.length}/900',
+    style: TextStyle(
+    fontSize: 10,
+    color: value.text.length >= 900
+    ? Colors.red
+        : Colors.grey,
+    ),
+    ),
+    );
+    },
+    ),
+
+    TextField(
+    controller: _textController,
+    focusNode: _focusNode,
+    onChanged: (text) {
+    _saveDraft(text);
+    },
+    readOnly: (_isGenerating || _isLoading),
+    minLines: 1,
+    maxLines: 4,
+    maxLength: 900,
+    keyboardType: TextInputType.multiline,
+    decoration: InputDecoration(
+    hintText: _isGenerating
+    ? AppLocalizations.of(context)?.chat_ai_typing ??
+    '對方正在輸入...'
+        : AppLocalizations.of(context)
+        ?.chat_input_hint_default ??
+    '請輸入...',
+    border: InputBorder.none,
+    counterText: "",
+    contentPadding: const EdgeInsets.symmetric(
+    vertical: 8.0,
+    horizontal: 12.0,
+    ),
+    ),
+    ),
+    ],
+    ),
+    ),
+
+    IconButton(
+    icon: _isGenerating
+    ? const Icon(
+    Icons.stop_circle_outlined,
+    color: Colors.red,
+    )
+        : Icon(
+    Icons.send,
+    color: _isLoading
+    ? Colors.grey
+        : Theme.of(context).colorScheme.primary,
+    ),
+    onPressed: _isGenerating
+    ? _stopGenerating
+        : (_isLoading
+    ? null
+        : () async {
+    final text = _textController.text.trim();
+    final imagePath = _selectedChatImagePath;
+
+    // 文字跟圖片都沒有，才不送
+    if (text.isEmpty &&
+    (imagePath == null || imagePath.isEmpty)) {
+    return;
+    }
+
+    // 先抓出圖片，再清掉畫面預覽
+    setState(() {
+    _selectedChatImagePath = null;
+    });
+
+    await _sendMessage(
+    text: text,
+    imagePath: imagePath,
+    showInChat: true,
+    );
+    }),
+    ),
+    ],
+    ),
+    ],
+    ),
+    ),
+    ),
+    ],
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
     );
   }
 
@@ -6841,17 +7032,50 @@ class _ChatPageState extends State<ChatPage> {
                   : _buildStyledAiMessage(displayText, normalStyle),);
           }
           else if (type == 'image') {
+            final imageText = message.text.trim();
+            final imagePath =
+            (message.path != null && message.path!.trim().isNotEmpty)
+                ? message.path!.trim()
+                : message.path.trim();
+
             messageContent = ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: MediaQuery
-                  .of(context)
-                  .size
-                  .width * 0.65),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
-                child: _buildChatImage(
-                  (message.path != null && message.path!.trim().isNotEmpty)
-                      ? message.path!.trim()
-                      : message.path.trim(),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.65,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: isUserMessage
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.surfaceVariant,
+                  borderRadius: BorderRadius.circular(16),
+                  border: _highlightedMessageId == message.id
+                      ? Border.all(color: Colors.yellowAccent, width: 2.5)
+                      : null,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12.0),
+                      child: _buildChatImage(imagePath),
+                    ),
+
+                    if (imageText.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        imageText,
+                        style: TextStyle(
+                          color: isUserMessage
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
+                          fontSize: 14,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             );
