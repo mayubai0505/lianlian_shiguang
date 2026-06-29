@@ -347,7 +347,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
             scopeKey: 'chat_home',
             order: 1,
           tipKey: '${FeatureTipKeys.callMemory}_v4',
-            tipText: '通話後收藏的\n語音會在這裡!',
+            tipText: l10n.tip_call_memory,
             direction: FeatureTipDirection.down,
             top: 56,
             maxWidth: 150,
@@ -393,10 +393,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   backgroundColor: Colors.pinkAccent,
                   smallSize: 10,
                   child: FeatureTipTarget(
-                  scopeKey: 'chat_home',
-                  order: 2,
+                    scopeKey: 'chat_home',
+                    order: 2,
                     tipKey: '${FeatureTipKeys.chatHomeNotifications}_v3',
-                  tipText: '這裡可以\n查看新通知',
+                    // ✨ 替換：新通知提示
+                    tipText: l10n.tip_chat_notifications,
                   direction: FeatureTipDirection.down,
                   top: 70,
                   maxWidth: 130,

@@ -4080,4 +4080,98 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'عرض تراخيص البرمجيات مفتوحة المصدر التابعة لجهات خارجية';
+
+  @override
+  String get call_login_title => 'تسجيل الدخول مطلوب';
+
+  @override
+  String get call_login_content =>
+      'سجّلي الدخول لفتح ميزة المكالمات الصوتية الحصرية!';
+
+  @override
+  String get cancel_later => 'لاحقاً';
+
+  @override
+  String get go_to_login => 'الانتقال لتسجيل الدخول';
+
+  @override
+  String get easter_egg_title => 'اكتشاف مفاجأة مخفية ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'لقد قمتِ بتفعيل \"$title\".\n\nهل تودين استخدام هذه القصة الخاصة؟';
+  }
+
+  @override
+  String get easter_egg_cancel => 'عدم الاستخدام';
+
+  @override
+  String get easter_egg_confirm => 'استخدام المفاجأة';
+
+  @override
+  String get common_update_success => 'تم التعديل بنجاح';
+
+  @override
+  String get common_update_failed_try_again =>
+      'فشل التعديل، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String get no_voice_available => 'لا يوجد صوت حالياً';
+
+  @override
+  String get gift_insufficient_title => 'النقاط غير كافية';
+
+  @override
+  String get gift_insufficient_prompt =>
+      'هل تودين الانتقال للحصول على المزيد من عملات الفان화؟';
+
+  @override
+  String get not_now => 'ليس الآن';
+
+  @override
+  String get go_to_get => 'الانتقال للحصول عليها';
+
+  @override
+  String get status_published => 'تم النشر';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ تم فتح البطاقة الشهرية المتميزة بنجاح!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'شكراً لاشتراككِ! لقد دخلت المزايا الحصرية حيز التنفيذ:';
+
+  @override
+  String get monthly_card_perk_1 => 'الحصول على 250 زهرة من زهور الزمن فوراً';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'الحصول على 10 زهور زمن إضافية عند تسجيل الدخول يومياً';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'فتح الحد الأقصى لمرات تفاعل الإعجاب الحصري';
+
+  @override
+  String get monthly_card_start_perks => 'البدء في الاستمتاع بالمزايا';
+
+  @override
+  String get tip_post_like =>
+      'بعد الإعجاب، يمكنكِ العثور عليه في\nالمحتوى المفضّل';
+
+  @override
+  String get tip_post_bookmark =>
+      'بعد الحفظ، يمكنكِ العثور عليه في\n\"محفوظاتي\"';
+
+  @override
+  String get tip_time_echoes =>
+      'بعد ترك تجربتكِ\nستظهر التعليقات المنبثقة عند البحث';
+
+  @override
+  String get tip_call_memory =>
+      'التسجيلات الصوتية المحفوظة بعد المكالمة\nستكون هنا!';
+
+  @override
+  String get tip_chat_notifications => 'هنا يمكنكِ\nعرض الإشعارات الجديدة';
 }

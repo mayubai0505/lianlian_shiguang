@@ -4133,4 +4133,99 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'Xem giấy phép phần mềm mã nguồn mở của bên thứ ba';
+
+  @override
+  String get call_login_title => 'Yêu cầu đăng nhập';
+
+  @override
+  String get call_login_content =>
+      'Đăng nhập ngay để mở khóa tính năng gọi điện thoại voice độc quyền nhé!';
+
+  @override
+  String get cancel_later => 'Để sau nhé';
+
+  @override
+  String get go_to_login => 'Đi đến đăng nhập';
+
+  @override
+  String get easter_egg_title => 'Phát hiện Easter Egg ẩn ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'Bạn đã kích hoạt \"$title\".\n\nBạn có muốn sử dụng cốt truyện đặc biệt này không?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'Không sử dụng';
+
+  @override
+  String get easter_egg_confirm => 'Sử dụng Easter Egg';
+
+  @override
+  String get common_update_success => 'Chỉnh sửa thành công';
+
+  @override
+  String get common_update_failed_try_again =>
+      'Chỉnh sửa thất bại, vui lòng thử lại sau';
+
+  @override
+  String get no_voice_available => 'Hiện tại chưa có ghi âm thoại';
+
+  @override
+  String get gift_insufficient_title => 'Không đủ Phồn Hoa Tệ';
+
+  @override
+  String get gift_insufficient_prompt =>
+      'Bạn có muốn đi đến nơi nhận thêm Phồn Hoa Tệ không?';
+
+  @override
+  String get not_now => 'Để sau nhé';
+
+  @override
+  String get go_to_get => 'Đi đến nhận';
+
+  @override
+  String get status_published => 'Đã đăng';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ Mở khóa Thẻ Tháng Premium thành công!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'Cảm ơn bạn đã đăng ký! Các đặc quyền độc quyền đã chính thức có hiệu lực:';
+
+  @override
+  String get monthly_card_perk_1 => 'Nhận ngay 250 đóa Hoa Thời Gian';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'Nhận thêm 10 đóa Hoa Thời Gian khi đăng nhập mỗi ngày';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'Mở khóa giới hạn số lần tương tác hảo cảm độc quyền';
+
+  @override
+  String get monthly_card_start_perks => 'Bắt đầu tận hưởng đặc quyền';
+
+  @override
+  String get tip_post_like =>
+      'Sau khi thích, bạn có thể xem tại\nNội dung yêu thích';
+
+  @override
+  String get tip_post_bookmark =>
+      'Sau khi lưu, bạn có thể xem tại\n\"Mục lưu của tôi\"';
+
+  @override
+  String get tip_time_echoes =>
+      'Sau khi để lại trải nghiệm của bạn\nbình luận bay (danmaku) sẽ xuất hiện khi tìm kiếm';
+
+  @override
+  String get tip_call_memory =>
+      'Ghi âm cuộc gọi được lưu sau cuộc trò chuyện\nsẽ ở ngay đây!';
+
+  @override
+  String get tip_chat_notifications =>
+      'Nơi đây bạn có thể\nxem các thông báo mới';
 }

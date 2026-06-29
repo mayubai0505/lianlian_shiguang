@@ -4135,4 +4135,97 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'थर्ड-पार्टी ओपन-सोर्स सॉफ़्टवेयर लाइसेंस देखें';
+
+  @override
+  String get call_login_title => 'लॉगिन आवश्यक है';
+
+  @override
+  String get call_login_content =>
+      'विशेष वॉयस कॉल सुविधा को अनलॉक करने के लिए अभी लॉगिन करें!';
+
+  @override
+  String get cancel_later => 'बाद में';
+
+  @override
+  String get go_to_login => 'लॉगिन पर जाएं';
+
+  @override
+  String get easter_egg_title => 'छिपा हुआ सरप्राइज मिला ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'आपने \'$title\' को ट्रिगर किया है।\n\nक्या आप इस विशेष कहानी का उपयोग करना चाहते हैं?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'उपयोग न करें';
+
+  @override
+  String get easter_egg_confirm => 'सरप्राइज का उपयोग करें';
+
+  @override
+  String get common_update_success => 'सफलतापूर्वक संशोधित किया गया';
+
+  @override
+  String get common_update_failed_try_again =>
+      'संशोधन विफल रहा, कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get no_voice_available => 'फिलहाल कोई वॉयस उपलब्ध नहीं है';
+
+  @override
+  String get gift_insufficient_title => 'अपरियाप्त शेष';
+
+  @override
+  String get gift_insufficient_prompt =>
+      'क्या आप अधिक फानहुआ सिक्के प्राप्त करने जाना चाहते हैं?';
+
+  @override
+  String get not_now => 'अभी नहीं';
+
+  @override
+  String get go_to_get => 'प्राप्त करने जाएं';
+
+  @override
+  String get status_published => 'प्रकाशित';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ प्रीमियम मासिक कार्ड सफलतापूर्वक अनलॉक हुआ!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'आपकी सदस्यता के लिए धन्यवाद! आपके विशेष विशेषाधिकार अब सक्रिय हैं:';
+
+  @override
+  String get monthly_card_perk_1 => 'तुरंत 250 टाइम फ्लावर्स प्राप्त करें';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'दैनिक लॉगिन करने पर अतिरिक्त 10 टाइम फ्लावर्स पाएं';
+
+  @override
+  String get monthly_card_perk_3 => 'विशेष स्नेह अंतःक्रिया सीमा को अनलॉक करें';
+
+  @override
+  String get monthly_card_start_perks => 'विशेषाधिकारों का आनंद लेना शुरू करें';
+
+  @override
+  String get tip_post_like =>
+      'लाइक करने के बाद, आप इसे\nपसंदीदा सामग्री में देख सकते हैं';
+
+  @override
+  String get tip_post_bookmark =>
+      'सहेजने के बाद, आप इसे\n\"मेरी बचत\" में देख सकते हैं';
+
+  @override
+  String get tip_time_echoes =>
+      'अपना अनुभव छोड़ने के बाद\nखोज करते समय फ्लोटिंग कमेंट्स दिखाई देंगे';
+
+  @override
+  String get tip_call_memory =>
+      'कॉल के बाद सहेजी गई वॉयस रिकॉर्डिंग\nयहाँ मिलेंगी!';
+
+  @override
+  String get tip_chat_notifications => 'यहाँ आप\nनया नोटिफिकेशन देख सकते हैं';
 }

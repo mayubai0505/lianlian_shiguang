@@ -1876,5 +1876,40 @@
     "about_us_edit_confirm": "ยืนยันการแก้ไข",
     "save": "บันทึก",
     "openSourceLicenses": "สัญญาอนุญาตโอเพนซอร์ส",
-    "openSourceLicensesDescription": "ดูสัญญาอนุญาตซอฟต์แวร์โอเพนซอร์สของบุคคลที่สาม"
+    "openSourceLicensesDescription": "ดูสัญญาอนุญาตซอฟต์แวร์โอเพนซอร์สของบุคคลที่สาม",
+    "call_login_title": "จำเป็นต้องเข้าสู่ระบบ",
+    "call_login_content": "เข้าสู่ระบบเพื่อปลดล็อกฟังก์ชันโทรสายเสียงสุดพิเศษได้เลยนะ!",
+    "cancel_later": "ไว้ทีหลัง",
+    "go_to_login": "ไปที่เข้าสู่ระบบ",
+    "easter_egg_title": "ค้นพบอีสเตอร์เอ้กที่ซ่อนอยู่ ✨",
+    "easter_egg_content": "คุณได้ปลดล็อก \"{title}\"\n\nต้องการใช้เนื้อเรื่องพิเศษนี้ไหมคะ?",
+    "@easter_egg_content": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "深夜的貓咪"
+            }
+        }
+    },
+    "easter_egg_cancel": "ไม่ใช้งาน",
+    "easter_egg_confirm": "ใช้อีสเตอร์เอ้ก",
+    "common_update_success": "แก้ไขสำเร็จแล้ว",
+    "common_update_failed_try_again": "แก้ไขไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง",
+    "no_voice_available": "ยังไม่มีข้อความเสียงในขณะนี้",
+    "gift_insufficient_title": "เหรียญฟานฮวาไม่พอ",
+    "gift_insufficient_prompt": "ต้องการไปรับเหรียญฟานฮวาเพิ่มไหมคะ?",
+    "not_now": "ไว้ทีหลัง",
+    "go_to_get": "ไปรับเหรียญ",
+    "status_published": "เผยแพร่แล้ว",
+    "monthly_card_success_title": "✨ ปลดล็อกบัตรรายเดือนระดับพรีเมียมสำเร็จแล้ว!",
+    "monthly_card_success_subtitle": "ขอบคุณสำหรับการสมัครสมาชิกค่ะ! สิทธิพิเศษเฉพาะตัวของคุณมีผลแล้ววันนี้:",
+    "monthly_card_perk_1": "รับดอกไม้แห่งเวลา 250 ดอกทันที",
+    "monthly_card_perk_2": "รับดอกไม้แห่งเวลาเพิ่มอีก 10 ดอกจากการเข้าสู่ระบบรายวัน",
+    "monthly_card_perk_3": "ปลดล็อกขีดจำกัดจำนวนครั้งการโต้ตอบเพื่อเพิ่มค่าความสนิท",
+    "monthly_card_start_perks": "เริ่มรับสิทธิพิเศษเลย",
+    "tip_post_like": "หลังจากกดถูกใจ คุณสามารถดูได้ที่\nคอนเทนต์ที่ชอบ",
+    "tip_post_bookmark": "หลังจากบันทึก คุณสามารถดูได้ที่\n\"คอลเลกชันของฉัน\"",
+    "tip_time_echoes": "หลังจากบันทึกเรื่องราวแล้ว\nข้อความวิ่งจะปรากฏขึ้นขณะค้นหา",
+    "tip_call_memory": "ข้อความเสียงที่บันทึกไว้หลังวางสาย\nจะอยู่ตรงนี้นะ!",
+    "tip_chat_notifications": "ตรงนี้สามารถ\nดูการแจ้งเตือนใหม่ได้"
 }

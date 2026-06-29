@@ -4187,4 +4187,101 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'Afficher les licences des logiciels open source tiers';
+
+  @override
+  String get call_login_title => 'Connexion requise';
+
+  @override
+  String get call_login_content =>
+      'Connectez-vous pour déverrouiller la fonction exclusive d\'appel vocal !';
+
+  @override
+  String get cancel_later => 'Plus tard';
+
+  @override
+  String get go_to_login => 'Se connecter';
+
+  @override
+  String get easter_egg_title => 'Easter egg caché découvert ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'Vous avez déclenché « $title ».\n\nSouhaitez-vous utiliser cette intrigue spéciale ?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'Ne pas utiliser';
+
+  @override
+  String get easter_egg_confirm => 'Utiliser l\'easter egg';
+
+  @override
+  String get common_update_success => 'Modifié avec succès';
+
+  @override
+  String get common_update_failed_try_again =>
+      'Échec de la modification. Veuillez réessayer plus tard';
+
+  @override
+  String get no_voice_available =>
+      'Aucun message vocal disponible pour le moment';
+
+  @override
+  String get gift_insufficient_title => 'Solde insuffisant';
+
+  @override
+  String get gift_insufficient_prompt =>
+      'Souhaitez-vous aller obtenir plus de Pièces Fanhua ?';
+
+  @override
+  String get not_now => 'Pas maintenant';
+
+  @override
+  String get go_to_get => 'Y aller';
+
+  @override
+  String get status_published => 'Publié';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ Carte Mensuelle Premium débloquée avec succès !';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'Merci pour votre abonnement ! Vos privilèges exclusifs sont désormais actifs :';
+
+  @override
+  String get monthly_card_perk_1 =>
+      'Recevez instantanément 250 Fleurs du Temps';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'Récupérez 10 Fleurs du Temps supplémentaires lors de votre connexion quotidienne';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'Débloquez la limite exclusive d\'interactions d\'affection';
+
+  @override
+  String get monthly_card_start_perks => 'Profiter des privilèges';
+
+  @override
+  String get tip_post_like =>
+      'Après avoir aimé, vous pouvez le voir dans\nContenu aimé';
+
+  @override
+  String get tip_post_bookmark =>
+      'Après avoir enregistré, vous pouvez le voir dans\n« Mes favoris »';
+
+  @override
+  String get tip_time_echoes =>
+      'Après avoir partagé votre expérience\ndes commentaires défilants apparaîtront lors de la recherche';
+
+  @override
+  String get tip_call_memory =>
+      'Les enregistrements vocaux enregistrés après les appels\nseront ici !';
+
+  @override
+  String get tip_chat_notifications =>
+      'Ici, vous pouvez\nconsulter les nouvelles notifications';
 }

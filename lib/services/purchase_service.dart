@@ -310,8 +310,10 @@ class PurchaseService extends ChangeNotifier {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), // 🌟 加點圓角讓彈窗更有質感
         title: Row(
           children: [
-            // 🌟 根據是否為月卡，顯示不同的標題 (如果要支援多語系，這裡之後可以換成 l10n)
-            Text(isMonthlyCard ? '✨ 尊榮月卡解鎖成功！' : l10n.shop_purchase_success_title),
+            // 🌟 替換：月卡標題
+            Expanded( // 加上 Expanded 避免文字過長在小螢幕上溢出
+              child: Text(isMonthlyCard ? l10n.monthly_card_success_title : l10n.shop_purchase_success_title),
+            ),
             if (isFirstTime && !isMonthlyCard) const Text(' 🎉', style: TextStyle(fontSize: 24)),
           ],
         ),
@@ -321,13 +323,15 @@ class PurchaseService extends ChangeNotifier {
           children: [
             // 🌟 核心分流：月卡專屬的華麗特權展示
             if (isMonthlyCard) ...[
-              const Text('感謝您的訂閱！專屬特權已生效：', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              // 🌟 替換：月卡副標題
+              Text(l10n.monthly_card_success_subtitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               const SizedBox(height: 16),
-              _buildPerkRow('🌸', '立即獲得 250 朵時光花'),
+              // 🌟 替換：三大特權內容 (Emoji 保留)
+              _buildPerkRow('🌸', l10n.monthly_card_perk_1),
               const SizedBox(height: 10),
-              _buildPerkRow('🎁', '每日登入額外領取 10 朵時光花'),
+              _buildPerkRow('🎁', l10n.monthly_card_perk_2),
               const SizedBox(height: 10),
-              _buildPerkRow('💖', '解鎖專屬好感度互動次數上限'),
+              _buildPerkRow('💖', l10n.monthly_card_perk_3),
             ]
             // 🌟 原本的單次購買顯示邏輯
             else ...[
@@ -346,8 +350,8 @@ class PurchaseService extends ChangeNotifier {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            // 🌟 月卡的按鈕文字也可以稍微不同，增加儀式感
-            child: Text(isMonthlyCard ? '開始享受特權' : l10n.shop_purchase_awesome),
+            // 🌟 替換：月卡的按鈕文字
+            child: Text(isMonthlyCard ? l10n.monthly_card_start_perks : l10n.shop_purchase_awesome),
           ),
         ],
       ),

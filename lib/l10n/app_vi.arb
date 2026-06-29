@@ -1876,5 +1876,40 @@
   "about_us_edit_confirm": "Xác nhận chỉnh sửa",
   "save": "Lưu",
   "openSourceLicenses": "Giấy phép mã nguồn mở",
-  "openSourceLicensesDescription": "Xem giấy phép phần mềm mã nguồn mở của bên thứ ba"
+  "openSourceLicensesDescription": "Xem giấy phép phần mềm mã nguồn mở của bên thứ ba",
+  "call_login_title": "Yêu cầu đăng nhập",
+  "call_login_content": "Đăng nhập ngay để mở khóa tính năng gọi điện thoại voice độc quyền nhé!",
+  "cancel_later": "Để sau nhé",
+  "go_to_login": "Đi đến đăng nhập",
+  "easter_egg_title": "Phát hiện Easter Egg ẩn ✨",
+  "easter_egg_content": "Bạn đã kích hoạt \"{title}\".\n\nBạn có muốn sử dụng cốt truyện đặc biệt này không?",
+  "@easter_egg_content": {
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "深夜的貓咪"
+      }
+    }
+  },
+  "easter_egg_cancel": "Không sử dụng",
+  "easter_egg_confirm": "Sử dụng Easter Egg",
+  "common_update_success": "Chỉnh sửa thành công",
+  "common_update_failed_try_again": "Chỉnh sửa thất bại, vui lòng thử lại sau",
+  "no_voice_available": "Hiện tại chưa có ghi âm thoại",
+  "gift_insufficient_title": "Không đủ Phồn Hoa Tệ",
+  "gift_insufficient_prompt": "Bạn có muốn đi đến nơi nhận thêm Phồn Hoa Tệ không?",
+  "not_now": "Để sau nhé",
+  "go_to_get": "Đi đến nhận",
+  "status_published": "Đã đăng",
+  "monthly_card_success_title": "✨ Mở khóa Thẻ Tháng Premium thành công!",
+  "monthly_card_success_subtitle": "Cảm ơn bạn đã đăng ký! Các đặc quyền độc quyền đã chính thức có hiệu lực:",
+  "monthly_card_perk_1": "Nhận ngay 250 đóa Hoa Thời Gian",
+  "monthly_card_perk_2": "Nhận thêm 10 đóa Hoa Thời Gian khi đăng nhập mỗi ngày",
+  "monthly_card_perk_3": "Mở khóa giới hạn số lần tương tác hảo cảm độc quyền",
+  "monthly_card_start_perks": "Bắt đầu tận hưởng đặc quyền",
+  "tip_post_like": "Sau khi thích, bạn có thể xem tại\nNội dung yêu thích",
+  "tip_post_bookmark": "Sau khi lưu, bạn có thể xem tại\n\"Mục lưu của tôi\"",
+  "tip_time_echoes": "Sau khi để lại trải nghiệm của bạn\nbình luận bay (danmaku) sẽ xuất hiện khi tìm kiếm",
+  "tip_call_memory": "Ghi âm cuộc gọi được lưu sau cuộc trò chuyện\nsẽ ở ngay đây!",
+  "tip_chat_notifications": "Nơi đây bạn có thể\nxem các thông báo mới"
 }

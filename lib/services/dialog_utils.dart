@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart'; // 用於日期判斷
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class DialogUtils {
   /// 顯示帶有「今日不再顯示」功能的對話框
@@ -15,7 +16,7 @@ class DialogUtils {
     if (await _isSuppressedToday(key)) return;
 
     if (!context.mounted) return;
-
+    final l10n = AppLocalizations.of(context)!;
     bool doNotShowAgain = false;
 
     await showDialog(
@@ -33,7 +34,7 @@ class DialogUtils {
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 value: doNotShowAgain,
-                title: const Text('今日不再顯示', style: TextStyle(fontSize: 14)),
+                title: Text(l10n.do_not_show_again_today, style: TextStyle(fontSize: 14)),
                 onChanged: (val) => setState(() => doNotShowAgain = val!),
               ),
             ],
@@ -47,7 +48,7 @@ class DialogUtils {
                 if (onConfirm != null) onConfirm();
                 Navigator.pop(context);
               },
-              child: const Text('確定'),
+              child: Text(l10n.confirm),
             ),
           ],
         ),

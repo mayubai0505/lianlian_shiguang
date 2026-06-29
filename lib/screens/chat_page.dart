@@ -275,8 +275,6 @@ class _ChatPageState extends State<ChatPage> {
     // 🌟🌟🌟 總裁無敵星星：測試模式攔截器 🌟🌟🌟
     // 這裡我們直接幫妳把所有「開關」都打開，不讓它有機會去轉圈圈！
     if (widget.isTestMode) {
-      print("🧪 測試模式啟動：正在手動配置 UI...");
-
       _sessionId = widget.sessionId;     // 🔑 報到成功，給予假 ID
       _currentCharacter = widget.character; // 👤 角色資料載入
 
@@ -1176,6 +1174,9 @@ class _ChatPageState extends State<ChatPage> {
   Future<bool> _showUseEasterEggDialog(dynamic egg) async {
     if (!mounted) return false;
 
+    // ✨ 1. 取得 l10n 實例
+    final l10n = AppLocalizations.of(context)!;
+
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -1184,18 +1185,22 @@ class _ChatPageState extends State<ChatPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text('發現隱藏彩蛋 ✨'),
+          // ✨ 2. 替換標題
+          title: Text(l10n.easter_egg_title),
+          // ✨ 3. 替換內容，並把 egg.title 當作參數傳給字典！
           content: Text(
-            '你觸發了「${egg.title}」。\n\n要使用這個特殊劇情嗎？',
+            l10n.easter_egg_content(egg.title),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('不使用'),
+              // ✨ 4. 替換「不使用」按鈕
+              child: Text(l10n.easter_egg_cancel),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('使用彩蛋'),
+              // ✨ 5. 替換「使用彩蛋」按鈕
+              child: Text(l10n.easter_egg_confirm),
             ),
           ],
         );
@@ -1905,7 +1910,7 @@ class _ChatPageState extends State<ChatPage> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      // ✨ 總裁級：引導註冊/登入的專屬互動彈窗
+      // ✨ 總裁級：引導註冊/登入的專屬互動彈窗 (已完全支援多國語系)
       showDialog(
         context: context,
         builder: (BuildContext dialogContext) => AlertDialog(
@@ -1914,14 +1919,17 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               const Icon(Icons.lock_person_outlined, color: Colors.blueAccent),
               const SizedBox(width: 8),
-              Text('需要登入', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+              // 替換：需要登入
+              Text(l10n.call_login_title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             ],
           ),
-          content: Text('${l10n.please_login_first}\n\n登入後即可解鎖專屬語音通話功能喔！', style: const TextStyle(fontSize: 16)),
+          // 替換：保留您原本的 please_login_first，並接上新翻譯的下半句
+          content: Text('${l10n.please_login_first}\n\n${l10n.call_login_content}', style: const TextStyle(fontSize: 16)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.cancelButton ?? '稍後再說', style: const TextStyle(color: Colors.grey)),
+              // 替換：稍後再說 (若您原本已經有 cancelButton 也可以直接用 l10n.cancelButton)
+              child: Text(l10n.cancel_later, style: const TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -1935,10 +1943,11 @@ class _ChatPageState extends State<ChatPage> {
                 // 🚀 2. 飛向你的登入介面！
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()), // 記得確認頂部有 import 'login_page.dart'; 喔！
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
               },
-              child: const Text('前往登入'),
+              // 替換：前往登入
+              child: Text(l10n.go_to_login),
             ),
           ],
         ),
@@ -1973,6 +1982,7 @@ class _ChatPageState extends State<ChatPage> {
       }
     } catch (e) {
       if (context.mounted) Navigator.pop(context);
+      // 這裡只是開發者除錯用的 Print，通常不用放進 l10n，除非要顯示在畫面上
       print("獲取點數失敗: $e");
     }
   }
@@ -2469,7 +2479,7 @@ class _ChatPageState extends State<ChatPage> {
                               context) => const StorePage()), // 確保你有 import store_page
                         );
                       },
-                      child: const Text('前往獲取'),
+                      child:  Text(l10n.goToSubscribeButton),
                     ),
                   ],
                 ),
@@ -3396,7 +3406,7 @@ class _ChatPageState extends State<ChatPage> {
             // 📸 🌟 總裁推薦：新增「截圖分享」選項
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined, color: Colors.purple),
-              title: const Text('截圖分享'),
+              title: Text(l10n.screenshotShare),
               onTap: () {
                 Navigator.pop(context);
 
@@ -5160,7 +5170,7 @@ class _ChatPageState extends State<ChatPage> {
                         children: [
                           const Icon(Icons.volume_mute_rounded, color: Colors.orangeAccent, size: 28),
                           const SizedBox(width: 8),
-                          Text('暫無語音', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                          Text(l10n.no_voice_available, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                         ],
                       ),
                       // 這裡放入你原本的沒語音提示文字
@@ -5319,17 +5329,20 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               const Icon(Icons.local_florist, color: Colors.pinkAccent), // 花朵圖示
               const SizedBox(width: 8),
-              Text('心意不足', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+              // ✨ 替換：心意不足
+              Text(l10n.gift_insufficient_title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             ],
           ),
+          // ✨ 替換：接上新的提示問句
           content: Text(
-              '${l10n.chat_gift_points_needed(gift['cost'].toString())}\n\n要前往獲取更多繁花幣嗎？',
+              '${l10n.chat_gift_points_needed(gift['cost'].toString())}\n\n${l10n.gift_insufficient_prompt}',
               style: const TextStyle(fontSize: 16)
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.cancelButton ?? '先不要', style: const TextStyle(color: Colors.grey)),
+              // ✨ 替換：先不要 (若有 cancelButton 則優先使用)
+              child: Text(l10n.cancelButton ?? l10n.not_now, style: const TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -5346,7 +5359,8 @@ class _ChatPageState extends State<ChatPage> {
                   MaterialPageRoute(builder: (context) => const StorePage()), // 或 TaskPage()
                 );
               },
-              child: const Text('前往獲取'),
+              // ✨ 替換：前往獲取
+              child: Text(l10n.go_to_get),
             ),
           ],
         ),

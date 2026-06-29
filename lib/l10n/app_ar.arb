@@ -1917,5 +1917,40 @@
     "about_us_edit_confirm": "تأكيد التعديل",
     "save": "حفظ",
     "openSourceLicenses": "تراخيص البرمجيات مفتوحة المصدر",
-    "openSourceLicensesDescription": "عرض تراخيص البرمجيات مفتوحة المصدر التابعة لجهات خارجية"
+    "openSourceLicensesDescription": "عرض تراخيص البرمجيات مفتوحة المصدر التابعة لجهات خارجية",
+    "call_login_title": "تسجيل الدخول مطلوب",
+    "call_login_content": "سجّلي الدخول لفتح ميزة المكالمات الصوتية الحصرية!",
+    "cancel_later": "لاحقاً",
+    "go_to_login": "الانتقال لتسجيل الدخول",
+    "easter_egg_title": "اكتشاف مفاجأة مخفية ✨",
+    "easter_egg_content": "لقد قمتِ بتفعيل \"{title}\".\n\nهل تودين استخدام هذه القصة الخاصة؟",
+    "@easter_egg_content": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "深夜的貓咪"
+            }
+        }
+    },
+    "easter_egg_cancel": "عدم الاستخدام",
+    "easter_egg_confirm": "استخدام المفاجأة",
+    "common_update_success": "تم التعديل بنجاح",
+    "common_update_failed_try_again": "فشل التعديل، يرجى المحاولة مرة أخرى لاحقاً",
+    "no_voice_available": "لا يوجد صوت حالياً",
+    "gift_insufficient_title": "النقاط غير كافية",
+    "gift_insufficient_prompt": "هل تودين الانتقال للحصول على المزيد من عملات الفان화؟",
+    "not_now": "ليس الآن",
+    "go_to_get": "الانتقال للحصول عليها",
+    "status_published": "تم النشر",
+    "monthly_card_success_title": "✨ تم فتح البطاقة الشهرية المتميزة بنجاح!",
+    "monthly_card_success_subtitle": "شكراً لاشتراككِ! لقد دخلت المزايا الحصرية حيز التنفيذ:",
+    "monthly_card_perk_1": "الحصول على 250 زهرة من زهور الزمن فوراً",
+    "monthly_card_perk_2": "الحصول على 10 زهور زمن إضافية عند تسجيل الدخول يومياً",
+    "monthly_card_perk_3": "فتح الحد الأقصى لمرات تفاعل الإعجاب الحصري",
+    "monthly_card_start_perks": "البدء في الاستمتاع بالمزايا",
+    "tip_post_like": "بعد الإعجاب، يمكنكِ العثور عليه في\nالمحتوى المفضّل",
+    "tip_post_bookmark": "بعد الحفظ، يمكنكِ العثور عليه في\n\"محفوظاتي\"",
+    "tip_time_echoes": "بعد ترك تجربتكِ\nستظهر التعليقات المنبثقة عند البحث",
+    "tip_call_memory": "التسجيلات الصوتية المحفوظة بعد المكالمة\nستكون هنا!",
+    "tip_chat_notifications": "هنا يمكنكِ\nعرض الإشعارات الجديدة"
 }

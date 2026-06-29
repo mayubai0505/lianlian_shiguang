@@ -1876,5 +1876,40 @@
     "about_us_edit_confirm": "संशोधन की पुष्टि करें",
     "save": "सहेजें",
     "openSourceLicenses": "ओपन सोर्स लाइसेंस",
-    "openSourceLicensesDescription": "थर्ड-पार्टी ओपन-सोर्स सॉफ़्टवेयर लाइसेंस देखें"
+    "openSourceLicensesDescription": "थर्ड-पार्टी ओपन-सोर्स सॉफ़्टवेयर लाइसेंस देखें",
+    "call_login_title": "लॉगिन आवश्यक है",
+    "call_login_content": "विशेष वॉयस कॉल सुविधा को अनलॉक करने के लिए अभी लॉगिन करें!",
+    "cancel_later": "बाद में",
+    "go_to_login": "लॉगिन पर जाएं",
+    "easter_egg_title": "छिपा हुआ सरप्राइज मिला ✨",
+    "easter_egg_content": "आपने '{title}' को ट्रिगर किया है।\n\nक्या आप इस विशेष कहानी का उपयोग करना चाहते हैं?",
+    "@easter_egg_content": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "深夜的貓咪"
+            }
+        }
+    },
+    "easter_egg_cancel": "उपयोग न करें",
+    "easter_egg_confirm": "सरप्राइज का उपयोग करें",
+    "common_update_success": "सफलतापूर्वक संशोधित किया गया",
+    "common_update_failed_try_again": "संशोधन विफल रहा, कृपया बाद में पुनः प्रयास करें",
+    "no_voice_available": "फिलहाल कोई वॉयस उपलब्ध नहीं है",
+    "gift_insufficient_title": "अपरियाप्त शेष",
+    "gift_insufficient_prompt": "क्या आप अधिक फानहुआ सिक्के प्राप्त करने जाना चाहते हैं?",
+    "not_now": "अभी नहीं",
+    "go_to_get": "प्राप्त करने जाएं",
+    "status_published": "प्रकाशित",
+    "monthly_card_success_title": "✨ प्रीमियम मासिक कार्ड सफलतापूर्वक अनलॉक हुआ!",
+    "monthly_card_success_subtitle": "आपकी सदस्यता के लिए धन्यवाद! आपके विशेष विशेषाधिकार अब सक्रिय हैं:",
+    "monthly_card_perk_1": "तुरंत 250 टाइम फ्लावर्स प्राप्त करें",
+    "monthly_card_perk_2": "दैनिक लॉगिन करने पर अतिरिक्त 10 टाइम फ्लावर्स पाएं",
+    "monthly_card_perk_3": "विशेष स्नेह अंतःक्रिया सीमा को अनलॉक करें",
+    "monthly_card_start_perks": "विशेषाधिकारों का आनंद लेना शुरू करें",
+    "tip_post_like": "लाइक करने के बाद, आप इसे\nपसंदीदा सामग्री में देख सकते हैं",
+    "tip_post_bookmark": "सहेजने के बाद, आप इसे\n\"मेरी बचत\" में देख सकते हैं",
+    "tip_time_echoes": "अपना अनुभव छोड़ने के बाद\nखोज करते समय फ्लोटिंग कमेंट्स दिखाई देंगे",
+    "tip_call_memory": "कॉल के बाद सहेजी गई वॉयस रिकॉर्डिंग\nयहाँ मिलेंगी!",
+    "tip_chat_notifications": "यहाँ आप\nनया नोटिफिकेशन देख सकते हैं"
 }

@@ -7233,6 +7233,168 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'查看第三方開源軟體授權'**
   String get openSourceLicensesDescription;
+
+  /// No description provided for @call_login_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'需要登入'**
+  String get call_login_title;
+
+  /// No description provided for @call_login_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'登入後即可解鎖專屬語音通話功能喔！'**
+  String get call_login_content;
+
+  /// No description provided for @cancel_later.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'稍後再說'**
+  String get cancel_later;
+
+  /// No description provided for @go_to_login.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'前往登入'**
+  String get go_to_login;
+
+  /// No description provided for @easter_egg_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發現隱藏彩蛋 ✨'**
+  String get easter_egg_title;
+
+  /// No description provided for @easter_egg_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'你觸發了「{title}」。\n\n要使用這個特殊劇情嗎？'**
+  String easter_egg_content(String title);
+
+  /// No description provided for @easter_egg_cancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'不使用'**
+  String get easter_egg_cancel;
+
+  /// No description provided for @easter_egg_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'使用彩蛋'**
+  String get easter_egg_confirm;
+
+  /// No description provided for @common_update_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'修改成功'**
+  String get common_update_success;
+
+  /// No description provided for @common_update_failed_try_again.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'修改失敗，請稍後再試'**
+  String get common_update_failed_try_again;
+
+  /// No description provided for @no_voice_available.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'暫無語音'**
+  String get no_voice_available;
+
+  /// No description provided for @gift_insufficient_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'心意不足'**
+  String get gift_insufficient_title;
+
+  /// No description provided for @gift_insufficient_prompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'要前往獲取更多繁花幣嗎？'**
+  String get gift_insufficient_prompt;
+
+  /// No description provided for @not_now.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'先不要'**
+  String get not_now;
+
+  /// No description provided for @go_to_get.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'前往獲取'**
+  String get go_to_get;
+
+  /// No description provided for @status_published.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已發布'**
+  String get status_published;
+
+  /// No description provided for @monthly_card_success_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 尊榮月卡解鎖成功！'**
+  String get monthly_card_success_title;
+
+  /// No description provided for @monthly_card_success_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'感謝您的訂閱！專屬特權已生效：'**
+  String get monthly_card_success_subtitle;
+
+  /// No description provided for @monthly_card_perk_1.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'立即獲得 250 朵時光花'**
+  String get monthly_card_perk_1;
+
+  /// No description provided for @monthly_card_perk_2.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每日登入額外領取 10 朵時光花'**
+  String get monthly_card_perk_2;
+
+  /// No description provided for @monthly_card_perk_3.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解鎖專屬好感度互動次數上限'**
+  String get monthly_card_perk_3;
+
+  /// No description provided for @monthly_card_start_perks.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開始享受特權'**
+  String get monthly_card_start_perks;
+
+  /// No description provided for @tip_post_like.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'按讚後可在\n喜歡內容查看'**
+  String get tip_post_like;
+
+  /// No description provided for @tip_post_bookmark.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏後可在\n「我的收藏」查看'**
+  String get tip_post_bookmark;
+
+  /// No description provided for @tip_time_echoes.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'留下經歷後\n搜尋時會出現彈幕'**
+  String get tip_time_echoes;
+
+  /// No description provided for @tip_call_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'通話後收藏的\n語音會在這裡!'**
+  String get tip_call_memory;
+
+  /// No description provided for @tip_chat_notifications.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這裡可以\n查看新通知'**
+  String get tip_chat_notifications;
 }
 
 class _AppLocalizationsDelegate

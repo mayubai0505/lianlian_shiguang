@@ -4138,4 +4138,99 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'Lihat lesen perisian sumber terbuka pihak ketiga';
+
+  @override
+  String get call_login_title => 'Log Masuk Diperlukan';
+
+  @override
+  String get call_login_content =>
+      'Log masuk sekarang untuk membuka kunci fungsi panggilan suara eksklusif!';
+
+  @override
+  String get cancel_later => 'Kemudian Saja';
+
+  @override
+  String get go_to_login => 'Log Masuk';
+
+  @override
+  String get easter_egg_title => 'Menemui Kejutan Misteri Tersembunyi ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'Awak telah mencetuskan \'$title\'.\n\nAdakah awak ingin menggunakan jalan cerita khas ini?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'Tidak Gunakan';
+
+  @override
+  String get easter_egg_confirm => 'Gunakan Kejutan';
+
+  @override
+  String get common_update_success => 'Berjaya diubah';
+
+  @override
+  String get common_update_failed_try_again =>
+      'Gagal diubah, sila cuba lagi kemudian';
+
+  @override
+  String get no_voice_available => 'Tiada audio tersedia buat masa ini';
+
+  @override
+  String get gift_insufficient_title => 'Baki Tidak Mencukupi';
+
+  @override
+  String get gift_insufficient_prompt =>
+      'Adakah awak ingin pergi mendapatkan lebih banyak Syiling Fanhua?';
+
+  @override
+  String get not_now => 'Nanti Saja';
+
+  @override
+  String get go_to_get => 'Pergi Dapatkan';
+
+  @override
+  String get status_published => 'Diterbitkan';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ Kad Bulanan Premium Berjaya Dibuka!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'Terima kasih kerana melanggan! Hak istimewa eksklusif awak kini aktif:';
+
+  @override
+  String get monthly_card_perk_1 => 'Dapatkan 250 Bunga Masa dengan segera';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'Tuntut tambahan 10 Bunga Masa melalui log masuk harian';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'Buka kunci had interaksi kejelekitan (affection) eksklusif';
+
+  @override
+  String get monthly_card_start_perks => 'Mula Nikmati Hak Istimewa';
+
+  @override
+  String get tip_post_like =>
+      'Selepas suka, awak boleh melihatnya di\nKandungan Disukai';
+
+  @override
+  String get tip_post_bookmark =>
+      'Selepas menyimpan, awak boleh melihatnya di\n\"Simpanan Saya\"';
+
+  @override
+  String get tip_time_echoes =>
+      'Selepas meninggalkan pengalaman awak\nkomentar melayang akan muncul semasa carian';
+
+  @override
+  String get tip_call_memory =>
+      'Rakaman suara yang disimpan selepas panggilan\nakan ada di sini!';
+
+  @override
+  String get tip_chat_notifications =>
+      'Di sini awak boleh\nmelihat notifikasi baru';
 }

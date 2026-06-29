@@ -4152,4 +4152,100 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'Visualizar licenças de softwares de código aberto de terceiros';
+
+  @override
+  String get call_login_title => 'Login Necessário';
+
+  @override
+  String get call_login_content =>
+      'Faça login para desbloquear a função exclusiva de chamada de voz!';
+
+  @override
+  String get cancel_later => 'Mais tarde';
+
+  @override
+  String get go_to_login => 'Ir para o Login';
+
+  @override
+  String get easter_egg_title => 'Easter Egg Oculto Descoberto ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'Você ativou \'$title\'.\n\nQuer usar esta trama especial?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'Não usar';
+
+  @override
+  String get easter_egg_confirm => 'Usar Easter Egg';
+
+  @override
+  String get common_update_success => 'Alterado com sucesso';
+
+  @override
+  String get common_update_failed_try_again =>
+      'Falha na alteração. Por favor, tente novamente mais tarde';
+
+  @override
+  String get no_voice_available => 'Nenhum áudio disponível no momento';
+
+  @override
+  String get gift_insufficient_title => 'Saldo Insuficiente';
+
+  @override
+  String get gift_insufficient_prompt =>
+      'Gostaria de ir obter mais Moedas Fanhua?';
+
+  @override
+  String get not_now => 'Agora não';
+
+  @override
+  String get go_to_get => 'Ir Obter';
+
+  @override
+  String get status_published => 'Publicado';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ Cartão Mensal Premium Desbloqueado com Sucesso!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'Obrigado por sua assinatura! Seus privilégios exclusivos já estão ativos:';
+
+  @override
+  String get monthly_card_perk_1 =>
+      'Receba instantaneamente 250 Flores do Tempo';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'Resgate 10 Flores do Tempo adicionais no login diário';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'Desbloqueie o limite exclusivo de interações de afinidade';
+
+  @override
+  String get monthly_card_start_perks => 'Começar a Aproveitar os Privilégios';
+
+  @override
+  String get tip_post_like =>
+      'Depois de curtir, você pode ver em\nConteúdo Curtido';
+
+  @override
+  String get tip_post_bookmark =>
+      'Depois de salvar, você pode ver em\n\"Mis Favoritos\"';
+
+  @override
+  String get tip_time_echoes =>
+      'Depois de deixar sua experiência\ncomentários flutuantes aparecerão durante a busca';
+
+  @override
+  String get tip_call_memory =>
+      'Os áudios salvos após as chamadas\nficarão aqui!';
+
+  @override
+  String get tip_chat_notifications =>
+      'Aqui você pode\nver as novas notificações';
 }

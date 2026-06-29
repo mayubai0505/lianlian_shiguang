@@ -2049,5 +2049,40 @@
     "about_us_edit_confirm": "Confirmer la modification",
     "save": "Enregistrer",
     "openSourceLicenses": "Licences open source",
-    "openSourceLicensesDescription": "Afficher les licences des logiciels open source tiers"
+    "openSourceLicensesDescription": "Afficher les licences des logiciels open source tiers",
+    "call_login_title": "Connexion requise",
+    "call_login_content": "Connectez-vous pour déverrouiller la fonction exclusive d'appel vocal !",
+    "cancel_later": "Plus tard",
+    "go_to_login": "Se connecter",
+    "easter_egg_title": "Easter egg caché découvert ✨",
+    "easter_egg_content": "Vous avez déclenché « {title} ».\n\nSouhaitez-vous utiliser cette intrigue spéciale ?",
+    "@easter_egg_content": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "深夜的貓咪"
+            }
+        }
+    },
+    "easter_egg_cancel": "Ne pas utiliser",
+    "easter_egg_confirm": "Utiliser l'easter egg",
+    "common_update_success": "Modifié avec succès",
+    "common_update_failed_try_again": "Échec de la modification. Veuillez réessayer plus tard",
+    "no_voice_available": "Aucun message vocal disponible pour le moment",
+    "gift_insufficient_title": "Solde insuffisant",
+    "gift_insufficient_prompt": "Souhaitez-vous aller obtenir plus de Pièces Fanhua ?",
+    "not_now": "Pas maintenant",
+    "go_to_get": "Y aller",
+    "status_published": "Publié",
+    "monthly_card_success_title": "✨ Carte Mensuelle Premium débloquée avec succès !",
+    "monthly_card_success_subtitle": "Merci pour votre abonnement ! Vos privilèges exclusifs sont désormais actifs :",
+    "monthly_card_perk_1": "Recevez instantanément 250 Fleurs du Temps",
+    "monthly_card_perk_2": "Récupérez 10 Fleurs du Temps supplémentaires lors de votre connexion quotidienne",
+    "monthly_card_perk_3": "Débloquez la limite exclusive d'interactions d'affection",
+    "monthly_card_start_perks": "Profiter des privilèges",
+    "tip_post_like": "Après avoir aimé, vous pouvez le voir dans\nContenu aimé",
+    "tip_post_bookmark": "Après avoir enregistré, vous pouvez le voir dans\n« Mes favoris »",
+    "tip_time_echoes": "Après avoir partagé votre expérience\ndes commentaires défilants apparaîtront lors de la recherche",
+    "tip_call_memory": "Les enregistrements vocaux enregistrés après les appels\nseront ici !",
+    "tip_chat_notifications": "Ici, vous pouvez\nconsulter les nouvelles notifications"
 }

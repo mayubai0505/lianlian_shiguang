@@ -270,13 +270,14 @@ class CreatorStudioPage extends StatelessWidget {
   }
 
   Widget _buildPublicBadge(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.green.withValues(alpha:0.2),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Text('已發布', style: TextStyle(color: Colors.green, fontSize: 12)),
+      child: Text(l10n.status_published, style: const TextStyle(color: Colors.green, fontSize: 12)),
     );
   }
 

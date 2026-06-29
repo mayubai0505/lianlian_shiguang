@@ -2020,5 +2020,40 @@
   "about_us_edit_confirm": "確認修改",
   "save": "儲存",
   "openSourceLicenses": "開源授權",
-  "openSourceLicensesDescription": "查看第三方開源軟體授權"
+  "openSourceLicensesDescription": "查看第三方開源軟體授權",
+  "call_login_title": "需要登入",
+  "call_login_content": "登入後即可解鎖專屬語音通話功能喔！",
+  "cancel_later": "稍後再說",
+  "go_to_login": "前往登入",
+  "easter_egg_title": "發現隱藏彩蛋 ✨",
+  "easter_egg_content": "你觸發了「{title}」。\n\n要使用這個特殊劇情嗎？",
+  "@easter_egg_content": {
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "深夜的貓咪"
+      }
+    }
+  },
+  "easter_egg_cancel": "不使用",
+  "easter_egg_confirm": "使用彩蛋",
+  "common_update_success": "修改成功",
+  "common_update_failed_try_again": "修改失敗，請稍後再試",
+  "no_voice_available": "暫無語音",
+  "gift_insufficient_title": "心意不足",
+  "gift_insufficient_prompt": "要前往獲取更多繁花幣嗎？",
+  "not_now": "先不要",
+  "go_to_get": "前往獲取",
+  "status_published": "已發布",
+  "monthly_card_success_title": "✨ 尊榮月卡解鎖成功！",
+  "monthly_card_success_subtitle": "感謝您的訂閱！專屬特權已生效：",
+  "monthly_card_perk_1": "立即獲得 250 朵時光花",
+  "monthly_card_perk_2": "每日登入額外領取 10 朵時光花",
+  "monthly_card_perk_3": "解鎖專屬好感度互動次數上限",
+  "monthly_card_start_perks": "開始享受特權",
+  "tip_post_like": "按讚後可在\n喜歡內容查看",
+  "tip_post_bookmark": "收藏後可在\n「我的收藏」查看",
+  "tip_time_echoes": "留下經歷後\n搜尋時會出現彈幕",
+  "tip_call_memory": "通話後收藏的\n語音會在這裡!",
+  "tip_chat_notifications": "這裡可以\n查看新通知"
 }

@@ -1877,5 +1877,40 @@
   "about_us_edit_confirm": "変更を確定",
   "save": "保存",
   "openSourceLicenses": "オープンソースライセンス",
-  "openSourceLicensesDescription": "サードパーティのオープンソースソフトウェアライセンスを表示します"
+  "openSourceLicensesDescription": "サードパーティのオープンソースソフトウェアライセンスを表示します",
+  "call_login_title": "ログインが必要です",
+  "call_login_content": "ログインすると、専属の音声通話機能が解放されます！",
+  "cancel_later": "またあとで",
+  "go_to_login": "ログインへ進む",
+  "easter_egg_title": "隠しイースターエッグを発見 ✨",
+  "easter_egg_content": "「{title}」が解放されました。\n\nこの特殊ストーリーを使用しますか？",
+  "@easter_egg_content": {
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "深夜的貓咪"
+      }
+    }
+  },
+  "easter_egg_cancel": "使用しない",
+  "easter_egg_confirm": "エッグを使用する",
+  "common_update_success": "変更に成功しました",
+  "common_update_failed_try_again": "変更に失敗しました。しばらく経ってからもう一度お試しください",
+  "no_voice_available": "ボイスはまだありません",
+  "gift_insufficient_title": "繁花コイン不足",
+  "gift_insufficient_prompt": "繁花コインを補充しに進みますか？",
+  "not_now": "今はしない",
+  "go_to_get": "補充しに進む",
+  "status_published": "公開済み",
+  "monthly_card_success_title": "✨ プレミアム月間カード解放成功！",
+  "monthly_card_success_subtitle": "サブスクリプションへのご登録ありがとうございます！専属特権が有効になりました：",
+  "monthly_card_perk_1": "「時の花」を今すぐ250個獲得",
+  "monthly_card_perk_2": "毎日のログインで「時の花」をさらに10個獲得",
+  "monthly_card_perk_3": "専属好感度インタラクションの回数上限を解放",
+  "monthly_card_start_perks": "特権を楽しむ",
+  "tip_post_like": "いいね！した後は\nお気に入りコンテンツで確認できます",
+  "tip_post_bookmark": "保存した後は\n「マイコレクション」で確認できます",
+  "tip_time_echoes": "足跡を残した後は\n検索時に弾幕（コメント流動）が表示されます",
+  "tip_call_memory": "通話後に保存したボイスは\nここに集まります！",
+  "tip_chat_notifications": "新着通知は\nここから確認できます"
 }

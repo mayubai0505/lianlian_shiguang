@@ -3890,6 +3890,89 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get openSourceLicensesDescription => '查看第三方開源軟體授權';
+
+  @override
+  String get call_login_title => '需要登入';
+
+  @override
+  String get call_login_content => '登入後即可解鎖專屬語音通話功能喔！';
+
+  @override
+  String get cancel_later => '稍後再說';
+
+  @override
+  String get go_to_login => '前往登入';
+
+  @override
+  String get easter_egg_title => '發現隱藏彩蛋 ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return '你觸發了「$title」。\n\n要使用這個特殊劇情嗎？';
+  }
+
+  @override
+  String get easter_egg_cancel => '不使用';
+
+  @override
+  String get easter_egg_confirm => '使用彩蛋';
+
+  @override
+  String get common_update_success => '修改成功';
+
+  @override
+  String get common_update_failed_try_again => '修改失敗，請稍後再試';
+
+  @override
+  String get no_voice_available => '暫無語音';
+
+  @override
+  String get gift_insufficient_title => '心意不足';
+
+  @override
+  String get gift_insufficient_prompt => '要前往獲取更多繁花幣嗎？';
+
+  @override
+  String get not_now => '先不要';
+
+  @override
+  String get go_to_get => '前往獲取';
+
+  @override
+  String get status_published => '已發布';
+
+  @override
+  String get monthly_card_success_title => '✨ 尊榮月卡解鎖成功！';
+
+  @override
+  String get monthly_card_success_subtitle => '感謝您的訂閱！專屬特權已生效：';
+
+  @override
+  String get monthly_card_perk_1 => '立即獲得 250 朵時光花';
+
+  @override
+  String get monthly_card_perk_2 => '每日登入額外領取 10 朵時光花';
+
+  @override
+  String get monthly_card_perk_3 => '解鎖專屬好感度互動次數上限';
+
+  @override
+  String get monthly_card_start_perks => '開始享受特權';
+
+  @override
+  String get tip_post_like => '按讚後可在\n喜歡內容查看';
+
+  @override
+  String get tip_post_bookmark => '收藏後可在\n「我的收藏」查看';
+
+  @override
+  String get tip_time_echoes => '留下經歷後\n搜尋時會出現彈幕';
+
+  @override
+  String get tip_call_memory => '通話後收藏的\n語音會在這裡!';
+
+  @override
+  String get tip_chat_notifications => '這裡可以\n查看新通知';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7778,6 +7861,89 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get openSourceLicensesDescription => '查看第三方开源软件授权';
+
+  @override
+  String get call_login_title => '需要登录';
+
+  @override
+  String get call_login_content => '登录后即可解锁专属语音通话功能喔！';
+
+  @override
+  String get cancel_later => '稍后再说';
+
+  @override
+  String get go_to_login => '前往登录';
+
+  @override
+  String get easter_egg_title => '发现隐藏彩蛋 ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return '你触发了「$title」。\n\n要使用这个特殊剧情吗？';
+  }
+
+  @override
+  String get easter_egg_cancel => '不使用';
+
+  @override
+  String get easter_egg_confirm => '使用彩蛋';
+
+  @override
+  String get common_update_success => '修改成功';
+
+  @override
+  String get common_update_failed_try_again => '修改失败，请稍后再试';
+
+  @override
+  String get no_voice_available => '暂无语音';
+
+  @override
+  String get gift_insufficient_title => '心意不足';
+
+  @override
+  String get gift_insufficient_prompt => '要前往获取更多繁花币吗？';
+
+  @override
+  String get not_now => '先不要';
+
+  @override
+  String get go_to_get => '前往获取';
+
+  @override
+  String get status_published => '已发布';
+
+  @override
+  String get monthly_card_success_title => '✨ 尊荣月卡解锁成功！';
+
+  @override
+  String get monthly_card_success_subtitle => '感谢您的订阅！专属特权已生效：';
+
+  @override
+  String get monthly_card_perk_1 => '立即获得 250 朵时光花';
+
+  @override
+  String get monthly_card_perk_2 => '每日登录额外领取 10 朵时光花';
+
+  @override
+  String get monthly_card_perk_3 => '解锁专属好感度互动次数上限';
+
+  @override
+  String get monthly_card_start_perks => '开始享受特权';
+
+  @override
+  String get tip_post_like => '点赞后可在\n喜欢内容查看';
+
+  @override
+  String get tip_post_bookmark => '收藏后可在\n“我的收藏”查看';
+
+  @override
+  String get tip_time_echoes => '留下经历后\n搜索时会出现弹幕';
+
+  @override
+  String get tip_call_memory => '通话后收藏的\n语音会在这里!';
+
+  @override
+  String get tip_chat_notifications => '这里可以\n查看新通知';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11666,4 +11832,87 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get openSourceLicensesDescription => '查看第三方開源軟體授權';
+
+  @override
+  String get call_login_title => '需要登入';
+
+  @override
+  String get call_login_content => '登入後即可解鎖專屬語音通話功能喔！';
+
+  @override
+  String get cancel_later => '稍後再說';
+
+  @override
+  String get go_to_login => '前往登入';
+
+  @override
+  String get easter_egg_title => '發現隱藏彩蛋 ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return '你觸發了「$title」。\n\n要使用這個特殊劇情嗎？';
+  }
+
+  @override
+  String get easter_egg_cancel => '不使用';
+
+  @override
+  String get easter_egg_confirm => '使用彩蛋';
+
+  @override
+  String get common_update_success => '修改成功';
+
+  @override
+  String get common_update_failed_try_again => '修改失敗，請稍後再試';
+
+  @override
+  String get no_voice_available => '暫無語音';
+
+  @override
+  String get gift_insufficient_title => '心意不足';
+
+  @override
+  String get gift_insufficient_prompt => '要前往獲取更多繁花幣嗎？';
+
+  @override
+  String get not_now => '先不要';
+
+  @override
+  String get go_to_get => '前往獲取';
+
+  @override
+  String get status_published => '已發布';
+
+  @override
+  String get monthly_card_success_title => '✨ 尊榮月卡解鎖成功！';
+
+  @override
+  String get monthly_card_success_subtitle => '感謝您的訂閱！專屬特權已生效：';
+
+  @override
+  String get monthly_card_perk_1 => '立即獲得 250 朵時光花';
+
+  @override
+  String get monthly_card_perk_2 => '每日登入額外領取 10 朵時光花';
+
+  @override
+  String get monthly_card_perk_3 => '解鎖專屬好感度互動次數上限';
+
+  @override
+  String get monthly_card_start_perks => '開始享受特權';
+
+  @override
+  String get tip_post_like => '按讚後可在\n喜歡內容查看';
+
+  @override
+  String get tip_post_bookmark => '收藏後可在\n「我的收藏」查看';
+
+  @override
+  String get tip_time_echoes => '留下經歷後\n搜尋時會出現彈幕';
+
+  @override
+  String get tip_call_memory => '通話後收藏的\n語音會在這裡!';
+
+  @override
+  String get tip_chat_notifications => '這裡可以\n查看新通知';
 }

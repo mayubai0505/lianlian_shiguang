@@ -817,7 +817,8 @@ class _MomentCardState extends State<MomentCard> {
                   scopeKey: 'moments_page',
                   order: 4,
                   tipKey: '${FeatureTipKeys.postLike}_v3',
-                  tipText: '按讚後可在\n喜歡內容查看',
+                  // ✨ 替換：按讚提示
+                  tipText: l10n.tip_post_like,
 
                   // 先改 down，確認它一定看得到
                   direction: FeatureTipDirection.down,
@@ -855,7 +856,8 @@ class _MomentCardState extends State<MomentCard> {
                   scopeKey: 'moments_page',
                   order: 3,
                   tipKey: '${FeatureTipKeys.postBookmark}_v3',
-                  tipText: '收藏後可在\n「我的收藏」查看',
+                  // ✨ 替換：收藏提示
+                  tipText: l10n.tip_post_bookmark,
 
                   // 先改 down，確認它一定看得到
                   direction: FeatureTipDirection.down,

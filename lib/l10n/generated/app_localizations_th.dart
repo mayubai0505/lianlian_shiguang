@@ -4083,4 +4083,97 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'ดูสัญญาอนุญาตซอฟต์แวร์โอเพนซอร์สของบุคคลที่สาม';
+
+  @override
+  String get call_login_title => 'จำเป็นต้องเข้าสู่ระบบ';
+
+  @override
+  String get call_login_content =>
+      'เข้าสู่ระบบเพื่อปลดล็อกฟังก์ชันโทรสายเสียงสุดพิเศษได้เลยนะ!';
+
+  @override
+  String get cancel_later => 'ไว้ทีหลัง';
+
+  @override
+  String get go_to_login => 'ไปที่เข้าสู่ระบบ';
+
+  @override
+  String get easter_egg_title => 'ค้นพบอีสเตอร์เอ้กที่ซ่อนอยู่ ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'คุณได้ปลดล็อก \"$title\"\n\nต้องการใช้เนื้อเรื่องพิเศษนี้ไหมคะ?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'ไม่ใช้งาน';
+
+  @override
+  String get easter_egg_confirm => 'ใช้อีสเตอร์เอ้ก';
+
+  @override
+  String get common_update_success => 'แก้ไขสำเร็จแล้ว';
+
+  @override
+  String get common_update_failed_try_again =>
+      'แก้ไขไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง';
+
+  @override
+  String get no_voice_available => 'ยังไม่มีข้อความเสียงในขณะนี้';
+
+  @override
+  String get gift_insufficient_title => 'เหรียญฟานฮวาไม่พอ';
+
+  @override
+  String get gift_insufficient_prompt => 'ต้องการไปรับเหรียญฟานฮวาเพิ่มไหมคะ?';
+
+  @override
+  String get not_now => 'ไว้ทีหลัง';
+
+  @override
+  String get go_to_get => 'ไปรับเหรียญ';
+
+  @override
+  String get status_published => 'เผยแพร่แล้ว';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ ปลดล็อกบัตรรายเดือนระดับพรีเมียมสำเร็จแล้ว!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'ขอบคุณสำหรับการสมัครสมาชิกค่ะ! สิทธิพิเศษเฉพาะตัวของคุณมีผลแล้ววันนี้:';
+
+  @override
+  String get monthly_card_perk_1 => 'รับดอกไม้แห่งเวลา 250 ดอกทันที';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'รับดอกไม้แห่งเวลาเพิ่มอีก 10 ดอกจากการเข้าสู่ระบบรายวัน';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'ปลดล็อกขีดจำกัดจำนวนครั้งการโต้ตอบเพื่อเพิ่มค่าความสนิท';
+
+  @override
+  String get monthly_card_start_perks => 'เริ่มรับสิทธิพิเศษเลย';
+
+  @override
+  String get tip_post_like =>
+      'หลังจากกดถูกใจ คุณสามารถดูได้ที่\nคอนเทนต์ที่ชอบ';
+
+  @override
+  String get tip_post_bookmark =>
+      'หลังจากบันทึก คุณสามารถดูได้ที่\n\"คอลเลกชันของฉัน\"';
+
+  @override
+  String get tip_time_echoes =>
+      'หลังจากบันทึกเรื่องราวแล้ว\nข้อความวิ่งจะปรากฏขึ้นขณะค้นหา';
+
+  @override
+  String get tip_call_memory =>
+      'ข้อความเสียงที่บันทึกไว้หลังวางสาย\nจะอยู่ตรงนี้นะ!';
+
+  @override
+  String get tip_chat_notifications => 'ตรงนี้สามารถ\nดูการแจ้งเตือนใหม่ได้';
 }

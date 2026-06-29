@@ -4133,4 +4133,99 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'Lihat lisensi perangkat lunak sumber terbuka pihak ketiga';
+
+  @override
+  String get call_login_title => 'Perlu Masuk';
+
+  @override
+  String get call_login_content =>
+      'Masuk sekarang untuk membuka fitur panggilan suara eksklusif!';
+
+  @override
+  String get cancel_later => 'Nanti Saja';
+
+  @override
+  String get go_to_login => 'Pergi Masuk';
+
+  @override
+  String get easter_egg_title => 'Menemukan Easter Egg Tersembunyi ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'Anda telah memicu \'$title\'.\n\nApakah ingin menggunakan jalan cerita spesial ini?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'Tidak Digunakan';
+
+  @override
+  String get easter_egg_confirm => 'Gunakan Easter Egg';
+
+  @override
+  String get common_update_success => 'Berhasil diubah';
+
+  @override
+  String get common_update_failed_try_again =>
+      'Gagal mengubah, silakan coba lagi nanti';
+
+  @override
+  String get no_voice_available => 'Belum ada pesan suara saat ini';
+
+  @override
+  String get gift_insufficient_title => 'Saldo Tidak Cukup';
+
+  @override
+  String get gift_insufficient_prompt =>
+      'Apakah Anda ingin pergi untuk mendapatkan lebih banyak Koin Fanhua?';
+
+  @override
+  String get not_now => 'Nanti Saja';
+
+  @override
+  String get go_to_get => 'Pergi Dapatkan';
+
+  @override
+  String get status_published => 'Diterbitkan';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ Kartu Bulanan Premium Berhasil Dibuka!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'Terima kasih telah berlangganan! Hak istimewa eksklusif Anda telah aktif:';
+
+  @override
+  String get monthly_card_perk_1 => 'Segera dapatkan 250 Bunga Waktu';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'Dapatkan tambahan 10 Bunga Waktu setiap login harian';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'Buka kunci batas interaksi afeksi eksklusif';
+
+  @override
+  String get monthly_card_start_perks => 'Mulai Nikmati Hak Istimewa';
+
+  @override
+  String get tip_post_like =>
+      'Setelah menyukai, Anda dapat melihatnya di\nKonten yang Disukai';
+
+  @override
+  String get tip_post_bookmark =>
+      'Setelah menyimpan, Anda dapat melihatnya di\n\"Disimpan Saya\"';
+
+  @override
+  String get tip_time_echoes =>
+      'Setelah meninggalkan pengalaman Anda\nkomentar melayang akan muncul saat mencari';
+
+  @override
+  String get tip_call_memory =>
+      'Rekaman suara yang disimpan setelah panggilan\nakan ada di sini!';
+
+  @override
+  String get tip_chat_notifications =>
+      'Di sini Anda dapat\nmelihat notifikasi baru';
 }

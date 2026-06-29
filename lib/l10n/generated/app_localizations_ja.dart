@@ -3930,4 +3930,88 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'サードパーティのオープンソースソフトウェアライセンスを表示します';
+
+  @override
+  String get call_login_title => 'ログインが必要です';
+
+  @override
+  String get call_login_content => 'ログインすると、専属の音声通話機能が解放されます！';
+
+  @override
+  String get cancel_later => 'またあとで';
+
+  @override
+  String get go_to_login => 'ログインへ進む';
+
+  @override
+  String get easter_egg_title => '隠しイースターエッグを発見 ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return '「$title」が解放されました。\n\nこの特殊ストーリーを使用しますか？';
+  }
+
+  @override
+  String get easter_egg_cancel => '使用しない';
+
+  @override
+  String get easter_egg_confirm => 'エッグを使用する';
+
+  @override
+  String get common_update_success => '変更に成功しました';
+
+  @override
+  String get common_update_failed_try_again => '変更に失敗しました。しばらく経ってからもう一度お試しください';
+
+  @override
+  String get no_voice_available => 'ボイスはまだありません';
+
+  @override
+  String get gift_insufficient_title => '繁花コイン不足';
+
+  @override
+  String get gift_insufficient_prompt => '繁花コインを補充しに進みますか？';
+
+  @override
+  String get not_now => '今はしない';
+
+  @override
+  String get go_to_get => '補充しに進む';
+
+  @override
+  String get status_published => '公開済み';
+
+  @override
+  String get monthly_card_success_title => '✨ プレミアム月間カード解放成功！';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'サブスクリプションへのご登録ありがとうございます！専属特権が有効になりました：';
+
+  @override
+  String get monthly_card_perk_1 => '「時の花」を今すぐ250個獲得';
+
+  @override
+  String get monthly_card_perk_2 => '毎日のログインで「時の花」をさらに10個獲得';
+
+  @override
+  String get monthly_card_perk_3 => '専属好感度インタラクションの回数上限を解放';
+
+  @override
+  String get monthly_card_start_perks => '特権を楽しむ';
+
+  @override
+  String get tip_post_like => 'いいね！した後は\nお気に入りコンテンツで確認できます';
+
+  @override
+  String get tip_post_bookmark => '保存した後は\n「マイコレクション」で確認できます';
+
+  @override
+  String get tip_time_echoes => '足跡を残した後は\n検索時に弾幕（コメント流動）が表示されます';
+
+  @override
+  String get tip_call_memory => '通話後に保存したボイスは\nここに集まります！';
+
+  @override
+  String get tip_chat_notifications => '新着通知は\nここから確認できます';
 }

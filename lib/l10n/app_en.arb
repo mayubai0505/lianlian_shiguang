@@ -2091,5 +2091,40 @@
   "about_us_edit_confirm": "Confirm Edit",
   "save": "Save",
   "openSourceLicenses": "Open Source Licenses",
-  "openSourceLicensesDescription": "View third-party open-source software licenses"
+  "openSourceLicensesDescription": "View third-party open-source software licenses",
+  "call_login_title": "Login Required",
+  "call_login_content": "Log in now to unlock the exclusive voice call feature!",
+  "cancel_later": "Maybe Later",
+  "go_to_login": "Go to Login",
+  "easter_egg_title": "Hidden Easter Egg Discovered ✨",
+  "easter_egg_content": "You have triggered '{title}'.\n\nWould you like to use this special storyline?",
+  "@easter_egg_content": {
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "深夜的貓咪"
+      }
+    }
+  },
+  "easter_egg_cancel": "Do Not Use",
+  "easter_egg_confirm": "Use Easter Egg",
+  "common_update_success": "Updated successfully",
+  "common_update_failed_try_again": "Update failed. Please try again later",
+  "no_voice_available": "No voice clip available yet",
+  "gift_insufficient_title": "Insufficient Balance",
+  "gift_insufficient_prompt": "Would you like to go get more Fanhua Coins?",
+  "not_now": "Not Now",
+  "go_to_get": "Go to Get",
+  "status_published": "Published",
+  "monthly_card_success_title": "✨ Premium Monthly Pass Unlocked!",
+  "monthly_card_success_subtitle": "Thank you for subscribing! Your exclusive privileges are now active:",
+  "monthly_card_perk_1": "Instantly receive 250 Time Flowers",
+  "monthly_card_perk_2": "Claim an extra 10 Time Flowers upon daily login",
+  "monthly_card_perk_3": "Unlock the exclusive interaction cap for affection points",
+  "monthly_card_start_perks": "Start Enjoying Perks",
+  "tip_post_like": "After liking, you can view it in\nLiked Content",
+  "tip_post_bookmark": "After bookmarking, you can view it in\n\"My Bookmarks\"",
+  "tip_time_echoes": "After leaving your experience\nfloating comments will appear during search",
+  "tip_call_memory": "Voice recordings bookmarked after calls\nwill be right here!",
+  "tip_chat_notifications": "Right here you can\nview new notifications"
 }

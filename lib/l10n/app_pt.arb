@@ -1877,5 +1877,40 @@
    "about_us_edit_confirm": "Confirmar Alteração",
    "save": "Salvar",
    "openSourceLicenses": "Licenças de código aberto",
-   "openSourceLicensesDescription": "Visualizar licenças de softwares de código aberto de terceiros"
+   "openSourceLicensesDescription": "Visualizar licenças de softwares de código aberto de terceiros",
+   "call_login_title": "Login Necessário",
+   "call_login_content": "Faça login para desbloquear a função exclusiva de chamada de voz!",
+   "cancel_later": "Mais tarde",
+   "go_to_login": "Ir para o Login",
+   "easter_egg_title": "Easter Egg Oculto Descoberto ✨",
+   "easter_egg_content": "Você ativou '{title}'.\n\nQuer usar esta trama especial?",
+   "@easter_egg_content": {
+      "placeholders": {
+         "title": {
+            "type": "String",
+            "example": "深夜的貓咪"
+         }
+      }
+   },
+   "easter_egg_cancel": "Não usar",
+   "easter_egg_confirm": "Usar Easter Egg",
+   "common_update_success": "Alterado com sucesso",
+   "common_update_failed_try_again": "Falha na alteração. Por favor, tente novamente mais tarde",
+   "no_voice_available": "Nenhum áudio disponível no momento",
+   "gift_insufficient_title": "Saldo Insuficiente",
+   "gift_insufficient_prompt": "Gostaria de ir obter mais Moedas Fanhua?",
+   "not_now": "Agora não",
+   "go_to_get": "Ir Obter",
+   "status_published": "Publicado",
+   "monthly_card_success_title": "✨ Cartão Mensal Premium Desbloqueado com Sucesso!",
+   "monthly_card_success_subtitle": "Obrigado por sua assinatura! Seus privilégios exclusivos já estão ativos:",
+   "monthly_card_perk_1": "Receba instantaneamente 250 Flores do Tempo",
+   "monthly_card_perk_2": "Resgate 10 Flores do Tempo adicionais no login diário",
+   "monthly_card_perk_3": "Desbloqueie o limite exclusivo de interações de afinidade",
+   "monthly_card_start_perks": "Começar a Aproveitar os Privilégios",
+   "tip_post_like": "Depois de curtir, você pode ver em\nConteúdo Curtido",
+   "tip_post_bookmark": "Depois de salvar, você pode ver em\n\"Mis Favoritos\"",
+   "tip_time_echoes": "Depois de deixar sua experiência\ncomentários flutuantes aparecerão durante a busca",
+   "tip_call_memory": "Os áudios salvos após as chamadas\nficarão aqui!",
+   "tip_chat_notifications": "Aqui você pode\nver as novas notificações"
 }

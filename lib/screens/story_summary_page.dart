@@ -480,10 +480,10 @@ class _EditStorySummaryPageState extends State<EditStorySummaryPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('編輯我們的故事'),
+        title:  Text(l10n.edit_btn),
         actions: [
           _isSaving
               ? const Padding(

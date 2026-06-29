@@ -4101,4 +4101,97 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'View third-party open-source software licenses';
+
+  @override
+  String get call_login_title => 'Login Required';
+
+  @override
+  String get call_login_content =>
+      'Log in now to unlock the exclusive voice call feature!';
+
+  @override
+  String get cancel_later => 'Maybe Later';
+
+  @override
+  String get go_to_login => 'Go to Login';
+
+  @override
+  String get easter_egg_title => 'Hidden Easter Egg Discovered ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'You have triggered \'$title\'.\n\nWould you like to use this special storyline?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'Do Not Use';
+
+  @override
+  String get easter_egg_confirm => 'Use Easter Egg';
+
+  @override
+  String get common_update_success => 'Updated successfully';
+
+  @override
+  String get common_update_failed_try_again =>
+      'Update failed. Please try again later';
+
+  @override
+  String get no_voice_available => 'No voice clip available yet';
+
+  @override
+  String get gift_insufficient_title => 'Insufficient Balance';
+
+  @override
+  String get gift_insufficient_prompt =>
+      'Would you like to go get more Fanhua Coins?';
+
+  @override
+  String get not_now => 'Not Now';
+
+  @override
+  String get go_to_get => 'Go to Get';
+
+  @override
+  String get status_published => 'Published';
+
+  @override
+  String get monthly_card_success_title => '✨ Premium Monthly Pass Unlocked!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      'Thank you for subscribing! Your exclusive privileges are now active:';
+
+  @override
+  String get monthly_card_perk_1 => 'Instantly receive 250 Time Flowers';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'Claim an extra 10 Time Flowers upon daily login';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'Unlock the exclusive interaction cap for affection points';
+
+  @override
+  String get monthly_card_start_perks => 'Start Enjoying Perks';
+
+  @override
+  String get tip_post_like => 'After liking, you can view it in\nLiked Content';
+
+  @override
+  String get tip_post_bookmark =>
+      'After bookmarking, you can view it in\n\"My Bookmarks\"';
+
+  @override
+  String get tip_time_echoes =>
+      'After leaving your experience\nfloating comments will appear during search';
+
+  @override
+  String get tip_call_memory =>
+      'Voice recordings bookmarked after calls\nwill be right here!';
+
+  @override
+  String get tip_chat_notifications =>
+      'Right here you can\nview new notifications';
 }

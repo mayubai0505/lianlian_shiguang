@@ -22,7 +22,7 @@ class BackpackPage extends StatelessWidget {
     final theme = Theme.of(context);
     final user = FirebaseAuth.instance.currentUser;
     final l10n = AppLocalizations.of(context)!;
-    if (user == null) return const Scaffold(body: Center(child: Text("請先登入")));
+    if (user == null) return Scaffold(body: Center(child: Text(l10n.please_login_first)));
 
     // 指向這個角色的專屬背包
     final backpackRef = FirebaseFirestore.instance

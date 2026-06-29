@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
+import '../services/toast_utils.dart';
+
 
 class SharedMemory {
   final String id;
@@ -111,8 +113,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
       await _memoriesRef.doc(memoryId).delete();
       _fetchMemories();
       if (mounted) Navigator.pop(context); // 關閉閱讀視窗
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.about_us_delete_success)), // ✨ 多國語言化
+      ToastUtils.showCenterToast(
+          context,l10n.about_us_delete_success // ✨ 多國語言化
       );
     } catch (e) {
       debugPrint('刪除回憶失敗: $e');
@@ -132,29 +134,32 @@ class _AboutUsPageState extends State<AboutUsPage> {
         'content': content.trim(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
-
+      final l10n = AppLocalizations.of(context)!;
       await _fetchMemories();
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('修改成功')),
+      ToastUtils.showCenterToast(
+        context,
+        l10n.common_update_success,
       );
     } catch (e) {
       debugPrint('修改回憶失敗: $e');
 
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('修改失敗，請稍後再試')),
+      final l10n = AppLocalizations.of(context)!;
+      ToastUtils.showCenterToast(
+        context,
+        l10n.common_update_failed_try_again,
+        isError: true,
       );
     }
   }
 
   void _showAddMemoryDialog(AppLocalizations l10n) {
     if (_memories.length >= 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.about_us_limit_error)), // ✨ 多國語言化
+      ToastUtils.showCenterToast(
+          context,l10n.about_us_limit_error // ✨ 多國語言化
       );
       return;
     }
@@ -229,8 +234,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 final content = controllerContent.text.trim();
 
                 if (title.isEmpty || content.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.lore_empty_error)),
+                  ToastUtils.showCenterToast(
+                      context,l10n.lore_empty_error
                   );
                   return;
                 }
@@ -341,8 +346,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
                 final content = contentController.text.trim();
 
                 if (title.isEmpty || content.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.lore_empty_error)),
+                  ToastUtils.showCenterToast(
+                      context,l10n.lore_empty_error
                   );
                   return;
                 }

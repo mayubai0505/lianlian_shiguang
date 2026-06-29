@@ -4160,4 +4160,100 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get openSourceLicensesDescription =>
       'Ver las licencias de software de código abierto de terceros';
+
+  @override
+  String get call_login_title => 'Iniciar sesión requerido';
+
+  @override
+  String get call_login_content =>
+      '¡Inicia sesión para desbloquear la función exclusiva de llamadas de voz!';
+
+  @override
+  String get cancel_later => 'Más tarde';
+
+  @override
+  String get go_to_login => 'Ir a iniciar sesión';
+
+  @override
+  String get easter_egg_title => 'Huevo de pascua oculto descubierto ✨';
+
+  @override
+  String easter_egg_content(String title) {
+    return 'Has activado \'$title\'.\n\n¿Quieres usar esta trama especial?';
+  }
+
+  @override
+  String get easter_egg_cancel => 'No usar';
+
+  @override
+  String get easter_egg_confirm => 'Usar huevo de pascua';
+
+  @override
+  String get common_update_success => 'Modificado con éxito';
+
+  @override
+  String get common_update_failed_try_again =>
+      'Error al modificar. Por favor, inténtalo de nuevo más tarde';
+
+  @override
+  String get no_voice_available => 'No hay audio disponible por ahora';
+
+  @override
+  String get gift_insufficient_title => 'Saldo insuficiente';
+
+  @override
+  String get gift_insufficient_prompt =>
+      '¿Quieres ir a conseguir más Monedas Fanhua?';
+
+  @override
+  String get not_now => 'Ahora no';
+
+  @override
+  String get go_to_get => 'Ir a conseguir';
+
+  @override
+  String get status_published => 'Publicado';
+
+  @override
+  String get monthly_card_success_title =>
+      '✨ ¡Tarjeta Mensual Premium desbloqueada con éxito!';
+
+  @override
+  String get monthly_card_success_subtitle =>
+      '¡Gracias por tu suscripción! Tus privilegios exclusivos ya están activos:';
+
+  @override
+  String get monthly_card_perk_1 => 'Recibe al instante 250 Flores del Tiempo';
+
+  @override
+  String get monthly_card_perk_2 =>
+      'Reclama 10 Flores del Tiempo adicionales al iniciar sesión diariamente';
+
+  @override
+  String get monthly_card_perk_3 =>
+      'Desbloquea el límite exclusivo de interacciones de afecto';
+
+  @override
+  String get monthly_card_start_perks =>
+      'Comenzar a disfrutar de los beneficios';
+
+  @override
+  String get tip_post_like =>
+      'Después de dar me gusta, puedes verlo en\nContenido favorito';
+
+  @override
+  String get tip_post_bookmark =>
+      'Después de guardar, puedes verlo en\n\"Mis marcadores\"';
+
+  @override
+  String get tip_time_echoes =>
+      'Después de dejar tu experiencia\naparecerán comentarios flotantes al buscar';
+
+  @override
+  String get tip_call_memory =>
+      '¡Los audios guardados después de las llamadas\nestarán aquí!';
+
+  @override
+  String get tip_chat_notifications =>
+      'Aquí puedes\nver las nuevas notificaciones';
 }

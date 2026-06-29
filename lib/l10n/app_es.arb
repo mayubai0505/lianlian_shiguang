@@ -1876,5 +1876,39 @@
     "about_us_edit_confirm": "Confirmar modificación",
     "save": "Guardar",
     "openSourceLicenses": "Licencias de código abierto",
-    "openSourceLicensesDescription": "Ver las licencias de software de código abierto de terceros"
+    "openSourceLicensesDescription": "Ver las licencias de software de código abierto de terceros",
+    "call_login_title": "Iniciar sesión requerido",
+    "call_login_content": "¡Inicia sesión para desbloquear la función exclusiva de llamadas de voz!",
+    "cancel_later": "Más tarde",
+    "go_to_login": "Ir a iniciar sesión",
+    "easter_egg_title": "Huevo de pascua oculto descubierto ✨",
+    "easter_egg_content": "Has activado '{title}'.\n\n¿Quieres usar esta trama especial?",
+    "@easter_egg_content": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "深夜的貓咪"
+            }
+        }
+    },
+    "easter_egg_cancel": "No usar",
+    "easter_egg_confirm": "Usar huevo de pascua",
+    "common_update_success": "Modificado con éxito",
+    "common_update_failed_try_again": "Error al modificar. Por favor, inténtalo de nuevo más tarde",
+    "no_voice_available": "No hay audio disponible por ahora",
+    "gift_insufficient_title": "Saldo insuficiente",
+    "gift_insufficient_prompt": "¿Quieres ir a conseguir más Monedas Fanhua?",
+    "not_now": "Ahora no",
+    "go_to_get": "Ir a conseguir",
+    "status_published": "Publicado",
+    "monthly_card_success_title": "✨ ¡Tarjeta Mensual Premium desbloqueada con éxito!",
+    "monthly_card_success_subtitle": "¡Gracias por tu suscripción! Tus privilegios exclusivos ya están activos:",
+    "monthly_card_perk_1": "Recibe al instante 250 Flores del Tiempo",
+    "monthly_card_perk_2": "Reclama 10 Flores del Tiempo adicionales al iniciar sesión diariamente",
+    "monthly_card_perk_3": "Desbloquea el límite exclusivo de interacciones de afecto",
+    "monthly_card_start_perks": "Comenzar a disfrutar de los beneficios",
+    "tip_post_like": "Después de dar me gusta, puedes verlo en\nContenido favorito",
+    "tip_post_bookmark": "Después de guardar, puedes verlo en\n\"Mis marcadores\"",
+    "tip_time_echoes": "Después de dejar tu experiencia\naparecerán comentarios flotantes al buscar","tip_call_memory": "¡Los audios guardados después de las llamadas\nestarán aquí!",
+    "tip_chat_notifications": "Aquí puedes\nver las nuevas notificaciones"
 }

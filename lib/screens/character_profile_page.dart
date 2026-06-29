@@ -2263,7 +2263,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
                 FeatureTipTarget(
                   tipKey: '${FeatureTipKeys.timeEchoes}_v2',
-                tipText: '留下經歷後\n搜尋時會出現彈幕',
+                  // ✨ 替換：把寫死的字串換成 l10n 變數
+                  tipText: l10n.tip_time_echoes,
                   top: 46,
                   right: 0,
                   child: TextButton.icon(

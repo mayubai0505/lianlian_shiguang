@@ -1875,5 +1875,40 @@
     "about_us_edit_confirm": "Konfirmasi Perubahan",
     "save": "Simpan",
     "openSourceLicenses": "Lisensi Sumber Terbuka",
-    "openSourceLicensesDescription": "Lihat lisensi perangkat lunak sumber terbuka pihak ketiga"
+    "openSourceLicensesDescription": "Lihat lisensi perangkat lunak sumber terbuka pihak ketiga",
+    "call_login_title": "Perlu Masuk",
+    "call_login_content": "Masuk sekarang untuk membuka fitur panggilan suara eksklusif!",
+    "cancel_later": "Nanti Saja",
+    "go_to_login": "Pergi Masuk",
+    "easter_egg_title": "Menemukan Easter Egg Tersembunyi ✨",
+    "easter_egg_content": "Anda telah memicu '{title}'.\n\nApakah ingin menggunakan jalan cerita spesial ini?",
+    "@easter_egg_content": {
+        "placeholders": {
+            "title": {
+                "type": "String",
+                "example": "深夜的貓咪"
+            }
+        }
+    },
+    "easter_egg_cancel": "Tidak Digunakan",
+    "easter_egg_confirm": "Gunakan Easter Egg",
+    "common_update_success": "Berhasil diubah",
+    "common_update_failed_try_again": "Gagal mengubah, silakan coba lagi nanti",
+    "no_voice_available": "Belum ada pesan suara saat ini",
+    "gift_insufficient_title": "Saldo Tidak Cukup",
+    "gift_insufficient_prompt": "Apakah Anda ingin pergi untuk mendapatkan lebih banyak Koin Fanhua?",
+    "not_now": "Nanti Saja",
+    "go_to_get": "Pergi Dapatkan",
+    "status_published": "Diterbitkan",
+    "monthly_card_success_title": "✨ Kartu Bulanan Premium Berhasil Dibuka!",
+    "monthly_card_success_subtitle": "Terima kasih telah berlangganan! Hak istimewa eksklusif Anda telah aktif:",
+    "monthly_card_perk_1": "Segera dapatkan 250 Bunga Waktu",
+    "monthly_card_perk_2": "Dapatkan tambahan 10 Bunga Waktu setiap login harian",
+    "monthly_card_perk_3": "Buka kunci batas interaksi afeksi eksklusif",
+    "monthly_card_start_perks": "Mulai Nikmati Hak Istimewa",
+    "tip_post_like": "Setelah menyukai, Anda dapat melihatnya di\nKonten yang Disukai",
+    "tip_post_bookmark": "Setelah menyimpan, Anda dapat melihatnya di\n\"Disimpan Saya\"",
+    "tip_time_echoes": "Setelah meninggalkan pengalaman Anda\nkomentar melayang akan muncul saat mencari",
+    "tip_call_memory": "Rekaman suara yang disimpan setelah panggilan\nakan ada di sini!",
+    "tip_chat_notifications": "Di sini Anda dapat\nmelihat notifikasi baru"
 }
