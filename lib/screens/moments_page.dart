@@ -185,7 +185,7 @@ class _MomentsPageState extends State<MomentsPage> {
                 actions: [
                   FeatureTipTarget(
                     scopeKey: 'moments_page',
-                    tipKey: '${FeatureTipKeys.momentsWallMenu}_v3',
+                    tipKey: '${FeatureTipKeys.momentsWallMenu}_v4',
                     tipText: l10n.tip_moments_wall_menu,
                     direction: FeatureTipDirection.down,
 
@@ -200,7 +200,7 @@ class _MomentsPageState extends State<MomentsPage> {
 
                     offset: Offset(
                       isTablet
-                          ? 330
+                          ? (screenWidth * 0.38).clamp(330.0, 450.0)
                           : isSmallPhone
                           ? 80
                           : 100,

@@ -735,6 +735,9 @@ class _MomentCardState extends State<MomentCard> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isSmallPhone = screenWidth < 390;
+    final isTablet = screenWidth >= 600;
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
@@ -817,16 +820,31 @@ class _MomentCardState extends State<MomentCard> {
                   scopeKey: 'moments_page',
                   order: 4,
                   tipKey: '${FeatureTipKeys.postLike}_v3',
-                  // ✨ 替換：按讚提示
                   tipText: l10n.tip_post_like,
-
-                  // 先改 down，確認它一定看得到
                   direction: FeatureTipDirection.down,
 
-                  top: 56,
-                  maxWidth: 148,
-                  offset: const Offset(160,-10),
-                  arrowOffset: -50,
+                  top: isTablet ? 44 : 56,
+
+                  maxWidth: isTablet
+                      ? 190
+                      : isSmallPhone
+                      ? 138
+                      : 148,
+
+                  offset: Offset(
+                    isTablet
+                        ? (screenWidth * 0.40).clamp(360.0, 440.0)
+                        : isSmallPhone
+                        ? 125
+                        : 160,
+                    isTablet ? -6 : -10,
+                  ),
+
+                  arrowOffset: isTablet
+                      ? -50
+                      : isSmallPhone
+                      ? -40
+                      : -50,
 
                   child: IconButton(
                     icon: Icon(
@@ -856,16 +874,31 @@ class _MomentCardState extends State<MomentCard> {
                   scopeKey: 'moments_page',
                   order: 3,
                   tipKey: '${FeatureTipKeys.postBookmark}_v3',
-                  // ✨ 替換：收藏提示
                   tipText: l10n.tip_post_bookmark,
-
-                  // 先改 down，確認它一定看得到
                   direction: FeatureTipDirection.down,
 
-                  top: 56,
-                  maxWidth: 148,
-                  offset: const Offset(55, -10),
-                  arrowOffset: 55,
+                  top: isTablet ? 54 : 56,
+
+                  maxWidth: isTablet
+                      ? 190
+                      : isSmallPhone
+                      ? 138
+                      : 148,
+
+                  offset: Offset(
+                    isTablet
+                        ? (screenWidth * 0.30).clamp(250.0, 350.0)
+                        : isSmallPhone
+                        ? 45
+                        : 55,
+                    isTablet ? -6 : -10,
+                  ),
+
+                  arrowOffset: isTablet
+                      ? 60
+                      : isSmallPhone
+                      ? 45
+                      : 55,
 
                   child: IconButton(
                     icon: Icon(
