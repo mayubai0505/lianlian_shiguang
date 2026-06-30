@@ -2541,17 +2541,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                   "30~80 字",
                                   "30-80 字",
                                   "Threads 風格",
-                                  "內心獨白或生活動態",
-
-                                                 // ✅ 新增：擋掉配圖/舞台指示
-                                                 "配圖",
-                                                 "圖片描述",
-                                                 "畫面描述",
-                                                 "鏡頭",
-                                                 "場景",
-                                                 "暗示著",
-                                                 "氛圍",
-                                                 "氣氛",
+                                  "內心獨白或生活動態"
                               ];
 
                               return markers.some((marker) => text.includes(marker));
@@ -2712,8 +2702,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                      4. 不要重複上一則貼文的句型、話題或問候語。
                                      5. 不可以包含「任務指令」、「這次的目標是」、「情境主題」、「請確保」、「來，發文吧」等後台文字。
                                      6. 不可以提到 AI、模型、提示詞、生成、系統指令。
-                                     7. 不可以把角色設定、發文目標、上一則貼文內容一起輸出。
-                                     8. 不可以包含「配圖」、「圖片描述」、「畫面描述」、「場景」、「鏡頭」等非貼文內容。`;
+                                     7. 不可以把角色設定、發文目標、上一則貼文內容一起輸出。`;
                                      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                                          method: 'POST',
                                          headers: {
@@ -2744,10 +2733,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                          const jsonText = extractJsonObjectText(rawAiText);
                                          const parsed = JSON.parse(jsonText);
                                          generatedPost = (parsed.postText || "").toString().trim();
-                                          generatedPost = generatedPost
-                                                 .replace(/（[^）]*(配圖|圖片|畫面|鏡頭|場景|氛圍|氣氛|暗示)[^）]*）/g, "")
-                                                 .replace(/\([^)]*(配圖|圖片|畫面|鏡頭|場景|氛圍|氣氛|暗示)[^)]*\)/g, "")
-                                                 .trim();
+
                                      } catch (e) {
                                          console.warn(`⚠️ [JSON 解析失敗] ${charData.name}，原始回覆：`, rawAiText);
 
