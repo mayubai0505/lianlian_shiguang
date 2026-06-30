@@ -2084,5 +2084,6 @@
     "tip_post_bookmark": "Après avoir enregistré, vous pouvez le voir dans\n« Mes favoris »",
     "tip_time_echoes": "Après avoir partagé votre expérience\ndes commentaires défilants apparaîtront lors de la recherche",
     "tip_call_memory": "Les enregistrements vocaux enregistrés après les appels\nseront ici !",
-    "tip_chat_notifications": "Ici, vous pouvez\nconsulter les nouvelles notifications"
+    "tip_chat_notifications": "Ici, vous pouvez\nconsulter les nouvelles notifications",
+    "tip_moments_wall_menu": "Appuyez ici pour\nplanifier les publications du personnage"
 }

@@ -4228,4 +4228,8 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get tip_chat_notifications => 'यहाँ आप\nनया नोटिफिकेशन देख सकते हैं';
+
+  @override
+  String get tip_moments_wall_menu =>
+      'कैरेक्टर पोस्ट शेड्यूल करने के लिए\nयहाँ टैप करें';
 }

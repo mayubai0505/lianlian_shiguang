@@ -4256,4 +4256,8 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get tip_chat_notifications =>
       'Aquí puedes\nver las nuevas notificaciones';
+
+  @override
+  String get tip_moments_wall_menu =>
+      'Toca aquí para\nprogramar publicaciones del personaje';
 }

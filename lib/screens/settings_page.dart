@@ -205,24 +205,33 @@ class _SettingsPageState extends State<SettingsPage> {
               final String? errorMessage = await authService.deleteAccount();
               if (context.mounted) {
                 if (errorMessage == null) {
-                  // ✅ 成功：顯示成功訊息
-                  // 💡 總裁防護罩提醒：刪除帳號絕對是 async 動作，記得確認外層是否有 if (mounted) 喔！
-
-// ✨ 總裁級：帳號註銷成功的最後道別，乾淨俐落、不留痕跡的完美退場！
                   ToastUtils.showCenterToast(
                     context,
                     l10n.deleteAccountSuccessSnackbar,
-                    customIcon: Icons.no_accounts_rounded, // 💡 總裁精選：專門用於「無帳號 / 帳號已刪除」的精準圖示
-                    // 💡 總裁秘技：如果想帶有一點「揮手道別」的感覺，用 Icons.waving_hand_rounded 也非常有溫度喔！
+                    customIcon: Icons.no_accounts_rounded,
                   );
 
-                  // 🌟 核心修正：不要只是 pop()，要徹底跳回登入頁
-                  Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                        (route) => false, // 清空所有歷史頁面
-                  );
+                  await Future.delayed(const Duration(milliseconds: 600));
+
+                  if (!context.mounted) return;
+
+                  await authService.signOut(context);
                 } else {
-                  // ❌ 失敗：顯示錯誤原因（例如需重新登入）
+                  if (errorMessage.contains('重新登入')) {
+                    ToastUtils.showCenterToast(
+                      context,
+                      errorMessage,
+                      isError: true,
+                    );
+
+                    await Future.delayed(const Duration(milliseconds: 600));
+
+                    if (!context.mounted) return;
+
+                    await authService.signOut(context);
+                    return;
+                  }
+
                   _showErrorDialog('發生錯誤', errorMessage);
                 }
               }

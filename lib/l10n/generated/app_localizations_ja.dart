@@ -4014,4 +4014,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tip_chat_notifications => '新着通知は\nここから確認できます';
+
+  @override
+  String get tip_moments_wall_menu => 'ここをタップして\nキャラクターの投稿を予約できます';
 }

@@ -2126,5 +2126,6 @@
   "tip_post_bookmark": "After bookmarking, you can view it in\n\"My Bookmarks\"",
   "tip_time_echoes": "After leaving your experience\nfloating comments will appear during search",
   "tip_call_memory": "Voice recordings bookmarked after calls\nwill be right here!",
-  "tip_chat_notifications": "Right here you can\nview new notifications"
+  "tip_chat_notifications": "Right here you can\nview new notifications",
+  "tip_moments_wall_menu": "Tap here to\nschedule character posts"
 }

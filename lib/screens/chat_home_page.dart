@@ -334,7 +334,9 @@ class _ChatHomePageState extends State<ChatHomePage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isSmallPhone = screenWidth < 390;
+    final isTablet = screenWidth >= 600;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -346,13 +348,33 @@ class _ChatHomePageState extends State<ChatHomePage> {
           FeatureTipTarget(
             scopeKey: 'chat_home',
             order: 1,
-          tipKey: '${FeatureTipKeys.callMemory}_v4',
+            tipKey: '${FeatureTipKeys.callMemory}_v4',
             tipText: l10n.tip_call_memory,
             direction: FeatureTipDirection.down,
-            top: 56,
-            maxWidth: 150,
-            offset: const Offset(110, 0),
-            arrowOffset: 0,
+
+            top: isTablet ? 54 : 56,
+
+            maxWidth: isTablet
+                ? 220
+                : isSmallPhone
+                ? 140
+                : 160,
+
+            offset: Offset(
+              isTablet
+                  ? (screenWidth * 0.38).clamp(230.0, 350.0)
+                  : isSmallPhone
+                  ? 85
+                  : 110,
+              0,
+            ),
+
+            arrowOffset: isTablet
+                ? -20
+                : isSmallPhone
+                ? 0
+                : 0,
+
             child: IconButton(
               tooltip: l10n.call_memory_tooltip,
               icon: const Icon(Icons.headphones_outlined, size: 26),
@@ -396,26 +418,45 @@ class _ChatHomePageState extends State<ChatHomePage> {
                     scopeKey: 'chat_home',
                     order: 2,
                     tipKey: '${FeatureTipKeys.chatHomeNotifications}_v3',
-                    // ✨ 替換：新通知提示
                     tipText: l10n.tip_chat_notifications,
-                  direction: FeatureTipDirection.down,
-                  top: 70,
-                  maxWidth: 130,
-                  offset: const Offset(85, -10),
-                  arrowOffset: 25,
-                  child: Transform.scale(
-                    scale: 1.6,
-                    child: Image.asset(
-                      'assets/images/love_plane_icon.png',
-                      width: 36,
-                      height: 36,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : theme.colorScheme.onBackground,
-                      fit: BoxFit.contain,
+                    direction: FeatureTipDirection.down,
+
+                    top: isTablet ? 78 : 70,
+
+                    maxWidth: isTablet
+                        ? 220
+                        : isSmallPhone
+                        ? 130
+                        : 150,
+
+                    offset: Offset(
+                      isTablet
+                          ? (screenWidth * 0.34).clamp(230.0, 300.0)
+                          : isSmallPhone
+                          ? 70
+                          : 85,
+                      isTablet ? -6 : -10,
+                    ),
+
+                    arrowOffset: isTablet
+                        ? 20
+                        : isSmallPhone
+                        ? 18
+                        : 25,
+
+                    child: Transform.scale(
+                      scale: 1.6,
+                      child: Image.asset(
+                        'assets/images/love_plane_icon.png',
+                        width: 36,
+                        height: 36,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : theme.colorScheme.onBackground,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
-                ),
                 ),
               );
             },

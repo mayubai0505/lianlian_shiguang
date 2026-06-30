@@ -4284,4 +4284,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get tip_chat_notifications =>
       'Ici, vous pouvez\nconsulter les nouvelles notifications';
+
+  @override
+  String get tip_moments_wall_menu =>
+      'Appuyez ici pour\nplanifier les publications du personnage';
 }

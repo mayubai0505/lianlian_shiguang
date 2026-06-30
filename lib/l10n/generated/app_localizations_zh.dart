@@ -3973,6 +3973,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tip_chat_notifications => '這裡可以\n查看新通知';
+
+  @override
+  String get tip_moments_wall_menu => '點這裡可以\n安排角色發文';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7944,6 +7947,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get tip_chat_notifications => '这里可以\n查看新通知';
+
+  @override
+  String get tip_moments_wall_menu => '点这里可以\n安排角色发文';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11915,4 +11921,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get tip_chat_notifications => '這裡可以\n查看新通知';
+
+  @override
+  String get tip_moments_wall_menu => '點這裡可以\n安排角色發文';
 }

@@ -86,21 +86,31 @@ class AuthService {
   // ✨ 新增技能 1：使用信箱密碼「註冊」
   Future<Map<String, dynamic>?> registerWithEmail(String email, String password) async {
     try {
+      debugPrint('🧪 開始信箱註冊 email=$email');
+
       final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // ✨✨✨ 關鍵補救：帶新手去資料庫開戶，發放 50 朵花花！ ✨✨✨
+      debugPrint('✅ Firebase Auth 註冊成功 uid=${userCredential.user?.uid}');
+
       if (userCredential.user != null) {
+        debugPrint('🧪 準備建立 Firestore user document');
         await createNewUser(userCredential.user!);
+        debugPrint('✅ Firestore user document 建立/補洞完成');
       }
 
-      // 註冊成功，絕對是新玩家
-      return {'user': userCredential.user, 'isNewUser': true};
+      return {
+        'user': userCredential.user,
+        'isNewUser': true,
+      };
     } on FirebaseAuthException catch (e) {
-      print('信箱註冊失敗: ${e.message}');
-      rethrow; // 把錯誤往上丟，讓 UI 可以顯示警告
+      debugPrint('❌ 信箱註冊 FirebaseAuthException code=${e.code}, message=${e.message}');
+      rethrow;
+    } catch (e) {
+      debugPrint('❌ 信箱註冊未知錯誤: $e');
+      rethrow;
     }
   }
 
@@ -251,32 +261,45 @@ class AuthService {
   }
 
 // ✨ 刪除帳號 (包含資料庫與驗證帳號)
-Future<String?> deleteAccount() async {
-  try {
-    final User? user = _auth.currentUser;
-    if (user == null) return "使用者未登入，無法刪除帳號。";
+  Future<String?> deleteAccount() async {
+    try {
+      final User? user = _auth.currentUser;
+      if (user == null) return null;
 
-    final String uid = user.uid;
+      final String uid = user.uid;
 
-    // 1. 先把他在雲端資料庫 (Firestore) 的資料清空
-    await _firestore.collection('users').doc(uid).delete();
-    print('已刪除 Firestore 中的使用者資料');
+      // 1. 先刪 Firestore 使用者資料
+      try {
+        await _firestore.collection('users').doc(uid).delete();
+        print('已刪除 Firestore 中的使用者資料');
+      } catch (e) {
+        print('⚠️ 刪除 Firestore 使用者資料失敗: $e');
+        // 這裡先不要直接 return，避免卡住玩家登出
+      }
 
-    // 2. 再把他的登入帳號刪除
-    await user.delete();
-    print('已刪除 Firebase Authentication 中的帳號');
+      // 2. 再刪 Firebase Authentication 帳號
+      try {
+        await user.delete();
+        print('已刪除 Firebase Authentication 中的帳號');
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'requires-recent-login') {
+          return '為了安全起見，請先登出後重新登入，再執行刪除帳號。';
+        }
 
-    return null;
-  } on FirebaseAuthException catch (e) {
-    // 安全機制：刪除帳號是敏感操作，如果他登入太久沒活動，Firebase 會要求重新登入
-    if (e.code == 'requires-recent-login') {
-      return '為了安全起見，此操作需要您重新登入後再執行。';
+        if (e.code == 'user-not-found') {
+          print('Auth 帳號已不存在，視為刪除成功');
+          return null;
+        }
+
+        return '刪除帳號時發生錯誤: ${e.message}';
+      }
+
+      return null;
+    } catch (e) {
+      print('❌ deleteAccount 發生未知錯誤: $e');
+      return '發生未知錯誤，請聯絡官方。';
     }
-    return '刪除帳號時發生錯誤: ${e.message}';
-  } catch (e) {
-    return '發生未知錯誤，請聯絡官方。';
   }
-}
 
   String _generateRandomPlayerID() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -315,7 +338,7 @@ Stream<User?> get authStateChanges => _auth.authStateChanges();
         'playerID': _generateRandomPlayerID(),
 
         // 簽到相關，避免新帳號簽到讀不到欄位
-        'lastCheckInDate': '',
+        'lastCheckInDate': null,
         'checkInStreak': 0,
         'dailyCheckInCount': 0,
       });
@@ -353,7 +376,7 @@ Stream<User?> get authStateChanges => _auth.authStateChanges();
     }
 
     if (!data.containsKey('lastCheckInDate')) {
-      patchData['lastCheckInDate'] = '';
+      patchData['lastCheckInDate'] = null;
     }
 
     if (!data.containsKey('checkInStreak')) {

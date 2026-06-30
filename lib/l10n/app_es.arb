@@ -1910,5 +1910,6 @@
     "tip_post_like": "Después de dar me gusta, puedes verlo en\nContenido favorito",
     "tip_post_bookmark": "Después de guardar, puedes verlo en\n\"Mis marcadores\"",
     "tip_time_echoes": "Después de dejar tu experiencia\naparecerán comentarios flotantes al buscar","tip_call_memory": "¡Los audios guardados después de las llamadas\nestarán aquí!",
-    "tip_chat_notifications": "Aquí puedes\nver las nuevas notificaciones"
+    "tip_chat_notifications": "Aquí puedes\nver las nuevas notificaciones",
+    "tip_moments_wall_menu": "Toca aquí para\nprogramar publicaciones del personaje"
 }

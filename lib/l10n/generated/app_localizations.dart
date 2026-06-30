@@ -7395,6 +7395,12 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'這裡可以\n查看新通知'**
   String get tip_chat_notifications;
+
+  /// No description provided for @tip_moments_wall_menu.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點這裡可以\n安排角色發文'**
+  String get tip_moments_wall_menu;
 }
 
 class _AppLocalizationsDelegate

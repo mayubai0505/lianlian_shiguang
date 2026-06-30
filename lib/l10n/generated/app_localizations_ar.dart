@@ -4174,4 +4174,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tip_chat_notifications => 'هنا يمكنكِ\nعرض الإشعارات الجديدة';
+
+  @override
+  String get tip_moments_wall_menu => 'انقري هنا لـ\nجدولة منشورات الشخصية';
 }

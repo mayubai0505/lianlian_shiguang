@@ -4228,4 +4228,8 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get tip_chat_notifications =>
       'Nơi đây bạn có thể\nxem các thông báo mới';
+
+  @override
+  String get tip_moments_wall_menu =>
+      'Nhấn vào đây để lên lịch\nđăng bài cho nhân vật';
 }

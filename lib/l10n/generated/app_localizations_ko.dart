@@ -4029,4 +4029,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tip_chat_notifications => '여기에서\n새 알림을 확인할 수 있습니다';
+
+  @override
+  String get tip_moments_wall_menu => '여기를 누르면\n캐릭터의 포스트 게시를 예약할 수 있습니다';
 }

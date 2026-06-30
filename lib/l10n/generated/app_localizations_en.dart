@@ -4194,4 +4194,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tip_chat_notifications =>
       'Right here you can\nview new notifications';
+
+  @override
+  String get tip_moments_wall_menu => 'Tap here to\nschedule character posts';
 }

@@ -4233,4 +4233,8 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get tip_chat_notifications =>
       'Di sini awak boleh\nmelihat notifikasi baru';
+
+  @override
+  String get tip_moments_wall_menu =>
+      'Ketik di sini untuk mengatur\njadual siaran karakter';
 }

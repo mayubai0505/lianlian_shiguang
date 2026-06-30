@@ -17,7 +17,8 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // 雲端硬碟總管
 import 'package:http/http.dart' as http;
 
-import '../services/toast_utils.dart'; // 專門用來破解網頁版 blob 網址的工具
+import '../services/toast_utils.dart';
+import 'main_page.dart'; // 專門用來破解網頁版 blob 網址的工具
 
 //個人檔案
 
@@ -444,17 +445,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
 
       if (mounted && popOnSuccess) {
-        // ✨ 總裁級：個人檔案儲存成功的完美過場，提示與退場動畫互不干擾！
         ToastUtils.showCenterToast(
           context,
           l10n.profile_saved_success,
-          // 💡 總裁精選：針對「個人檔案」，強烈推薦使用帶有個人專屬質感的圖示
           customIcon: Icons.account_circle_rounded,
-          // 💡 總裁秘技：如果想更強調「大功告成/煥然一新」的感覺，
-          // Icons.face_retouching_natural_rounded 或是 Icons.how_to_reg_rounded 也會非常有高級感喔！
         );
 
-        Navigator.pop(context, true); // 帶著更新成功的信號，優雅地回到上一頁
+        await Future.delayed(const Duration(milliseconds: 300));
+
+        if (!mounted) return;
+
+        if (widget.isCreating) {
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const MainPage()),
+                (route) => false,
+          );
+        } else {
+          Navigator.pop(context, true);
+        }
       }
     } catch (e) {
       if (mounted) {

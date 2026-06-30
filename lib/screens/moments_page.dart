@@ -154,6 +154,9 @@ class _MomentsPageState extends State<MomentsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isSmallPhone = screenWidth < 390;
+    final isTablet = screenWidth >= 600;
     return DefaultTabController(
       length: 2,
       child: Container(
@@ -183,17 +186,32 @@ class _MomentsPageState extends State<MomentsPage> {
                   FeatureTipTarget(
                     scopeKey: 'moments_page',
                     tipKey: '${FeatureTipKeys.momentsWallMenu}_v3',
-                    tipText: '點這裡可以\n安排角色發文',
+                    tipText: l10n.tip_moments_wall_menu,
                     direction: FeatureTipDirection.down,
-                    top: 56,
+
+                    top: isTablet ? 54 : 56,
                     right: 0,
-                    maxWidth: 156,
 
-                    // 整顆氣泡往右
-                    offset: const Offset(100, -10),
+                    maxWidth: isTablet
+                        ? 220
+                        : isSmallPhone
+                        ? 140
+                        : 156,
 
-                    // 小尾巴原本往右 48，如果氣泡也往右，尾巴可能要往左一點
-                    arrowOffset:55,
+                    offset: Offset(
+                      isTablet
+                          ? 330
+                          : isSmallPhone
+                          ? 80
+                          : 100,
+                      isTablet ? -6 : -10,
+                    ),
+
+                    arrowOffset: isTablet
+                        ? 50
+                        : isSmallPhone
+                        ? 35
+                        : 45,
 
                     child: IconButton(
                       icon: const Icon(Icons.menu, size: 28),

@@ -4176,4 +4176,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get tip_chat_notifications => 'ตรงนี้สามารถ\nดูการแจ้งเตือนใหม่ได้';
+
+  @override
+  String get tip_moments_wall_menu => 'แตะตรงนี้เพื่อ\nตั้งเวลาโพสต์ของตัวละคร';
 }
