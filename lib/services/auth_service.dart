@@ -111,8 +111,17 @@ class AuthService {
         email: email,
         password: password,
       );
-      // 登入成功，通常是老玩家 (除非他剛註冊完秒登出又登入)
-      return {'user': userCredential.user, 'isNewUser': false};
+
+      if (userCredential.user != null) {
+        final bool isNewUser = await createNewUser(userCredential.user!);
+
+        return {
+          'user': userCredential.user,
+          'isNewUser': isNewUser,
+        };
+      }
+
+      return null;
     } on FirebaseAuthException catch (e) {
       print('信箱登入失敗: ${e.message}');
       rethrow;
@@ -293,11 +302,22 @@ Stream<User?> get authStateChanges => _auth.authStateChanges();
       await userDocRef.set({
         'uid': user.uid,
         'displayName': user.displayName ?? "初識的旅人",
-        'email': user.email,
-        'photoURL': user.photoURL,
+        'nickname': user.displayName ?? "初識的旅人",
+        'email': user.email ?? '',
+        'photoURL': user.photoURL ?? '',
         'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+
+        // 新手資源
         'flowerPoints': 50,
+
+        // 玩家 ID
         'playerID': _generateRandomPlayerID(),
+
+        // 簽到相關，避免新帳號簽到讀不到欄位
+        'lastCheckInDate': '',
+        'checkInStreak': 0,
+        'dailyCheckInCount': 0,
       });
 
       return true; // 是新玩家
@@ -314,6 +334,34 @@ Stream<User?> get authStateChanges => _auth.authStateChanges();
     final String existingPlayerID = (data['playerID'] ?? '').toString().trim();
     if (existingPlayerID.isEmpty) {
       patchData['playerID'] = _generateRandomPlayerID();
+    }
+
+    if (!data.containsKey('displayName')) {
+      patchData['displayName'] = user.displayName ?? "初識的旅人";
+    }
+
+    if (!data.containsKey('nickname')) {
+      patchData['nickname'] = user.displayName ?? "初識的旅人";
+    }
+
+    if (!data.containsKey('email')) {
+      patchData['email'] = user.email ?? '';
+    }
+
+    if (!data.containsKey('photoURL')) {
+      patchData['photoURL'] = user.photoURL ?? '';
+    }
+
+    if (!data.containsKey('lastCheckInDate')) {
+      patchData['lastCheckInDate'] = '';
+    }
+
+    if (!data.containsKey('checkInStreak')) {
+      patchData['checkInStreak'] = 0;
+    }
+
+    if (!data.containsKey('dailyCheckInCount')) {
+      patchData['dailyCheckInCount'] = 0;
     }
 
     if (!data.containsKey('uid')) {
