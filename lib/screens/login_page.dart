@@ -149,7 +149,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
+    final bool showFacebookLogin = false;
+    final bool showGoogleLogin = false;
     // ✅ Apple 登入只在 iOS / iPadOS 顯示
     final bool showAppleLogin =
         !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
@@ -197,16 +198,18 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 60),
 
                 // 🚀 Google 登入
-                _buildLoginButton(
-                  text: l10n.login_with_google,
-                  iconWidget: Image.asset(
-                    'assets/images/google_logo.png',
-                    height: 24,
+                if (showGoogleLogin) ...[
+                  _buildLoginButton(
+                    text: l10n.login_with_google,
+                    iconWidget: Image.asset(
+                      'assets/images/google_logo.png',
+                      height: 24,
+                    ),
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black87,
+                    onPressed: () => _performLogin(_authService.signInWithGoogle),
                   ),
-                  backgroundColor: Colors.white,
-                  textColor: Colors.black87,
-                  onPressed: () => _performLogin(_authService.signInWithGoogle),
-                ),
+                ],
 
                 // ✅ Apple 登入：只在 iOS / iPadOS 顯示
                 if (showAppleLogin) ...[
@@ -227,17 +230,20 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 16),
 
                 // 🚀 Facebook 登入
-                _buildLoginButton(
-                  text: l10n.login_with_facebook,
-                  iconWidget: const Icon(
-                    Icons.facebook,
-                    color: Colors.white,
-                    size: 28,
+                if (showFacebookLogin) ...[
+                  const SizedBox(height: 16),
+                  _buildLoginButton(
+                    text: l10n.login_with_facebook,
+                    iconWidget: const Icon(
+                      Icons.facebook,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    backgroundColor: const Color(0xFF1877F2),
+                    textColor: Colors.white,
+                    onPressed: () => _performLogin(_authService.signInWithFacebook),
                   ),
-                  backgroundColor: const Color(0xFF1877F2),
-                  textColor: Colors.white,
-                  onPressed: () => _performLogin(_authService.signInWithFacebook),
-                ),
+                ],
 
                 const SizedBox(height: 32),
 

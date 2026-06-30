@@ -2500,6 +2500,53 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                               }
                           });
 
+                          function extractJsonObjectText(text) {
+                              if (!text) return "";
+
+                              let cleaned = text.trim();
+
+                              // 去掉 ```json ``` 包裝
+                              cleaned = cleaned
+                                  .replace(/^```json\s*/i, "")
+                                  .replace(/^```\s*/i, "")
+                                  .replace(/```$/i, "")
+                                  .trim();
+
+                              const start = cleaned.indexOf("{");
+                              const end = cleaned.lastIndexOf("}");
+
+                              if (start >= 0 && end > start) {
+                                  return cleaned.substring(start, end + 1);
+                              }
+
+                              return cleaned;
+                          }
+
+                          function hasPromptLeak(text) {
+                              if (!text) return true;
+
+                              const markers = [
+                                  "任務指令",
+                                  "這次的目標是",
+                                  "這次的發文情境主題",
+                                  "情境主題是",
+                                  "最高防重複警告",
+                                  "你上一次的發文內容",
+                                  "請確保這次的貼文",
+                                  "完全不同",
+                                  "禁止使用 AI",
+                                  "AI 機器人腔調",
+                                  "來，發文吧",
+                                  "現在請發一篇貼文",
+                                  "30~80 字",
+                                  "30-80 字",
+                                  "Threads 風格",
+                                  "內心獨白或生活動態"
+                              ];
+
+                              return markers.some((marker) => text.includes(marker));
+                          }
+
                          exports.autoPostManager = onSchedule({
                              schedule: "*/5 * * * *",
                              timeZone: "Asia/Taipei",
@@ -2627,14 +2674,35 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
 
                                      const systemPrompt = `${characterPersona}
 
-                                     【任務指令】
-                                     請以你的性格發一篇 30~80 字的 Threads 風格內心獨白或生活動態。
-                                     這次的發文情境主題是：「${forcedScenario}」。
+                                     const systemPrompt = `${characterPersona}
 
-                                     【最高防重複警告】
-                                     你上一次的發文內容是：「${lastPostText}」。
-                                     請確保這次的貼文與上次【完全不同】，絕對不要重複相同的句型、話題或問候語！禁止使用 AI 機器人腔調，要像真實人類在社群軟體上的隨筆。`;
+                                     你是一個角色社群貼文生成器。
 
+                                     請根據角色設定，生成一篇角色本人會公開發布的短貼文。
+
+                                     【發文情境】
+                                     ${forcedScenario}
+
+                                     【上一則貼文】
+                                     ${lastPostText}
+
+                                     【輸出規則】
+                                     你只能輸出 JSON。
+                                     不要輸出任何解釋、分析、括號內心戲、Markdown、任務指令或後台文字。
+
+                                     JSON 格式必須完全符合：
+                                     {
+                                       "postText": "角色要發布的貼文"
+                                     }
+
+                                     【postText 規則】
+                                     1. 只能是角色本人會公開發出的貼文。
+                                     2. 字數 30～80 字。
+                                     3. 要像真實人在社群軟體上的隨筆。
+                                     4. 不要重複上一則貼文的句型、話題或問候語。
+                                     5. 不可以包含「任務指令」、「這次的目標是」、「情境主題」、「請確保」、「來，發文吧」等後台文字。
+                                     6. 不可以提到 AI、模型、提示詞、生成、系統指令。
+                                     7. 不可以把角色設定、發文目標、上一則貼文內容一起輸出。`;
                                      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                                          method: 'POST',
                                          headers: {
@@ -2645,7 +2713,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                              model: "google/gemini-2.5-flash-lite",
                                              messages: [
                                                  { role: "system", content: systemPrompt },
-                                                 { role: "user", content: "現在請發一篇貼文。" }
+                                                 { role: "user", content: "請依照規則輸出 JSON。" }
                                              ],
                                              temperature: 0.9, // 稍微調高溫度，讓他的靈感更跳躍
                                          })
@@ -2657,28 +2725,58 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                      }
 
                                      const apiData = await response.json();
-                                     const generatedPost = apiData.choices[0]?.message?.content || "";
+                                     const rawAiText = apiData.choices[0]?.message?.content || "";
 
-                                     if (generatedPost.trim() !== "") {
-                                         const parentDocRef = admin.firestore().collection("artifacts").doc(APP_ID);
-                                         const newMomentRef = parentDocRef.collection("moments").doc();
+                                     let generatedPost = "";
 
-                                         await parentDocRef.set({ exists: true, lastUpdate: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+                                     try {
+                                         const jsonText = extractJsonObjectText(rawAiText);
+                                         const parsed = JSON.parse(jsonText);
+                                         generatedPost = (parsed.postText || "").toString().trim();
+                                     } catch (e) {
+                                         console.warn(`⚠️ [JSON 解析失敗] ${charData.name}，原始回覆：`, rawAiText);
 
-                                         await newMomentRef.set({
-                                             content: generatedPost.trim(),
-                                             authorId: doc.id,
-                                             authorName: charData.name,
-                                             authorAvatar: charData.avatarPath || 'assets/images/blank_avatar.png',
-                                             isPublic: true,
-                                             createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                                             commentCount: 0,
-                                             createdBy: charData.createdBy || "system",
-                                             likeCount: 0,
-                                             likedBy: []
-                                         });
-                                         console.log(`✅ [發文成功] ${charData.name} 已更新動態牆。`);
+                                         // 解析失敗時不要硬發，避免後台詞外洩
+                                         continue;
                                      }
+
+                                     // 第二道保險：擋掉 prompt 外洩
+                                     if (hasPromptLeak(generatedPost)) {
+                                         console.warn(`⚠️ [阻止發文] ${charData.name} 的貼文疑似包含後台詞：`, generatedPost);
+                                         continue;
+                                     }
+
+                                     // 第三道保險：內容太短或太長也不要發
+                                     if (generatedPost.length < 10 || generatedPost.length > 160) {
+                                         console.warn(`⚠️ [阻止發文] ${charData.name} 的貼文長度異常：`, generatedPost);
+                                         continue;
+                                     }
+
+                                     const parentDocRef = admin.firestore().collection("artifacts").doc(APP_ID);
+                                     const newMomentRef = parentDocRef.collection("moments").doc();
+
+                                     await parentDocRef.set(
+                                         {
+                                             exists: true,
+                                             lastUpdate: admin.firestore.FieldValue.serverTimestamp()
+                                         },
+                                         { merge: true }
+                                     );
+
+                                     await newMomentRef.set({
+                                         content: generatedPost,
+                                         authorId: doc.id,
+                                         authorName: charData.name,
+                                         authorAvatar: charData.avatarPath || 'assets/images/blank_avatar.png',
+                                         isPublic: true,
+                                         createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                                         commentCount: 0,
+                                         createdBy: charData.createdBy || "system",
+                                         likeCount: 0,
+                                         likedBy: []
+                                     });
+
+                                     console.log(`✅ [發文成功] ${charData.name} 已更新動態牆：${generatedPost}`);ㄜ
                                  }
                              } catch (error) {
                                  console.error("❌ [定時任務總體崩潰]", error);
