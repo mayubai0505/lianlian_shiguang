@@ -543,8 +543,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // --- ✨ 新增：稍後編輯按鈕的邏輯 ---
   Future<void> _skipEditing() async {
     // 如果不是首次建立，這顆按鈕就是「取消變更」
+    // ✅ 不要只 Navigator.pop，直接回到 MainPage，避免卡在奇怪頁面
     if (!widget.isCreating) {
-      Navigator.pop(context, false);
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainPage()),
+            (route) => false,
+      );
       return;
     }
 
