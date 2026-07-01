@@ -17,13 +17,19 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 //主介面
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final int initialIndex;
+
+  const MainPage({
+    super.key,
+    this.initialIndex = 0,
+  });
+
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
-  int _selectedIndex = 0; // 預設頁面索引 (0=聊天, 1=邂逅...)
+  late int _selectedIndex;
   late List<bool> _isPageActivated;
   bool _hasClaimedToday = false;
   bool _hasCheckedInToday = false;
@@ -41,11 +47,18 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _isPageActivated = List.generate(_pages.length, (index) => index == 0);
+
+    _selectedIndex = widget.initialIndex;
+
+    _isPageActivated = List.generate(
+      _pages.length,
+          (index) => index == widget.initialIndex,
+    );
+
     // 1. 註冊監聽器
     WidgetsBinding.instance.addObserver(this);
 
-    // 2. 這是「冷啟動」(第一次打開 App) 時的檢查
+    // 2. 這是「冷啟動」時的檢查
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkDailyCheckIn();
       _checkAndTriggerBirthdayEvent();

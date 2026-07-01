@@ -20,6 +20,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:typed_data';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'main_page.dart';
 import 'profile_page.dart';
 
 // ✨ 這是一個既能「創建」也能「編輯」的萬能頁面
@@ -658,9 +659,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     if (!mounted) return;
 
-    debugPrint('🚪 儲存草稿完成，準備回到原本主頁架構：result=$result');
+    debugPrint('🚪 準備離開角色編輯頁，回到個人主頁：result=$result');
 
-    Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => const MainPage(initialIndex: 3),
+      ),
+          (route) => false,
+    );
   }
 
   Future<Map<String, dynamic>?> _showExitConfirmationDialog() async {
@@ -680,11 +686,18 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         content: Text(l10n.draft_save_content),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop({
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+
+              await Future.delayed(const Duration(milliseconds: 200));
+
+              if (!mounted) return;
+
+              await _leaveCharacterEditPage({
                 'shouldLeave': true,
                 'changed': false,
                 'notSaved': true,
+                'goProfile': true,
               });
             },
             child: Text(
@@ -731,6 +744,18 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       ),
     );
     return result;
+  }
+
+  Future<void> _handleExitPressed() async {
+    if (!mounted || _isLeavingPage) return;
+
+    final result = await _showExitConfirmationDialog();
+
+    if (!mounted || result == null) return;
+
+    if (result['shouldLeave'] == true) {
+      await _leaveCharacterEditPage(result);
+    }
   }
 
   void _scrollToFocus(FocusNode focusNode) {
@@ -1952,15 +1977,25 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           if (didPop) return;
           if (_isLeavingPage) return;
 
-          await _showExitConfirmationDialog();
+          await _handleExitPressed();
         },
       // ✨✨✨ 核心升級：加入 DefaultTabController ✨✨✨
       child: DefaultTabController(
         length: 3, // 三個分頁
         child: Scaffold(
           appBar: AppBar(
-            title: Text(isEditing ? l10n.edit_character_title(widget.character!.name) : l10n.createCharacterTitle),
+            title: Text(
+              isEditing
+                  ? l10n.edit_character_title(widget.character!.name)
+                  : l10n.createCharacterTitle,
+            ),
             elevation: 0,
+
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              onPressed: _handleExitPressed,
+            ),
+
             actions: [
               if (isEditing)
                 IconButton(

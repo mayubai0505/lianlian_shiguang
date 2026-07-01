@@ -281,6 +281,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           popOnSuccess: true,
           newID: finalID,
           hasChangedID: shouldLockID,
+          targetIndexAfterSave: 0,
         );
       } catch (e) {
         if (mounted) {
@@ -338,8 +339,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   // --- NEW: 這是只儲存非ID資料的函式 ---
-  Future<void> _saveProfileDataOnly(
-      {bool popOnSuccess = true, String? newID, bool? hasChangedID}) async {
+  Future<void> _saveProfileDataOnly({
+    bool popOnSuccess = true,
+    String? newID,
+    bool? hasChangedID,
+    int targetIndexAfterSave = 3,
+  }) async {
     if (mounted) setState(() => _isSaving = true);
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -455,14 +460,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
         if (!mounted) return;
 
-        if (widget.isCreating) {
-          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const MainPage()),
-                (route) => false,
-          );
-        } else {
-          Navigator.pop(context, true);
-        }
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => MainPage(initialIndex: targetIndexAfterSave),
+          ),
+              (route) => false,
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -542,16 +545,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   // --- ✨ 新增：稍後編輯按鈕的邏輯 ---
   Future<void> _skipEditing() async {
-    // 如果不是首次建立，這顆按鈕就是「取消變更」
-    // ✅ 不要只 Navigator.pop，直接回到 MainPage，避免卡在奇怪頁面
+    // =========================
+    // 一般編輯模式：取消變更，回個人主頁
+    // =========================
     if (!widget.isCreating) {
       Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MainPage()),
+        MaterialPageRoute(
+          builder: (_) => const MainPage(initialIndex: 3),
+        ),
             (route) => false,
       );
       return;
     }
 
+    // =========================
+    // 首次建立模式：稍後編輯
+    // 自動建立基本資料，然後回聊天主頁
+    // =========================
     if (_isSaving) return;
 
     FocusScope.of(context).unfocus();
@@ -572,6 +582,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         popOnSuccess: true,
         newID: finalID,
         hasChangedID: false,
+        targetIndexAfterSave: 0,
       );
     } catch (e) {
       if (mounted) {

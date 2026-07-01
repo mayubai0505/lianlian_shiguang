@@ -348,7 +348,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
           FeatureTipTarget(
             scopeKey: 'chat_home',
             order: 1,
-            tipKey: '${FeatureTipKeys.callMemory}_v4',
+            tipKey: '${FeatureTipKeys.callMemory}_v5',
             tipText: l10n.tip_call_memory,
             direction: FeatureTipDirection.down,
 
@@ -417,7 +417,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   child: FeatureTipTarget(
                     scopeKey: 'chat_home',
                     order: 2,
-                    tipKey: '${FeatureTipKeys.chatHomeNotifications}_v3',
+                    tipKey: '${FeatureTipKeys.chatHomeNotifications}_v4',
                     tipText: l10n.tip_chat_notifications,
                     direction: FeatureTipDirection.down,
 
