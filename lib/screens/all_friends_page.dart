@@ -166,6 +166,7 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
 
   void _navigateToChat(Character character) {
     final l10n = AppLocalizations.of(context)!;
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -173,14 +174,11 @@ class _AllFriendsPageState extends State<AllFriendsPage> {
           character: character,
           characterId: character.id,
           chatMode: "daily",
-          // 🌟 既然 ChatPage 現在變嚴格了，我們就補給它預設值
-          sessionId: character.id,    // 暫時用角色 ID 當作 Session ID
-          selectedLanguage: l10n.traditional_chinese, // 預設語言
+          selectedLanguage: l10n.traditional_chinese,
         ),
       ),
     );
   }
-
   Future<void> addFriendWithUniqueEncounter(Character character) async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) return;

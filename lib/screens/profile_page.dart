@@ -1674,9 +1674,22 @@ class _ProfilePageState extends State<ProfilePage> {
 
       final allInteractableChars = <String, Character>{};
 
-      // 先加入私密角色 (自己創的，預設就是好友)
+// 1. 先加入自己的私密角色
       for (var char in myPrivateCharacters) {
         allInteractableChars[char.id] = char;
+      }
+
+// 2. ✅ 加入自己創建的公開角色
+// 不需要按「加好友」，自己創的角色也應該出現在我的好友
+      for (var char in myPublicCharacters) {
+        allInteractableChars[char.id] = char;
+      }
+
+// 3. 加入「真的有點過 + 好友」的公開角色
+      for (var char in allPublicCharacters) {
+        if (myFriendIds.contains(char.id)) {
+          allInteractableChars.putIfAbsent(char.id, () => char);
+        }
       }
 
       // 🌟 只加入「真的有點過+好友」的官方角色
