@@ -910,27 +910,33 @@ class _ChatPageState extends State<ChatPage> {
         String firstLine = rawFirstLine.replaceAll('{{玩家名字}}', _playerNickname);
 
         String rawInitialStory = _currentCharacter.initialStory ?? '';
-        String initialStoryText = rawInitialStory.replaceAll('{{玩家名字}}', _playerNickname);
+        String initialStoryText =
+        rawInitialStory.replaceAll('{{玩家名字}}', _playerNickname);
 
-        // 如果有系統前情提要，加入 batch
+        final DateTime now = DateTime.now();
+
+        // ✅ 故事介紹：固定比較早
         if (initialStoryText.isNotEmpty) {
           final systemMsgRef = newSessionRef.collection('messages').doc();
           batch.set(systemMsgRef, {
             'sender': 'system',
             'text': initialStoryText,
-            'timestamp': FieldValue.serverTimestamp(),
+            'timestamp': Timestamp.fromDate(now),
             'type': 'text',
             'path': '',
+            'orderIndex': 0,
           });
         }
-        // 將角色的第一句話加入 batch
+
+        // ✅ 第一句：固定比較晚
         final aiMsgRef = newSessionRef.collection('messages').doc();
         batch.set(aiMsgRef, {
           'sender': 'ai',
           'text': firstLine,
           'type': 'text',
           'path': '',
-          'timestamp': FieldValue.serverTimestamp(), // 讓雲端自動排序時間
+          'timestamp': Timestamp.fromDate(now.add(const Duration(milliseconds: 1))),
+          'orderIndex': 1,
         });
       }
       // ✨✨✨ 4. 關鍵煞車：等待全部寫入成功！ ✨✨✨

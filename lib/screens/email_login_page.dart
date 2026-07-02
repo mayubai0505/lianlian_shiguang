@@ -31,6 +31,55 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
     super.dispose();
   }
 
+  Future<void> _resetPassword() async {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        '請先輸入信箱，再點選忘記密碼',
+        isError: true,
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '重設密碼信已寄出，請至信箱查看',
+        customIcon: Icons.mark_email_read_rounded,
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      String message = '寄送重設密碼信失敗，請稍後再試';
+
+      if (e.code == 'invalid-email') {
+        message = '信箱格式不正確';
+      } else if (e.code == 'user-not-found') {
+        message = '找不到此信箱的帳號';
+      }
+
+      ToastUtils.showCenterToast(
+        context,
+        message,
+        isError: true,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '寄送重設密碼信失敗：$e',
+        isError: true,
+      );
+    }
+  }
+
   // 核心執行邏輯
   Future<void> _submit() async {
     final email = _emailController.text.trim();
@@ -220,6 +269,24 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                     ),
                   ),
                   const SizedBox(height: 32),
+
+                  if (_isLoginMode)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _isLoading ? null : _resetPassword,
+                        child: const Text(
+                          '忘記密碼？',
+                          style: TextStyle(
+                            color: Color(0xFF7B1FA2),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 24),
+
 
                   // 送出按鈕
                   ElevatedButton(
