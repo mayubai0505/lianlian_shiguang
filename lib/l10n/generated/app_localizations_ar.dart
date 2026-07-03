@@ -4177,4 +4177,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tip_moments_wall_menu => 'انقري هنا لـ\nجدولة منشورات الشخصية';
+
+  @override
+  String get forgot_password => 'هل نسيتِ كلمة المرور؟';
+
+  @override
+  String get forgot_password_empty_email =>
+      'يرجى إدخال البريد الإلكتروني أولاً، ثم النقر على نسيت كلمة المرور';
+
+  @override
+  String get forgot_password_email_sent =>
+      'تم إرسال بريد إعادة تعيين كلمة المرور، يرجى التحقق من صندوق الوارد الخاص بكِ';
+
+  @override
+  String get forgot_password_error_default =>
+      'فشل إرسال بريد إعادة تعيين كلمة المرور، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String get forgot_password_error_invalid_email =>
+      'صيغة البريد الإلكتروني غير صحيحة';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'لم يتم العثور على حساب مرتبط بهذا البريد الإلكتروني';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'فشل إرسال بريد إعادة تعيين كلمة المرور: $error';
+  }
 }

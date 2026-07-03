@@ -4197,4 +4197,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tip_moments_wall_menu => 'Tap here to\nschedule character posts';
+
+  @override
+  String get forgot_password => 'Forgot Password?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'Please enter your email first, then click Forgot Password';
+
+  @override
+  String get forgot_password_email_sent =>
+      'Password reset email has been sent. Please check your inbox';
+
+  @override
+  String get forgot_password_error_default =>
+      'Failed to send password reset email. Please try again later';
+
+  @override
+  String get forgot_password_error_invalid_email => 'Invalid email format';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'No account found with this email';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'Failed to send password reset email: $error';
+  }
 }

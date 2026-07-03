@@ -4252,4 +4252,32 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get tip_moments_wall_menu =>
       'Toque aqui para agendar\nas postagens dos personagens';
+
+  @override
+  String get forgot_password => 'Esqueceu a senha?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'Por favor, insira o seu e-mail primeiro, depois toque em Esqueceu a senha';
+
+  @override
+  String get forgot_password_email_sent =>
+      'O e-mail de redefinição de senha foi enviado, por favor, verifique sua caixa de entrada';
+
+  @override
+  String get forgot_password_error_default =>
+      'Falha ao enviar o e-mail de redefinição de senha, por favor, tente novamente mais tarde';
+
+  @override
+  String get forgot_password_error_invalid_email =>
+      'Formato de e-mail incorreto';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'Nenhuma conta foi encontrada com este e-mail';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'Falha ao enviar o e-mail de redefinição de senha: $error';
+  }
 }

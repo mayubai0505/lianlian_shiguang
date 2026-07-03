@@ -4179,4 +4179,31 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get tip_moments_wall_menu => 'แตะตรงนี้เพื่อ\nตั้งเวลาโพสต์ของตัวละคร';
+
+  @override
+  String get forgot_password => 'ลืมรหัสผ่าน?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'กรุณากรอกอีเมลก่อน แล้วจึงคลิกเลือก ลืมรหัสผ่าน';
+
+  @override
+  String get forgot_password_email_sent =>
+      'ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว กรุณาตรวจสอบที่กล่องจดหมายของคุณ';
+
+  @override
+  String get forgot_password_error_default =>
+      'ส่งอีเมลรีเซ็ตรหัสผ่านไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง';
+
+  @override
+  String get forgot_password_error_invalid_email => 'รูปแบบอีเมลไม่ถูกต้อง';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'ไม่พบบัญชีผู้ใช้ที่ใช้อีเมลนี้';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'ส่งอีเมลรีเซ็ตรหัสผ่านไม่สำเร็จ: $error';
+  }
 }

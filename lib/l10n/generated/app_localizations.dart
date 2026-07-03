@@ -7401,6 +7401,48 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'點這裡可以\n安排角色發文'**
   String get tip_moments_wall_menu;
+
+  /// No description provided for @forgot_password.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'忘記密碼？'**
+  String get forgot_password;
+
+  /// No description provided for @forgot_password_empty_email.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先輸入信箱，再點選忘記密碼'**
+  String get forgot_password_empty_email;
+
+  /// No description provided for @forgot_password_email_sent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重設密碼信已寄出，請至信箱查看'**
+  String get forgot_password_email_sent;
+
+  /// No description provided for @forgot_password_error_default.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寄送重設密碼信失敗，請稍後再試'**
+  String get forgot_password_error_default;
+
+  /// No description provided for @forgot_password_error_invalid_email.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'信箱格式不正確'**
+  String get forgot_password_error_invalid_email;
+
+  /// No description provided for @forgot_password_error_user_not_found.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到此信箱的帳號'**
+  String get forgot_password_error_user_not_found;
+
+  /// No description provided for @forgot_password_error_with_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寄送重設密碼信失敗：{error}'**
+  String forgot_password_error_with_message(String error);
 }
 
 class _AppLocalizationsDelegate

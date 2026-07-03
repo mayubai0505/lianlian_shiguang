@@ -4232,4 +4232,32 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get tip_moments_wall_menu =>
       'कैरेक्टर पोस्ट शेड्यूल करने के लिए\nयहाँ टैप करें';
+
+  @override
+  String get forgot_password => 'पासवर्ड भूल गए?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'कृपया पहले अपना ईमेल दर्ज करें, फिर \'पासवर्ड भूल गए\' पर क्लिक करें';
+
+  @override
+  String get forgot_password_email_sent =>
+      'पासवर्ड रीसेट ईमेल भेज दिया गया है। कृपया अपना इनबॉक्स देखें';
+
+  @override
+  String get forgot_password_error_default =>
+      'पासवर्ड रीसेट ईमेल भेजने में विफल। कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get forgot_password_error_invalid_email =>
+      'ईमेल का प्रारूप सही नहीं है';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'इस ईमेल के साथ कोई खाता नहीं मिला';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'पासवर्ड रीसेट ईमेल भेजने में विफल: $error';
+  }
 }

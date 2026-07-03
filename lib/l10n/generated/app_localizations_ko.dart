@@ -4032,4 +4032,30 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tip_moments_wall_menu => '여기를 누르면\n캐릭터의 포스트 게시를 예약할 수 있습니다';
+
+  @override
+  String get forgot_password => '비밀번호를 잊으셨나요?';
+
+  @override
+  String get forgot_password_empty_email =>
+      '먼저 이메일을 입력한 후 \'비밀번호를 잊으셨나요?\'를 눌러주세요';
+
+  @override
+  String get forgot_password_email_sent =>
+      '비밀번호 재설정 이메일이 발송되었습니다. 이메일함을 확인해 주세요';
+
+  @override
+  String get forgot_password_error_default =>
+      '비밀번호 재설정 이메일 발송에 실패했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get forgot_password_error_invalid_email => '이메일 형식이 올바르지 않습니다';
+
+  @override
+  String get forgot_password_error_user_not_found => '이 이메일로 가입된 계정을 찾을 수 없습니다';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return '비밀번호 재설정 이메일 발송 실패: $error';
+  }
 }

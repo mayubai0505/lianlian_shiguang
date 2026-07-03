@@ -1912,5 +1912,20 @@
   "tip_time_echoes": "Sau khi để lại trải nghiệm của bạn\nbình luận bay (danmaku) sẽ xuất hiện khi tìm kiếm",
   "tip_call_memory": "Ghi âm cuộc gọi được lưu sau cuộc trò chuyện\nsẽ ở ngay đây!",
   "tip_chat_notifications": "Nơi đây bạn có thể\nxem các thông báo mới",
-  "tip_moments_wall_menu": "Nhấn vào đây để lên lịch\nđăng bài cho nhân vật"
+  "tip_moments_wall_menu": "Nhấn vào đây để lên lịch\nđăng bài cho nhân vật",
+  "forgot_password": "Quên mật khẩu?",
+  "forgot_password_empty_email": "Vui lòng nhập email trước, sau đó nhấn Quên mật khẩu",
+  "forgot_password_email_sent": "Email đặt lại mật khẩu đã được gửi, vui lòng kiểm tra hộp thư của bạn",
+  "forgot_password_error_default": "Gửi email đặt lại mật khẩu thất bại, vui lòng thử lại sau",
+  "forgot_password_error_invalid_email": "Định dạng email không chính xác",
+  "forgot_password_error_user_not_found": "Không tìm thấy tài khoản nào liên kết với email này",
+  "forgot_password_error_with_message": "Gửi email đặt lại mật khẩu thất bại: {error}",
+  "@forgot_password_error_with_message": {
+  "placeholders": {
+  "error": {
+  "type": "String",
+  "example": "Network error"
+  }
+  }
+  }
 }

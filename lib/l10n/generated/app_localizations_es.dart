@@ -4260,4 +4260,32 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get tip_moments_wall_menu =>
       'Toca aquí para\nprogramar publicaciones del personaje';
+
+  @override
+  String get forgot_password => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'Por favor, introduce tu correo primero y luego haz clic en ¿Olvidaste tu contraseña?';
+
+  @override
+  String get forgot_password_email_sent =>
+      'Se ha enviado el correo de restablecimiento de contraseña. Por favor, revisa tu bandeja de entrada';
+
+  @override
+  String get forgot_password_error_default =>
+      'Error al enviar el correo de restablecimiento. Por favor, inténtalo de nuevo más tarde';
+
+  @override
+  String get forgot_password_error_invalid_email =>
+      'El formato del correo electrónico no es correcto';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'No se encontró ninguna cuenta con este correo electrónico';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'Error al enviar el correo de restablecimiento: $error';
+  }
 }

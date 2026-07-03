@@ -1927,5 +1927,20 @@
   "tip_time_echoes": "留下经历后\n搜索时会出现弹幕",
   "tip_call_memory": "通话后收藏的\n语音会在这里!",
   "tip_chat_notifications": "这里可以\n查看新通知",
-  "tip_moments_wall_menu": "点这里可以\n安排角色发文"
+  "tip_moments_wall_menu": "点这里可以\n安排角色发文",
+  "forgot_password": "忘记密码？",
+  "forgot_password_empty_email": "请先输入邮箱，再点击忘记密码",
+  "forgot_password_email_sent": "重置密码信已寄出，请至邮箱查看",
+  "forgot_password_error_default": "寄送重置密码信失败，请稍后再试",
+  "forgot_password_error_invalid_email": "邮箱格式不正确",
+  "forgot_password_error_user_not_found": "找不到此邮箱的账号",
+  "forgot_password_error_with_message": "寄送重置密码信失败：{error}",
+  "@forgot_password_error_with_message": {
+  "placeholders": {
+  "error": {
+  "type": "String",
+  "example": "Network error"
+  }
+  }
+  }
 }

@@ -3976,6 +3976,29 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tip_moments_wall_menu => '點這裡可以\n安排角色發文';
+
+  @override
+  String get forgot_password => '忘記密碼？';
+
+  @override
+  String get forgot_password_empty_email => '請先輸入信箱，再點選忘記密碼';
+
+  @override
+  String get forgot_password_email_sent => '重設密碼信已寄出，請至信箱查看';
+
+  @override
+  String get forgot_password_error_default => '寄送重設密碼信失敗，請稍後再試';
+
+  @override
+  String get forgot_password_error_invalid_email => '信箱格式不正確';
+
+  @override
+  String get forgot_password_error_user_not_found => '找不到此信箱的帳號';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return '寄送重設密碼信失敗：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7950,6 +7973,29 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get tip_moments_wall_menu => '点这里可以\n安排角色发文';
+
+  @override
+  String get forgot_password => '忘记密码？';
+
+  @override
+  String get forgot_password_empty_email => '请先输入邮箱，再点击忘记密码';
+
+  @override
+  String get forgot_password_email_sent => '重置密码信已寄出，请至邮箱查看';
+
+  @override
+  String get forgot_password_error_default => '寄送重置密码信失败，请稍后再试';
+
+  @override
+  String get forgot_password_error_invalid_email => '邮箱格式不正确';
+
+  @override
+  String get forgot_password_error_user_not_found => '找不到此邮箱的账号';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return '寄送重置密码信失败：$error';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11924,4 +11970,27 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get tip_moments_wall_menu => '點這裡可以\n安排角色發文';
+
+  @override
+  String get forgot_password => '忘記密碼？';
+
+  @override
+  String get forgot_password_empty_email => '請先輸入信箱，再點選忘記密碼';
+
+  @override
+  String get forgot_password_email_sent => '重設密碼信已寄出，請至信箱查看';
+
+  @override
+  String get forgot_password_error_default => '寄送重設密碼信失敗，請稍後再試';
+
+  @override
+  String get forgot_password_error_invalid_email => '信箱格式不正確';
+
+  @override
+  String get forgot_password_error_user_not_found => '找不到此信箱的帳號';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return '寄送重設密碼信失敗：$error';
+  }
 }

@@ -4237,4 +4237,31 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get tip_moments_wall_menu =>
       'Ketik di sini untuk mengatur\njadual siaran karakter';
+
+  @override
+  String get forgot_password => 'Lupa Kata Laluan?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'Sila masukkan e-mel anda terlebih dahulu, kemudian ketik Lupa Kata Laluan';
+
+  @override
+  String get forgot_password_email_sent =>
+      'E-mel tetapan semula kata laluan telah dihantar, sila semak peti masuk anda';
+
+  @override
+  String get forgot_password_error_default =>
+      'Gagal menghantar e-mel tetapan semula kata laluan, sila cuba lagi kemudian';
+
+  @override
+  String get forgot_password_error_invalid_email => 'Format e-mel tidak betul';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'Tiada akaun ditemui dengan e-mel ini';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'Gagal menghantar e-mel tetapan semula kata laluan: $error';
+  }
 }

@@ -4232,4 +4232,32 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get tip_moments_wall_menu =>
       'Nhấn vào đây để lên lịch\nđăng bài cho nhân vật';
+
+  @override
+  String get forgot_password => 'Quên mật khẩu?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'Vui lòng nhập email trước, sau đó nhấn Quên mật khẩu';
+
+  @override
+  String get forgot_password_email_sent =>
+      'Email đặt lại mật khẩu đã được gửi, vui lòng kiểm tra hộp thư của bạn';
+
+  @override
+  String get forgot_password_error_default =>
+      'Gửi email đặt lại mật khẩu thất bại, vui lòng thử lại sau';
+
+  @override
+  String get forgot_password_error_invalid_email =>
+      'Định dạng email không chính xác';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'Không tìm thấy tài khoản nào liên kết với email này';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'Gửi email đặt lại mật khẩu thất bại: $error';
+  }
 }

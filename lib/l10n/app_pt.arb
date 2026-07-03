@@ -1913,5 +1913,20 @@
    "tip_time_echoes": "Depois de deixar sua experiência\ncomentários flutuantes aparecerão durante a busca",
    "tip_call_memory": "Os áudios salvos após as chamadas\nficarão aqui!",
    "tip_chat_notifications": "Aqui você pode\nver as novas notificações",
-   "tip_moments_wall_menu": "Toque aqui para agendar\nas postagens dos personagens"
+   "tip_moments_wall_menu": "Toque aqui para agendar\nas postagens dos personagens",
+   "forgot_password": "Esqueceu a senha?",
+   "forgot_password_empty_email": "Por favor, insira o seu e-mail primeiro, depois toque em Esqueceu a senha",
+   "forgot_password_email_sent": "O e-mail de redefinição de senha foi enviado, por favor, verifique sua caixa de entrada",
+   "forgot_password_error_default": "Falha ao enviar o e-mail de redefinição de senha, por favor, tente novamente mais tarde",
+   "forgot_password_error_invalid_email": "Formato de e-mail incorreto",
+   "forgot_password_error_user_not_found": "Nenhuma conta foi encontrada com este e-mail",
+   "forgot_password_error_with_message": "Falha ao enviar o e-mail de redefinição de senha: {error}",
+   "@forgot_password_error_with_message": {
+   "placeholders": {
+   "error": {
+   "type": "String",
+   "example": "Network error"
+   }
+   }
+   }
 }

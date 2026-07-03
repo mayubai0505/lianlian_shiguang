@@ -1912,5 +1912,20 @@
     "tip_time_echoes": "अपना अनुभव छोड़ने के बाद\nखोज करते समय फ्लोटिंग कमेंट्स दिखाई देंगे",
     "tip_call_memory": "कॉल के बाद सहेजी गई वॉयस रिकॉर्डिंग\nयहाँ मिलेंगी!",
     "tip_chat_notifications": "यहाँ आप\nनया नोटिफिकेशन देख सकते हैं",
-    "tip_moments_wall_menu": "कैरेक्टर पोस्ट शेड्यूल करने के लिए\nयहाँ टैप करें"
+    "tip_moments_wall_menu": "कैरेक्टर पोस्ट शेड्यूल करने के लिए\nयहाँ टैप करें",
+    "forgot_password": "पासवर्ड भूल गए?",
+    "forgot_password_empty_email": "कृपया पहले अपना ईमेल दर्ज करें, फिर 'पासवर्ड भूल गए' पर क्लिक करें",
+    "forgot_password_email_sent": "पासवर्ड रीसेट ईमेल भेज दिया गया है। कृपया अपना इनबॉक्स देखें",
+    "forgot_password_error_default": "पासवर्ड रीसेट ईमेल भेजने में विफल। कृपया बाद में पुनः प्रयास करें",
+    "forgot_password_error_invalid_email": "ईमेल का प्रारूप सही नहीं है",
+    "forgot_password_error_user_not_found": "इस ईमेल के साथ कोई खाता नहीं मिला",
+    "forgot_password_error_with_message": "पासवर्ड रीसेट ईमेल भेजने में विफल: {error}",
+    "@forgot_password_error_with_message": {
+    "placeholders": {
+    "error": {
+    "type": "String",
+    "example": "Network error"
+    }
+    }
+    }
 }

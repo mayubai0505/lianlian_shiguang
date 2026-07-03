@@ -32,12 +32,13 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
   }
 
   Future<void> _resetPassword() async {
+    final l10n = AppLocalizations.of(context)!; // ✨ 記得在函數開頭取得語系包
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
       ToastUtils.showCenterToast(
         context,
-        '請先輸入信箱，再點選忘記密碼',
+        l10n.forgot_password_empty_email, // ✨ 替換：信箱為空提示
         isError: true,
       );
       return;
@@ -50,18 +51,19 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
 
       ToastUtils.showCenterToast(
         context,
-        '重設密碼信已寄出，請至信箱查看',
+        l10n.forgot_password_email_sent, // ✨ 替換：成功寄出提示
         customIcon: Icons.mark_email_read_rounded,
       );
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
 
-      String message = '寄送重設密碼信失敗，請稍後再試';
+      // ✨ 替換：預設錯誤訊息
+      String message = l10n.forgot_password_error_default;
 
       if (e.code == 'invalid-email') {
-        message = '信箱格式不正確';
+        message = l10n.forgot_password_error_invalid_email; // ✨ 替換：格式不正確
       } else if (e.code == 'user-not-found') {
-        message = '找不到此信箱的帳號';
+        message = l10n.forgot_password_error_user_not_found; // ✨ 替換：找不到帳號
       }
 
       ToastUtils.showCenterToast(
@@ -74,7 +76,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
 
       ToastUtils.showCenterToast(
         context,
-        '寄送重設密碼信失敗：$e',
+        l10n.forgot_password_error_with_message(e.toString()), // ✨ 替換：帶有變數的錯誤捕捉
         isError: true,
       );
     }
@@ -275,8 +277,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: _isLoading ? null : _resetPassword,
-                        child: const Text(
-                          '忘記密碼？',
+                        child: Text(l10n.forgot_password,
                           style: TextStyle(
                             color: Color(0xFF7B1FA2),
                             fontWeight: FontWeight.w600,

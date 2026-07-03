@@ -2127,5 +2127,20 @@
   "tip_time_echoes": "After leaving your experience\nfloating comments will appear during search",
   "tip_call_memory": "Voice recordings bookmarked after calls\nwill be right here!",
   "tip_chat_notifications": "Right here you can\nview new notifications",
-  "tip_moments_wall_menu": "Tap here to\nschedule character posts"
+  "tip_moments_wall_menu": "Tap here to\nschedule character posts",
+  "forgot_password": "Forgot Password?",
+  "forgot_password_empty_email": "Please enter your email first, then click Forgot Password",
+  "forgot_password_email_sent": "Password reset email has been sent. Please check your inbox",
+  "forgot_password_error_default": "Failed to send password reset email. Please try again later",
+  "forgot_password_error_invalid_email": "Invalid email format",
+  "forgot_password_error_user_not_found": "No account found with this email",
+  "forgot_password_error_with_message": "Failed to send password reset email: {error}",
+  "@forgot_password_error_with_message": {
+  "placeholders": {
+  "error": {
+  "type": "String",
+  "example": "Network error"
+  }
+  }
+  }
 }

@@ -1912,5 +1912,20 @@
     "tip_time_echoes": "หลังจากบันทึกเรื่องราวแล้ว\nข้อความวิ่งจะปรากฏขึ้นขณะค้นหา",
     "tip_call_memory": "ข้อความเสียงที่บันทึกไว้หลังวางสาย\nจะอยู่ตรงนี้นะ!",
     "tip_chat_notifications": "ตรงนี้สามารถ\nดูการแจ้งเตือนใหม่ได้",
-    "tip_moments_wall_menu": "แตะตรงนี้เพื่อ\nตั้งเวลาโพสต์ของตัวละคร"
+    "tip_moments_wall_menu": "แตะตรงนี้เพื่อ\nตั้งเวลาโพสต์ของตัวละคร",
+    "forgot_password": "ลืมรหัสผ่าน?",
+    "forgot_password_empty_email": "กรุณากรอกอีเมลก่อน แล้วจึงคลิกเลือก ลืมรหัสผ่าน",
+    "forgot_password_email_sent": "ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว กรุณาตรวจสอบที่กล่องจดหมายของคุณ",
+    "forgot_password_error_default": "ส่งอีเมลรีเซ็ตรหัสผ่านไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง",
+    "forgot_password_error_invalid_email": "รูปแบบอีเมลไม่ถูกต้อง",
+    "forgot_password_error_user_not_found": "ไม่พบบัญชีผู้ใช้ที่ใช้อีเมลนี้",
+    "forgot_password_error_with_message": "ส่งอีเมลรีเซ็ตรหัสผ่านไม่สำเร็จ: {error}",
+    "@forgot_password_error_with_message": {
+    "placeholders": {
+    "error": {
+    "type": "String",
+    "example": "Network error"
+    }
+    }
+    }
 }

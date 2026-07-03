@@ -4232,4 +4232,31 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get tip_moments_wall_menu =>
       'Ketuk di sini untuk mengatur\njadwal postingan karakter';
+
+  @override
+  String get forgot_password => 'Lupa Kata Sandi?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'Silakan masukkan email Anda terlebih dahulu, lalu klik Lupa Kata Sandi';
+
+  @override
+  String get forgot_password_email_sent =>
+      'Email reset kata sandi telah dikirim, silakan periksa kotak masuk Anda';
+
+  @override
+  String get forgot_password_error_default =>
+      'Gagal mengirim email reset kata sandi, silakan coba lagi nanti';
+
+  @override
+  String get forgot_password_error_invalid_email => 'Format email tidak valid';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'Tidak dapat menemukan akun dengan email ini';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'Gagal mengirim email reset kata sandi: $error';
+  }
 }

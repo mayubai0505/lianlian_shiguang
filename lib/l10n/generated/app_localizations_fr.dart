@@ -4288,4 +4288,32 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get tip_moments_wall_menu =>
       'Appuyez ici pour\nplanifier les publications du personnage';
+
+  @override
+  String get forgot_password => 'Mot de passe oublié ?';
+
+  @override
+  String get forgot_password_empty_email =>
+      'Veuillez d\'abord saisir votre e-mail, puis cliquer sur Mot de passe oublié';
+
+  @override
+  String get forgot_password_email_sent =>
+      'L\'e-mail de réinitialisation du mot de passe a été envoyé. Veuillez vérifier votre boîte de réception';
+
+  @override
+  String get forgot_password_error_default =>
+      'Échec de l\'envoi de l\'e-mail de réinitialisation. Veuillez réessayer plus tard';
+
+  @override
+  String get forgot_password_error_invalid_email =>
+      'Format de l\'adresse e-mail incorrect';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'Aucun compte trouvé avec cette adresse e-mail';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'Échec de l\'envoi de l\'e-mail de réinitialisation : $error';
+  }
 }

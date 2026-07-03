@@ -4017,4 +4017,30 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tip_moments_wall_menu => 'ここをタップして\nキャラクターの投稿を予約できます';
+
+  @override
+  String get forgot_password => 'パスワードをお忘れですか？';
+
+  @override
+  String get forgot_password_empty_email =>
+      '先にメールアドレスを入力してから、パスワードをお忘れですか？をタップしてください';
+
+  @override
+  String get forgot_password_email_sent => 'パスワード再設定メールを送信しました。メールボックスをご確認ください';
+
+  @override
+  String get forgot_password_error_default =>
+      'パスワード再設定メールの送信に失敗しました。しばらく経ってからもう一度お試しください';
+
+  @override
+  String get forgot_password_error_invalid_email => 'メールアドレスの形式が正しくありません';
+
+  @override
+  String get forgot_password_error_user_not_found =>
+      'このメールアドレスのユーザーアカウントが見つかりません';
+
+  @override
+  String forgot_password_error_with_message(String error) {
+    return 'パスワード再設定メールの送信に失敗しました：$error';
+  }
 }
