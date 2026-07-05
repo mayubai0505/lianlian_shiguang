@@ -275,15 +275,6 @@ class PurchaseService extends ChangeNotifier {
         // 魔法：把前面的字串拔掉，剩下的數字直接轉成整數！
         // 例如 'com.lianlian.points_90' 會直接變成整數 90
         int basePoints = _getBasePointsFromProductId(productId);
-
-        if (productId == 'com.lianlian.points_2350') {
-          basePoints = 2300;
-        }
-
-        if (productId == 'com.lianlian.points_3450') {
-          basePoints = 3400;
-        }
-
         // 首購雙倍判斷！
         pointsToAdd = isFirstTime ? (basePoints * 2) : basePoints;
       }
