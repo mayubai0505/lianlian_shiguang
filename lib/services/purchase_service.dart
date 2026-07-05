@@ -70,7 +70,6 @@ class PurchaseService extends ChangeNotifier {
       'com.lianlian.points_3200',// 長久禮包
       'com.lianlian.points_3400',// 唯一禮包
       'com.lianlian.points_3450',  // 唯一禮包
-      'com.lianlian.points_4200',  // 摯愛禮包
       'com.lianlian.points_4300',  // 一生一世包
       'com.lianlian.points_6400',  // 誓約禮包
       'com.lianlian.points_10000', // 永恆戀人包
@@ -176,6 +175,39 @@ class PurchaseService extends ChangeNotifier {
     notifyListeners();
   }
 
+  int _getBasePointsFromProductId(String productId) {
+    const Map<String, int> productPointsMap = {
+      'com.lianlian.points_90': 90,
+      'com.lianlian.points_215': 215,
+      'com.lianlian.points_370': 370,
+      'com.lianlian.points_590': 590,
+      'com.lianlian.points_780': 780,
+      'com.lianlian.points_1030': 1030,
+      'com.lianlian.points_1420': 1420,
+      'com.lianlian.points_1650': 1650,
+      'com.lianlian.points_2200': 2200,
+
+      // Apple / Google 同一禮包但不同 productId
+      'com.lianlian.points_2300': 2300,
+      'com.lianlian.points_2350': 2300,
+
+      'com.lianlian.points_2400': 2400,
+      'com.lianlian.points_2680': 2680,
+      'com.lianlian.points_3200': 3200,
+
+      // Apple / Google 同一禮包但不同 productId
+      'com.lianlian.points_3400': 3400,
+      'com.lianlian.points_3450': 3400,
+
+      'com.lianlian.points_4200': 4200,
+      'com.lianlian.points_4300': 4300,
+      'com.lianlian.points_6400': 6400,
+      'com.lianlian.points_10000': 10000,
+    };
+
+    return productPointsMap[productId] ?? 0;
+  }
+
   // ✨ 修改 3：完美對接新 ID 的首購雙倍發貨系統
   Future<void> _deliverPurchase(PurchaseDetails purchaseDetails) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -242,8 +274,15 @@ class PurchaseService extends ChangeNotifier {
       else if (productId.startsWith('com.lianlian.points_')) {
         // 魔法：把前面的字串拔掉，剩下的數字直接轉成整數！
         // 例如 'com.lianlian.points_90' 會直接變成整數 90
-        String pointsStr = productId.replaceAll('com.lianlian.points_', '');
-        int basePoints = int.tryParse(pointsStr) ?? 0;
+        int basePoints = _getBasePointsFromProductId(productId);
+
+        if (productId == 'com.lianlian.points_2350') {
+          basePoints = 2300;
+        }
+
+        if (productId == 'com.lianlian.points_3450') {
+          basePoints = 3400;
+        }
 
         // 首購雙倍判斷！
         pointsToAdd = isFirstTime ? (basePoints * 2) : basePoints;

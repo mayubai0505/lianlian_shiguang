@@ -150,7 +150,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final bool showFacebookLogin = false;
-    final bool showGoogleLogin = false;
+    final bool showGoogleLogin =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
     // ✅ Apple 登入只在 iOS / iPadOS 顯示
     final bool showAppleLogin =
         !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
@@ -213,7 +214,6 @@ class _LoginPageState extends State<LoginPage> {
 
                 // ✅ Apple 登入：只在 iOS / iPadOS 顯示
                 if (showAppleLogin) ...[
-                  const SizedBox(height: 16),
                   _buildLoginButton(
                     text: l10n.login_with_apple,
                     iconWidget: const Icon(
@@ -225,9 +225,8 @@ class _LoginPageState extends State<LoginPage> {
                     textColor: Colors.white,
                     onPressed: () => _performLogin(_authService.signInWithApple),
                   ),
+                  const SizedBox(height: 16),
                 ],
-
-                const SizedBox(height: 16),
 
                 // 🚀 Facebook 登入
                 if (showFacebookLogin) ...[
