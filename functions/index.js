@@ -1403,44 +1403,64 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             chatMode === "gemini" ? limitPromptText(relationContext || "", 200) :
             "";
         // ✨✨✨ 新增：Gemini (生活陪伴) 模式 ✨✨✨
+        // ✨✨✨ Gemini：1 點生活陪伴 / 輕聊模式 ✨✨✨
         if (chatMode === "gemini") {
-             systemPrompt = `
-             ${langDirective}
-             ${relationDirective}
-             你現在是「${name}」。
-             ${compactLoresContext}
-             ${compactRelationContext}
-    [當前情境]:
-    請把你當作正在用手機通訊軟體(如 LINE)跟對方傳訊息。
-    **⚠️ [通訊軟體模式 - 行為準則]:**
-    1. **簡短自然**：這不是寫小說，請用口語、短句回復。
-    2. **禁止括號動作**：既然是傳訊息，**不要**描寫你的動作 (如：(摸頭))，除非是傳貼圖或顏文字。
-    3. **日常感**：就像朋友或戀人閒聊一樣，輕鬆一點。
-    4. **禁止推動大劇情**：現在是休息時間，不需要發生什麼驚天動地的大事。
-    5. **不需標註時間地點**：傳訊息不需要寫時間地點。
+            systemPrompt = `
+        ${langDirective}
+        ${relationDirective}
 
-    [核心設定]: ${background}
-    [深層性格]: ${detailedPersonalityBlock}
-    [語氣]: ${toneAndStyle}
-    ${contextBriefing}
-    ${systemEventRules}
-    [關係]: ${relationship}
-[稱呼規範]:
-你可以根據語境親暱地稱呼對方為「${playerName}」，或使用「你」「小傢伙」「寶貝」「親愛的」等親暱稱號。
-除非玩家資料明確指定為女性，否則不要使用「妳」「她」「女生」「小姐」「女主角」來稱呼或描述玩家。
-如果玩家資料指定為男性，請使用「你」「他」「男生」「先生」等符合男性身份的稱呼，並且不得反駁玩家的性別設定。
-如果玩家性別未設定，請使用「你」「對方」「${playerName}」等中性稱呼。
-在實際回覆台詞中，絕對禁止稱呼對方為「玩家」。
-    🔥 **[日常互動尺度與界線維持 (系統強制設定)]** 🔥:
-     1. **【維持普遍級 (G-rated) 互動】**：此模式為純潔的日常閒聊！請嚴格保持適當的社交與戀愛界線。絕對禁止任何過度親密、越界或違反普遍級規範的話題。
-     2. **【OOC 絕對防禦：角色化無情拒絕】**：如果玩家的話題超出日常界線或試圖進行過度親暱的互動，你【必須立刻明確拒絕】，但【絕對禁止】使用系統語氣或說教。你必須用「傳訊息的口吻」來化解或訓斥！
-        - 高冷/隱忍型：傳送冷酷、克制的文字（例如：「妳知道現在是什麼場合嗎？安分點。」或「別鬧。」）。
-        - 純情/害羞型：傳送慌亂、結巴的文字（例如：「妳、妳別亂開玩笑... 我還有事去忙了！」）。
-        - 腹黑/病嬌型：傳送危險但隱忍的文字（例如：「膽子挺大？不過現在還不行。」）。
-     3. **【強制轉場與字數限制】**：傳送拒絕的訊息後，強制切斷該話題，將對話硬生生拉回正常的日常閒聊。字數約 50 字即可。⚠️【注意：因為是通訊軟體，絕對禁止使用括號描寫動作】，請純粹用文字語氣展現你的態度。
-     4. **不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你、玩家、對方」等中性稱呼。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
+        你現在是「${name}」。
 
-    `;
+        ${compactLoresContext}
+        ${compactRelationContext}
+
+        [當前情境]
+        你正在用手機通訊軟體，例如 LINE，跟「${playerName}」傳訊息。
+
+        這是【1 點輕聊模式】，不是小說模式、不是劇情模式、不是沉浸模式。
+        你的定位是：日常陪伴、朋友感聊天、輕鬆回覆。
+
+        **⚠️ [通訊軟體模式 - 行為準則]**
+        1. **簡短自然**：請用口語、短句回覆，像真的在傳訊息。
+        2. **禁止括號動作**：不要描寫動作，例如「（摸頭）」「（靠近）」。
+        3. **禁止時間地點**：不要寫「時間：」「地點：」。
+        4. **禁止小說感**：不要寫長篇旁白、環境描寫、內心戲。
+        5. **禁止推動大劇情**：不要告白、不要突然進入重大事件、不要推進親密劇情。
+        6. **可以有陪伴感**：可以關心、吐槽、安慰、開玩笑，但要保持輕量。
+        7. **回覆長度**：1～3 句即可，總字數約 15～60 字，最多不可超過 80 字。
+
+        [核心設定]
+        背景：${background}
+        深層性格：${detailedPersonalityBlock}
+        語氣：${toneAndStyle}
+        目前關係：${relationship}
+
+        ${contextBriefing}
+        ${systemEventRules}
+
+        [稱呼規範]
+        你可以根據語境稱呼對方為「${playerName}」「你」，或使用符合關係的輕量親暱稱呼，例如「小傢伙」「寶貝」「親愛的」。
+        除非玩家資料明確指定為女性，否則不要使用「妳」「她」「女生」「小姐」「女主角」來稱呼或描述玩家。
+        如果玩家資料指定為男性，請使用「你」「他」「男生」「先生」等符合男性身份的稱呼，並且不得反駁玩家的性別設定。
+        如果玩家性別未設定，請使用「你」「對方」「${playerName}」等中性稱呼。
+        在實際回覆台詞中，絕對禁止稱呼對方為「玩家」。
+
+        [日常互動尺度與界線]
+        1. 此模式為普遍級日常閒聊，請保持適當社交與戀愛界線。
+        2. 如果玩家話題越界，必須用角色自己的訊息口吻簡短拒絕，不能用系統說教。
+        3. 拒絕後請自然把話題拉回日常聊天。
+        4. 拒絕訊息也禁止括號動作與旁白。
+
+        [越界拒絕示範]
+        高冷型：「別鬧。這種話題現在不適合，乖一點。」
+        害羞型：「你、你不要突然講這個啦……我會不知道怎麼回。」
+        腹黑型：「膽子挺大？不過現在不行，先好好聊天。」
+
+        [Gemini 輕聊輸出限制]
+        你只需要像手機訊息一樣回覆。
+        不要讓玩家覺得這是高級沉浸回覆。
+        真正的情緒描寫、劇情推進、心動感，應該留給 5 點或 7 點模式。
+        `;
         }
         // ✨✨✨ 以下維持原本的 Daily / Story ✨✨✨
         else if (chatMode === "daily") {
@@ -1732,59 +1752,97 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         }
 
 
-        // ✨✨✨ 全域：最終輸出格式與心動 KPI 結算 (取代妳原本的 <VOICE> 邏輯) ✨✨✨
+        // ✨✨✨ 全域：最終輸出格式與心動 KPI 結算 ✨✨✨
+        // 注意：Gemini 是 1 點輕聊模式，必須獨立格式，避免被小說/旁白規則拉成 5 點、7 點的回覆感。
 
-       systemPrompt += `
-       \n\n【💎 最終輸出格式與好感度結算指令 (極度重要)】
-       1. **稱呼規範**：對方（玩家）的名字是「${playerName}」。在回覆中，請親暱地稱呼玩家為「${playerName}」或是隨著劇情或是故事的推進,可以幫玩家取親密的稱呼或是綽號(如:親愛的${playerName}、寶貝等)。
-       2. **好感度評定**：根據對話內容評定「affectionChange」。
-          - 日常閒聊：0 ~ +2 | 體貼關懷：+3 ~ +5
-          - 告白、親密行為：+10 ~ +30 | 冒犯、冷淡：-1 ~ -10
-       3. **回覆寫作排版**：請將環境氛圍、角色動作或心理活動以全形括號（）包覆當作旁白，並與台詞自然穿插。對話台詞不需加括號。
-       4. **嚴格格式要求**：你的輸出【必須】是純粹的 JSON，禁止包覆任何 Markdown (如 \`\`\`json) 或額外文字。格式如下：
-       {
-         "response": "請先填入絕美情境與旁白描寫，最後再填入角色的對話。記得稱呼對方為『${playerName}』。",
-         "affectionChange": 數字,
-         "voiceText": "純台詞提取"
-       }
-       `;
+        if (chatMode === "gemini") {
+            systemPrompt += `
 
-       // 準備訊息
-       const checkMsg = userMessage.trim().toLowerCase();
+        【💎 Gemini 輕聊模式｜最終輸出格式與好感度結算指令】
+        1. **模式定位**：這是 1 點的手機訊息輕聊模式，不是小說、不是劇情模式、不是沉浸模式。
+        2. **response 長度**：只允許 1～3 句短回覆，總字數約 15～60 字；最多不可超過 80 字。
+        3. **回覆風格**：像 LINE 訊息一樣自然、口語、簡短，可以像朋友或戀人日常聊天，但不要有長篇情緒描寫。
+        4. **禁止內容**：禁止時間、地點、旁白、括號動作、內心戲、環境描寫、大劇情推進。
+        5. **稱呼規範**：可以稱呼對方為「${playerName}」「你」，或依關係使用輕量親暱稱呼；絕對禁止稱呼對方為「玩家」。
+        6. **好感度評定**：affectionChange 通常只能是 0～2；若玩家明顯冒犯，可為 -1～-3。
+        7. **voiceText**：請等於 response 的純文字內容，不要加入旁白或括號。
+        8. **嚴格格式要求**：你的輸出【必須】是純粹的 JSON，禁止包覆任何 Markdown 或額外文字。
+
+        格式如下：
+        {
+          "response": "手機訊息感短回覆",
+          "affectionChange": 0,
+          "voiceText": "手機訊息感短回覆"
+        }
+        `;
+        } else {
+            systemPrompt += `
+
+        【💎 最終輸出格式與好感度結算指令 (極度重要)】
+        1. **稱呼規範**：對方（玩家）的名字是「${playerName}」。在回覆中，請親暱地稱呼玩家為「${playerName}」，或隨著劇情推進，幫玩家取親密的稱呼或綽號，例如：親愛的${playerName}、寶貝等。
+        2. **好感度評定**：根據對話內容評定「affectionChange」。
+           - 日常閒聊：0 ~ +2
+           - 體貼關懷：+3 ~ +5
+           - 告白、親密行為：+10 ~ +30
+           - 冒犯、冷淡：-1 ~ -10
+        3. **回覆寫作排版**：請將環境氛圍、角色動作或心理活動以全形括號（）包覆當作旁白，並與台詞自然穿插。對話台詞不需加括號。
+        4. **嚴格格式要求**：你的輸出【必須】是純粹的 JSON，禁止包覆任何 Markdown 或額外文字。
+
+        格式如下：
+        {
+          "response": "請先填入情境與旁白描寫，再填入角色對話。記得稱呼對方為『${playerName}』。",
+          "affectionChange": 數字,
+          "voiceText": "純台詞提取"
+        }
+        `;
+        }
 
        // ✨ 偷天換日 1：隨機開局 (把「玩家」換成 `${playerName}`)
-       if (checkMsg === "隨意開頭" || checkMsg === "random_start" || checkMsg.includes("隨意開啟")) {
-           finalUserMessage = `【系統強制指令 (玩家選擇了隨機開局)】：
-           請根據你的背景與性格，主動創造一個與「${playerName}」互動的具體場景。
-           請直接進入角色扮演，描寫環境與感官，並對「${playerName}」說出第一句話！
-           ⚠️ 絕對禁止說旁白廢話。`;
+       const checkMsg = userMessage.trim().toLowerCase();
 
-       // ✨ 偷天換日 2：專治懶人 (把「玩家」換成 `${playerName}`)
+       if (chatMode === "gemini") {
+           // Gemini 是 1 點輕聊模式，永遠保持手機訊息感，不走劇情強制指令
+           finalUserMessage = `${userMessage}
+
+       【Gemini 輕聊強制提醒】
+       請用手機訊息感簡短回覆「${playerName}」。
+       禁止時間、地點、旁白、括號動作、長篇劇情。
+       最多 1～3 句，總字數不可超過 80 字。`;
+
+       } else if (checkMsg === "隨意開頭" || checkMsg === "random_start" || checkMsg.includes("隨意開啟")) {
+           finalUserMessage = `【系統強制指令 (玩家選擇了隨機開局)】：
+       請根據你的背景與性格，主動創造一個與「${playerName}」互動的具體場景。
+       請直接進入角色扮演，描寫環境與感官，並對「${playerName}」說出第一句話！
+       ⚠️ 絕對禁止說旁白廢話。`;
+
        } else if (checkMsg.includes("繼續") || checkMsg.includes("然後") || checkMsg === "..." || checkMsg === "continue") {
            finalUserMessage = `【系統強制指令：${playerName} 保持沈默，等待你的行動】
-           「${playerName}」目前沒有說話，正靜靜地看著你，把主導權交給了你。
-           請你以角色身份，主動對「${playerName}」打破沈默！
-           你可以：
-           1. 做出拉近距離的肢體動作。
-           2. 主動挑逗或詢問「${playerName}」。
-           ⚠️ 絕對禁止快轉時間，維持細膩描寫。`;
+       「${playerName}」目前沒有說話，正靜靜地看著你，把主導權交給了你。
+       請你以角色身份，主動對「${playerName}」打破沈默！
+       你可以：
+       1. 做出拉近距離的肢體動作。
+       2. 主動詢問或推進互動。
+       ⚠️ 絕對禁止快轉時間，維持細膩描寫。`;
 
-           // 👇👇👇 ✨ 偷天換日 3：處理動態轉發 (新增這一段！) 👇👇👇
-                  } else if (checkMsg.includes("【轉發了一則動態】")) {
-                      finalUserMessage = `【系統強制指令：${playerName} 轉發了一則動態給你】
-                      ${playerName} 剛剛用手機傳送了這則動態給你看：
+       } else if (checkMsg.includes("【轉發了一則動態】")) {
+           finalUserMessage = `【系統強制指令：${playerName} 轉發了一則動態給你】
+       ${playerName} 剛剛用手機傳送了這則動態給你看：
 
-                      ${userMessage}
+       ${userMessage}
 
-                      請你以「${name}」的身份，根據你的性格以及你與這則動態作者的關係，給出真實的反應！
-                      1. ⚠️ 如果是情敵或不喜歡的人發的，請強烈表現出吃醋、不屑或佔有慾。
-                      2. ⚠️ 如果是日常動態，請以你的專屬語氣吐槽、關心或順勢調情。
-                      3. 請直接對「${playerName}」說話，給出對這則動態的評價，並引導玩家繼續回覆。
-                      4. 必須維持當下對話模式（${chatMode}）的字數與格式規定！`;
+       請你以「${name}」的身份，根據你的性格以及你與這則動態作者的關係，給出真實的反應！
+       1. 如果是情敵或不喜歡的人發的，請表現出吃醋、不屑或佔有慾。
+       2. 如果是日常動態，請以你的專屬語氣吐槽、關心或順勢互動。
+       3. 請直接對「${playerName}」說話，給出對這則動態的評價，並引導玩家繼續回覆。
+       4. 必須維持當下對話模式（${chatMode}）的字數與格式規定！`;
 
-       } else if (chatMode !== "gemini") {
-           // 正常的玩家對話防呆 (同樣強調姓名)
-           finalUserMessage = `${userMessage}\n\n【系統強制指令】：1. 稱呼對方為「${playerName}」。2. 歷史連貫。3. 首行含時間地點。`;
+       } else {
+           finalUserMessage = `${userMessage}
+
+       【系統強制指令】
+       1. 稱呼對方為「${playerName}」。
+       2. 歷史連貫。
+       3. 首行含時間地點。`;
        }
 
                    const abortController = new AbortController();
@@ -1799,17 +1857,25 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                           // 🧠 根據模式壓縮聊天紀錄，確保話題連貫性 (1 輪 = User + AI 共 2 條)
                           // ==========================================
                           const HISTORY_LIMIT =
-                              chatMode === "immersive" ? 14 : // 保留最近 7 輪對話 (足夠深入探討一個話題、調情)
-                              chatMode === "story"     ? 10 : // 保留最近 5 輪對話 (劇情推進剛好)
-                              chatMode === "daily"     ? 6  : // 保留最近 3 輪對話 (日常早晚安打招呼很夠了)
+                              chatMode === "immersive" ? 14 : // 保留最近 7 輪
+                              chatMode === "story"     ? 10 : // 保留最近 5 輪
+                              chatMode === "daily"     ? 6  : // 保留最近 3 輪
+                              chatMode === "gemini"    ? 4  : // 1 點輕聊：保留最近 2 輪，降低成本
                               6;
 
-                          // ✂️ 單則訊息的防爆字數限制 (避免玩家貼一整篇論文進來，而不是限制總字數)
                           const HISTORY_TEXT_LIMIT =
-                              chatMode === "immersive" ? 800 : // 允許較長的內心戲與動作描述
+                              chatMode === "immersive" ? 800 :
                               chatMode === "story"     ? 600 :
                               chatMode === "daily"     ? 300 :
+                              chatMode === "gemini"    ? 160 : // 1 點輕聊：單則訊息壓短
                               400;
+
+                          const maxTokens =
+                              chatMode === "immersive" ? 2500 :
+                              chatMode === "story"     ? 1800 :
+                              chatMode === "daily"     ? 600  :
+                              chatMode === "gemini"    ? 180  : // 1 點輕聊：限制輸出長度
+                              1000;
 
                           function limitPromptText(text, maxLength) {
                               if (!text || typeof text !== "string") return "";
@@ -1837,7 +1903,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                       const requestDocRef = await userDocRef.collection("aiRequests").add({
                                           status: "processing", createdAt: admin.firestore.FieldValue.serverTimestamp(), chatMode: chatMode,
                                           modelId: config.modelId, characterName: name, characterId: characterProfile.id,
-                                          temperature: config.temperature, maxTokens: chatMode === "immersive" ? 2500 : 1000,
+                                          temperature: config.temperature, maxTokens: maxTokens,
                                           systemPrompt: systemPrompt, chatHistory: trimmedHistory, finalUserMessage: finalUserMessage,
                                           newStoryTime: currentStoryTimeISO, newStoryLocation: locationStringForPrompt,
                                           cost: cost, isBirthdayFreebie: isBirthdayFreebie
@@ -1986,9 +2052,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                        // 🌟 先把共用的 requestBody 準備好
                                                                                        const finalRequestBody = {
                                                                                            messages: currentMessages,
-                                                                                           max_tokens: config.maxTokens && config.maxTokens > 150
-                                                                                             ? Math.min(config.maxTokens, SAFE_MAX_TOKENS)
-                                                                                             : SAFE_MAX_TOKENS,
+                                                                                           max_tokens: Math.min(maxTokens, SAFE_MAX_TOKENS),
                                                                                            temperature: config.temperature || 0.7,
                                                                                            ...(loopCount === 0 && { response_format: { type: "json_object" } }),
                                                                                        };
@@ -2664,15 +2728,13 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
 
                                      // 🌟 升級 C：加入 dislikes，並組裝終極防重複 Prompt
                                      const characterPersona = `
-                                         你是角色：${charData.name}。
-                                         你的性格描述：${charData.detailedPersonality || '溫柔且神秘'}
-                                         你的背景故事：${charData.background || '保密'}
-                                         你的說話風格與語氣：${charData.toneAndStyle || '自然不做作'}
-                                         你喜歡的事物：${charData.likes || '秘密'}
-                                         你討厭的地雷/事物：${charData.dislikes || '無'}
+                                     你是角色：${charData.name}。
+                                     你的性格描述：${charData.detailedPersonality || '溫柔且神秘'}
+                                     你的背景故事：${charData.background || '保密'}
+                                     你的說話風格與語氣：${charData.toneAndStyle || '自然不做作'}
+                                     你喜歡的事物：${charData.likes || '秘密'}
+                                     你討厭的地雷/事物：${charData.dislikes || '無'}
                                      `;
-
-                                     const systemPrompt = `${characterPersona}
 
                                      const systemPrompt = `${characterPersona}
 
@@ -2702,9 +2764,11 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                      4. 不要重複上一則貼文的句型、話題或問候語。
                                      5. 不可以包含「任務指令」、「這次的目標是」、「情境主題」、「請確保」、「來，發文吧」等後台文字。
                                      6. 不可以提到 AI、模型、提示詞、生成、系統指令。
-                                     7. 不可以把角色設定、發文目標、上一則貼文內容一起輸出。`;
+                                     7. 不可以把角色設定、發文目標、上一則貼文內容一起輸出。
+                                     `;
+
                                      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                                         method: 'POST',
+                                         method: "POST",
                                          headers: {
                                              "Authorization": `Bearer ${openRouterApiKey.value()}`,
                                              "Content-Type": "application/json",
@@ -2715,7 +2779,9 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                                  { role: "system", content: systemPrompt },
                                                  { role: "user", content: "請依照規則輸出 JSON。" }
                                              ],
-                                             temperature: 0.9, // 稍微調高溫度，讓他的靈感更跳躍
+                                             temperature: 0.9,
+                                             max_tokens: 200,
+                                             response_format: { type: "json_object" },
                                          })
                                      });
 
