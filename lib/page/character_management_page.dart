@@ -28,6 +28,7 @@ class CharacterManagementPage extends StatelessWidget {
             .collection('users')
             .doc(uid)
             .collection('characters')
+            .where('isBlocked', isEqualTo: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) return Center(child: Text(l10n.connection_error));
@@ -95,19 +96,17 @@ class CharacterManagementPage extends StatelessWidget {
                   ),
                   trailing: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: isBlocked
-                          ? colorScheme.primary
-                          : colorScheme.error,
-                      side: BorderSide(color: isBlocked
-                          ? colorScheme.primary
-                          : colorScheme.error),
+                      foregroundColor: colorScheme.primary,
+                      side: BorderSide(color: colorScheme.primary),
                       shape: const StadiumBorder(),
                     ),
-                    // ✨ 完美細節：加上確認對話框
-                    onPressed: () =>
-                        _confirmToggleBlock(
-                            context, uid, charId, charData['name'], isBlocked),
-                    child: Text(isBlocked ? l10n.unblock: l10n.block),
+                    onPressed: () => _confirmUnblock(
+                      context,
+                      uid,
+                      charId,
+                      charData['name'] ?? '角色',
+                    ),
+                    child: Text(l10n.unblock),
                   ),
                   onTap: () => _showCharDetail(context, charData),
                 ),
@@ -120,50 +119,39 @@ class CharacterManagementPage extends StatelessWidget {
   }
 
   // ✨ 邏輯優化：封鎖前的確認對話框
-  Future<void> _confirmToggleBlock(BuildContext context, String uid,
-      String charId, String charName, bool currentStatus) async {
-    if (currentStatus) {
-      // 如果是要「解除封鎖」，可以直接執行或簡單詢問
-      await _executeToggle(uid, charId, currentStatus);
-      return;
-    }
+  Future<void> _confirmUnblock(
+      BuildContext context,
+      String uid,
+      String charId,
+      String charName,
+      ) async {
     final l10n = AppLocalizations.of(context)!;
-    // 如果是要「封鎖」，彈跳詢問
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.confirm_block_title),
-        // 🌟 1. 改用 block_warning_msg
-        // 🌟 2. 用小括號 () 傳入變數
-        content: Text(l10n.block_warning_msg(charName)),
+        title: Text(l10n.unblock),
+        content: Text('確定要解除封鎖「$charName」嗎？解除後，相關內容可能會再次顯示。'),
         actions: [
-              TextButton(onPressed: () => Navigator.pop(context, false),
-                  child: Text(l10n.think_again)),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: TextButton.styleFrom(foregroundColor: Theme
-                    .of(context)
-                    .colorScheme
-                    .error),
-                child: Text(l10n.confirm_block_btn),
-              ),
-            ],
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.unblock),
+          ),
+        ],
+      ),
     );
 
     if (confirm == true) {
-      await _executeToggle(uid, charId, currentStatus);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('characters')
+          .doc(charId)
+          .update({'isBlocked': false});
     }
-  }
-
-  Future<void> _executeToggle(String uid, String charId,
-      bool currentStatus) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('characters')
-        .doc(charId)
-        .update({'isBlocked': !currentStatus});
   }
 
   // ✨ 邏輯 B：顯示詳情 (優化行高版)

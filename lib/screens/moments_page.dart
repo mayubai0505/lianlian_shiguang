@@ -860,13 +860,15 @@ class PersistentFeed extends StatefulWidget {
 }
 
 class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAliveClientMixin {
-  // 💡 修正 2：幫動態牆也建立專屬的 Stream 變數
   late Stream<QuerySnapshot> _momentsStream;
+
+  final Set<String> _blockedUserIds = {};
+  bool _isLoadingBlockedUsers = true;
 
   @override
   void initState() {
     super.initState();
-    // 💡 修正 3：在初始化時就把動態牆的連線定下來，任憑外面怎麼呼叫 setState，這裡都穩如泰山！
+
     _momentsStream = FirebaseFirestore.instance
         .collection('artifacts')
         .doc(widget.appId)
@@ -874,6 +876,132 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
         .orderBy('createdAt', descending: true)
         .limit(50)
         .snapshots();
+
+    _loadBlockedUsers();
+  }
+
+  Future<void> _loadBlockedUsers() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .collection('blockedUsers')
+          .get();
+
+      if (!mounted) return;
+
+      setState(() {
+        _blockedUserIds
+          ..clear()
+          ..addAll(snapshot.docs.map((doc) => doc.id));
+        _isLoadingBlockedUsers = false;
+      });
+    } catch (e) {
+      debugPrint('讀取封鎖名單失敗: $e');
+
+      if (!mounted) return;
+
+      setState(() {
+        _isLoadingBlockedUsers = false;
+      });
+    }
+  }
+
+  Future<void> _blockMomentAuthor(Moment moment) async {
+    final String blockedUid = moment.createdBy;
+
+    if (blockedUid.isEmpty || blockedUid == widget.userId) {
+      ToastUtils.showCenterToast(
+        context,
+        '無法封鎖自己的內容',
+        customIcon: Icons.info_outline_rounded,
+      );
+      return;
+    }
+
+    final bool confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('封鎖此使用者？'),
+        content: const Text(
+          '封鎖後，你將不再看到此使用者發布的內容。\n'
+              '我們也會收到通知並進行審查。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              '封鎖',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+
+    if (!confirm) return;
+
+    try {
+      final db = FirebaseFirestore.instance;
+      final batch = db.batch();
+
+      final blockRef = db
+          .collection('users')
+          .doc(widget.userId)
+          .collection('blockedUsers')
+          .doc(blockedUid);
+
+      batch.set(blockRef, {
+        'blockedUid': blockedUid,
+        'blockedAt': FieldValue.serverTimestamp(),
+        'source': 'moments',
+        'relatedMomentId': moment.id,
+        'blockedAuthorName': moment.authorName,
+      }, SetOptions(merge: true));
+
+      final alertRef = db.collection('moderationAlerts').doc();
+
+      batch.set(alertRef, {
+        'type': 'block_user',
+        'blockerUid': widget.userId,
+        'blockedUid': blockedUid,
+        'relatedType': 'moment',
+        'relatedMomentId': moment.id,
+        'relatedAuthorId': moment.authorId,
+        'relatedAuthorName': moment.authorName,
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'pending',
+      });
+
+      await batch.commit();
+
+      if (!mounted) return;
+
+      setState(() {
+        _blockedUserIds.add(blockedUid);
+      });
+
+      ToastUtils.showCenterToast(
+        context,
+        '已封鎖此使用者，相關內容已從你的拾光牆移除',
+        customIcon: Icons.block_rounded,
+      );
+    } catch (e) {
+      debugPrint('封鎖使用者失敗: $e');
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '封鎖失敗，請稍後再試',
+        customIcon: Icons.error_outline_rounded,
+      );
+    }
   }
 
   @override
@@ -900,7 +1028,8 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
       child: StreamBuilder<QuerySnapshot>(
         stream: _momentsStream, // 💡 修正 4：改用綁定好的 _momentsStream
         builder: (context, momentSnapshot) {
-          if (momentSnapshot.connectionState == ConnectionState.waiting) {
+          if (_isLoadingBlockedUsers ||
+              momentSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (!momentSnapshot.hasData || momentSnapshot.data!.docs.isEmpty) {
@@ -912,6 +1041,11 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
               .toList();
 
           final filteredMoments = allMoments.where((m) {
+            // 自己封鎖過的使用者，直接不顯示
+            if (_blockedUserIds.contains(m.createdBy)) {
+              return false;
+            }
+
             if (widget.isPublicTab) {
               return m.isPublic == true;
             } else {
@@ -930,12 +1064,12 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
                 return MomentCard(
                   moment: moment,
                   currentUserId: widget.userId,
-                  // 朋友圈第一篇貼文才顯示按讚 / 收藏提示
                   showFeatureTips: index == 0,
                   onLikeTapped: () => widget.onLikeTapped(moment),
                   onDeleteTapped: () => widget.onDeleteTapped(moment.id),
                   onAvatarTapped: () => widget.onAvatarTapped(moment),
                   onEditTapped: () => widget.onEditTapped(moment),
+                  onBlockUserTapped: () => _blockMomentAuthor(moment),
                 );
               }
           );

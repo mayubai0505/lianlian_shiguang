@@ -27,6 +27,7 @@ class MomentCard extends StatefulWidget {
   final VoidCallback? onDeleteTapped;
   final VoidCallback? onAvatarTapped;
   final VoidCallback? onEditTapped;
+  final VoidCallback? onBlockUserTapped; // ✅ 新增
   final bool showFeatureTips;
 
   const MomentCard({
@@ -38,6 +39,7 @@ class MomentCard extends StatefulWidget {
     this.onDeleteTapped,
     this.onAvatarTapped,
     this.onEditTapped,
+    this.onBlockUserTapped, // ✅ 新增
     this.showFeatureTips = false,
   });
 
@@ -544,13 +546,26 @@ class _MomentCardState extends State<MomentCard> {
                   },
                 ),
               ] else ...[
-                // 🛡️ 如果是別人的動態，顯示這個
+                // 🛡️ 如果是別人的動態，顯示檢舉
                 ListTile(
                   leading: const Icon(Icons.report_problem_outlined),
                   title: Text(l10n.moment_action_report),
                   onTap: () {
                     Navigator.pop(context);
                     // 這裡放檢舉邏輯
+                  },
+                ),
+
+                // 🚫 Apple 審核需要：封鎖使用者
+                ListTile(
+                  leading: const Icon(Icons.block_rounded, color: Colors.redAccent),
+                  title: const Text(
+                    '封鎖此使用者',
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.onBlockUserTapped?.call();
                   },
                 ),
               ],
