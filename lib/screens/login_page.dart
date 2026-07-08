@@ -18,11 +18,12 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
-
+bool _isLoginLoading = false;
 class _LoginPageState extends State<LoginPage> {
   final AuthService _authService = AuthService();
   BuildContext? _dialogContext; // 🎯 專門用來記住轉圈圈的 ID
   bool _isLoginLoading = false;
+  bool _termsAccepted = false;
 
   void _showLoadingDialog(BuildContext context) {
     showDialog(
@@ -76,6 +77,78 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     }
+  }
+
+  bool _checkTermsAccepted() {
+    if (!_termsAccepted) {
+      ToastUtils.showCenterToast(
+        context,
+        '請先閱讀並同意使用條款與社群規範',
+        customIcon: Icons.info_outline_rounded,
+      );
+      return false;
+    }
+    return true;
+  }
+
+  void _showTermsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('使用條款'),
+          content: const SingleChildScrollView(
+            child: Text(
+              '歡迎使用戀戀拾光。\n\n'
+                  '使用本服務前，您必須同意遵守本使用條款與社群規範。\n\n'
+                  '您不得上傳、建立、發布或傳送任何違法、侵權、色情裸露、暴力、仇恨、騷擾、辱罵、詐欺、垃圾訊息，'
+                  '或其他令人反感、冒犯、危害他人權益的內容。\n\n'
+                  '戀戀拾光對不當內容與濫用行為採取零容忍政策。'
+                  '若使用者違反規範，我們可能會移除相關內容、限制功能、暫停或終止帳號。\n\n'
+                  '使用者可透過 App 內建的檢舉與封鎖功能回報不當內容或濫用使用者。',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('我知道了'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCommunityRulesDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('社群規範'),
+          content: const SingleChildScrollView(
+            child: Text(
+              '戀戀拾光希望提供安全、友善且尊重創作者與使用者的互動環境。\n\n'
+                  '我們不允許以下內容或行為：\n'
+                  '1. 色情裸露或性暗示不當內容\n'
+                  '2. 騷擾、辱罵、霸凌或威脅他人\n'
+                  '3. 仇恨、歧視或煽動暴力\n'
+                  '4. 血腥、暴力或危險行為內容\n'
+                  '5. 侵犯他人著作權、肖像權或其他權利\n'
+                  '6. 垃圾訊息、詐騙或惡意行為\n'
+                  '7. 其他令人反感或不適合公開顯示的內容\n\n'
+                  '使用者可以檢舉不當內容，也可以封鎖濫用使用者。'
+                  '封鎖後，該使用者的內容將不再顯示於您的畫面中。',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('我知道了'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
@@ -196,7 +269,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                const SizedBox(height: 60),
+                const SizedBox(height: 40),
+
+                _termsAgreementSection(),
+
+                const SizedBox(height: 20),
 
                 // 🚀 Google 登入
                 if (showGoogleLogin) ...[
@@ -208,11 +285,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     backgroundColor: Colors.white,
                     textColor: Colors.black87,
-                    onPressed: () => _performLogin(_authService.signInWithGoogle),
+                    onPressed: () {
+                      if (!_checkTermsAccepted()) return;
+                      _performLogin(_authService.signInWithGoogle);
+                    },
                   ),
                 ],
 
-                // ✅ Apple 登入：只在 iOS / iPadOS 顯示
+// ✅ Apple 登入：只在 iOS / iPadOS 顯示
                 if (showAppleLogin) ...[
                   _buildLoginButton(
                     text: l10n.login_with_apple,
@@ -223,7 +303,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     backgroundColor: Colors.black,
                     textColor: Colors.white,
-                    onPressed: () => _performLogin(_authService.signInWithApple),
+                    onPressed: () {
+                      if (!_checkTermsAccepted()) return;
+                      _performLogin(_authService.signInWithApple);
+                    },
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -240,7 +323,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     backgroundColor: const Color(0xFF1877F2),
                     textColor: Colors.white,
-                    onPressed: () => _performLogin(_authService.signInWithFacebook),
+                    onPressed: () {
+                      if (!_checkTermsAccepted()) return;
+                      _performLogin(_authService.signInWithFacebook);
+                    },
                   ),
                 ],
 
@@ -287,6 +373,7 @@ class _LoginPageState extends State<LoginPage> {
                   backgroundColor: const Color(0xFFBA68C8),
                   textColor: Colors.white,
                   onPressed: () {
+                    if (!_checkTermsAccepted()) return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -301,6 +388,75 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _termsAgreementSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Checkbox(
+            value: _termsAccepted,
+            activeColor: const Color(0xFF7B1FA2),
+            onChanged: _isLoginLoading
+                ? null
+                : (value) {
+              setState(() {
+                _termsAccepted = value ?? false;
+              });
+            },
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Wrap(
+                children: [
+                  const Text(
+                    '我已閱讀並同意',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF6A4A6F),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: _showTermsDialog,
+                    child: const Text(
+                      '《使用條款》',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF7B1FA2),
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  const Text(
+                    '與',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF6A4A6F),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: _showCommunityRulesDialog,
+                    child: const Text(
+                      '《社群規範》',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF7B1FA2),
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
