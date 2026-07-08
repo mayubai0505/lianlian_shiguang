@@ -452,7 +452,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Politique de Confidentialité de \"Lianlian Shiguang\"\nDernière mise à jour : 10 avril 2026\n\nBienvenue sur \"Lianlian Shiguang\" (ci-après \"le Service\"). Nous accordons une grande importance à votre vie privée. Cette politique détaille la collecte et l\'utilisation de vos données.\n\n1. Informations de compte :\nConnexion tierce : Via Google, Facebook ou Apple, nous collectons votre Firebase UID, e-mail et pseudonyme.\nE-mail : Votre mot de passe est crypté via Firebase, inaccessible à l\'équipe de développement.\n\nInteraction : Nous stockons vos dialogues avec l\'IA pour assurer une mémoire continue aux personnages.\nAppareil : Modèle, version du système et identifiant unique pour l\'optimisation.\n\n2. Utilisation :\nOptimisation de l\'IA, gestion des transactions (points) et protection contre les cyberattaques.\n\n3. Partenaires :\nGoogle Cloud / Firebase, OpenRouter, xAI, Meta. Nous ne vendons pas vos dialogues à des annonceurs.\n\n4. Suppression :\nDonnées stockées sur le cloud. Demande de suppression définitive de compte possible à tout moment.';
 
   @override
-  String get terms_title => 'Conditions d\'Utilisation de Lianlian Shiguang';
+  String get terms_title => 'Conditions d\'utilisation';
 
   @override
   String get terms_date => 'Dernière mise à jour : 10 avril 2026';
@@ -4316,4 +4316,37 @@ class AppLocalizationsFr extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return 'Échec de l\'envoi de l\'e-mail de réinitialisation : $error';
   }
+
+  @override
+  String get terms_not_accepted_toast =>
+      'Veuillez d\'abord lire et accepter les Conditions d\'utilisation et les Règles de la communauté';
+
+  @override
+  String get terms_content =>
+      'Bienvenue sur Lian Lian Shi Guang.\n\nAvant d\'utiliser ce service, vous devez accepter de vous conformer aux présentes Conditions d\'utilisation et Règles de la communauté.\n\nVous ne devez pas télécharger, créer, publier ou transmettre de contenu illégal, contrefait, pornographique, dénudé, violent, haineux, harcelant, injurieux, frauduleux, indésirable (spam) ou autrement répréhensible, offensant ou nuisant aux droits d\'autrui.\n\nLian Lian Shi Guang applique une politique de tolérance zéro à l\'égard des contenus inappropriés et des comportements abusifs. Si un utilisateur enfreint les règles, nous pouvons supprimer le contenu concerné, restreindre les fonctionnalités, suspendre ou résilier le compte.\n\nLes utilisateurs peuvent signaler les contenus inappropriés ou les utilisateurs abusifs via les fonctionnalités de signalement et de blocage intégrées à l\'application.';
+
+  @override
+  String get community_rules_title => 'Règles de la communauté';
+
+  @override
+  String get community_rules_content =>
+      'Lian Lian Shi Guang souhaite offrir un environnement interactif sûr, amical et respectueux pour les créateurs et les utilisateurs.\n\nNous n\'autorisons pas les contenus ou comportements suivants :\n1. Pornographie, nudité ou contenu suggestif inapproprié\n2. Harcèlement, injures, intimidation ou menaces envers autrui\n3. Haine, discrimination ou incitation à la violence\n4. Contenu sanglant, violent ou comportements dangereux\n5. Violation des droits d\'auteur, des droits à l\'image ou d\'autres droits d\'autrui\n6. Messages indésirables, escroqueries ou comportements malveillants\n7. Tout autre contenu répréhensible ou inapproprié pour un affichage public\n\nLes utilisateurs peuvent signaler les contenus inappropriés et bloquer les utilisateurs abusifs. Une fois bloqué, le contenu de cet utilisateur ne s\'affichera plus sur votre écran.';
+
+  @override
+  String get block_self_error => 'Vous cannot bloquer votre propre contenu';
+
+  @override
+  String get block_user_title => 'Bloquer cet utilisateur ?';
+
+  @override
+  String get block_user_content =>
+      'Une fois bloqué, vous ne verrez plus les contenus publiés par cet utilisateur.\nNous recevrons également une notification et procéderons à un examen.';
+
+  @override
+  String get block_user_success =>
+      'Cet utilisateur a été bloqué, les contenus associés ont été supprimés de votre Mur';
+
+  @override
+  String get block_user_failed =>
+      'Échec du blocage. Veuillez réessayer plus tard';
 }

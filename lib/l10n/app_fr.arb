@@ -2100,5 +2100,15 @@
     "example": "Network error"
     }
     }
-    }
+    },
+    "terms_not_accepted_toast": "Veuillez d'abord lire et accepter les Conditions d'utilisation et les Règles de la communauté",
+    "terms_title": "Conditions d'utilisation",
+    "terms_content": "Bienvenue sur Lian Lian Shi Guang.\n\nAvant d'utiliser ce service, vous devez accepter de vous conformer aux présentes Conditions d'utilisation et Règles de la communauté.\n\nVous ne devez pas télécharger, créer, publier ou transmettre de contenu illégal, contrefait, pornographique, dénudé, violent, haineux, harcelant, injurieux, frauduleux, indésirable (spam) ou autrement répréhensible, offensant ou nuisant aux droits d'autrui.\n\nLian Lian Shi Guang applique une politique de tolérance zéro à l'égard des contenus inappropriés et des comportements abusifs. Si un utilisateur enfreint les règles, nous pouvons supprimer le contenu concerné, restreindre les fonctionnalités, suspendre ou résilier le compte.\n\nLes utilisateurs peuvent signaler les contenus inappropriés ou les utilisateurs abusifs via les fonctionnalités de signalement et de blocage intégrées à l'application.",
+    "community_rules_title": "Règles de la communauté",
+    "community_rules_content": "Lian Lian Shi Guang souhaite offrir un environnement interactif sûr, amical et respectueux pour les créateurs et les utilisateurs.\n\nNous n'autorisons pas les contenus ou comportements suivants :\n1. Pornographie, nudité ou contenu suggestif inapproprié\n2. Harcèlement, injures, intimidation ou menaces envers autrui\n3. Haine, discrimination ou incitation à la violence\n4. Contenu sanglant, violent ou comportements dangereux\n5. Violation des droits d'auteur, des droits à l'image ou d'autres droits d'autrui\n6. Messages indésirables, escroqueries ou comportements malveillants\n7. Tout autre contenu répréhensible ou inapproprié pour un affichage public\n\nLes utilisateurs peuvent signaler les contenus inappropriés et bloquer les utilisateurs abusifs. Une fois bloqué, le contenu de cet utilisateur ne s'affichera plus sur votre écran.",
+    "block_self_error": "Vous cannot bloquer votre propre contenu",
+    "block_user_title": "Bloquer cet utilisateur ?",
+    "block_user_content": "Une fois bloqué, vous ne verrez plus les contenus publiés par cet utilisateur.\nNous recevrons également une notification et procéderons à un examen.",
+    "block_user_success": "Cet utilisateur a été bloqué, les contenus associés ont été supprimés de votre Mur",
+    "block_user_failed": "Échec du blocage. Veuillez réessayer plus tard"
 }

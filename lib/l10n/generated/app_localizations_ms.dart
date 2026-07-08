@@ -448,7 +448,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Dasar Privasi \"Lianlian Shiguang\"\nKemas Kini Terakhir: 10 April 2026\n\nSelamat datang ke \"Lianlian Shiguang\" (selepas ini disebut \"Perkhidmatan\"). Kami menghargai privasi anda. Dasar ini menjelaskan cara kami mengumpul dan melindungi maklumat anda.\n\n1. Maklumat Akaun:\nLog Masuk Pihak Ketiga: Melalui Google, Facebook, atau Apple, kami mengumpul Firebase UID, e-mel dan nama samaran anda.\nE-mel: Kata laluan diuruskan melalui enkripsi Firebase, pihak pembangun tidak mempunyai akses kepada kata laluan asal anda.\n\nData Interaksi: Kami menyimpan rekod perbualan anda dengan AI untuk memastikan kesinambungan memori watak.\nPeranti: Model peranti, versi sistem dan identiti unik untuk pengoptimuman.\n\n2. Penggunaan Maklumat:\nMeningkatkan pengalaman AI, operasi perkhidmatan (tambah nilai mata), dan perlindungan keselamatan server.\n\n3. Rakan Kerjasama:\nGoogle Cloud / Firebase, OpenRouter, xAI, Meta. Kami tidak menjual rekod perbualan anda kepada pengiklan.\n\n4. Penyimpanan & Pemadaman:\nData disimpan selamat di awan. Anda boleh meminta pemadaman akaun secara kekal pada bila-bila masa.';
 
   @override
-  String get terms_title => 'Syarat Perkhidmatan Lianlian Shiguang';
+  String get terms_title => 'Syarat Penggunaan';
 
   @override
   String get terms_date => 'Kemas Kini Terakhir: 10 April 2026';
@@ -4264,4 +4264,36 @@ class AppLocalizationsMs extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return 'Gagal menghantar e-mel tetapan semula kata laluan: $error';
   }
+
+  @override
+  String get terms_not_accepted_toast =>
+      'Sila baca dan setujui Syarat Penggunaan dan Garis Panduan Komuniti terlebih dahulu';
+
+  @override
+  String get terms_content =>
+      'Selamat datang ke Lian Lian Shi Guang.\n\nSebelum menggunakan perkhidmatan ini, anda mesti bersetuju untuk mematuhi Syarat Penggunaan dan Garis Panduan Komuniti ini.\n\nAnda tidak dibenarkan memuat naik, mencipta, menerbitkan atau menghantar sebarang kandungan yang menyalahi undang-undang, melanggar hak, pornografi, mendedahkan aurat/bogel, ganas, berunsur kebencian, gangguan, penderaan/makian, penipuan, mesej spam, atau kandungan lain yang menyinggung perasaan, melampau, atau membahayakan hak orang lain.\n\nLian Lian Shi Guang mengamalkan dasar toleransi sifar terhadap kandungan tidak sesuai dan tingkah laku salah guna. Jika pengguna melanggar garis panduan, kami mungkin mengalih keluar kandungan berkaitan, mengehadkan ciri, atau menggantung/menamatkan akaun.\n\nPengguna boleh melaporkan kandungan tidak sesuai atau pengguna yang menyalahgunakan perkhidmatan melalui ciri laporan dan sekatan terbina dalam Aplikasi.';
+
+  @override
+  String get community_rules_title => 'Garis Panduan Komuniti';
+
+  @override
+  String get community_rules_content =>
+      'Lian Lian Shi Guang berharap dapat menyediakan persekitaran interaksi yang selamat, mesra dan menghormati para pencipta serta pengguna.\n\nKami tidak membenarkan kandungan atau tingkah laku berikut:\n1. Pornografi, bogel atau kandungan cadangan seksual yang tidak sesuai\n2. Gangguan, makian, buli atau mengancam orang lain\n3. Kebencian, diskriminasi atau menghasut keganasan\n4. Kandungan berdarah, ganas atau tingkah laku berbahaya\n5. Melanggar hak cipta, hak potret atau hak orang lain\n6. Mesej spam, penipuan atau tingkah laku berniat jahat\n7. Kandungan lain yang menyinggung perasaan atau tidak sesuai untuk paparan awam\n\nPengguna boleh melaporkan kandungan tidak sesuai dan juga menyekat pengguna yang menyalahgunakan sistem. Selepas disekat, kandungan pengguna tersebut tidak akan dipaparkan lagi pada skrin anda.';
+
+  @override
+  String get block_self_error => 'Tidak boleh menyekat kandungan diri sendiri';
+
+  @override
+  String get block_user_title => 'Sekat pengguna ini?';
+
+  @override
+  String get block_user_content =>
+      'Selepas disekat, awak tidak akan lagi melihat kandungan yang disiarkan oleh pengguna ini.\nKami juga akan menerima notifikasi dan menjalankan semakan.';
+
+  @override
+  String get block_user_success =>
+      'Pengguna telah disekat, kandungan berkaitan telah dialih keluar daripada Dinding Kenangan awak';
+
+  @override
+  String get block_user_failed => 'Gagal menyekat, sila cuba lagi kemudian';
 }

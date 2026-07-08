@@ -429,7 +429,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '「연연습광」 개인정보 처리방침\n최근 업데이트: 2026년 4월 10일\n\n「연연습광」(이하 \"본 서비스\")을 이용해 주셔서 감사합니다. 당사는 귀하의 개인정보를 소중히 여기며, 본 정책은 정보 수집 및 보호 방식을 설명합니다.\n\n1. 계정 정보:\n제3자 로그인: Google, Facebook, Apple 계정으로 로그인 시 Firebase UID, 이메일, 닉네임을 수집합니다.\n이메일 가입: 이메일 가입 시 계정 정보를 수집하며, 비밀번호는 Firebase 암호화 기술로 안전하게 관리됩니다.\n\n상호작용 데이터: AI 캐릭터의 연속적인 기억을 위해 AI와의 대화 기록 및 게임 내 작성 내용을 저장합니다.\n기기 정보: 기기 모델, OS 버전, 고유 식별자를 시스템 최적화를 위해 수집합니다.\n\n2. 정보의 이용 목적\nAI 경험 향상: 대화 기록을 통한 AI 답변 품질 및 성격 일관성 최적화.\n서비스 운영: 포인트 충전, 소비 기록 처리 및 본인 인증.\n보안 보호: 악성 행위 모니터링 및 서버 보호.\n\n3. 제3자 기술 협력\n본 서비스는 Google Cloud / Firebase, OpenRouter / xAI / Meta의 기술을 사용합니다. 당사는 귀하의 대화 기록을 광고주에게 판매하지 않습니다.\n\n4. 데이터 저장 및 삭제\n데이터는 클라우드 서버에 안전하게 저장됩니다. 언제든지 계정 및 모든 데이터의 영구 삭제를 요청할 수 있습니다.';
 
   @override
-  String get terms_title => '「연연습광」 서비스 이용약관';
+  String get terms_title => '이용약관';
 
   @override
   String get terms_date => '최근 업데이트: 2026년 4月 10일';
@@ -4058,4 +4058,34 @@ class AppLocalizationsKo extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return '비밀번호 재설정 이메일 발송 실패: $error';
   }
+
+  @override
+  String get terms_not_accepted_toast => '이용약관 및 커뮤니티 가이드라인을 읽고 동의해 주세요';
+
+  @override
+  String get terms_content =>
+      '연연습광(戀戀拾光)에 오신 것을 환영합니다.\n\n본 서비스를 이용하시기 전에 귀하는 본 이용약관 및 커뮤니티 가이드라인을 준수하는 데 동의하셔야 합니다.\n\n귀하는 불법, 권리 침해, 음란 및 노출, 폭력, 혐오, 괴롭힘, 욕설, 사기, 스팸 메시지 또는 기타 불쾌감을 주거나 공격적이고 타인의 권익을 해치는 콘텐츠를 업로드, 생성, 게시 또는 전송할 수 없습니다.\n\n연연습광은 부적절한 콘텐츠 및 악용 행위에 대해 무관용(Zero-Tolerance) 정책을 적용합니다. 사용자가 규정을 위반하는 경우, 당사는 관련 콘텐츠를 삭제하거나 기능을 제한하고, 계정을 일시 정지 또는 해지할 수 있습니다.\n\n사용자는 앱 내에 내장된 신고 및 차단 기능을 통해 부적절한 콘텐츠나 악용 사용자를 신고할 수 있습니다.';
+
+  @override
+  String get community_rules_title => '커뮤니티 가이드라인';
+
+  @override
+  String get community_rules_content =>
+      '연연습광은 크리에이터와 사용자에게 안전하고 우호적이며 서로를 존중하는 상호작용 환경을 제공하고자 합니다.\n\n당사는 다음과 같은 콘텐츠나 행위를 허용하지 않습니다:\n1. 음란 및 노출 또는 부적절한 성적 암시를 포함한 콘텐츠\n2. 타인을 괴롭히거나 욕설, 따돌림(불링) 또는 위협하는 행위\n3. 혐오, 차별 또는 폭력을 선동하는 행위\n4. 잔혹함, 폭력 또는 위험한 행동을 담은 콘텐츠\n5. 타인의 저작권, 초상권 또는 기타 권리를 침해하는 행위\n6. 스팸, 사기 또는 악의적인 행위\n7. 기타 불쾌감을 주거나 공개적으로 표시하기에 부적절한 콘텐츠\n\n사용자는 부적절한 콘텐츠를 신고할 수 있으며, 악용 사용자를 차단할 수도 있습니다. 차단 후에는 해당 사용자의 콘텐츠가 귀하의 화면에 더 이상 표시되지 않습니다.';
+
+  @override
+  String get block_self_error => '자신의 콘텐츠는 차단할 수 없습니다';
+
+  @override
+  String get block_user_title => '이 사용자를 차단하시겠습니까?';
+
+  @override
+  String get block_user_content =>
+      '차단하면 이 사용자가 게시한 콘텐츠를 더 이상 볼 수 없습니다.\n저희 측에도 알림이 전송되어 검토가 진행됩니다.';
+
+  @override
+  String get block_user_success => '해당 사용자가 차단되었으며, 관련 콘텐츠가 당신의 타임월에서 삭제되었습니다';
+
+  @override
+  String get block_user_failed => '차단에 실패했습니다. 잠시 후 다시 시도해 주세요';
 }

@@ -80,10 +80,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bool _checkTermsAccepted() {
+    final l10n = AppLocalizations.of(context)!; // ✨ 新增這行取得語系
     if (!_termsAccepted) {
       ToastUtils.showCenterToast(
         context,
-        '請先閱讀並同意使用條款與社群規範',
+        l10n.terms_not_accepted_toast, // ✨ 替換：未同意的提示
         customIcon: Icons.info_outline_rounded,
       );
       return false;
@@ -92,26 +93,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showTermsDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('使用條款'),
-          content: const SingleChildScrollView(
-            child: Text(
-              '歡迎使用戀戀拾光。\n\n'
-                  '使用本服務前，您必須同意遵守本使用條款與社群規範。\n\n'
-                  '您不得上傳、建立、發布或傳送任何違法、侵權、色情裸露、暴力、仇恨、騷擾、辱罵、詐欺、垃圾訊息，'
-                  '或其他令人反感、冒犯、危害他人權益的內容。\n\n'
-                  '戀戀拾光對不當內容與濫用行為採取零容忍政策。'
-                  '若使用者違反規範，我們可能會移除相關內容、限制功能、暫停或終止帳號。\n\n'
-                  '使用者可透過 App 內建的檢舉與封鎖功能回報不當內容或濫用使用者。',
-            ),
+          title: Text(l10n.terms_title), // ✨ 替換：標題 (記得拿掉 const)
+          content: SingleChildScrollView(
+            child: Text(l10n.terms_content), // ✨ 替換：內容 (記得拿掉 const)
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('我知道了'),
+              child: Text(l10n.common_got_it),
             ),
           ],
         );
@@ -120,30 +114,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showCommunityRulesDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('社群規範'),
-          content: const SingleChildScrollView(
-            child: Text(
-              '戀戀拾光希望提供安全、友善且尊重創作者與使用者的互動環境。\n\n'
-                  '我們不允許以下內容或行為：\n'
-                  '1. 色情裸露或性暗示不當內容\n'
-                  '2. 騷擾、辱罵、霸凌或威脅他人\n'
-                  '3. 仇恨、歧視或煽動暴力\n'
-                  '4. 血腥、暴力或危險行為內容\n'
-                  '5. 侵犯他人著作權、肖像權或其他權利\n'
-                  '6. 垃圾訊息、詐騙或惡意行為\n'
-                  '7. 其他令人反感或不適合公開顯示的內容\n\n'
-                  '使用者可以檢舉不當內容，也可以封鎖濫用使用者。'
-                  '封鎖後，該使用者的內容將不再顯示於您的畫面中。',
-            ),
+          title: Text(l10n.community_rules_title), // ✨ 替換：標題 (記得拿掉 const)
+          content: SingleChildScrollView(
+            child: Text(l10n.community_rules_content), // ✨ 替換：內容 (記得拿掉 const)
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('我知道了'),
+              child: Text(l10n.common_got_it),
             ),
           ],
         );
@@ -440,6 +423,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: Color(0xFF6A4A6F),
                     ),
                   ),
+
                   GestureDetector(
                     onTap: _showCommunityRulesDialog,
                     child: const Text(

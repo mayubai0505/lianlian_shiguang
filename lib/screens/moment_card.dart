@@ -559,8 +559,8 @@ class _MomentCardState extends State<MomentCard> {
                 // 🚫 Apple 審核需要：封鎖使用者
                 ListTile(
                   leading: const Icon(Icons.block_rounded, color: Colors.redAccent),
-                  title: const Text(
-                    '封鎖此使用者',
+                  title:  Text(
+                    l10n.block_char,
                     style: TextStyle(color: Colors.redAccent),
                   ),
                   onTap: () {
@@ -599,71 +599,77 @@ class _MomentCardState extends State<MomentCard> {
   void _onSharePressed() {
     final l10n = AppLocalizations.of(context)!;
     final String appName = l10n.app_name;
-// TODO: 等雙平台上架後，把這裡換成真正的商店連結或 Firebase Dynamic Link
+
+    // TODO: 等雙平台上架後，把這裡換成真正的商店連結或 Firebase Dynamic Link
     final String appLink = "https://your-app-link.com";
 
-    Share.share(
-        l10n.moment_external_share_content(
-            appName,
-            widget.moment.authorName,
-            widget.moment.content,
-            appLink
-        )
-    );
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) {
-        // ✨✨✨ 關鍵修正：把邏輯放在 return (畫畫面) 的前面！
-        final bool isMyPost = widget.moment.createdBy == FirebaseAuth.instance.currentUser?.uid;
+        final bool isMyPost =
+            widget.moment.createdBy == FirebaseAuth.instance.currentUser?.uid;
 
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-               Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(l10n.moment_action_share, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  l10n.moment_action_share,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
 
-              // ✨ 第一個按鈕：我們的智慧私訊/轉發系統
+              // 第一個按鈕：App 內轉發 / 私訊
               ListTile(
-                leading: Icon(isMyPost ? Icons.send : Icons.reply, color: Colors.pinkAccent),
+                leading: Icon(
+                  isMyPost ? Icons.send : Icons.reply,
+                  color: Colors.pinkAccent,
+                ),
                 title: Text(
-                  isMyPost ? l10n.moment_forward_hint : l10n.moment_reply_private(widget.moment.authorName),
+                  isMyPost
+                      ? l10n.moment_forward_hint
+                      : l10n.moment_reply_private(widget.moment.authorName),
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 onTap: () {
-                  Navigator.pop(context); // 先把原本的選項選單收起來
+                  Navigator.pop(context);
+
                   if (isMyPost) {
-                    // ✨ 呼叫我們新寫好的底部轉發表單
                     _showForwardBottomSheet(context);
                   } else {
-                    // ✨ 總裁級：從動態走向私聊的優雅過場，完美避開聊天室底部的輸入框雷區！
                     ToastUtils.showCenterToast(
                       context,
                       l10n.moment_go_to_chat_msg(widget.moment.authorName),
-                      customIcon: Icons.chat_bubble_outline_rounded, // 💡 總裁精選：最直覺的對話氣泡，完美預告接下來的聊天情境！
+                      customIcon: Icons.chat_bubble_outline_rounded,
                     );
                   }
                 },
               ),
 
-              // 第二個按鈕：分享到外部 App (LINE, IG 等)
+              // 第二個按鈕：分享到外部 App
               ListTile(
                 leading: const Icon(Icons.share, color: Colors.blue),
                 title: Text(l10n.moment_share_to_apps),
                 onTap: () {
                   Navigator.pop(context);
+
                   Share.share(
-                      l10n.moment_external_share_content(
-                          appName,
-                          widget.moment.authorName,
-                          widget.moment.content,
-                          appLink
-                      )
+                    l10n.moment_external_share_content(
+                      appName,
+                      widget.moment.authorName,
+                      widget.moment.content,
+                      appLink,
+                    ),
                   );
-                  },
+                },
               ),
             ],
           ),

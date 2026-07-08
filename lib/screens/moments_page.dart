@@ -909,11 +909,11 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
 
   Future<void> _blockMomentAuthor(Moment moment) async {
     final String blockedUid = moment.createdBy;
-
+    final l10n = AppLocalizations.of(context)!;
     if (blockedUid.isEmpty || blockedUid == widget.userId) {
       ToastUtils.showCenterToast(
         context,
-        '無法封鎖自己的內容',
+        l10n.block_self_error, // ✨ 替換：無法封鎖自己
         customIcon: Icons.info_outline_rounded,
       );
       return;
@@ -922,21 +922,18 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
     final bool confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('封鎖此使用者？'),
-        content: const Text(
-          '封鎖後，你將不再看到此使用者發布的內容。\n'
-              '我們也會收到通知並進行審查。',
-        ),
+        title: Text(l10n.block_user_title), // ✨ 替換：彈窗標題 (記得拿掉 const)
+        content: Text(l10n.block_user_content), // ✨ 替換：彈窗內容 (記得拿掉 const)
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child:  Text(l10n.cancelButton),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              '封鎖',
-              style: TextStyle(color: Colors.red),
+            child: Text(
+              l10n.block,
+              style: const TextStyle(color: Colors.red), // 這裡可以加回 const TextStyle
             ),
           ),
         ],
@@ -988,7 +985,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
 
       ToastUtils.showCenterToast(
         context,
-        '已封鎖此使用者，相關內容已從你的拾光牆移除',
+        l10n.block_user_success, // ✨ 替換：封鎖成功提示
         customIcon: Icons.block_rounded,
       );
     } catch (e) {
@@ -998,7 +995,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
 
       ToastUtils.showCenterToast(
         context,
-        '封鎖失敗，請稍後再試',
+        l10n.block_user_failed, // ✨ 替換：封鎖失敗提示
         customIcon: Icons.error_outline_rounded,
       );
     }

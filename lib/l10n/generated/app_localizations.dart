@@ -929,7 +929,7 @@ abstract class AppLocalizations {
   /// No description provided for @terms_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'《戀戀拾光》服務使用條款'**
+  /// **'使用條款'**
   String get terms_title;
 
   /// No description provided for @terms_date.
@@ -7443,6 +7443,60 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'寄送重設密碼信失敗：{error}'**
   String forgot_password_error_with_message(String error);
+
+  /// No description provided for @terms_not_accepted_toast.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先閱讀並同意使用條款與社群規範'**
+  String get terms_not_accepted_toast;
+
+  /// No description provided for @terms_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'歡迎使用戀戀拾光。\n\n使用本服務前，您必須同意遵守本使用條款與社群規範。\n\n您不得上傳、建立、發布或傳送任何違法、侵權、色情裸露、暴力、仇恨、騷擾、辱罵、詐欺、垃圾訊息，或其他令人反感、冒犯、危害他人權益的內容。\n\n戀戀拾光對不當內容與濫用行為採取零容忍政策。若使用者違反規範，我們可能會移除相關內容、限制功能、暫停或終止帳號。\n\n使用者可透過 App 內建的檢舉與封鎖功能回報不當內容或濫用使用者。'**
+  String get terms_content;
+
+  /// No description provided for @community_rules_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'社群規範'**
+  String get community_rules_title;
+
+  /// No description provided for @community_rules_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光希望提供安全、友善且尊重創作者與使用者的互動環境。\n\n我們不允許以下內容或行為：\n1. 色情裸露或性暗示不當內容\n2. 騷擾、辱罵、霸凌或威脅他人\n3. 仇恨、歧視或煽動暴力\n4. 血腥、暴力或危險行為內容\n5. 侵犯他人著作權、肖像權或其他權利\n6. 垃圾訊息、詐騙或惡意行為\n7. 其他令人反感或不適合公開顯示的內容\n\n使用者可以檢舉不當內容，也可以封鎖濫用使用者。封鎖後，該使用者的內容將不再顯示於您的畫面中。'**
+  String get community_rules_content;
+
+  /// No description provided for @block_self_error.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法封鎖自己的內容'**
+  String get block_self_error;
+
+  /// No description provided for @block_user_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖此使用者？'**
+  String get block_user_title;
+
+  /// No description provided for @block_user_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖後，你將不再看到此使用者發布的內容。\n我們也會收到通知並進行審查。'**
+  String get block_user_content;
+
+  /// No description provided for @block_user_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已封鎖此使用者，相關內容已從你的拾光牆移除'**
+  String get block_user_success;
+
+  /// No description provided for @block_user_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖失敗，請稍後再試'**
+  String get block_user_failed;
 }
 
 class _AppLocalizationsDelegate

@@ -17,7 +17,6 @@ import 'package:lianlian_shiguang/widgets/feature_tip_target.dart';
 import 'package:lianlian_shiguang/widgets/feature_tip_keys.dart';
 
 //聊天室的名稱更改
-
 class ChatHomePage extends StatefulWidget {
   const ChatHomePage({super.key});
 
@@ -29,6 +28,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   final User? _currentUser = FirebaseAuth.instance.currentUser;
   Stream<QuerySnapshot>? _sessionsStream;
   bool _isOpeningChat = false;
+  bool _isNavigatingToChat = false;
   final String _appId = AppConfig.appId;
   final Map<String, Character> _characterCache = {};
 
@@ -279,7 +279,13 @@ class _ChatHomePageState extends State<ChatHomePage> {
   }
 
   Future<void> _navigateToChat(String sessionId, String characterId) async {
-    if (_isOpeningChat || !mounted) return;
+    if (_isOpeningChat || _isNavigatingToChat || !mounted) return;
+
+    setState(() {
+      _isNavigatingToChat = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 80));
     final l10n = AppLocalizations.of(context)!;
 
     Character? character;
@@ -305,11 +311,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
 
     // 🚀 執行跳轉
     if (character != null) {
-      Navigator.push(
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ChatPage(
-            character: character!, // 注意這裡加了驚嘆號，因為我們確定它不是 null 了
+            character: character!,
             sessionId: sessionId,
             chatMode: 'daily',
             selectedLanguage: l10n.ai_chat_language,
@@ -317,15 +323,24 @@ class _ChatHomePageState extends State<ChatHomePage> {
           ),
         ),
       );
+
+      if (mounted) {
+        setState(() {
+          _isNavigatingToChat = false;
+        });
+      }
     } else {
-      // ✨ 總裁級防護：角色查找失敗的優雅迫降，清楚告知狀態但不引發焦慮！
-      ToastUtils.showCenterToast(
-        context,
-        l10n.character_not_found,
-        isError: true, // 💡 使用統一的紅色驚嘆號，讓玩家明確知道「路走不通」
-        // 💡 總裁精選：如果想要更強調「找不到」的感覺，也可以用：
-        // customIcon: Icons.person_search_rounded (搜尋人物) 或是 Icons.person_off_rounded (人物不存在)
-      );
+      if (mounted) {
+        setState(() {
+          _isNavigatingToChat = false;
+        });
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.character_not_found,
+          isError: true,
+        );
+      }
     }
   }
 
@@ -346,6 +361,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
         foregroundColor: theme.colorScheme.onBackground,
         actions: [
           FeatureTipTarget(
+            enabled: !_isNavigatingToChat,
             scopeKey: 'chat_home',
             order: 1,
             tipKey: '${FeatureTipKeys.callMemory}_v5',
@@ -415,6 +431,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   backgroundColor: Colors.pinkAccent,
                   smallSize: 10,
                   child: FeatureTipTarget(
+                    enabled: !_isNavigatingToChat,
                     scopeKey: 'chat_home',
                     order: 2,
                     tipKey: '${FeatureTipKeys.chatHomeNotifications}_v4',

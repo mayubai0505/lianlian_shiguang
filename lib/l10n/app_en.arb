@@ -2142,5 +2142,15 @@
   "example": "Network error"
   }
   }
-  }
+  },
+  "terms_not_accepted_toast": "Please read and agree to the Terms of Service and Community Guidelines first",
+  "terms_title": "Terms of Service",
+  "terms_content": "Welcome to Lian Lian Shi Guang.\n\nBefore using this service, you must agree to comply with these Terms of Service and Community Guidelines.\n\nYou must not upload, create, publish, or transmit any content that is illegal, infringing, pornographic, nude, violent, hateful, harassing, abusive, fraudulent, spam, or otherwise objectionable, offensive, or harmful to the rights of others.\n\nLian Lian Shi Guang enforces a zero-tolerance policy against inappropriate content and abusive behavior. If a user violates these guidelines, we may remove the relevant content, restrict features, or suspend/terminate the account.\n\nUsers can report inappropriate content or abusive users through the built-in reporting and blocking features within the App.",
+  "community_rules_title": "Community Guidelines",
+  "community_rules_content": "Lian Lian Shi Guang aims to provide a safe, friendly, and respectful interactive environment for creators and users.\n\nWe do not allow the following content or behaviors:\n1. Pornography, nudity, or inappropriate sexually suggestive content\n2. Harassment, abuse, bullying, or threatening others\n3. Hate speech, discrimination, or inciting violence\n4. Gory, violent, or dangerous behavioral content\n5. Infringement of others' copyright, portrait rights, or other rights\n6. Spam, scams, or malicious activities\n7. Other objectionable content or content unsuitable for public display\n\nUsers can report inappropriate content and block abusive users. Once blocked, that user's content will no longer be displayed on your screen.",
+  "block_self_error": "You cannot block your own content",
+  "block_user_title": "Block this user?",
+  "block_user_content": "Once blocked, you will no longer see content published by this user.\nWe will also be notified and will conduct a review.",
+  "block_user_success": "User blocked successfully. Related content has been removed from your Moments Wall",
+  "block_user_failed": "Failed to block user. Please try again later"
 }

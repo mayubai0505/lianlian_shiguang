@@ -445,7 +445,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chính sách bảo mật của \"Lianlian Shiguang\"\nCập nhật lần cuối: Ngày 10 tháng 4 năm 2026\n\nChào mừng bạn đến với \"Lianlian Shiguang\" (sau đây gọi là \"Dịch vụ\"). Chúng tôi coi trọng quyền riêng tư của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin của bạn.\n\n1. Thông tin tài khoản:\nĐăng nhập bên thứ ba: Qua Google, Facebook hoặc Apple, chúng tôi thu thập Firebase UID, email và biệt danh của bạn.\nEmail: Mật khẩu được mã hóa bởi Firebase, đội ngũ phát triển không thể xem mật khẩu gốc.\nDữ liệu tương tác: Lưu trữ lịch sử trò chuyện để AI có trí nhớ liên tục.\n\n2. Cách sử dụng thông tin:\nTối ưu hóa phản hồi của AI, xử lý nạp điểm, xác minh danh tính và bảo mật máy chủ.\n\n3. Hợp tác kỹ thuật:\nSử dụng Google Cloud / Firebase và mô hình AI từ OpenRouter / xAI / Meta. Chúng tôi không bán lịch sử trò chuyện cho bên quảng cáo.\n\n4. Lưu trữ và Xóa dữ liệu:\nDữ liệu được lưu trữ bảo mật trên đám mây. Bạn có thể yêu cầu xóa tài khoản vĩnh viễn bất cứ lúc nào.';
 
   @override
-  String get terms_title => 'Điều khoản dịch vụ Lianlian Shiguang';
+  String get terms_title => 'Điều khoản Sử dụng';
 
   @override
   String get terms_date => 'Cập nhật lần cuối: Ngày 10 tháng 4 năm 2026';
@@ -4260,4 +4260,36 @@ class AppLocalizationsVi extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return 'Gửi email đặt lại mật khẩu thất bại: $error';
   }
+
+  @override
+  String get terms_not_accepted_toast =>
+      'Vui lòng đọc và đồng ý với Điều khoản Sử dụng và Quy chuẩn Cộng đồng trước';
+
+  @override
+  String get terms_content =>
+      'Chào mừng bạn đến với Liên Liên Thập Quang (Lian Lian Shi Guang).\n\nTrước khi sử dụng dịch vụ này, bạn phải đồng ý tuân thủ Điều khoản Sử dụng và Quy chuẩn Cộng đồng này.\n\nBạn không được tải lên, tạo, đăng tải hoặc truyền tải bất kỳ nội dung nào bất hợp pháp, vi phạm quyền sở hữu, khiêu dâm, khỏa thân, bạo lực, thù hận, quấy rối, lăng mạ, lừa đảo, tin nhắn rác (spam), hoặc các nội dung gây phản cảm, xúc phạm, gây hại đến quyền lợi của người khác.\n\nLian Lian Shi Guang áp dụng chính sách nghiêm cấm tuyệt đối (Zero-Tolerance) đối với nội dung không phù hợp và hành vi lạm dụng. Nếu người dùng vi phạm quy định, chúng tôi có thể xóa nội dung liên quan, giới hạn tính năng, tạm ngưng hoặc chấm dứt tài khoản.\n\nNgười dùng có thể báo cáo nội dung không phù hợp hoặc người dùng lạm dụng thông qua tính năng báo cáo và chặn được tích hợp sẵn trong Ứng dụng.';
+
+  @override
+  String get community_rules_title => 'Quy chuẩn Cộng đồng';
+
+  @override
+  String get community_rules_content =>
+      'Lian Lian Shi Guang hy vọng mang đến một môi trường tương tác an toàn, thân thiện và tôn trọng các nhà sáng tạo cũng như người dùng.\n\nChúng tôi không cho phép các nội dung hoặc hành vi sau đây:\n1. Nội dung khiêu dâm, khỏa thân hoặc gợi dục không phù hợp\n2. Quấy rối, lăng mạ, bắt nạt hoặc đe dọa người khác\n3. Thù hận, phân biệt đối xử hoặc kích động bạo lực\n4. Nội dung máu me, bạo lực hoặc hành vi nguy hiểm\n5. Vi phạm bản quyền, quyền hình ảnh hoặc các quyền khác của người khác\n6. Tin nhắn rác, lừa đảo hoặc hành vi ác ý\n7. Các nội dung gây phản cảm hoặc không phù hợp để hiển thị công khai khác\n\nNgười dùng có thể báo cáo nội dung không phù hợp, đồng thời cũng có thể chặn người dùng lạm dụng. Sau khi chặn, nội dung của người dùng đó sẽ không còn hiển thị trên màn hình của bạn nữa.';
+
+  @override
+  String get block_self_error => 'Không thể chặn nội dung của chính mình';
+
+  @override
+  String get block_user_title => 'Chặn người dùng này?';
+
+  @override
+  String get block_user_content =>
+      'Sau khi chặn, bạn sẽ không còn nhìn thấy nội dung do người dùng này đăng tải nữa.\nChúng tôi cũng sẽ nhận được thông báo và tiến hành xét duyệt.';
+
+  @override
+  String get block_user_success =>
+      'Đã chặn người dùng này, các nội dung liên quan đã được xóa khỏi Tường Kỷ Niệm của bạn';
+
+  @override
+  String get block_user_failed => 'Chặn thất bại, vui lòng thử lại sau';
 }

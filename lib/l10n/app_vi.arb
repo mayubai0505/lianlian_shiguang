@@ -1927,5 +1927,15 @@
   "example": "Network error"
   }
   }
-  }
+  },
+  "terms_not_accepted_toast": "Vui lòng đọc và đồng ý với Điều khoản Sử dụng và Quy chuẩn Cộng đồng trước",
+  "terms_title": "Điều khoản Sử dụng",
+  "terms_content": "Chào mừng bạn đến với Liên Liên Thập Quang (Lian Lian Shi Guang).\n\nTrước khi sử dụng dịch vụ này, bạn phải đồng ý tuân thủ Điều khoản Sử dụng và Quy chuẩn Cộng đồng này.\n\nBạn không được tải lên, tạo, đăng tải hoặc truyền tải bất kỳ nội dung nào bất hợp pháp, vi phạm quyền sở hữu, khiêu dâm, khỏa thân, bạo lực, thù hận, quấy rối, lăng mạ, lừa đảo, tin nhắn rác (spam), hoặc các nội dung gây phản cảm, xúc phạm, gây hại đến quyền lợi của người khác.\n\nLian Lian Shi Guang áp dụng chính sách nghiêm cấm tuyệt đối (Zero-Tolerance) đối với nội dung không phù hợp và hành vi lạm dụng. Nếu người dùng vi phạm quy định, chúng tôi có thể xóa nội dung liên quan, giới hạn tính năng, tạm ngưng hoặc chấm dứt tài khoản.\n\nNgười dùng có thể báo cáo nội dung không phù hợp hoặc người dùng lạm dụng thông qua tính năng báo cáo và chặn được tích hợp sẵn trong Ứng dụng.",
+  "community_rules_title": "Quy chuẩn Cộng đồng",
+  "community_rules_content": "Lian Lian Shi Guang hy vọng mang đến một môi trường tương tác an toàn, thân thiện và tôn trọng các nhà sáng tạo cũng như người dùng.\n\nChúng tôi không cho phép các nội dung hoặc hành vi sau đây:\n1. Nội dung khiêu dâm, khỏa thân hoặc gợi dục không phù hợp\n2. Quấy rối, lăng mạ, bắt nạt hoặc đe dọa người khác\n3. Thù hận, phân biệt đối xử hoặc kích động bạo lực\n4. Nội dung máu me, bạo lực hoặc hành vi nguy hiểm\n5. Vi phạm bản quyền, quyền hình ảnh hoặc các quyền khác của người khác\n6. Tin nhắn rác, lừa đảo hoặc hành vi ác ý\n7. Các nội dung gây phản cảm hoặc không phù hợp để hiển thị công khai khác\n\nNgười dùng có thể báo cáo nội dung không phù hợp, đồng thời cũng có thể chặn người dùng lạm dụng. Sau khi chặn, nội dung của người dùng đó sẽ không còn hiển thị trên màn hình của bạn nữa.",
+  "block_self_error": "Không thể chặn nội dung của chính mình",
+  "block_user_title": "Chặn người dùng này?",
+  "block_user_content": "Sau khi chặn, bạn sẽ không còn nhìn thấy nội dung do người dùng này đăng tải nữa.\nChúng tôi cũng sẽ nhận được thông báo và tiến hành xét duyệt.",
+  "block_user_success": "Đã chặn người dùng này, các nội dung liên quan đã được xóa khỏi Tường Kỷ Niệm của bạn",
+  "block_user_failed": "Chặn thất bại, vui lòng thử lại sau"
 }

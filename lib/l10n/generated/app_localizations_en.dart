@@ -441,7 +441,7 @@ class AppLocalizationsEn extends AppLocalizations {
       '\"Lianlian Shiguang\" Privacy Policy\nLast Updated: April 10, 2026\n\nWelcome to \"Lianlian Shiguang\" (hereinafter referred to as \"the Service\"). We value your privacy. This policy explains how we collect, use, and protect your personal information.\n\n1. Account Information:\nThird-party Login: When you log in via Google, Facebook, or Apple, we collect your Firebase UID, email, and public nickname.\nEmail Registration: When you choose to register by email, we collect your email address. Your login password is managed and stored using Firebase encryption; the development team cannot access your original password. We commit to adopting industry-standard security measures to safeguard your personal data.\n\nInteraction Data: To enable AI characters to have continuous memory, we collect and store your conversation records with the AI and the content you write for characters within the game.\n\nDevice Information: Including device model, operating system version, and unique device identifier (UDID) for system optimization.\n\n2. Use of Information\nEnhancing AI Experience: Utilizing conversation records to optimize AI response quality and personality consistency.\nService Operations: Used for processing point recharges, consumption records, and user identity verification.\nSecurity Protection: Monitoring malicious behavior to protect the server from attacks.\n\n3. Third-party Technical Cooperation\nThe Service is supported by the following major international technologies:\nGoogle Cloud / Firebase: Data storage and identity verification.\nOpenRouter / xAI / Meta: Providing AI model computational logic.\nNote: We do not sell your original conversation records to any advertisers.\n\n4. Data Storage and Deletion\nYour data will be securely stored on cloud servers.\nYou may contact us at any time to request the permanent deletion of your account and all associated conversation data.';
 
   @override
-  String get terms_title => 'Lianlian Shiguang Terms of Service';
+  String get terms_title => 'Terms of Service';
 
   @override
   String get terms_date => 'Last Updated: April 10, 2026';
@@ -4224,4 +4224,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return 'Failed to send password reset email: $error';
   }
+
+  @override
+  String get terms_not_accepted_toast =>
+      'Please read and agree to the Terms of Service and Community Guidelines first';
+
+  @override
+  String get terms_content =>
+      'Welcome to Lian Lian Shi Guang.\n\nBefore using this service, you must agree to comply with these Terms of Service and Community Guidelines.\n\nYou must not upload, create, publish, or transmit any content that is illegal, infringing, pornographic, nude, violent, hateful, harassing, abusive, fraudulent, spam, or otherwise objectionable, offensive, or harmful to the rights of others.\n\nLian Lian Shi Guang enforces a zero-tolerance policy against inappropriate content and abusive behavior. If a user violates these guidelines, we may remove the relevant content, restrict features, or suspend/terminate the account.\n\nUsers can report inappropriate content or abusive users through the built-in reporting and blocking features within the App.';
+
+  @override
+  String get community_rules_title => 'Community Guidelines';
+
+  @override
+  String get community_rules_content =>
+      'Lian Lian Shi Guang aims to provide a safe, friendly, and respectful interactive environment for creators and users.\n\nWe do not allow the following content or behaviors:\n1. Pornography, nudity, or inappropriate sexually suggestive content\n2. Harassment, abuse, bullying, or threatening others\n3. Hate speech, discrimination, or inciting violence\n4. Gory, violent, or dangerous behavioral content\n5. Infringement of others\' copyright, portrait rights, or other rights\n6. Spam, scams, or malicious activities\n7. Other objectionable content or content unsuitable for public display\n\nUsers can report inappropriate content and block abusive users. Once blocked, that user\'s content will no longer be displayed on your screen.';
+
+  @override
+  String get block_self_error => 'You cannot block your own content';
+
+  @override
+  String get block_user_title => 'Block this user?';
+
+  @override
+  String get block_user_content =>
+      'Once blocked, you will no longer see content published by this user.\nWe will also be notified and will conduct a review.';
+
+  @override
+  String get block_user_success =>
+      'User blocked successfully. Related content has been removed from your Moments Wall';
+
+  @override
+  String get block_user_failed =>
+      'Failed to block user. Please try again later';
 }

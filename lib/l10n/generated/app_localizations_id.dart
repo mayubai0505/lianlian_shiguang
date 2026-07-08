@@ -447,7 +447,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Kebijakan Privasi \"Lianlian Shiguang\"\nTerakhir Diperbarui: 10 April 2026\n\nSelamat datang di \"Lianlian Shiguang\" (selanjutnya disebut \"Layanan\"). Kami sangat menghargai privasi Anda. Kebijakan ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.\n\n1. Informasi Akun:\nLogin Pihak Ketiga: Saat login melalui Google, Facebook, atau Apple, kami mengumpulkan Firebase UID, email, dan nama panggilan publik Anda.\nRegistrasi Email: Jika menggunakan email, kami mengumpulkan alamat email Anda. Kata sandi dikelola dan disimpan melalui enkripsi Firebase; tim pengembang tidak dapat melihat kata sandi asli Anda.\n\nData Interaksi: Agar karakter AI memiliki memori berkelanjutan, kami menyimpan riwayat percakapan Anda dengan AI dan konten yang Anda tulis untuk karakter dalam game.\n\nInformasi Perangkat: Termasuk model perangkat, versi sistem operasi, dan pengenal unik perangkat untuk optimasi sistem.\n\n2. Penggunaan Informasi:\nOptimalisasi AI: Menggunakan riwayat percakapan untuk meningkatkan kualitas respons dan konsistensi kepribadian AI.\nOperasi Layanan: Digunakan untuk memproses pengisian poin, catatan konsumsi, dan verifikasi identitas.\nKeamanan: Memantau perilaku berbahaya untuk melindungi server.\n\n3. Kerja Sama Teknis Pihak Ketiga:\nLayanan ini didukung oleh: Google Cloud / Firebase (Penyimpanan & Autentikasi), OpenRouter / xAI / Meta (Logika AI).\nCatatan: Kami tidak menjual riwayat percakapan asli Anda kepada pengiklan.\n\n4. Penyimpanan & Penghapusan Data:\nData disimpan dengan aman di server cloud. Anda dapat menghubungi kami kapan saja untuk meminta penghapusan permanen akun dan semua data terkait.';
 
   @override
-  String get terms_title => 'Ketentuan Layanan Lianlian Shiguang';
+  String get terms_title => 'Syarat Penggunaan';
 
   @override
   String get terms_date => 'Pembaruan Terakhir: 10 April 2026';
@@ -4259,4 +4259,36 @@ class AppLocalizationsId extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return 'Gagal mengirim email reset kata sandi: $error';
   }
+
+  @override
+  String get terms_not_accepted_toast =>
+      'Silakan baca dan setujui Syarat Penggunaan dan Panduan Komunitas terlebih dahulu';
+
+  @override
+  String get terms_content =>
+      'Selamat datang di Lian Lian Shi Guang.\n\nSebelum menggunakan layanan ini, Anda harus setuju untuk mematuhi Syarat Penggunaan dan Panduan Komunitas ini.\n\nAnda tidak boleh mengunggah, membuat, menerbitkan, atau mengirimkan konten apa pun yang ilegal, melanggar hak, pornografi, ketelanjangan, kekerasan, kebencian, pelecehan, kekerasan verbal, penipuan, spam, atau konten lain yang menyinggung, tidak pantas, atau membahayakan hak orang lain.\n\nLian Lian Shi Guang menerapkan kebijakan toleransi nol terhadap konten yang tidak pantas dan perilaku menyimpang. Jika pengguna melanggar aturan, kami dapat menghapus konten terkait, membatasi fitur, atau menangguhkan/menghentikan akun.\n\nPengguna dapat melaporkan konten yang tidak pantas atau pengguna yang menyimpang melalui fitur pelaporan dan pemblokiran bawaan di dalam Aplikasi.';
+
+  @override
+  String get community_rules_title => 'Panduan Komunitas';
+
+  @override
+  String get community_rules_content =>
+      'Lian Lian Shi Guang berharap dapat menyediakan lingkungan interaksi yang aman, ramah, dan saling menghormati bagi para kreator dan pengguna.\n\nKami tidak mengizinkan konten atau perilaku berikut:\n1. Pornografi, ketelanjangan, atau konten sugestif seksual yang tidak pantas\n2. Pelecehan, kekerasan verbal, perundungan (bullying), atau mengancam orang lain\n3. Kebencian, diskriminasi, atau menghasut kekerasan\n4. Konten berdarah, kekerasan, atau perilaku berbahaya\n5. Melanggar hak cipta, hak foto/potret, atau hak orang lain\n6. Spam, penipuan, atau perilaku berbahaya lainnya\n7. Konten tidak pantas lainnya atau konten yang tidak cocok untuk ditampilkan secara publik\n\nPengguna dapat melaporkan konten yang tidak pantas dan juga memblokir pengguna yang menyimpang. Setelah diblokir, konten dari pengguna tersebut tidak akan ditampilkan lagi di layar Anda.';
+
+  @override
+  String get block_self_error => 'Tidak dapat memblokir konten Anda sendiri';
+
+  @override
+  String get block_user_title => 'Blokir pengguna ini?';
+
+  @override
+  String get block_user_content =>
+      'Setelah diblokir, Anda tidak akan lagi melihat konten yang diterbitkan oleh pengguna ini.\nKami juga akan menerima notifikasi dan melakukan peninjauan.';
+
+  @override
+  String get block_user_success =>
+      'Pengguna telah diblokir, konten terkait telah dihapus dari Dinding Kenangan Anda';
+
+  @override
+  String get block_user_failed => 'Gagal memblokir, silakan coba lagi nanti';
 }

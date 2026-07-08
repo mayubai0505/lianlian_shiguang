@@ -449,7 +449,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Política de Privacidade de \"Lianlian Shiguang\"\nÚltima atualização: 10 de abril de 2026\n\nBem-vindo ao \"Lianlian Shiguang\". Valorizamos sua privacidade. Esta política explica como tratamos seus dados.\n\n1. Dados de Conta :\nLogin via Google/Facebook/Apple (UID, e-mail, apelido). O Firebase gerencia senhas criptografadas.\nInteração: Armazenamos diálogos para que a IA mantenha a memória dos personagens.\nDispositivo: Modelo e versão do sistema para otimização.\n\n2. Uso :\nMelhoria da IA, processamento de pagamentos e segurança do servidor.\n\n3. Parceiros :\nGoogle Cloud, Firebase, OpenRouter, xAI, Meta. Não vendemos seus diálogos para publicidade.\n\n4. Exclusão :\nDados seguros na nuvem. Você pode solicitar a exclusão permanente da conta a qualquer momento.';
 
   @override
-  String get terms_title => 'Termos de Serviço de Lianlian Shiguang';
+  String get terms_title => 'Termos de Uso';
 
   @override
   String get terms_date => 'Última atualização: 10 de abril de 2026';
@@ -4280,4 +4280,38 @@ class AppLocalizationsPt extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return 'Falha ao enviar o e-mail de redefinição de senha: $error';
   }
+
+  @override
+  String get terms_not_accepted_toast =>
+      'Por favor, leia e aceite os Termos de Uso e as Diretrizes da Comunidade primeiro';
+
+  @override
+  String get terms_content =>
+      'Boas-vindas ao Lian Lian Shi Guang.\n\nAntes de utilizar este serviço, você deve concordar em cumprir estes Termos de Uso e as Diretrizes da Comunidade.\n\nVocê não deve fazer upload, criar, publicar ou transmitir qualquer conteúdo que seja ilegal, infrator, pornográfico, com nudez, violento, de ódio, assediador, abusivo, fraudulento, spam ou outro conteúdo que seja ultrajante, ofensivo ou que prejudique os direitos alheios.\n\nO Lian Lian Shi Guang adota uma política de tolerância zero contra conteúdos inadequados e comportamentos abusivos. Se um usuário violar as normas, poderemos remover o conteúdo relevante, restringir funcionalidades, suspender ou encerrar a conta.\n\nOs usuários podem denunciar conteúdos inadequados ou usuários abusivos por meio das ferramentas nativas de denúncia e bloqueio integradas no App.';
+
+  @override
+  String get community_rules_title => 'Diretrizes da Comunidade';
+
+  @override
+  String get community_rules_content =>
+      'O Lian Lian Shi Guang deseja oferecer um ambiente de interação seguro, amigável e que respeite os criadores e usuários.\n\nNão permitimos os seguintes conteúdos ou comportamentos:\n1. Nudez, conteúdo pornográfico ou insinuações sexuais inadequadas\n2. Assédio, abuso, bullying ou ameaças a terceiros\n3. Ódio, discriminação ou incitação à violência\n4. Conteúdo sangrento, violento ou com comportamentos perigosos\n5. Violação de direitos autorais, direitos de imagem ou outros direitos de terceiros\n6. Mensagens indesejadas (spam), golpes ou condutas maliciosas\n7. Outros conteúdos ultrajantes ou inadequados para exibição pública\n\nOs usuários podem denunciar conteúdos inadequados e também bloquear usuários abusivos. Após o bloqueio, o conteúdo desse usuário não será mais exibido em sua tela.';
+
+  @override
+  String get block_self_error =>
+      'Você não pode bloquear o seu próprio conteúdo';
+
+  @override
+  String get block_user_title => 'Bloquear este usuário?';
+
+  @override
+  String get block_user_content =>
+      'Após o bloqueio, você não verá mais os conteúdos publicados por este usuário.\nNós também seremos notificados e realizaremos uma revisão.';
+
+  @override
+  String get block_user_success =>
+      'Este usuário foi bloqueado, o conteúdo relacionado foi removido do seu Mural';
+
+  @override
+  String get block_user_failed =>
+      'Falha ao bloquear. Por favor, tente novamente mais tarde';
 }

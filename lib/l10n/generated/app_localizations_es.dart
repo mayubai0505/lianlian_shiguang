@@ -449,7 +449,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Política de Privacidad de \"Lianlian Shiguang\"\nÚltima actualización: 10 de abril de 2026\n\nBienvenido a \"Lianlian Shiguang\" (en adelante, \"el Servicio\"). Valoramos profundamente su privacidad. Esta política explica cómo recopilamos, usamos y protegemos su información personal.\n\n1. Información de la cuenta:\nInicio de sesión de terceros: Al iniciar sesión a través de Google, Facebook o Apple, recopilamos su Firebase UID, correo electrónico y apodo público.\nRegistro por correo electrónico: Recopilamos su dirección de correo electrónico. Su contraseña se gestiona mediante el cifrado de Firebase; el equipo de desarrollo no puede acceder a su contraseña original.\n\nDatos de interacción: Para que los personajes de IA tengan memoria continua, almacenamos sus registros de conversación y el contenido que escribe para los personajes.\n\nInformación del dispositivo: Incluye el modelo del dispositivo, versión del SO e identificador único para la optimización del sistema.\n\n2. Uso de la información:\nMejora de la IA: Optimizamos la calidad de las respuestas y la coherencia de la personalidad.\nOperaciones del servicio: Procesamiento de recargas de puntos y verificación de identidad.\nSeguridad: Monitoreo de comportamientos maliciosos.\n\n3. Cooperación técnica:\nEl servicio utiliza Google Cloud / Firebase para almacenamiento y OpenRouter / xAI / Meta para lógica de IA.\nNota: No vendemos sus registros de conversación a anunciantes.\n\n4. Almacenamiento y eliminación:\nSus datos se almacenan de forma segura en la nube. Puede solicitar la eliminación permanente de su cuenta en cualquier momento.';
 
   @override
-  String get terms_title => 'Términos de Servicio de Lianlian Shiguang';
+  String get terms_title => 'Términos de uso';
 
   @override
   String get terms_date => 'Última actualización: 10 de abril de 2026';
@@ -4288,4 +4288,37 @@ class AppLocalizationsEs extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return 'Error al enviar el correo de restablecimiento: $error';
   }
+
+  @override
+  String get terms_not_accepted_toast =>
+      'Por favor, lee y acepta los Términos de uso y las Normas de la comunidad primero';
+
+  @override
+  String get terms_content =>
+      'Bienvenido a Lian Lian Shi Guang.\n\nAntes de utilizar este servicio, debes aceptar cumplir con estos Términos de uso y las Normas de la comunidad.\n\nNo debes subir, crear, publicar ni transmitir ningún contenido que sea ilegal, infractor, pornográfico, con desnudez, violento, odioso, acosador, abusivo, fraudulento, spam u otro tipo de contenido objetable, ofensivo o que perjudique los derechos de los demás.\n\nLian Lian Shi Guang aplica una política de tolerancia cero frente al contenido inapropiado y el comportamiento abusivo. Si un usuario viola las normas, podemos eliminar el contenido relevante, restringir funciones o suspender/cancelar la cuenta.\n\nLos usuarios pueden denunciar el contenido inapropiado o a los usuarios abusivos a través de las funciones integradas de denuncia y bloqueo de la aplicación.';
+
+  @override
+  String get community_rules_title => 'Normas de la comunidad';
+
+  @override
+  String get community_rules_content =>
+      'Lian Lian Shi Guang busca proporcionar un entorno de interacción seguro, amigable y respetuoso para los creadores y usuarios.\n\nNo permitimos los siguientes contenidos o comportamientos:\n1. Desnudez, contenido pornográfico o insinuaciones sexuales inapropiadas\n2. Acoso, abuso, acoso escolar (bullying) o amenazas a otros\n3. Odio, discriminación o incitación a la violencia\n4. Contenido sangriento, violento o con conductas peligrosas\n5. Infracción de derechos de autor, derechos de imagen u otros derechos de terceros\n6. Mensajes no deseados (spam), estafas o conductas maliciosas\n7. Otro contenido objetable o no apto para mostrarse públicamente\n\nLos usuarios pueden denunciar el contenido inapropiado y bloquear a los usuarios abusivos. Una vez bloqueado, el contenido de dicho usuario dejará de mostrarse en tu pantalla.';
+
+  @override
+  String get block_self_error => 'No puedes bloquear tu propio contenido';
+
+  @override
+  String get block_user_title => '¿Bloquear a este usuario?';
+
+  @override
+  String get block_user_content =>
+      'Una vez bloqueado, ya no verás el contenido publicado por este usuario.\nTambién recibiremos una notificación y realizaremos una revisión.';
+
+  @override
+  String get block_user_success =>
+      'Se ha bloqueado a este usuario, el contenido relacionado se ha eliminado de tu Muro';
+
+  @override
+  String get block_user_failed =>
+      'Error al bloquear. Por favor, inténtalo de nuevo más tarde';
 }

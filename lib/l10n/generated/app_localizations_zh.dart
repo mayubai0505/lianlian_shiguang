@@ -426,7 +426,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '歡迎使用《戀戀拾光》（以下簡稱「本服務」）。我們非常重視您的隱私，本政策旨在說明我們如何收集、使用及保護您的個人資訊。\n\n1. 帳戶資訊：\n第三方登入：當您透過 Google、Facebook 或 Apple 帳號登入時，我們會收集您的 Firebase UID、電子郵件及公開暱稱。\nE-mail 註冊：當您選擇以電子郵件註冊時，我們會收集您的電子郵件帳號。您的登入密碼將透過 Firebase 加密技術進行管理與儲存，開發團隊無法查閱您的原始密碼。 我們承諾將採取業界標準的安全措施保障您的個資安全。\n\n互動資料：為了讓 AI 角色具備連續的記憶，我們會收集並儲存您與AI的對話紀錄與您在遊戲裡面為角色所寫下的內容。\n\n設備資訊：包含設備型號、作業系統版本及唯一設備識別碼，用於系統優化。\n\n2. 資訊的使用方式\n提升AI體驗：利用對話紀錄優化AI的回覆品質與個性連貫性。\n服務營運：用於處理點數充值、消費紀錄及使用者身分驗證。\n安全防護：監測惡意行為，保護伺服器不受攻擊。\n\n3. 第三方技術合作\n本服務採用以下國際主流技術提供支持：\nGoogle Cloud / Firebase：資料存儲與身份驗證。\nOpenRouter / xAI / Meta：提供 AI 模型運算邏輯。\n備註：我們不會向任何廣告商出售您的原始對話紀錄。\n\n4. 資料儲存與刪除\n您的資料將安全地儲存在雲端服務器中。\n您可以隨時聯繫我們要求永久刪除您的帳戶及所有相關對話數據。';
 
   @override
-  String get terms_title => '《戀戀拾光》服務使用條款';
+  String get terms_title => '使用條款';
 
   @override
   String get terms_date => '最近更新日期：2026年4月10日';
@@ -3999,6 +3999,35 @@ class AppLocalizationsZh extends AppLocalizations {
   String forgot_password_error_with_message(String error) {
     return '寄送重設密碼信失敗：$error';
   }
+
+  @override
+  String get terms_not_accepted_toast => '請先閱讀並同意使用條款與社群規範';
+
+  @override
+  String get terms_content =>
+      '歡迎使用戀戀拾光。\n\n使用本服務前，您必須同意遵守本使用條款與社群規範。\n\n您不得上傳、建立、發布或傳送任何違法、侵權、色情裸露、暴力、仇恨、騷擾、辱罵、詐欺、垃圾訊息，或其他令人反感、冒犯、危害他人權益的內容。\n\n戀戀拾光對不當內容與濫用行為採取零容忍政策。若使用者違反規範，我們可能會移除相關內容、限制功能、暫停或終止帳號。\n\n使用者可透過 App 內建的檢舉與封鎖功能回報不當內容或濫用使用者。';
+
+  @override
+  String get community_rules_title => '社群規範';
+
+  @override
+  String get community_rules_content =>
+      '戀戀拾光希望提供安全、友善且尊重創作者與使用者的互動環境。\n\n我們不允許以下內容或行為：\n1. 色情裸露或性暗示不當內容\n2. 騷擾、辱罵、霸凌或威脅他人\n3. 仇恨、歧視或煽動暴力\n4. 血腥、暴力或危險行為內容\n5. 侵犯他人著作權、肖像權或其他權利\n6. 垃圾訊息、詐騙或惡意行為\n7. 其他令人反感或不適合公開顯示的內容\n\n使用者可以檢舉不當內容，也可以封鎖濫用使用者。封鎖後，該使用者的內容將不再顯示於您的畫面中。';
+
+  @override
+  String get block_self_error => '無法封鎖自己的內容';
+
+  @override
+  String get block_user_title => '封鎖此使用者？';
+
+  @override
+  String get block_user_content => '封鎖後，你將不再看到此使用者發布的內容。\n我們也會收到通知並進行審查。';
+
+  @override
+  String get block_user_success => '已封鎖此使用者，相關內容已從你的拾光牆移除';
+
+  @override
+  String get block_user_failed => '封鎖失敗，請稍後再試';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -4423,7 +4452,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '《恋恋拾光》隐私权政策\n最近更新日期：2026年4月10日\n\n欢迎使用《恋恋拾光》（以下简称“本服务”）。我们非常重视您的隐私，本政策旨在说明我们如何收集、使用及保护您的个人信息。\n\n1. 帐户信息：\n第三方登录：当您通过 Google、Facebook 或 Apple 帐号登录时，我们会收集您的 Firebase UID、电子邮件及公开昵称。\nE-mail 注册：您的登录密码将通过 Firebase 加密技术进行管理与存储，开发团队无法查阅您的原始密码。\n\n互动资料：为了让 AI 角色具备连续的记忆，我们会收集并存储您与 AI 的对话记录与您在游戏里面为角色所写下的内容。\n\n设备信息：包含设备型号、操作系统版本及唯一设备识别码。\n\n2. 信息的使用方式\n提升 AI 体验：优化 AI 的回复质量与个性连贯性。\n服务运营：用于处理点数充值、消费记录及身份验证。\n安全防护：监测恶意行为，保护服务器。\n\n3. 第三方技术合作\n本服务采用 Google Cloud / Firebase 以及 OpenRouter / xAI / Meta 提供技术支持。我们承诺不会向任何广告商出售您的原始对话记录。\n\n4. 数据存储与删除\n您的数据将安全地存储在云端服务器中。您可以随时联系我们要求永久删除您的帐户及所有相关对话数据。';
 
   @override
-  String get terms_title => '《恋恋拾光》服务使用条款';
+  String get terms_title => '使用条款';
 
   @override
   String get terms_date => '最近更新日期：2026年4月10日';
@@ -7996,6 +8025,35 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String forgot_password_error_with_message(String error) {
     return '寄送重置密码信失败：$error';
   }
+
+  @override
+  String get terms_not_accepted_toast => '请先阅读并同意使用条款与社区规范';
+
+  @override
+  String get terms_content =>
+      '欢迎使用恋恋拾光。\n\n使用本服务前，您必须同意遵守本使用条款与社区规范。\n\n您不得上传、建立、发布或传送任何违法、侵权、色情裸露、暴力、仇恨、骚扰、辱骂、诈骗、垃圾讯息，或其他令人反感、冒犯、危害他人权益的内容。\n\n恋恋拾光对不当内容与滥用行为采取零容忍政策。若使用者违反规范，我们可能会移除相关内容、限制功能、暂停或终止帐号。\n\n使用者可透过 App 内建的检举与封锁功能回报不当内容或滥用使用者。';
+
+  @override
+  String get community_rules_title => '社区规范';
+
+  @override
+  String get community_rules_content =>
+      '恋恋拾光希望提供安全、友善且尊重创作者与使用者的互动环境。\n\n我们不允许以下内容或行为：\n1. 色情裸露或性暗示不当内容\n2. 骚扰、辱骂、霸凌或威胁他人\n3. 仇恨、歧视或煽动暴力\n4. 血腥、暴力 or 危险行为内容\n5. 侵犯他人著作权、肖像权或其他权利\n6. 垃圾讯息、诈骗或恶意行为\n7. 其他令人反感或不适合公开显示的内容\n\n使用者可以检举不当内容，也可以封锁滥用使用者。封锁后，该使用者的内容将不再显示在您的画面中。';
+
+  @override
+  String get block_self_error => '无法封锁自己的内容';
+
+  @override
+  String get block_user_title => '封锁此使用者？';
+
+  @override
+  String get block_user_content => '封锁后，你将不再看到此使用者发布的内容。\n我们也会收到通知并进行审查。';
+
+  @override
+  String get block_user_success => '已封锁此使用者，相关内容已从你的拾光墙移除';
+
+  @override
+  String get block_user_failed => '封锁失败，请稍后再试';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -8420,7 +8478,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '歡迎使用《戀戀拾光》（以下簡稱「本服務」）。我們非常重視您的隱私，本政策旨在說明我們如何收集、使用及保護您的個人資訊。\n\n1. 帳戶資訊：\n第三方登入：當您透過 Google、Facebook 或 Apple 帳號登入時，我們會收集您的 Firebase UID、電子郵件及公開暱稱。\nE-mail 註冊：當您選擇以電子郵件註冊時，我們會收集您的電子郵件帳號。您的登入密碼將透過 Firebase 加密技術進行管理與儲存，開發團隊無法查閱您的原始密碼。 我們承諾將採取業界標準的安全措施保障您的個資安全。\n\n互動資料：為了讓 AI 角色具備連續的記憶，我們會收集並儲存您與AI的對話紀錄與您在遊戲裡面為角色所寫下的內容。\n\n設備資訊：包含設備型號、作業系統版本及唯一設備識別碼，用於系統優化。\n\n2. 資訊的使用方式\n提升AI體驗：利用對話紀錄優化AI的回覆品質與個性連貫性。\n服務營運：用於處理點數充值、消費紀錄及使用者身分驗證。\n安全防護：監測惡意行為，保護伺服器不受攻擊。\n\n3. 第三方技術合作\n本服務採用以下國際主流技術提供支持：\nGoogle Cloud / Firebase：資料存儲與身份驗證。\nOpenRouter / xAI / Meta：提供 AI 模型運算邏輯。\n備註：我們不會向任何廣告商出售您的原始對話紀錄。\n\n4. 資料儲存與刪除\n您的資料將安全地儲存在雲端服務器中。\n您可以隨時聯繫我們要求永久刪除您的帳戶及所有相關對話數據。';
 
   @override
-  String get terms_title => '《戀戀拾光》服務使用條款';
+  String get terms_title => '使用條款';
 
   @override
   String get terms_date => '最近更新日期：2026年4月10日';
@@ -11993,4 +12051,33 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String forgot_password_error_with_message(String error) {
     return '寄送重設密碼信失敗：$error';
   }
+
+  @override
+  String get terms_not_accepted_toast => '請先閱讀並同意使用條款與社群規範';
+
+  @override
+  String get terms_content =>
+      '歡迎使用戀戀拾光。\n\n使用本服務前，您必須同意遵守本使用條款與社群規範。\n\n您不得上傳、建立、發布或傳送任何違法、侵權、色情裸露、暴力、仇恨、騷擾、辱罵、詐欺、垃圾訊息，或其他令人反感、冒犯、危害他人權益的內容。\n\n戀戀拾光對不當內容與濫用行為採取零容忍政策。若使用者違反規範，我們可能會移除相關內容、限制功能、暫停或終止帳號。\n\n使用者可透過 App 內建的檢舉與封鎖功能回報不當內容或濫用使用者。';
+
+  @override
+  String get community_rules_title => '社群規範';
+
+  @override
+  String get community_rules_content =>
+      '戀戀拾光希望提供安全、友善且尊重創作者與使用者的互動環境。\n\n我們不允許以下內容或行為：\n1. 色情裸露或性暗示不當內容\n2. 騷擾、辱罵、霸凌或威脅他人\n3. 仇恨、歧視或煽動暴力\n4. 血腥、暴力或危險行為內容\n5. 侵犯他人著作權、肖像權或其他權利\n6. 垃圾訊息、詐騙或惡意行為\n7. 其他令人反感或不適合公開顯示的內容\n\n使用者可以檢舉不當內容，也可以封鎖濫用使用者。封鎖後，該使用者的內容將不再顯示於您的畫面中。';
+
+  @override
+  String get block_self_error => '無法封鎖自己的內容';
+
+  @override
+  String get block_user_title => '封鎖此使用者？';
+
+  @override
+  String get block_user_content => '封鎖後，你將不再看到此使用者發布的內容。\n我們也會收到通知並進行審查。';
+
+  @override
+  String get block_user_success => '已封鎖此使用者，相關內容已從你的拾光牆移除';
+
+  @override
+  String get block_user_failed => '封鎖失敗，請稍後再試';
 }

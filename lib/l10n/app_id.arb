@@ -1926,5 +1926,15 @@
     "example": "Network error"
     }
     }
-    }
+    },
+    "terms_not_accepted_toast": "Silakan baca dan setujui Syarat Penggunaan dan Panduan Komunitas terlebih dahulu",
+    "terms_title": "Syarat Penggunaan",
+    "terms_content": "Selamat datang di Lian Lian Shi Guang.\n\nSebelum menggunakan layanan ini, Anda harus setuju untuk mematuhi Syarat Penggunaan dan Panduan Komunitas ini.\n\nAnda tidak boleh mengunggah, membuat, menerbitkan, atau mengirimkan konten apa pun yang ilegal, melanggar hak, pornografi, ketelanjangan, kekerasan, kebencian, pelecehan, kekerasan verbal, penipuan, spam, atau konten lain yang menyinggung, tidak pantas, atau membahayakan hak orang lain.\n\nLian Lian Shi Guang menerapkan kebijakan toleransi nol terhadap konten yang tidak pantas dan perilaku menyimpang. Jika pengguna melanggar aturan, kami dapat menghapus konten terkait, membatasi fitur, atau menangguhkan/menghentikan akun.\n\nPengguna dapat melaporkan konten yang tidak pantas atau pengguna yang menyimpang melalui fitur pelaporan dan pemblokiran bawaan di dalam Aplikasi.",
+    "community_rules_title": "Panduan Komunitas",
+    "community_rules_content": "Lian Lian Shi Guang berharap dapat menyediakan lingkungan interaksi yang aman, ramah, dan saling menghormati bagi para kreator dan pengguna.\n\nKami tidak mengizinkan konten atau perilaku berikut:\n1. Pornografi, ketelanjangan, atau konten sugestif seksual yang tidak pantas\n2. Pelecehan, kekerasan verbal, perundungan (bullying), atau mengancam orang lain\n3. Kebencian, diskriminasi, atau menghasut kekerasan\n4. Konten berdarah, kekerasan, atau perilaku berbahaya\n5. Melanggar hak cipta, hak foto/potret, atau hak orang lain\n6. Spam, penipuan, atau perilaku berbahaya lainnya\n7. Konten tidak pantas lainnya atau konten yang tidak cocok untuk ditampilkan secara publik\n\nPengguna dapat melaporkan konten yang tidak pantas dan juga memblokir pengguna yang menyimpang. Setelah diblokir, konten dari pengguna tersebut tidak akan ditampilkan lagi di layar Anda.",
+    "block_self_error": "Tidak dapat memblokir konten Anda sendiri",
+    "block_user_title": "Blokir pengguna ini?",
+    "block_user_content": "Setelah diblokir, Anda tidak akan lagi melihat konten yang diterbitkan oleh pengguna ini.\nKami juga akan menerima notifikasi dan melakukan peninjauan.",
+    "block_user_success": "Pengguna telah diblokir, konten terkait telah dihapus dari Dinding Kenangan Anda",
+    "block_user_failed": "Gagal memblokir, silakan coba lagi nanti"
 }
