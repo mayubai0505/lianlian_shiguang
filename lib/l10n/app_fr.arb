@@ -2110,5 +2110,9 @@
     "block_user_title": "Bloquer cet utilisateur ?",
     "block_user_content": "Une fois bloqué, vous ne verrez plus les contenus publiés par cet utilisateur.\nNous recevrons également une notification et procéderons à un examen.",
     "block_user_success": "Cet utilisateur a été bloqué, les contenus associés ont été supprimés de votre Mur",
-    "block_user_failed": "Échec du blocage. Veuillez réessayer plus tard"
+    "block_user_failed": "Échec du blocage. Veuillez réessayer plus tard",
+    "terms_checkbox_read_agree": "J'ai lu et j'accepte les",
+    "terms_checkbox_terms": "« Conditions d'utilisation »",
+    "terms_checkbox_and": "et les",
+    "terms_checkbox_rules": "« Règles de la communauté »"
 }

@@ -4296,4 +4296,17 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get block_user_failed => 'Gagal menyekat, sila cuba lagi kemudian';
+
+  @override
+  String get terms_checkbox_read_agree =>
+      'Saya telah membaca dan bersetuju dengan';
+
+  @override
+  String get terms_checkbox_terms => '《Syarat Penggunaan》';
+
+  @override
+  String get terms_checkbox_and => 'dan';
+
+  @override
+  String get terms_checkbox_rules => '《Garis Panduan Komuniti》';
 }

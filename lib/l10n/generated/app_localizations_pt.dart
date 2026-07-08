@@ -4314,4 +4314,16 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get block_user_failed =>
       'Falha ao bloquear. Por favor, tente novamente mais tarde';
+
+  @override
+  String get terms_checkbox_read_agree => 'Eu li e concordo com os';
+
+  @override
+  String get terms_checkbox_terms => '《Termos de Uso》';
+
+  @override
+  String get terms_checkbox_and => 'e';
+
+  @override
+  String get terms_checkbox_rules => '《Diretrizes da Comunidade》';
 }

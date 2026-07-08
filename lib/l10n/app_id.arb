@@ -1936,5 +1936,9 @@
     "block_user_title": "Blokir pengguna ini?",
     "block_user_content": "Setelah diblokir, Anda tidak akan lagi melihat konten yang diterbitkan oleh pengguna ini.\nKami juga akan menerima notifikasi dan melakukan peninjauan.",
     "block_user_success": "Pengguna telah diblokir, konten terkait telah dihapus dari Dinding Kenangan Anda",
-    "block_user_failed": "Gagal memblokir, silakan coba lagi nanti"
+    "block_user_failed": "Gagal memblokir, silakan coba lagi nanti",
+    "terms_checkbox_read_agree": "Saya telah membaca dan menyetujui",
+    "terms_checkbox_terms": "《Syarat Penggunaan》",
+    "terms_checkbox_and": "dan",
+    "terms_checkbox_rules": "《Panduan Komunitas》"
 }

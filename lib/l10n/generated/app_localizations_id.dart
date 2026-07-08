@@ -4291,4 +4291,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get block_user_failed => 'Gagal memblokir, silakan coba lagi nanti';
+
+  @override
+  String get terms_checkbox_read_agree => 'Saya telah membaca dan menyetujui';
+
+  @override
+  String get terms_checkbox_terms => '《Syarat Penggunaan》';
+
+  @override
+  String get terms_checkbox_and => 'dan';
+
+  @override
+  String get terms_checkbox_rules => '《Panduan Komunitas》';
 }

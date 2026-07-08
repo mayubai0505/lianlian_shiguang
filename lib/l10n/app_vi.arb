@@ -1937,5 +1937,9 @@
   "block_user_title": "Chặn người dùng này?",
   "block_user_content": "Sau khi chặn, bạn sẽ không còn nhìn thấy nội dung do người dùng này đăng tải nữa.\nChúng tôi cũng sẽ nhận được thông báo và tiến hành xét duyệt.",
   "block_user_success": "Đã chặn người dùng này, các nội dung liên quan đã được xóa khỏi Tường Kỷ Niệm của bạn",
-  "block_user_failed": "Chặn thất bại, vui lòng thử lại sau"
+  "block_user_failed": "Chặn thất bại, vui lòng thử lại sau",
+  "terms_checkbox_read_agree": "Tôi đã đọc và đồng ý với",
+  "terms_checkbox_terms": "《Điều khoản Sử dụng》",
+  "terms_checkbox_and": "và",
+  "terms_checkbox_rules": "《Quy chuẩn Cộng đồng》"
 }

@@ -4292,4 +4292,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get block_user_failed => 'Chặn thất bại, vui lòng thử lại sau';
+
+  @override
+  String get terms_checkbox_read_agree => 'Tôi đã đọc và đồng ý với';
+
+  @override
+  String get terms_checkbox_terms => '《Điều khoản Sử dụng》';
+
+  @override
+  String get terms_checkbox_and => 'và';
+
+  @override
+  String get terms_checkbox_rules => '《Quy chuẩn Cộng đồng》';
 }

@@ -1938,5 +1938,9 @@
   "block_user_title": "このユーザーをブロックしますか？",
   "block_user_content": "ブロックすると、このユーザーが投稿したコンテンツは表示されなくなります。\nまた、運営チームにも通知が届き、確認・審査が行われます。",
   "block_user_success": "ユーザーをブロックしました。関連コンテンツはあなたのタイムウォールから削除されました",
-  "block_user_failed": "ブロックに失敗しました。しばらく経ってからもう一度お試しください"
+  "block_user_failed": "ブロックに失敗しました。しばらく経ってからもう一度お試しください",
+  "terms_checkbox_read_agree": "私は内容を確認し、",
+  "terms_checkbox_terms": "《利用規約》",
+  "terms_checkbox_and": "および",
+  "terms_checkbox_rules": "《コミュニティガイドライン》に同意します"
 }

@@ -1938,5 +1938,9 @@
    "block_user_title": "Bloquear este usuário?",
    "block_user_content": "Após o bloqueio, você não verá mais os conteúdos publicados por este usuário.\nNós também seremos notificados e realizaremos uma revisão.",
    "block_user_success": "Este usuário foi bloqueado, o conteúdo relacionado foi removido do seu Mural",
-   "block_user_failed": "Falha ao bloquear. Por favor, tente novamente mais tarde"
+   "block_user_failed": "Falha ao bloquear. Por favor, tente novamente mais tarde",
+   "terms_checkbox_read_agree": "Eu li e concordo com os",
+   "terms_checkbox_terms": "《Termos de Uso》",
+   "terms_checkbox_and": "e",
+   "terms_checkbox_rules": "《Diretrizes da Comunidade》"
 }

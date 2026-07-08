@@ -2080,5 +2080,9 @@
 "block_user_title": "封鎖此使用者？",
 "block_user_content": "封鎖後，你將不再看到此使用者發布的內容。\n我們也會收到通知並進行審查。",
 "block_user_success": "已封鎖此使用者，相關內容已從你的拾光牆移除",
-"block_user_failed": "封鎖失敗，請稍後再試"
+"block_user_failed": "封鎖失敗，請稍後再試",
+"terms_checkbox_read_agree": "我已閱讀並同意",
+"terms_checkbox_terms": "《使用條款》",
+"terms_checkbox_and": "與",
+"terms_checkbox_rules": "《社群規範》"
 }

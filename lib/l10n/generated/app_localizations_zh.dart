@@ -4028,6 +4028,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get block_user_failed => '封鎖失敗，請稍後再試';
+
+  @override
+  String get terms_checkbox_read_agree => '我已閱讀並同意';
+
+  @override
+  String get terms_checkbox_terms => '《使用條款》';
+
+  @override
+  String get terms_checkbox_and => '與';
+
+  @override
+  String get terms_checkbox_rules => '《社群規範》';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8054,6 +8066,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get block_user_failed => '封锁失败，请稍后再试';
+
+  @override
+  String get terms_checkbox_read_agree => '我已阅读并同意';
+
+  @override
+  String get terms_checkbox_terms => '《使用条款》';
+
+  @override
+  String get terms_checkbox_and => '与';
+
+  @override
+  String get terms_checkbox_rules => '《社区规范》';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -12080,4 +12104,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get block_user_failed => '封鎖失敗，請稍後再試';
+
+  @override
+  String get terms_checkbox_read_agree => '我已閱讀並同意';
+
+  @override
+  String get terms_checkbox_terms => '《使用條款》';
+
+  @override
+  String get terms_checkbox_and => '與';
+
+  @override
+  String get terms_checkbox_rules => '《社群規範》';
 }

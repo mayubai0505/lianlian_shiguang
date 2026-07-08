@@ -4349,4 +4349,16 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get block_user_failed =>
       'Échec du blocage. Veuillez réessayer plus tard';
+
+  @override
+  String get terms_checkbox_read_agree => 'J\'ai lu et j\'accepte les';
+
+  @override
+  String get terms_checkbox_terms => '« Conditions d\'utilisation »';
+
+  @override
+  String get terms_checkbox_and => 'et les';
+
+  @override
+  String get terms_checkbox_rules => '« Règles de la communauté »';
 }

@@ -1936,5 +1936,9 @@
   "block_user_title": "이 사용자를 차단하시겠습니까?",
   "block_user_content": "차단하면 이 사용자가 게시한 콘텐츠를 더 이상 볼 수 없습니다.\n저희 측에도 알림이 전송되어 검토가 진행됩니다.",
   "block_user_success": "해당 사용자가 차단되었으며, 관련 콘텐츠가 당신의 타임월에서 삭제되었습니다",
-  "block_user_failed": "차단에 실패했습니다. 잠시 후 다시 시도해 주세요"
+  "block_user_failed": "차단에 실패했습니다. 잠시 후 다시 시도해 주세요",
+  "terms_checkbox_read_agree": "본인은 ",
+  "terms_checkbox_terms": "《이용약관》",
+  "terms_checkbox_and": "및",
+  "terms_checkbox_rules": "《커뮤니티 가이드라인》을 읽었으며 이에 동의합니다"
 }

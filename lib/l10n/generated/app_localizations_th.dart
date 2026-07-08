@@ -4239,4 +4239,16 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get block_user_failed =>
       'บล็อกไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง';
+
+  @override
+  String get terms_checkbox_read_agree => 'ฉันได้อ่านและยอมรับ';
+
+  @override
+  String get terms_checkbox_terms => '《ข้อตกลงการใช้งาน》';
+
+  @override
+  String get terms_checkbox_and => 'และ';
+
+  @override
+  String get terms_checkbox_rules => '《แนวทางปฏิบัติของชุมชน》';
 }

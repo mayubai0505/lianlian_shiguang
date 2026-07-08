@@ -4088,4 +4088,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get block_user_failed => '차단에 실패했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get terms_checkbox_read_agree => '본인은 ';
+
+  @override
+  String get terms_checkbox_terms => '《이용약관》';
+
+  @override
+  String get terms_checkbox_and => '및';
+
+  @override
+  String get terms_checkbox_rules => '《커뮤니티 가이드라인》을 읽었으며 이에 동의합니다';
 }

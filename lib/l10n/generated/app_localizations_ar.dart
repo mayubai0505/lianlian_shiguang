@@ -4237,4 +4237,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get block_user_failed => 'فشل الحظر، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String get terms_checkbox_read_agree => 'لقد قرأتُ وأوافق على';
+
+  @override
+  String get terms_checkbox_terms => '《شروط الاستخدام》';
+
+  @override
+  String get terms_checkbox_and => 'و';
+
+  @override
+  String get terms_checkbox_rules => '《إرشادات المجتمع》';
 }

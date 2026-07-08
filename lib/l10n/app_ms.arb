@@ -1937,5 +1937,9 @@
     "block_user_title": "Sekat pengguna ini?",
     "block_user_content": "Selepas disekat, awak tidak akan lagi melihat kandungan yang disiarkan oleh pengguna ini.\nKami juga akan menerima notifikasi dan menjalankan semakan.",
     "block_user_success": "Pengguna telah disekat, kandungan berkaitan telah dialih keluar daripada Dinding Kenangan awak",
-    "block_user_failed": "Gagal menyekat, sila cuba lagi kemudian"
+    "block_user_failed": "Gagal menyekat, sila cuba lagi kemudian",
+    "terms_checkbox_read_agree": "Saya telah membaca dan bersetuju dengan",
+    "terms_checkbox_terms": "《Syarat Penggunaan》",
+    "terms_checkbox_and": "dan",
+    "terms_checkbox_rules": "《Garis Panduan Komuniti》"
 }

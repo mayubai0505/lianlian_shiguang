@@ -2152,5 +2152,9 @@
   "block_user_title": "Block this user?",
   "block_user_content": "Once blocked, you will no longer see content published by this user.\nWe will also be notified and will conduct a review.",
   "block_user_success": "User blocked successfully. Related content has been removed from your Moments Wall",
-  "block_user_failed": "Failed to block user. Please try again later"
+  "block_user_failed": "Failed to block user. Please try again later",
+  "terms_checkbox_read_agree": "I have read and agree to the",
+  "terms_checkbox_terms": "\"Terms of Service\"",
+  "terms_checkbox_and": "and",
+  "terms_checkbox_rules": "\"Community Guidelines\""
 }

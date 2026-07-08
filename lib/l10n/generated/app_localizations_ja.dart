@@ -4073,4 +4073,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get block_user_failed => 'ブロックに失敗しました。しばらく経ってからもう一度お試しください';
+
+  @override
+  String get terms_checkbox_read_agree => '私は内容を確認し、';
+
+  @override
+  String get terms_checkbox_terms => '《利用規約》';
+
+  @override
+  String get terms_checkbox_and => 'および';
+
+  @override
+  String get terms_checkbox_rules => '《コミュニティガイドライン》に同意します';
 }

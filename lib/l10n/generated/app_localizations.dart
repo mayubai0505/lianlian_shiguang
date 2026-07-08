@@ -7497,6 +7497,30 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'封鎖失敗，請稍後再試'**
   String get block_user_failed;
+
+  /// No description provided for @terms_checkbox_read_agree.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我已閱讀並同意'**
+  String get terms_checkbox_read_agree;
+
+  /// No description provided for @terms_checkbox_terms.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'《使用條款》'**
+  String get terms_checkbox_terms;
+
+  /// No description provided for @terms_checkbox_and.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與'**
+  String get terms_checkbox_and;
+
+  /// No description provided for @terms_checkbox_rules.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'《社群規範》'**
+  String get terms_checkbox_rules;
 }
 
 class _AppLocalizationsDelegate

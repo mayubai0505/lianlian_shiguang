@@ -1952,5 +1952,9 @@
   "block_user_title": "封锁此使用者？",
   "block_user_content": "封锁后，你将不再看到此使用者发布的内容。\n我们也会收到通知并进行审查。",
   "block_user_success": "已封锁此使用者，相关内容已从你的拾光墙移除",
-  "block_user_failed": "封锁失败，请稍后再试"
+  "block_user_failed": "封锁失败，请稍后再试",
+  "terms_checkbox_read_agree": "我已阅读并同意",
+  "terms_checkbox_terms": "《使用条款》",
+  "terms_checkbox_and": "与",
+  "terms_checkbox_rules": "《社区规范》"
 }

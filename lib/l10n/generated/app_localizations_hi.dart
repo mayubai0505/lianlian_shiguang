@@ -4293,4 +4293,16 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get block_user_failed =>
       'ब्लॉक करने में विफल, कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get terms_checkbox_read_agree => 'मैंने पढ़ लिया है और मैं सहमत हूँ';
+
+  @override
+  String get terms_checkbox_terms => '《उपयोग की शर्तें》';
+
+  @override
+  String get terms_checkbox_and => 'और';
+
+  @override
+  String get terms_checkbox_rules => '《समुदाय दिशानिर्देश》';
 }

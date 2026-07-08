@@ -251,12 +251,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Color(0xFFAB47BC),
                   ),
                 ),
-
-                const SizedBox(height: 40),
-
-                _termsAgreementSection(),
-
-                const SizedBox(height: 20),
+                const SizedBox(height: 60),
 
                 // 🚀 Google 登入
                 if (showGoogleLogin) ...[
@@ -344,6 +339,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 32),
 
                 // 專屬信箱登入
+                // 專屬信箱登入
                 _buildLoginButton(
                   text: l10n.login_with_email,
                   iconWidget: const Padding(
@@ -366,6 +362,10 @@ class _LoginPageState extends State<LoginPage> {
                   },
                 ),
 
+                const SizedBox(height: 16),
+
+                _termsAgreementSection(),
+
                 const SizedBox(height: 40),
               ],
             ),
@@ -376,6 +376,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _termsAgreementSection() {
+    final l10n = AppLocalizations.of(context)!; // ✨ 新增：取得語系包
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40.0),
       child: Row(
@@ -397,18 +399,20 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.only(top: 12),
               child: Wrap(
                 children: [
-                  const Text(
-                    '我已閱讀並同意',
-                    style: TextStyle(
+                  // ✨ 替換：我已閱讀並同意
+                  Text(
+                    l10n.terms_checkbox_read_agree,
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF6A4A6F),
                     ),
                   ),
                   GestureDetector(
                     onTap: _showTermsDialog,
-                    child: const Text(
-                      '《使用條款》',
-                      style: TextStyle(
+                    // ✨ 替換：《使用條款》
+                    child: Text(
+                      l10n.terms_checkbox_terms,
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Color(0xFF7B1FA2),
                         fontWeight: FontWeight.bold,
@@ -416,9 +420,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const Text(
-                    '與',
-                    style: TextStyle(
+                  // ✨ 替換：與 (and)
+                  Text(
+                    l10n.terms_checkbox_and,
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Color(0xFF6A4A6F),
                     ),
@@ -426,9 +431,10 @@ class _LoginPageState extends State<LoginPage> {
 
                   GestureDetector(
                     onTap: _showCommunityRulesDialog,
-                    child: const Text(
-                      '《社群規範》',
-                      style: TextStyle(
+                    // ✨ 替換：《社群規範》
+                    child: Text(
+                      l10n.terms_checkbox_rules,
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Color(0xFF7B1FA2),
                         fontWeight: FontWeight.bold,
