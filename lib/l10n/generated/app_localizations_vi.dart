@@ -4304,4 +4304,72 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《Quy chuẩn Cộng đồng》';
+
+  @override
+  String get hidden_moments => 'Khoảnh khắc ẩn';
+
+  @override
+  String get hide_moment_title => 'Ẩn khoảnh khắc này?';
+
+  @override
+  String get hide_moment_content =>
+      'Sau khi ẩn, bài viết này sẽ không còn xuất hiện trên Tường Kỷ Niệm của bạn nữa.';
+
+  @override
+  String get hide => 'Ẩn';
+
+  @override
+  String get hide_moment_success => 'Đã ẩn khoảnh khắc này';
+
+  @override
+  String get hide_moment_failed => 'Ẩn thất bại, vui lòng thử lại sau';
+
+  @override
+  String get block_character_not_found =>
+      'Không tìm thấy dữ liệu nhân vật, không thể chặn';
+
+  @override
+  String get block_character_title => 'Chặn nhân vật này?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'Sau khi chặn, bạn sẽ không nhìn thấy các khoảnh khắc do \"$authorName\" đăng tải nữa. Nếu nội dung này vi phạm quy định, chúng tôi cũng sẽ nhận được thông báo và tiến hành xét duyệt.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return 'Đã chặn \"$authorName\", các khoảnh khắc liên quan đã được ẩn';
+  }
+
+  @override
+  String get block_character_failed => 'Chặn thất bại, vui lòng thử lại sau';
+
+  @override
+  String get hidden_moments_title => 'Khoảnh khắc ẩn';
+
+  @override
+  String get hidden_moments_empty => 'Hiện tại không có khoảnh khắc nào bị ẩn';
+
+  @override
+  String get hidden_moments_load_failed => 'Tải khoảnh khắc ẩn thất bại';
+
+  @override
+  String get hidden_moment_unknown_author => 'Nhân vật bí ẩn';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'Bài viết này không có nội dung để xem trước';
+
+  @override
+  String get unhide_moment_title => 'Hủy ẩn khoảnh khắc?';
+
+  @override
+  String get unhide_moment_content =>
+      'Sau khi hủy ẩn, nếu bài viết này vẫn còn tồn tại, nó có thể sẽ xuất hiện lại trên Tường Kỷ Niệm của bạn trong tương lai.';
+
+  @override
+  String get unhide_moment_action => 'Hủy ẩn';
+
+  @override
+  String get unhide_moment_success => 'Đã hủy ẩn thành công';
 }

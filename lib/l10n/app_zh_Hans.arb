@@ -1956,5 +1956,41 @@
   "terms_checkbox_read_agree": "我已阅读并同意",
   "terms_checkbox_terms": "《使用条款》",
   "terms_checkbox_and": "与",
-  "terms_checkbox_rules": "《社区规范》"
+  "terms_checkbox_rules": "《社区规范》",
+  "hidden_moments": "隐藏的动态",
+  "hide_moment_title": "隐藏此动态？",
+  "hide_moment_content": "隐藏后，这篇动态将不会再出现在你的拾光墙上。",
+  "hide": "隐藏",
+  "hide_moment_success": "已隐藏此动态",
+  "hide_moment_failed": "隐藏失败，请稍后再试",
+  "block_character_not_found": "找不到角色资料，无法封锁",
+  "block_character_title": "封锁此角色？",
+  "block_character_content": "封锁后，你将不再看到「{authorName}」发布的动态。若此内容涉及违规，我们也会收到通知并进行审查。",
+  "@block_character_content": {
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
+  },
+  "block_character_success": "已封锁「{authorName}」，相关动态已隐藏",
+  "@block_character_success": {
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
+  },
+  "block_character_failed": "封锁失败，请稍后再试",
+  "hidden_moments_title": "隐藏的动态",
+  "hidden_moments_empty": "目前没有隐藏的动态",
+  "hidden_moments_load_failed": "读取隐藏动态失败",
+  "hidden_moment_unknown_author": "未知角色",
+  "hidden_moment_no_preview": "这篇动态没有可预览的内容",
+  "unhide_moment_title": "解除隐藏？",
+  "unhide_moment_content": "解除后，若这篇动态仍存在，之后可能会再次出现在你的拾光墙。",
+  "unhide_moment_action": "解除隐藏",
+  "unhide_moment_success": "已解除隐藏"
 }

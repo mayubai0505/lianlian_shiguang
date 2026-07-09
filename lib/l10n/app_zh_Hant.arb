@@ -2084,5 +2084,43 @@
 "terms_checkbox_read_agree": "我已閱讀並同意",
 "terms_checkbox_terms": "《使用條款》",
 "terms_checkbox_and": "與",
-"terms_checkbox_rules": "《社群規範》"
+"terms_checkbox_rules": "《社群規範》",
+"hidden_moments": "隱藏的動態",
+"hide_moment_title": "隱藏此動態？",
+"hide_moment_content": "隱藏後，這篇動態將不會再出現在你的拾光牆上。",
+"hide": "隱藏",
+"hide_moment_success": "已隱藏此動態",
+"hide_moment_failed": "隱藏失敗，請稍後再試",
+
+"block_character_not_found": "找不到角色資料，無法封鎖",
+"block_character_title": "封鎖此角色？",
+"block_character_content": "封鎖後，你將不再看到「{authorName}」發布的動態。若此內容涉及違規，我們也會收到通知並進行審查。",
+"@block_character_content": {
+  "placeholders": {
+    "authorName": {
+      "type": "String",
+      "example": "程安"
+    }
+  }
+},
+"block_character_success": "已封鎖「{authorName}」，相關動態已隱藏",
+"@block_character_success": {
+  "placeholders": {
+    "authorName": {
+      "type": "String",
+      "example": "程安"
+    }
+  }
+},
+"block_character_failed": "封鎖失敗，請稍後再試",
+  "hidden_moments_title": "隱藏的動態",
+  "hidden_moments_empty": "目前沒有隱藏的動態",
+  "hidden_moments_load_failed": "讀取隱藏動態失敗",
+  "hidden_moment_unknown_author": "未知角色",
+  "hidden_moment_no_preview": "這篇動態沒有可預覽的內容",
+
+  "unhide_moment_title": "解除隱藏？",
+  "unhide_moment_content": "解除後，若這篇動態仍存在，之後可能會再次出現在你的拾光牆。",
+  "unhide_moment_action": "解除隱藏",
+  "unhide_moment_success": "已解除隱藏"
 }

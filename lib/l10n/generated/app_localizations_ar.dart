@@ -4249,4 +4249,73 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《إرشادات المجتمع》';
+
+  @override
+  String get hidden_moments => 'اللحظات المخفية';
+
+  @override
+  String get hide_moment_title => 'إخفاء هذه اللحظة؟';
+
+  @override
+  String get hide_moment_content =>
+      'بعد الإخفاء، لن تظهر هذه اللحظة على جدار الزمن الخاص بكِ مجدداً.';
+
+  @override
+  String get hide => 'إخفاء';
+
+  @override
+  String get hide_moment_success => 'تم إخفاء هذه اللحظة';
+
+  @override
+  String get hide_moment_failed => 'فشل الإخفاء، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String get block_character_not_found =>
+      'لم يتم العثور على بيانات الشخصية، تعذر الحظر';
+
+  @override
+  String get block_character_title => 'حظر هذه الشخصية؟';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'بعد الحظر، لن تتمكني من رؤية اللحظات التي تنشرها \"$authorName\" مجدداً. إذا كان هذا المحتوى ينتهك اللوائح، سنقوم أيضاً بتلقي إشعار وإجراء مراجعة للأمر.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return 'تم حظر \"$authorName\" بنجاح، وتم إخفاء اللحظات ذات الصلة';
+  }
+
+  @override
+  String get block_character_failed =>
+      'فشل الحظر، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String get hidden_moments_title => 'اللحظات المخفية';
+
+  @override
+  String get hidden_moments_empty => 'لا توجد لحظات مخفية حالياً';
+
+  @override
+  String get hidden_moments_load_failed => 'فشل تحميل اللحظات المخفية';
+
+  @override
+  String get hidden_moment_unknown_author => 'شخصية مجهولة';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'لا يوجد محتوى متاح للمعاينة في هذه اللحظة';
+
+  @override
+  String get unhide_moment_title => 'إلغاء الإخفاء؟';
+
+  @override
+  String get unhide_moment_content =>
+      'بعد إلغاء الإخفاء، إذا كانت هذه اللحظة لا تزال موجودة، فقد تظهر مجدداً على جدار الزمن الخاص بكِ لاحقاً.';
+
+  @override
+  String get unhide_moment_action => 'إلغاء الإخفاء';
+
+  @override
+  String get unhide_moment_success => 'تم إلغاء الإخفاء بنجاح';
 }

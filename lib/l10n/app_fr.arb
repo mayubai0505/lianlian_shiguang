@@ -2114,5 +2114,41 @@
     "terms_checkbox_read_agree": "J'ai lu et j'accepte les",
     "terms_checkbox_terms": "« Conditions d'utilisation »",
     "terms_checkbox_and": "et les",
-    "terms_checkbox_rules": "« Règles de la communauté »"
+    "terms_checkbox_rules": "« Règles de la communauté »",
+    "hidden_moments": "Moments cachés",
+    "hide_moment_title": "Cacher ce Moment ?",
+    "hide_moment_content": "Une fois caché, ce post n'apparaîtra plus sur votre Mur.",
+    "hide": "Cacher",
+    "hide_moment_success": "Ce Moment a été caché",
+    "hide_moment_failed": "Échec du masquage. Veuillez réessayer plus tard",
+    "block_character_not_found": "Données du personnage introuvables. Impossible de bloquer",
+    "block_character_title": "Bloquer ce personnage ?",
+    "block_character_content": "Une fois bloqué, vous ne verrez plus los moments publiés par « {authorName} ». Si ce contenu est contraire aux règles, nous recevrons également une notification et procéderons à un examen.",
+    "@block_character_content": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_success": "« {authorName} » a été bloqué, les moments associés ont été cachés",
+    "@block_character_success": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_failed": "Échec du blocage. Veuillez réessayer plus tard",
+    "hidden_moments_title": "Moments cachés",
+    "hidden_moments_empty": "Aucun moment caché pour le moment",
+    "hidden_moments_load_failed": "Échec du chargement des moments cachés",
+    "hidden_moment_unknown_author": "Personnage inconnu",
+    "hidden_moment_no_preview": "Ce moment ne contient aucun contenu à prévisualiser",
+    "unhide_moment_title": "Afficher à nouveau ?",
+    "unhide_moment_content": "Une fois réaffiché, si ce post existe toujours, il se peut qu'il réapparaisse sur votre Mur à l'avenir.",
+    "unhide_moment_action": "Afficher à nouveau",
+    "unhide_moment_success": "Affiché à nouveau avec succès"
 }

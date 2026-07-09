@@ -1941,5 +1941,41 @@
     "terms_checkbox_read_agree": "ฉันได้อ่านและยอมรับ",
     "terms_checkbox_terms": "《ข้อตกลงการใช้งาน》",
     "terms_checkbox_and": "และ",
-    "terms_checkbox_rules": "《แนวทางปฏิบัติของชุมชน》"
+    "terms_checkbox_rules": "《แนวทางปฏิบัติของชุมชน》",
+    "hidden_moments": "ช่วงเวลาที่ซ่อนอยู่",
+    "hide_moment_title": "ซ่อนช่วงเวลานี้ไหมคะ?",
+    "hide_moment_content": "หลังจากซ่อนแล้ว โพสต์นี้จะไม่แสดงบนวอลล์แห่งเวลาของคุณอีกต่อไปค่ะ",
+    "hide": "ซ่อน",
+    "hide_moment_success": "ซ่อนช่วงเวลานี้เรียบร้อยแล้วค่ะ",
+    "hide_moment_failed": "ซ่อนไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง",
+    "block_character_not_found": "ไม่พบข้อมูลตัวละคร ไม่สามารถดำเนินการบล็อกได้ค่ะ",
+    "block_character_title": "บล็อกตัวละครนี้ไหมคะ?",
+    "block_character_content": "หลังจากบล็อกแล้ว คุณจะไม่เห็นช่วงเวลาที่โพสต์โดย \"{authorName}\" อีกต่อไป และหากเนื้อหานี้ละเมิดกฎเกณฑ์ ทางเราจะได้รับแจ้งเตือนเพื่อดำเนินการตรวจสอบด้วยเช่นกันค่ะ",
+    "@block_character_content": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_success": "บล็อก \"{authorName}\" เรียบร้อยแล้ว ระบบได้ซ่อนช่วงเวลาที่เกี่ยวข้องแล้วค่ะ",
+    "@block_character_success": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_failed": "บล็อกไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง",
+    "hidden_moments_title": "ช่วงเวลาที่ซ่อนอยู่",
+    "hidden_moments_empty": "ขณะนี้ไม่มีช่วงเวลาที่ซ่อนอยู่ค่ะ",
+    "hidden_moments_load_failed": "โหลดช่วงเวลาที่ซ่อนอยู่ไม่สำเร็จ",
+    "hidden_moment_unknown_author": "ตัวละครที่ไม่รู้จัก",
+    "hidden_moment_no_preview": "โพสต์นี้ไม่มีเนื้อหาสำหรับแสดงตัวอย่างค่ะ",
+    "unhide_moment_title": "เลิกซ่อนไหมคะ?",
+    "unhide_moment_content": "หลังจากเลิกซ่อนแล้ว หากโพสต์นี้ยังคงอยู่ ก็อาจจะกลับมาแสดงบนวอลล์แห่งเวลาของคุณอีกครั้งในอนาคตค่ะ",
+    "unhide_moment_action": "เลิกซ่อน",
+    "unhide_moment_success": "เลิกซ่อนเรียบร้อยแล้วค่ะ"
 }

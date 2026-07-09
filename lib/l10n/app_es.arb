@@ -1940,5 +1940,41 @@
     "terms_checkbox_read_agree": "He leído y acepto los",
     "terms_checkbox_terms": "《Términos de uso》",
     "terms_checkbox_and": "y las",
-    "terms_checkbox_rules": "《Normas de la comunidad》"
+    "terms_checkbox_rules": "《Normas de la comunidad》",
+    "hidden_moments": "Momentos ocultos",
+    "hide_moment_title": "¿Ocultar este Momento?",
+    "hide_moment_content": "Una vez oculto, esta publicación ya no aparecerá en tu Muro.",
+    "hide": "Ocultar",
+    "hide_moment_success": "Se ha ocultado este Momento",
+    "hide_moment_failed": "Error al ocultar. Por favor, inténtalo de nuevo más tarde",
+    "block_character_not_found": "No se encontraron los datos del personaje. No se puede bloquear",
+    "block_character_title": "¿Bloquear a este personaje?",
+    "block_character_content": "Una vez bloqueado, ya no verás los momentos publicados por \"{authorName}\". Si este contenido infringe las normas, también recibirremos una notificación y realizaremos una revisión.",
+    "@block_character_content": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_success": "Se ha bloqueado a \"{authorName}\", los momentos relacionados se han ocultado",
+    "@block_character_success": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_failed": "Error al bloquear. Por favor, inténtalo de nuevo más tarde",
+    "hidden_moments_title": "Momentos ocultos",
+    "hidden_moments_empty": "No hay momentos ocultos por el momento",
+    "hidden_moments_load_failed": "Error al cargar los momentos ocultos",
+    "hidden_moment_unknown_author": "Personaje desconocido",
+    "hidden_moment_no_preview": "Este momento no tiene contenido para vista previa",
+    "unhide_moment_title": "¿Mostrar de nuevo?",
+    "unhide_moment_content": "Una vez mostrado de nuevo, si esta publicación aún existe, podría volver a aparecer en tu Muro en el futuro.",
+    "unhide_moment_action": "Mostrar de nuevo",
+    "unhide_moment_success": "Se ha vuelto a mostrar con éxito"
 }

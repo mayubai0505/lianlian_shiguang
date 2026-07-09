@@ -4251,4 +4251,74 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《แนวทางปฏิบัติของชุมชน》';
+
+  @override
+  String get hidden_moments => 'ช่วงเวลาที่ซ่อนอยู่';
+
+  @override
+  String get hide_moment_title => 'ซ่อนช่วงเวลานี้ไหมคะ?';
+
+  @override
+  String get hide_moment_content =>
+      'หลังจากซ่อนแล้ว โพสต์นี้จะไม่แสดงบนวอลล์แห่งเวลาของคุณอีกต่อไปค่ะ';
+
+  @override
+  String get hide => 'ซ่อน';
+
+  @override
+  String get hide_moment_success => 'ซ่อนช่วงเวลานี้เรียบร้อยแล้วค่ะ';
+
+  @override
+  String get hide_moment_failed =>
+      'ซ่อนไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง';
+
+  @override
+  String get block_character_not_found =>
+      'ไม่พบข้อมูลตัวละคร ไม่สามารถดำเนินการบล็อกได้ค่ะ';
+
+  @override
+  String get block_character_title => 'บล็อกตัวละครนี้ไหมคะ?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'หลังจากบล็อกแล้ว คุณจะไม่เห็นช่วงเวลาที่โพสต์โดย \"$authorName\" อีกต่อไป และหากเนื้อหานี้ละเมิดกฎเกณฑ์ ทางเราจะได้รับแจ้งเตือนเพื่อดำเนินการตรวจสอบด้วยเช่นกันค่ะ';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return 'บล็อก \"$authorName\" เรียบร้อยแล้ว ระบบได้ซ่อนช่วงเวลาที่เกี่ยวข้องแล้วค่ะ';
+  }
+
+  @override
+  String get block_character_failed =>
+      'บล็อกไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลัง';
+
+  @override
+  String get hidden_moments_title => 'ช่วงเวลาที่ซ่อนอยู่';
+
+  @override
+  String get hidden_moments_empty => 'ขณะนี้ไม่มีช่วงเวลาที่ซ่อนอยู่ค่ะ';
+
+  @override
+  String get hidden_moments_load_failed => 'โหลดช่วงเวลาที่ซ่อนอยู่ไม่สำเร็จ';
+
+  @override
+  String get hidden_moment_unknown_author => 'ตัวละครที่ไม่รู้จัก';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'โพสต์นี้ไม่มีเนื้อหาสำหรับแสดงตัวอย่างค่ะ';
+
+  @override
+  String get unhide_moment_title => 'เลิกซ่อนไหมคะ?';
+
+  @override
+  String get unhide_moment_content =>
+      'หลังจากเลิกซ่อนแล้ว หากโพสต์นี้ยังคงอยู่ ก็อาจจะกลับมาแสดงบนวอลล์แห่งเวลาของคุณอีกครั้งในอนาคตค่ะ';
+
+  @override
+  String get unhide_moment_action => 'เลิกซ่อน';
+
+  @override
+  String get unhide_moment_success => 'เลิกซ่อนเรียบร้อยแล้วค่ะ';
 }

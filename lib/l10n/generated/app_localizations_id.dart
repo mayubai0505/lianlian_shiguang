@@ -4303,4 +4303,75 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《Panduan Komunitas》';
+
+  @override
+  String get hidden_moments => 'Momen Tersembunyi';
+
+  @override
+  String get hide_moment_title => 'Sembunyikan Momen Ini?';
+
+  @override
+  String get hide_moment_content =>
+      'Setelah disembunyikan, postingan ini tidak akan muncul lagi di Dinding Kenangan Anda.';
+
+  @override
+  String get hide => 'Sembunyikan';
+
+  @override
+  String get hide_moment_success => 'Momen ini telah disembunyikan';
+
+  @override
+  String get hide_moment_failed =>
+      'Gagal menyembunyikan, silakan coba lagi nanti';
+
+  @override
+  String get block_character_not_found =>
+      'Data karakter tidak ditemukan, tidak dapat memblokir';
+
+  @override
+  String get block_character_title => 'Blokir karakter ini?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'Setelah diblokir, Anda tidak akan lagi melihat momen yang diterbitkan oleh \"$authorName\". Jika konten ini melanggar aturan, kami juga akan menerima notifikasi dan melakukan peninjauan.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return 'Telah memblokir \"$authorName\", momen terkait telah disembunyikan';
+  }
+
+  @override
+  String get block_character_failed =>
+      'Gagal memblokir, silakan coba lagi nanti';
+
+  @override
+  String get hidden_moments_title => 'Momen Tersembunyi';
+
+  @override
+  String get hidden_moments_empty =>
+      'Saat ini tidak ada momen yang disembunyikan';
+
+  @override
+  String get hidden_moments_load_failed => 'Gagal memuat momen tersembunyi';
+
+  @override
+  String get hidden_moment_unknown_author => 'Karakter Tidak Dikenal';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'Tidak ada konten pratinjau untuk momen ini';
+
+  @override
+  String get unhide_moment_title => 'Batalkan Sembunyi?';
+
+  @override
+  String get unhide_moment_content =>
+      'Setelah dibatalkan, jika postingan ini masih ada, mungkin akan muncul kembali di Dinding Kenangan Anda di masa mendatang.';
+
+  @override
+  String get unhide_moment_action => 'Batalkan Sembunyi';
+
+  @override
+  String get unhide_moment_success => 'Telah batal disembunyikan';
 }

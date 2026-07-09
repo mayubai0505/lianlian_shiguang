@@ -4100,4 +4100,69 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《커뮤니티 가이드라인》을 읽었으며 이에 동의합니다';
+
+  @override
+  String get hidden_moments => '숨겨진 순간';
+
+  @override
+  String get hide_moment_title => '이 순간을 숨기시겠습니까?';
+
+  @override
+  String get hide_moment_content => '숨긴 후에는 이 포스트가 당신의 타임월에 더 이상 표시되지 않습니다.';
+
+  @override
+  String get hide => '숨기기';
+
+  @override
+  String get hide_moment_success => '이 순간을 숨겼습니다';
+
+  @override
+  String get hide_moment_failed => '숨기기에 실패했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get block_character_not_found => '캐릭터 데이터를 찾을 수 없어 차단할 수 없습니다';
+
+  @override
+  String get block_character_title => '이 캐릭터를 차단하시겠습니까?';
+
+  @override
+  String block_character_content(String authorName) {
+    return '차단하면 「$authorName」이(가) 게시한 순간들을 더 이상 볼 수 없습니다. 해당 콘텐츠가 규정 위반에 해당하는 경우, 저희 측에도 알림이 전송되어 검토가 진행됩니다.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '「$authorName」을(를) 차단했으며, 관련 순간들이 숨겨졌습니다';
+  }
+
+  @override
+  String get block_character_failed => '차단에 실패했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get hidden_moments_title => '숨겨진 순간';
+
+  @override
+  String get hidden_moments_empty => '현재 숨겨진 순간이 없습니다';
+
+  @override
+  String get hidden_moments_load_failed => '숨겨진 순간을 불러오는 데 실패했습니다';
+
+  @override
+  String get hidden_moment_unknown_author => '알 수 없는 캐릭터';
+
+  @override
+  String get hidden_moment_no_preview => '이 포스트에는 미리 볼 수 있는 내용이 없습니다';
+
+  @override
+  String get unhide_moment_title => '숨기기 해제?';
+
+  @override
+  String get unhide_moment_content =>
+      '해제 후 해당 포스트가 여전히 존재한다면, 향후 당신의 타임월에 다시 표시될 수 있습니다.';
+
+  @override
+  String get unhide_moment_action => '숨기기 해제';
+
+  @override
+  String get unhide_moment_success => '숨기기가 해제되었습니다';
 }

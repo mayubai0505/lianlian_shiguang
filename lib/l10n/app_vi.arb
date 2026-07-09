@@ -1941,5 +1941,41 @@
   "terms_checkbox_read_agree": "Tôi đã đọc và đồng ý với",
   "terms_checkbox_terms": "《Điều khoản Sử dụng》",
   "terms_checkbox_and": "và",
-  "terms_checkbox_rules": "《Quy chuẩn Cộng đồng》"
+  "terms_checkbox_rules": "《Quy chuẩn Cộng đồng》",
+  "hidden_moments": "Khoảnh khắc ẩn",
+  "hide_moment_title": "Ẩn khoảnh khắc này?",
+  "hide_moment_content": "Sau khi ẩn, bài viết này sẽ không còn xuất hiện trên Tường Kỷ Niệm của bạn nữa.",
+  "hide": "Ẩn",
+  "hide_moment_success": "Đã ẩn khoảnh khắc này",
+  "hide_moment_failed": "Ẩn thất bại, vui lòng thử lại sau",
+  "block_character_not_found": "Không tìm thấy dữ liệu nhân vật, không thể chặn",
+  "block_character_title": "Chặn nhân vật này?",
+  "block_character_content": "Sau khi chặn, bạn sẽ không nhìn thấy các khoảnh khắc do \"{authorName}\" đăng tải nữa. Nếu nội dung này vi phạm quy định, chúng tôi cũng sẽ nhận được thông báo và tiến hành xét duyệt.",
+  "@block_character_content": {
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
+  },
+  "block_character_success": "Đã chặn \"{authorName}\", các khoảnh khắc liên quan đã được ẩn",
+  "@block_character_success": {
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
+  },
+  "block_character_failed": "Chặn thất bại, vui lòng thử lại sau",
+  "hidden_moments_title": "Khoảnh khắc ẩn",
+  "hidden_moments_empty": "Hiện tại không có khoảnh khắc nào bị ẩn",
+  "hidden_moments_load_failed": "Tải khoảnh khắc ẩn thất bại",
+  "hidden_moment_unknown_author": "Nhân vật bí ẩn",
+  "hidden_moment_no_preview": "Bài viết này không có nội dung để xem trước",
+  "unhide_moment_title": "Hủy ẩn khoảnh khắc?",
+  "unhide_moment_content": "Sau khi hủy ẩn, nếu bài viết này vẫn còn tồn tại, nó có thể sẽ xuất hiện lại trên Tường Kỷ Niệm của bạn trong tương lai.",
+  "unhide_moment_action": "Hủy ẩn",
+  "unhide_moment_success": "Đã hủy ẩn thành công"
 }

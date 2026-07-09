@@ -4085,4 +4085,69 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《コミュニティガイドライン》に同意します';
+
+  @override
+  String get hidden_moments => '非表示の瞬間';
+
+  @override
+  String get hide_moment_title => 'この投稿を非表示にしますか？';
+
+  @override
+  String get hide_moment_content => '非表示にすると、この投稿はあなたのタイムウォールに表示されなくなります。';
+
+  @override
+  String get hide => '非表示';
+
+  @override
+  String get hide_moment_success => '投稿を非表示にしました';
+
+  @override
+  String get hide_moment_failed => '非表示に失敗しました。しばらく経ってからもう一度お試しください';
+
+  @override
+  String get block_character_not_found => 'キャラクターデータが見つからないため、ブロックできません';
+
+  @override
+  String get block_character_title => 'このキャラクターをブロックしますか？';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'ブロックすると、「$authorName」が投稿したタイムラインが表示されなくなります。また、該当コンテンツが規約に違反している場合、運営チームにも通知が届き審査が行われます。';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '「$authorName」をブロックしました。関連する投稿は非表示になります';
+  }
+
+  @override
+  String get block_character_failed => 'ブロックに失敗しました。しばらく経ってからもう一度お試しください';
+
+  @override
+  String get hidden_moments_title => '非表示の瞬間';
+
+  @override
+  String get hidden_moments_empty => '現在、非表示の瞬間はありません';
+
+  @override
+  String get hidden_moments_load_failed => '非表示の瞬間の読み込みに失敗しました';
+
+  @override
+  String get hidden_moment_unknown_author => '未知のキャラクター';
+
+  @override
+  String get hidden_moment_no_preview => 'この投稿にはプレビューできる内容がありません';
+
+  @override
+  String get unhide_moment_title => '再表示しますか？';
+
+  @override
+  String get unhide_moment_content =>
+      '非表示を解除すると、該当の投稿がまだ存在している場合、今後再びタイムウォールに表示される可能性があります。';
+
+  @override
+  String get unhide_moment_action => '非表示を解除';
+
+  @override
+  String get unhide_moment_success => '非表示を解除しました';
 }

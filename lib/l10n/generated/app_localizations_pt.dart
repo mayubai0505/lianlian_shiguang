@@ -4326,4 +4326,74 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《Diretrizes da Comunidade》';
+
+  @override
+  String get hidden_moments => 'Momentos Ocultos';
+
+  @override
+  String get hide_moment_title => 'Ocultar este Momento?';
+
+  @override
+  String get hide_moment_content =>
+      'Após ocultar, esta postagem não aparecerá mais no seu Mural.';
+
+  @override
+  String get hide => 'Ocultar';
+
+  @override
+  String get hide_moment_success => 'Este momento foi ocultado';
+
+  @override
+  String get hide_moment_failed =>
+      'Falha ao ocultar. Por favor, tente novamente mais tarde';
+
+  @override
+  String get block_character_not_found =>
+      'Dados do personagem não encontrados. Não é possível bloquear';
+
+  @override
+  String get block_character_title => 'Bloquear este personagem?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'Após o bloqueio, você não verá mais os momentos publicados por \"$authorName\". Se este conteúdo violar as normas, nós também seremos notificados e realizaremos uma revisão.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '\"$authorName\" foi bloqueado, os momentos relacionados foram ocultados';
+  }
+
+  @override
+  String get block_character_failed =>
+      'Falha ao bloquear. Por favor, tente novamente mais tarde';
+
+  @override
+  String get hidden_moments_title => 'Detik Tersembunyi';
+
+  @override
+  String get hidden_moments_empty => 'Tiada detik tersembunyi buat masa ini';
+
+  @override
+  String get hidden_moments_load_failed => 'Gagal memuatkan detik tersembunyi';
+
+  @override
+  String get hidden_moment_unknown_author => 'Karakter Tidak Dikenali';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'Tiada kandungan pratinjau untuk detik ini';
+
+  @override
+  String get unhide_moment_title => 'Batalkan Sembunyi?';
+
+  @override
+  String get unhide_moment_content =>
+      'Selepas dibatalkan, jika siaran ini masih ada, ia mungkin akan dipaparkan semula pada Dinding Kenangan awak pada masa hadapan.';
+
+  @override
+  String get unhide_moment_action => 'Batalkan Sembunyi';
+
+  @override
+  String get unhide_moment_success => 'Telah batal disembunyikan';
 }

@@ -1982,5 +1982,41 @@
     "terms_checkbox_read_agree": "لقد قرأتُ وأوافق على",
     "terms_checkbox_terms": "《شروط الاستخدام》",
     "terms_checkbox_and": "و",
-    "terms_checkbox_rules": "《إرشادات المجتمع》"
+    "terms_checkbox_rules": "《إرشادات المجتمع》",
+    "hidden_moments": "اللحظات المخفية",
+    "hide_moment_title": "إخفاء هذه اللحظة؟",
+    "hide_moment_content": "بعد الإخفاء، لن تظهر هذه اللحظة على جدار الزمن الخاص بكِ مجدداً.",
+    "hide": "إخفاء",
+    "hide_moment_success": "تم إخفاء هذه اللحظة",
+    "hide_moment_failed": "فشل الإخفاء، يرجى المحاولة مرة أخرى لاحقاً",
+    "block_character_not_found": "لم يتم العثور على بيانات الشخصية، تعذر الحظر",
+    "block_character_title": "حظر هذه الشخصية؟",
+    "block_character_content": "بعد الحظر، لن تتمكني من رؤية اللحظات التي تنشرها \"{authorName}\" مجدداً. إذا كان هذا المحتوى ينتهك اللوائح، سنقوم أيضاً بتلقي إشعار وإجراء مراجعة للأمر.",
+    "@block_character_content": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_success": "تم حظر \"{authorName}\" بنجاح، وتم إخفاء اللحظات ذات الصلة",
+    "@block_character_success": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_failed": "فشل الحظر، يرجى المحاولة مرة أخرى لاحقاً",
+    "hidden_moments_title": "اللحظات المخفية",
+    "hidden_moments_empty": "لا توجد لحظات مخفية حالياً",
+    "hidden_moments_load_failed": "فشل تحميل اللحظات المخفية",
+    "hidden_moment_unknown_author": "شخصية مجهولة",
+    "hidden_moment_no_preview": "لا يوجد محتوى متاح للمعاينة في هذه اللحظة",
+    "unhide_moment_title": "إلغاء الإخفاء؟",
+    "unhide_moment_content": "بعد إلغاء الإخفاء، إذا كانت هذه اللحظة لا تزال موجودة، فقد تظهر مجدداً على جدار الزمن الخاص بكِ لاحقاً.",
+    "unhide_moment_action": "إلغاء الإخفاء",
+    "unhide_moment_success": "تم إلغاء الإخفاء بنجاح"
 }

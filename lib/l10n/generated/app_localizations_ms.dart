@@ -4309,4 +4309,74 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《Garis Panduan Komuniti》';
+
+  @override
+  String get hidden_moments => 'Detik Tersembunyi';
+
+  @override
+  String get hide_moment_title => 'Sembunyikan Detik Ini?';
+
+  @override
+  String get hide_moment_content =>
+      'Selepas disembunyikan, siaran ini tidak akan dipaparkan lagi pada Dinding Kenangan awak.';
+
+  @override
+  String get hide => 'Sembunyikan';
+
+  @override
+  String get hide_moment_success => 'Detik ini telah disembunyikan';
+
+  @override
+  String get hide_moment_failed =>
+      'Gagal menyembunyikan, sila cuba lagi kemudian';
+
+  @override
+  String get block_character_not_found =>
+      'Data karakter tidak ditemui, tidak boleh menyekat';
+
+  @override
+  String get block_character_title => 'Sekat karakter ini?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'Selepas disekat, awak tidak akan lagi melihat detik yang disiarkan oleh \"$authorName\". Jika kandungan ini melanggar garis panduan, kami juga akan menerima notifikasi dan menjalankan semakan.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return 'Telah menyekat \"$authorName\", detik berkaitan telah disembunyikan';
+  }
+
+  @override
+  String get block_character_failed =>
+      'Gagal menyekat, sila cuba lagi kemudian';
+
+  @override
+  String get hidden_moments_title => 'Momentos Ocultos';
+
+  @override
+  String get hidden_moments_empty => 'Não há momentos ocultos no momento';
+
+  @override
+  String get hidden_moments_load_failed => 'Falha ao carregar momentos ocultos';
+
+  @override
+  String get hidden_moment_unknown_author => 'Personagem Desconhecido';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'Este momento não possui conteúdo para visualização';
+
+  @override
+  String get unhide_moment_title => 'Exibir Novamente?';
+
+  @override
+  String get unhide_moment_content =>
+      'Após exibir novamente, se esta postagem ainda existir, ela poderá aparecer no seu Mural outra vez no futuro.';
+
+  @override
+  String get unhide_moment_action => 'Exibir Novamente';
+
+  @override
+  String get unhide_moment_success => 'Exibido novamente com sucesso';
 }

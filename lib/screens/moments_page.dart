@@ -17,6 +17,8 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'character_profile_page.dart';
 import '../services/moment_notification_service.dart';
 import 'edit_moment_page.dart';
+import 'hidden_moments_page.dart';
+import 'dart:async';
 //動態牆(朋友圈)
 class MomentsPage extends StatefulWidget {
   const MomentsPage({super.key});
@@ -32,7 +34,11 @@ class _MomentsPageState extends State<MomentsPage> {
   int _likeProgress = 0;
   bool _isLikeClaimed = false;
   late Stream<QuerySnapshot> _friendsStream;
-
+  int _feedReloadKey = 0;
+  bool _isOpeningMoreMenu = false;
+  bool _momentsMenuTipDismissed = false;
+  int _pauseMomentCardTipsSignal = 0;
+  int _resumeMomentCardTipsSignal = 0;
   @override
   void initState() {
     super.initState();
@@ -184,6 +190,7 @@ class _MomentsPageState extends State<MomentsPage> {
                 // ✨ 三條線選單
                 actions: [
                   FeatureTipTarget(
+                    enabled: !_isOpeningMoreMenu && !_momentsMenuTipDismissed,
                     scopeKey: 'moments_page',
                     tipKey: '${FeatureTipKeys.momentsWallMenu}_v4',
                     tipText: l10n.tip_moments_wall_menu,
@@ -216,7 +223,31 @@ class _MomentsPageState extends State<MomentsPage> {
                     child: IconButton(
                       icon: const Icon(Icons.menu, size: 28),
                       tooltip: l10n.more_options,
-                      onPressed: () => _showMoreMenuSheet(context),
+                      onPressed: () async {
+                        if (_isOpeningMoreMenu) return;
+
+                        setState(() {
+                          _isOpeningMoreMenu = true;
+
+                          // 暫停第一篇貼文的按讚 / 收藏氣泡
+                          _pauseMomentCardTipsSignal++;
+                        });
+
+                        await Future.delayed(const Duration(milliseconds: 80));
+
+                        if (!mounted) return;
+
+                        await _showMoreMenuSheet(context);
+
+                        if (!mounted) return;
+
+                        setState(() {
+                          _isOpeningMoreMenu = false;
+
+                          // 底部選單關掉後，恢復導覽氣泡
+                          _resumeMomentCardTipsSignal++;
+                        });
+                      },
                     ),
                   ),
                 ],
@@ -248,20 +279,26 @@ class _MomentsPageState extends State<MomentsPage> {
         return TabBarView(
           children: [
             PersistentFeed(
+              key: ValueKey('public_$_feedReloadKey'),
               friendIds: friendIds,
               isPublicTab: true,
               userId: _userId!,
               appId: _appId,
+              pauseMomentCardTipsSignal: _pauseMomentCardTipsSignal,
+              resumeMomentCardTipsSignal: _resumeMomentCardTipsSignal,
               onLikeTapped: _handleLikeTaskProgress,
               onDeleteTapped: _deleteMoment,
               onAvatarTapped: _navigateToCharacterProfile,
               onEditTapped: _editMoment,
             ),
             PersistentFeed(
+              key: ValueKey('private_$_feedReloadKey'),
               friendIds: friendIds,
               isPublicTab: false,
               userId: _userId!,
               appId: _appId,
+              pauseMomentCardTipsSignal: _pauseMomentCardTipsSignal,
+              resumeMomentCardTipsSignal: _resumeMomentCardTipsSignal,
               onLikeTapped: _handleLikeTaskProgress,
               onDeleteTapped: _deleteMoment,
               onAvatarTapped: _navigateToCharacterProfile,
@@ -516,9 +553,9 @@ class _MomentsPageState extends State<MomentsPage> {
   }
 
     // ✨ 新增：大廳右上角的三條線綜合選單
-    void _showMoreMenuSheet(BuildContext context) {
+  Future<void> _showMoreMenuSheet(BuildContext context) async {
       final l10n = AppLocalizations.of(context)!;
-      showModalBottomSheet(
+      await showModalBottomSheet(
         context: context,
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
         builder: (context) {
@@ -585,6 +622,27 @@ class _MomentsPageState extends State<MomentsPage> {
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) => const InteractionHistoryPage(initialIndex: 1),
                     ));
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.visibility_off_outlined, color: Colors.blueGrey),
+                  // ✨ 替換：隱藏的動態 (拿掉 const)
+                  title: Text(l10n.hidden_moments),
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                  onTap: () {
+                    Navigator.pop(context);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HiddenMomentsPage(),
+                      ),
+                    ).then((_) {
+                      if (!mounted) return;
+                      setState(() {
+                        _feedReloadKey++;
+                      });
+                    });
                   },
                 ),
                 const SizedBox(height: 10),
@@ -842,6 +900,8 @@ class PersistentFeed extends StatefulWidget {
   final Function(Moment) onAvatarTapped;
   final Function(Moment) onEditTapped;
   final bool showFeatureTips;
+  final int pauseMomentCardTipsSignal;
+  final int resumeMomentCardTipsSignal;
   const PersistentFeed({
     super.key,
     required this.friendIds,
@@ -852,6 +912,8 @@ class PersistentFeed extends StatefulWidget {
     required this.onDeleteTapped,
     required this.onAvatarTapped,
     required this.onEditTapped,
+    required this.pauseMomentCardTipsSignal,
+    required this.resumeMomentCardTipsSignal,
     this.showFeatureTips = false,
   });
 
@@ -862,8 +924,15 @@ class PersistentFeed extends StatefulWidget {
 class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAliveClientMixin {
   late Stream<QuerySnapshot> _momentsStream;
 
-  final Set<String> _blockedUserIds = {};
-  bool _isLoadingBlockedUsers = true;
+  final Set<String> _hiddenMomentIds = {};
+  final Set<String> _blockedCharacterIds = {};
+  bool _isLoadingBlockedData = true;
+  bool _momentFeatureTipsPaused = false;
+  StreamSubscription<QuerySnapshot>? _hiddenMomentsSub;
+  StreamSubscription<QuerySnapshot>? _blockedCharactersSub;
+
+  bool _hiddenMomentsLoaded = false;
+  bool _blockedCharactersLoaded = false;
 
   @override
   void initState() {
@@ -877,43 +946,170 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
         .limit(50)
         .snapshots();
 
-    _loadBlockedUsers();
+    _listenBlockedData();
   }
 
-  Future<void> _loadBlockedUsers() async {
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .collection('blockedUsers')
-          .get();
+  @override
+  void dispose() {
+    _hiddenMomentsSub?.cancel();
+    _blockedCharactersSub?.cancel();
+    super.dispose();
+  }
 
-      if (!mounted) return;
+  @override
+  void didUpdateWidget(covariant PersistentFeed oldWidget) {
+    super.didUpdateWidget(oldWidget);
 
-      setState(() {
-        _blockedUserIds
-          ..clear()
-          ..addAll(snapshot.docs.map((doc) => doc.id));
-        _isLoadingBlockedUsers = false;
-      });
-    } catch (e) {
-      debugPrint('讀取封鎖名單失敗: $e');
+    if (oldWidget.pauseMomentCardTipsSignal != widget.pauseMomentCardTipsSignal) {
+      if (!_momentFeatureTipsPaused && mounted) {
+        setState(() {
+          _momentFeatureTipsPaused = true;
+        });
+      }
+    }
 
-      if (!mounted) return;
-
-      setState(() {
-        _isLoadingBlockedUsers = false;
-      });
+    if (oldWidget.resumeMomentCardTipsSignal != widget.resumeMomentCardTipsSignal) {
+      if (_momentFeatureTipsPaused && mounted) {
+        setState(() {
+          _momentFeatureTipsPaused = false;
+        });
+      }
     }
   }
 
-  Future<void> _blockMomentAuthor(Moment moment) async {
-    final String blockedUid = moment.createdBy;
+  void _listenBlockedData() {
+    _hiddenMomentsSub = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('hiddenMoments')
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted) return;
+
+      setState(() {
+        _hiddenMomentIds
+          ..clear()
+          ..addAll(snapshot.docs.map((doc) => doc.id));
+
+        _hiddenMomentsLoaded = true;
+        _isLoadingBlockedData =
+        !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
+      });
+    }, onError: (e) {
+      debugPrint('監聽隱藏動態失敗: $e');
+
+      if (!mounted) return;
+
+      setState(() {
+        _hiddenMomentsLoaded = true;
+        _isLoadingBlockedData =
+        !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
+      });
+    });
+
+    _blockedCharactersSub = FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('characters')
+        .where('isBlocked', isEqualTo: true)
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted) return;
+
+      setState(() {
+        _blockedCharacterIds
+          ..clear()
+          ..addAll(snapshot.docs.map((doc) => doc.id));
+
+        _blockedCharactersLoaded = true;
+        _isLoadingBlockedData =
+        !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
+      });
+    }, onError: (e) {
+      debugPrint('監聽封鎖角色失敗: $e');
+
+      if (!mounted) return;
+
+      setState(() {
+        _blockedCharactersLoaded = true;
+        _isLoadingBlockedData =
+        !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
+      });
+    });
+  }
+
+  Future<void> _hideMoment(Moment moment) async {
     final l10n = AppLocalizations.of(context)!;
-    if (blockedUid.isEmpty || blockedUid == widget.userId) {
+
+    final bool confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.hide_moment_title), // ✨ 替換
+        content: Text(l10n.hide_moment_content), // ✨ 替換
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancelButton),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.hide), // ✨ 替換
+          ),
+        ],
+      ),
+    ) ??
+        false;
+
+    if (!confirm) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .collection('hiddenMoments')
+          .doc(moment.id)
+          .set({
+        'momentId': moment.id,
+        'authorId': moment.authorId,
+        'authorName': moment.authorName,
+        'authorAvatar': moment.authorAvatar,
+        'content': moment.content,
+        'imageUrl': moment.imageUrl,
+        'hiddenAt': FieldValue.serverTimestamp(),
+        'source': 'moments',
+      }, SetOptions(merge: true));
+
+      if (!mounted) return;
+
+      setState(() {
+        _hiddenMomentIds.add(moment.id);
+      });
+
       ToastUtils.showCenterToast(
         context,
-        l10n.block_self_error, // ✨ 替換：無法封鎖自己
+        l10n.hide_moment_success, // ✨ 替換
+        customIcon: Icons.visibility_off_outlined,
+      );
+    } catch (e) {
+      debugPrint('隱藏動態失敗: $e');
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.hide_moment_failed, // ✨ 替換
+        customIcon: Icons.error_outline_rounded,
+      );
+    }
+  }
+
+  Future<void> _blockMomentCharacter(Moment moment) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (moment.authorId.isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        l10n.block_character_not_found, // ✨ 替換
         customIcon: Icons.info_outline_rounded,
       );
       return;
@@ -922,18 +1118,20 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
     final bool confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.block_user_title), // ✨ 替換：彈窗標題 (記得拿掉 const)
-        content: Text(l10n.block_user_content), // ✨ 替換：彈窗內容 (記得拿掉 const)
+        title: Text(l10n.block_character_title), // ✨ 替換
+        content: Text(
+          l10n.block_character_content(moment.authorName), // ✨ 替換：帶入角色名稱參數
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child:  Text(l10n.cancelButton),
+            child: Text(l10n.cancelButton),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               l10n.block,
-              style: const TextStyle(color: Colors.red), // 這裡可以加回 const TextStyle
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],
@@ -947,30 +1145,32 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
       final db = FirebaseFirestore.instance;
       final batch = db.batch();
 
-      final blockRef = db
+      final blockedCharacterRef = db
           .collection('users')
           .doc(widget.userId)
-          .collection('blockedUsers')
-          .doc(blockedUid);
+          .collection('characters')
+          .doc(moment.authorId);
 
-      batch.set(blockRef, {
-        'blockedUid': blockedUid,
+      batch.set(blockedCharacterRef, {
+        'name': moment.authorName,
+        'avatar': moment.authorAvatar,
+        'isBlocked': true,
         'blockedAt': FieldValue.serverTimestamp(),
-        'source': 'moments',
+        'desc': '',
+        'blockedFrom': 'moments',
         'relatedMomentId': moment.id,
-        'blockedAuthorName': moment.authorName,
       }, SetOptions(merge: true));
 
       final alertRef = db.collection('moderationAlerts').doc();
 
       batch.set(alertRef, {
-        'type': 'block_user',
+        'type': 'block_character',
         'blockerUid': widget.userId,
-        'blockedUid': blockedUid,
+        'blockedCharacterId': moment.authorId,
+        'blockedCharacterName': moment.authorName,
         'relatedType': 'moment',
         'relatedMomentId': moment.id,
-        'relatedAuthorId': moment.authorId,
-        'relatedAuthorName': moment.authorName,
+        'createdBy': moment.createdBy,
         'createdAt': FieldValue.serverTimestamp(),
         'status': 'pending',
       });
@@ -980,22 +1180,22 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
       if (!mounted) return;
 
       setState(() {
-        _blockedUserIds.add(blockedUid);
+        _blockedCharacterIds.add(moment.authorId);
       });
 
       ToastUtils.showCenterToast(
         context,
-        l10n.block_user_success, // ✨ 替換：封鎖成功提示
+        l10n.block_character_success(moment.authorName), // ✨ 替換：帶入角色名稱參數
         customIcon: Icons.block_rounded,
       );
     } catch (e) {
-      debugPrint('封鎖使用者失敗: $e');
+      debugPrint('封鎖角色失敗: $e');
 
       if (!mounted) return;
 
       ToastUtils.showCenterToast(
         context,
-        l10n.block_user_failed, // ✨ 替換：封鎖失敗提示
+        l10n.block_character_failed, // ✨ 替換
         customIcon: Icons.error_outline_rounded,
       );
     }
@@ -1010,7 +1210,6 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
 
     return RefreshIndicator(
       onRefresh: () async {
-        // 💡 如果使用者手動下拉重新整理，我們才重新抓一次 Stream
         setState(() {
           _momentsStream = FirebaseFirestore.instance
               .collection('artifacts')
@@ -1020,12 +1219,13 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
               .limit(50)
               .snapshots();
         });
+
         await Future.delayed(const Duration(milliseconds: 500));
       },
       child: StreamBuilder<QuerySnapshot>(
         stream: _momentsStream, // 💡 修正 4：改用綁定好的 _momentsStream
         builder: (context, momentSnapshot) {
-          if (_isLoadingBlockedUsers ||
+          if (_isLoadingBlockedData ||
               momentSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -1038,8 +1238,13 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
               .toList();
 
           final filteredMoments = allMoments.where((m) {
-            // 自己封鎖過的使用者，直接不顯示
-            if (_blockedUserIds.contains(m.createdBy)) {
+            // 隱藏單篇動態：只隱藏這一篇
+            if (_hiddenMomentIds.contains(m.id)) {
+              return false;
+            }
+
+            // 封鎖角色：這個角色的所有動態都不顯示
+            if (_blockedCharacterIds.contains(m.authorId)) {
               return false;
             }
 
@@ -1061,12 +1266,13 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
                 return MomentCard(
                   moment: moment,
                   currentUserId: widget.userId,
-                  showFeatureTips: index == 0,
+                  showFeatureTips: index == 0 && !_momentFeatureTipsPaused,
                   onLikeTapped: () => widget.onLikeTapped(moment),
                   onDeleteTapped: () => widget.onDeleteTapped(moment.id),
                   onAvatarTapped: () => widget.onAvatarTapped(moment),
                   onEditTapped: () => widget.onEditTapped(moment),
-                  onBlockUserTapped: () => _blockMomentAuthor(moment),
+                  onHideMomentTapped: () => _hideMoment(moment),
+                  onBlockCharacterTapped: () => _blockMomentCharacter(moment),
                 );
               }
           );

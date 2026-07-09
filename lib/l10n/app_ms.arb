@@ -1941,5 +1941,50 @@
     "terms_checkbox_read_agree": "Saya telah membaca dan bersetuju dengan",
     "terms_checkbox_terms": "《Syarat Penggunaan》",
     "terms_checkbox_and": "dan",
-    "terms_checkbox_rules": "《Garis Panduan Komuniti》"
+    "terms_checkbox_rules": "《Garis Panduan Komuniti》",
+    "hidden_moments": "Detik Tersembunyi",
+    "hide_moment_title": "Sembunyikan Detik Ini?",
+    "hide_moment_content": "Selepas disembunyikan, siaran ini tidak akan dipaparkan lagi pada Dinding Kenangan awak.",
+    "hide": "Sembunyikan",
+    "hide_moment_success": "Detik ini telah disembunyikan",
+    "hide_moment_failed": "Gagal menyembunyikan, sila cuba lagi kemudian",
+    "block_character_not_found": "Data karakter tidak ditemui, tidak boleh menyekat",
+    "block_character_title": "Sekat karakter ini?",
+    "block_character_content": "Selepas disekat, awak tidak akan lagi melihat detik yang disiarkan oleh \"{authorName}\". Jika kandungan ini melanggar garis panduan, kami juga akan menerima notifikasi dan menjalankan semakan.",
+    "@block_character_content": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_success": "Telah menyekat \"{authorName}\", detik berkaitan telah disembunyikan",
+    "@block_character_success": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_failed": "Gagal menyekat, sila cuba lagi kemudian",
+    "hidden_moments_title": "Detik Tersembunyi",
+    "hidden_moments_empty": "Tiada detik tersembunyi buat masa ini",
+    "hidden_moments_load_failed": "Gagal memuatkan detik tersembunyi",
+    "hidden_moment_unknown_author": "Karakter Tidak Dikenali",
+    "hidden_moment_no_preview": "Tiada kandungan pratinjau untuk detik ini",
+    "unhide_moment_title": "Batalkan Sembunyi?",
+    "unhide_moment_content": "Selepas dibatalkan, jika siaran ini masih ada, ia mungkin akan dipaparkan semula pada Dinding Kenangan awak pada masa hadapan.",
+    "unhide_moment_action": "Batalkan Sembunyi",
+    "unhide_moment_success": "Telah batal disembunyikan",
+    "hidden_moments_title": "Momentos Ocultos",
+    "hidden_moments_empty": "Não há momentos ocultos no momento",
+    "hidden_moments_load_failed": "Falha ao carregar momentos ocultos",
+    "hidden_moment_unknown_author": "Personagem Desconhecido",
+    "hidden_moment_no_preview": "Este momento não possui conteúdo para visualização",
+    "unhide_moment_title": "Exibir Novamente?",
+    "unhide_moment_content": "Após exibir novamente, se esta postagem ainda existir, ela poderá aparecer no seu Mural outra vez no futuro.",
+    "unhide_moment_action": "Exibir Novamente",
+    "unhide_moment_success": "Exibido novamente com sucesso"
 }

@@ -1940,5 +1940,41 @@
     "terms_checkbox_read_agree": "Saya telah membaca dan menyetujui",
     "terms_checkbox_terms": "《Syarat Penggunaan》",
     "terms_checkbox_and": "dan",
-    "terms_checkbox_rules": "《Panduan Komunitas》"
+    "terms_checkbox_rules": "《Panduan Komunitas》",
+    "hidden_moments": "Momen Tersembunyi",
+    "hide_moment_title": "Sembunyikan Momen Ini?",
+    "hide_moment_content": "Setelah disembunyikan, postingan ini tidak akan muncul lagi di Dinding Kenangan Anda.",
+    "hide": "Sembunyikan",
+    "hide_moment_success": "Momen ini telah disembunyikan",
+    "hide_moment_failed": "Gagal menyembunyikan, silakan coba lagi nanti",
+    "block_character_not_found": "Data karakter tidak ditemukan, tidak dapat memblokir",
+    "block_character_title": "Blokir karakter ini?",
+    "block_character_content": "Setelah diblokir, Anda tidak akan lagi melihat momen yang diterbitkan oleh \"{authorName}\". Jika konten ini melanggar aturan, kami juga akan menerima notifikasi dan melakukan peninjauan.",
+    "@block_character_content": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_success": "Telah memblokir \"{authorName}\", momen terkait telah disembunyikan",
+    "@block_character_success": {
+    "placeholders": {
+    "authorName": {
+    "type": "String",
+    "example": "程安"
+    }
+    }
+    },
+    "block_character_failed": "Gagal memblokir, silakan coba lagi nanti",
+    "hidden_moments_title": "Momen Tersembunyi",
+    "hidden_moments_empty": "Saat ini tidak ada momen yang disembunyikan",
+    "hidden_moments_load_failed": "Gagal memuat momen tersembunyi",
+    "hidden_moment_unknown_author": "Karakter Tidak Dikenal",
+    "hidden_moment_no_preview": "Tidak ada konten pratinjau untuk momen ini",
+    "unhide_moment_title": "Batalkan Sembunyi?",
+    "unhide_moment_content": "Setelah dibatalkan, jika postingan ini masih ada, mungkin akan muncul kembali di Dinding Kenangan Anda di masa mendatang.",
+    "unhide_moment_action": "Batalkan Sembunyi",
+    "unhide_moment_success": "Telah batal disembunyikan"
 }

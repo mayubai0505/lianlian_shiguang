@@ -1942,5 +1942,42 @@
    "terms_checkbox_read_agree": "Eu li e concordo com os",
    "terms_checkbox_terms": "《Termos de Uso》",
    "terms_checkbox_and": "e",
-   "terms_checkbox_rules": "《Diretrizes da Comunidade》"
+   "terms_checkbox_rules": "《Diretrizes da Comunidade》",
+   "hidden_moments": "Momentos Ocultos",
+   "hide_moment_title": "Ocultar este Momento?",
+   "hide_moment_content": "Após ocultar, esta postagem não aparecerá mais no seu Mural.",
+   "hide": "Ocultar",
+   "hide_moment_success": "Este momento foi ocultado",
+   "hide_moment_failed": "Falha ao ocultar. Por favor, tente novamente mais tarde",
+   "block_character_not_found": "Dados do personagem não encontrados. Não é possível bloquear",
+   "block_character_title": "Bloquear este personagem?",
+   "block_character_content": "Após o bloqueio, você não verá mais os momentos publicados por \"{authorName}\". Se este conteúdo violar as normas, nós também seremos notificados e realizaremos uma revisão.",
+   "@block_character_content": {
+   "placeholders": {
+   "authorName": {
+   "type": "String",
+   "example": "程安"
+   }
+   }
+   },
+   "block_character_success": "\"{authorName}\" foi bloqueado, os momentos relacionados foram ocultados",
+   "@block_character_success": {
+   "placeholders": {
+   "authorName": {
+   "type": "String",
+   "example": "程安"
+   }
+   }
+   },
+   "block_character_failed": "Falha ao bloquear. Por favor, tente novamente mais tarde",
+   "hidden_moments_title": "Detik Tersembunyi",
+   "hidden_moments_empty": "Tiada detik tersembunyi buat masa ini",
+   "hidden_moments_load_failed": "Gagal memuatkan detik tersembunyi",
+   "hidden_moment_unknown_author": "Karakter Tidak Dikenali",
+   "hidden_moment_no_preview": "Tiada kandungan pratinjau untuk detik ini",
+   "unhide_moment_title": "Batalkan Sembunyi?",
+   "unhide_moment_content": "Selepas dibatalkan, jika siaran ini masih ada, ia mungkin akan dipaparkan semula pada Dinding Kenangan awak pada masa hadapan.",
+   "unhide_moment_action": "Batalkan Sembunyi",
+   "unhide_moment_success": "Telah batal disembunyikan"
+
 }

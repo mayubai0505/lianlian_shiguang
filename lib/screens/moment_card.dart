@@ -27,7 +27,9 @@ class MomentCard extends StatefulWidget {
   final VoidCallback? onDeleteTapped;
   final VoidCallback? onAvatarTapped;
   final VoidCallback? onEditTapped;
-  final VoidCallback? onBlockUserTapped; // ✅ 新增
+  final VoidCallback? onHideMomentTapped;
+  final VoidCallback? onBlockCharacterTapped;
+  final VoidCallback? onDismissFeatureTips;
   final bool showFeatureTips;
 
   const MomentCard({
@@ -39,7 +41,9 @@ class MomentCard extends StatefulWidget {
     this.onDeleteTapped,
     this.onAvatarTapped,
     this.onEditTapped,
-    this.onBlockUserTapped, // ✅ 新增
+    this.onHideMomentTapped,
+    this.onBlockCharacterTapped,
+    this.onDismissFeatureTips,
     this.showFeatureTips = false,
   });
 
@@ -52,6 +56,7 @@ class _MomentCardState extends State<MomentCard> {
   int _likeCount = 0;
   bool _isLikeStatusLoading = true;
   bool _isBookmarked = false;
+  bool _isOpeningMomentAction = false;
 
   // 🌟 總裁指令：Moments 的參照路徑也要回歸總部管理！
   DocumentReference get _momentRef => FirebaseFirestore.instance
@@ -515,9 +520,25 @@ class _MomentCardState extends State<MomentCard> {
     );
   }
 
-  void _showMoreOptions() {
+  Future<void> _hideTipsThenRun(Future<void> Function() action) async {
+    if (_isOpeningMomentAction || !mounted) return;
+
+    widget.onDismissFeatureTips?.call();
+
+    setState(() {
+      _isOpeningMomentAction = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 80));
+
+    if (!mounted) return;
+
+    await action();
+  }
+
+  Future<void> _showMoreOptions() async {
     final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
@@ -546,26 +567,36 @@ class _MomentCardState extends State<MomentCard> {
                   },
                 ),
               ] else ...[
-                // 🛡️ 如果是別人的動態，顯示檢舉
+                // 🛡️ 檢舉此動態
                 ListTile(
                   leading: const Icon(Icons.report_problem_outlined),
                   title: Text(l10n.moment_action_report),
                   onTap: () {
                     Navigator.pop(context);
-                    // 這裡放檢舉邏輯
+                    // 這裡之後接檢舉邏輯
                   },
                 ),
 
-                // 🚫 Apple 審核需要：封鎖使用者
+// 👁️ 只隱藏這一篇
+                ListTile(
+                  leading: const Icon(Icons.visibility_off_outlined),
+                  title: const Text('隱藏此動態'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.onHideMomentTapped?.call();
+                  },
+                ),
+
+// 🚫 封鎖此角色
                 ListTile(
                   leading: const Icon(Icons.block_rounded, color: Colors.redAccent),
-                  title:  Text(
+                  title: Text(
                     l10n.block_char,
-                    style: TextStyle(color: Colors.redAccent),
+                    style: const TextStyle(color: Colors.redAccent),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    widget.onBlockUserTapped?.call();
+                    widget.onBlockCharacterTapped?.call();
                   },
                 ),
               ],
@@ -596,14 +627,14 @@ class _MomentCardState extends State<MomentCard> {
     }
   }
 
-  void _onSharePressed() {
+  Future<void> _onSharePressed() async {
     final l10n = AppLocalizations.of(context)!;
     final String appName = l10n.app_name;
 
     // TODO: 等雙平台上架後，把這裡換成真正的商店連結或 Firebase Dynamic Link
     final String appLink = "https://your-app-link.com";
 
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -772,7 +803,11 @@ class _MomentCardState extends State<MomentCard> {
           ListTile(
             // ✨ 用 GestureDetector 把頭像包起來
             leading: GestureDetector(
-              onTap: widget.onAvatarTapped, // 👈 這裡加上跳轉指令！
+              onTap: () {
+                _hideTipsThenRun(() async {
+                  widget.onAvatarTapped?.call();
+                });
+              },
               child: CircleAvatar(
                 backgroundImage: getAvatarImageProvider(widget.moment.authorAvatar),
               ),
@@ -787,7 +822,9 @@ class _MomentCardState extends State<MomentCard> {
             ),
             trailing: IconButton(
               icon: const Icon(Icons.more_horiz),
-              onPressed: _showMoreOptions, // ✨ 更多選項
+              onPressed: () {
+                _hideTipsThenRun(() => _showMoreOptions());
+              },
             ),
           ),
 
@@ -837,7 +874,7 @@ class _MomentCardState extends State<MomentCard> {
             Row(
               children: [
                 FeatureTipTarget(
-                  enabled: widget.showFeatureTips,
+                  enabled: widget.showFeatureTips && !_isOpeningMomentAction,
                   scopeKey: 'moments_page',
                   order: 4,
                   tipKey: '${FeatureTipKeys.postLike}_v3',
@@ -874,24 +911,31 @@ class _MomentCardState extends State<MomentCard> {
                           ? const Color(0xFFAED581)
                           : theme.iconTheme.color,
                     ),
-                    onPressed: _toggleLike,
+                    onPressed: () {
+                      _hideTipsThenRun(() async {
+                        await _toggleLike();
+                      });
+                    },
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.chat_bubble_outline),
                   onPressed: () {
-                    // 🚀 關鍵這行：呼叫我們剛剛寫的底部抽屜！
-                    CommentBottomSheet.show(context,widget.moment);
+                    _hideTipsThenRun(() async {
+                      CommentBottomSheet.show(context, widget.moment);
+                    });
                   },
                 ),
                 Text('${widget.moment.commentCount}'),
                 IconButton(
                   icon: const Icon(Icons.send_outlined),
-                  onPressed: _onSharePressed,
+                  onPressed: () {
+                    _hideTipsThenRun(() => _onSharePressed());
+                  },
                 ),
                 const Spacer(),
                 FeatureTipTarget(
-                  enabled: widget.showFeatureTips,
+                  enabled: widget.showFeatureTips && !_isOpeningMomentAction,
                   scopeKey: 'moments_page',
                   order: 3,
                   tipKey: '${FeatureTipKeys.postBookmark}_v3',
@@ -928,7 +972,11 @@ class _MomentCardState extends State<MomentCard> {
                           ? const Color(0xFFA1887F)
                           : theme.iconTheme.color,
                     ),
-                    onPressed: _toggleBookmark,
+                    onPressed: () {
+                      _hideTipsThenRun(() async {
+                        await _toggleBookmark();
+                      });
+                    },
                   ),
                 ),
               ],

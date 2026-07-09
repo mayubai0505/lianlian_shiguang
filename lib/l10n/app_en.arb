@@ -2156,5 +2156,41 @@
   "terms_checkbox_read_agree": "I have read and agree to the",
   "terms_checkbox_terms": "\"Terms of Service\"",
   "terms_checkbox_and": "and",
-  "terms_checkbox_rules": "\"Community Guidelines\""
+  "terms_checkbox_rules": "\"Community Guidelines\"",
+  "hidden_moments": "Hidden Moments",
+  "hide_moment_title": "Hide this Moment?",
+  "hide_moment_content": "Once hidden, this post will no longer appear on your Moments Wall.",
+  "hide": "Hide",
+  "hide_moment_success": "Moment hidden successfully",
+  "hide_moment_failed": "Failed to hide. Please try again later",
+  "block_character_not_found": "Character data not found. Unable to block",
+  "block_character_title": "Block this character?",
+  "block_character_content": "Once blocked, you will no longer see moments published by \"{authorName}\". If this content violates guidelines, we will also be notified and conduct a review.",
+  "@block_character_content": {
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
+  },
+  "block_character_success": "\"{authorName}\" blocked successfully. Related moments have been hidden",
+  "@block_character_success": {
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
+  },
+  "block_character_failed": "Failed to block. Please try again later",
+  "hidden_moments_title": "Hidden Moments",
+  "hidden_moments_empty": "No hidden moments at the moment",
+  "hidden_moments_load_failed": "Failed to load hidden moments",
+  "hidden_moment_unknown_author": "Unknown Character",
+  "hidden_moment_no_preview": "There is no previewable content for this moment",
+  "unhide_moment_title": "Unhide this Moment?",
+  "unhide_moment_content": "Once unhidden, if this post still exists, it may appear on your Moments Wall again in the future.",
+  "unhide_moment_action": "Unhide",
+  "unhide_moment_success": "Unhidden successfully"
 }

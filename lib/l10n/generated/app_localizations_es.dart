@@ -4333,4 +4333,75 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《Normas de la comunidad》';
+
+  @override
+  String get hidden_moments => 'Momentos ocultos';
+
+  @override
+  String get hide_moment_title => '¿Ocultar este Momento?';
+
+  @override
+  String get hide_moment_content =>
+      'Una vez oculto, esta publicación ya no aparecerá en tu Muro.';
+
+  @override
+  String get hide => 'Ocultar';
+
+  @override
+  String get hide_moment_success => 'Se ha ocultado este Momento';
+
+  @override
+  String get hide_moment_failed =>
+      'Error al ocultar. Por favor, inténtalo de nuevo más tarde';
+
+  @override
+  String get block_character_not_found =>
+      'No se encontraron los datos del personaje. No se puede bloquear';
+
+  @override
+  String get block_character_title => '¿Bloquear a este personaje?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'Una vez bloqueado, ya no verás los momentos publicados por \"$authorName\". Si este contenido infringe las normas, también recibirremos una notificación y realizaremos una revisión.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return 'Se ha bloqueado a \"$authorName\", los momentos relacionados se han ocultado';
+  }
+
+  @override
+  String get block_character_failed =>
+      'Error al bloquear. Por favor, inténtalo de nuevo más tarde';
+
+  @override
+  String get hidden_moments_title => 'Momentos ocultos';
+
+  @override
+  String get hidden_moments_empty => 'No hay momentos ocultos por el momento';
+
+  @override
+  String get hidden_moments_load_failed =>
+      'Error al cargar los momentos ocultos';
+
+  @override
+  String get hidden_moment_unknown_author => 'Personaje desconocido';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'Este momento no tiene contenido para vista previa';
+
+  @override
+  String get unhide_moment_title => '¿Mostrar de nuevo?';
+
+  @override
+  String get unhide_moment_content =>
+      'Una vez mostrado de nuevo, si esta publicación aún existe, podría volver a aparecer en tu Muro en el futuro.';
+
+  @override
+  String get unhide_moment_action => 'Mostrar de nuevo';
+
+  @override
+  String get unhide_moment_success => 'Se ha vuelto a mostrar con éxito';
 }

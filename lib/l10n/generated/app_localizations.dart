@@ -7521,6 +7521,126 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'《社群規範》'**
   String get terms_checkbox_rules;
+
+  /// No description provided for @hidden_moments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'隱藏的動態'**
+  String get hidden_moments;
+
+  /// No description provided for @hide_moment_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'隱藏此動態？'**
+  String get hide_moment_title;
+
+  /// No description provided for @hide_moment_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'隱藏後，這篇動態將不會再出現在你的拾光牆上。'**
+  String get hide_moment_content;
+
+  /// No description provided for @hide.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'隱藏'**
+  String get hide;
+
+  /// No description provided for @hide_moment_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已隱藏此動態'**
+  String get hide_moment_success;
+
+  /// No description provided for @hide_moment_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'隱藏失敗，請稍後再試'**
+  String get hide_moment_failed;
+
+  /// No description provided for @block_character_not_found.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到角色資料，無法封鎖'**
+  String get block_character_not_found;
+
+  /// No description provided for @block_character_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖此角色？'**
+  String get block_character_title;
+
+  /// No description provided for @block_character_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖後，你將不再看到「{authorName}」發布的動態。若此內容涉及違規，我們也會收到通知並進行審查。'**
+  String block_character_content(String authorName);
+
+  /// No description provided for @block_character_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已封鎖「{authorName}」，相關動態已隱藏'**
+  String block_character_success(String authorName);
+
+  /// No description provided for @block_character_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖失敗，請稍後再試'**
+  String get block_character_failed;
+
+  /// No description provided for @hidden_moments_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'隱藏的動態'**
+  String get hidden_moments_title;
+
+  /// No description provided for @hidden_moments_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有隱藏的動態'**
+  String get hidden_moments_empty;
+
+  /// No description provided for @hidden_moments_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取隱藏動態失敗'**
+  String get hidden_moments_load_failed;
+
+  /// No description provided for @hidden_moment_unknown_author.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未知角色'**
+  String get hidden_moment_unknown_author;
+
+  /// No description provided for @hidden_moment_no_preview.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這篇動態沒有可預覽的內容'**
+  String get hidden_moment_no_preview;
+
+  /// No description provided for @unhide_moment_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解除隱藏？'**
+  String get unhide_moment_title;
+
+  /// No description provided for @unhide_moment_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解除後，若這篇動態仍存在，之後可能會再次出現在你的拾光牆。'**
+  String get unhide_moment_content;
+
+  /// No description provided for @unhide_moment_action.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解除隱藏'**
+  String get unhide_moment_action;
+
+  /// No description provided for @unhide_moment_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已解除隱藏'**
+  String get unhide_moment_success;
 }
 
 class _AppLocalizationsDelegate

@@ -4305,4 +4305,74 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《समुदाय दिशानिर्देश》';
+
+  @override
+  String get hidden_moments => 'छिपे हुए पल';
+
+  @override
+  String get hide_moment_title => 'इस पल को छिपाएं?';
+
+  @override
+  String get hide_moment_content =>
+      'छिपाने के बाद, यह पोस्ट आपकी टाइम वॉल पर फिर से दिखाई नहीं देगी।';
+
+  @override
+  String get hide => 'छिपाएं';
+
+  @override
+  String get hide_moment_success => 'इस पल को छिपा दिया गया है';
+
+  @override
+  String get hide_moment_failed =>
+      'छिपाने में विफल, कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get block_character_not_found =>
+      'कैरेक्टर का डेटा नहीं मिला, ब्लॉक करने में असमर्थ';
+
+  @override
+  String get block_character_title => 'इस कैरेक्टर को ब्लॉक करें?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'ब्लॉक करने के बाद, आप \"$authorName\" द्वारा प्रकाशित पलों को नहीं देख पाएंगे। यदि यह सामग्री नियमों का उल्लंघन करती है, तो हमें भी सूचित किया जाएगा और हम समीक्षा करेंगे।';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '\"$authorName\" को ब्लॉक कर दिया गया है, संबंधित पल छिपा दिए गए हैं';
+  }
+
+  @override
+  String get block_character_failed =>
+      'ब्लॉक करने में विफल, कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get hidden_moments_title => 'छिपे हुए पल';
+
+  @override
+  String get hidden_moments_empty => 'फिलहाल कोई छिपा हुआ पल नहीं है';
+
+  @override
+  String get hidden_moments_load_failed => 'छिपे हुए पलों को लोड करने में विफल';
+
+  @override
+  String get hidden_moment_unknown_author => 'अज्ञात कैरेक्टर';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'इस पल के लिए कोई पूर्वावलोकन सामग्री उपलब्ध नहीं है';
+
+  @override
+  String get unhide_moment_title => 'अनहाइड करें?';
+
+  @override
+  String get unhide_moment_content =>
+      'अनहाइड करने के बाद, यदि यह पोस्ट अभी भी मौजूद है, तो यह भविष्य में आपकी टाइम वॉल पर फिर से दिखाई दे सकती है।';
+
+  @override
+  String get unhide_moment_action => 'अनहाइड करें';
+
+  @override
+  String get unhide_moment_success => 'सफलतापूर्वक अनहाइड किया गया';
 }

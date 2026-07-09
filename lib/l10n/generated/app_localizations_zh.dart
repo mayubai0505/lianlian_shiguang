@@ -4040,6 +4040,70 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '《社群規範》';
+
+  @override
+  String get hidden_moments => '隱藏的動態';
+
+  @override
+  String get hide_moment_title => '隱藏此動態？';
+
+  @override
+  String get hide_moment_content => '隱藏後，這篇動態將不會再出現在你的拾光牆上。';
+
+  @override
+  String get hide => '隱藏';
+
+  @override
+  String get hide_moment_success => '已隱藏此動態';
+
+  @override
+  String get hide_moment_failed => '隱藏失敗，請稍後再試';
+
+  @override
+  String get block_character_not_found => '找不到角色資料，無法封鎖';
+
+  @override
+  String get block_character_title => '封鎖此角色？';
+
+  @override
+  String block_character_content(String authorName) {
+    return '封鎖後，你將不再看到「$authorName」發布的動態。若此內容涉及違規，我們也會收到通知並進行審查。';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '已封鎖「$authorName」，相關動態已隱藏';
+  }
+
+  @override
+  String get block_character_failed => '封鎖失敗，請稍後再試';
+
+  @override
+  String get hidden_moments_title => '隱藏的動態';
+
+  @override
+  String get hidden_moments_empty => '目前沒有隱藏的動態';
+
+  @override
+  String get hidden_moments_load_failed => '讀取隱藏動態失敗';
+
+  @override
+  String get hidden_moment_unknown_author => '未知角色';
+
+  @override
+  String get hidden_moment_no_preview => '這篇動態沒有可預覽的內容';
+
+  @override
+  String get unhide_moment_title => '解除隱藏？';
+
+  @override
+  String get unhide_moment_content => '解除後，若這篇動態仍存在，之後可能會再次出現在你的拾光牆。';
+
+  @override
+  String get unhide_moment_action => '解除隱藏';
+
+  @override
+  String get unhide_moment_success => '已解除隱藏';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8078,6 +8142,70 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get terms_checkbox_rules => '《社区规范》';
+
+  @override
+  String get hidden_moments => '隐藏的动态';
+
+  @override
+  String get hide_moment_title => '隐藏此动态？';
+
+  @override
+  String get hide_moment_content => '隐藏后，这篇动态将不会再出现在你的拾光墙上。';
+
+  @override
+  String get hide => '隐藏';
+
+  @override
+  String get hide_moment_success => '已隐藏此动态';
+
+  @override
+  String get hide_moment_failed => '隐藏失败，请稍后再试';
+
+  @override
+  String get block_character_not_found => '找不到角色资料，无法封锁';
+
+  @override
+  String get block_character_title => '封锁此角色？';
+
+  @override
+  String block_character_content(String authorName) {
+    return '封锁后，你将不再看到「$authorName」发布的动态。若此内容涉及违规，我们也会收到通知并进行审查。';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '已封锁「$authorName」，相关动态已隐藏';
+  }
+
+  @override
+  String get block_character_failed => '封锁失败，请稍后再试';
+
+  @override
+  String get hidden_moments_title => '隐藏的动态';
+
+  @override
+  String get hidden_moments_empty => '目前没有隐藏的动态';
+
+  @override
+  String get hidden_moments_load_failed => '读取隐藏动态失败';
+
+  @override
+  String get hidden_moment_unknown_author => '未知角色';
+
+  @override
+  String get hidden_moment_no_preview => '这篇动态没有可预览的内容';
+
+  @override
+  String get unhide_moment_title => '解除隐藏？';
+
+  @override
+  String get unhide_moment_content => '解除后，若这篇动态仍存在，之后可能会再次出现在你的拾光墙。';
+
+  @override
+  String get unhide_moment_action => '解除隐藏';
+
+  @override
+  String get unhide_moment_success => '已解除隐藏';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -12116,4 +12244,68 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get terms_checkbox_rules => '《社群規範》';
+
+  @override
+  String get hidden_moments => '隱藏的動態';
+
+  @override
+  String get hide_moment_title => '隱藏此動態？';
+
+  @override
+  String get hide_moment_content => '隱藏後，這篇動態將不會再出現在你的拾光牆上。';
+
+  @override
+  String get hide => '隱藏';
+
+  @override
+  String get hide_moment_success => '已隱藏此動態';
+
+  @override
+  String get hide_moment_failed => '隱藏失敗，請稍後再試';
+
+  @override
+  String get block_character_not_found => '找不到角色資料，無法封鎖';
+
+  @override
+  String get block_character_title => '封鎖此角色？';
+
+  @override
+  String block_character_content(String authorName) {
+    return '封鎖後，你將不再看到「$authorName」發布的動態。若此內容涉及違規，我們也會收到通知並進行審查。';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '已封鎖「$authorName」，相關動態已隱藏';
+  }
+
+  @override
+  String get block_character_failed => '封鎖失敗，請稍後再試';
+
+  @override
+  String get hidden_moments_title => '隱藏的動態';
+
+  @override
+  String get hidden_moments_empty => '目前沒有隱藏的動態';
+
+  @override
+  String get hidden_moments_load_failed => '讀取隱藏動態失敗';
+
+  @override
+  String get hidden_moment_unknown_author => '未知角色';
+
+  @override
+  String get hidden_moment_no_preview => '這篇動態沒有可預覽的內容';
+
+  @override
+  String get unhide_moment_title => '解除隱藏？';
+
+  @override
+  String get unhide_moment_content => '解除後，若這篇動態仍存在，之後可能會再次出現在你的拾光牆。';
+
+  @override
+  String get unhide_moment_action => '解除隱藏';
+
+  @override
+  String get unhide_moment_success => '已解除隱藏';
 }

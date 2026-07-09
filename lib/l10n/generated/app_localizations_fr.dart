@@ -4361,4 +4361,75 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '« Règles de la communauté »';
+
+  @override
+  String get hidden_moments => 'Moments cachés';
+
+  @override
+  String get hide_moment_title => 'Cacher ce Moment ?';
+
+  @override
+  String get hide_moment_content =>
+      'Une fois caché, ce post n\'apparaîtra plus sur votre Mur.';
+
+  @override
+  String get hide => 'Cacher';
+
+  @override
+  String get hide_moment_success => 'Ce Moment a été caché';
+
+  @override
+  String get hide_moment_failed =>
+      'Échec du masquage. Veuillez réessayer plus tard';
+
+  @override
+  String get block_character_not_found =>
+      'Données du personnage introuvables. Impossible de bloquer';
+
+  @override
+  String get block_character_title => 'Bloquer ce personnage ?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'Une fois bloqué, vous ne verrez plus los moments publiés par « $authorName ». Si ce contenu est contraire aux règles, nous recevrons également une notification et procéderons à un examen.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '« $authorName » a été bloqué, les moments associés ont été cachés';
+  }
+
+  @override
+  String get block_character_failed =>
+      'Échec du blocage. Veuillez réessayer plus tard';
+
+  @override
+  String get hidden_moments_title => 'Moments cachés';
+
+  @override
+  String get hidden_moments_empty => 'Aucun moment caché pour le moment';
+
+  @override
+  String get hidden_moments_load_failed =>
+      'Échec du chargement des moments cachés';
+
+  @override
+  String get hidden_moment_unknown_author => 'Personnage inconnu';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'Ce moment ne contient aucun contenu à prévisualiser';
+
+  @override
+  String get unhide_moment_title => 'Afficher à nouveau ?';
+
+  @override
+  String get unhide_moment_content =>
+      'Une fois réaffiché, si ce post existe toujours, il se peut qu\'il réapparaisse sur votre Mur à l\'avenir.';
+
+  @override
+  String get unhide_moment_action => 'Afficher à nouveau';
+
+  @override
+  String get unhide_moment_success => 'Affiché à nouveau avec succès';
 }

@@ -4269,4 +4269,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get terms_checkbox_rules => '\"Community Guidelines\"';
+
+  @override
+  String get hidden_moments => 'Hidden Moments';
+
+  @override
+  String get hide_moment_title => 'Hide this Moment?';
+
+  @override
+  String get hide_moment_content =>
+      'Once hidden, this post will no longer appear on your Moments Wall.';
+
+  @override
+  String get hide => 'Hide';
+
+  @override
+  String get hide_moment_success => 'Moment hidden successfully';
+
+  @override
+  String get hide_moment_failed => 'Failed to hide. Please try again later';
+
+  @override
+  String get block_character_not_found =>
+      'Character data not found. Unable to block';
+
+  @override
+  String get block_character_title => 'Block this character?';
+
+  @override
+  String block_character_content(String authorName) {
+    return 'Once blocked, you will no longer see moments published by \"$authorName\". If this content violates guidelines, we will also be notified and conduct a review.';
+  }
+
+  @override
+  String block_character_success(String authorName) {
+    return '\"$authorName\" blocked successfully. Related moments have been hidden';
+  }
+
+  @override
+  String get block_character_failed =>
+      'Failed to block. Please try again later';
+
+  @override
+  String get hidden_moments_title => 'Hidden Moments';
+
+  @override
+  String get hidden_moments_empty => 'No hidden moments at the moment';
+
+  @override
+  String get hidden_moments_load_failed => 'Failed to load hidden moments';
+
+  @override
+  String get hidden_moment_unknown_author => 'Unknown Character';
+
+  @override
+  String get hidden_moment_no_preview =>
+      'There is no previewable content for this moment';
+
+  @override
+  String get unhide_moment_title => 'Unhide this Moment?';
+
+  @override
+  String get unhide_moment_content =>
+      'Once unhidden, if this post still exists, it may appear on your Moments Wall again in the future.';
+
+  @override
+  String get unhide_moment_action => 'Unhide';
+
+  @override
+  String get unhide_moment_success => 'Unhidden successfully';
 }

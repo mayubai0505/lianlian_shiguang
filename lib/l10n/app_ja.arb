@@ -1942,5 +1942,41 @@
   "terms_checkbox_read_agree": "私は内容を確認し、",
   "terms_checkbox_terms": "《利用規約》",
   "terms_checkbox_and": "および",
-  "terms_checkbox_rules": "《コミュニティガイドライン》に同意します"
+  "terms_checkbox_rules": "《コミュニティガイドライン》に同意します",
+  "hidden_moments": "非表示の瞬間",
+  "hide_moment_title": "この投稿を非表示にしますか？",
+  "hide_moment_content": "非表示にすると、この投稿はあなたのタイムウォールに表示されなくなります。",
+  "hide": "非表示",
+  "hide_moment_success": "投稿を非表示にしました",
+  "hide_moment_failed": "非表示に失敗しました。しばらく経ってからもう一度お試しください",
+  "block_character_not_found": "キャラクターデータが見つからないため、ブロックできません",
+  "block_character_title": "このキャラクターをブロックしますか？",
+  "block_character_content": "ブロックすると、「{authorName}」が投稿したタイムラインが表示されなくなります。また、該当コンテンツが規約に違反している場合、運営チームにも通知が届き審査が行われます。",
+  "@block_character_content": {
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
+  },
+  "block_character_success": "「{authorName}」をブロックしました。関連する投稿は非表示になります",
+  "@block_character_success": {
+  "placeholders": {
+  "authorName": {
+  "type": "String",
+  "example": "程安"
+  }
+  }
+  },
+  "block_character_failed": "ブロックに失敗しました。しばらく経ってからもう一度お試しください",
+  "hidden_moments_title": "非表示の瞬間",
+  "hidden_moments_empty": "現在、非表示の瞬間はありません",
+  "hidden_moments_load_failed": "非表示の瞬間の読み込みに失敗しました",
+  "hidden_moment_unknown_author": "未知のキャラクター",
+  "hidden_moment_no_preview": "この投稿にはプレビューできる内容がありません",
+  "unhide_moment_title": "再表示しますか？",
+  "unhide_moment_content": "非表示を解除すると、該当の投稿がまだ存在している場合、今後再びタイムウォールに表示される可能性があります。",
+  "unhide_moment_action": "非表示を解除",
+  "unhide_moment_success": "非表示を解除しました"
 }

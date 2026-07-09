@@ -29,6 +29,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   Stream<QuerySnapshot>? _sessionsStream;
   bool _isOpeningChat = false;
   bool _isNavigatingToChat = false;
+  bool _isOpeningTopAction = false;
   final String _appId = AppConfig.appId;
   final Map<String, Character> _characterCache = {};
 
@@ -278,6 +279,31 @@ class _ChatHomePageState extends State<ChatHomePage> {
     }
   }
 
+  Future<void> _openTopActionPage(Widget page) async {
+    if (_isOpeningTopAction || !mounted) return;
+
+    setState(() {
+      _isOpeningTopAction = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 80));
+
+    if (!mounted) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => page,
+      ),
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isOpeningTopAction = false;
+    });
+  }
+
   Future<void> _navigateToChat(String sessionId, String characterId) async {
     if (_isOpeningChat || _isNavigatingToChat || !mounted) return;
 
@@ -361,7 +387,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
         foregroundColor: theme.colorScheme.onBackground,
         actions: [
           FeatureTipTarget(
-            enabled: !_isNavigatingToChat,
+            enabled: !_isNavigatingToChat && !_isOpeningTopAction,
             scopeKey: 'chat_home',
             order: 1,
             tipKey: '${FeatureTipKeys.callMemory}_v5',
@@ -395,12 +421,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
               tooltip: l10n.call_memory_tooltip,
               icon: const Icon(Icons.headphones_outlined, size: 26),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CallMemoryPage(),
-                  ),
-                );
+                _openTopActionPage(const CallMemoryPage());
               },
             ),
           ),
@@ -422,7 +443,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationListPage()));
+                  _openTopActionPage(const NotificationListPage());
                 },
                 icon: Badge(
                   label: null,
@@ -431,7 +452,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   backgroundColor: Colors.pinkAccent,
                   smallSize: 10,
                   child: FeatureTipTarget(
-                    enabled: !_isNavigatingToChat,
+                    enabled: !_isNavigatingToChat && !_isOpeningTopAction,
                     scopeKey: 'chat_home',
                     order: 2,
                     tipKey: '${FeatureTipKeys.chatHomeNotifications}_v4',
