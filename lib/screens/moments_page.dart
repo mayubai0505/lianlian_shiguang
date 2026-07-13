@@ -18,6 +18,8 @@ import 'character_profile_page.dart';
 import '../services/moment_notification_service.dart';
 import 'edit_moment_page.dart';
 import 'hidden_moments_page.dart';
+import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 //動態牆(朋友圈)
 class MomentsPage extends StatefulWidget {
@@ -36,18 +38,50 @@ class _MomentsPageState extends State<MomentsPage> {
   late Stream<QuerySnapshot> _friendsStream;
   int _feedReloadKey = 0;
   bool _isOpeningMoreMenu = false;
-  bool _momentsMenuTipDismissed = false;
   int _pauseMomentCardTipsSignal = 0;
   int _resumeMomentCardTipsSignal = 0;
+  // 🔑 新增：專門給右上角選單用的追蹤鑰匙
+  final GlobalKey _menuKey = GlobalKey();
+  // 💡 新增：用來記錄這次開啟畫面時，氣泡彈過沒
+  bool _hasMenuTipShown = true;
+  bool _menuTutorialFinished = false;
   @override
   void initState() {
     super.initState();
     _userId = FirebaseAuth.instance.currentUser?.uid;
     _loadDailyTaskProgress();
 
-    // ✨ 關鍵：在這裡就先連好線！
+    // 🌟 2. 剛進畫面時，去翻一下小記事本
+    _checkTutorialStatus();
+
     if (_userId != null) {
       _friendsStream = _db.collection('users').doc(_userId!).collection('friends').snapshots();
+    }
+  }
+
+  // 🌟 3. 新增這個「翻記事本」的專屬功能
+  Future<void> _checkTutorialStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 尋找 'seen_moments_tips'，如果找不到就當作沒看過 (false)
+    bool hasSeen = prefs.getBool('seen_moments_tips') ?? false;
+
+    if (!hasSeen) {
+      // 如果沒看過，就把開關打開，允許畫面發射氣泡！
+      if (mounted) {
+        setState(() {
+          _hasMenuTipShown = false;
+        });
+      }
+      // ✍️ 立刻在記事本寫下紀錄：他看過了！(下次進來就會是 true)
+      await prefs.setBool('seen_moments_tips', true);
+    } else {
+      // 🌟 如果他以前看過了，我們直接把接力棒解鎖給卡片
+      // 這樣即使沒彈右上角氣泡，卡片底下的功能也能正常運作！
+      if (mounted) {
+        setState(() {
+          _menuTutorialFinished = true;
+        });
+      }
     }
   }
 
@@ -160,104 +194,93 @@ class _MomentsPageState extends State<MomentsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final isSmallPhone = screenWidth < 390;
-    final isTablet = screenWidth >= 600;
-    return DefaultTabController(
-      length: 2,
-      child: Container(
-        decoration: themeNotifier.currentBackground,
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                title:Text(l10n.wall_title_shiguang),
-                pinned: true,
-                floating: true,
-                snap: true,
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                forceElevated: innerBoxIsScrolled,
-                // ✨ 2. 切換選單 (TabBar)
-                bottom: TabBar(
-                  indicatorColor: Theme.of(context).colorScheme.primary,
-                  labelColor: Theme.of(context).colorScheme.primary,
-                  unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
-                  tabs: [
-                    Tab(text: l10n.wall_tab_explore),
-                    Tab(text: l10n.wall_tab_exclusive),
-                  ],
-                ),
-                // ✨ 三條線選單
-                actions: [
-                  FeatureTipTarget(
-                    enabled: !_isOpeningMoreMenu && !_momentsMenuTipDismissed,
-                    scopeKey: 'moments_page',
-                    tipKey: '${FeatureTipKeys.momentsWallMenu}_v4',
-                    tipText: l10n.tip_moments_wall_menu,
-                    direction: FeatureTipDirection.down,
 
-                    top: isTablet ? 54 : 56,
-                    right: 0,
+    // 🌟 1. 最外層包上 ShowCaseWidget 總指揮中心 (修正了 builder 的語法)
+    return ShowCaseWidget(
+      onFinish: () {
+        if (mounted) {
+          setState(() {
+            _menuTutorialFinished = true; // 🏁 右上角跑完了，解鎖下一棒！
+          });
+        }
+      },
+      builder: (context) {
 
-                    maxWidth: isTablet
-                        ? 220
-                        : isSmallPhone
-                        ? 140
-                        : 156,
+        // 🚀 2. 畫面一載入，就發射右上角的選單氣泡！
+        if (!_hasMenuTipShown) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ShowCaseWidget.of(context).startShowCase([_menuKey]);
+          });
+          _hasMenuTipShown = true; // 標記為已發射，避免重複觸發
+        }
 
-                    offset: Offset(
-                      isTablet
-                          ? (screenWidth * 0.38).clamp(330.0, 450.0)
-                          : isSmallPhone
-                          ? 80
-                          : 100,
-                      isTablet ? -6 : -10,
+        return DefaultTabController(
+          length: 2,
+          child: Container(
+            decoration: themeNotifier.currentBackground,
+            child: NestedScrollView(
+              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                return <Widget>[
+                  SliverAppBar(
+                    title: Text(l10n.wall_title_shiguang),
+                    pinned: true,
+                    floating: true,
+                    snap: true,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    forceElevated: innerBoxIsScrolled,
+                    // ✨ 2. 切換選單 (TabBar)
+                    bottom: TabBar(
+                      indicatorColor: Theme.of(context).colorScheme.primary,
+                      labelColor: Theme.of(context).colorScheme.primary,
+                      unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
+                      tabs: [
+                        Tab(text: l10n.wall_tab_explore),
+                        Tab(text: l10n.wall_tab_exclusive),
+                      ],
                     ),
+                    // ✨ 3. 升級版的三條線選單自動導航氣泡
+                    actions: [
+                      Showcase(
+                        key: _menuKey,
+                        description: l10n.tip_moments_wall_menu,
+                        child: IconButton(
+                          icon: const Icon(Icons.menu, size: 28),
+                          tooltip: l10n.more_options,
+                          onPressed: () async {
+                            if (_isOpeningMoreMenu) return;
 
-                    arrowOffset: isTablet
-                        ? 50
-                        : isSmallPhone
-                        ? 35
-                        : 45,
+                            setState(() {
+                              _isOpeningMoreMenu = true;
+                              // 暫停第一篇貼文的按讚 / 收藏氣泡
+                              _pauseMomentCardTipsSignal++;
+                            });
 
-                    child: IconButton(
-                      icon: const Icon(Icons.menu, size: 28),
-                      tooltip: l10n.more_options,
-                      onPressed: () async {
-                        if (_isOpeningMoreMenu) return;
+                            await Future.delayed(const Duration(milliseconds: 80));
 
-                        setState(() {
-                          _isOpeningMoreMenu = true;
+                            if (!mounted) return;
 
-                          // 暫停第一篇貼文的按讚 / 收藏氣泡
-                          _pauseMomentCardTipsSignal++;
-                        });
+                            await _showMoreMenuSheet(context);
 
-                        await Future.delayed(const Duration(milliseconds: 80));
+                            if (!mounted) return;
 
-                        if (!mounted) return;
-
-                        await _showMoreMenuSheet(context);
-
-                        if (!mounted) return;
-
-                        setState(() {
-                          _isOpeningMoreMenu = false;
-
-                          // 底部選單關掉後，恢復導覽氣泡
-                          _resumeMomentCardTipsSignal++;
-                        });
-                      },
-                    ),
+                            setState(() {
+                              _isOpeningMoreMenu = false;
+                              // 底部選單關掉後，恢復導覽氣泡
+                              _resumeMomentCardTipsSignal++;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ];
-          },
-          // ✨ 3. body 負責去抓好友名單，然後分配給兩個分頁
-          body: _buildBodyWithFriendsStream(),
-        ),
-      ),
+                ];
+              },
+              // ✨ body 負責去抓好友名單，然後分配給兩個分頁
+              body: _buildBodyWithFriendsStream(),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -284,6 +307,7 @@ class _MomentsPageState extends State<MomentsPage> {
               isPublicTab: true,
               userId: _userId!,
               appId: _appId,
+              showFeatureTips: _menuTutorialFinished,
               pauseMomentCardTipsSignal: _pauseMomentCardTipsSignal,
               resumeMomentCardTipsSignal: _resumeMomentCardTipsSignal,
               onLikeTapped: _handleLikeTaskProgress,
@@ -297,6 +321,7 @@ class _MomentsPageState extends State<MomentsPage> {
               isPublicTab: false,
               userId: _userId!,
               appId: _appId,
+              showFeatureTips: false, // 👈 這裡強制改成 false！
               pauseMomentCardTipsSignal: _pauseMomentCardTipsSignal,
               resumeMomentCardTipsSignal: _resumeMomentCardTipsSignal,
               onLikeTapped: _handleLikeTaskProgress,
@@ -1266,7 +1291,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
                 return MomentCard(
                   moment: moment,
                   currentUserId: widget.userId,
-                  showFeatureTips: index == 0 && !_momentFeatureTipsPaused,
+                  showFeatureTips: index == 0 && widget.showFeatureTips && !_momentFeatureTipsPaused,
                   onLikeTapped: () => widget.onLikeTapped(moment),
                   onDeleteTapped: () => widget.onDeleteTapped(moment.id),
                   onAvatarTapped: () => widget.onAvatarTapped(moment),

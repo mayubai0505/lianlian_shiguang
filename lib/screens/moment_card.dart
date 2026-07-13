@@ -18,6 +18,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'character_profile_page.dart';
+import 'package:showcaseview/showcaseview.dart'; // 🌟 記得在檔案最上方加上這行
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MomentCard extends StatefulWidget {
   final Moment moment;
@@ -57,6 +59,9 @@ class _MomentCardState extends State<MomentCard> {
   bool _isLikeStatusLoading = true;
   bool _isBookmarked = false;
   bool _isOpeningMomentAction = false;
+  // 🔑 宣告 5 把氣泡追蹤鑰匙 (新增在這裡)
+  final GlobalKey _likeKey = GlobalKey();
+  final GlobalKey _bookmarkKey = GlobalKey();
 
   // 🌟 總裁指令：Moments 的參照路徑也要回歸總部管理！
   DocumentReference get _momentRef => FirebaseFirestore.instance
@@ -79,6 +84,21 @@ class _MomentCardState extends State<MomentCard> {
     _likeCount = widget.moment.likeCount;
     _checkIfLiked();
     _checkIfBookmarked();
+
+    // 🌟 原本一大串發射程式碼，現在濃縮成這一行！
+    if (widget.showFeatureTips) {
+      _checkAndShowTips();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant MomentCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // 🌟 原本一大串發射程式碼，現在濃縮成這一行！
+    if (!oldWidget.showFeatureTips && widget.showFeatureTips) {
+      _checkAndShowTips();
+    }
   }
 
   // ✨ 輔助函數：處理不同來源的頭像
@@ -86,6 +106,32 @@ class _MomentCardState extends State<MomentCard> {
     if (path.isEmpty) return const AssetImage('assets/images/blank_avatar.png');
     if (path.startsWith('http')) return NetworkImage(path);
     return AssetImage(path);
+  }
+
+  // ✨✨✨ 新增：卡片專屬的記事本檢查功能
+  // ✨✨✨ 升級版：具備緩衝機制的氣泡發射器
+  Future<void> _checkAndShowTips() async {
+    // 1. 如果外層還沒解鎖，不准發射
+    if (!widget.showFeatureTips) return;
+
+    // 🌟 2. 緩衝魔法：給系統 0.3 秒，確保三條線的氣泡動畫已經完全收乾淨了
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted) return;
+
+    final prefs = await SharedPreferences.getInstance();
+
+    bool hasSeen = prefs.getBool('seen_moment_card_tips') ?? false;
+
+    // 4. 真正發射氣泡！(因為已經延遲過了，不需要再用 addPostFrameCallback，直接射！)
+    if (!hasSeen) {
+      try {
+        ShowCaseWidget.of(context).startShowCase([_likeKey, _bookmarkKey]);
+        // 寫下紀錄
+        await prefs.setBool('seen_moment_card_tips', true);
+      } catch (e) {
+        print("⚠️ 找不到 ShowCaseWidget: $e");
+      }
+    }
   }
 
   // --- 邏輯處理區 ---
@@ -521,10 +567,12 @@ class _MomentCardState extends State<MomentCard> {
   }
 
   Future<void> _hideTipsThenRun(Future<void> Function() action) async {
+    // 如果已經在執行中，或是畫面已經不在了，就擋掉
     if (_isOpeningMomentAction || !mounted) return;
 
     widget.onDismissFeatureTips?.call();
 
+    // 🔒 1. 鎖上大門，防止玩家狂點
     setState(() {
       _isOpeningMomentAction = true;
     });
@@ -533,7 +581,17 @@ class _MomentCardState extends State<MomentCard> {
 
     if (!mounted) return;
 
-    await action();
+    try {
+      // 🏃‍♂️ 2. 執行你的按讚、收藏或開啟選單動作
+      await action();
+    } finally {
+      // 🔓 3. 魔法修復：不管動作成功還是失敗，最後一定要解鎖！
+      if (mounted) {
+        setState(() {
+          _isOpeningMomentAction = false;
+        });
+      }
+    }
   }
 
   Future<void> _showMoreOptions() async {
@@ -787,9 +845,7 @@ class _MomentCardState extends State<MomentCard> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final isSmallPhone = screenWidth < 390;
-    final isTablet = screenWidth >= 600;
+
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
@@ -831,7 +887,6 @@ class _MomentCardState extends State<MomentCard> {
           // 2. 內容文字區
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            // ✨ 換成我們的智慧渲染器
             child: _buildContentWithMentions(widget.moment.content, theme),
           ),
 
@@ -873,51 +928,22 @@ class _MomentCardState extends State<MomentCard> {
           if (!widget.isDetailView) ...[
             Row(
               children: [
-                FeatureTipTarget(
-                  enabled: widget.showFeatureTips && !_isOpeningMomentAction,
-                  scopeKey: 'moments_page',
-                  order: 4,
-                  tipKey: '${FeatureTipKeys.postLike}_v3',
-                  tipText: l10n.tip_post_like,
-                  direction: FeatureTipDirection.down,
-
-                  top: isTablet ? 44 : 56,
-
-                  maxWidth: isTablet
-                      ? 190
-                      : isSmallPhone
-                      ? 138
-                      : 148,
-
-                  offset: Offset(
-                    isTablet
-                        ? (screenWidth * 0.40).clamp(360.0, 440.0)
-                        : isSmallPhone
-                        ? 125
-                        : 160,
-                    isTablet ? -6 : -10,
-                  ),
-
-                  arrowOffset: isTablet
-                      ? -50
-                      : isSmallPhone
-                      ? -40
-                      : -50,
-
+                // 🍃 1. 按讚 (有氣泡)
+                Showcase(
+                  key: _likeKey,
+                  description: l10n.tip_post_like ?? '喜歡這則動態嗎？給他一點心意吧！',
                   child: IconButton(
                     icon: Icon(
                       _isLiked ? Icons.eco : Icons.eco_outlined,
-                      color: _isLiked
-                          ? const Color(0xFFAED581)
-                          : theme.iconTheme.color,
+                      color: _isLiked ? const Color(0xFFAED581) : theme.iconTheme.color,
                     ),
                     onPressed: () {
-                      _hideTipsThenRun(() async {
-                        await _toggleLike();
-                      });
+                      _hideTipsThenRun(() async => await _toggleLike());
                     },
                   ),
                 ),
+
+                // 💬 2. 留言按鈕 (保持不變)
                 IconButton(
                   icon: const Icon(Icons.chat_bubble_outline),
                   onPressed: () {
@@ -927,61 +953,33 @@ class _MomentCardState extends State<MomentCard> {
                   },
                 ),
                 Text('${widget.moment.commentCount}'),
+
+                // 📤 3. 分享按鈕 (保持不變)
                 IconButton(
                   icon: const Icon(Icons.send_outlined),
                   onPressed: () {
                     _hideTipsThenRun(() => _onSharePressed());
                   },
                 ),
+
                 const Spacer(),
-                FeatureTipTarget(
-                  enabled: widget.showFeatureTips && !_isOpeningMomentAction,
-                  scopeKey: 'moments_page',
-                  order: 3,
-                  tipKey: '${FeatureTipKeys.postBookmark}_v3',
-                  tipText: l10n.tip_post_bookmark,
-                  direction: FeatureTipDirection.down,
 
-                  top: isTablet ? 54 : 56,
-
-                  maxWidth: isTablet
-                      ? 190
-                      : isSmallPhone
-                      ? 138
-                      : 148,
-
-                  offset: Offset(
-                    isTablet
-                        ? (screenWidth * 0.30).clamp(250.0, 350.0)
-                        : isSmallPhone
-                        ? 45
-                        : 55,
-                    isTablet ? -6 : -10,
-                  ),
-
-                  arrowOffset: isTablet
-                      ? 60
-                      : isSmallPhone
-                      ? 45
-                      : 55,
-
+                // 🌳 4. 收藏 (有氣泡)
+                Showcase(
+                  key: _bookmarkKey,
+                  description: l10n.tip_post_bookmark ?? '把特別的動態悄悄收進口袋裡。',
                   child: IconButton(
                     icon: Icon(
                       _isBookmarked ? Icons.park : Icons.park_outlined,
-                      color: _isBookmarked
-                          ? const Color(0xFFA1887F)
-                          : theme.iconTheme.color,
+                      color: _isBookmarked ? const Color(0xFFA1887F) : theme.iconTheme.color,
                     ),
                     onPressed: () {
-                      _hideTipsThenRun(() async {
-                        await _toggleBookmark();
-                      });
+                      _hideTipsThenRun(() async => await _toggleBookmark());
                     },
                   ),
                 ),
               ],
             ),
-
             // 📊 5. 數據與文字區
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

@@ -36,10 +36,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   bool _isShowingCheckInDialog = false;
   // ✨ 效能優化：紀錄最後一次檢查日期，避免頻繁讀取資料庫
   String _lastCheckedDateString = "";
-
-  final List<Widget> _pages = [
+  final GlobalKey<SelectChatPageState> _encounterKey = GlobalKey<SelectChatPageState>();
+  // ✨ 2. 加上 late，並把鑰匙裝進 SelectChatPage
+  late final List<Widget> _pages = [
     const ChatHomePage(), // 0
-    const SelectChatPage(), // 1
+    SelectChatPage(key: _encounterKey), // 1 👈 鑰匙插在這裡！(注意 const 要拿掉)
     const MomentsPage(), // 2
     const ProfilePage(), // 3
   ];
@@ -494,12 +495,22 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     );
   }
 
+  // ✨ 3. 更新點擊邏輯
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // ✨ 只要點到那一頁，就把它標記為已啟動
-      _isPageActivated[index] = true;
-    });
+    if (_selectedIndex == index) {
+      // 🌟 如果玩家已經在這一頁，又點了一次
+      if (index == 1) {
+        // 直接按下遙控器，呼叫邂逅頁面裡面的轉圈圈刷新！
+        _encounterKey.currentState?.refreshEncounters();
+      }
+    } else {
+      // 正常切換頁面
+      setState(() {
+        _selectedIndex = index;
+        // 只要點到那一頁，就把它標記為已啟動
+        _isPageActivated[index] = true;
+      });
+    }
   }
 
   @override

@@ -17,6 +17,8 @@ import 'dart:ui'; // 🌟 為了 ImageFilter
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:showcaseview/showcaseview.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //角色卡片內容
 
 class CharacterProfilePage extends StatefulWidget {
@@ -67,15 +69,33 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     final currentUser = FirebaseAuth.instance.currentUser;
     return currentUser != null && currentUser.uid == widget.character.createdBy;
   }
+// 🔑 1. 新增：時空迴音按鈕的專屬鑰匙
+  final GlobalKey _echoKey = GlobalKey();
 
+  // 💡 2. 新增：紀錄迴音氣泡彈過了沒 (預設 true，等翻記事本)
+  bool _hasEchoTipShown = true;
   @override
   void initState() {
     super.initState();
-
-    // 1. 同步的初始化（不牽涉 context 或 async 的）可以放外面
     _tabController = TabController(length: 3, vsync: this);
-
-    // 2. ✨ ✨ ✨ 魔法包裝：確保在第一幀畫面畫完後才執行
+// 🌟  去翻記事本，看看他以前看過迴音氣泡了沒
+    _checkEchoTutorial();
+    // 🌟 4. 魔法監聽器：當玩家切換分頁時觸發！
+    _tabController.addListener(() {
+      // 如果切換到了第三個分頁 (index 2)，而且還沒發射過氣泡
+      if (_tabController.index == 2 && !_hasEchoTipShown) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            // 立刻發射氣泡！
+            ShowCaseWidget.of(context).startShowCase([_echoKey]);
+          } catch (e) {
+            print("⚠️ 找不到 ShowCaseWidget");
+          }
+        });
+        // 標記為已發射，避免切來切去重複彈
+        _hasEchoTipShown = true;
+      }
+    });
     // 這能解決 dependOnInheritedWidget 的報錯（因為這時 context 已經準備好了）
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -92,6 +112,21 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkEchoTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool hasSeen = prefs.getBool('seen_profile_echo_tip') ?? false;
+
+    if (!hasSeen) {
+      if (mounted) {
+        setState(() {
+          _hasEchoTipShown = false; // 允許發射氣泡
+        });
+      }
+      // ✍️ 寫下紀錄，這輩子只彈這一次！
+      await prefs.setBool('seen_profile_echo_tip', true);
+    }
   }
 
   // 🌟 3. 核心函式：去 Firestore 抓取目前玩家的資料
@@ -2261,12 +2296,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   ),
                 ),
 
-                FeatureTipTarget(
-                  tipKey: '${FeatureTipKeys.timeEchoes}_v2',
-                  // ✨ 替換：把寫死的字串換成 l10n 變數
-                  tipText: l10n.tip_time_echoes,
-                  top: 46,
-                  right: 0,
+                // ✨ 換成超級清爽的 Showcase！沒有座標，全自動追蹤！
+                Showcase(
+                  key: _echoKey,
+                  description: l10n.tip_time_echoes,
                   child: TextButton.icon(
                     onPressed: _showAddEchoDialog,
                     icon: const Icon(Icons.add, size: 18),

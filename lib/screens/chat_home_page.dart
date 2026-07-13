@@ -15,6 +15,8 @@ import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:lianlian_shiguang/widgets/feature_tip_target.dart';
 import 'package:lianlian_shiguang/widgets/feature_tip_keys.dart';
+import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
+import 'package:shared_preferences/shared_preferences.dart';
 
 //聊天室的名稱更改
 class ChatHomePage extends StatefulWidget {
@@ -32,10 +34,17 @@ class _ChatHomePageState extends State<ChatHomePage> {
   bool _isOpeningTopAction = false;
   final String _appId = AppConfig.appId;
   final Map<String, Character> _characterCache = {};
-
+  // 💡 新增：紀錄這頁的氣泡是否已經彈過
+  bool _hasChatHomeTipsShown = true;
+// 🔑 新增：專屬這頁的兩個追蹤鑰匙
+  final GlobalKey _memoryKey = GlobalKey();
+  final GlobalKey _mailboxKey = GlobalKey();
   @override
   void initState() {
     super.initState();
+    // 🌟 2. 剛進畫面時去翻記事本
+    _checkChatHomeTutorial();
+
     if (_currentUser != null) {
       _sessionsStream = FirebaseFirestore.instance
           .collection('artifacts')
@@ -44,6 +53,23 @@ class _ChatHomePageState extends State<ChatHomePage> {
           .where('userId', isEqualTo: _currentUser!.uid)
           .orderBy('lastActivity', descending: true)
           .snapshots();
+    }
+  }
+
+  // 🌟 3. 新增聊天室專屬的「翻記事本」功能
+  Future<void> _checkChatHomeTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 注意這裡的鑰匙名字不一樣喔！叫做 'seen_chat_home_tips'
+    bool hasSeen = prefs.getBool('seen_chat_home_tips') ?? false;
+
+    if (!hasSeen) {
+      if (mounted) {
+        setState(() {
+          _hasChatHomeTipsShown = false; // 允許發射氣泡
+        });
+      }
+      // ✍️ 寫下紀錄，下次不再打擾
+      await prefs.setBool('seen_chat_home_tips', true);
     }
   }
 
@@ -375,335 +401,296 @@ class _ChatHomePageState extends State<ChatHomePage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final isSmallPhone = screenWidth < 390;
-    final isTablet = screenWidth >= 600;
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(l10n.chat_home_title),
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        foregroundColor: theme.colorScheme.onBackground,
-        actions: [
-          FeatureTipTarget(
-            enabled: !_isNavigatingToChat && !_isOpeningTopAction,
-            scopeKey: 'chat_home',
-            order: 1,
-            tipKey: '${FeatureTipKeys.callMemory}_v5',
-            tipText: l10n.tip_call_memory,
-            direction: FeatureTipDirection.down,
 
-            top: isTablet ? 54 : 56,
+    // 🗑️ 清理掉 screenWidth, isSmallPhone, isTablet 等判斷
 
-            maxWidth: isTablet
-                ? 220
-                : isSmallPhone
-                ? 140
-                : 160,
+    // 🌟 1. 最外層包上總指揮中心
+    return ShowCaseWidget(
+        builder: (context) {
 
-            offset: Offset(
-              isTablet
-                  ? (screenWidth * 0.38).clamp(230.0, 350.0)
-                  : isSmallPhone
-                  ? 85
-                  : 110,
-              0,
-            ),
+          // 🚀 2. 畫面一載入自動發射氣泡 (依照陣列順序：先耳機，再信箱)
+          if (!_hasChatHomeTipsShown) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ShowCaseWidget.of(context).startShowCase([_memoryKey, _mailboxKey]);
+            });
+            _hasChatHomeTipsShown = true;
+          }
 
-            arrowOffset: isTablet
-                ? -20
-                : isSmallPhone
-                ? 0
-                : 0,
-
-            child: IconButton(
-              tooltip: l10n.call_memory_tooltip,
-              icon: const Icon(Icons.headphones_outlined, size: 26),
-              onPressed: () {
-                _openTopActionPage(const CallMemoryPage());
-              },
-            ),
-          ),
-          StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser?.uid ?? '')
-                .collection('mailbox')
-                .where('isRead', isEqualTo: false)
-                .snapshots(),
-            builder: (context, snapshot) {
-              int unreadCount = 0;
-              if (snapshot.hasData) {
-                unreadCount = snapshot.data!.docs.length;
-              }
-
-              return IconButton(
-                tooltip: l10n.private_mailbox,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () {
-                  _openTopActionPage(const NotificationListPage());
-                },
-                icon: Badge(
-                  label: null,
-                  alignment: const AlignmentDirectional(1.8, -0.8),
-                  isLabelVisible: unreadCount > 0,
-                  backgroundColor: Colors.pinkAccent,
-                  smallSize: 10,
-                  child: FeatureTipTarget(
-                    enabled: !_isNavigatingToChat && !_isOpeningTopAction,
-                    scopeKey: 'chat_home',
-                    order: 2,
-                    tipKey: '${FeatureTipKeys.chatHomeNotifications}_v4',
-                    tipText: l10n.tip_chat_notifications,
-                    direction: FeatureTipDirection.down,
-
-                    top: isTablet ? 78 : 70,
-
-                    maxWidth: isTablet
-                        ? 220
-                        : isSmallPhone
-                        ? 130
-                        : 150,
-
-                    offset: Offset(
-                      isTablet
-                          ? (screenWidth * 0.34).clamp(230.0, 300.0)
-                          : isSmallPhone
-                          ? 70
-                          : 85,
-                      isTablet ? -6 : -10,
-                    ),
-
-                    arrowOffset: isTablet
-                        ? 20
-                        : isSmallPhone
-                        ? 18
-                        : 25,
-
-                    child: Transform.scale(
-                      scale: 1.6,
-                      child: Image.asset(
-                        'assets/images/love_plane_icon.png',
-                        width: 36,
-                        height: 36,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : theme.colorScheme.onBackground,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              title: Text(l10n.chat_home_title),
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              foregroundColor: theme.colorScheme.onBackground,
+              actions: [
+                // ✨ 3. 耳機按鈕 (更換為 Showcase)
+                Showcase(
+                  key: _memoryKey,
+                  description: l10n.tip_call_memory,
+                  child: IconButton(
+                    tooltip: l10n.call_memory_tooltip,
+                    icon: const Icon(Icons.headphones_outlined, size: 26),
+                    onPressed: () {
+                      _openTopActionPage(const CallMemoryPage());
+                    },
                   ),
                 ),
-              );
-            },
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: themeNotifier.currentBackground,
-            child: _currentUser == null
-                ? Center(child: Text(l10n.login_to_view_chat))
-                : StreamBuilder<QuerySnapshot>(
-              stream: _sessionsStream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text(l10n.load_chat_failed(snapshot.error.toString())));
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(l10n.chat_list_empty, style: TextStyle(color: Colors.grey.shade500, fontSize: 18)),
-                          const SizedBox(height: 8),
-                          Text(l10n.go_to_encounter, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-                        ],
-                      )
-                  );
-                }
 
-                final sessionDocs = snapshot.data!.docs;
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser?.uid ?? '')
+                      .collection('mailbox')
+                      .where('isRead', isEqualTo: false)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    int unreadCount = 0;
+                    if (snapshot.hasData) {
+                      unreadCount = snapshot.data!.docs.length;
+                    }
 
-                return ListView.builder(
-                  padding: EdgeInsets.only(top: kToolbarHeight + MediaQuery.of(context).padding.top + 10, bottom: 20),
-                  itemCount: sessionDocs.length,
-                  itemBuilder: (context, index) {
-                    final sessionData = sessionDocs[index].data() as Map<String, dynamic>;
-                    final sessionId = sessionDocs[index].id;
-                    final characterName = sessionData['characterName'] ?? l10n.unknownCharacter;
-                    final displayRoomName = sessionData['customRoomName'] ?? characterName;
-                    final chatMode = sessionData['chatMode'] ?? 'daily';
-                    final unreadCount = sessionData['unreadCount'] ?? 0;
-
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: theme.cardColor.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(16),
-                        clipBehavior: Clip.antiAlias,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          leading: Stack(
-                            children: [
-                              CircleAvatar(
-                                radius: 28,
-                                backgroundImage: NetworkImage(sessionData['characterAvatarPath'] ?? ''),
-                                backgroundColor: theme.colorScheme.secondaryContainer,
-                              ),
-                              if (unreadCount > 0)
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Text(
-                                      '$unreadCount',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          title: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  displayRoomName,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: theme.colorScheme.onSurface,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  _getModeLabel(chatMode, l10n),
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: theme.colorScheme.onPrimaryContainer,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Text(
-                              sessionData['lastMessage'] ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: unreadCount > 0
-                                    ? theme.colorScheme.onSurface
-                                    : Colors.grey,
-                              ),
+                    return IconButton(
+                      tooltip: l10n.private_mailbox,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () {
+                        _openTopActionPage(const NotificationListPage());
+                      },
+                      icon: Badge(
+                        label: null,
+                        alignment: const AlignmentDirectional(1.8, -0.8),
+                        isLabelVisible: unreadCount > 0,
+                        backgroundColor: Colors.pinkAccent,
+                        smallSize: 10,
+                        // ✨ 4. 信箱紙飛機按鈕 (更換為 Showcase)
+                        child: Showcase(
+                          key: _mailboxKey,
+                          description: l10n.tip_chat_notifications,
+                          child: Transform.scale(
+                            scale: 1.6,
+                            child: Image.asset(
+                              'assets/images/love_plane_icon.png',
+                              width: 36,
+                              height: 36,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : theme.colorScheme.onBackground,
+                              fit: BoxFit.contain,
                             ),
-                          ),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                _formatTimestamp(sessionData['lastActivity'] as Timestamp?),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: unreadCount > 0
-                                      ? theme.colorScheme.primary
-                                      : Colors.grey,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              if (sessionData['friendshipScore'] != null)
-                                Text(
-                                  l10n.affection_score_short(
-                                    sessionData['friendshipScore'].toString(),
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.pinkAccent,
-                                  ),
-                                ),
-                            ],
-                          ),
-                          onTap: () => _navigateToChat(
-                            sessionId,
-                            sessionData['characterId'] ?? '',
-                          ),
-
-                          // ✅ 改這裡：長按不再直接改名，而是跳出選單
-                          onLongPress: () => _showChatRoomOptions(
-                            sessionId: sessionId,
-                            displayRoomName: displayRoomName,
-                            characterName: characterName,
                           ),
                         ),
                       ),
                     );
                   },
-                );
-              },
+                ),
+                const SizedBox(width: 16),
+              ],
             ),
-          ),
 
-          if (_isOpeningChat)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const CircularProgressIndicator(color: Colors.pinkAccent),
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
-                          borderRadius: BorderRadius.circular(24)
-                      ),
-                      child: Text(
-                          l10n.preparing_chat_room,
-                          style: const TextStyle(color: Colors.white, fontSize: 14, letterSpacing: 1.5)
+            // ... ⬇️ (下方 body 內的 ListView.builder 等邏輯完全保持不變) ⬇️ ...
+            body: Stack(
+              children: [
+                Container(
+                  decoration: themeNotifier.currentBackground,
+                  child: _currentUser == null
+                      ? Center(child: Text(l10n.login_to_view_chat))
+                      : StreamBuilder<QuerySnapshot>(
+                    stream: _sessionsStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(child: Text(l10n.load_chat_failed(snapshot.error.toString())));
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(l10n.chat_list_empty, style: TextStyle(color: Colors.grey.shade500, fontSize: 18)),
+                                const SizedBox(height: 8),
+                                Text(l10n.go_to_encounter, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+                              ],
+                            )
+                        );
+                      }
+
+                      final sessionDocs = snapshot.data!.docs;
+
+                      return ListView.builder(
+                        padding: EdgeInsets.only(top: kToolbarHeight + MediaQuery.of(context).padding.top + 10, bottom: 20),
+                        itemCount: sessionDocs.length,
+                        itemBuilder: (context, index) {
+                          final sessionData = sessionDocs[index].data() as Map<String, dynamic>;
+                          final sessionId = sessionDocs[index].id;
+                          final characterName = sessionData['characterName'] ?? l10n.unknownCharacter;
+                          final displayRoomName = sessionData['customRoomName'] ?? characterName;
+                          final chatMode = sessionData['chatMode'] ?? 'daily';
+                          final unreadCount = sessionData['unreadCount'] ?? 0;
+
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              color: theme.cardColor.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(16),
+                              clipBehavior: Clip.antiAlias,
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                leading: Stack(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: NetworkImage(sessionData['characterAvatarPath'] ?? ''),
+                                      backgroundColor: theme.colorScheme.secondaryContainer,
+                                    ),
+                                    if (unreadCount > 0)
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Text(
+                                            '$unreadCount',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                title: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        displayRoomName,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: theme.colorScheme.onSurface,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primaryContainer,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        _getModeLabel(chatMode, l10n),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: theme.colorScheme.onPrimaryContainer,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: Text(
+                                    sessionData['lastMessage'] ?? '',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: unreadCount > 0
+                                          ? theme.colorScheme.onSurface
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      _formatTimestamp(sessionData['lastActivity'] as Timestamp?),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: unreadCount > 0
+                                            ? theme.colorScheme.primary
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    if (sessionData['friendshipScore'] != null)
+                                      Text(
+                                        l10n.affection_score_short(
+                                          sessionData['friendshipScore'].toString(),
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.pinkAccent,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                onTap: () => _navigateToChat(
+                                  sessionId,
+                                  sessionData['characterId'] ?? '',
+                                ),
+                                onLongPress: () => _showChatRoomOptions(
+                                  sessionId: sessionId,
+                                  displayRoomName: displayRoomName,
+                                  characterName: characterName,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+
+                if (_isOpeningChat)
+                  Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CircularProgressIndicator(color: Colors.pinkAccent),
+                          const SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(24)
+                            ),
+                            child: Text(
+                                l10n.preparing_chat_room,
+                                style: const TextStyle(color: Colors.white, fontSize: 14, letterSpacing: 1.5)
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+              ],
             ),
-        ],
-      ),
+          );
+        }
     );
   }
 }

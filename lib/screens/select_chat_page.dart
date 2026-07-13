@@ -19,17 +19,25 @@ class SelectChatPage extends StatefulWidget {
   const SelectChatPage({super.key});
 
   @override
-  _SelectChatPageState createState() => _SelectChatPageState();
+  SelectChatPageState createState() => SelectChatPageState();
 }
 
-class _SelectChatPageState extends State<SelectChatPage> {
+class SelectChatPageState extends State<SelectChatPage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final String APP_ID = AppConfig.appId;
   String? _userId;
   Future<List<Character>>? _charactersFuture;
   Set<String> _friendIds = {};
   Set<String> _blockedCharacterIds = {};
-
+  void refreshEncounters() {
+    setState(() {
+      // 刻意先把它設為 null，這樣畫面就會觸發 FutureBuilder 的 waiting 狀態，
+      // 跑出優雅的「轉圈圈」動畫，讓玩家知道正在重新尋找邂逅！
+      _charactersFuture = null;
+    });
+    // 接著立刻重新去資料庫抓資料
+    _refreshAllData();
+  }
   @override
   void initState() {
     super.initState();
