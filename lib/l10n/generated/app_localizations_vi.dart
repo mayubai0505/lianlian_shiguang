@@ -4372,4 +4372,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'Đã hủy ẩn thành công';
+
+  @override
+  String get report_moment_title => 'Báo cáo khoảnh khắc này';
+
+  @override
+  String get report_moment_content =>
+      'Bạn có chắc chắn muốn báo cáo khoảnh khắc này đến ban quản trị không? Các nội dung độc hại sẽ bị ẩn hoặc xóa bỏ.';
+
+  @override
+  String get report_confirm_button => 'Xác nhận báo cáo';
+
+  @override
+  String get report_success_message =>
+      'Chúng tôi đã nhận được báo cáo của bạn. Đội ngũ kiểm duyệt sẽ tiến hành xử lý trong thời gian sớm nhất.';
 }

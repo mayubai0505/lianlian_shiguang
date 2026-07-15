@@ -1977,5 +1977,9 @@
   "unhide_moment_title": "Hủy ẩn khoảnh khắc?",
   "unhide_moment_content": "Sau khi hủy ẩn, nếu bài viết này vẫn còn tồn tại, nó có thể sẽ xuất hiện lại trên Tường Kỷ Niệm của bạn trong tương lai.",
   "unhide_moment_action": "Hủy ẩn",
-  "unhide_moment_success": "Đã hủy ẩn thành công"
+  "unhide_moment_success": "Đã hủy ẩn thành công",
+  "report_moment_title": "Báo cáo khoảnh khắc này",
+  "report_moment_content": "Bạn có chắc chắn muốn báo cáo khoảnh khắc này đến ban quản trị không? Các nội dung độc hại sẽ bị ẩn hoặc xóa bỏ.",
+  "report_confirm_button": "Xác nhận báo cáo",
+  "report_success_message": "Chúng tôi đã nhận được báo cáo của bạn. Đội ngũ kiểm duyệt sẽ tiến hành xử lý trong thời gian sớm nhất."
 }

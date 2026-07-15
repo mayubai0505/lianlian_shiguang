@@ -4432,4 +4432,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'Affiché à nouveau avec succès';
+
+  @override
+  String get report_moment_title => 'Signaler ce Moment';
+
+  @override
+  String get report_moment_content =>
+      'Êtes-vous sûr de vouloir signaler ce moment à l\'équipe d\'administration ? Les contenus malveillants seront cachés ou supprimés.';
+
+  @override
+  String get report_confirm_button => 'Confirmer le signalement';
+
+  @override
+  String get report_success_message =>
+      'Nous avons bien reçu votre signalement. L\'équipe d\'examen interviendra et traitera la situation dans les plus brefs délais.';
 }

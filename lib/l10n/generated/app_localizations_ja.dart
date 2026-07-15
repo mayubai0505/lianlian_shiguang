@@ -4150,4 +4150,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get unhide_moment_success => '非表示を解除しました';
+
+  @override
+  String get report_moment_title => 'この投稿を通報する';
+
+  @override
+  String get report_moment_content =>
+      'この投稿を管理チームに通報してもよろしいですか？悪質なコンテンツは非表示または削除されます。';
+
+  @override
+  String get report_confirm_button => '通報を確定する';
+
+  @override
+  String get report_success_message => '通報を受け付けました。審査チームが迅速に確認し対応いたします。';
 }

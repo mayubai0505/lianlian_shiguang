@@ -1978,6 +1978,10 @@
    "unhide_moment_title": "Batalkan Sembunyi?",
    "unhide_moment_content": "Selepas dibatalkan, jika siaran ini masih ada, ia mungkin akan dipaparkan semula pada Dinding Kenangan awak pada masa hadapan.",
    "unhide_moment_action": "Batalkan Sembunyi",
-   "unhide_moment_success": "Telah batal disembunyikan"
+   "unhide_moment_success": "Telah batal disembunyikan",
+   "report_moment_title": "Denunciar este Momento",
+   "report_moment_content": "Tem certeza de que deseja denunciar este momento para a equipe de administração? Conteúdos maliciosos serão ocultados ou excluídos.",
+   "report_confirm_button": "Confirmar Denúncia",
+   "report_success_message": "Sua denúncia foi recebida. A equipe de revisão analisará e tomará as providências o mais rápido possível."
 
 }

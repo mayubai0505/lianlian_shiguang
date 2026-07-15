@@ -7641,6 +7641,30 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'已解除隱藏'**
   String get unhide_moment_success;
+
+  /// No description provided for @report_moment_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉此動態'**
+  String get report_moment_title;
+
+  /// No description provided for @report_moment_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要向管理團隊檢舉這篇動態嗎？惡意內容將會被隱藏或刪除。'**
+  String get report_moment_content;
+
+  /// No description provided for @report_confirm_button.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認檢舉'**
+  String get report_confirm_button;
+
+  /// No description provided for @report_success_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已收到您的檢舉，審核團隊將盡快介入處理。'**
+  String get report_success_message;
 }
 
 class _AppLocalizationsDelegate

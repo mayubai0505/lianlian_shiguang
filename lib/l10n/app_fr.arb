@@ -2150,5 +2150,9 @@
     "unhide_moment_title": "Afficher à nouveau ?",
     "unhide_moment_content": "Une fois réaffiché, si ce post existe toujours, il se peut qu'il réapparaisse sur votre Mur à l'avenir.",
     "unhide_moment_action": "Afficher à nouveau",
-    "unhide_moment_success": "Affiché à nouveau avec succès"
+    "unhide_moment_success": "Affiché à nouveau avec succès",
+    "report_moment_title": "Signaler ce Moment",
+    "report_moment_content": "Êtes-vous sûr de vouloir signaler ce moment à l'équipe d'administration ? Les contenus malveillants seront cachés ou supprimés.",
+    "report_confirm_button": "Confirmer le signalement",
+    "report_success_message": "Nous avons bien reçu votre signalement. L'équipe d'examen interviendra et traitera la situation dans les plus brefs délais."
 }

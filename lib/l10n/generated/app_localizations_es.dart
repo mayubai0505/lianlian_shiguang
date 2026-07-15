@@ -4404,4 +4404,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'Se ha vuelto a mostrar con éxito';
+
+  @override
+  String get report_moment_title => 'Denunciar este Momento';
+
+  @override
+  String get report_moment_content =>
+      '¿Confirmas que quieres denunciar este momento al equipo de administración? El contenido malicioso se ocultará o eliminará.';
+
+  @override
+  String get report_confirm_button => 'Confirmar denuncia';
+
+  @override
+  String get report_success_message =>
+      'Hemos recibido tu denuncia. El equipo de revisión intervendrá y se encargará de ello lo antes posible.';
 }

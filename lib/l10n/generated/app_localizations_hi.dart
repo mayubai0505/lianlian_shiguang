@@ -4375,4 +4375,18 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'सफलतापूर्वक अनहाइड किया गया';
+
+  @override
+  String get report_moment_title => 'इस पल की रिपोर्ट करें';
+
+  @override
+  String get report_moment_content =>
+      'क्या आप वाकई प्रबंधन टीम को इस पल की रिपोर्ट करना चाहते हैं? दुर्भावनापूर्ण सामग्री को छिपा या हटा दिया जाएगा।';
+
+  @override
+  String get report_confirm_button => 'रिपोर्ट की पुष्टि करें';
+
+  @override
+  String get report_success_message =>
+      'हमें आपकी रिपोर्ट मिल गई है। समीक्षा टीम जल्द से जल्द इस पर कार्रवाई करेगी।';
 }

@@ -1978,5 +1978,9 @@
   "unhide_moment_title": "再表示しますか？",
   "unhide_moment_content": "非表示を解除すると、該当の投稿がまだ存在している場合、今後再びタイムウォールに表示される可能性があります。",
   "unhide_moment_action": "非表示を解除",
-  "unhide_moment_success": "非表示を解除しました"
+  "unhide_moment_success": "非表示を解除しました",
+  "report_moment_title": "この投稿を通報する",
+  "report_moment_content": "この投稿を管理チームに通報してもよろしいですか？悪質なコンテンツは非表示または削除されます。",
+  "report_confirm_button": "通報を確定する",
+  "report_success_message": "通報を受け付けました。審査チームが迅速に確認し対応いたします。"
 }

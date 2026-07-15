@@ -4318,4 +4318,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'تم إلغاء الإخفاء بنجاح';
+
+  @override
+  String get report_moment_title => 'الإبلاغ عن هذه اللحظة';
+
+  @override
+  String get report_moment_content =>
+      'هل أنتِ متأكدة من رغبتكِ في الإبلاغ عن هذه اللحظة إلى فريق الإدارة؟ سيتم إخفاء المحتوى الضار أو حذفه.';
+
+  @override
+  String get report_confirm_button => 'تأكيد الإبلاغ';
+
+  @override
+  String get report_success_message =>
+      'لقد تلقينا بلاغكِ، وسيتدخل فريق المراجعة لمعالجة الأمر في أقرب وقت ممكن.';
 }

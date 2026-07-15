@@ -4379,4 +4379,18 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'Exibido novamente com sucesso';
+
+  @override
+  String get report_moment_title => 'Laporkan Detik Ini';
+
+  @override
+  String get report_moment_content =>
+      'Adakah awak pasti ingin melaporkan detik ini kepada pasukan pengurusan? Kandungan berniat jahat akan disembunyikan atau dipadamkan.';
+
+  @override
+  String get report_confirm_button => 'Sahkan Laporan';
+
+  @override
+  String get report_success_message =>
+      'Laporan awak telah diterima. Pasukan semakan akan menyiasat dan mengendalikannya secepat mungkin.';
 }

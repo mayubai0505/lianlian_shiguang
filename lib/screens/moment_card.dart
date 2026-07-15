@@ -630,15 +630,15 @@ class _MomentCardState extends State<MomentCard> {
                   leading: const Icon(Icons.report_problem_outlined),
                   title: Text(l10n.moment_action_report),
                   onTap: () {
-                    Navigator.pop(context);
-                    // 這裡之後接檢舉邏輯
+                    Navigator.pop(context); // 先關閉底部選單
+                    _submitReport();        // 🚀 呼叫我們剛剛寫的真實檢舉函式！
                   },
                 ),
-
 // 👁️ 只隱藏這一篇
+                // 👁️ 只隱藏這一篇
                 ListTile(
                   leading: const Icon(Icons.visibility_off_outlined),
-                  title: const Text('隱藏此動態'),
+                  title: Text(l10n.hide_moment_title), // ✨ 換成多國語系變數，並移除 const
                   onTap: () {
                     Navigator.pop(context);
                     widget.onHideMomentTapped?.call();
@@ -682,6 +682,63 @@ class _MomentCardState extends State<MomentCard> {
     );
     if (confirm == true) {
       await _momentRef.delete();
+    }
+  }
+
+  // 🛡️ 真實檢舉寫入功能
+  // 🛡️ 真實檢舉寫入功能 (多國語系版)
+  Future<void> _submitReport() async {
+    final String? reporterId = FirebaseAuth.instance.currentUser?.uid;
+    if (reporterId == null) return;
+
+    final l10n = AppLocalizations.of(context)!;
+
+    // 1. 為了怕玩家誤觸，加一個簡單的確認對話框
+    final bool? confirm = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(l10n.report_moment_title),
+          content: Text(l10n.report_moment_content),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(l10n.cancelButton)
+            ),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(
+                    l10n.report_confirm_button,
+                    style: const TextStyle(color: Colors.red)
+                )
+            ),
+          ],
+        )
+    );
+
+    if (confirm != true) return;
+
+    try {
+      // 2. 把檢舉資料寫進 Firebase 獨立的 'reports' 集合裡
+      await FirebaseFirestore.instance.collection('reports').add({
+        'reporterId': reporterId,                   // 誰檢舉的
+        'reportedMomentId': widget.moment.id,       // 哪篇動態被檢舉
+        'reportedAuthorId': widget.moment.authorId, // 被檢舉人的 ID
+        'contentSnapshot': widget.moment.content,   // 留存當下的文字當證據
+        'status': 'pending',                        // 處理狀態：待處理
+        'createdAt': FieldValue.serverTimestamp(),  // 檢舉時間
+      });
+
+      // 3. 顯示成功提示給玩家 (與審核員)
+      if (mounted) {
+        // ✨ 改用你原本專案裡習慣的 ToastUtils 會更有一致性
+        ToastUtils.showCenterToast(
+          context,
+          l10n.report_success_message,
+          customIcon: Icons.check_circle_outline_rounded,
+        );
+      }
+    } catch (e) {
+      print("檢舉寫入失敗: $e");
     }
   }
 

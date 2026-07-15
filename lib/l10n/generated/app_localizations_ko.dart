@@ -4165,4 +4165,18 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get unhide_moment_success => '숨기기가 해제되었습니다';
+
+  @override
+  String get report_moment_title => '이 순간 신고하기';
+
+  @override
+  String get report_moment_content =>
+      '이 순간을 관리팀에 신고하시겠습니까? 악성 콘텐츠는 숨김 처리되거나 삭제됩니다.';
+
+  @override
+  String get report_confirm_button => '신고 확인';
+
+  @override
+  String get report_success_message =>
+      '신고가 접수되었습니다. 검토팀에서 신속하게 확인 후 처리해 드리겠습니다.';
 }

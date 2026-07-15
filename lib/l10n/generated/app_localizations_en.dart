@@ -4338,4 +4338,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'Unhidden successfully';
+
+  @override
+  String get report_moment_title => 'Report this Moment';
+
+  @override
+  String get report_moment_content =>
+      'Are you sure you want to report this moment to the management team? Malicious content will be hidden or deleted.';
+
+  @override
+  String get report_confirm_button => 'Confirm Report';
+
+  @override
+  String get report_success_message =>
+      'We have received your report. The review team will investigate and handle it as soon as possible.';
 }

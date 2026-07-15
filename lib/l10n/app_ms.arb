@@ -1986,5 +1986,9 @@
     "unhide_moment_title": "Exibir Novamente?",
     "unhide_moment_content": "Após exibir novamente, se esta postagem ainda existir, ela poderá aparecer no seu Mural outra vez no futuro.",
     "unhide_moment_action": "Exibir Novamente",
-    "unhide_moment_success": "Exibido novamente com sucesso"
+    "unhide_moment_success": "Exibido novamente com sucesso",
+    "report_moment_title": "Laporkan Detik Ini",
+    "report_moment_content": "Adakah awak pasti ingin melaporkan detik ini kepada pasukan pengurusan? Kandungan berniat jahat akan disembunyikan atau dipadamkan.",
+    "report_confirm_button": "Sahkan Laporan",
+    "report_success_message": "Laporan awak telah diterima. Pasukan semakan akan menyiasat dan mengendalikannya secepat mungkin."
 }

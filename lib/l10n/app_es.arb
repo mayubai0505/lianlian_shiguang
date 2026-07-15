@@ -1976,5 +1976,9 @@
     "unhide_moment_title": "¿Mostrar de nuevo?",
     "unhide_moment_content": "Una vez mostrado de nuevo, si esta publicación aún existe, podría volver a aparecer en tu Muro en el futuro.",
     "unhide_moment_action": "Mostrar de nuevo",
-    "unhide_moment_success": "Se ha vuelto a mostrar con éxito"
+    "unhide_moment_success": "Se ha vuelto a mostrar con éxito",
+    "report_moment_title": "Denunciar este Momento",
+    "report_moment_content": "¿Confirmas que quieres denunciar este momento al equipo de administración? El contenido malicioso se ocultará o eliminará.",
+    "report_confirm_button": "Confirmar denuncia",
+    "report_success_message": "Hemos recibido tu denuncia. El equipo de revisión intervendrá y se encargará de ello lo antes posible."
 }

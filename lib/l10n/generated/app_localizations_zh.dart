@@ -4104,6 +4104,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get unhide_moment_success => '已解除隱藏';
+
+  @override
+  String get report_moment_title => '檢舉此動態';
+
+  @override
+  String get report_moment_content => '確定要向管理團隊檢舉這篇動態嗎？惡意內容將會被隱藏或刪除。';
+
+  @override
+  String get report_confirm_button => '確認檢舉';
+
+  @override
+  String get report_success_message => '已收到您的檢舉，審核團隊將盡快介入處理。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8206,6 +8218,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get unhide_moment_success => '已解除隐藏';
+
+  @override
+  String get report_moment_title => '检举此动态';
+
+  @override
+  String get report_moment_content => '确定要向管理团队检举这篇动态吗？恶意内容将会被隐藏或删除。';
+
+  @override
+  String get report_confirm_button => '确认检举';
+
+  @override
+  String get report_success_message => '已收到您的检举，审核团队将尽快介入处理。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -12308,4 +12332,16 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get unhide_moment_success => '已解除隱藏';
+
+  @override
+  String get report_moment_title => '檢舉此動態';
+
+  @override
+  String get report_moment_content => '確定要向管理團隊檢舉這篇動態嗎？惡意內容將會被隱藏或刪除。';
+
+  @override
+  String get report_confirm_button => '確認檢舉';
+
+  @override
+  String get report_success_message => '已收到您的檢舉，審核團隊將盡快介入處理。';
 }

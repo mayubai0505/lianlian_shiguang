@@ -1976,5 +1976,9 @@
     "unhide_moment_title": "Batalkan Sembunyi?",
     "unhide_moment_content": "Setelah dibatalkan, jika postingan ini masih ada, mungkin akan muncul kembali di Dinding Kenangan Anda di masa mendatang.",
     "unhide_moment_action": "Batalkan Sembunyi",
-    "unhide_moment_success": "Telah batal disembunyikan"
+    "unhide_moment_success": "Telah batal disembunyikan",
+    "report_moment_title": "Laporkan Momen Ini",
+    "report_moment_content": "Apakah Anda yakin ingin melaporkan momen ini kepada tim manajemen? Konten berbahaya akan disembunyikan atau dihapus.",
+    "report_confirm_button": "Konfirmasi Laporan",
+    "report_success_message": "Laporan Anda telah kami terima, tim peninjau akan segera turun tangan untuk memprosesnya."
 }

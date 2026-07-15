@@ -4321,4 +4321,18 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'เลิกซ่อนเรียบร้อยแล้วค่ะ';
+
+  @override
+  String get report_moment_title => 'รายงานช่วงเวลานี้';
+
+  @override
+  String get report_moment_content =>
+      'คุณแน่ใจหรือไม่ว่าต้องการรายงานช่วงเวลานี้ไปยังทีมผู้ดูแลระบบ? เนื้อหาที่ไม่เหมาะสมจะถูกซ่อนหรือลบออกค่ะ';
+
+  @override
+  String get report_confirm_button => 'ยืนยันการรายงาน';
+
+  @override
+  String get report_success_message =>
+      'ทางเราได้รับรายงานของคุณแล้ว ทีมงานตรวจสอบจะรีบดำเนินการตรวจสอบและจัดการโดยเร็วที่สุดค่ะ';
 }

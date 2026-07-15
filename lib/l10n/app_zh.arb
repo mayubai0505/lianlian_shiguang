@@ -2123,5 +2123,9 @@
     "unhide_moment_title": "解除隱藏？",
     "unhide_moment_content": "解除後，若這篇動態仍存在，之後可能會再次出現在你的拾光牆。",
     "unhide_moment_action": "解除隱藏",
-    "unhide_moment_success": "已解除隱藏"
+    "unhide_moment_success": "已解除隱藏",
+    "report_moment_title": "檢舉此動態",
+      "report_moment_content": "確定要向管理團隊檢舉這篇動態嗎？惡意內容將會被隱藏或刪除。",
+      "report_confirm_button": "確認檢舉",
+      "report_success_message": "已收到您的檢舉，審核團隊將盡快介入處理。"
 }

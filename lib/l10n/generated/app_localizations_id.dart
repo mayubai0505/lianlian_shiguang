@@ -4374,4 +4374,18 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'Telah batal disembunyikan';
+
+  @override
+  String get report_moment_title => 'Laporkan Momen Ini';
+
+  @override
+  String get report_moment_content =>
+      'Apakah Anda yakin ingin melaporkan momen ini kepada tim manajemen? Konten berbahaya akan disembunyikan atau dihapus.';
+
+  @override
+  String get report_confirm_button => 'Konfirmasi Laporan';
+
+  @override
+  String get report_success_message =>
+      'Laporan Anda telah kami terima, tim peninjau akan segera turun tangan untuk memprosesnya.';
 }

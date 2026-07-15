@@ -4396,4 +4396,18 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get unhide_moment_success => 'Telah batal disembunyikan';
+
+  @override
+  String get report_moment_title => 'Denunciar este Momento';
+
+  @override
+  String get report_moment_content =>
+      'Tem certeza de que deseja denunciar este momento para a equipe de administração? Conteúdos maliciosos serão ocultados ou excluídos.';
+
+  @override
+  String get report_confirm_button => 'Confirmar Denúncia';
+
+  @override
+  String get report_success_message =>
+      'Sua denúncia foi recebida. A equipe de revisão analisará e tomará as providências o mais rápido possível.';
 }
