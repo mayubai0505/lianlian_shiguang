@@ -20,6 +20,7 @@ import 'package:flutter/gestures.dart';
 import 'character_profile_page.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得在檔案最上方加上這行
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
 
 class MomentCard extends StatefulWidget {
   final Moment moment;
@@ -746,8 +747,17 @@ class _MomentCardState extends State<MomentCard> {
     final l10n = AppLocalizations.of(context)!;
     final String appName = l10n.app_name;
 
-    // TODO: 等雙平台上架後，把這裡換成真正的商店連結或 Firebase Dynamic Link
-    final String appLink = "https://your-app-link.com";
+    // 🌟 替換開始：智慧判斷雙平台下載連結
+    String appLink = "https://lianlianshiguang.com"; // 預設防呆（給你們的官網）
+
+    if (Platform.isIOS) {
+      appLink = "https://apps.apple.com/tw/app/戀戀拾光/id6773677178";
+    } else if (Platform.isAndroid) {
+      // ⚠️ 記得把下面這個 id= 後面的字，換成你 Android 的套件名稱 (applicationId)
+      // 通常長得像 com.yourname.lianlianshiguang，你可以去 android/app/build.gradle 裡找
+      appLink = "https://play.google.com/store/apps/details?id=填入你的安卓套件名稱";
+    }
+    // 🌟 替換結束
 
     await showModalBottomSheet(
       context: context,
