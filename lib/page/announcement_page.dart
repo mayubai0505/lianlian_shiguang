@@ -17,9 +17,7 @@ class AnnouncementListPage extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         // 🌟 1. 路徑搬家！改對齊 artifacts 新家
         stream: FirebaseFirestore.instance
-            .collection('artifacts')
-            .doc(AppConfig.appId)
-            .collection('announcements')
+            .collection('announcements') // 👈 改成直接對應後台的路徑
             .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {

@@ -1888,7 +1888,9 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
                               if (cleaned.length <= maxLength) return cleaned;
 
-                              return cleaned.slice(0, maxLength).trim() + "……";
+                              const suffix = "……";
+
+                              return cleaned.slice(0, maxLength - suffix.length).trim() + suffix;
                           }
 
                           const trimmedHistory = chatHistory
@@ -1937,26 +1939,35 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                        TARGET_LENGTH = 40;
                                        MAX_LOOPS = 1;
                                    }
-                                   // ==========================================
-                                   // 🛡️ 總裁專屬防爆網：單則訊息精準截斷
-                                   // ==========================================
-                                   // 1. 清洗歷史紀錄
-                                   const safeTrimmedHistory = trimmedHistory.map(msg => {
-                                       let safeContent = msg.content || "";
-                                       if (safeContent.length > HISTORY_TEXT_LIMIT) {
-                                           // 保留到限制字數，並在結尾加上提示，讓 AI 知道這句話被省略了
-                                           safeContent = safeContent.substring(0, HISTORY_TEXT_LIMIT) + "\n...(系統省略過長文字)";
-                                           console.log(`⚠️ 截斷歷史紀錄: ${msg.role} 從 ${msg.content.length} 縮減至 ${HISTORY_TEXT_LIMIT}`);
-                                       }
-                                       return { role: msg.role, content: safeContent };
-                                   });
 
-                                   // 2. 清洗玩家最新輸入的這句話 (避免玩家這輪發送小論文)
-                                   let safeFinalUserMessage = finalUserMessage || "";
-                                   if (safeFinalUserMessage.length > HISTORY_TEXT_LIMIT) {
-                                       safeFinalUserMessage = safeFinalUserMessage.substring(0, HISTORY_TEXT_LIMIT) + "\n...(系統省略過長文字)";
-                                       console.log(`⚠️ 截斷最新訊息: user 從 ${finalUserMessage.length} 縮減至 ${HISTORY_TEXT_LIMIT}`);
-                                   }
+                                  // ==========================================
+                                  // 🛡️ 歷史紀錄安全整理
+                                  // ==========================================
+
+                                  let trimmedCount = 0;
+
+                                  const safeTrimmedHistory = trimmedHistory.map(msg => {
+                                      let safeContent = msg.content || "";
+
+                                      if (safeContent.length > HISTORY_TEXT_LIMIT) {
+                                          trimmedCount++;
+
+                                          safeContent = safeContent
+                                              .substring(0, HISTORY_TEXT_LIMIT)
+                                              .trim();
+                                      }
+
+                                      return {
+                                          role: msg.role,
+                                          content: safeContent
+                                      };
+                                  });
+
+                                  if (trimmedCount > 0) {
+                                      console.log(
+                                          `⚠️ 二次防爆截斷：${trimmedCount} 則超過 ${HISTORY_TEXT_LIMIT} 字`
+                                      );
+                                  }
 
                                    // ==========================================
                                    // 🧩 正式組裝 currentMessages
@@ -1993,8 +2004,8 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                300;
 
                                                                            const SAFE_MAX_TOKENS =
-                                                                               chatMode === "immersive" ? 1400 :
-                                                                               chatMode === "story" ? 1200 :
+                                                                               chatMode === "immersive" ? 1200 :
+                                                                               chatMode === "story" ? 1000 :
                                                                                chatMode === "daily" ? 250 :
                                                                                500;
 

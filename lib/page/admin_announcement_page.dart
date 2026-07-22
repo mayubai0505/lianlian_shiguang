@@ -273,30 +273,19 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
   Widget _buildReportTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(AppConfig.appId) // 例如 'lianlian_shiguang' 或 AppConfig.appId
-          .collection('reports')
+          .collection('reports') // 👈 確保跟剛剛修正後的一樣是根目錄
           .where('status', isEqualTo: 'pending')
           .snapshots(),
       builder: (context, snapshot) {
-        // 🚨 1. 裝上監視器！如果被擋住，把死因印在畫面上跟 Console 裡
         if (snapshot.hasError) {
           print("🚨 檢舉頁面報錯：${snapshot.error}");
-          return Center(
-            child: Text(
-              '載入失敗，請看 Console：\n${snapshot.error}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red),
-            ),
-          );
+          return Center(child: Text('載入失敗：\n${snapshot.error}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)));
         }
 
-        // ⏳ 2. 正常讀取中才轉圈圈
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // 📦 3. 讀取完畢，但裡面沒資料
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('目前沒有待處理的案件 ✨'));
         }
@@ -307,14 +296,63 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
           itemCount: docs.length,
           itemBuilder: (context, index) {
             var data = docs[index].data() as Map<String, dynamic>;
+
+            // ✨ 1. 智慧解析檢舉類型與標題
+            String typeText = '一般檢舉';
+            String targetName = '';
+            String displayContent = data['content'] ?? '無具體文字';
+
+            if (data['type'] == 'block_character') {
+              typeText = '🚫 封鎖角色';
+              targetName = data['blockedCharacterName'] != null
+                  ? '角色：${data['blockedCharacterName']}'
+                  : '';
+            } else if (data['relatedType'] == 'moment') {
+              typeText = '💬 貼文相關';
+            } else if (data['reportedMessage'] != null || data['reason'] == '回覆不恰當') {
+              // 💡 專門抓出聊天室／訊息回覆檢舉！
+              typeText = '💬 聊天回覆檢舉';
+              if (data['reason'] != null) {
+                targetName = '原因：${data['reason']}';
+              }
+              // 如果有被檢舉的訊息內容，優先顯示出來
+              if (data['reportedMessage'] != null) {
+                displayContent = '被檢舉訊息：「${data['reportedMessage']}」';
+              }
+            }
+
+// 組合顯示的主標題
+            String mainTitle = targetName.isNotEmpty ? '$typeText - $targetName' : typeText;
+
             return Card(
-              margin: const EdgeInsets.all(10),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              elevation: 2,
               child: ListTile(
-                title: Text(data['content'] ?? '無內容'),
-                subtitle: Text('來自：${data['reporterId']?.substring(0, 5) ?? '未知'}...'),
+                contentPadding: const EdgeInsets.all(16),
+                title: Text(
+                  mainTitle,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.pinkAccent),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 顯示玩家原本留下的意見或內容
+                      Text('回報內容：${data['content'] ?? '無具體文字'}', style: const TextStyle(fontSize: 14)),
+                      const SizedBox(height: 4),
+                      Text('回報者 UID：${data['reporterId'] ?? data['createdBy'] ?? '未知'}',
+                          style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                    ],
+                  ),
+                ),
                 trailing: ElevatedButton(
-                  onPressed: () => _showReplyDialog(docs[index].id, data['reporterId'] ?? '', data['content'] ?? ''),
-                  child: const Text('回覆'),
+                  onPressed: () => _showReplyDialog(
+                      docs[index].id,
+                      data['reporterId'] ?? data['createdBy'] ?? '',
+                      data['content'] ?? data['blockedCharacterName'] ?? '該檢舉項目'
+                  ),
+                  child: const Text('處理'),
                 ),
               ),
             );
