@@ -246,9 +246,18 @@ class _CallOverlayState extends State<CallOverlay> {
       if (widget.selectedLanguage == 'Tiếng Việt') greeting = "A lô";
 
       String promptText = userText.trim();
+
       if (isFirstGreeting) {
-        promptText = "（玩家剛剛接起了你的電話）";
-        callOverridePrompt += "\n👉 【特別：開場指令】解：必須嚴格遵守以下開場格式：\n$greeting？ + [${widget.selectedLanguage}正文] | 喂？ + [繁體中文正文]";
+        // 🧠 加上判斷：檢查這是不是「真正的」第一次通話
+        if (_callHistory.isEmpty) {
+          // 情況 A：完全沒有歷史紀錄（真的是第一通電話）
+          promptText = "（玩家剛剛接起了你的電話）";
+          callOverridePrompt += "\n👉 【特別：開場指令】：必須嚴格遵守以下開場格式：\n$greeting？ + [${widget.selectedLanguage}正文] | 喂？ + [繁體中文正文]";
+        } else {
+          // 情況 B：記憶晶體有資料（代表是掛斷後又打來，要接續話題）
+          promptText = "（玩家再次撥通了你的電話）";
+          callOverridePrompt += "\n👉 【特別：開場指令】：玩家又打來了。請閱讀歷史紀錄「直接接續」剛才的話題！絕對【禁止】再說「$greeting」或「喂」等制式開場白。請給出符合人設的自然反應（例如問玩家怎麼又打來了、或是繼續剛才沒說完的事）。";
+        }
       }
 
       final request = http.Request(

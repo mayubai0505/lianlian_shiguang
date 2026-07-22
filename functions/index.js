@@ -140,11 +140,11 @@ exports.generateVoice = onRequest({
 
         // 🌟 讓前端直接傳 text 進來，不用再傳麻煩的 messageId 了！
         const {
-            text: rawText,
-            voiceId,
-            stability = 0.40, // 稍微拉高到 0.4，聲音會更穩更有磁性
-            style = 0.75,
-        } = req.body || {};
+                    text: rawText,
+                    voiceId,
+                    stability = 0.35, // ✨ 稍微調降一點 (0.35~0.4)，情緒起伏更自然
+                    style = 0.15,     // 🚨 從 0.75 降到 0.15，擺脫做作的戲劇腔！
+                } = req.body || {};
 
         if (!rawText || !voiceId) {
             return res.status(400).json({ error: "缺少 text 或 voiceId" });
@@ -189,30 +189,32 @@ exports.generateVoice = onRequest({
 
         // 🎙️ 快取沒中，安全地呼秘書ElevenLabs
         console.log("🎙️ 呼叫 ElevenLabs 生成新語音");
-        const apiKey = elevenLabsApiKey.value(); // 讀取 Secret
+                const apiKey = elevenLabsApiKey.value();
 
-        const elevenResponse = await fetch(
-            `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=3`,
-            {
-                method: "POST",
-                headers: {
-                    "accept": "audio/mpeg",
-                    "Authorization": `Bearer ${apiKey}`, // 有些版本是用 xi-api-key，依據妳舊寫法即可
-                    "xi-api-key": apiKey,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    text: text,
-                    model_id: "eleven_multilingual_v2",
-                    voice_settings: {
-                        stability: Number(stability),
-                        similarity_boost: 0.80,
-                        style: Number(style),
-                        use_speaker_boost: true,
-                    },
-                }),
-            }
-        );
+                const elevenResponse = await fetch(
+                    // ✨ 把延遲優化從 3 降到 1，保證音質跟情緒的完整度
+                    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=1`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "accept": "audio/mpeg",
+                            "Authorization": `Bearer ${apiKey}`,
+                            "xi-api-key": apiKey,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            text: text,
+                            // ✨ 升級為最新版「極速對話模型」，口語感更強！
+                            model_id: "eleven_turbo_v2_5",
+                            voice_settings: {
+                                stability: Number(stability),
+                                similarity_boost: 0.75, // 稍微降一點點，給 AI 多點喘息空間
+                                style: Number(style),
+                                use_speaker_boost: true,
+                            },
+                        }),
+                    }
+                );
 
         if (!elevenResponse.ok) {
             return res.status(500).json({ error: "ElevenLabs 失敗", detail: await elevenResponse.text() });
@@ -1009,7 +1011,7 @@ exports.getAiResponse = onRequest({
                     cost: 1,
                     modelId: "google/gemini-2.5-flash-lite",
                     fallbackModelId: "deepseek/deepseek-v4-flash",
-                    maxTokens: 180,
+                    maxTokens: 320,
                     temperature: 0.5,
                 },
 
@@ -2017,6 +2019,62 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                return cut.trim() + "\n\n（未完待續。）";
                                                                            }
 
+                                                                           function cleanAiResponseText(raw, safePlayerName = "") {
+                                                                               if (!raw) return "";
+
+                                                                               let text = String(raw)
+                                                                                   .replace(/```json/g, "")
+                                                                                   .replace(/```/g, "")
+                                                                                   .trim();
+
+                                                                               // 1. 完整 JSON：正常解析
+                                                                               try {
+                                                                                   const parsed = JSON.parse(text);
+
+                                                                                   if (parsed && typeof parsed === "object") {
+                                                                                       if (typeof parsed.response === "string") {
+                                                                                           return parsed.response
+                                                                                               .replace(/玩家/g, safePlayerName)
+                                                                                               .trim();
+                                                                                       }
+                                                                                       if (typeof parsed.text === "string") {
+                                                                                           return parsed.text.trim();
+                                                                                       }
+                                                                                       if (typeof parsed.message === "string") {
+                                                                                           return parsed.message.trim();
+                                                                                       }
+                                                                                   }
+
+                                                                                   if (typeof parsed === "string") {
+                                                                                       return parsed.trim();
+                                                                                   }
+                                                                               } catch (e) {
+                                                                                   // 不是完整 JSON，往下救
+                                                                               }
+
+                                                                               // 2. 救被截斷的格式：
+                                                                               // { "response": "真正內容
+                                                                               // 或 "response": "真正內容
+                                                                               const responseMatch = text.match(/"?response"?\s*:\s*"([\s\S]*)/);
+                                                                               if (responseMatch && responseMatch[1]) {
+                                                                                   text = responseMatch[1];
+                                                                               }
+
+                                                                               // 3. 清掉尾巴殘留欄位
+                                                                               text = text
+                                                                                   .replace(/",?\s*"affectionChange"\s*:\s*[\s\S]*$/g, "")
+                                                                                   .replace(/",?\s*"voiceText"\s*:\s*"[\s\S]*$/g, "")
+                                                                                   .replace(/",?\s*"reasoning"\s*:\s*"[\s\S]*$/g, "")
+                                                                                   .replace(/",?\s*"reasoning_details"\s*:\s*\[[\s\S]*$/g, "")
+                                                                                   .replace(/"\s*}\s*$/g, "")
+                                                                                   .replace(/\\n/g, "\n")
+                                                                                   .replace(/\\"/g, '"')
+                                                                                   .replace(/玩家/g, safePlayerName)
+                                                                                   .trim();
+
+                                                                               return text;
+                                                                           }
+
                                                                            // ==========================================
                                                                            // 🔄 總裁的惡鬼催稿迴圈：防爆 + 防亂碼版
                                                                            // ==========================================
@@ -2173,20 +2231,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                            safeContent
                                                                                        );
 
-                                                                                       const responseMatch =
-                                                                                           safeContent.match(/"response"\s*:\s*"((?:[^"\\]|\\.)*)"/);
-
-                                                                                       let finalResponse = "";
-
-                                                                                       if (responseMatch) {
-                                                                                           finalResponse = responseMatch[1]
-                                                                                               .replace(/\\n/g, "\n")
-                                                                                               .replace(/\\"/g, '"');
-                                                                                       } else {
-                                                                                           finalResponse = safeContent.replace(/\\n/g, "\n");
-                                                                                       }
-
-                                                                                       finalResponse = finalResponse.replace(/玩家/g, safePlayerName);
+                                                                                       let finalResponse = cleanAiResponseText(safeContent, safePlayerName);
 
                                                                                        parsedData = {
                                                                                            response: finalResponse,
@@ -2217,12 +2262,15 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                // ==========================================
                                                                                let currentText = parsedData?.response || "";
 
+                                                                               currentText = cleanAiResponseText(currentText, safePlayerName);
                                                                                currentText = fixMojibake(currentText);
 
                                                                                if (typeof currentText === "string") {
                                                                                    currentText = currentText
-                                                                                       .replace(/^response\s*:\s*/i, "")
-                                                                                       .replace(/^\{\s*"/i, '"');
+                                                                                       .replace(/^"?response"?\s*:\s*"?/i, "")
+                                                                                       .replace(/^\{\s*"?response"?\s*:\s*"?/i, "")
+                                                                                       .replace(/^\{\s*"/i, '"')
+                                                                                       .trim();
                                                                                }
 
                                                                                // ✂️ 每一輪先截斷，避免單輪爆到 3000～4000 字
@@ -2886,10 +2934,15 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                   ];
 
                                   // 🧠 2. 裝上記憶晶體：讀取 Flutter 手機端傳來的通話歷史！
-                                  // 這樣他就會記得前面幾秒鐘說過的話，不會再瞬間移動了！
-                                  if (data.history && Array.isArray(data.history)) {
-                                      messagesArray = messagesArray.concat(data.history);
-                                  }
+                                          // 🛡️ 新增 Token 防爆機制：後端自動裁切，永遠只保留最後 10 筆對話！
+                                          if (data.history && Array.isArray(data.history)) {
+                                              const maxHistory = 10;
+                                              const safeHistory = data.history.length > maxHistory
+                                                  ? data.history.slice(-maxHistory) // 擷取陣列的最後 10 筆
+                                                  : data.history;
+
+                                              messagesArray = messagesArray.concat(safeHistory);
+                                          }
 
                                   // 🗣️ 3. 加上玩家剛剛說的最新一句話
                                   if (data.userMessage) {
