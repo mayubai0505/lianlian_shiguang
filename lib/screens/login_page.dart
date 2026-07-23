@@ -9,6 +9,8 @@ import 'dart:async';
 import '../services/butterfly_loading_view.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 //登入介面
 
@@ -61,12 +63,41 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // 👇 總裁，把這整段「同步大頭貼」的功能本體貼進來 👇
+  Future<void> syncUserAvatar() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null && user.photoURL != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set({
+          // ⚠️ 記得確認這裡的 key 是妳資料庫裡存頭貼的欄位名稱！
+          // 例如：'characterAvatarPath' 或是 'photoUrl'
+          'photoUrl': user.photoURL,
+        }, SetOptions(merge: true));
+
+        debugPrint('✅ 登入成功：大頭貼網址已自動同步更新！');
+      } catch (e) {
+        debugPrint('⚠️ 大頭貼同步更新失敗: $e');
+      }
+    }
+  }
+  // 👆 貼到這裡結束 👆
+
+
   // ✨ 處理登入成功後的轉場
-  void _handleLoginSuccess(Map<String, dynamic> resultMap) {
+  void _handleLoginSuccess(Map<String, dynamic> resultMap) async { // 💡 記得加上 async
     final User? user = resultMap['user'] as User?;
     final bool isNewUser = resultMap['isNewUser'] as bool? ?? false;
 
     if (user != null) {
+      // 👇 總裁，把自動更新大頭貼的函式插在這裡！ 👇
+      // 這樣無論是新玩家還是老玩家，登入成功瞬間都會更新大頭貼
+      await syncUserAvatar();
+      // 👆 新增這行 👆
+
       if (isNewUser) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const OnboardingPage()),
@@ -205,12 +236,13 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final bool showFacebookLogin = true;
-    final bool showGoogleLogin =
-        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+    final bool showFacebookLogin = false;
+    final bool showGoogleLogin = false;
     // ✅ Apple 登入只在 iOS / iPadOS 顯示
     final bool showAppleLogin =
-        !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+        kIsWeb ||
+            defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.macOS;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -338,7 +370,6 @@ class _LoginPageState extends State<LoginPage> {
 
                 const SizedBox(height: 32),
 
-                // 專屬信箱登入
                 // 專屬信箱登入
                 _buildLoginButton(
                   text: l10n.login_with_email,

@@ -1354,6 +1354,11 @@ class _ProfilePageState extends State<ProfilePage> {
               backgroundColor: primaryColor.withValues(alpha:0.1),
               // ✅ 使用我們之前的萬能頭像讀取器
               backgroundImage: getAvatarImageProvider(_avatarPath),
+
+              // 👇 ✨ 總裁，把防爆網加在這裡！ 👇
+              onBackgroundImageError: (exception, stackTrace) {
+                debugPrint('⚠️ 個人檔案大頭貼載入失敗，已自動顯示預設底色');
+              },
             ),
           ),
         ),
