@@ -4116,6 +4116,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get report_success_message => '已收到您的檢舉，審核團隊將盡快介入處理。';
+
+  @override
+  String get accountDeletionSubmittedTitle => '帳號刪除申請已提交';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      '好的！我們會為你的帳號保留 3 天緩衝期。\n\n如果想取消刪除帳號，只需要在期限內重新登入即可恢復帳號。';
+
+  @override
+  String get restoreAccountDialogTitle => '帳號刪除申請';
+
+  @override
+  String get restoreAccountDialogContent =>
+      '你的帳號目前正在等待刪除。\n\n如果繼續登入，將取消刪除申請並恢復帳號。';
+
+  @override
+  String get cancelLoginButton => '取消登入';
+
+  @override
+  String get restoreAccountButton => '恢復帳號';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8230,6 +8250,26 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get report_success_message => '已收到您的检举，审核团队将尽快介入处理。';
+
+  @override
+  String get accountDeletionSubmittedTitle => '账号删除申请已提交';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      '好的！我们会为你的账号保留 3 天缓冲期。\n\n如果想取消删除账号，只需要在期限内重新登录即可恢复账号。';
+
+  @override
+  String get restoreAccountDialogTitle => '账号删除申请';
+
+  @override
+  String get restoreAccountDialogContent =>
+      '你的账号目前正在等待删除。\n\n如果继续登录，将取消删除申请并恢复账号。';
+
+  @override
+  String get cancelLoginButton => '取消登录';
+
+  @override
+  String get restoreAccountButton => '恢复账号';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -12344,4 +12384,24 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get report_success_message => '已收到您的檢舉，審核團隊將盡快介入處理。';
+
+  @override
+  String get accountDeletionSubmittedTitle => '帳號刪除申請已提交';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      '好的！我們會為你的帳號保留 3 天緩衝期。\n\n如果想取消刪除帳號，只需要在期限內重新登入即可恢復帳號。';
+
+  @override
+  String get restoreAccountDialogTitle => '帳號刪除申請';
+
+  @override
+  String get restoreAccountDialogContent =>
+      '你的帳號目前正在等待刪除。\n\n如果繼續登入，將取消刪除申請並恢復帳號。';
+
+  @override
+  String get cancelLoginButton => '取消登入';
+
+  @override
+  String get restoreAccountButton => '恢復帳號';
 }

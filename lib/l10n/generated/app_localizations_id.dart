@@ -4388,4 +4388,25 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get report_success_message =>
       'Laporan Anda telah kami terima, tim peninjau akan segera turun tangan untuk memprosesnya.';
+
+  @override
+  String get accountDeletionSubmittedTitle =>
+      'Permohonan Penghapusan Akun Telah Dikirim';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'Baik! Kami akan memberikan masa tenggang selama 3 hari untuk akun Anda.\n\nJika ingin membatalkan penghapusan akun, Anda hanya perlu login kembali sebelum batas waktu berakhir untuk memulihkan akun.';
+
+  @override
+  String get restoreAccountDialogTitle => 'Permohonan Penghapusan Akun';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'Akun Anda saat ini sedang menunggu penghapusan.\n\nJika melanjutkan untuk login, permohonan penghapusan akan dibatalkan dan akun Anda akan dipulihkan.';
+
+  @override
+  String get cancelLoginButton => 'Batal Login';
+
+  @override
+  String get restoreAccountButton => 'Pulihkan Akun';
 }

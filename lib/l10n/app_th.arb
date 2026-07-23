@@ -1981,5 +1981,29 @@
     "report_moment_title": "รายงานช่วงเวลานี้",
     "report_moment_content": "คุณแน่ใจหรือไม่ว่าต้องการรายงานช่วงเวลานี้ไปยังทีมผู้ดูแลระบบ? เนื้อหาที่ไม่เหมาะสมจะถูกซ่อนหรือลบออกค่ะ",
     "report_confirm_button": "ยืนยันการรายงาน",
-    "report_success_message": "ทางเราได้รับรายงานของคุณแล้ว ทีมงานตรวจสอบจะรีบดำเนินการตรวจสอบและจัดการโดยเร็วที่สุดค่ะ"
+    "report_success_message": "ทางเราได้รับรายงานของคุณแล้ว ทีมงานตรวจสอบจะรีบดำเนินการตรวจสอบและจัดการโดยเร็วที่สุดค่ะ",
+    "accountDeletionSubmittedTitle": "ส่งคำขอลบบัญชีเรียบร้อยแล้ว",
+    "@accountDeletionSubmittedTitle": {
+        "description": "Title for account deletion submission success dialog"
+    },
+    "accountDeletionSubmittedContent": "เรียบร้อยค่ะ! ทางเราจะขยายระยะเวลาผ่อนผันให้เป็นเวลา 3 วันสำหรับบัญชีของคุณค่ะ\n\nหากคุณต้องการยกเลิกการลบบัญชี เพียงแค่เข้าสู่ระบบใหม่อีกครั้งภายในระยะเวลาที่กำหนดเพื่อกู้คืนบัญชีของคุณได้เลยค่ะ",
+    "@accountDeletionSubmittedContent": {
+        "description": "Content for account deletion submission success dialog"
+    },
+    "restoreAccountDialogTitle": "คำขอลบบัญชี",
+    "@restoreAccountDialogTitle": {
+        "description": "Title for the restore account dialog"
+    },
+    "restoreAccountDialogContent": "ขณะนี้บัญชีของคุณอยู่ระหว่างรอดำเนินการลบค่ะ\n\nหากคุณดำเนินการเข้าสู่ระบบต่อ คำขอลบบัญชีจะถูกยกเลิกและบัญชีของคุณจะได้รับการกู้คืนค่ะ",
+    "@restoreAccountDialogContent": {
+        "description": "Content for the restore account dialog"
+    },
+    "cancelLoginButton": "ยกเลิกการเข้าสู่ระบบ",
+    "@cancelLoginButton": {
+        "description": "Button text to cancel login"
+    },
+    "restoreAccountButton": "กู้คืนบัญชี",
+    "@restoreAccountButton": {
+        "description": "Button text to restore account"
+    }
 }

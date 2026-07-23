@@ -2126,5 +2126,29 @@
   "report_moment_title": "檢舉此動態",
     "report_moment_content": "確定要向管理團隊檢舉這篇動態嗎？惡意內容將會被隱藏或刪除。",
     "report_confirm_button": "確認檢舉",
-    "report_success_message": "已收到您的檢舉，審核團隊將盡快介入處理。"
+    "report_success_message": "已收到您的檢舉，審核團隊將盡快介入處理。",
+  "accountDeletionSubmittedTitle": "帳號刪除申請已提交",
+  "@accountDeletionSubmittedTitle": {
+    "description": "Title for account deletion submission success dialog"
+  },
+  "accountDeletionSubmittedContent": "好的！我們會為你的帳號保留 3 天緩衝期。\n\n如果想取消刪除帳號，只需要在期限內重新登入即可恢復帳號。",
+  "@accountDeletionSubmittedContent": {
+    "description": "Content for account deletion submission success dialog"
+  },
+  "restoreAccountDialogTitle": "帳號刪除申請",
+  "@restoreAccountDialogTitle": {
+    "description": "Title for the restore account dialog"
+  },
+  "restoreAccountDialogContent": "你的帳號目前正在等待刪除。\n\n如果繼續登入，將取消刪除申請並恢復帳號。",
+  "@restoreAccountDialogContent": {
+    "description": "Content for the restore account dialog"
+  },
+  "cancelLoginButton": "取消登入",
+  "@cancelLoginButton": {
+    "description": "Button text to cancel login"
+  },
+  "restoreAccountButton": "恢復帳號",
+  "@restoreAccountButton": {
+    "description": "Button text to restore account"
+  }
 }

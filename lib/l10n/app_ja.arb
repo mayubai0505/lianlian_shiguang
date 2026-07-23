@@ -1982,5 +1982,29 @@
   "report_moment_title": "この投稿を通報する",
   "report_moment_content": "この投稿を管理チームに通報してもよろしいですか？悪質なコンテンツは非表示または削除されます。",
   "report_confirm_button": "通報を確定する",
-  "report_success_message": "通報を受け付けました。審査チームが迅速に確認し対応いたします。"
+  "report_success_message": "通報を受け付けました。審査チームが迅速に確認し対応いたします。",
+  "accountDeletionSubmittedTitle": "アカウント削除リクエストを送信しました",
+  "@accountDeletionSubmittedTitle": {
+    "description": "Title for account deletion submission success dialog"
+  },
+  "accountDeletionSubmittedContent": "承知いたしました！3日間の猶予期間を設けております。\n\n削除をキャンセルしたい場合は、期間内に再度ログインしていただくことでアカウントを復元できます。",
+  "@accountDeletionSubmittedContent": {
+    "description": "Content for account deletion submission success dialog"
+  },
+  "restoreAccountDialogTitle": "アカウント削除リクエスト",
+  "@restoreAccountDialogTitle": {
+    "description": "Title for the restore account dialog"
+  },
+  "restoreAccountDialogContent": "現在、アカウントの削除手続き中です。\n\nログインを継続すると削除申請がキャンセルされ、アカウントが復元されます。",
+  "@restoreAccountDialogContent": {
+    "description": "Content for the restore account dialog"
+  },
+  "cancelLoginButton": "ログインをキャンセル",
+  "@cancelLoginButton": {
+    "description": "Button text to cancel login"
+  },
+  "restoreAccountButton": "アカウントを復元",
+  "@restoreAccountButton": {
+    "description": "Button text to restore account"
+  }
 }

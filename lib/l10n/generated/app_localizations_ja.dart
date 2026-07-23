@@ -4163,4 +4163,24 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get report_success_message => '通報を受け付けました。審査チームが迅速に確認し対応いたします。';
+
+  @override
+  String get accountDeletionSubmittedTitle => 'アカウント削除リクエストを送信しました';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      '承知いたしました！3日間の猶予期間を設けております。\n\n削除をキャンセルしたい場合は、期間内に再度ログインしていただくことでアカウントを復元できます。';
+
+  @override
+  String get restoreAccountDialogTitle => 'アカウント削除リクエスト';
+
+  @override
+  String get restoreAccountDialogContent =>
+      '現在、アカウントの削除手続き中です。\n\nログインを継続すると削除申請がキャンセルされ、アカウントが復元されます。';
+
+  @override
+  String get cancelLoginButton => 'ログインをキャンセル';
+
+  @override
+  String get restoreAccountButton => 'アカウントを復元';
 }

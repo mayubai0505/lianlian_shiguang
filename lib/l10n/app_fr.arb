@@ -2154,5 +2154,29 @@
     "report_moment_title": "Signaler ce Moment",
     "report_moment_content": "Êtes-vous sûr de vouloir signaler ce moment à l'équipe d'administration ? Les contenus malveillants seront cachés ou supprimés.",
     "report_confirm_button": "Confirmer le signalement",
-    "report_success_message": "Nous avons bien reçu votre signalement. L'équipe d'examen interviendra et traitera la situation dans les plus brefs délais."
+    "report_success_message": "Nous avons bien reçu votre signalement. L'équipe d'examen interviendra et traitera la situation dans les plus brefs délais.",
+    "accountDeletionSubmittedTitle": "Demande de suppression de compte envoyée",
+    "@accountDeletionSubmittedTitle": {
+        "description": "Title for account deletion submission success dialog"
+    },
+    "accountDeletionSubmittedContent": "C'est bien noté ! Nous conservons une période de grâce de 3 jours pour votre compte.\n\nSi vous souhaitez annuler la suppression, il vous suffit de vous reconnecter durant ce délai pour restaurer votre compte.",
+    "@accountDeletionSubmittedContent": {
+        "description": "Content for account deletion submission success dialog"
+    },
+    "restoreAccountDialogTitle": "Demande de suppression de compte",
+    "@restoreAccountDialogTitle": {
+        "description": "Title for the restore account dialog"
+    },
+    "restoreAccountDialogContent": "Votre compte est actuellement en attente de suppression.\n\nSi vous poursuivez la connexion, la demande de suppression sera annulée et votre compte sera restauré.",
+    "@restoreAccountDialogContent": {
+        "description": "Content for the restore account dialog"
+    },
+    "cancelLoginButton": "Annuler la connexion",
+    "@cancelLoginButton": {
+        "description": "Button text to cancel login"
+    },
+    "restoreAccountButton": "Ressusciter le compte",
+    "@restoreAccountButton": {
+        "description": "Button text to restore account"
+    }
 }

@@ -458,9 +458,33 @@ class _ChatPageState extends State<ChatPage> {
       // 🌟🌟🌟 總裁查水表：絕對不要相信本地變數，直接去雲端看最新狀態！
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       final userData = userDoc.data() ?? {};
+      // 根據月卡到期日判斷是否仍有效
+      final now = DateTime.now();
 
-      // 🕵️‍♀️ 注意：請把 'hasMonthlyPass' 換成妳資料庫裡真正用來紀錄月卡的那個欄位名稱！
-      bool hasPass = userData['isMonthlySubscribed'] == true;
+      bool hasPass = false;
+
+      final endDateString = userData['monthlySubEndDate'] as String?;
+
+      if (endDateString != null) {
+        try {
+          final endDate = DateTime.parse(endDateString);
+
+          if (endDate.isAfter(now)) {
+            hasPass = true;
+          } else {
+            // 避免每次都重複寫 Firestore
+            if (userData['isMonthlySubscribed'] == true ||
+                userData['monthlyCardStatus'] != 'expired') {
+              await userDoc.reference.update({
+                'isMonthlySubscribed': false,
+                'monthlyCardStatus': 'expired',
+              });
+            }
+          }
+        } catch (e) {
+          debugPrint("❌ monthlySubEndDate 格式錯誤: $e");
+        }
+      }
       final int maxCount = hasPass ? 20 : 3;
       final todayStr = DateTime.now().toString().substring(0, 10);
 
@@ -483,6 +507,15 @@ class _ChatPageState extends State<ChatPage> {
         currentCount = maxCount; // 霸氣直接幫妳把次數灌滿到 20！
 
         // 順便把滿血的次數寫回雲端，以免下次進來又被扣
+        await docRef.set({
+          'regenerateCount': maxCount,
+        }, SetOptions(merge: true));
+      }
+
+      if (currentCount > maxCount) {
+        currentCount = maxCount;
+
+        // 順便把校正後的次數寫回雲端，確保資料庫乾淨
         await docRef.set({
           'regenerateCount': maxCount,
         }, SetOptions(merge: true));
@@ -4967,13 +5000,19 @@ class _ChatPageState extends State<ChatPage> {
       }
 
       final savedCount = data['regenerateCount'];
+      int currentCount = savedCount is int ? savedCount : _maxRegenerateCount;
+
+      // 🔥 核心修正：如果資料庫存的次數「大於」現在的上限（代表月卡剛過期），強制壓回上限
+      if (currentCount > _maxRegenerateCount) {
+        currentCount = _maxRegenerateCount;
+        // 可選：順便把正確的數字寫回 Firebase，保持資料庫乾淨
+        docRef.set({'regenerateCount': currentCount}, SetOptions(merge: true));
+      }
 
       if (!mounted) return;
 
       setState(() {
-        _freeRegenerateCount = savedCount is int
-            ? savedCount
-            : _maxRegenerateCount;
+        _freeRegenerateCount = currentCount;
       });
     } catch (e) {
       debugPrint('⚠️ 讀取重新生成次數失敗: $e');
@@ -5011,6 +5050,11 @@ class _ChatPageState extends State<ChatPage> {
         } else {
           final savedCount = data['regenerateCount'];
           currentCount = savedCount is int ? savedCount : _maxRegenerateCount;
+
+          // 🔥 核心修正：消費扣除前也要檢查，避免用舊的高額度
+          if (currentCount > _maxRegenerateCount) {
+            currentCount = _maxRegenerateCount;
+          }
         }
 
         if (currentCount <= 0) {

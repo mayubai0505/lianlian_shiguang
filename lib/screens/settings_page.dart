@@ -183,7 +183,7 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showDeleteAccountDialog(BuildContext context, AppLocalizations l10n, AuthService authService) {
     showDialog(
       context: context,
-      useRootNavigator: true, // 🌟 確保彈窗一定會顯示在螢幕最前方
+      useRootNavigator: true,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(l10n.deleteAccountDialogTitle),
@@ -195,45 +195,71 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           TextButton(
             child: Text(
-                l10n.deleteAccountDialogActionConfirm,
-                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)
+              l10n.deleteAccountDialogActionConfirm,
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             onPressed: () async {
-              // 1. 先關掉彈窗
+
+              // 關閉確認刪除視窗
               Navigator.of(dialogContext).pop();
-              // 2. 執行刪除動作
-              final String? errorMessage = await authService.deleteAccount();
-              if (context.mounted) {
-                if (errorMessage == null) {
-                  ToastUtils.showCenterToast(
-                    context,
-                    l10n.deleteAccountSuccessSnackbar,
-                    customIcon: Icons.no_accounts_rounded,
-                  );
 
-                  await Future.delayed(const Duration(milliseconds: 600));
 
-                  if (!context.mounted) return;
+              // 申請刪除（不是立即刪除）
+              final String? errorMessage =
+              await authService.requestDeleteAccount();
 
-                  await authService.signOut(context);
-                } else {
-                  if (errorMessage.contains('重新登入')) {
-                    ToastUtils.showCenterToast(
-                      context,
-                      errorMessage,
-                      isError: true,
-                    );
 
-                    await Future.delayed(const Duration(milliseconds: 600));
+              if (!context.mounted) return;
 
-                    if (!context.mounted) return;
 
-                    await authService.signOut(context);
-                    return;
-                  }
+              if (errorMessage == null) {
 
-                  _showErrorDialog('發生錯誤', errorMessage);
-                }
+
+                // 顯示3天冷靜期通知
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (successContext) => AlertDialog(
+
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+
+                    title: Text(
+                      l10n.accountDeletionSubmittedTitle,
+                    ),
+
+                    content: Text(
+                      l10n.accountDeletionSubmittedContent,
+                    ),
+
+
+                    actions: [
+
+                      TextButton(
+                        child:  Text(l10n.ok_button),
+                        onPressed: () async {
+
+                          Navigator.of(successContext).pop();
+
+
+                          await authService.signOut(context);
+
+
+                        },
+                      ),
+
+                    ],
+                  ),
+                );
+              } else {
+                _showErrorDialog(
+                  '發生錯誤',
+                  errorMessage,
+                );
               }
             },
           ),
@@ -457,7 +483,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       showLicensePage(
                         context: context,
                         applicationName: '戀戀拾光',
-                        applicationVersion: '1.0.0',
+                        applicationVersion: '1.0.1',
                         applicationLegalese: '© 2026 默語白',
                       );
                     },

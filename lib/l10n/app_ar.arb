@@ -2022,5 +2022,29 @@
     "report_moment_title": "الإبلاغ عن هذه اللحظة",
     "report_moment_content": "هل أنتِ متأكدة من رغبتكِ في الإبلاغ عن هذه اللحظة إلى فريق الإدارة؟ سيتم إخفاء المحتوى الضار أو حذفه.",
     "report_confirm_button": "تأكيد الإبلاغ",
-    "report_success_message": "لقد تلقينا بلاغكِ، وسيتدخل فريق المراجعة لمعالجة الأمر في أقرب وقت ممكن."
+    "report_success_message": "لقد تلقينا بلاغكِ، وسيتدخل فريق المراجعة لمعالجة الأمر في أقرب وقت ممكن.",
+    "accountDeletionSubmittedTitle": "تم تقديم طلب حذف الحساب",
+    "@accountDeletionSubmittedTitle": {
+        "description": "Title for account deletion submission success dialog"
+    },
+    "accountDeletionSubmittedContent": "حسناً! سنحتفظ بفترة مهلة مدتها 3 أيام لحسابكِ.\n\nإذا كنتِ ترغبين في إلغاء حذف الحساب، ما عليكِ سوى إعادة تسجيل الدخول خلال هذه الفترة لاستعادة حسابكِ.",
+    "@accountDeletionSubmittedContent": {
+        "description": "Content for account deletion submission success dialog"
+    },
+    "restoreAccountDialogTitle": "طلب حذف الحساب",
+    "@restoreAccountDialogTitle": {
+        "description": "Title for the restore account dialog"
+    },
+    "restoreAccountDialogContent": "حسابكِ حالياً في انتظار الحذف.\n\nإذا استمررتِ في تسجيل الدخول، سيتم إلغاء طلب الحذف واستعادة حسابكِ.",
+    "@restoreAccountDialogContent": {
+        "description": "Content for the restore account dialog"
+    },
+    "cancelLoginButton": "إلغاء تسجيل الدخول",
+    "@cancelLoginButton": {
+        "description": "Button text to cancel login"
+    },
+    "restoreAccountButton": "استعادة الحساب",
+    "@restoreAccountButton": {
+        "description": "Button text to restore account"
+    }
 }

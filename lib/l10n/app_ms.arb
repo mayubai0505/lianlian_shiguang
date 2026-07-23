@@ -1990,5 +1990,29 @@
     "report_moment_title": "Laporkan Detik Ini",
     "report_moment_content": "Adakah awak pasti ingin melaporkan detik ini kepada pasukan pengurusan? Kandungan berniat jahat akan disembunyikan atau dipadamkan.",
     "report_confirm_button": "Sahkan Laporan",
-    "report_success_message": "Laporan awak telah diterima. Pasukan semakan akan menyiasat dan mengendalikannya secepat mungkin."
+    "report_success_message": "Laporan awak telah diterima. Pasukan semakan akan menyiasat dan mengendalikannya secepat mungkin.",
+    "accountDeletionSubmittedTitle": "Permohonan Pemadaman Akaun Telah Dihantar",
+    "@accountDeletionSubmittedTitle": {
+        "description": "Title for account deletion submission success dialog"
+    },
+    "accountDeletionSubmittedContent": "Baik! Kami akan memberikan tempoh kelonggaran selama 3 hari untuk akaun awak.\n\nJika ingin membatalkan pemadaman akaun, awak hanya perlu log masuk semula dalam tempoh tersebut untuk memulihkan akaun.",
+    "@accountDeletionSubmittedContent": {
+        "description": "Content for account deletion submission success dialog"
+    },
+    "restoreAccountDialogTitle": "Permohonan Pemadaman Akaun",
+    "@restoreAccountDialogTitle": {
+        "description": "Title for the restore account dialog"
+    },
+    "restoreAccountDialogContent": "Akaun awak kini sedang menunggu pemadaman.\n\nJika meneruskan log masuk, permohonan pemadaman akan dibatalkan dan akaun awak akan dipulihkan.",
+    "@restoreAccountDialogContent": {
+        "description": "Content for the restore account dialog"
+    },
+    "cancelLoginButton": "Batal Log Masuk",
+    "@cancelLoginButton": {
+        "description": "Button text to cancel login"
+    },
+    "restoreAccountButton": "Pulihkan Akaun",
+    "@restoreAccountButton": {
+        "description": "Button text to restore account"
+    }
 }

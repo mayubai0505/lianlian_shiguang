@@ -4393,4 +4393,25 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get report_success_message =>
       'Laporan awak telah diterima. Pasukan semakan akan menyiasat dan mengendalikannya secepat mungkin.';
+
+  @override
+  String get accountDeletionSubmittedTitle =>
+      'Permohonan Pemadaman Akaun Telah Dihantar';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'Baik! Kami akan memberikan tempoh kelonggaran selama 3 hari untuk akaun awak.\n\nJika ingin membatalkan pemadaman akaun, awak hanya perlu log masuk semula dalam tempoh tersebut untuk memulihkan akaun.';
+
+  @override
+  String get restoreAccountDialogTitle => 'Permohonan Pemadaman Akaun';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'Akaun awak kini sedang menunggu pemadaman.\n\nJika meneruskan log masuk, permohonan pemadaman akan dibatalkan dan akaun awak akan dipulihkan.';
+
+  @override
+  String get cancelLoginButton => 'Batal Log Masuk';
+
+  @override
+  String get restoreAccountButton => 'Pulihkan Akaun';
 }

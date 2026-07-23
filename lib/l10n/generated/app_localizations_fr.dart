@@ -4446,4 +4446,25 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get report_success_message =>
       'Nous avons bien reçu votre signalement. L\'équipe d\'examen interviendra et traitera la situation dans les plus brefs délais.';
+
+  @override
+  String get accountDeletionSubmittedTitle =>
+      'Demande de suppression de compte envoyée';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'C\'est bien noté ! Nous conservons une période de grâce de 3 jours pour votre compte.\n\nSi vous souhaitez annuler la suppression, il vous suffit de vous reconnecter durant ce délai pour restaurer votre compte.';
+
+  @override
+  String get restoreAccountDialogTitle => 'Demande de suppression de compte';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'Votre compte est actuellement en attente de suppression.\n\nSi vous poursuivez la connexion, la demande de suppression sera annulée et votre compte sera restauré.';
+
+  @override
+  String get cancelLoginButton => 'Annuler la connexion';
+
+  @override
+  String get restoreAccountButton => 'Ressusciter le compte';
 }

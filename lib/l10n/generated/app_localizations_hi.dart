@@ -4389,4 +4389,25 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get report_success_message =>
       'हमें आपकी रिपोर्ट मिल गई है। समीक्षा टीम जल्द से जल्द इस पर कार्रवाई करेगी।';
+
+  @override
+  String get accountDeletionSubmittedTitle =>
+      'खाता हटाने का अनुरोध जमा किया गया';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'ठीक है! हम आपके खाते के लिए 3 दिनों की छूट अवधि (ग्रेस पीरियड) रखेंगे।\n\nयदि आप खाता हटाना रद्द करना चाहते हैं, तो अपना खाता पुनर्स्थापित करने के लिए बस इस समय सीमा के भीतर फिर से लॉगिन करें।';
+
+  @override
+  String get restoreAccountDialogTitle => 'खाता हटाने का अनुरोध';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'आपका खाता वर्तमान में हटाए जाने की प्रक्रिया में है।\n\nयदि आप लॉगिन जारी रखते हैं, तो हटाने का अनुरोध रद्द कर दिया जाएगा और आपका खाता पुनर्स्थापित हो जाएगा।';
+
+  @override
+  String get cancelLoginButton => 'लॉगिन रद्द करें';
+
+  @override
+  String get restoreAccountButton => 'खाता पुनर्स्थापित करें';
 }

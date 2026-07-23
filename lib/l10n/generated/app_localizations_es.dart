@@ -4418,4 +4418,25 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get report_success_message =>
       'Hemos recibido tu denuncia. El equipo de revisión intervendrá y se encargará de ello lo antes posible.';
+
+  @override
+  String get accountDeletionSubmittedTitle =>
+      'Solicitud de eliminación de cuenta enviada';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      '¡Entendido! Mantendremos un período de gracia de 3 días para tu cuenta.\n\nSi deseas cancelar la eliminación, solo debes volver a iniciar sesión dentro del plazo para recuperar tu cuenta.';
+
+  @override
+  String get restoreAccountDialogTitle => 'Solicitud de eliminación de cuenta';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'Tu cuenta está actualmente pendiente de eliminación.\n\nSi continúas con el inicio de sesión, se cancelará la solicitud de eliminación y se restaurará tu cuenta.';
+
+  @override
+  String get cancelLoginButton => 'Cancelar inicio de sesión';
+
+  @override
+  String get restoreAccountButton => 'Restaurar cuenta';
 }

@@ -753,10 +753,10 @@ async function transcribeAudioWithGemini(audioUrlOrPath) {
 
 exports.getAiResponse = onRequest({
     region: REGION,
-        minInstances: 0,
-        memory: "1GiB",
-        timeoutSeconds: 300,
-        secrets: [openRouterApiKey, geminiApiKey],
+    minInstances: 0,
+    memory: "512Mi",
+    timeoutSeconds: 300,
+    secrets: [openRouterApiKey, geminiApiKey],
 }, (req, res) => {
     return cors(req, res, async () => {
         try {
@@ -4723,5 +4723,196 @@ exports.createMomentNotification = onCall(
       recipientId,
       notificationId,
     };
+  }
+);
+exports.requestDeleteAccount = functions.https.onCall(async (data, context) => {
+
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "請先登入"
+    );
+  }
+
+  const uid = context.auth.uid;
+
+
+  const deleteDate = new Date();
+  deleteDate.setDate(deleteDate.getDate() + 3);
+
+
+  await db.collection("users")
+    .doc(uid)
+    .set({
+
+      accountDeleteRequested: true,
+
+      deleteScheduledAt:
+        admin.firestore.Timestamp.fromDate(deleteDate),
+
+    }, {
+      merge:true
+    });
+
+
+  return {
+    success:true
+  };
+
+});
+
+
+
+exports.cancelDeleteAccount = functions.https.onCall(async (data, context)=>{
+
+  if(!context.auth){
+
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "請登入"
+    );
+
+  }
+
+
+  const uid=context.auth.uid;
+
+
+  await db.collection("users")
+    .doc(uid)
+    .update({
+
+      accountDeleteRequested:false,
+
+      deleteScheduledAt:
+      admin.firestore.FieldValue.delete()
+
+    });
+
+
+  return {
+    success:true
+  };
+
+});
+
+exports.checkScheduledDelete = onSchedule(
+  {
+    schedule: "every 24 hours",
+    timeZone: "Asia/Taipei",
+  },
+  async () => {
+
+    const now = admin.firestore.Timestamp.now();
+
+
+    const usersSnapshot = await db
+      .collection("users")
+      .where("accountDeleteRequested", "==", true)
+      .where(
+        "deleteScheduledAt",
+        "<=",
+        now
+      )
+      .get();
+
+
+    if (usersSnapshot.empty) {
+      console.log("目前沒有需要刪除的帳號");
+      return;
+    }
+
+
+    for (const doc of usersSnapshot.docs) {
+
+      const uid = doc.id;
+
+
+      console.log(
+        `開始刪除過期帳號 UID=${uid}`
+      );
+
+
+      try {
+
+
+        const userRef =
+          db.collection("users").doc(uid);
+
+
+        // ======================
+        // 刪 aiRequests
+        // ======================
+
+        const aiRequests =
+          await userRef
+            .collection("aiRequests")
+            .get();
+
+
+        const batch =
+          db.batch();
+
+
+        aiRequests.docs.forEach(item => {
+          batch.delete(item.ref);
+        });
+
+
+
+        // ======================
+        // 刪 flower_logs
+        // ======================
+
+        const flowerLogs =
+          await userRef
+            .collection("flower_logs")
+            .get();
+
+
+        flowerLogs.docs.forEach(item => {
+          batch.delete(item.ref);
+        });
+
+
+
+        // ======================
+        // 刪 users
+        // ======================
+
+        batch.delete(userRef);
+
+
+        await batch.commit();
+
+
+
+        // ======================
+        // 刪 Authentication
+        // ======================
+
+        await admin
+          .auth()
+          .deleteUser(uid);
+
+
+
+        console.log(
+          `✅ 完成刪除 UID=${uid}`
+        );
+
+
+      } catch(error) {
+
+
+        console.error(
+          `❌ 刪除失敗 UID=${uid}`,
+          error
+        );
+
+      }
+
+    }
+
   }
 );

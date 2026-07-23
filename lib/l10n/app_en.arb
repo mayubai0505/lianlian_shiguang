@@ -2196,5 +2196,29 @@
   "report_moment_title": "Report this Moment",
   "report_moment_content": "Are you sure you want to report this moment to the management team? Malicious content will be hidden or deleted.",
   "report_confirm_button": "Confirm Report",
-  "report_success_message": "We have received your report. The review team will investigate and handle it as soon as possible."
+  "report_success_message": "We have received your report. The review team will investigate and handle it as soon as possible.",
+  "accountDeletionSubmittedTitle": "Account Deletion Request Submitted",
+  "@accountDeletionSubmittedTitle": {
+    "description": "Title for account deletion submission success dialog"
+  },
+  "accountDeletionSubmittedContent": "Got it! We will hold a 3-day grace period for your account.\n\nIf you wish to cancel the deletion, simply log in again within this period to restore your account.",
+  "@accountDeletionSubmittedContent": {
+    "description": "Content for account deletion submission success dialog"
+  },
+  "restoreAccountDialogTitle": "Account Deletion Request",
+  "@restoreAccountDialogTitle": {
+    "description": "Title for the restore account dialog"
+  },
+  "restoreAccountDialogContent": "Your account is currently pending deletion.\n\nIf you proceed with logging in, the deletion request will be canceled and your account will be restored.",
+  "@restoreAccountDialogContent": {
+    "description": "Content for the restore account dialog"
+  },
+  "cancelLoginButton": "Cancel Login",
+  "@cancelLoginButton": {
+    "description": "Button text to cancel login"
+  },
+  "restoreAccountButton": "Restore Account",
+  "@restoreAccountButton": {
+    "description": "Button text to restore account"
+  }
 }

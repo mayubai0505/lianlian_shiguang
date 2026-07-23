@@ -175,24 +175,38 @@ class _LoginPageState extends State<LoginPage> {
     try {
       print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
       print("🟢 [1. 啟動] 蝴蝶巡邏開始，等待 AuthService 回傳...");
-
       final result = await loginMethod();
-
       print("🟢 [2. 接收] AuthService 執行完畢！");
-
       if (_dialogContext != null) {
         Navigator.of(_dialogContext!).pop();
         _dialogContext = null;
       }
-
       await Future.delayed(const Duration(milliseconds: 300));
-
       if (result != null && mounted) {
+
+
+        // ⭐ 檢查是否有刪除申請
+        final user = result['user'];
+        if (user != null) {
+          final bool hasDeleteRequest =
+          await _authService.hasPendingDeleteRequest(
+            user.uid,
+          );
+
+          if (hasDeleteRequest) {
+            final bool restored =
+            await _showRestoreAccountDialog(context);
+            if (!restored) {
+              await _authService.signOut(context);
+              return;
+            }
+          }
+        }
         print("✅ [3. 成功] 拿到資料了，準備穿越時光隧道 (跳轉中)！");
         _handleLoginSuccess(result);
+
       } else if (result != null && !mounted) {
         print("🚀 [超車提示] 登入其實成功了！資料也拿到了！");
-        print("只不過 Firebase 狀態監聽器動作太快，已經自動把畫面切換走了，所以 LoginPage 提早下班啦！");
       } else {
         print("🟡 [提示] 登入被取消或回傳為空值。");
       }
@@ -480,6 +494,49 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  Future<bool> _showRestoreAccountDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!; // 確保有這行來抓取語系
+
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            l10n.restoreAccountDialogTitle,
+          ),
+          content: Text(
+            l10n.restoreAccountDialogContent,
+          ),
+          actions: [
+            TextButton(
+              child: Text(l10n.cancelLoginButton),
+              onPressed: () {
+                Navigator.pop(
+                  context,
+                  false,
+                );
+              },
+            ),
+            TextButton(
+              child: Text(
+                l10n.restoreAccountButton,
+              ),
+              onPressed: () async {
+                await _authService.cancelDeleteAccount();
+                Navigator.pop(
+                  context,
+                  true,
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? false;
   }
 
   // ✨ 按鈕工廠

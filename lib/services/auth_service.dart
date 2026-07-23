@@ -12,6 +12,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'dart:math';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -72,8 +73,13 @@ class AuthService {
       print("Firebase 登入成功！使用者: ${userCredential.user?.displayName}");
 
       if (userCredential.user != null) {
-        final bool isNewUser = await createNewUser(userCredential.user!);
-        return {'user': userCredential.user, 'isNewUser': isNewUser};
+        final bool isNewUser =
+        await createNewUser(userCredential.user!);
+
+        return {
+          'user': userCredential.user,
+          'isNewUser': isNewUser,
+        };
       }
       return null;
 
@@ -123,7 +129,8 @@ class AuthService {
       );
 
       if (userCredential.user != null) {
-        final bool isNewUser = await createNewUser(userCredential.user!);
+        final bool isNewUser =
+        await createNewUser(userCredential.user!);
 
         return {
           'user': userCredential.user,
@@ -214,8 +221,13 @@ class AuthService {
       print("🎉 Facebook 登入成功！使用者: ${userCredential.user?.displayName}");
 
       if (userCredential.user != null) {
-        final bool isNewUser = await createNewUser(userCredential.user!);
-        return {'user': userCredential.user, 'isNewUser': isNewUser};
+        final bool isNewUser =
+        await createNewUser(userCredential.user!);
+
+        return {
+          'user': userCredential.user,
+          'isNewUser': isNewUser,
+        };
       }
       return null;
 
@@ -248,7 +260,8 @@ class AuthService {
       }
 
 // ✅ Apple 登入也要建立 users/{uid}，才會送新手 50 點
-      final bool isNewUser = await createNewUser(userCredential.user!);
+      final bool isNewUser =
+      await createNewUser(userCredential.user!);
 
       return {
         'user': userCredential.user,
@@ -260,44 +273,75 @@ class AuthService {
     }
   }
 
+  Future<bool> checkDeleteRequest(String uid) async {
+
+    final doc = await _firestore
+        .collection('users')
+        .doc(uid)
+        .get();
+
+
+    if (!doc.exists) {
+      return false;
+    }
+
+
+    final data = doc.data() ?? {};
+
+
+    return data['accountDeleteRequested'] == true;
+  }
+
+  Future<void> cancelDeleteAccount() async {
+    final callable =
+    FirebaseFunctions.instance
+        .httpsCallable('cancelDeleteAccount');
+    await callable.call();
+
+  }
+
 // ✨ 刪除帳號 (包含資料庫與驗證帳號)
   Future<String?> deleteAccount() async {
+
     try {
-      final User? user = _auth.currentUser;
-      if (user == null) return null;
 
-      final String uid = user.uid;
+      final callable =
+      FirebaseFunctions.instance
+          .httpsCallable('deleteUserAccount');
 
-      // 1. 先刪 Firestore 使用者資料
-      try {
-        await _firestore.collection('users').doc(uid).delete();
-        print('已刪除 Firestore 中的使用者資料');
-      } catch (e) {
-        print('⚠️ 刪除 Firestore 使用者資料失敗: $e');
-        // 這裡先不要直接 return，避免卡住玩家登出
-      }
 
-      // 2. 再刪 Firebase Authentication 帳號
-      try {
-        await user.delete();
-        print('已刪除 Firebase Authentication 中的帳號');
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'requires-recent-login') {
-          return '為了安全起見，請先登出後重新登入，再執行刪除帳號。';
-        }
+      await callable.call();
 
-        if (e.code == 'user-not-found') {
-          print('Auth 帳號已不存在，視為刪除成功');
-          return null;
-        }
 
-        return '刪除帳號時發生錯誤: ${e.message}';
-      }
+      print("✅ 帳號刪除完成");
 
       return null;
+
+
+    } catch(e){
+
+      print("❌ 刪除失敗: $e");
+
+      return "刪除帳號失敗";
+
+    }
+  }
+
+  Future<String?> requestDeleteAccount() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        return "尚未登入";
+      }
+
+      final callable = FirebaseFunctions.instance
+          .httpsCallable('requestDeleteAccount');
+      await callable.call();
+      return null;
     } catch (e) {
-      print('❌ deleteAccount 發生未知錯誤: $e');
-      return '發生未知錯誤，請聯絡官方。';
+      print("❌ 申請刪除失敗: $e");
+      return "申請刪除帳號失敗，請稍後再試";
+
     }
   }
 
@@ -311,6 +355,76 @@ class AuthService {
     ).join();
   }
 
+  Future<void> repairMissingUser({
+    required String uid,
+    required int flowerPoints,
+  }) async {
+    try {
+      final userRef = _firestore.collection('users').doc(uid);
+
+      // 確認玩家文件是否存在
+      final userDoc = await userRef.get();
+
+      if (userDoc.exists) {
+        print("⚠️ 玩家文件已存在，不需要修復：$uid");
+        return;
+      }
+
+      // 建立遺失的 users 文件
+      await userRef.set({
+
+        'uid': uid,
+
+        'displayName': '初識的旅人',
+        'nickname': '初識的旅人',
+
+        'flowerPoints': flowerPoints,
+
+        'email': '',
+        'photoURL': '',
+
+        'playerID': '',
+
+        'lastCheckInDate': null,
+        'checkInStreak': 0,
+        'dailyCheckInCount': 0,
+
+        'isMonthlySubscribed': false,
+        'monthlyCardStatus': 'none',
+
+        'updatedAt': FieldValue.serverTimestamp(),
+
+        'dataRepaired': true,
+        'repairReason': 'Missing user document recovery',
+        'repairedAt': FieldValue.serverTimestamp(),
+
+      });
+
+      print("✅ 玩家資料修復完成 UID=$uid");
+
+    } catch (e) {
+      print("❌ 玩家資料修復失敗：$e");
+    }
+  }
+
+  Future<bool> hasPendingDeleteRequest(String uid) async {
+
+    final doc = await _firestore
+        .collection('users')
+        .doc(uid)
+        .get();
+
+
+    if (!doc.exists) {
+      return false;
+    }
+
+
+    final data = doc.data() ?? {};
+
+
+    return data['accountDeleteRequested'] == true;
+  }
 
 // 📡 監聽登入狀態變化 (讓 App 知道現在是誰在線)
 Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -321,7 +435,67 @@ Stream<User?> get authStateChanges => _auth.authStateChanges();
     final userDoc = await userDocRef.get();
 
     if (!userDoc.exists) {
-      // 如果資料庫還沒這筆資料，就幫他開一個新的戶頭
+
+      // 🔍 檢查是否有子集合殘留
+      final flowerLogsSnapshot = await userDocRef
+          .collection('flower_logs')
+          .limit(1)
+          .get();
+
+      final aiRequestsSnapshot = await userDocRef
+          .collection('aiRequests')
+          .limit(1)
+          .get();
+
+      final bool hasOldData =
+          flowerLogsSnapshot.docs.isNotEmpty ||
+              aiRequestsSnapshot.docs.isNotEmpty;
+
+      if (hasOldData) {
+        // ⚠️ 有舊資料，但主文件不見
+        // 不當新玩家，不發50花
+        print("⚠️ 發現玩家資料異常 UID=${user.uid}，存在子集合但 users 文件不存在");
+
+
+        // ✅ 先根據流水帳重新計算花花
+        final repairedFlowerPoints =
+        await calculateFlowerPoints(user.uid);
+
+        await userDocRef.set({
+          'uid': user.uid,
+          'displayName':
+          user.displayName ?? "初識的旅人",
+          'nickname':
+          user.displayName ?? "初識的旅人",
+          'email':
+          user.email ?? '',
+          'photoURL':
+          user.photoURL ?? '',
+          // ✅ 使用流水帳計算出的花花
+          'flowerPoints':
+          repairedFlowerPoints,
+          'playerID':
+          _generateRandomPlayerID(),
+          'lastCheckInDate': null,
+          'checkInStreak': 0,
+          'dailyCheckInCount': 0,
+          // 標記人工修復
+          'dataRepaired': true,
+          'repairReason':
+          'Missing user document',
+          'createdAt':
+          FieldValue.serverTimestamp(),
+          'updatedAt':
+          FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+        print(
+            "✅ 玩家資料修復完成 UID=${user.uid}, 花花=$repairedFlowerPoints"
+        );
+        return false;
+      }
+
+
+      // ✅ 真的完全沒有資料，才算新玩家
       await userDocRef.set({
         'uid': user.uid,
         'displayName': user.displayName ?? "初識的旅人",
@@ -331,19 +505,26 @@ Stream<User?> get authStateChanges => _auth.authStateChanges();
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
 
-        // 新手資源
+        // 新手50
         'flowerPoints': 50,
 
-        // 玩家 ID
         'playerID': _generateRandomPlayerID(),
 
-        // 簽到相關，避免新帳號簽到讀不到欄位
         'lastCheckInDate': null,
         'checkInStreak': 0,
         'dailyCheckInCount': 0,
       });
 
-      return true; // 是新玩家
+
+      await userDocRef.collection('flower_logs').add({
+        'type': 'income',
+        'title': '新手禮物',
+        'amount': 50,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+
+      return true;
     }
 
     // ✅ 舊帳號補洞：如果以前建立過，但缺 flowerPoints 或 playerID，就補上
@@ -398,4 +579,66 @@ Stream<User?> get authStateChanges => _auth.authStateChanges();
 
     return false; // 是老玩家
   }
+
+  Future<int> calculateFlowerPoints(String uid) async {
+
+    int balance = 0;
+
+
+    final snapshot = await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('flower_logs')
+        .get();
+
+
+    for (final doc in snapshot.docs) {
+
+      final data = doc.data();
+
+      final amount = data['amount'] ?? 0;
+
+      balance += (amount as num).toInt();
+
+    }
+
+
+    return balance;
+
+  }
+
+  Future<bool> checkDeleteStatus(User user) async {
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+
+    if (!doc.exists) {
+      return false;
+    }
+
+
+    final data = doc.data()!;
+
+
+    if (data['accountDeleteRequested'] == true) {
+
+      final deleteDate =
+      (data['deleteScheduledAt'] as Timestamp)
+          .toDate();
+
+
+      if (DateTime.now().isBefore(deleteDate)) {
+
+        // 還在冷靜期
+        return true;
+      }
+    }
+
+
+    return false;
+  }
+
 }

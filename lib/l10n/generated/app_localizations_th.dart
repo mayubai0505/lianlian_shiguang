@@ -4335,4 +4335,24 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get report_success_message =>
       'ทางเราได้รับรายงานของคุณแล้ว ทีมงานตรวจสอบจะรีบดำเนินการตรวจสอบและจัดการโดยเร็วที่สุดค่ะ';
+
+  @override
+  String get accountDeletionSubmittedTitle => 'ส่งคำขอลบบัญชีเรียบร้อยแล้ว';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'เรียบร้อยค่ะ! ทางเราจะขยายระยะเวลาผ่อนผันให้เป็นเวลา 3 วันสำหรับบัญชีของคุณค่ะ\n\nหากคุณต้องการยกเลิกการลบบัญชี เพียงแค่เข้าสู่ระบบใหม่อีกครั้งภายในระยะเวลาที่กำหนดเพื่อกู้คืนบัญชีของคุณได้เลยค่ะ';
+
+  @override
+  String get restoreAccountDialogTitle => 'คำขอลบบัญชี';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'ขณะนี้บัญชีของคุณอยู่ระหว่างรอดำเนินการลบค่ะ\n\nหากคุณดำเนินการเข้าสู่ระบบต่อ คำขอลบบัญชีจะถูกยกเลิกและบัญชีของคุณจะได้รับการกู้คืนค่ะ';
+
+  @override
+  String get cancelLoginButton => 'ยกเลิกการเข้าสู่ระบบ';
+
+  @override
+  String get restoreAccountButton => 'กู้คืนบัญชี';
 }

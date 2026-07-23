@@ -4386,4 +4386,24 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get report_success_message =>
       'Chúng tôi đã nhận được báo cáo của bạn. Đội ngũ kiểm duyệt sẽ tiến hành xử lý trong thời gian sớm nhất.';
+
+  @override
+  String get accountDeletionSubmittedTitle => 'Đã gửi yêu cầu xóa tài khoản';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'Đã hiểu! Chúng tôi sẽ dành thời hạn gia hạn 3 ngày cho tài khoản của bạn.\n\nNếu muốn hủy xóa tài khoản, bạn chỉ cần đăng nhập lại trong thời hạn này để khôi phục tài khoản.';
+
+  @override
+  String get restoreAccountDialogTitle => 'Yêu cầu xóa tài khoản';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'Tài khoản của bạn hiện đang trong hàng đợi chờ xóa.\n\nNếu tiếp tục đăng nhập, yêu cầu xóa sẽ bị hủy và tài khoản của bạn sẽ được khôi phục.';
+
+  @override
+  String get cancelLoginButton => 'Hủy đăng nhập';
+
+  @override
+  String get restoreAccountButton => 'Khôi phục tài khoản';
 }

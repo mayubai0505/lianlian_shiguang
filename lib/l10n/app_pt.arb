@@ -1982,6 +1982,30 @@
    "report_moment_title": "Denunciar este Momento",
    "report_moment_content": "Tem certeza de que deseja denunciar este momento para a equipe de administração? Conteúdos maliciosos serão ocultados ou excluídos.",
    "report_confirm_button": "Confirmar Denúncia",
-   "report_success_message": "Sua denúncia foi recebida. A equipe de revisão analisará e tomará as providências o mais rápido possível."
+   "report_success_message": "Sua denúncia foi recebida. A equipe de revisão analisará e tomará as providências o mais rápido possível.",
+   "accountDeletionSubmittedTitle": "Solicitação de exclusão de conta enviada",
+   "@accountDeletionSubmittedTitle": {
+      "description": "Title for account deletion submission success dialog"
+   },
+   "accountDeletionSubmittedContent": "Tudo certo! Manteremos um período de carência de 3 dias para a sua conta.\n\nSe desejar cancelar a exclusão, basta fazer login novamente dentro do prazo para restaurar sua conta.",
+   "@accountDeletionSubmittedContent": {
+      "description": "Content for account deletion submission success dialog"
+   },
+   "restoreAccountDialogTitle": "Solicitação de exclusão de conta",
+   "@restoreAccountDialogTitle": {
+      "description": "Title for the restore account dialog"
+   },
+   "restoreAccountDialogContent": "Sua conta está atualmente aguardando a exclusão.\n\nSe continuar com o login, a solicitação de exclusão será cancelada e sua conta será restaurada.",
+   "@restoreAccountDialogContent": {
+      "description": "Content for the restore account dialog"
+   },
+   "cancelLoginButton": "Cancelar login",
+   "@cancelLoginButton": {
+      "description": "Button text to cancel login"
+   },
+   "restoreAccountButton": "Restaurar conta",
+   "@restoreAccountButton": {
+      "description": "Button text to restore account"
+   }
 
 }

@@ -4352,4 +4352,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get report_success_message =>
       'We have received your report. The review team will investigate and handle it as soon as possible.';
+
+  @override
+  String get accountDeletionSubmittedTitle =>
+      'Account Deletion Request Submitted';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'Got it! We will hold a 3-day grace period for your account.\n\nIf you wish to cancel the deletion, simply log in again within this period to restore your account.';
+
+  @override
+  String get restoreAccountDialogTitle => 'Account Deletion Request';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'Your account is currently pending deletion.\n\nIf you proceed with logging in, the deletion request will be canceled and your account will be restored.';
+
+  @override
+  String get cancelLoginButton => 'Cancel Login';
+
+  @override
+  String get restoreAccountButton => 'Restore Account';
 }

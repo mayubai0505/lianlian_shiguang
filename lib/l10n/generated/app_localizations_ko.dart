@@ -4179,4 +4179,24 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get report_success_message =>
       '신고가 접수되었습니다. 검토팀에서 신속하게 확인 후 처리해 드리겠습니다.';
+
+  @override
+  String get accountDeletionSubmittedTitle => '계정 삭제 요청 제출 완료';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      '네, 알겠습니다! 계정 삭제 유예 기간 3일이 제공됩니다.\n\n계정 삭제를 취소하고 싶다면 해당 기간 내에 다시 로그인하기만 하면 계정이 복구됩니다.';
+
+  @override
+  String get restoreAccountDialogTitle => '계정 삭제 요청';
+
+  @override
+  String get restoreAccountDialogContent =>
+      '현재 계정이 삭제 대기 중입니다.\n\n로그인을 계속하시면 삭제 요청이 취소되고 계정이 복구됩니다.';
+
+  @override
+  String get cancelLoginButton => '로그인 취소';
+
+  @override
+  String get restoreAccountButton => '계정 복구';
 }

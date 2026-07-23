@@ -1980,5 +1980,29 @@
     "report_moment_title": "Laporkan Momen Ini",
     "report_moment_content": "Apakah Anda yakin ingin melaporkan momen ini kepada tim manajemen? Konten berbahaya akan disembunyikan atau dihapus.",
     "report_confirm_button": "Konfirmasi Laporan",
-    "report_success_message": "Laporan Anda telah kami terima, tim peninjau akan segera turun tangan untuk memprosesnya."
+    "report_success_message": "Laporan Anda telah kami terima, tim peninjau akan segera turun tangan untuk memprosesnya.",
+    "accountDeletionSubmittedTitle": "Permohonan Penghapusan Akun Telah Dikirim",
+    "@accountDeletionSubmittedTitle": {
+        "description": "Title for account deletion submission success dialog"
+    },
+    "accountDeletionSubmittedContent": "Baik! Kami akan memberikan masa tenggang selama 3 hari untuk akun Anda.\n\nJika ingin membatalkan penghapusan akun, Anda hanya perlu login kembali sebelum batas waktu berakhir untuk memulihkan akun.",
+    "@accountDeletionSubmittedContent": {
+        "description": "Content for account deletion submission success dialog"
+    },
+    "restoreAccountDialogTitle": "Permohonan Penghapusan Akun",
+    "@restoreAccountDialogTitle": {
+        "description": "Title for the restore account dialog"
+    },
+    "restoreAccountDialogContent": "Akun Anda saat ini sedang menunggu penghapusan.\n\nJika melanjutkan untuk login, permohonan penghapusan akan dibatalkan dan akun Anda akan dipulihkan.",
+    "@restoreAccountDialogContent": {
+        "description": "Content for the restore account dialog"
+    },
+    "cancelLoginButton": "Batal Login",
+    "@cancelLoginButton": {
+        "description": "Button text to cancel login"
+    },
+    "restoreAccountButton": "Pulihkan Akun",
+    "@restoreAccountButton": {
+        "description": "Button text to restore account"
+    }
 }

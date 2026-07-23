@@ -7665,6 +7665,42 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'已收到您的檢舉，審核團隊將盡快介入處理。'**
   String get report_success_message;
+
+  /// Title for account deletion submission success dialog
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'帳號刪除申請已提交'**
+  String get accountDeletionSubmittedTitle;
+
+  /// Content for account deletion submission success dialog
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好的！我們會為你的帳號保留 3 天緩衝期。\n\n如果想取消刪除帳號，只需要在期限內重新登入即可恢復帳號。'**
+  String get accountDeletionSubmittedContent;
+
+  /// Title for the restore account dialog
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'帳號刪除申請'**
+  String get restoreAccountDialogTitle;
+
+  /// Content for the restore account dialog
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'你的帳號目前正在等待刪除。\n\n如果繼續登入，將取消刪除申請並恢復帳號。'**
+  String get restoreAccountDialogContent;
+
+  /// Button text to cancel login
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消登入'**
+  String get cancelLoginButton;
+
+  /// Button text to restore account
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'恢復帳號'**
+  String get restoreAccountButton;
 }
 
 class _AppLocalizationsDelegate

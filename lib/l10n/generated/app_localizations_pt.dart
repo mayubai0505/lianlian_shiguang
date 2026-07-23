@@ -4410,4 +4410,25 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get report_success_message =>
       'Sua denúncia foi recebida. A equipe de revisão analisará e tomará as providências o mais rápido possível.';
+
+  @override
+  String get accountDeletionSubmittedTitle =>
+      'Solicitação de exclusão de conta enviada';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'Tudo certo! Manteremos um período de carência de 3 dias para a sua conta.\n\nSe desejar cancelar a exclusão, basta fazer login novamente dentro do prazo para restaurar sua conta.';
+
+  @override
+  String get restoreAccountDialogTitle => 'Solicitação de exclusão de conta';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'Sua conta está atualmente aguardando a exclusão.\n\nSe continuar com o login, a solicitação de exclusão será cancelada e sua conta será restaurada.';
+
+  @override
+  String get cancelLoginButton => 'Cancelar login';
+
+  @override
+  String get restoreAccountButton => 'Restaurar conta';
 }

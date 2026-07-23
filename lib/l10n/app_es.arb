@@ -1980,5 +1980,29 @@
     "report_moment_title": "Denunciar este Momento",
     "report_moment_content": "¿Confirmas que quieres denunciar este momento al equipo de administración? El contenido malicioso se ocultará o eliminará.",
     "report_confirm_button": "Confirmar denuncia",
-    "report_success_message": "Hemos recibido tu denuncia. El equipo de revisión intervendrá y se encargará de ello lo antes posible."
+    "report_success_message": "Hemos recibido tu denuncia. El equipo de revisión intervendrá y se encargará de ello lo antes posible.",
+    "accountDeletionSubmittedTitle": "Solicitud de eliminación de cuenta enviada",
+    "@accountDeletionSubmittedTitle": {
+        "description": "Title for account deletion submission success dialog"
+    },
+    "accountDeletionSubmittedContent": "¡Entendido! Mantendremos un período de gracia de 3 días para tu cuenta.\n\nSi deseas cancelar la eliminación, solo debes volver a iniciar sesión dentro del plazo para recuperar tu cuenta.",
+    "@accountDeletionSubmittedContent": {
+        "description": "Content for account deletion submission success dialog"
+    },
+    "restoreAccountDialogTitle": "Solicitud de eliminación de cuenta",
+    "@restoreAccountDialogTitle": {
+        "description": "Title for the restore account dialog"
+    },
+    "restoreAccountDialogContent": "Tu cuenta está actualmente pendiente de eliminación.\n\nSi continúas con el inicio de sesión, se cancelará la solicitud de eliminación y se restaurará tu cuenta.",
+    "@restoreAccountDialogContent": {
+        "description": "Content for the restore account dialog"
+    },
+    "cancelLoginButton": "Cancelar inicio de sesión",
+    "@cancelLoginButton": {
+        "description": "Button text to cancel login"
+    },
+    "restoreAccountButton": "Restaurar cuenta",
+    "@restoreAccountButton": {
+        "description": "Button text to restore account"
+    }
 }

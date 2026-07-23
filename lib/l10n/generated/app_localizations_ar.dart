@@ -4332,4 +4332,24 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get report_success_message =>
       'لقد تلقينا بلاغكِ، وسيتدخل فريق المراجعة لمعالجة الأمر في أقرب وقت ممكن.';
+
+  @override
+  String get accountDeletionSubmittedTitle => 'تم تقديم طلب حذف الحساب';
+
+  @override
+  String get accountDeletionSubmittedContent =>
+      'حسناً! سنحتفظ بفترة مهلة مدتها 3 أيام لحسابكِ.\n\nإذا كنتِ ترغبين في إلغاء حذف الحساب، ما عليكِ سوى إعادة تسجيل الدخول خلال هذه الفترة لاستعادة حسابكِ.';
+
+  @override
+  String get restoreAccountDialogTitle => 'طلب حذف الحساب';
+
+  @override
+  String get restoreAccountDialogContent =>
+      'حسابكِ حالياً في انتظار الحذف.\n\nإذا استمررتِ في تسجيل الدخول، سيتم إلغاء طلب الحذف واستعادة حسابكِ.';
+
+  @override
+  String get cancelLoginButton => 'إلغاء تسجيل الدخول';
+
+  @override
+  String get restoreAccountButton => 'استعادة الحساب';
 }

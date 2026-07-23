@@ -1981,5 +1981,29 @@
   "report_moment_title": "Báo cáo khoảnh khắc này",
   "report_moment_content": "Bạn có chắc chắn muốn báo cáo khoảnh khắc này đến ban quản trị không? Các nội dung độc hại sẽ bị ẩn hoặc xóa bỏ.",
   "report_confirm_button": "Xác nhận báo cáo",
-  "report_success_message": "Chúng tôi đã nhận được báo cáo của bạn. Đội ngũ kiểm duyệt sẽ tiến hành xử lý trong thời gian sớm nhất."
+  "report_success_message": "Chúng tôi đã nhận được báo cáo của bạn. Đội ngũ kiểm duyệt sẽ tiến hành xử lý trong thời gian sớm nhất.",
+  "accountDeletionSubmittedTitle": "Đã gửi yêu cầu xóa tài khoản",
+  "@accountDeletionSubmittedTitle": {
+    "description": "Title for account deletion submission success dialog"
+  },
+  "accountDeletionSubmittedContent": "Đã hiểu! Chúng tôi sẽ dành thời hạn gia hạn 3 ngày cho tài khoản của bạn.\n\nNếu muốn hủy xóa tài khoản, bạn chỉ cần đăng nhập lại trong thời hạn này để khôi phục tài khoản.",
+  "@accountDeletionSubmittedContent": {
+    "description": "Content for account deletion submission success dialog"
+  },
+  "restoreAccountDialogTitle": "Yêu cầu xóa tài khoản",
+  "@restoreAccountDialogTitle": {
+    "description": "Title for the restore account dialog"
+  },
+  "restoreAccountDialogContent": "Tài khoản của bạn hiện đang trong hàng đợi chờ xóa.\n\nNếu tiếp tục đăng nhập, yêu cầu xóa sẽ bị hủy và tài khoản của bạn sẽ được khôi phục.",
+  "@restoreAccountDialogContent": {
+    "description": "Content for the restore account dialog"
+  },
+  "cancelLoginButton": "Hủy đăng nhập",
+  "@cancelLoginButton": {
+    "description": "Button text to cancel login"
+  },
+  "restoreAccountButton": "Khôi phục tài khoản",
+  "@restoreAccountButton": {
+    "description": "Button text to restore account"
+  }
 }
