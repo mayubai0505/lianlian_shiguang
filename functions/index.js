@@ -1969,6 +1969,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                       );
                                   }
 
+                                  // 🌟🌟🌟 總裁！就是漏了這段啦！趕快補上！ 🌟🌟🌟
+                                  let safeFinalUserMessage = finalUserMessage || "";
+                                  if (safeFinalUserMessage.length > HISTORY_TEXT_LIMIT) {
+                                      safeFinalUserMessage = safeFinalUserMessage.substring(0, HISTORY_TEXT_LIMIT).trim();
+                                  }
+                                  // 🌟🌟🌟 補上這段，它才認識這個變數！ 🌟🌟🌟
+
                                    // ==========================================
                                    // 🧩 正式組裝 currentMessages
                                    // ==========================================
