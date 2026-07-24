@@ -20,6 +20,7 @@ import 'package:flutter/gestures.dart';
 import 'character_profile_page.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得在檔案最上方加上這行
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:io' show Platform;
 
 class MomentCard extends StatefulWidget {
@@ -686,7 +687,7 @@ class _MomentCardState extends State<MomentCard> {
     }
   }
 
-  // 🛡️ 真實檢舉寫入功能
+
   // 🛡️ 真實檢舉寫入功能 (多國語系版)
   Future<void> _submitReport() async {
     final String? reporterId = FirebaseAuth.instance.currentUser?.uid;
@@ -814,16 +815,27 @@ class _MomentCardState extends State<MomentCard> {
               ListTile(
                 leading: const Icon(Icons.share, color: Colors.blue),
                 title: Text(l10n.moment_share_to_apps),
-                onTap: () {
+                // 👇 注意這裡加上了 async
+                onTap: () async {
+
+                  // 🌟 1. 總裁級防護：在選單消失前，先抓下這個選單目前的座標！
+                  final RenderBox? box = context.findRenderObject() as RenderBox?;
+
+                  // 2. 座標到手後，才安心關閉底部選單
                   Navigator.pop(context);
 
-                  Share.share(
+                  // 3. 呼叫分享，並附上剛剛抓到的座標給 iPad 看
+                  await Share.share(
                     l10n.moment_external_share_content(
                       appName,
                       widget.moment.authorName,
                       widget.moment.content,
                       appLink,
                     ),
+                    // 🔥 iPad 防崩潰補丁
+                    sharePositionOrigin: box != null
+                        ? box.localToGlobal(Offset.zero) & box.size
+                        : null,
                   );
                 },
               ),

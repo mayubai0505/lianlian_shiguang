@@ -292,36 +292,42 @@ class AuthService {
     return data['accountDeleteRequested'] == true;
   }
 
-  Future<void> cancelDeleteAccount() async {
-    final callable =
-    FirebaseFunctions.instance
-        .httpsCallable('cancelDeleteAccount');
-    await callable.call();
+  Future<String?> cancelDeleteAccount() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        return "尚未登入";
+      }
 
+      // 🛡️ 1. 強制刷新身分 Token
+      await user.getIdToken(true);
+
+      // 🎯 2. 精準對齊美國區 (us-central1)
+      final callable = FirebaseFunctions.instanceFor(region: 'us-central1')
+          .httpsCallable('cancelDeleteAccount');
+
+      // 🚀 3. 發送請求
+      await callable.call();
+      return null;
+    } catch (e) {
+      print("❌ 取消刪除失敗: $e");
+      return "取消刪除帳號失敗，請稍後再試";
+    }
   }
 
 // ✨ 刪除帳號 (包含資料庫與驗證帳號)
   Future<String?> deleteAccount() async {
-
     try {
-
       final callable =
       FirebaseFunctions.instance
           .httpsCallable('deleteUserAccount');
 
-
       await callable.call();
 
-
       print("✅ 帳號刪除完成");
-
       return null;
-
-
     } catch(e){
-
       print("❌ 刪除失敗: $e");
-
       return "刪除帳號失敗";
 
     }
@@ -334,17 +340,22 @@ class AuthService {
         return "尚未登入";
       }
 
-      final callable = FirebaseFunctions.instance
-          .httpsCallable('requestDeleteAccount');
+      // 🛡️ 1. 確保身分證絕對新鮮：強迫 Firebase 刷新 Token
+      await user.getIdToken(true);
+
+      // 🎯 2. 精準對齊美國區
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'us-central1',
+      ).httpsCallable('requestDeleteAccount');
+
+      // 🚀 3. 發送請求
       await callable.call();
       return null;
     } catch (e) {
       print("❌ 申請刪除失敗: $e");
       return "申請刪除帳號失敗，請稍後再試";
-
     }
   }
-
   String _generateRandomPlayerID() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random.secure();

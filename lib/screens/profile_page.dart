@@ -26,6 +26,9 @@ import 'creator_studio_page.dart';
 import 'package:share_plus/share_plus.dart';
 import 'private_character_profile_page.dart'; // 我們剛剛建好的私人專屬主頁
 import 'character_profile_page.dart';
+import 'package:http/http.dart' as http;
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // 🌟 加上這個！
 
 //個人主頁
 
@@ -92,11 +95,86 @@ class _ProfilePageState extends State<ProfilePage> {
           _loadDailyTaskProgress();
           _listenToUserDocument();
           _checkIfBirthday();
+
+          // 👇 🔥 第四步：在這裡加上 FB 大頭貼更新器！
+          // 我們直接把 user 傳給函數，這樣就不用再抓一次 currentUser 了
+          _refreshFacebookAvatar(user);
         }
       } else if (mounted) {
         setState(() => _isLoading = false);
       }
     });
+  }
+
+// 👇 把這段 Function 放在 initState 的下面或其他獨立的區塊裡
+  Future<void> _refreshFacebookAvatar(User user) async {
+    try {
+      // 1. 先去資料庫調閱這個人的檔案
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) return;
+
+      final String currentAvatar = userDoc.data()?['avatarPath'] ?? '';
+
+      // 🛡️ 如果已經在我們自己的金庫裡，安全撤退，不浪費效能！
+      if (currentAvatar.isEmpty || currentAvatar.contains('firebasestorage.googleapis.com')) {
+        return;
+      }
+
+      // ⚔️ 鎖定目標：只要是 FB 的網址，通通視為獵物
+      if (currentAvatar.contains('fbsbx.com') || currentAvatar.contains('facebook.com') || currentAvatar.contains('graph.facebook.com')) {
+
+        debugPrint('🔥 啟動金庫強奪計畫！繞過 Firebase，直接找 FB 總部要人！');
+
+        String? freshUrl;
+
+        try {
+          // 🌟 核心關鍵：直接用 FacebookAuth 拿最新鮮的網址！
+          final fbUserData = await FacebookAuth.instance.getUserData();
+          freshUrl = fbUserData['picture']?['data']?['url'];
+        } catch (fbError) {
+          // 如果連 FB 的登入憑證都過期了，暗殺部隊只能先撤退
+          debugPrint('⚠️ FB 憑證已完全過期，需等玩家下次重新登入才能抓新照片。');
+          return;
+        }
+
+        // 如果成功拿到新網址，立刻展開綁架！
+        if (freshUrl != null) {
+          final response = await http.get(Uri.parse(freshUrl));
+
+          if (response.statusCode == 200) {
+            // 敲開金庫大門
+            final storageRef = FirebaseStorage.instance
+                .ref()
+                .child('user_avatars')
+                .child('${user.uid}_avatar.jpg');
+
+            // 鎖進金庫
+            await storageRef.putData(
+              response.bodyBytes,
+              SettableMetadata(contentType: 'image/jpeg'),
+            );
+
+            // 拿到永久無敵網址
+            final String permanentUrl = await storageRef.getDownloadURL();
+
+            // 寫入資料庫
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .update({'avatarPath': permanentUrl});
+
+            debugPrint('✅ 完美綁架！最新 FB 大頭貼已永久鎖進拾光金庫！');
+
+            // 如果需要馬上更新畫面，可以加上 setState
+            // if (mounted) setState(() {});
+          } else {
+            debugPrint('⚠️ 抓取新網址後依然下載失敗，狀態碼: ${response.statusCode}');
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ 暗殺部隊遭遇不明抵抗: $e');
+    }
   }
 
 // 🌟 別忘了！有開就要有關，這是好習慣

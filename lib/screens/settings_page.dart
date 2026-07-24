@@ -206,6 +206,12 @@ class _SettingsPageState extends State<SettingsPage> {
               // 關閉確認刪除視窗
               Navigator.of(dialogContext).pop();
 
+              try {
+                await FirebaseAuth.instance.currentUser?.getIdToken(true);
+              } catch (e) {
+                debugPrint("⚠️ 強制刷新憑證失敗，可能需要重新登入: $e");
+                // 如果連這裡都失敗，通常代表玩家真的離開太久，憑證死透了
+              }
 
               // 申請刪除（不是立即刪除）
               final String? errorMessage =
