@@ -1658,17 +1658,19 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             6. 絕對不要在對話中提及『重複』、『再次』或計算玩家說話的次數。即使玩家輸入相同的對話，也請視為全新的互動，自然地接續劇情。
 
             🚨 **[Immersive 極限輸出紅線]** 🚨
-            - **【絕對排版鐵律】**：請再次確認你的 \`response\` 欄位第一行是：
-            時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}
-            （嚴格禁止偷懶！即使是在完全相同的時間與場景下接續上一句話，也絕對不允許省略此標頭！）
-            - **【排版美學】**：每一次「台詞」與「括號描寫」之間必須【空一行】！
-            - **【字數標準】**：單人互動時回覆 700~1200 字；多人同場互動時回覆 1000~1500 字。追求極致細膩而非簡短，確保每一個出場角色的感官張力都能被完整釋放。
-            - **【感官豐富度】**：每段括號描寫至少包含兩種以上感官元素（聲音 + 氣息 + 溫度/觸感 + 生理反應）。
-            - **【角色個性一致性】**：強烈且精準抓住每個角色的核心個性，不同角色必須有明顯區別。
-            - **【話題延伸】**：自然加入 1-2 個新話題或互動鉤子，增加沉浸深度。
-            - **【防重複】**：嚴格禁止與前一次回覆出現高度相似內容、句型或描寫。
-            - 所有的括號描寫必須完整閉合，絕對禁止在段落結尾留下未完成的空括號 ( 例如出現只有 "(" 的情況 )。
-
+                - **【絕對排版鐵律】**：請再次確認你的 \`response\` 欄位第一行是：
+                時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}
+                （嚴格禁止偷懶！即使是在完全相同的時間與場景下接續上一句話，也絕對不允許省略此標頭！）
+                - **【排版美學】**：每一次「台詞」與「括號描寫}」之間必須【空一行】！
+                - **【強制四步長篇結構（缺一不可）】**：為確保達到小說級張力，每一次回覆必須完整包含以下四個階段，絕對禁止過早收尾：
+                  1. 【環境與氛圍鋪陳】：用 2-3 句描寫當下的光影、氣味、周遭動態或距離感。
+                  2. 【微表情與生理細節】：角色在聽到玩家說話後的瞬間反應（如瞳孔收縮、呼吸停頓、指尖動作）。
+                  3. 【多層次台詞與心境交鋒】：角色開口說出的話，以及台詞背後的內心試探與克制。
+                  4. 【餘韻與互動鉤子】：結束時必須留下肢體餘溫或拋出一個能讓劇情繼續延展的細微動作/問題。
+                - **【感官豐富度】**：每段括號描寫至少包含兩種以上感官元素（聲音 + 氣息 + 溫度/觸感 + 生理反應）。
+                - **【角色個性一致性】**：強烈且精準抓住每個角色的核心個性，不同角色必須有明顯區別。
+                - **【防重複】**：嚴格禁止與前一次回覆出現高度相似內容、句型或描寫。
+                - 所有的括號描寫必須完整閉合，絕對禁止在段落結尾留下未完成的空括號。
             ### 🏆 極致沉浸高密度示範格式
             請只學習以下「細膩程度、排版、節奏」，禁止照抄內容本身。
 
@@ -1931,8 +1933,8 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                    let MAX_LOOPS = 1;
 
                                    if (chatMode === "immersive") {
-                                       TARGET_LENGTH = 650;
-                                       MAX_LOOPS = 1;
+                                       TARGET_LENGTH = 800;
+                                       MAX_LOOPS = 3;
                                    } else if (chatMode === "story") {
                                        TARGET_LENGTH = 450;
                                        MAX_LOOPS = 1;
@@ -2009,16 +2011,16 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                            // 🎯 字數防爆設定
                                                                            // ==========================================
                                                                            const MAX_RESPONSE_LENGTH =
-                                                                               chatMode === "immersive" ? 1500 :
-                                                                               chatMode === "story" ? 1300 :
-                                                                               chatMode === "daily" ? 180 :
-                                                                               300;
+                                                                               chatMode === "immersive" ? 3000 :
+                                                                               chatMode === "story" ? 2500 :
+                                                                               chatMode === "daily" ? 300 :
+                                                                               500;
 
                                                                            const SAFE_MAX_TOKENS =
-                                                                               chatMode === "immersive" ? 1200 :
-                                                                               chatMode === "story" ? 1000 :
-                                                                               chatMode === "daily" ? 250 :
-                                                                               500;
+                                                                               chatMode === "immersive" ? 2500 :
+                                                                               chatMode === "story" ? 2000 :
+                                                                               chatMode === "daily" ? 400 :
+                                                                               700;
 
                                                                            // ✂️ 防爆字數截斷器
                                                                            function limitTextLength(text, maxLength) {
@@ -2035,67 +2037,76 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                );
 
                                                                                if (lastBreak > maxLength * 0.6) {
-                                                                                   return cut.slice(0, lastBreak + 1).trim() + "\n\n（未完待續。）";
+                                                                                   return cut.slice(0, lastBreak + 1).trim() ;
                                                                                }
 
-                                                                               return cut.trim() + "\n\n（未完待續。）";
+                                                                               return cut.trim() ;
                                                                            }
 
                                                                            function cleanAiResponseText(raw, safePlayerName = "") {
-                                                                               if (!raw) return "";
+                                                                                                                           if (!raw) return "";
 
-                                                                               let text = String(raw)
-                                                                                   .replace(/```json/g, "")
-                                                                                   .replace(/```/g, "")
-                                                                                   .trim();
+                                                                                                                           let text = String(raw)
+                                                                                                                               .replace(/```json/g, "")
+                                                                                                                               .replace(/```/g, "")
+                                                                                                                               .trim();
 
-                                                                               // 1. 完整 JSON：正常解析
-                                                                               try {
-                                                                                   const parsed = JSON.parse(text);
+                                                                                                                           // 1. 完整 JSON：正常解析
+                                                                                                                           try {
+                                                                                                                               const parsed = JSON.parse(text);
 
-                                                                                   if (parsed && typeof parsed === "object") {
-                                                                                       if (typeof parsed.response === "string") {
-                                                                                           return parsed.response
-                                                                                               .replace(/玩家/g, safePlayerName)
-                                                                                               .trim();
-                                                                                       }
-                                                                                       if (typeof parsed.text === "string") {
-                                                                                           return parsed.text.trim();
-                                                                                       }
-                                                                                       if (typeof parsed.message === "string") {
-                                                                                           return parsed.message.trim();
-                                                                                       }
-                                                                                   }
+                                                                                                                               if (parsed && typeof parsed === "object") {
+                                                                                                                                   if (typeof parsed.response === "string") {
+                                                                                                                                       text = parsed.response;
+                                                                                                                                   } else if (typeof parsed.text === "string") {
+                                                                                                                                       text = parsed.text;
+                                                                                                                                   } else if (typeof parsed.message === "string") {
+                                                                                                                                       text = parsed.message;
+                                                                                                                                   }
+                                                                                                                               } else if (typeof parsed === "string") {
+                                                                                                                                   text = parsed;
+                                                                                                                               }
+                                                                                                                           } catch (e) {
+                                                                                                                               // 不是完整 JSON，往下救
+                                                                                                                           }
 
-                                                                                   if (typeof parsed === "string") {
-                                                                                       return parsed.trim();
-                                                                                   }
-                                                                               } catch (e) {
-                                                                                   // 不是完整 JSON，往下救
-                                                                               }
+                                                                                                                           // 2. 救被截斷的格式
+                                                                                                                           const responseMatch = text.match(/"?response"?\s*:\s*"([\s\S]*)/);
+                                                                                                                           if (responseMatch && responseMatch[1]) {
+                                                                                                                               text = responseMatch[1];
+                                                                                                                           }
 
-                                                                               // 2. 救被截斷的格式：
-                                                                               // { "response": "真正內容
-                                                                               // 或 "response": "真正內容
-                                                                               const responseMatch = text.match(/"?response"?\s*:\s*"([\s\S]*)/);
-                                                                               if (responseMatch && responseMatch[1]) {
-                                                                                   text = responseMatch[1];
-                                                                               }
+                                                                                                                           // 3. 清掉尾巴殘留欄位與轉義字元
+                                                                                                                           text = text
+                                                                                                                               .replace(/",?\s*"affectionChange"\s*:\s*[\s\S]*$/g, "")
+                                                                                                                               .replace(/",?\s*"voiceText"\s*:\s*"[\s\S]*$/g, "")
+                                                                                                                               .replace(/",?\s*"reasoning"\s*:\s*"[\s\S]*$/g, "")
+                                                                                                                               .replace(/",?\s*"reasoning_details"\s*:\s*\[[\s\S]*$/g, "")
+                                                                                                                               .replace(/"\s*}\s*$/g, "")
+                                                                                                                               .replace(/\\n/g, "\n")
+                                                                                                                               .replace(/\\"/g, '"');
 
-                                                                               // 3. 清掉尾巴殘留欄位
-                                                                               text = text
-                                                                                   .replace(/",?\s*"affectionChange"\s*:\s*[\s\S]*$/g, "")
-                                                                                   .replace(/",?\s*"voiceText"\s*:\s*"[\s\S]*$/g, "")
-                                                                                   .replace(/",?\s*"reasoning"\s*:\s*"[\s\S]*$/g, "")
-                                                                                   .replace(/",?\s*"reasoning_details"\s*:\s*\[[\s\S]*$/g, "")
-                                                                                   .replace(/"\s*}\s*$/g, "")
-                                                                                   .replace(/\\n/g, "\n")
-                                                                                   .replace(/\\"/g, '"')
-                                                                                   .replace(/玩家/g, safePlayerName)
-                                                                                   .trim();
+                                                                                                                           // 🌟🌟🌟 總裁專屬防線：自動偵測並砍掉中途重複出現的第二個「時間：... | 地點：...」！
+                                                                                                                           // 原理：用正則找出第二次出現的時間地點標頭，直接把後面重複的截掉或合併
+                                                                                                                           const duplicateHeaderRegex = /(時間：[\s\S]*?\| 地點：[\s\S]*?)\n\n[\s\S]*?\1/;
+                                                                                                                           if (duplicateHeaderRegex.test(text)) {
+                                                                                                                               // 如果抓到它自己複製貼上兩次，我們保留第一次，把第二次以後的雜訊清掉
+                                                                                                                               text = text.replace(duplicateHeaderRegex, "$1");
+                                                                                                                           }
 
-                                                                               return text;
-                                                                           }
+                                                                                                                           // 也可以用更暴力的保底：如果文字中出現兩次「時間：」，直接從第二個「時間：」切掉前半段重複的
+                                                                                                                           const firstIndex = text.indexOf("時間：");
+                                                                                                                           if (firstIndex !== -1) {
+                                                                                                                               const secondIndex = text.indexOf("時間：", firstIndex + 3);
+                                                                                                                               if (secondIndex !== -1) {
+                                                                                                                                   // 代表它真的鬼打牆寫了兩次！我們只取第二段接續下去的精華，或者把第一段拔掉
+                                                                                                                                   // 這裡我們把第二個「時間：」開頭到之間的廢話拔掉，讓它變成流暢的一段
+                                                                                                                                   text = text.substring(0, secondIndex) + text.substring(text.indexOf("（", secondIndex));
+                                                                                                                               }
+                                                                                                                           }
+
+                                                                                                                           return text.replace(/玩家/g, safePlayerName).trim();
+                                                                                                                       }
 
                                                                            // ==========================================
                                                                            // 🔄 總裁的惡鬼催稿迴圈：防爆 + 防亂碼版
@@ -2399,14 +2410,15 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                );
 
                                                                                currentMessages.push({
-                                                                                   role: "assistant",
-                                                                                   content: parsedData.response
-                                                                               });
+                                                                                                                                   role: "assistant",
+                                                                                                                                   content: parsedData.response
+                                                                                                                               });
 
-                                                                               currentMessages.push({
-                                                                                   role: "user",
-                                                                                   content: "（系統強制指令：目前的篇幅不足以達到沉浸要求。請保持 JSON 格式回傳，接著最後一句話繼續即可。不要重寫，不要原封不動重複，總長度不要超過限制。）"
-                                                                               });
+                                                                                                                               // 🚀 升級版：用「劇情未完，請接續」的文學式指令取代硬邦邦的系統口吻
+                                                                                                                               currentMessages.push({
+                                                                                                                                   role: "user",
+                                                                                                                                   content: "（系統隱形指令：剛才的劇情尚未結束，請直接從上一句結尾的標點符號後方【無縫往下續寫】，絕對禁止再次輸出「時間：…… | 地點：……」等場景標頭，請直接延續當前的動作與對話，保持故事流暢度。）"
+                                                                                                                               });
                                                                            } // 👈 迴圈在這裡完美閉合！
 // ==========================================
 // 🛑 總裁鐵門：防堵幽靈回覆與幽靈扣款
@@ -3165,7 +3177,25 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
         if (!sessionDoc.exists) return null;
         const sessionData = sessionDoc.data();
         const userId = sessionData.userId;
+// 計算玩家目前 AI 未讀訊息數量
+const unreadSnapshot = await admin.firestore()
+    .collection("artifacts")
+    .doc("lianlianshiguang")
+    .collection("chat_sessions")
+    .where("userId", "==", userId)
+    .get();
 
+let unreadCount = 0;
+
+for (const doc of unreadSnapshot.docs) {
+    const messagesSnapshot = await doc.ref
+        .collection("messages")
+        .where("role", "==", "assistant")
+        .where("isUnread", "==", true)
+        .get();
+
+    unreadCount += messagesSnapshot.size;
+}
         let previewText = "你收到了一則新訊息 ✨";
         // 🌟 優先從 cleanDisplayText (text 欄位) 拿資料，如果沒有才去解析 content
         const rawContent = messageData.text || messageData.content || "";
@@ -3243,14 +3273,16 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
             },
             apns: {
                 payload: {
-                    aps: { sound: "default" }
+                    aps: {
+                        sound: "default",
+                        badge: unreadCount,
+                    }
                 }
             }
         };
 
         console.log(`叮咚！準備發送推播給用戶: ${userId}，來自角色的通知: ${charName}`);
         return await sendToUserDevices(userId, payload);
-               return null;
     } catch (error) {
         console.error("推播接線生發生錯誤:", error);
     }
@@ -3269,6 +3301,15 @@ exports.sendMailboxNotification = onDocumentCreated({
     const mailData = snap.data();
     const userId = event.params.userId;
     const mailId = event.params.mailId;
+
+const unreadSnapshot = await admin.firestore()
+    .collection("users")
+    .doc(userId)
+    .collection("mailbox")
+    .where("read", "==", false)
+    .get();
+
+const unreadCount = unreadSnapshot.size;
 
     const payload = {
         notification: {
@@ -3293,7 +3334,7 @@ exports.sendMailboxNotification = onDocumentCreated({
             payload: {
                 aps: {
                     sound: "default",
-                    badge: 1,
+                     badge: unreadCount,
                 },
             },
         },
