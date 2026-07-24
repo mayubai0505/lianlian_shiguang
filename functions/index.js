@@ -11,12 +11,16 @@ const axios = require('axios');
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const Stripe = require("stripe");
 const { TranslationServiceClient } = require('@google-cloud/translate');
+
+// 🌟 單一且完整的初始化（包含屬性設定）
 if (admin.apps.length === 0) {
     admin.initializeApp();
     admin.firestore().settings({ ignoreUndefinedProperties: true });
 }
+
+// 🔥 資料庫實例化
+const db = admin.firestore();
 const REGION = "asia-east1";
-// 🌟 全域變數定義
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
 const deepseekApiKey = defineSecret('DEEPSEEK_API_KEY');
@@ -4725,79 +4729,72 @@ exports.createMomentNotification = onCall(
     };
   }
 );
-exports.requestDeleteAccount = functions.https.onCall(async (data, context) => {
+exports.requestDeleteAccount = onCall(
+  {
+     region: "us-central1",
+  },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入"
+      );
+    }
 
-  if (!context.auth) {
-    throw new functions.https.HttpsError(
-      "unauthenticated",
-      "請先登入"
-    );
-  }
+    const uid = request.auth.uid;
 
-  const uid = context.auth.uid;
+    const deleteDate = new Date();
+    deleteDate.setDate(deleteDate.getDate() + 3);
 
-
-  const deleteDate = new Date();
-  deleteDate.setDate(deleteDate.getDate() + 3);
-
-
-  await db.collection("users")
-    .doc(uid)
-    .set({
-
-      accountDeleteRequested: true,
-
-      deleteScheduledAt:
-        admin.firestore.Timestamp.fromDate(deleteDate),
-
-    }, {
-      merge:true
-    });
-
-
-  return {
-    success:true
-  };
-
-});
-
-
-
-exports.cancelDeleteAccount = functions.https.onCall(async (data, context)=>{
-
-  if(!context.auth){
-
-    throw new functions.https.HttpsError(
-      "unauthenticated",
-      "請登入"
+    await db.collection("users").doc(uid).set(
+      {
+        accountDeleteRequested: true,
+        deleteScheduledAt: admin.firestore.Timestamp.fromDate(deleteDate),
+      },
+      {
+        merge: true,
+      }
     );
 
+    return {
+      success: true,
+    };
   }
+);
 
+exports.cancelDeleteAccount = onCall(
+  {
+     region: 'us-central1', // 鎖定美國區，避開亞洲區 CPU 滿載
+  },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請登入"
+      );
+    }
 
-  const uid=context.auth.uid;
+    const uid = request.auth.uid;
 
+    // 使用 set + merge，確保絕對不會因為欄位問題而 Crash
+    await db.collection("users").doc(uid).set(
+      {
+        accountDeleteRequested: false,
+        deleteScheduledAt: admin.firestore.FieldValue.delete(),
+      },
+      {
+        merge: true,
+      }
+    );
 
-  await db.collection("users")
-    .doc(uid)
-    .update({
-
-      accountDeleteRequested:false,
-
-      deleteScheduledAt:
-      admin.firestore.FieldValue.delete()
-
-    });
-
-
-  return {
-    success:true
-  };
-
-});
-
+    return {
+      success: true,
+    };
+  }
+);
 exports.checkScheduledDelete = onSchedule(
   {
+  region: 'us-central1',
     schedule: "every 24 hours",
     timeZone: "Asia/Taipei",
   },
