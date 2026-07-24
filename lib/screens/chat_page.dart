@@ -7474,45 +7474,61 @@ Future<void> _deleteMessagesFromDB(String aiMessageId, String userMessageId) asy
 }
 
 // ✨ AI 專屬文字掃描器：引號內正常色，引號外強制灰色
+// ✨ AI 專屬文字掃描器：引號內維持正常色，括號（）與其他旁白強制漆成灰色
 Widget _buildStyledAiMessage(String message, TextStyle normalStyle) {
-  // 🔍 鎖定目標：抓出所有被 「」 或 "" 或 “” 包住的對話
-  final RegExp quoteRegex = RegExp(r'(「.*?」|“.*?”|".*?")');
-  final Iterable<RegExpMatch> matches = quoteRegex.allMatches(message);
+  // 🔍 鎖定目標：同時捕捉「全形/半形引號」以及「全形括號（）」
+  final RegExp mixedRegex = RegExp(r'(「.*?」|“.*?”|".*?"|（.*?）|\(.*?\))');
+  final Iterable<RegExpMatch> matches = mixedRegex.allMatches(message);
 
-  // 旁白強制套用灰色
+  // 旁白與括號強制套用灰色
   final greyStyle = const TextStyle(color: Colors.grey);
 
-  // 如果這句話裡面完全沒有引號（全是旁白），就整段變灰色
+  if (message.isEmpty) {
+    return const SizedBox.shrink();
+  }
+
+  // 如果這句話裡面完全沒有任何符合的括號或引號
   if (matches.isEmpty) {
-    return Text(message, style: greyStyle);
+    return Text(message, style: normalStyle);
   }
 
   List<TextSpan> spans = [];
   int currentIndex = 0;
 
   for (final match in matches) {
-    // 1. 處理引號「前面」的文字（旁白 ➡️ 灰色）
+    String matchedText = match.group(0) ?? '';
+
+    // 1. 處理配對目標「前面」漏掉的散落文字
     if (match.start > currentIndex) {
       spans.add(TextSpan(
         text: message.substring(currentIndex, match.start),
-        style: greyStyle,
+        style: normalStyle,
       ));
     }
 
-    // 2. 處理引號「裡面」的文字（對話 ➡️ 套用主題的 normalStyle）
-    spans.add(TextSpan(
-      text: match.group(0),
-      style: normalStyle,
-    ));
+    // 2. 判斷這次抓到的是「引號（對話）」還是「括號（旁白）」
+    if (matchedText.startsWith('（') || matchedText.startsWith('(')) {
+      // 括號內部：強制漆成灰色
+      spans.add(TextSpan(
+        text: matchedText,
+        style: greyStyle,
+      ));
+    } else {
+      // 引號內部：維持正常的主題文字顏色
+      spans.add(TextSpan(
+        text: matchedText,
+        style: normalStyle,
+      ));
+    }
 
     currentIndex = match.end;
   }
 
-  // 3. 處理最後一個引號「後面」剩下的文字（旁白 ➡️ 灰色）
+  // 3. 處理最後一個目標「後面」剩下的文字
   if (currentIndex < message.length) {
     spans.add(TextSpan(
       text: message.substring(currentIndex),
-      style: greyStyle,
+      style: normalStyle,
     ));
   }
 
