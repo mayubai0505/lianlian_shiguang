@@ -6291,6 +6291,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
           delay: const Duration(milliseconds: 200),
           targetSize: Size(400, canvasHeight),
+          pixelRatio: 3.0,
         );
       }
 
