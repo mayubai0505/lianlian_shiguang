@@ -11,7 +11,6 @@ const axios = require('axios');
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const Stripe = require("stripe");
 const { TranslationServiceClient } = require('@google-cloud/translate');
-
 // 🌟 單一且完整的初始化（包含屬性設定）
 if (admin.apps.length === 0) {
     admin.initializeApp();
@@ -4954,3 +4953,71 @@ exports.checkScheduledDelete = onSchedule(
 
   }
 );
+
+// ==========================================
+// 綠界金流測試：產生結帳表單
+// ==========================================
+exports.createECPayOrder = functions.https.onRequest((req, res) => {
+    // 1. 從 .env 安全地把測試金鑰拿出來
+    const merchantID = process.env.ECPAY_MERCHANT_ID;
+    const hashKey = process.env.ECPAY_HASH_KEY;
+    const hashIV = process.env.ECPAY_HASH_IV;
+
+    // 2. 準備綠界需要的「訂單時間」（格式必須是 yyyy/MM/dd HH:mm:ss）
+    // 2. 準備綠界需要的「訂單時間」（最嚴格的 yyyy/MM/dd HH:mm:ss 格式，手動補零最安全）
+        const now = new Date();
+        const twTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // 強制轉換為台灣時間 UTC+8
+        const yyyy = twTime.getUTCFullYear();
+        const MM = String(twTime.getUTCMonth() + 1).padStart(2, '0');
+        const dd = String(twTime.getUTCDate()).padStart(2, '0');
+        const HH = String(twTime.getUTCHours()).padStart(2, '0');
+        const mm = String(twTime.getUTCMinutes()).padStart(2, '0');
+        const ss = String(twTime.getUTCSeconds()).padStart(2, '0');
+        const orderDate = `${yyyy}/${MM}/${dd} ${HH}:${mm}:${ss}`;
+
+    // 3. 設定訂單內容 (這裡先用程安的草莓蛋糕當作測試)
+    const orderParams = {
+        MerchantID: merchantID,
+        MerchantTradeNo: 'LLSG' + now.getTime(),
+        MerchantTradeDate: orderDate,
+        PaymentType: 'aio',
+        TotalAmount: '150',
+        TradeDesc: '戀戀拾光_測試購買',
+        ItemName: '程安的專屬草莓蛋糕',
+        ReturnURL: 'https://us-central1-你的專案ID.cloudfunctions.net/ecpayReturn',
+        ClientBackURL: 'https://你的網頁版網址.com',
+        ChoosePayment: 'ALL',
+        EncryptType: '1'
+    };
+
+    // 4. 計算綠界最嚴格的 CheckMacValue (檢查碼)
+    const keys = Object.keys(orderParams).sort();
+    let checkMacStr = `HashKey=${hashKey}`;
+    for (const key of keys) {
+        checkMacStr += `&${key}=${orderParams[key]}`;
+    }
+    checkMacStr += `&HashIV=${hashIV}`;
+
+    let encodedStr = encodeURIComponent(checkMacStr)
+        .replace(/%20/g, '+')
+        .replace(/%2d/gi, '-')
+        .replace(/%5f/gi, '_')
+        .replace(/%2e/gi, '.')
+        .replace(/%21/gi, '!')
+        .replace(/%2a/gi, '*')
+        .replace(/%28/gi, '(')
+        .replace(/%29/gi, ')')
+        .toLowerCase();
+
+    const checkMacValue = crypto.createHash('sha256').update(encodedStr).digest('hex').toUpperCase();
+    orderParams.CheckMacValue = checkMacValue;
+
+    // 5. 產出一個帶有隱藏表單的 HTML，並用 JavaScript 自動送出
+    let formHtml = `<form id="ecpay-form" action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5" method="POST">`;
+    for (const key in orderParams) {
+        formHtml += `<input type="hidden" name="${key}" value="${orderParams[key]}" />`;
+    }
+    formHtml += `</form><script>document.getElementById('ecpay-form').submit();</script>`;
+
+    res.send(formHtml);
+});
