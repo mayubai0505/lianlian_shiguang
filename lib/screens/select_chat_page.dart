@@ -22,25 +22,20 @@ class SelectChatPage extends StatefulWidget {
   SelectChatPageState createState() => SelectChatPageState();
 }
 
-class SelectChatPageState extends State<SelectChatPage> {
+class SelectChatPageState extends State<SelectChatPage> with TickerProviderStateMixin {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final String APP_ID = AppConfig.appId;
   String? _userId;
   Future<List<Character>>? _charactersFuture;
   Set<String> _friendIds = {};
   Set<String> _blockedCharacterIds = {};
-  void refreshEncounters() {
-    setState(() {
-      // 刻意先把它設為 null，這樣畫面就會觸發 FutureBuilder 的 waiting 狀態，
-      // 跑出優雅的「轉圈圈」動畫，讓玩家知道正在重新尋找邂逅！
-      _charactersFuture = null;
-    });
-    // 接著立刻重新去資料庫抓資料
-    _refreshAllData();
-  }
+
+  late TabController _mainTabController;
+
   @override
   void initState() {
     super.initState();
+    _mainTabController = TabController(length: 2, vsync: this);
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (mounted) {
         setState(() {
@@ -49,6 +44,19 @@ class SelectChatPageState extends State<SelectChatPage> {
         _refreshAllData();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _mainTabController.dispose();
+    super.dispose();
+  }
+
+  void refreshEncounters() {
+    setState(() {
+      _charactersFuture = null;
+    });
+    _refreshAllData();
   }
 
   Future<void> _refreshAllData() async {
@@ -87,7 +95,6 @@ class SelectChatPageState extends State<SelectChatPage> {
           _friendIds = ids;
         });
       }
-      print("✅ 成功載入 ${_friendIds.length} 位好友的 ID。");
     } catch (e) {
       print("❌ 讀取好友列表失敗: $e");
     }
@@ -109,9 +116,6 @@ class SelectChatPageState extends State<SelectChatPage> {
   }
 
   Future<List<Character>> _loadCharacters() async {
-    if (AppConfig.appId == 'default-app-id') {
-      print("警告：正在使用預設的 App ID。請確認您的 Firestore 路徑是否正確。");
-    }
     try {
       final querySnapshot = await _db
           .collection('artifacts')
@@ -123,17 +127,13 @@ class SelectChatPageState extends State<SelectChatPage> {
       List<Character> characters = await Future.wait(
           querySnapshot.docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
       );
-      print("成功讀取到 ${characters.length} 位公開角色。");
       characters.removeWhere((char) => _blockedCharacterIds.contains(char.id));
-      characters.shuffle();
       return characters;
     } catch (e) {
       print("讀取邂逅角色失敗: $e");
       return [];
     }
   }
-
-  // ✨✨✨ 總裁專屬：放在大房子裡的彈窗小幫手們 ✨✨✨
 
   // 1. 專屬加好友成功彈窗
   Future<void> _showAddFriendSuccessDialog(String characterName) async {
@@ -158,7 +158,7 @@ class SelectChatPageState extends State<SelectChatPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.favorite, size: 60, color: theme.colorScheme.primary),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(l10n.add_friend_success(characterName),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -178,7 +178,7 @@ class SelectChatPageState extends State<SelectChatPage> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(l10n.do_not_show_again_today, style: TextStyle(color: Colors.grey, fontSize: 12)),
+                                Text(l10n.do_not_show_again_today, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                               ]
                           ),
                           const SizedBox(height: 20),
@@ -198,7 +198,7 @@ class SelectChatPageState extends State<SelectChatPage> {
                                   }
                                   Navigator.pop(context);
                                 },
-                                child: Text(l10n.ok_button, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                child: Text(l10n.ok_button, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                               )
                           )
                         ]
@@ -239,7 +239,7 @@ class SelectChatPageState extends State<SelectChatPage> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         onPressed: () => Navigator.pop(context),
-                        child: Text(l10n.deleteAccountDialogActionConfirm, style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: Text(l10n.deleteAccountDialogActionConfirm, style: const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     )
                   ]
@@ -249,8 +249,6 @@ class SelectChatPageState extends State<SelectChatPage> {
     );
   }
 
-  // ✨✨✨ 彈窗小幫手結束 ✨✨✨
-
   Future<void> _addFriend(Character character) async {
     final l10n = AppLocalizations.of(context)!;
     if (_userId == null) {
@@ -259,7 +257,6 @@ class SelectChatPageState extends State<SelectChatPage> {
     }
 
     try {
-      print('正在將角色 ${character.name} (ID: ${character.id}) 添加到好友列表...');
       final String charId = character.id;
       final String userId = _userId!;
 
@@ -301,8 +298,6 @@ class SelectChatPageState extends State<SelectChatPage> {
         });
       });
 
-      print('✨ 角色 ${character.name} 已成功寫入 Firestore 且完成邂逅結算！');
-
       if (mounted) {
         setState(() {
           _friendIds.add(character.id);
@@ -310,7 +305,6 @@ class SelectChatPageState extends State<SelectChatPage> {
         _showAddFriendSuccessDialog(character.name);
       }
     } catch (e) {
-      print('❌ 添加好友失敗: $e');
       if (mounted) {
         _showResultDialog('添加好友失敗，請稍後再試。', isError: true);
       }
@@ -330,7 +324,7 @@ class SelectChatPageState extends State<SelectChatPage> {
                 TextButton(onPressed: () => Navigator.of(context).pop(false),
                     child: Text(l10n.cancelButton)),
                 TextButton(onPressed: () => Navigator.of(context).pop(true),
-                    child:  Text(l10n.action_remove, style: const TextStyle(color: Colors.red))),
+                    child: Text(l10n.action_remove, style: const TextStyle(color: Colors.red))),
               ],
             )
     );
@@ -363,7 +357,7 @@ class SelectChatPageState extends State<SelectChatPage> {
                 TextButton(onPressed: () => Navigator.of(context).pop(false),
                     child: Text(l10n.cancel)),
                 TextButton(onPressed: () => Navigator.of(context).pop(true),
-                    child:  Text(l10n.block, style: const TextStyle(color: Colors.red))),
+                    child: Text(l10n.block, style: const TextStyle(color: Colors.red))),
               ],
             )
     );
@@ -402,7 +396,7 @@ class SelectChatPageState extends State<SelectChatPage> {
               title: Text(l10n.dialog_title_report(character.name)),
               content: TextField(
                 controller: reasonController,
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                     hintText: l10n.input_hint_report_reason),
                 maxLines: 3,
               ),
@@ -435,7 +429,6 @@ class SelectChatPageState extends State<SelectChatPage> {
   }
 
   void _showMoreOptions(Character character, bool isFriend) {
-    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -445,7 +438,7 @@ class SelectChatPageState extends State<SelectChatPage> {
               if (isFriend)
                 ListTile(
                   leading: const Icon(Icons.person_remove_outlined, color: Colors.red),
-                  title:  Text(l10n.action_remove_friend, style: const TextStyle(color: Colors.red)),
+                  title: const Text('移除好友', style: TextStyle(color: Colors.red)),
                   onTap: () {
                     Navigator.pop(context);
                     _deleteFriend(character);
@@ -453,7 +446,7 @@ class SelectChatPageState extends State<SelectChatPage> {
                 ),
               ListTile(
                 leading: const Icon(Icons.flag_outlined),
-                title:Text(l10n.action_report_character),
+                title: const Text('檢舉角色'),
                 onTap: () {
                   Navigator.pop(context);
                   _reportCharacter(character);
@@ -461,7 +454,7 @@ class SelectChatPageState extends State<SelectChatPage> {
               ),
               ListTile(
                 leading: const Icon(Icons.block, color: Colors.orange),
-                title:  Text(l10n.action_block_character, style: const TextStyle(color: Colors.orange)),
+                title: const Text('封鎖角色', style: TextStyle(color: Colors.orange)),
                 onTap: () {
                   Navigator.pop(context);
                   _blockCharacter(character);
@@ -474,16 +467,38 @@ class SelectChatPageState extends State<SelectChatPage> {
     );
   }
 
-  void _refreshCharacters() {
-    setState(() {
-      _charactersFuture = _loadCharacters();
-    });
-  }
-
   void _navigateToSearch() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const SearchCharacterPage()),
+    );
+  }
+
+  // 🌟 小橢圓膠囊按鈕建構器
+  Widget _buildSmallPillButton({
+    required String text,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required ThemeData theme,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant.withValues(alpha: 0.6),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
     );
   }
 
@@ -496,11 +511,50 @@ class SelectChatPageState extends State<SelectChatPage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title:  Text(l10n.title_meet_him),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        foregroundColor: theme.colorScheme.onSurface,
+        // 🌟 修正：讓標題文字具備彈性縮放與防溢位機制
+        title: Row(
+          children: [
+            Flexible(
+              child: Text(
+                l10n.title_meet_him,
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 16, // 字體稍微精簡，更契合手機 AppBar
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis, // 空間不足時自動顯示 ...
+              ),
+            ),
+            const SizedBox(width: 8), // 縮小間距
+            AnimatedBuilder(
+              animation: _mainTabController,
+              builder: (context, child) {
+                final currentIndex = _mainTabController.index;
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildSmallPillButton(
+                      text: "每日邂逅",
+                      isSelected: currentIndex == 0,
+                      onTap: () => _mainTabController.animateTo(0),
+                      theme: theme,
+                    ),
+                    const SizedBox(width: 4), // 縮小按鈕間距
+                    _buildSmallPillButton(
+                      text: "探索大廳",
+                      isSelected: currentIndex == 1,
+                      onTap: () => _mainTabController.animateTo(1),
+                      theme: theme,
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -520,56 +574,75 @@ class SelectChatPageState extends State<SelectChatPage> {
 
           final characters = snapshot.data!;
 
-          return Column(
+          // 🌟 直接渲染 TabBarView，頂部空間已完全釋放！
+          return TabBarView(
+            controller: _mainTabController,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      l10n.text_character_count(characters.length),
-                      style: TextStyle(color: theme.colorScheme.onSurface),
+              // ------------------------------------
+              // 1. 滑卡模式主頁
+              // ------------------------------------
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          l10n.text_character_count(characters.length),
+                          style: TextStyle(color: theme.colorScheme.onSurface),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Swiper(
-                  itemCount: characters.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == characters.length) {
-                      return _buildEndCard(theme, themeNotifier);
-                    }
-                    final character = characters[index];
-                    final bool isFriend = _friendIds.contains(character.id);
+                  ),
+                  Expanded(
+                    child: Swiper(
+                      itemCount: characters.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == characters.length) {
+                          return _buildEndCard(theme, themeNotifier);
+                        }
+                        final character = characters[index];
+                        final bool isFriend = _friendIds.contains(character.id);
 
-                    return CharacterCard(
-                      character: character,
-                      isFriend: isFriend,
-                      onAddFriend: () => _addFriend(character),
-                      onShowOptions: (char, isFriend) => _showMoreOptions(char, isFriend),
-                    );
-                  },
-                  scrollDirection: Axis.vertical,
-                  layout: SwiperLayout.STACK,
-                  itemWidth: MediaQuery.of(context).size.width * 0.9,
-                  itemHeight: MediaQuery.of(context).size.height * 0.70,
-                  loop: false,
-                  onTap: (index) async {
-                    if (index < characters.length) {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                CharacterProfilePage(
-                                  character: characters[index],
-                                  characterId: characters[index].id,
-                                )),
-                      );
-                      _loadFriendIds();
-                    }
-                  },
-                ),
+                        return CharacterCard(
+                          character: character,
+                          isFriend: isFriend,
+                          onAddFriend: () => _addFriend(character),
+                          onShowOptions: (char, isFriend) => _showMoreOptions(char, isFriend),
+                        );
+                      },
+                      scrollDirection: Axis.vertical,
+                      layout: SwiperLayout.STACK,
+                      itemWidth: MediaQuery.of(context).size.width * 0.9,
+                      itemHeight: MediaQuery.of(context).size.height * 0.70,
+                      loop: false,
+                      onTap: (index) async {
+                        if (index < characters.length) {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CharacterProfilePage(
+                                      character: characters[index],
+                                      characterId: characters[index].id,
+                                    )),
+                          );
+                          _loadFriendIds();
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+
+              // ------------------------------------
+              // 2. 探索大廳 (三子分頁)
+              // ------------------------------------
+              _DiscoveryHallView(
+                allCharacters: characters,
+                friendIds: _friendIds,
+                onAddFriend: _addFriend,
+                onShowOptions: _showMoreOptions,
               ),
             ],
           );
@@ -610,16 +683,16 @@ class SelectChatPageState extends State<SelectChatPage> {
                   l10n.msg_check_new_encounters,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha:0.7)
+                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7)
                   ),
                 ),
                 const SizedBox(height: 32),
                 ElevatedButton.icon(
-                  onPressed: _refreshCharacters,
+                  onPressed: refreshEncounters,
                   icon: const Icon(Icons.refresh),
-                  label:  Text(l10n.action_refresh, style: const TextStyle(fontSize: 16)),
+                  label: Text(l10n.action_refresh, style: const TextStyle(fontSize: 16)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary.withValues(alpha:0.8),
+                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.8),
                     foregroundColor: theme.colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
@@ -631,6 +704,463 @@ class SelectChatPageState extends State<SelectChatPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ==========================================
+// ==========================================
+// 🏛️ 探索大廳檢視元件 (包含三個子分頁)
+// ==========================================
+class _DiscoveryHallView extends StatelessWidget {
+  final List<Character> allCharacters;
+  final Set<String> friendIds;
+  final Function(Character) onAddFriend;
+  final Function(Character, bool) onShowOptions;
+
+  const _DiscoveryHallView({
+    required this.allCharacters,
+    required this.friendIds,
+    required this.onAddFriend,
+    required this.onShowOptions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, // 讓內容靠左對齊
+        children: [
+          Container(
+            color: Colors.transparent,
+            child: TabBar(
+              isScrollable: true,
+              tabAlignment: TabAlignment.start, // 🔑 關鍵：強制從最左邊開始排列，消滅左側空格！
+              padding: EdgeInsets.zero,          // 🔑 清除預設的外距
+              labelPadding: const EdgeInsets.symmetric(horizontal: 16), // 調整每個標籤之間的間距
+              tabs: const [
+                Tab(text: "🌟 最新推薦"),
+                Tab(text: "🔥 人氣熱榜"),
+                Tab(text: "🏷️ 角色特徵"),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _LatestTab(allCharacters: allCharacters, friendIds: friendIds, onAddFriend: onAddFriend, onShowOptions: onShowOptions),
+                _PopularTab(allCharacters: allCharacters, friendIds: friendIds, onAddFriend: onAddFriend, onShowOptions: onShowOptions),
+                _TagsTab(allCharacters: allCharacters, friendIds: friendIds, onAddFriend: onAddFriend, onShowOptions: onShowOptions),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 🌟 分頁一：最新推薦 (保持完美比例 + 呈現時尚的高低交錯感)
+class _LatestTab extends StatelessWidget {
+  final List<Character> allCharacters;
+  final Set<String> friendIds;
+  final Function(Character) onAddFriend;
+  final Function(Character, bool) onShowOptions;
+
+  const _LatestTab({required this.allCharacters, required this.friendIds, required this.onAddFriend, required this.onShowOptions});
+
+  @override
+  Widget build(BuildContext context) {
+    List<Character> sortedList = List.from(allCharacters);
+    sortedList.sort((a, b) {
+      if (a.createdAt == null || b.createdAt == null) return 0;
+      return b.createdAt.compareTo(a.createdAt);
+    });
+
+    final bannerList = sortedList.take(10).toList();
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (bannerList.isNotEmpty) ...[
+          const Text("🌟 閃耀新星．強檔推薦", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          // 🌟 完美解決寬扁橫幅切臉問題的「模糊背板 + 中間主體」強檔推薦橫幅
+          SizedBox(
+            height: 220,
+            child: Swiper(
+              itemCount: bannerList.length,
+              autoplay: true,
+              itemBuilder: (context, index) {
+                final char = bannerList[index];
+                final String bannerImg = char.galleryPaths.isNotEmpty ? char.galleryPaths.first : '';
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => CharacterProfilePage(character: char, characterId: char.id)));
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        // 1. 🎨 背景層：同張圖片放大鋪滿 + 強力毛玻璃模糊（消除寬扁橫幅的空白與切臉感）
+                        if (bannerImg.isNotEmpty) ...[
+                          Image.network(
+                            bannerImg,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
+                          ),
+                          BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                            child: Container(
+                              color: Colors.black.withValues(alpha: 0.35), // 微微壓暗，凸顯中間主角
+                            ),
+                          ),
+                        ],
+
+                        // 2. 👑 前景層：置中完整顯示（contain），確保臉和上半身 100% 完美露在正中間！
+                        Center(
+                          child: bannerImg.isNotEmpty
+                              ? Image.network(
+                            bannerImg,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.center,
+                          )
+                              : const Image(image: AssetImage('assets/images/blank_avatar.png')),
+                        ),
+
+                        // 3. 🌙 底部漸層陰影（確保左下角的名字清晰可見）
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
+                            ),
+                          ),
+                        ),
+
+                        // 4. 📝 角色名稱
+                        Positioned(
+                          bottom: 16, left: 16, right: 16,
+                          child: Text(
+                            char.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 24),
+        ],
+        const Text("✨ 最近上架新角色", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
+
+        // 🏛️ 讓右欄故意往下位移，營造出時髦的高低交錯感！
+        LayoutBuilder(
+          builder: (context, constraints) {
+            List<Character> leftCol = [];
+            List<Character> rightCol = [];
+
+            for (int i = 0; i < sortedList.length; i++) {
+              if (i % 2 == 0) {
+                leftCol.add(sortedList[i]);
+              } else {
+                rightCol.add(sortedList[i]);
+              }
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 左欄正常排
+                Expanded(
+                  child: Column(
+                    children: leftCol.map((char) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _buildStaggeredCard(context, char),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // 右欄故意加上一個頂部距離（例如 30px），製造高低交錯感！
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 30.0),
+                    child: Column(
+                      children: rightCol.map((char) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildStaggeredCard(context, char),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  // 🎨 維持完美比例的卡片
+  Widget _buildStaggeredCard(BuildContext context, Character char) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => CharacterProfilePage(character: char, characterId: char.id)));
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: AspectRatio(
+          aspectRatio: 0.85, // 💡 卡片本身的完美比例不動
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image(
+                image: char.galleryPaths.isNotEmpty ? NetworkImage(char.galleryPaths.first) : const AssetImage('assets/images/blank_avatar.png') as ImageProvider,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter, // 💡 確保臉部完美露出
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.75)],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      char.name,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      char.occupation,
+                      style: const TextStyle(color: Colors.white70, fontSize: 11),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 🔥 分頁二：人氣熱榜
+class _PopularTab extends StatelessWidget {
+  final List<Character> allCharacters;
+  final Set<String> friendIds;
+  final Function(Character) onAddFriend;
+  final Function(Character, bool) onShowOptions;
+
+  const _PopularTab({required this.allCharacters, required this.friendIds, required this.onAddFriend, required this.onShowOptions});
+
+  @override
+  Widget build(BuildContext context) {
+    List<Character> popularList = List.from(allCharacters);
+    popularList.sort((a, b) => b.playCount.compareTo(a.playCount));
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: popularList.length,
+      itemBuilder: (context, index) {
+        final char = popularList[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(8),
+            leading: CircleAvatar(
+              radius: 30,
+              backgroundImage: char.galleryPaths.isNotEmpty ? NetworkImage(char.galleryPaths.first) : null,
+              child: char.galleryPaths.isEmpty ? const Icon(Icons.person) : null,
+            ),
+            title: Text(char.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 4),
+                Text(char.storySummary, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.local_fire_department, size: 14, color: Colors.orange),
+                    const SizedBox(width: 4),
+                    Text("遊玩次數: ${char.playCount}", style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                  ],
+                ),
+              ],
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => CharacterProfilePage(character: char, characterId: char.id)));
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+// 🏷️ 分頁三：角色特徵標籤探索 (多色交錯、絕不眼花版)
+class _TagsTab extends StatelessWidget {
+  final List<Character> allCharacters;
+  final Set<String> friendIds;
+  final Function(Character) onAddFriend;
+  final Function(Character, bool) onShowOptions;
+
+  const _TagsTab({required this.allCharacters, required this.friendIds, required this.onAddFriend, required this.onShowOptions});
+
+  @override
+  Widget build(BuildContext context) {
+    Set<String> uniqueTags = {};
+    for (var char in allCharacters) {
+      uniqueTags.addAll(char.personalityTags);
+    }
+    List<String> tagList = uniqueTags.toList();
+
+    if (tagList.isEmpty) {
+      return const Center(child: Text("目前還沒有任何標籤資料～"));
+    }
+
+    // 🎨 療癒的馬卡龍色系清單（低彩度、柔和護眼）
+    final List<Color> macaronColors = [
+      const Color(0xFFFFB7B2), // 柔粉色
+      const Color(0xFFFFDAC1), // 蜜桃橘
+      const Color(0xFFE2F0CB), // 薄荷綠
+      const Color(0xFFB5EAD7), // 青草藍
+      const Color(0xFFC7CEEA), // 薰衣草紫
+      const Color(0xFFF3C68F), // 奶黃色
+      const Color(0xFFD4A5A5), // 芋頭粉
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 2.4,
+        ),
+        itemCount: tagList.length,
+        itemBuilder: (context, index) {
+          final tag = tagList[index];
+          // 💡 透過索引輪流取馬卡龍色
+          final Color cardColor = macaronColors[index % macaronColors.length];
+
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => _TagFilteredCharactersPage(tag: tag, allCharacters: allCharacters),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              child: Text(
+                "#$tag",
+                style: const TextStyle(
+                  color: Colors.black87, // 搭配馬卡龍底色，用深色文字閱讀起來最舒服
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// 🏷️ 點擊特定標籤後跳轉過去的「過濾角色列表頁」
+class _TagFilteredCharactersPage extends StatelessWidget {
+  final String tag;
+  final List<Character> allCharacters;
+
+  const _TagFilteredCharactersPage({required this.tag, required this.allCharacters});
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredChars = allCharacters.where((c) => c.personalityTags.contains(tag)).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("標籤：#$tag"),
+      ),
+      body: filteredChars.isEmpty
+          ? const Center(child: Text("沒有找到擁有此標籤的角色"))
+          : ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: filteredChars.length,
+        itemBuilder: (context, index) {
+          final char = filteredChars[index];
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(8),
+              leading: CircleAvatar(
+                radius: 30,
+                backgroundImage: char.galleryPaths.isNotEmpty ? NetworkImage(char.galleryPaths.first) : null,
+              ),
+              title: Text(char.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text(char.occupation, style: const TextStyle(fontSize: 12)),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => CharacterProfilePage(character: char, characterId: char.id)));
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -703,7 +1233,6 @@ class _CharacterCardState extends State<CharacterCard> {
         });
       }
     } catch (e) {
-      print('--- 🔴 方案 B 寫入失敗: $e ---');
       if (mounted) setState(() => _isTranslating = false);
     }
   }
@@ -730,7 +1259,9 @@ class _CharacterCardState extends State<CharacterCard> {
         .map((tag) => tag.trim().replaceAll(RegExp(r'^#+'), '').trim())
         .where((tag) => tag.isNotEmpty)
         .where((tag) => seenTags.add(tag))
-        .toList();    final String displayIdentities = (widget.character.identities != null && widget.character.identities!.isNotEmpty)
+        .toList();
+
+    final String displayIdentities = (widget.character.identities != null && widget.character.identities!.isNotEmpty)
         ? widget.character.identities!.join(' / ')
         : (widget.character.occupation);
     final bool showTranslateButton = (currentAppLang != contentLang) &&
@@ -754,7 +1285,7 @@ class _CharacterCardState extends State<CharacterCard> {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withValues(alpha:0.85)
+                    Colors.black.withValues(alpha: 0.85)
                   ],
                 ),
               ),
@@ -765,7 +1296,7 @@ class _CharacterCardState extends State<CharacterCard> {
             child: IconButton(
               icon: const Icon(Icons.more_vert, color: Colors.white),
               style: IconButton.styleFrom(
-                  backgroundColor: Colors.black.withValues(alpha:0.3)),
+                  backgroundColor: Colors.black.withValues(alpha: 0.3)),
               onPressed: () =>
                   widget.onShowOptions(widget.character, widget.isFriend),
             ),
@@ -824,8 +1355,8 @@ class _CharacterCardState extends State<CharacterCard> {
                     const SizedBox(width: 10),
                     widget.isFriend
                         ? Chip(
-                      backgroundColor: primaryColor.withValues(alpha:0.2),
-                      side: BorderSide(color: primaryColor.withValues(alpha:0.5)),
+                      backgroundColor: primaryColor.withValues(alpha: 0.2),
+                      side: BorderSide(color: primaryColor.withValues(alpha: 0.5)),
                       avatar: Icon(Icons.check, size: 16, color: primaryColor),
                       label: Text(l10n.tab_friends, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
                       visualDensity: VisualDensity.compact,
@@ -833,7 +1364,7 @@ class _CharacterCardState extends State<CharacterCard> {
                         : ElevatedButton.icon(
                       onPressed: widget.onAddFriend,
                       icon: const Icon(Icons.add, size: 16),
-                      label:  Text(l10n.tab_friends),
+                      label: Text(l10n.tab_friends),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         foregroundColor: theme.colorScheme.onPrimary,
@@ -867,7 +1398,7 @@ class _CharacterCardState extends State<CharacterCard> {
                                   strokeWidth: 2, color: primaryColor))
                               : Text(l10n.action_view_translation,
                               style: TextStyle(
-                                  color: primaryColor.withValues(alpha:0.9),
+                                  color: primaryColor.withValues(alpha: 0.9),
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold)),
                         ),
@@ -877,7 +1408,7 @@ class _CharacterCardState extends State<CharacterCard> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha:0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.white12),
                         ),
@@ -915,7 +1446,7 @@ class _CharacterCardState extends State<CharacterCard> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 5),
                           decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha:0.15),
+                              color: Colors.white.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                   color: Colors.white24, width: 0.5)),
