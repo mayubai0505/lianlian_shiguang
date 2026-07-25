@@ -3309,12 +3309,17 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   }
 
   void _addCustomPersonalityTag() {
-    final newTag = _personalityController.text.trim();
-    String tag = _personalityController.text.trim();
-    if (tag.isNotEmpty && !_personalityTags.contains(tag)) {
+    final String tag = _personalityController.text.trim();
+
+    if (tag.isNotEmpty) {
       setState(() {
-        _personalityTags.add(tag);
-        _personalityTags.add(newTag);
+        // 如果標籤還不存在清單中，才加進去
+        if (!_personalityTags.contains(tag)) {
+          _personalityTags.add(tag);
+        }
+        // 💡 額外保險：順便把整個清單用 Set 去重，確保萬無一失！
+        _personalityTags = _personalityTags.toSet().toList();
+
         _personalityController.clear();
       });
     }

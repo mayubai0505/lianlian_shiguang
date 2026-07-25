@@ -2076,7 +2076,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   character: character,
                 ),
               ),
-            );
+            ).then((_) {
+              // 🌟 關鍵補丁：只要從好友頁面退回來，立刻重新抓取最新好友清單並重畫畫面！
+              _refreshData();
+            });
           } else {
             // 🔒 2. 私人角色：進行親權鑑定
             if (currentUser != null && character.createdBy == currentUser.uid) {

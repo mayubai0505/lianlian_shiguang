@@ -1424,27 +1424,29 @@ class _ChatPageState extends State<ChatPage> {
     final userId = currentUser.uid;
     final characterId = _currentCharacter.id;
 
-    // 🌟 1. UI 鎖定，並把失敗的舊 AI 台詞從畫面上拔掉！(玩家的話原封不動)
+    // 🌟 1. UI 鎖定，並把失敗的舊 AI 台詞從畫面上拔掉！
     setState(() {
       _isGenerating = true;
       _testMessages.removeWhere((msg) => msg.id == aiMessageId);
     });
 
     try {
-      // 🌟 1. 毀屍滅跡：直接刪除該筆 AI 訊息 (不再需要判斷 shouldSave)
+      // 🌟 1. 刪除該筆 AI 訊息
       if (_messagesCollection != null) {
         await _messagesCollection!.doc(aiMessageId).delete();
       }
 
-      // 🌟 2. 喚醒長期記憶：直接從 Firestore 抓取歷史紀錄
+      // 🌟 2. 喚醒長期記憶：從 Firestore 抓取歷史紀錄 (加上逾時保護與防呆)
       List<Map<String, String>> actualChatHistory = [];
 
       if (_messagesCollection != null) {
-        // 直接抓取該對話的歷史，無需判斷 shouldSave
         final historySnapshot = await _messagesCollection!
             .orderBy('timestamp', descending: true)
             .limit(16)
-            .get();
+            .get()
+            .timeout(const Duration(seconds: 10), onTimeout: () {
+          throw Exception('讀取歷史紀錄逾時');
+        });
 
         var docsList = historySnapshot.docs.reversed.toList();
         for (var doc in docsList) {
@@ -1465,7 +1467,8 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       }
-      // 讀取備忘錄與生理期 (精簡版)
+
+      // 讀取備忘錄與記憶
       final aboutMeSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('characters').doc(characterId).collection('memories').get();
       final aboutMeNotes = aboutMeSnapshot.docs.map((doc) => doc.data()['text'] as String? ?? '').toList();
       List<String> memos = [];
@@ -1473,7 +1476,8 @@ class _ChatPageState extends State<ChatPage> {
         final memosSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('characters').doc(characterId).collection('memos').get();
         memos = memosSnapshot.docs.map((doc) => doc.data()['content'] as String? ?? '').toList();
       }
-      // 🌟 4. 準備跟大腦說話的封口令！
+
+      // 🌟 4. 準備請求資料
       final idToken = await currentUser.getIdToken();
       String dynamicRelationship = _currentFriendship.relationshipTitle(l10n);
       String dynamicProfile = _buildDynamicUserProfileString();
@@ -1481,25 +1485,22 @@ class _ChatPageState extends State<ChatPage> {
         _currentAiProfile['gender']?.toString(),
       );
       final String playerPronounGuide = _buildPlayerPronounGuide(playerGenderForAi);
+
       final Map<String, dynamic> requestBody = {
-        "audioUrl": "", // 重新生成通常只針對文字
+        "audioUrl": "",
         "userMessage": lastUserText,
         "chatMode": _currentMode?.name ?? "daily",
-        "isBirthdayFreebie": false, // 重新生成不影響次數
+        "isBirthdayFreebie": false,
         "overrideSystemPrompt": "",
         "sessionId": _sessionId,
-        // 🌟 同步升級：傳送精準名字！
         "playerName": _playerNickname,
         "playerGender": playerGenderForAi,
         "playerPronounGuide": playerPronounGuide,
-        // 🌟 同步升級：呼叫動態人設產生器！
         "userProfile": dynamicProfile,
-        // 🛑 總裁專屬封口令 + 最高防護指令合併版！
-// 🌟 總裁專屬封口令 + 強制改口令！
         "systemDirective": "【最高防護指令】這是玩家要求重新生成的對話。注意：玩家的時空設定與稱呼可能已在此刻發生變更！你必須立刻捨棄歷史紀錄中的舊稱呼，現在起，與你對話的主角稱呼強制更新為「$_playerNickname」，絕對不能叫錯！請視為全新的互動自然地接續。以下是她當前的專屬時空設定：\n$dynamicProfile\n\n你必須嚴格根據這些設定與她互動，並以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。",
         "aboutMeNotes": aboutMeNotes,
         "memos": memos,
-        "periodStatus": "未知", // 精簡化，避免過度讀取
+        "periodStatus": "未知",
         "lastStoryTime": _currentStoryTime,
         "lastStoryLocation": _currentStoryLocation,
         "characterProfile": {
@@ -1517,66 +1518,71 @@ class _ChatPageState extends State<ChatPage> {
         "chatHistory": actualChatHistory,
       };
 
-      // 🌟 5. 呼叫雲端大腦！
+      // 🌟 5. 呼叫雲端大腦（設定 45 秒逾時保護）
       _httpClient = http.Client();
       final response = await _httpClient!.post(
         Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/getAiResponse'),
         headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $idToken'},
         body: jsonEncode(requestBody),
-      );
+      ).timeout(const Duration(seconds: 45));
 
-
-      // 🌟 6. 接收回覆，更新 UI (因為已經繞過 onCreate 監聽器，所以這裡要自己把 AI 的話加回畫面)
+      // 🌟 6. 安全解析回覆
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(utf8.decode(response.bodyBytes));
-        if (responseData['status'] == 'success') {
-          // 好感度計算 (同原本邏輯)
-          int finalAffectionChange = responseData['affectionChange'] ?? 0;
+        try {
+          final decodedBody = utf8.decode(response.bodyBytes);
+          final responseData = jsonDecode(decodedBody);
 
-          if (mounted) {
-            setState(() {
-              if (finalAffectionChange != 0) {
-                int oldScore = _currentFriendship;
-                _currentFriendship += finalAffectionChange;
-                _checkForLevelUp(oldScore, _currentFriendship);
-              }
+          if (responseData['status'] == 'success') {
+            int finalAffectionChange = responseData['affectionChange'] ?? 0;
 
-              _isGenerating = false;
-              _isLoading = false;
-            });
+            if (mounted) {
+              setState(() {
+                if (finalAffectionChange != 0) {
+                  int oldScore = _currentFriendship;
+                  _currentFriendship += finalAffectionChange;
+                  _checkForLevelUp(oldScore, _currentFriendship);
+                }
+                _isGenerating = false;
+                _isLoading = false;
+              });
+            }
+          } else {
+            _handleGenerationError(l10n.error_system_busy);
           }
-        } else {
-          // ❌ 伺服器回傳狀態不是 success (系統忙碌中)
-          if (mounted) {
-            setState(() {
-              _isGenerating = false;
-              _isLoading = false;
-            });
-            _showCenterToast(l10n.error_system_busy, isError: true);
-          }
+        } catch (jsonError) {
+          // 🛡️ 攔截 JSON 解析失敗（伺服器回傳非 JSON 的情況）
+          debugPrint('⚠️ 重新生成 JSON 解析崩潰: $jsonError, 原始 Body: ${response.body}');
+          _handleGenerationError(l10n.error_system_busy);
         }
       } else {
-        // ❌ HTTP 狀態碼不是 200 (網路異常或伺服器崩潰)
-        if (mounted) {
-          setState(() {
-            _isGenerating = false;
-            _isLoading = false;
-          });
-          _showCenterToast(l10n.error_msg_send_failed, isError: true);
-        }
+        debugPrint('⚠️ 重新生成 HTTP 錯誤碼: ${response.statusCode}');
+        _handleGenerationError(l10n.error_msg_send_failed);
       }
     } catch (e) {
-      debugPrint('重新生成發生錯誤: $e');
+      // 🔍 把真正的兇手印在除錯台上！
+      debugPrint('❌ 重新生成在前端發生嚴重錯誤: $e');
       if (mounted) {
         setState(() {
           _isGenerating = false;
           _isLoading = false;
         });
-// 如果是錯誤或警示，記得把 isError 設為 true，這樣就會帶個紅色驚嘆號！
-        _showCenterToast('重新生成失敗，請稍後再試 😢', isError: true);      }
+        // 暫時把錯誤訊息直接顯示出來，方便抓蟲 (上線後可改回友善提示)
+        _showCenterToast('發生錯誤: $e', isError: true);
+      }
     } finally {
       _httpClient?.close();
       _httpClient = null;
+    }
+  }
+
+// 💡 幫忙簡化 UI 狀態復原的小幫手
+  void _handleGenerationError(String errorMessage) {
+    if (mounted) {
+      setState(() {
+        _isGenerating = false;
+        _isLoading = false;
+      });
+      _showCenterToast(errorMessage, isError: true);
     }
   }
 
