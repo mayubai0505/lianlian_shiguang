@@ -1862,7 +1862,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                        }
                    });
                           // 🧠 根據模式壓縮聊天紀錄，確保話題連貫性 (1 輪 = User + AI 共 2 條)
-                          // ==========================================
                           const HISTORY_LIMIT =
                               chatMode === "immersive" ? 14 : // 保留最近 7 輪
                               chatMode === "story"     ? 10 : // 保留最近 5 輪
@@ -2111,7 +2110,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                            // 🔄 總裁的惡鬼催稿迴圈：防爆 + 防亂碼版
                                                                            // ==========================================
                                                                            while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
-                                                                               // 🚄 1. 預設走 OpenRouter 軌道 (給 Gemini 或其他模型用)
                                                                                // 🚄 1. 預設走 OpenRouter 中轉站
                                                                                        let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
                                                                                        let apiKey = openRouterApiKey.value();
@@ -2226,13 +2224,27 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                    const isRefused = triggeredKeyword || rawContent.trim() === "";
 
                                                                                   if (isRefused) {
-                                                                                       console.warn(`🛑 [防禦系統] 偵測到 AI 審查擋刀！(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"}) 攔截寫入與扣款！`);
-                                                                                       // 直接中斷，把 400 錯誤丟回給 Flutter，讓 Flutter 顯示溫柔提示
-                                                                                       return res.status(400).json({
-                                                                                           error: "CENSORED",
-                                                                                           message: "回覆失敗,請重新傳送訊息,本則訊息不扣點數"
-                                                                                       });
-                                                                                   }
+                                                                                              console.warn(`🛑 [防禦系統] 偵測到 AI 審查擋刀或發呆！(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"})`);
+
+                                                                                              // 🌟 核心修改：把直接 return 改成「判斷是否重試」
+                                                                                              // 假設我們允許遇到錯誤時，最多額外重試 2 次 (可以依你的需求調整)
+                                                                                              if (loopCount < MAX_LOOPS + 2) {
+                                                                                                  console.log(`🔄 啟動自動重試機制... (準備進行下一次呼叫)`);
+                                                                                                  loopCount++; // ⚠️ 極度重要：一定要增加次數，不然會變成無限死迴圈！
+
+                                                                                                  // 建議稍微停頓 1.5 秒再重試，避免瞬間狂打 API 被當成惡意攻擊
+                                                                                                  // await new Promise(resolve => setTimeout(resolve, 1500));
+
+                                                                                                  continue; // 🚀 關鍵：跳過下面的程式碼，直接回到 while 迴圈的最上面重新發射！
+                                                                                              }
+
+                                                                                              // 🚨 如果已經重試到極限了，才真正放棄並把 400 錯誤丟回給 Flutter
+                                                                                              console.warn("🛑 重試次數已達上限，徹底放棄，攔截寫入與扣款！");
+                                                                                              return res.status(400).json({
+                                                                                                  error: "CENSORED",
+                                                                                                  message: "他目前在忙，請稍後再試一次喔！" // 換成對玩家友善的提示
+                                                                                              });
+                                                                                          }
 
                                                                                // ==========================================
                                                                                // 🛡️ 三段式 JSON 淨化器

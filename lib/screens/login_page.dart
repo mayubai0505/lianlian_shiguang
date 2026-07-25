@@ -250,8 +250,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final bool showFacebookLogin = true;
-    final bool showGoogleLogin = false;
+    final bool showFacebookLogin = false;
+    final bool showGoogleLogin = true;
     // ✅ Apple 登入只在 iOS / iPadOS 顯示
     final bool showAppleLogin =
         kIsWeb ||
