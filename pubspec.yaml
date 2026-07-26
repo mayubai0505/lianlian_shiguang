@@ -93,6 +93,14 @@ flutter:
     - assets/audio/pickup.mp3
     - assets/images/splash_bg_only.png
     - assets/images/butterfly_transparent.png
+    - assets/images/tree_seed.png
+    - assets/images/tree_sprout.png
+    - assets/images/tree_sapling.png
+    - assets/images/tree_small.png
+    - assets/images/tree_large.png
+    - assets/images/tree_blooming.png
+    - assets/images/tree_full_flower.png
+    - assets/images/tree_star.png
   fonts:
     - family: NotoSansTC
       fonts:

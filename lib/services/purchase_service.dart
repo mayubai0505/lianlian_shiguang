@@ -208,6 +208,40 @@ class PurchaseService extends ChangeNotifier {
     return productPointsMap[productId] ?? 0;
   }
 
+  // ✨ 新增：VIP 課條專屬的台幣定價對照表
+  int _getPriceFromProductId(String productId) {
+    // 1. 如果是月卡，直接回傳 250 元
+    if (productId.contains('monthly_card')) {
+      return 250;
+    }
+
+    // 2. 常駐產品包的對應價格 (對齊總裁的財政緊縮版定價)
+    const Map<String, int> productPriceMap = {
+      'com.lianlian.points_90': 30,      // 初見禮包
+      'com.lianlian.points_215': 70,     // 曖昧禮包
+      'com.lianlian.points_370': 120,    // 心動禮包
+      'com.lianlian.points_590': 190,    // 熱戀禮包
+      'com.lianlian.points_780': 250,    // 知己禮包
+      'com.lianlian.points_1030': 330,   // 守候禮包
+      'com.lianlian.points_1420': 450,   // 信賴禮包
+      'com.lianlian.points_1650': 520,   // 我愛你禮包
+      'com.lianlian.points_2200': 690,   // 蜜月禮包
+      'com.lianlian.points_2300': 720,   // 承諾禮包
+      'com.lianlian.points_2350': 720,   // 承諾禮包 (備用ID)
+      'com.lianlian.points_2400': 750,   // 相伴禮包
+      'com.lianlian.points_2680': 830,   // 深愛禮包
+      'com.lianlian.points_3200': 990,   // 長久禮包
+      'com.lianlian.points_3400': 1050,  // 唯一禮包
+      'com.lianlian.points_3450': 1050,  // 唯一禮包 (備用ID)
+      'com.lianlian.points_4200': 1290,  // 摯愛禮包
+      'com.lianlian.points_4300': 1314,  // 一生一世包
+      'com.lianlian.points_6400': 1930,  // 誓約禮包
+      'com.lianlian.points_10000': 2990, // 永恆戀人包
+    };
+
+    return productPriceMap[productId] ?? 0;
+  }
+
   // ✨ 修改 3：完美對接新 ID 的首購雙倍發貨系統
   Future<void> _deliverPurchase(PurchaseDetails purchaseDetails) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -280,6 +314,11 @@ class PurchaseService extends ChangeNotifier {
       }
       if (pointsToAdd > 0) {
         updateData['flowerPoints'] = FieldValue.increment(pointsToAdd);
+
+        int priceSpent = _getPriceFromProductId(productId);
+        if (priceSpent > 0) {
+          updateData['totalSpent'] = FieldValue.increment(priceSpent);
+        }
 
         if (isFirstTime) {
           updateData['purchaseHistory'] = FieldValue.arrayUnion([productId]);

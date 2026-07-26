@@ -67,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isStoryChatClaimed = false;
   bool _isLikeClaimed = false;
   bool _isClaimingCheckIn = false;
-  bool _isBirthdayToday = false; // ✨ 新增一個狀態變數來記錄今天是否生日
+  bool _isBirthdayToday = false; // ✨ 新進一個狀態變數來記錄今天是否生日
   bool _hasActiveMonthlyCard = false;   // 是否持有有效月卡
   bool _isMonthlyRewardClaimed = false; // 今日月卡任務是否已領取
 
@@ -1055,9 +1055,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final bool isNewbie = hoursSinceCreation <= 72;
 
     // 測試期間強行現形：如需上線，解開下方註解即可
-     if ((invitedBy != null && isClaimed) || (invitedBy == null && !isNewbie)) {
-       return const SizedBox.shrink();
-     }
+    if ((invitedBy != null && isClaimed) || (invitedBy == null && !isNewbie)) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 4), // 左右再往內縮一點
@@ -1190,7 +1190,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             TextButton(
                               onPressed: () => Navigator.of(context).pop(), // 關閉彈窗
                               child: Text(
-                               l10n.common_got_it,
+                                l10n.common_got_it,
                                 style: TextStyle(
                                   color: Colors.pinkAccent,
                                   fontWeight: FontWeight.bold,
@@ -1220,16 +1220,255 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // 🎒 玩家專屬背包與獎勵收藏夾
+  void _showBackpackDialog(BuildContext context, String userId, int totalSpent, bool hasSubmittedAddress) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Row(
+            children: [
+              Icon(Icons.backpack_outlined, color: Colors.pink),
+              SizedBox(width: 8),
+              Text('我的專屬背包與特權'),
+            ],
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 💎 累積金額狀態列
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('目前累積浪漫羈絆', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('NT\$ $totalSpent', style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor, fontSize: 16)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('🎁 實體禮盒解鎖狀態：', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  const SizedBox(height: 8),
+
+                  // 👑 10,000 元實體禮盒判定
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: totalSpent >= 10000 ? primaryColor : Colors.grey.withValues(alpha: 0.3)),
+                      borderRadius: BorderRadius.circular(12),
+                      color: totalSpent >= 10000 ? primaryColor.withValues(alpha: 0.05) : Colors.grey.withValues(alpha: 0.05),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              totalSpent >= 10000 ? Icons.card_giftcard : Icons.lock_outline,
+                              color: totalSpent >= 10000 ? primaryColor : Colors.grey,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '【頂級摯愛】實體 VIP 專屬禮盒',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: totalSpent >= 10000 ? primaryColor : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          '含：專屬手寫信 + 角色代表娃 + 官方感謝信',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 10),
+
+                        // 狀態按鈕邏輯
+                        if (totalSpent >= 10000) ...[
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                foregroundColor: Colors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context); // 關閉背包
+                                _showPhysicalGiftDialog(context, userId); // 打開地址填寫表單
+                              },
+                              child: Text(hasSubmittedAddress ? '修改收件地址資訊' : '🎉 已解鎖！點此填寫收件資訊'),
+                            ),
+                          ),
+                          if (hasSubmittedAddress)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4.0),
+                              child: Text('✅ 您已成功登記收件地址，我們會盡快為您準備！', style: TextStyle(fontSize: 11, color: Colors.green)),
+                            ),
+                        ] else ...[
+                          Text(
+                            '還差 NT\$ ${10000 - totalSpent} 即可解鎖實體大賞！',
+                            style: const TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('💡 提示：其他數位外觀與頭像框可在商店或個人設定中查看與裝備。', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('關閉'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 👑 彈出實體禮盒收件資訊填寫表單
+  // 👑 彈出實體禮盒收件資訊填寫表單 (角色改為手動輸入版)
+  void _showPhysicalGiftDialog(BuildContext context, String userId) {
+    final nameController = TextEditingController();
+    final phoneController = TextEditingController();
+    final addressController = TextEditingController();
+    final characterController = TextEditingController(); // ✨ 改用文字控制器來手動輸入角色名
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: const Row(
+                children: [
+                  Icon(Icons.card_giftcard, color: Colors.pink),
+                  SizedBox(width: 8),
+                  Text('【頂級摯愛】實體禮盒解鎖'),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '感謝總裁級玩家對《戀戀拾光》的極致守候！\n請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：',
+                      style: TextStyle(fontSize: 13, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: '收件人真實姓名',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: '聯絡電話',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: addressController,
+                      maxLines: 2,
+                      decoration: const InputDecoration(
+                        labelText: '完整收件地址（含郵遞區號）',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: characterController,
+                      decoration: const InputDecoration(
+                        labelText: '想要收到的角色代表娃名字',
+                        hintText: '例如：欲輸入的角色名稱',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('稍後填寫', style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    // 防呆檢查：包含角色名稱也不能空白
+                    if (nameController.text.isEmpty ||
+                        phoneController.text.isEmpty ||
+                        addressController.text.isEmpty ||
+                        characterController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('請完整填寫收件資訊與心儀的角色名稱喔！')),
+                      );
+                      return;
+                    }
+
+                    await FirebaseFirestore.instance.collection('shipping_addresses').doc(userId).set({
+                      'userId': userId,
+                      'name': nameController.text.trim(),
+                      'phone': phoneController.text.trim(),
+                      'address': addressController.text.trim(),
+                      'favoriteCharacter': characterController.text.trim(), // 儲存手動輸入的角色
+                      'status': 'pending_shipment',
+                      'createdAt': FieldValue.serverTimestamp(),
+                    }, SetOptions(merge: true));
+
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('🎉 收件資訊已成功送出！請期待我們的實體驚喜！')),
+                    );
+                  },
+                  child: const Text('確認送出'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // ✨  取得 themeNotifier 來設定背景
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final currentUser = FirebaseAuth.instance.currentUser;
     final String adminUid = 'B71k2kyooubYsOtIO1nkiBwyBXt2';
     final bool isAdmin = (currentUser?.uid == adminUid);
     final theme = Theme.of(context);
-    // ✨ 移除舊的 Scaffold，最外層改為 Container + NestedScrollView
+
     return Container(
       decoration: themeNotifier.currentBackground,
       child: _isLoading
@@ -1241,7 +1480,6 @@ class _ProfilePageState extends State<ProfilePage> {
             return [
               SliverAppBar(
                 title: Text(l10n.title_personal_homepage),
-                // ✨  使用您最喜歡的滾動設定
                 pinned: false,
                 floating: false,
                 snap: false,
@@ -1249,16 +1487,51 @@ class _ProfilePageState extends State<ProfilePage> {
                 Theme.of(context).scaffoldBackgroundColor,
                 forceElevated: innerBoxIsScrolled,
                 actions: [
+                  // 🎁 新增：右上角背包與實體禮盒入口按鈕
                   IconButton(
-                    tooltip: l10n.title_time_letters, // 給它一個浪漫的提示名稱
+                    tooltip: '我的背包',
+                    icon: const Icon(Icons.card_giftcard),
+                    onPressed: () async {
+                      if (currentUser == null) return;
+
+                      // 顯示讀取中提示
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(child: CircularProgressIndicator()),
+                      );
+
+                      try {
+                        // 1. 去 Firebase 抓取當前玩家的 totalSpent
+                        final userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
+                        int totalSpent = userDoc.data()?['totalSpent'] ?? 0;
+
+                        // 2. 檢查是否已經填寫過實體地址
+                        final addressDoc = await FirebaseFirestore.instance.collection('shipping_addresses').doc(currentUser.uid).get();
+                        bool hasSubmittedAddress = addressDoc.exists;
+
+                        // 關閉 Loading
+                        if (mounted) Navigator.pop(context);
+
+                        // 3. 彈出真正的「背包收藏與 VIP 獎勵總覽」
+                        if (mounted) {
+                          _showBackpackDialog(context, currentUser.uid, totalSpent, hasSubmittedAddress);
+                        }
+                      } catch (e) {
+                        if (mounted) Navigator.pop(context);
+                        debugPrint('讀取背包失敗: $e');
+                      }
+                    },
+                  ),
+                  IconButton(
+                    tooltip: l10n.title_time_letters,
                     icon: Image.asset(
-                      'assets/images/scroll_icon.png', // 👈 記得換成妳實際儲存的檔名
-                      width: 26,  // 控制圖示大小，通常 AppBar 裡的圖示大約是 24~28
+                      'assets/images/scroll_icon.png',
+                      width: 26,
                       height: 26,
-                      // 💡 魔法小技巧：因為妳的圖是純黑線條，如果想讓它變成主題色(例如深紫)，可以加這行：
                       color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white          // 🌙 深色主題時：圖示變白色
-                          : const Color(0xFF6750A4), // ☀️ 淺色主題時：用原本的主題色
+                          ? Colors.white
+                          : const Color(0xFF6750A4),
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -1271,8 +1544,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: Icon(
                       Icons.settings_outlined,
                       color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white70 // 深色主題時用淺灰白
-                          : Colors.black54, // 淺色主題時用原本的深灰
+                          ? Colors.white70
+                          : Colors.black54,
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -1288,24 +1561,23 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ];
           },
-          // ✨ 將您原本的 Sliver 內容放到一個 ListView 裡作為 body
           body: ListView(
             padding: const EdgeInsets.all(16.0),
             children: [
               _buildProfileHeader(),
-              const SizedBox(height: 16), // 稍微調整間距
+              const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: _buildCheckInButton()), // ✨ 這個函式也有小小的修改
+                  Expanded(child: _buildCheckInButton()),
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton.icon(
                       icon: const Icon(Icons.auto_stories),
                       label: Text(l10n.tab_heartbeat_diary),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withValues(alpha:0.7), // 乾淨的半透明白底
-                        foregroundColor: theme.colorScheme.primary,     // 文字與圖示自動抓取主題色 (粉紅/粉藍等)
-                        elevation: 0, // 拿掉陰影，讓畫面更輕盈透亮
+                        backgroundColor: Colors.white.withValues(alpha:0.7),
+                        foregroundColor: theme.colorScheme.primary,
+                        elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       ),
                       onPressed: _showHeartbeatDiary,
@@ -1314,8 +1586,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               const SizedBox(height: 24),
-
-              // 🏆 簡化型即時監控區塊：現在只負責顯示輸入框
               StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance.collection('users').doc(currentUser?.uid).snapshots(),
                 builder: (context, snapshot) {
@@ -1324,8 +1594,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   }
 
                   final userData = snapshot.data!.data() as Map<String, dynamic>;
-
-                  // 🌟 直接回傳極致瘦身後的輸入框，中間的大箱子徹底消失！
                   return _buildReferralSection(userData);
                 },
               ),
@@ -1337,9 +1605,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 const Divider(thickness: 2, color: Colors.pinkAccent),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
-    child: Text('👑 主理人專屬區域', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
-    ),
-                // 進入後台的按鈕
+                  child: Text('👑 主理人專屬區域', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
+                ),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.admin_panel_settings),
                   label: const Text('進入拾光管理後台'),
@@ -1355,7 +1622,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   },
                 ),
-                const SizedBox(height: 40), // 底部留白
+                const SizedBox(height: 40),
               ],
             ],
           ),
@@ -1366,19 +1633,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildCheckInButton() {
     final l10n = AppLocalizations.of(context)!;
-    // 🌟 總裁補丁：把主題雷達加進來
     final theme = Theme.of(context);
 
     if (_hasCheckedInToday) {
       return ElevatedButton.icon(
         icon: const Icon(Icons.check_circle),
         label: Text(l10n.status_signed_in_today),
-        onPressed: null, // 已經簽到就直接設為 null 禁用
+        onPressed: null,
         style: ElevatedButton.styleFrom(
-          // ✨ 禁用狀態：給它 50% 的乾淨白底配上溫柔的灰色字，絕對不髒！
           disabledBackgroundColor: Colors.white.withValues(alpha: 0.5),
           disabledForegroundColor: Colors.grey,
-          elevation: 0, // 拿掉陰影更輕盈
+          elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
       );
@@ -1389,10 +1654,9 @@ class _ProfilePageState extends State<ProfilePage> {
             : const Icon(Icons.calendar_today),
         label: Text(_isClaimingCheckIn ? l10n.status_signing_in : l10n.status_daily_sign_in),
         onPressed: _isClaimingCheckIn ? null : _performCheckIn,
-        // ✨ 可用狀態：完美複製「心動日記」的變色龍裝扮！
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white.withValues(alpha: 0.7), // 乾淨的半透明白底
-          foregroundColor: theme.colorScheme.primary,           // 字體自動抓主題色
+          backgroundColor: Colors.white.withValues(alpha: 0.7),
+          foregroundColor: theme.colorScheme.primary,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         ),
@@ -1400,9 +1664,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-
   Widget _buildProfileHeader() {
-    // ✨ 首先，把所有變色龍變數準備好
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
@@ -1412,13 +1674,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Row(
       children: [
-        // 1. 頭像區 (含生日光環)
         GestureDetector(
           onTap: _editProfile,
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              // ✅ 只有生日當天，頭像才會散發浪漫主題色的光芒
               boxShadow: _isBirthdayToday ? [
                 BoxShadow(
                     color: primaryColor.withValues(alpha:0.5),
@@ -1430,10 +1690,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: CircleAvatar(
               radius: 50,
               backgroundColor: primaryColor.withValues(alpha:0.1),
-              // ✅ 使用我們之前的萬能頭像讀取器
               backgroundImage: getAvatarImageProvider(_avatarPath),
-
-              // 👇 ✨ 總裁，把防爆網加在這裡！ 👇
               onBackgroundImageError: (exception, stackTrace) {
                 debugPrint('⚠️ 個人檔案大頭貼載入失敗，已自動顯示預設底色');
               },
@@ -1441,13 +1698,10 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         const SizedBox(width: 20),
-
-        // 2. 文字資訊區
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 暱稱 + 生日蛋糕
               Row(
                 children: [
                   Flexible(
@@ -1468,11 +1722,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                 ],
               ),
-
-              // Player ID 區
               if (_playerID.isNotEmpty) ...[
                 const SizedBox(height: 4),
-
                 StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).snapshots(),
                   builder: (context, snapshot) {
@@ -1485,12 +1736,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       characterName = userData['currentCharacter'] ?? l10n.profile_fallback_character;
                     }
 
-                    // 🌟 核心改動：改用 Column 讓兩組資料上下排好，徹底解放橫向寬度限制！
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // 📑 第一列：ID 顯示與複製小夾子
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -1506,11 +1755,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             GestureDetector(
                               onTap: () {
                                 Clipboard.setData(ClipboardData(text: displayID));
-                                // ✨ 總裁級：行雲流水的複製回饋，一閃而過的安心感
                                 ToastUtils.showCenterToast(
-                                  context, // 💡 如果 onTap 變成 async，記得前面要加 if (context.mounted) 喔！
+                                  context,
                                   l10n.toast_id_copied,
-                                  customIcon: Icons.copy_rounded, // 💡 用「複製」的專屬圖示，直覺度滿分！
+                                  customIcon: Icons.copy_rounded,
                                 );
                               },
                               child: Tooltip(
@@ -1520,26 +1768,20 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ],
                         ),
-
-                        const SizedBox(height: 6), // 🌟 幫兩列中間留一點呼吸的微小間距
-
-                        // 🚀 第二列：總裁欽定「灰色文字導引 + 分享小核心」
+                        const SizedBox(height: 6),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            // 灰色導引文字
                             Text(
-                              l10n.profile_send_invite_btn, // 「發送星之邀約給好友」
+                              l10n.profile_send_invite_btn,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey.shade500,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
-                            const SizedBox(width: 4), // 稍微縮小間距
-
-                            // 🌟 新增的 (?) 規則說明小按鈕
+                            const SizedBox(width: 4),
                             GestureDetector(
                               onTap: () {
                                 showDialog(
@@ -1559,8 +1801,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           ),
                                         ],
                                       ),
-                                      content:  Text(
-                                       l10n.profile_referral_rule_receiver,
+                                      content: Text(
+                                        l10n.profile_referral_rule_receiver,
                                         style: TextStyle(fontSize: 14, height: 1.5),
                                       ),
                                       actions: [
@@ -1581,14 +1823,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               },
                               child: Icon(
                                 Icons.help_outline_rounded,
-                                size: 13, // 配合你旁邊分享按鈕的 13 號大小
+                                size: 13,
                                 color: Colors.grey.shade400,
                               ),
                             ),
-
-                            const SizedBox(width: 8), // 與分享按鈕的間距
-
-                            // 原本的 2026 最新規格分享按鈕
+                            const SizedBox(width: 8),
                             GestureDetector(
                               onTap: () async {
                                 final shareText = l10n.profile_share_message(characterName, displayID);
@@ -1609,38 +1848,31 @@ class _ProfilePageState extends State<ProfilePage> {
                   },
                 ),
               ],
-
               const SizedBox(height: 8),
-
-// 3. 花花點數 + 商城入口
-              InkWell( // 👈 1. 用 InkWell 包裹，讓整個膠囊都具備點擊效果
+              InkWell(
                 onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const StorePage())
                 ),
-                borderRadius: BorderRadius.circular(20), // 確保點擊的水波紋也是圓角的
+                borderRadius: BorderRadius.circular(20),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // 稍微增加垂直 padding 更好點擊
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    // 🌟 總裁補丁：讓花花點數標籤永遠保持乾淨透亮！
                     color: isDarkMode
-                        ? Colors.grey[800]!.withValues(alpha: 0.6)  // 深夜模式：保持低調的半透灰
-                        : Colors.white.withValues(alpha: 0.85),     // ✨ 淺色/漸層模式：給它 85% 的純白！
-
+                        ? Colors.grey[800]!.withValues(alpha: 0.6)
+                        : Colors.white.withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: primaryColor.withValues(alpha:0.3)), // 稍微加深一點邊框
+                    border: Border.all(color: primaryColor.withValues(alpha:0.3)),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min, // 👈 關鍵：膠囊會隨內容寬度自動伸縮
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Image.asset(
                           isDarkMode ? 'assets/images/flower_gift_dark.png' : 'assets/images/flower_gift.png',
                           height: 20
                       ),
                       const SizedBox(width: 8),
-                      // 👇 1. 這裡拿掉 Flexible，不要限制它的生存空間
                       Text(
-                        // 🌟 傳進去之前先檢查，如果是負數就傳 0 給它格式化
                         _formatPoints(_flowerPoints < 0 ? 0 : _flowerPoints),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -1658,10 +1890,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-    Text(
-      l10n.hint_click_avatar_to_edit,
-    style: TextStyle(fontSize: 12, color: subTextColor.withValues(alpha:0.8)),
-    ),
+              Text(
+                l10n.hint_click_avatar_to_edit,
+                style: TextStyle(fontSize: 12, color: subTextColor.withValues(alpha:0.8)),
+              ),
             ],
           ),
         ),
@@ -1669,11 +1901,9 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // ✨ 把函式名稱改成跟目的地一致，看起來更清爽專業！
   void _showAllFriends() {
     Navigator.push(
       context,
-      // ✨ 把它改回原本的「所有好友列表」頁面！
       MaterialPageRoute(builder: (context) => const AllFriendsPage()),
     );
   }
@@ -1682,16 +1912,13 @@ class _ProfilePageState extends State<ProfilePage> {
     if (_userId == null) return;
     final prefs = await SharedPreferences.getInstance();
 
-    // 先看雲端有沒有 ID 了
     final userDoc = await _db.collection('users').doc(_userId).get();
     String? cloudID = userDoc.data()?['playerID'];
 
     if (cloudID != null && cloudID.isNotEmpty) {
-      // 雲端有 ID，同步到本地
       setState(() => _playerID = cloudID);
       await prefs.setString('playerID', cloudID);
     } else {
-      // 雲端沒 ID，這才生成一個新的
       String newID = _generateRandomID(8);
       try {
         await _db.collection('users').doc(_userId).update({
@@ -1706,16 +1933,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   String _formatPoints(int points) {
-    // 🌟 保險絲：如果點數小於 0，強制當作 0 處理，防止 UI 噴灰屏
     final safePoints = points < 0 ? 0 : points;
-
-    // 🌟 千分位魔法：記得檔案最上方要有 import 'package:intl/intl.dart';
     return NumberFormat('#,##0').format(safePoints);
   }
 
   String _generateRandomID(int length) {
-    const chars =
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random();
     return String.fromCharCodes(Iterable.generate(
         length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
@@ -1724,7 +1947,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _fetchAllCharacterData() async {
     if (_userId == null) return;
     try {
-      // 1. 同時抓取私密與公開角色的原始 Snapshot
       final responses = await Future.wait([
         _db.collection('artifacts').doc(_appId).collection('users').doc(_userId).collection('private_characters').orderBy('createdAt', descending: true).get(),
         _db.collection('artifacts').doc(_appId).collection('public_characters').orderBy('createdAt', descending: true).get(),
@@ -1732,8 +1954,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (!mounted) return;
 
-      // 2. ✨ 關鍵變身：將 Snapshot 轉為已換好圖片網址的 Character 物件
-      // 使用 Future.wait 確保所有非同步轉換同時進行
       final myPrivateCharacters = await Future.wait(
           responses[0].docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
       );
@@ -1742,51 +1962,35 @@ class _ProfilePageState extends State<ProfilePage> {
           responses[1].docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
       );
 
-      // 3. 過濾出我創建的公開角色
       final myPublicCharacters = allPublicCharacters
           .where((char) => char.createdBy == _userId)
           .toList();
 
-      // 4. 合併並排序我的角色列表
       _myCharacters = [...myPrivateCharacters, ...myPublicCharacters];
       _myCharacters.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-      // 5. 🌟 關鍵修改：先去抓取「我真正加過好友」的 ID 列表
       final friendsSnapshot = await _db.collection('users').doc(_userId).collection('friends').get();
       final Set<String> myFriendIds = friendsSnapshot.docs.map((doc) => doc.id).toSet();
 
       final allInteractableChars = <String, Character>{};
 
-// 1. 先加入自己的私密角色
       for (var char in myPrivateCharacters) {
         allInteractableChars[char.id] = char;
       }
 
-// 2. ✅ 加入自己創建的公開角色
-// 不需要按「加好友」，自己創的角色也應該出現在我的好友
       for (var char in myPublicCharacters) {
         allInteractableChars[char.id] = char;
       }
 
-// 3. 加入「真的有點過 + 好友」的公開角色
       for (var char in allPublicCharacters) {
         if (myFriendIds.contains(char.id)) {
           allInteractableChars.putIfAbsent(char.id, () => char);
         }
       }
 
-      // 🌟 只加入「真的有點過+好友」的官方角色
-      for (var char in allPublicCharacters) {
-        if (myFriendIds.contains(char.id)) {
-          allInteractableChars.putIfAbsent(char.id, () => char);
-        }
-      }
-
-      // 6. 更新好友列表
       _friendsList = allInteractableChars.values.toList();
       _friendsList.sort((a, b) => b.playCount.compareTo(a.playCount));
 
-      // 7. 最後一刻才更新 UI
       setState(() {});
 
     } catch (e) {
@@ -1798,20 +2002,12 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const EditProfilePage()),
-    ).then((didUpdate) async { // ✨ 1. 這裡加上 async
+    ).then((didUpdate) async {
       if (didUpdate == true) {
-
-        // ✨ 2. 加上 await！強迫程式在這裡「等」，直到資料確實從暫存拿出來
         await _loadProfileFromCache();
-
-        // ✨ 3. 偷偷印出來檢查，看看有沒有順利抓到水煮蛋的網址或路徑
-        print("🕵️‍♀️ 檢查：更新後的頭像路徑是 = $_avatarPath");
-
-        // ✨ 4. 資料準備萬全了，大喊 setState 叫畫面重畫！
         if (mounted) {
           setState(() {});
         }
-
       }
     });
   }
@@ -1879,65 +2075,59 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 🌟 上半部：標題與原本的創建按鈕完美並存
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _buildSectionTitle(l10n.my_created_characters),
-            _buildCreateCharacterButton(context), // 原本的按鈕安全回歸！
+            _buildCreateCharacterButton(context),
           ],
         ),
         const SizedBox(height: 10),
-
-        // 🌟 中間部：顯示角色或是空狀態
         _myCharacters.isEmpty
             ? Center(
             child: Padding(
                 padding:  EdgeInsets.symmetric(vertical: 20.0),
                 child: Text(l10n.empty_no_characters_created,
                     style: TextStyle(color: theme.colorScheme.onSurface
-                            .withValues(alpha:0.7)))))
-             : SizedBox(
+                        .withValues(alpha:0.7)))))
+            : SizedBox(
           height: 230,
           child: GridView.builder(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // 上下兩排
+              crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               childAspectRatio: 1.25,
             ),
-            itemCount: _myCharacters.length, // 不再限制 6 個
+            itemCount: _myCharacters.length,
             itemBuilder: (context, index) {
               final character = _myCharacters[index];
               return _buildCharacterGridItem(character, isMyCharacter: true);
             },
           ),
         ),
-
-        const SizedBox(height: 16), // 給上方列表一點呼吸空間
-
-        // ✨ 下半部：總裁專屬的超大秘密工作室入口 ✨
+        const SizedBox(height: 16),
         SizedBox(
-          width: double.infinity, // 讓按鈕填滿左右寬度，超級大氣
+          width: double.infinity,
           child: ElevatedButton.icon(
             icon: const Icon(Icons.brush, size: 22),
             label: Text(
                 l10n.enter_secret_studio,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16, // 字體稍微加大，凸顯重點
-                  letterSpacing: 1.2, // 加一點字距看起來更有質感
+                  fontSize: 16,
+                  letterSpacing: 1.2,
                 )
             ),
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16), // 增加上下厚度，讓按鈕更好點擊
-              backgroundColor: theme.colorScheme.primaryContainer, // 使用主題容器底色
-              foregroundColor: theme.colorScheme.onPrimaryContainer, // 使用對應的文字顏色
-              elevation: 0, // 扁平化一點看起來比較現代
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              backgroundColor: theme.colorScheme.primaryContainer,
+              foregroundColor: theme.colorScheme.onPrimaryContainer,
+              elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16), // 圓角跟上面的卡片呼應
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
             onPressed: () async {
@@ -1951,10 +2141,9 @@ class _ProfilePageState extends State<ProfilePage> {
               if (!mounted) return;
 
               if (result is Map && result['changed'] == true) {
-                await _refreshData(); // 如果妳沒有 _refreshData，就換成 _fetchMyCharacters()
+                await _refreshData();
               } else {
-                // 保險：就算工作室沒有回傳 changed，也回來刷新一次
-                await _refreshData(); // 如果紅線，換成 _fetchMyCharacters()
+                await _refreshData();
               }
             },
           ),
@@ -2008,10 +2197,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final theme = Theme.of(context);
     return InkWell(
       borderRadius: BorderRadius.circular(12.0),
-
       onTap: () async {
         if (isMyCharacter) {
-          // 🌟 路線 A：從「我創建的角色」點擊，進入編輯頁
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
@@ -2020,8 +2207,6 @@ class _ProfilePageState extends State<ProfilePage> {
           );
           if (!mounted) return;
           if (result is Map) {
-            debugPrint('🔙 CharacterEditPage 回傳 result=$result');
-
             final bool changed = result['changed'] == true;
             final bool deleted = result['deleted'] == true;
             final String? deletedCharacterId = result['characterId']?.toString();
@@ -2029,11 +2214,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
             if (deleted) {
               final idToRemove = deletedCharacterId ?? character.id;
-
               setState(() {
                 _myCharacters.removeWhere((c) => c.id == idToRemove);
               });
-
               if (message != null && message.isNotEmpty) {
                 ToastUtils.showCenterToast(
                   context,
@@ -2041,17 +2224,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   customIcon: Icons.person_remove_rounded,
                 );
               }
-
-              // 刪除已經即時從畫面移除，不要再立刻 refresh 卡住畫面
               return;
             }
 
             if (changed) {
               await _refreshData();
-
               if (!mounted) return;
               setState(() {});
-
               if (message != null && message.isNotEmpty) {
                 ToastUtils.showCenterToast(
                   context,
@@ -2063,11 +2242,9 @@ class _ProfilePageState extends State<ProfilePage> {
           }
           return;
         } else {
-          // 🌟 路線 B：從「我的好友」點擊，啟動親權鑑定與主頁分流系統！
           final currentUser = FirebaseAuth.instance.currentUser;
 
           if (character.isPublic) {
-            // 🌍 1. 公開角色：直接去角色的個人首頁
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -2077,13 +2254,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ).then((_) {
-              // 🌟 關鍵補丁：只要從好友頁面退回來，立刻重新抓取最新好友清單並重畫畫面！
               _refreshData();
             });
           } else {
-            // 🔒 2. 私人角色：進行親權鑑定
             if (currentUser != null && character.createdBy == currentUser.uid) {
-              // 👩‍👦 是自己創建的私人角色
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -2092,13 +2266,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               );
             } else {
-              // 🚫 別人的私人角色，不准看
               _showSecretDialog(character);
             }
           }
         }
       },
-
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -2120,7 +2292,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-  // 🔒 總裁還原版：機密檔案彈窗
+
   void _showSecretDialog(Character character) {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
@@ -2132,18 +2304,15 @@ class _ProfilePageState extends State<ProfilePage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 標題：機密檔案
-               Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.lock, color: Colors.amber), // 金色鎖頭
+                  Icon(Icons.lock, color: Colors.amber),
                   SizedBox(width: 8),
                   Text(l10n.chat_secret_file_title, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 ],
               ),
               const SizedBox(height: 24),
-
-              // 角色頭像 (如果有妳自己的 getAvatarImageProvider 也可以換掉這行)
               CircleAvatar(
                 radius: 45,
                 backgroundColor: Colors.grey[200],
@@ -2155,15 +2324,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     : null,
               ),
               const SizedBox(height: 16),
-
-              // 角色名稱
               Text(
                 character.name,
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey),
               ),
               const SizedBox(height: 16),
-
-              // 拒絕訪問說明
               Text(
                 l10n.chat_secret_file_desc,
                 textAlign: TextAlign.center,
