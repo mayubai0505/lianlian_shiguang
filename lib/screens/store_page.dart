@@ -6,38 +6,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/purchase_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
-import '../services/paypal_purchase_service.dart';
 
-String _getPayPalProductId(String storeProductId) {
-  if (storeProductId.contains('monthly_card')) {
-    return 'paypal_monthly_card_250';
-  }
-
-  if (storeProductId.contains('points_90') || storeProductId == 'paypal_points_90') {
-    return 'paypal_points_90';
-  }
-
-  if (storeProductId.contains('points_215') || storeProductId == 'paypal_points_215') {
-    return 'paypal_points_215';
-  }
-
-  if (storeProductId.contains('points_590') || storeProductId == 'paypal_points_590') {
-    return 'paypal_points_590';
-  }
-
-  throw Exception('找不到對應的 PayPal 商品：$storeProductId');
-}
+// 🌟 PayPal 相關的 ID 轉換器已被移除
 
 Future<void> _buyStoreProductByPlatform(
     BuildContext context,
     dynamic productWrapper,
     ) async {
-  if (kIsWeb) {
-    final paypalProductId = _getPayPalProductId(productWrapper.productDetails.id);
-    await PayPalPurchaseService().buyWebProduct(paypalProductId);
-    return;
-  }
 
+  // 🌟 Web 版之後若要接上綠界金流，可以把呼叫綠界 API 的邏輯寫在這裡
+  // 目前統一交給 PurchaseService 處理（手機雙平台內購）
   final purchaseService = Provider.of<PurchaseService>(context, listen: false);
   await purchaseService.buyProduct(productWrapper.productDetails);
 }
@@ -284,31 +262,31 @@ class _StorePageState extends State<StorePage> {
     List<dynamic> displayProducts = service.products;
     bool isTestingMode = false;
 
-// Web 版不走 App Store / Google Play 內購，直接顯示 PayPal 商品
+    // 🌟 Web 版已移除 PayPal，改用台幣預設商品供介面渲染
     if (kIsWeb) {
       displayProducts = [
         ProductDetailsWrapper(
           productDetails: MockProductDetails(
-            id: 'paypal_monthly_card_250',
-            price: 'US\$4.99',
+            id: 'com_lianlian_monthly_card_250',
+            price: 'NT\$250',
           ),
         ),
         ProductDetailsWrapper(
           productDetails: MockProductDetails(
-            id: 'paypal_points_90',
-            price: 'US\$0.99',
+            id: 'com_lianlian_points_90',
+            price: 'NT\$30',
           ),
         ),
         ProductDetailsWrapper(
           productDetails: MockProductDetails(
-            id: 'paypal_points_215',
-            price: 'US\$1.99',
+            id: 'com_lianlian_points_215',
+            price: 'NT\$70',
           ),
         ),
         ProductDetailsWrapper(
           productDetails: MockProductDetails(
-            id: 'paypal_points_590',
-            price: 'US\$4.99',
+            id: 'com_lianlian_points_590',
+            price: 'NT\$170',
           ),
         ),
       ];
@@ -812,7 +790,7 @@ void _showMonthlyPassManual(BuildContext context) {
                   ),
                 ),
               ),
-               Row(
+              Row(
                 children: [
                   Icon(Icons.auto_awesome, color: Colors.pinkAccent),
                   SizedBox(width: 8),
