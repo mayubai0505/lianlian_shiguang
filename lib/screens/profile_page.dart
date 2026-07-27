@@ -1344,7 +1344,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // 👑 彈出實體禮盒收件資訊填寫表單
   // 👑 彈出實體禮盒收件資訊填寫表單 (角色改為手動輸入版)
   void _showPhysicalGiftDialog(BuildContext context, String userId) {
     final nameController = TextEditingController();
@@ -1372,7 +1371,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      '感謝總裁級玩家對《戀戀拾光》的極致守候！\n請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：',
+                      '感謝玩家對《戀戀拾光》的極致守候！\n請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：',
                       style: TextStyle(fontSize: 13, color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
@@ -1487,42 +1486,43 @@ class _ProfilePageState extends State<ProfilePage> {
                 Theme.of(context).scaffoldBackgroundColor,
                 forceElevated: innerBoxIsScrolled,
                 actions: [
-                  // 🎁 新增：右上角背包與實體禮盒入口按鈕
-                  IconButton(
-                    tooltip: '我的背包',
-                    icon: const Icon(Icons.card_giftcard),
-                    onPressed: () async {
-                      if (currentUser == null) return;
+                  // 🍎 終極隱藏術 4：如果是送審模式，直接讓這個背包按鈕人間蒸發！
+                  if (!isAppleReviewMode)
+                    IconButton(
+                      tooltip: '我的背包',
+                      icon: const Icon(Icons.card_giftcard),
+                      onPressed: () async {
+                        if (currentUser == null) return;
 
-                      // 顯示讀取中提示
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => const Center(child: CircularProgressIndicator()),
-                      );
+                        // 顯示讀取中提示
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => const Center(child: CircularProgressIndicator()),
+                        );
 
-                      try {
-                        // 1. 去 Firebase 抓取當前玩家的 totalSpent
-                        final userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
-                        int totalSpent = userDoc.data()?['totalSpent'] ?? 0;
+                        try {
+                          // 1. 去 Firebase 抓取當前玩家的 totalSpent
+                          final userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
+                          int totalSpent = userDoc.data()?['totalSpent'] ?? 0;
 
-                        // 2. 檢查是否已經填寫過實體地址
-                        final addressDoc = await FirebaseFirestore.instance.collection('shipping_addresses').doc(currentUser.uid).get();
-                        bool hasSubmittedAddress = addressDoc.exists;
+                          // 2. 檢查是否已經填寫過實體地址
+                          final addressDoc = await FirebaseFirestore.instance.collection('shipping_addresses').doc(currentUser.uid).get();
+                          bool hasSubmittedAddress = addressDoc.exists;
 
-                        // 關閉 Loading
-                        if (mounted) Navigator.pop(context);
+                          // 關閉 Loading
+                          if (mounted) Navigator.pop(context);
 
-                        // 3. 彈出真正的「背包收藏與 VIP 獎勵總覽」
-                        if (mounted) {
-                          _showBackpackDialog(context, currentUser.uid, totalSpent, hasSubmittedAddress);
+                          // 3. 彈出真正的「背包收藏與 VIP 獎勵總覽」
+                          if (mounted) {
+                            _showBackpackDialog(context, currentUser.uid, totalSpent, hasSubmittedAddress);
+                          }
+                        } catch (e) {
+                          if (mounted) Navigator.pop(context);
+                          debugPrint('讀取背包失敗: $e');
                         }
-                      } catch (e) {
-                        if (mounted) Navigator.pop(context);
-                        debugPrint('讀取背包失敗: $e');
-                      }
-                    },
-                  ),
+                      },
+                    ),
                   IconButton(
                     tooltip: l10n.title_time_letters,
                     icon: Image.asset(

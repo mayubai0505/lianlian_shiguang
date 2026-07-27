@@ -7,11 +7,13 @@ import '../services/purchase_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 
+// 🍎 蘋果審查專用總開關：送審前設為 true (會隱藏VIP頁籤)，審核通過上架後改回 false！
+const bool isAppleReviewMode = true;
+
 Future<void> _buyStoreProductByPlatform(
     BuildContext context,
     dynamic productWrapper,
     ) async {
-
   final purchaseService = Provider.of<PurchaseService>(context, listen: false);
   await purchaseService.buyProduct(productWrapper.productDetails);
 }
@@ -33,7 +35,8 @@ class _StorePageState extends State<StorePage> {
     final l10n = AppLocalizations.of(context)!;
 
     return DefaultTabController(
-      length: 3, // ✨ 完美擴充為 3 個分頁
+      // 🚨 終極隱藏術 1：動態決定分頁數量 (送審時只有2頁，平常有3頁)
+      length: isAppleReviewMode ? 2 : 3,
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -119,7 +122,8 @@ class _StorePageState extends State<StorePage> {
               indicatorWeight: 3,
               tabs: [
                 Tab(text: l10n.shop_tab_top_up),
-                const Tab(text: '累計福利'), // ✨ 新增專屬的課條分頁
+                // 🚨 終極隱藏術 2：送審期間，拔掉「累計福利」按鈕
+                if (!isAppleReviewMode) const Tab(text: '累計福利'),
                 Tab(text: l10n.shop_tab_history),
               ],
             ),
@@ -146,10 +150,10 @@ class _StorePageState extends State<StorePage> {
                     },
                   ),
 
-                  // ✨ 第二頁：專屬 VIP 課條分頁
-                  _buildVipTab(),
+                  // 🚨 終極隱藏術 3：送審期間，拔掉「累計福利」的實際畫面
+                  if (!isAppleReviewMode) _buildVipTab(),
 
-                  // 第三頁：收支明細列表
+                  // 第三頁：收支明細列表 (送審模式下會自動變成第二頁)
                   _buildHistoryList(),
                 ],
               ),
@@ -161,11 +165,9 @@ class _StorePageState extends State<StorePage> {
   }
 
   // ==========================================
-  // ✨ 新增區塊：VIP 累計福利 (課條)
+  // ✨ VIP 累計福利 (課條) - 完全保留在此，不用刪除
   // ==========================================
-  // ==========================================
-  // ✨ 新增區塊：VIP 累計福利 (課條 3.0 最終定案版)
-  // ==========================================
+
   Widget _buildVipTab() {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const SizedBox.shrink();

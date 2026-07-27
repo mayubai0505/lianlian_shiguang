@@ -160,7 +160,6 @@ exports.generateVoice = onRequest({
                         method: "POST",
                         headers: {
                             "accept": "audio/mpeg",
-                            "Authorization": `Bearer ${apiKey}`,
                             "xi-api-key": apiKey,
                             "Content-Type": "application/json",
                         },
@@ -179,8 +178,11 @@ exports.generateVoice = onRequest({
                 );
 
         if (!elevenResponse.ok) {
-            return res.status(500).json({ error: "ElevenLabs 失敗", detail: await elevenResponse.text() });
-        }
+                    const errorDetail = await elevenResponse.text();
+                    // 🚨 加上這行，逼它在 GCP 後台大聲說出失敗原因！
+                    console.error("🚨 ElevenLabs 拒絕存取，原因:", errorDetail);
+                    return res.status(500).json({ error: "ElevenLabs 失敗", detail: errorDetail });
+                }
 
         const audioBuffer = Buffer.from(await elevenResponse.arrayBuffer());
         const token = crypto.randomUUID();
