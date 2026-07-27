@@ -7,16 +7,15 @@ import '../services/theme_notifier.dart'; // ✨ 引入主題背景
 import '../services/toast_utils.dart';
 import 'chat_page.dart';
 import 'character_model.dart';
-import 'package:lianlian_shiguang/page/inbox_page.dart';
 import 'dart:async';
 import 'notification_list_page.dart'; // 記得根據妳的資料夾路徑調整
 import 'call_memory_page.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import 'package:lianlian_shiguang/widgets/feature_tip_target.dart';
-import 'package:lianlian_shiguang/widgets/feature_tip_keys.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 //聊天室的名稱更改
 class ChatHomePage extends StatefulWidget {
@@ -34,6 +33,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   bool _isOpeningTopAction = false;
   final String _appId = AppConfig.appId;
   final Map<String, Character> _characterCache = {};
+  final Set<String> _preloadedAvatarUrls = {};
   // 💡 新增：紀錄這頁的氣泡是否已經彈過
   bool _hasChatHomeTipsShown = true;
 // 🔑 新增：專屬這頁的兩個追蹤鑰匙
@@ -227,6 +227,30 @@ class _ChatHomePageState extends State<ChatHomePage> {
     }
   }
 
+  void _precacheVisibleAvatars(
+      BuildContext context,
+      List<QueryDocumentSnapshot> sessionDocs,
+      ) {
+    for (final doc in sessionDocs.take(6)) {
+      final data = doc.data() as Map<String, dynamic>;
+      final imageUrl = data['characterAvatarPath'] as String? ?? '';
+
+      if (imageUrl.isEmpty || _preloadedAvatarUrls.contains(imageUrl)) {
+        continue;
+      }
+
+      _preloadedAvatarUrls.add(imageUrl);
+
+      precacheImage(
+        CachedNetworkImageProvider(imageUrl),
+        context,
+      ).catchError((error) {
+        _preloadedAvatarUrls.remove(imageUrl);
+        debugPrint('預載聊天室頭像失敗：$imageUrl，$error');
+      });
+    }
+  }
+
   Future<void> _showChatRoomOptions({
     required String sessionId,
     required String displayRoomName,
@@ -330,7 +354,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
     });
   }
 
-  Future<void> _navigateToChat(String sessionId, String characterId) async {
+  Future<void> _navigateToChat(
+      String sessionId,
+      String characterId,
+      String avatarUrl,
+      ) async {
     if (_isOpeningChat || _isNavigatingToChat || !mounted) return;
 
     setState(() {
@@ -338,63 +366,165 @@ class _ChatHomePageState extends State<ChatHomePage> {
     });
 
     await Future.delayed(const Duration(milliseconds: 80));
-    final l10n = AppLocalizations.of(context)!;
 
+    if (!mounted) return;
+
+    final l10n = AppLocalizations.of(context)!;
     Character? character;
 
-    // 🕵️‍♂️ 總裁快取攔截：先查字典裡有沒有這個角色？
+    // 先從記憶體快取取得角色資料
     if (_characterCache.containsKey(characterId)) {
-      // 🌟 有快取！不顯示轉圈圈，直接從記憶體抓取，實現「秒進」！
       character = _characterCache[characterId];
     } else {
-      // 🐌 沒快取（第一次點擊）！顯示轉圈圈，並去 Firebase 下載
-      setState(() => _isOpeningChat = true);
+      setState(() {
+        _isOpeningChat = true;
+      });
 
       character = await _getCharacterById(characterId);
 
-      // 下載成功後，立刻存進快取字典裡，下次就不用再等了
       if (character != null) {
         _characterCache[characterId] = character;
       }
 
       if (!mounted) return;
-      setState(() => _isOpeningChat = false);
+
+      setState(() {
+        _isOpeningChat = false;
+      });
     }
 
-    // 🚀 執行跳轉
-    if (character != null) {
-      await Navigator.push(
+    if (character == null) {
+      if (!mounted) return;
+
+      setState(() {
+        _isNavigatingToChat = false;
+        _isOpeningChat = false;
+      });
+
+      ToastUtils.showCenterToast(
         context,
-        MaterialPageRoute(
-          builder: (context) => ChatPage(
-            character: character!,
-            sessionId: sessionId,
-            chatMode: 'daily',
-            selectedLanguage: l10n.ai_chat_language,
-            characterId: character!.id,
-          ),
-        ),
+        l10n.character_not_found,
+        isError: true,
       );
 
-      if (mounted) {
-        setState(() {
-          _isNavigatingToChat = false;
-        });
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          _isNavigatingToChat = false;
-        });
+      return;
+    }
 
-        ToastUtils.showCenterToast(
-          context,
-          l10n.character_not_found,
-          isError: true,
-        );
-      }
+    // 背景預載聊天室頭像，不阻擋頁面跳轉
+    if (avatarUrl.trim().isNotEmpty) {
+      unawaited(_precacheCharacterImage(avatarUrl));
+    }
+
+    if (!mounted) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(
+          character: character!,
+          sessionId: sessionId,
+          chatMode: 'daily',
+          selectedLanguage: l10n.ai_chat_language,
+          characterId: character.id,
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isNavigatingToChat = false;
+    });
+  }
+
+  Widget _buildCharacterAvatar({
+    required String imageUrl,
+    required ThemeData theme,
+  }) {
+    final normalizedUrl = imageUrl.trim();
+
+    if (normalizedUrl.isEmpty) {
+      return CircleAvatar(
+        radius: 28,
+        backgroundColor:
+        theme.colorScheme.secondaryContainer,
+        child: Icon(
+          Icons.person_rounded,
+          color:
+          theme.colorScheme.onSecondaryContainer,
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: normalizedUrl,
+          width: 56,
+          height: 56,
+
+          // 保持原圖比例，再從中央裁成正圓
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+
+          // 只限制寬度，不同時強制寬高，
+          // 避免非正方形原圖在解碼時看起來被壓扁。
+          memCacheWidth: 168,
+
+          filterQuality: FilterQuality.medium,
+
+          placeholder: (context, url) {
+            return Container(
+              width: 56,
+              height: 56,
+              color:
+              theme.colorScheme.secondaryContainer,
+              alignment: Alignment.center,
+              child: const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              ),
+            );
+          },
+
+          errorWidget: (context, url, error) {
+            return Container(
+              width: 56,
+              height: 56,
+              color:
+              theme.colorScheme.secondaryContainer,
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.person_rounded,
+                color: theme
+                    .colorScheme
+                    .onSecondaryContainer,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<void> _precacheCharacterImage(String imageUrl) async {
+    if (imageUrl.trim().isEmpty || !mounted) return;
+
+    try {
+      await precacheImage(
+        CachedNetworkImageProvider(imageUrl),
+        context,
+      );
+    } catch (e) {
+      debugPrint('預載角色圖片失敗：$imageUrl，$e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -533,6 +663,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
 
                         final sessionDocs = snapshot.data!.docs;
 
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          _precacheVisibleAvatars(context, sessionDocs);
+                        });
+
                         // ✨ 5. 原本的 ListView.builder 完美變身 SliverList
                         return SliverPadding(
                           // 💡 關鍵：SliverAppBar 會自動計算頂部高度，所以不用再加 kToolbarHeight 了！
@@ -547,6 +682,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                 final displayRoomName = sessionData['customRoomName'] ?? characterName;
                                 final chatMode = sessionData['chatMode'] ?? 'daily';
                                 final unreadCount = sessionData['unreadCount'] ?? 0;
+                                final avatarUrl = sessionData['characterAvatarPath'] as String? ?? '';
 
                                 return Container(
                                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -568,10 +704,9 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                       leading: Stack(
                                         children: [
-                                          CircleAvatar(
-                                            radius: 28,
-                                            backgroundImage: NetworkImage(sessionData['characterAvatarPath'] ?? ''),
-                                            backgroundColor: theme.colorScheme.secondaryContainer,
+                                          _buildCharacterAvatar(
+                                            imageUrl: avatarUrl,
+                                            theme: theme,
                                           ),
                                           if (unreadCount > 0)
                                             Positioned(
@@ -665,7 +800,8 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                       ),
                                       onTap: () => _navigateToChat(
                                         sessionId,
-                                        sessionData['characterId'] ?? '',
+                                        sessionData['characterId'] as String? ?? '',
+                                        sessionData['characterAvatarPath'] as String? ?? '',
                                       ),
                                       onLongPress: () => _showChatRoomOptions(
                                         sessionId: sessionId,

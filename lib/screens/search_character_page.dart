@@ -7,6 +7,7 @@ import 'character_profile_page.dart';
 import 'dart:math'; // ✨ 加上這一行就解決了
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 //搜尋頁面
 class SearchCharacterPage extends StatefulWidget {
@@ -117,117 +118,316 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     );
   }
 
-  Widget _buildCharacterCard(DocumentSnapshot doc, ThemeData theme) {
-    final charData = doc.data() as Map<String, dynamic>;
-    final primaryColor = theme.colorScheme.primary;
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildCharacterCard(
+      DocumentSnapshot doc,
+      ThemeData theme,
+      ) {
+    final charData =
+    doc.data() as Map<String, dynamic>;
+
+    final primaryColor =
+        theme.colorScheme.primary;
+
+    final l10n =
+    AppLocalizations.of(context)!;
+
+    final String imageUrl = (
+        charData['avatar'] ??
+            charData['avatarPath'] ??
+            ''
+    ).toString().trim();
 
     return GestureDetector(
-      // ✨ 1. 這裡要加上 async
       onTap: () async {
-        // ✨ 3. 使用 await 等待角色資料「變身」完成
-        final targetCharacter = await Character.fromFirestoreAsync(doc);
-        // ✨ 4. 變身完成後，再帶著完整的資料跳轉
-        if (context.mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CharacterProfilePage
-                (character: targetCharacter,
-                characterId: targetCharacter.id,
-              ),
-            ),
-          );
-        }
-      },
-      child: LayoutBuilder(builder: (context, constraints) {
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: primaryColor.withValues(alpha:0.1)),
-            image: DecorationImage(
-              image: NetworkImage(charData['avatar'] ?? charData['avatarPath'] ?? ''),
-              fit: BoxFit.cover,
-            ),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha:0.1), blurRadius: 10, offset: const Offset(0, 4)),
-            ],
+        final targetCharacter =
+        await Character.fromFirestoreAsync(doc);
+
+        if (!context.mounted) return;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                CharacterProfilePage(
+                  character: targetCharacter,
+                  characterId: targetCharacter.id,
+                ),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(
-              children: [
-                // 1. 底部陰影遮罩
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 120,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [Colors.black.withValues(alpha:0.8), Colors.transparent],
-                      ),
-                    ),
-                  ),
-                ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius:
+          BorderRadius.circular(20),
+          border: Border.all(
+            color: primaryColor.withValues(
+              alpha: 0.1,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(
+                alpha: 0.1,
+              ),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius:
+          BorderRadius.circular(20),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // =========================
+              // 角色背景圖片
+              // =========================
+              if (imageUrl.isNotEmpty)
+                CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
 
-                // ✨✨✨ 2. 在這裡加入「隨機位置」的玩家留言氣泡 ✨✨✨
-                AnimatedDanmu(
-                  characterId: doc.id,
-                  appId: AppConfig.appId,
-                ),
+                  // 稍微往上取景，避免角色臉部被裁掉。
+                  alignment:
+                  const Alignment(0, -0.15),
 
-                // 💖  右上角：心動數 (保留這個讓大家知道熱門度)
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha:0.5),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.favorite, color: Colors.white, size: 12),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${charData['likesCount'] ?? 0}',
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                  // 只限制解碼寬度，避免非正方形圖片被壓扁。
+                  memCacheWidth: 720,
+
+                  filterQuality:
+                  FilterQuality.medium,
+
+                  placeholder: (
+                      context,
+                      url,
+                      ) {
+                    return Container(
+                      color: theme.colorScheme
+                          .secondaryContainer,
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: 26,
+                        height: 26,
+                        child:
+                        CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: primaryColor,
                         ),
+                      ),
+                    );
+                  },
+
+                  errorWidget: (
+                      context,
+                      url,
+                      error,
+                      ) {
+                    return _buildCharacterImageFallback(
+                      theme,
+                    );
+                  },
+                )
+              else
+                _buildCharacterImageFallback(
+                  theme,
+                ),
+
+              // =========================
+              // 底部漸層遮罩
+              // =========================
+              Align(
+                alignment:
+                Alignment.bottomCenter,
+                child: Container(
+                  height: 140,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin:
+                      Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withValues(
+                          alpha: 0.82,
+                        ),
+                        Colors.black.withValues(
+                          alpha: 0.25,
+                        ),
+                        Colors.transparent,
+                      ],
+                      stops: const [
+                        0,
+                        0.55,
+                        1,
                       ],
                     ),
                   ),
                 ),
+              ),
 
-                // 📜 3. 底部文字資訊
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              // =========================
+              // 玩家留言彈幕
+              // =========================
+              AnimatedDanmu(
+                characterId: doc.id,
+                appId: AppConfig.appId,
+              ),
+
+              // =========================
+              // 右上角心動數
+              // =========================
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding:
+                  const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(
+                      alpha: 0.5,
+                    ),
+                    borderRadius:
+                    BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize:
+                    MainAxisSize.min,
                     children: [
-                      Text(
-                        charData['name'] ?? '',
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                      const Icon(
+                        Icons.favorite,
+                        color: Colors.white,
+                        size: 12,
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(width: 4),
                       Text(
-                        (charData['occupation'] != null && charData['occupation'].toString().isNotEmpty)
-                            ? l10n.character_info_full(charData['age']?.toString() ?? '??', charData['occupation'] ?? '')
-                        :l10n.character_info_age_only(charData['age']?.toString() ?? '??'
+                        '${charData['likesCount'] ?? charData['likes'] ?? 0}',
+                        style:
+                        const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight:
+                          FontWeight.bold,
                         ),
-                        style: TextStyle(color: Colors.white.withValues(alpha:0.9), fontSize: 12),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              // =========================
+              // 底部角色資料
+              // =========================
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Padding(
+                  padding:
+                  const EdgeInsets.all(12),
+                  child: Column(
+                    mainAxisSize:
+                    MainAxisSize.min,
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        charData['name']
+                            ?.toString() ??
+                            '',
+                        maxLines: 1,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style:
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight:
+                          FontWeight.bold,
+                          fontSize: 18,
+                          shadows: [
+                            Shadow(
+                              color:
+                              Colors.black54,
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        _buildCharacterInfoText(
+                          charData,
+                          l10n,
+                        ),
+                        maxLines: 1,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white
+                              .withValues(
+                            alpha: 0.9,
+                          ),
+                          fontSize: 12,
+                          shadows: const [
+                            Shadow(
+                              color:
+                              Colors.black54,
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        );
-      }),
+        ),
+      ),
+    );
+  }
+  Widget _buildCharacterImageFallback(
+      ThemeData theme,
+      ) {
+    return Container(
+      color: theme.colorScheme
+          .secondaryContainer,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.person_rounded,
+        size: 56,
+        color: theme.colorScheme
+            .onSecondaryContainer,
+      ),
+    );
+  }
+  String _buildCharacterInfoText(
+      Map<String, dynamic> charData,
+      AppLocalizations l10n,
+      ) {
+    final String age =
+        charData['age']?.toString() ?? '??';
+
+    final String occupation =
+        charData['occupation']
+            ?.toString()
+            .trim() ??
+            '';
+
+    if (occupation.isNotEmpty) {
+      return l10n.character_info_full(
+        age,
+        occupation,
+      );
+    }
+
+    return l10n.character_info_age_only(
+      age,
     );
   }
 }

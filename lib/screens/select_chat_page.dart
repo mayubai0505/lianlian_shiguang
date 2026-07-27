@@ -13,6 +13,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 // 邂逅頁面
 class SelectChatPage extends StatefulWidget {
@@ -29,7 +30,7 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
   Future<List<Character>>? _charactersFuture;
   Set<String> _friendIds = {};
   Set<String> _blockedCharacterIds = {};
-
+  final Set<String> _preloadedImageUrls = {};
   late TabController _mainTabController;
 
   @override
@@ -77,6 +78,31 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
     if (mounted) {
       setState(() {
         _charactersFuture = _loadCharacters();
+      });
+    }
+  }
+
+  void _precacheCharacterImages(
+      BuildContext context,
+      List<Character> characters,
+      ) {
+    for (final character in characters.take(5)) {
+      if (character.galleryPaths.isEmpty) continue;
+
+      final imageUrl = character.galleryPaths.first;
+
+      if (_preloadedImageUrls.contains(imageUrl)) {
+        continue;
+      }
+
+      _preloadedImageUrls.add(imageUrl);
+
+      precacheImage(
+        CachedNetworkImageProvider(imageUrl),
+        context,
+      ).catchError((error) {
+        _preloadedImageUrls.remove(imageUrl);
+        debugPrint('預載邂逅角色圖片失敗：$error');
       });
     }
   }
@@ -574,6 +600,11 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
 
           final characters = snapshot.data!;
 
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _precacheCharacterImages(context, characters);
+          });
+
           // 🌟 直接渲染 TabBarView，頂部空間已完全釋放！
           return TabBarView(
             controller: _mainTabController,
@@ -709,6 +740,40 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
   }
 }
 
+Widget buildCachedCharacterAvatar(
+    BuildContext context,
+    Character character, {
+      double radius = 30,
+    }) {
+  final imageUrl = character.galleryPaths.isNotEmpty
+      ? character.galleryPaths.first
+      : '';
+
+  final size = radius * 2;
+
+  return ClipOval(
+    child: SizedBox(
+      width: size,
+      height: size,
+      child: imageUrl.isNotEmpty
+          ? CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        memCacheWidth: (size * 3).round(),
+        memCacheHeight: (size * 3).round(),
+        placeholder: (context, url) => Container(
+          color: Theme.of(context)
+              .colorScheme
+              .secondaryContainer,
+        ),
+        errorWidget: (context, url, error) =>
+        const Icon(Icons.person),
+      )
+          : const Icon(Icons.person),
+    ),
+  );
+}
+
 // ==========================================
 // ==========================================
 // 🏛️ 探索大廳檢視元件 (包含三個子分頁)
@@ -808,10 +873,17 @@ class _LatestTab extends StatelessWidget {
                       children: [
                         // 1. 🎨 背景層：同張圖片放大鋪滿 + 強力毛玻璃模糊（消除寬扁橫幅的空白與切臉感）
                         if (bannerImg.isNotEmpty) ...[
-                          Image.network(
-                            bannerImg,
+                          CachedNetworkImage(
+                            imageUrl: bannerImg,
                             fit: BoxFit.cover,
                             alignment: Alignment.center,
+                            memCacheWidth: 1080,
+                            placeholder: (context, url) => Container(
+                              color: Colors.black12,
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.black12,
+                            ),
                           ),
                           BackdropFilter(
                             filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
@@ -824,10 +896,16 @@ class _LatestTab extends StatelessWidget {
                         // 2. 👑 前景層：置中完整顯示（contain），確保臉和上半身 100% 完美露在正中間！
                         Center(
                           child: bannerImg.isNotEmpty
-                              ? Image.network(
-                            bannerImg,
+                              ? CachedNetworkImage(
+                            imageUrl: bannerImg,
                             fit: BoxFit.contain,
                             alignment: Alignment.center,
+                            memCacheWidth: 1080,
+                            placeholder: (context, url) => const SizedBox.shrink(),
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/images/blank_avatar.png',
+                              fit: BoxFit.contain,
+                            ),
                           )
                               : const Image(image: AssetImage('assets/images/blank_avatar.png')),
                         ),
@@ -932,10 +1010,23 @@ class _LatestTab extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image(
-                image: char.galleryPaths.isNotEmpty ? NetworkImage(char.galleryPaths.first) : const AssetImage('assets/images/blank_avatar.png') as ImageProvider,
+              char.galleryPaths.isNotEmpty
+                  ? CachedNetworkImage(
+                imageUrl: char.galleryPaths.first,
                 fit: BoxFit.cover,
-                alignment: Alignment.topCenter, // 💡 確保臉部完美露出
+                alignment: Alignment.topCenter,
+                memCacheWidth: 720,
+                placeholder: (context, url) => Container(
+                  color: Colors.grey.shade200,
+                ),
+                errorWidget: (context, url, error) => Image.asset(
+                  'assets/images/blank_avatar.png',
+                  fit: BoxFit.cover,
+                ),
+              )
+                  : Image.asset(
+                'assets/images/blank_avatar.png',
+                fit: BoxFit.cover,
               ),
               Container(
                 decoration: BoxDecoration(
@@ -1000,10 +1091,9 @@ class _PopularTab extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: ListTile(
             contentPadding: const EdgeInsets.all(8),
-            leading: CircleAvatar(
-              radius: 30,
-              backgroundImage: char.galleryPaths.isNotEmpty ? NetworkImage(char.galleryPaths.first) : null,
-              child: char.galleryPaths.isEmpty ? const Icon(Icons.person) : null,
+            leading: buildCachedCharacterAvatar(
+              context,
+              char,
             ),
             title: Text(char.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             subtitle: Column(
@@ -1148,9 +1238,9 @@ class _TagFilteredCharactersPage extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: ListTile(
               contentPadding: const EdgeInsets.all(8),
-              leading: CircleAvatar(
-                radius: 30,
-                backgroundImage: char.galleryPaths.isNotEmpty ? NetworkImage(char.galleryPaths.first) : null,
+              leading: buildCachedCharacterAvatar(
+                context,
+                char,
               ),
               title: Text(char.name, style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(char.occupation, style: const TextStyle(fontSize: 12)),

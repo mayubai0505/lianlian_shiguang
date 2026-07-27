@@ -22,6 +22,8 @@ import 'package:showcaseview/showcaseview.dart'; // 🌟 記得在檔案最上�
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:io' show Platform;
+import 'package:cached_network_image/cached_network_image.dart';
+import '../utils/image_utils.dart';
 
 class MomentCard extends StatefulWidget {
   final Moment moment;
@@ -103,15 +105,7 @@ class _MomentCardState extends State<MomentCard> {
     }
   }
 
-  // ✨ 輔助函數：處理不同來源的頭像
-  ImageProvider getAvatarImageProvider(String path) {
-    if (path.isEmpty) return const AssetImage('assets/images/blank_avatar.png');
-    if (path.startsWith('http')) return NetworkImage(path);
-    return AssetImage(path);
-  }
-
-  // ✨✨✨ 新增：卡片專屬的記事本檢查功能
-  // ✨✨✨ 升級版：具備緩衝機制的氣泡發射器
+  // ✨✨✨ 新增：卡片專屬的記事本檢查功能.具備緩衝機制的氣泡發射器
   Future<void> _checkAndShowTips() async {
     // 1. 如果外層還沒解鎖，不准發射
     if (!widget.showFeatureTips) return;
@@ -377,10 +371,11 @@ class _MomentCardState extends State<MomentCard> {
                           final Character char = characters[index];
                           return ListTile(
                             leading: CircleAvatar(
-                              // 🌟 改用物件的頭像網址
-                              backgroundImage: char.avatarPath.startsWith('http')
-                                  ? NetworkImage(char.avatarPath) as ImageProvider
-                                  : AssetImage(char.avatarPath),
+                              backgroundImage: getAvatarImageProvider(
+                                char.avatarPath,
+                              ),
+                              backgroundColor:
+                              Theme.of(context).colorScheme.secondaryContainer,
                             ),
                             title: Text(char.name),
                             trailing: ElevatedButton(
@@ -970,34 +965,45 @@ class _MomentCardState extends State<MomentCard> {
           ),
 
           // 🖼️ 3. 照片顯示區
-          if (widget.moment.imageUrl != null && widget.moment.imageUrl!.isNotEmpty)
+          if (widget.moment.imageUrl != null &&
+              widget.moment.imageUrl!.trim().isNotEmpty)
             Container(
               width: double.infinity,
               color: Colors.black.withValues(alpha: 0.04),
               constraints: const BoxConstraints(
                 maxHeight: 520,
               ),
-              child: Image.network(
-                widget.moment.imageUrl!,
+              child: CachedNetworkImage(
+                imageUrl: widget.moment.imageUrl!.trim(),
                 fit: BoxFit.contain,
                 width: double.infinity,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
 
-                  return Container(
-                    height: 200,
-                    color: Colors.grey[200],
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
+                // 限制記憶體解碼尺寸，避免大圖完整塞入 RAM。
+                memCacheWidth: 1080,
+
+                placeholder: (context, url) {
                   return Container(
                     height: 200,
                     color: Colors.grey[200],
                     alignment: Alignment.center,
-                    child: const Icon(Icons.broken_image_outlined),
+                    child: const SizedBox(
+                      width: 26,
+                      height: 26,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  );
+                },
+
+                errorWidget: (context, url, error) {
+                  return Container(
+                    height: 200,
+                    color: Colors.grey[200],
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.broken_image_outlined,
+                    ),
                   );
                 },
               ),

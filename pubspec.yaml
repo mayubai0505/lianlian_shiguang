@@ -1,12 +1,7 @@
 name: lianlian_shiguang
 description: A new Flutter project.
 publish_to: 'none'
-<<<<<<< HEAD
 version: 1.0.1+52
-=======
-version: 1.0.1+50
->>>>>>> e383b14b41d1eba136373b42f5f258377b3d9d77
-
 environment:
   sdk: '>=3.2.3 <4.0.0'
 

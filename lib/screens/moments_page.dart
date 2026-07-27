@@ -21,6 +21,7 @@ import 'hidden_moments_page.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 //動態牆(朋友圈)
 class MomentsPage extends StatefulWidget {
   const MomentsPage({super.key});
@@ -718,10 +719,11 @@ class _MomentsPageState extends State<MomentsPage> {
                     // ✨ 選項 A：創作者本人
                     ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: creatorAvatar.isNotEmpty
-                            ? (creatorAvatar.startsWith('http') ? NetworkImage(creatorAvatar) : AssetImage(creatorAvatar) as ImageProvider)
-                            : const AssetImage('assets/images/blank_avatar.png'),
-                        backgroundColor: Colors.blue[100],
+                        backgroundImage: getAvatarImageProvider(
+                          creatorAvatar,
+                        ),
+                        backgroundColor:
+                        Theme.of(context).colorScheme.secondaryContainer,
                       ),
                       title: Text(creatorName, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
                       subtitle:Text(l10n.identity_creator),
@@ -832,9 +834,9 @@ class _MomentsPageState extends State<MomentsPage> {
                             child: Row(
                               children: [
                                 CircleAvatar(
-                                  backgroundImage: avatar.startsWith('http')
-                                      ? NetworkImage(avatar)
-                                      : AssetImage(avatar) as ImageProvider,
+                                  backgroundImage: getAvatarImageProvider(avatar),
+                                  backgroundColor:
+                                  Theme.of(context).colorScheme.secondaryContainer,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
@@ -948,7 +950,7 @@ class PersistentFeed extends StatefulWidget {
 
 class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAliveClientMixin {
   late Stream<QuerySnapshot> _momentsStream;
-
+  final Set<String> _preloadedMomentImages = {};
   final Set<String> _hiddenMomentIds = {};
   final Set<String> _blockedCharacterIds = {};
   bool _isLoadingBlockedData = true;
@@ -997,6 +999,38 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
       if (_momentFeatureTipsPaused && mounted) {
         setState(() {
           _momentFeatureTipsPaused = false;
+        });
+      }
+    }
+  }
+
+  void _precacheVisibleMoments(
+      BuildContext context,
+      List<Moment> moments,
+      ) {
+    for (final moment in moments.take(4)) {
+      final urls = <String>[
+        moment.authorAvatar,
+        moment.imageUrl ?? '',
+      ];
+
+      for (final rawUrl in urls) {
+        final url = rawUrl.trim();
+
+        if (url.isEmpty ||
+            !url.startsWith('http') ||
+            _preloadedMomentImages.contains(url)) {
+          continue;
+        }
+
+        _preloadedMomentImages.add(url);
+
+        precacheImage(
+          CachedNetworkImageProvider(url),
+          context,
+        ).catchError((error) {
+          _preloadedMomentImages.remove(url);
+          debugPrint('預載動態圖片失敗：$url，$error');
         });
       }
     }
@@ -1281,6 +1315,15 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
           }).toList();
 
           if (filteredMoments.isEmpty) return _buildEmpty();
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+
+            _precacheVisibleMoments(
+              context,
+              filteredMoments,
+            );
+          });
 
           return ListView.builder(
             padding: EdgeInsets.zero,
