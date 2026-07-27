@@ -4467,4 +4467,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'Ressusciter le compte';
+
+  @override
+  String get voice_preview => 'Lire le message vocal';
+
+  @override
+  String get voice_preview_failed => 'Échec de la lecture du message vocal';
 }

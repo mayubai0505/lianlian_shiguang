@@ -2005,5 +2005,7 @@
   "restoreAccountButton": "Khôi phục tài khoản",
   "@restoreAccountButton": {
     "description": "Button text to restore account"
-  }
+  },
+  "voice_preview": "Phát giọng nói",
+  "voice_preview_failed": "Phát giọng nói thất bại"
 }

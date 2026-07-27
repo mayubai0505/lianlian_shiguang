@@ -2004,5 +2004,7 @@
     "restoreAccountButton": "Pulihkan Akun",
     "@restoreAccountButton": {
         "description": "Button text to restore account"
-    }
+    },
+    "voice_preview": "Putar Suara",
+    "voice_preview_failed": "Gagal memutar suara"
 }

@@ -2004,5 +2004,7 @@
     "restoreAccountButton": "Restaurar cuenta",
     "@restoreAccountButton": {
         "description": "Button text to restore account"
-    }
+    },
+    "voice_preview": "Reproducir audio",
+    "voice_preview_failed": "Error al reproducir el audio"
 }

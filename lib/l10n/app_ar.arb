@@ -2046,5 +2046,7 @@
     "restoreAccountButton": "استعادة الحساب",
     "@restoreAccountButton": {
         "description": "Button text to restore account"
-    }
+    },
+    "voice_preview": "تشغيل الصوت",
+    "voice_preview_failed": "فشل تشغيل الصوت"
 }

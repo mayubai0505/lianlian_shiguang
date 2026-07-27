@@ -4355,4 +4355,10 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'กู้คืนบัญชี';
+
+  @override
+  String get voice_preview => 'เล่นเสียง';
+
+  @override
+  String get voice_preview_failed => 'เล่นเสียงไม่สำเร็จ';
 }

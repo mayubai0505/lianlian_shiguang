@@ -11,6 +11,10 @@ const axios = require('axios');
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const Stripe = require("stripe");
 const { TranslationServiceClient } = require('@google-cloud/translate');
+const {
+  getFirestore,
+  FieldValue,
+} = require("firebase-admin/firestore");
 // 🌟 單一且完整的初始化（包含屬性設定）
 if (admin.apps.length === 0) {
     admin.initializeApp();
@@ -3728,27 +3732,96 @@ function requireLogin(request) {
 }
 
 async function postElevenLabsJson(path, body) {
-  const response = await fetch(`https://api.elevenlabs.io${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "xi-api-key": elevenLabsApiKey.value(),
-    },
-    body: JSON.stringify(body),
-  });
+  const response = await fetch(
+    `https://api.elevenlabs.io${path}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "xi-api-key": elevenLabsApiKey.value(),
+      },
+      body: JSON.stringify(body),
+    }
+  );
 
   const text = await response.text();
 
+  let parsedBody;
+
+  try {
+    parsedBody = text ? JSON.parse(text) : {};
+  } catch (_) {
+    parsedBody = text;
+  }
+
   if (!response.ok) {
-    console.error("ElevenLabs error:", response.status, text);
+    console.error(
+      "========== ElevenLabs API ERROR =========="
+    );
+    console.error("path:", path);
+    console.error("status:", response.status);
+    console.error("body:", parsedBody);
+
+    let code = "internal";
+    let message = "ElevenLabs 請求失敗";
+
+    switch (response.status) {
+      case 400:
+        code = "invalid-argument";
+        message = "語音資料格式不正確";
+        break;
+
+      case 401:
+      case 403:
+        code = "permission-denied";
+        message =
+          "ElevenLabs API Key 無效或沒有權限";
+        break;
+
+      case 404:
+        code = "not-found";
+        message =
+          "找不到指定的聲音，可能已過期";
+        break;
+
+      case 409:
+        code = "already-exists";
+        message =
+          "這個預覽聲音可能已經被正式建立過";
+        break;
+
+      case 422:
+        code = "invalid-argument";
+        message =
+          "ElevenLabs 無法處理這份語音資料";
+        break;
+
+      case 429:
+        code = "resource-exhausted";
+        message =
+          "ElevenLabs 額度不足或請求過於頻繁";
+        break;
+
+      default:
+        if (response.status >= 500) {
+          code = "unavailable";
+          message =
+            "ElevenLabs 服務暫時異常，請稍後再試";
+        }
+    }
+
     throw new HttpsError(
-      "internal",
-      "ElevenLabs 請求失敗",
-      { status: response.status }
+      code,
+      message,
+      {
+        status: response.status,
+        path,
+        elevenLabsBody: parsedBody,
+      }
     );
   }
 
-  return JSON.parse(text);
+  return parsedBody;
 }
 
 // 1. 生成 3 個聲音 preview
@@ -3805,16 +3878,169 @@ exports.createVoiceFromPreview = onCall(
       );
     }
 
-    const result = await postElevenLabsJson(
-      "/v1/text-to-voice/create-voice-from-preview",
-      {
-        voice_name: voiceName,
-        voice_description: voiceDescription || "",
-        generated_voice_id: generatedVoiceId,
-      }
+    console.log(
+      "========== createVoiceFromPreview =========="
+    );
+    console.log("uid:", request.auth?.uid);
+    console.log("voiceName:", voiceName);
+    console.log(
+      "generatedVoiceId:",
+      generatedVoiceId
     );
 
-    return result;
+    try {
+      const result = await postElevenLabsJson(
+        "/v1/text-to-voice/create-voice-from-preview",
+        {
+          voice_name: voiceName,
+          voice_description:
+            voiceDescription || "",
+          generated_voice_id:
+            generatedVoiceId,
+        }
+      );
+
+      console.log(
+        "✅ createVoiceFromPreview 成功:",
+        result
+      );
+
+      const realVoiceId =
+        result?.voice_id ??
+        result?.voiceId ??
+        "";
+
+      if (!realVoiceId) {
+        console.error(
+          "ElevenLabs 成功回傳，但缺少 voice_id:",
+          result
+        );
+
+        throw new HttpsError(
+          "internal",
+          "語音服務未回傳正式 Voice ID",
+          {
+            response: result,
+          }
+        );
+      }
+
+      return result;
+    } catch (error) {
+      console.error(
+        "========== createVoiceFromPreview ERROR =========="
+      );
+      console.error("error:", error);
+      console.error(
+        "status:",
+        error?.status ??
+          error?.response?.status
+      );
+      console.error(
+        "body:",
+        error?.body ??
+          error?.response?.data
+      );
+
+      // 如果原本就是我們主動拋出的 HttpsError，
+      // 直接保留，不要再包一次。
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+
+      const status =
+        error?.status ??
+        error?.response?.status ??
+        error?.details?.status;
+
+      const rawBody =
+        error?.body ??
+        error?.response?.data ??
+        error?.message ??
+        "";
+
+      const bodyText =
+        typeof rawBody === "string"
+          ? rawBody
+          : JSON.stringify(rawBody);
+
+      if (status === 400) {
+        throw new HttpsError(
+          "invalid-argument",
+          "預覽聲音資料無效，請重新生成聲音樣本",
+          {
+            status,
+            elevenLabsBody: bodyText,
+          }
+        );
+      }
+
+      if (status === 401 ||
+          status === 403) {
+        throw new HttpsError(
+          "permission-denied",
+          "ElevenLabs API Key 無效或沒有權限",
+          {
+            status,
+            elevenLabsBody: bodyText,
+          }
+        );
+      }
+
+      if (status === 404) {
+        throw new HttpsError(
+          "not-found",
+          "找不到這個預覽聲音，可能已過期，請重新生成",
+          {
+            status,
+            elevenLabsBody: bodyText,
+          }
+        );
+      }
+
+      if (status === 409) {
+        throw new HttpsError(
+          "already-exists",
+          "這個預覽聲音可能已經被建立過",
+          {
+            status,
+            elevenLabsBody: bodyText,
+          }
+        );
+      }
+
+      if (status === 429) {
+        throw new HttpsError(
+          "resource-exhausted",
+          "ElevenLabs 額度不足或請求過於頻繁",
+          {
+            status,
+            elevenLabsBody: bodyText,
+          }
+        );
+      }
+
+      if (status != null &&
+          status >= 500) {
+        throw new HttpsError(
+          "unavailable",
+          "ElevenLabs 服務暫時異常，請稍後再試",
+          {
+            status,
+            elevenLabsBody: bodyText,
+          }
+        );
+      }
+
+      throw new HttpsError(
+        "internal",
+        "建立正式聲音失敗",
+        {
+          status,
+          elevenLabsBody: bodyText,
+        }
+      );
+    }
   }
 );
 
@@ -3841,43 +4067,101 @@ exports.testVoiceSettings = onCall(
       );
     }
 
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "xi-api-key": elevenLabsApiKey.value(),
-        },
-        body: JSON.stringify({
-          text,
-          model_id: "eleven_multilingual_v2",
-          voice_settings: {
-            stability: stability ?? 0.33,
-            similarity_boost: 0.75,
-            style: style ?? 0.75,
-            use_speaker_boost: true,
-          },
-        }),
-      }
-    );
+    console.log("========== testVoiceSettings ==========");
+    console.log("uid:", request.auth?.uid);
+    console.log("voiceId:", voiceId);
+    console.log("textLength:", String(text).length);
+    console.log("stability:", stability);
+    console.log("style:", style);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("ElevenLabs TTS error:", response.status, errorText);
+    try {
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "xi-api-key": elevenLabsApiKey.value(),
+            "Accept": "audio/mpeg",
+          },
+          body: JSON.stringify({
+            text,
+            model_id: "eleven_multilingual_v2",
+            voice_settings: {
+              stability: stability ?? 0.33,
+              similarity_boost: 0.75,
+              style: style ?? 0.75,
+              use_speaker_boost: true,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        console.error("========== ElevenLabs TTS ERROR ==========");
+        console.error("status:", response.status);
+        console.error("body:", errorText);
+
+        let message = "ElevenLabs 試聽失敗";
+
+        if (response.status === 401) {
+          message = "ElevenLabs API Key 無效或未設定";
+        } else if (response.status === 404) {
+          message = "找不到指定的 Voice ID";
+        } else if (response.status === 429) {
+          message = "ElevenLabs 額度不足或請求過於頻繁";
+        } else if (response.status >= 500) {
+          message = "ElevenLabs 服務暫時異常";
+        }
+
+        throw new HttpsError(
+          "internal",
+          message,
+          {
+            status: response.status,
+            elevenLabsBody: errorText,
+            voiceId,
+          }
+        );
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+
+      if (arrayBuffer.byteLength === 0) {
+        throw new HttpsError(
+          "internal",
+          "ElevenLabs 回傳空白音檔"
+        );
+      }
+
+      const audioBase64 =
+        Buffer.from(arrayBuffer).toString("base64");
+
+      console.log(
+        "✅ testVoiceSettings 成功，bytes:",
+        arrayBuffer.byteLength
+      );
+
+      return {
+        audio_base_64: audioBase64,
+      };
+    } catch (error) {
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+
+      console.error(
+        "========== testVoiceSettings UNKNOWN ERROR =========="
+      );
+      console.error(error);
+
       throw new HttpsError(
         "internal",
-        "ElevenLabs 試聽失敗",
-        { status: response.status }
+        error?.message || "語音試聽發生未知錯誤"
       );
     }
-
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBase64 = Buffer.from(arrayBuffer).toString("base64");
-
-    return {
-      audio_base_64: audioBase64,
-    };
   }
 );
 
@@ -4801,3 +5085,853 @@ exports.ecpayReturn = functions.https.onRequest(async (req, res) => {
     // 如果不回傳這個，綠界會以為我們沒收到，然後一直瘋狂重發通知喔！
     res.send('1|OK');
 });
+// ============================================================
+// Voice Bank：玩家描述正規化
+// ============================================================
+
+function normalizeVoiceRequest({
+  description,
+  gender,
+  age,
+}) {
+  const text = String(description || "")
+    .trim()
+    .toLowerCase();
+
+  const tags = [];
+
+  const tagKeywords = {
+    "低沉": [
+      "低沉",
+      "深沉",
+      "低音",
+      "厚重",
+    ],
+    "成熟": [
+      "成熟",
+      "穩重",
+      "大人",
+      "沉穩",
+    ],
+    "霸總": [
+      "霸總",
+      "總裁",
+      "強勢",
+      "上位者",
+    ],
+    "磁性": [
+      "磁性",
+      "性感",
+      "迷人",
+      "有魅力",
+    ],
+    "溫柔": [
+      "溫柔",
+      "溫暖",
+      "體貼",
+      "柔和",
+    ],
+    "冷淡": [
+      "冷淡",
+      "高冷",
+      "冷酷",
+      "清冷",
+    ],
+    "少年": [
+      "少年",
+      "年輕",
+      "青春",
+      "少年感",
+    ],
+    "活潑": [
+      "活潑",
+      "陽光",
+      "開朗",
+      "元氣",
+    ],
+    "慵懶": [
+      "慵懶",
+      "懶洋洋",
+      "隨性",
+      "漫不經心",
+    ],
+    "病嬌": [
+      "病嬌",
+      "偏執",
+      "佔有慾",
+      "瘋批",
+    ],
+    "知性": [
+      "知性",
+      "斯文",
+      "理性",
+      "學者",
+    ],
+    "沙啞": [
+      "沙啞",
+      "煙嗓",
+      "粗啞",
+      "微啞",
+    ],
+    "甜美": [
+      "甜美",
+      "甜妹",
+      "可愛",
+      "軟萌",
+    ],
+    "御姐": [
+      "御姐",
+      "姐姐",
+      "女王",
+      "成熟姐姐",
+    ],
+    "性感": [
+      "性感",
+      "撩人",
+      "誘惑",
+      "魅惑",
+    ],
+    "可靠": [
+      "可靠",
+      "安心",
+      "沉著",
+      "有安全感",
+    ],
+  };
+
+  for (
+    const [tag, keywords]
+    of Object.entries(tagKeywords)
+  ) {
+    finalKeywordLoop:
+    for (const keyword of keywords) {
+      if (text.includes(keyword)) {
+        tags.push(tag);
+        break finalKeywordLoop;
+      }
+    }
+  }
+
+  // 根據關鍵字推導 traits。
+  // 範圍統一為 0～1。
+  const traits = {
+    depth: 0.5,
+    warmth: 0.5,
+    energy: 0.5,
+    softness: 0.5,
+    maturity: 0.5,
+    brightness: 0.5,
+  };
+
+  if (
+    tags.includes("低沉") ||
+    tags.includes("沙啞")
+  ) {
+    traits.depth = 0.9;
+    traits.brightness = 0.2;
+  }
+
+  if (tags.includes("成熟")) {
+    traits.maturity = 0.9;
+    traits.energy = 0.4;
+  }
+
+  if (tags.includes("霸總")) {
+    traits.depth = Math.max(
+      traits.depth,
+      0.82
+    );
+    traits.maturity = Math.max(
+      traits.maturity,
+      0.85
+    );
+    traits.softness = 0.22;
+    traits.energy = 0.42;
+  }
+
+  if (tags.includes("磁性")) {
+    traits.depth = Math.max(
+      traits.depth,
+      0.78
+    );
+    traits.warmth = Math.max(
+      traits.warmth,
+      0.58
+    );
+  }
+
+  if (tags.includes("溫柔")) {
+    traits.warmth = 0.9;
+    traits.softness = 0.86;
+    traits.energy = Math.min(
+      traits.energy,
+      0.48
+    );
+  }
+
+  if (tags.includes("冷淡")) {
+    traits.warmth = 0.22;
+    traits.softness = 0.2;
+    traits.energy = 0.28;
+    traits.brightness = 0.3;
+  }
+
+  if (tags.includes("少年")) {
+    traits.maturity = 0.25;
+    traits.brightness = 0.88;
+    traits.energy = 0.72;
+    traits.depth = Math.min(
+      traits.depth,
+      0.35
+    );
+  }
+
+  if (tags.includes("活潑")) {
+    traits.energy = 0.92;
+    traits.brightness = 0.9;
+    traits.warmth = Math.max(
+      traits.warmth,
+      0.7
+    );
+  }
+
+  if (tags.includes("慵懶")) {
+    traits.energy = 0.22;
+    traits.softness = Math.max(
+      traits.softness,
+      0.6
+    );
+  }
+
+  if (tags.includes("病嬌")) {
+    traits.warmth = 0.35;
+    traits.energy = 0.65;
+    traits.softness = 0.32;
+    traits.brightness = 0.28;
+  }
+
+  if (tags.includes("知性")) {
+    traits.maturity = 0.8;
+    traits.energy = 0.35;
+    traits.warmth = 0.58;
+  }
+
+  if (tags.includes("甜美")) {
+    traits.depth = 0.18;
+    traits.brightness = 0.95;
+    traits.softness = 0.88;
+    traits.warmth = 0.82;
+  }
+
+  if (tags.includes("御姐")) {
+    traits.depth = Math.max(
+      traits.depth,
+      0.62
+    );
+    traits.maturity = 0.9;
+    traits.energy = 0.55;
+    traits.brightness = 0.42;
+  }
+
+  if (tags.includes("性感")) {
+    traits.depth = Math.max(
+      traits.depth,
+      0.72
+    );
+    traits.softness = Math.max(
+      traits.softness,
+      0.65
+    );
+    traits.warmth = Math.max(
+      traits.warmth,
+      0.62
+    );
+  }
+
+  if (tags.includes("可靠")) {
+    traits.maturity = Math.max(
+      traits.maturity,
+      0.82
+    );
+    traits.warmth = Math.max(
+      traits.warmth,
+      0.72
+    );
+    traits.energy = Math.min(
+      traits.energy,
+      0.5
+    );
+  }
+
+  return {
+    gender: String(gender || "")
+      .trim()
+      .toLowerCase(),
+    age: String(age || "")
+      .trim()
+      .toLowerCase(),
+    tags,
+    traits,
+    description: text,
+  };
+}
+
+// ============================================================
+// Voice Bank：相似度評分
+// ============================================================
+
+function calculateVoiceScore(
+  requested,
+  candidate
+) {
+  const requestedGender =
+    String(requested.gender || "")
+      .trim()
+      .toLowerCase();
+
+  const candidateGender =
+    String(candidate.gender || "")
+      .trim()
+      .toLowerCase();
+
+  // gender 不同時直接淘汰。
+  if (
+    requestedGender &&
+    candidateGender &&
+    requestedGender !== candidateGender
+  ) {
+    return -9999;
+  }
+
+  let score = 0;
+
+  // 性別
+  if (
+    requestedGender &&
+    requestedGender === candidateGender
+  ) {
+    score += 30;
+  }
+
+  // 年齡類型
+  const requestedAge =
+    String(requested.age || "")
+      .trim()
+      .toLowerCase();
+
+  const candidateAge =
+    String(candidate.age || "")
+      .trim()
+      .toLowerCase();
+
+  if (
+    requestedAge &&
+    candidateAge &&
+    requestedAge === candidateAge
+  ) {
+    score += 15;
+  }
+
+  // 標籤
+  const requestedTags = new Set(
+    Array.isArray(requested.tags)
+      ? requested.tags
+      : []
+  );
+
+  const candidateTags = new Set(
+    Array.isArray(candidate.tags)
+      ? candidate.tags
+      : []
+  );
+
+  for (const tag of requestedTags) {
+    if (candidateTags.has(tag)) {
+      score += 12;
+    }
+  }
+
+  // 玩家描述沒有命中任何關鍵字時，
+  // 仍然讓同 gender 的聲音可以進入候選。
+  if (requestedTags.size === 0) {
+    score += 5;
+  }
+
+  // traits 數值距離
+  const requestedTraits =
+    requested.traits &&
+    typeof requested.traits === "object"
+      ? requested.traits
+      : {};
+
+  const candidateTraits =
+    candidate.traits &&
+    typeof candidate.traits === "object"
+      ? candidate.traits
+      : {};
+
+  const traitWeights = {
+    depth: 14,
+    warmth: 10,
+    energy: 10,
+    softness: 8,
+    maturity: 12,
+    brightness: 8,
+  };
+
+  for (
+    const [traitName, weight]
+    of Object.entries(traitWeights)
+  ) {
+    const requestedValue =
+      Number(
+        requestedTraits[traitName] ?? 0.5
+      );
+
+    const candidateValue =
+      Number(
+        candidateTraits[traitName] ?? 0.5
+      );
+
+    if (
+      !Number.isFinite(requestedValue) ||
+      !Number.isFinite(candidateValue)
+    ) {
+      continue;
+    }
+
+    const difference = Math.abs(
+      requestedValue - candidateValue
+    );
+
+    const similarity = Math.max(
+      0,
+      1 - difference
+    );
+
+    score += similarity * weight;
+  }
+
+  return Number(score.toFixed(2));
+}
+
+// ============================================================
+// Cloud Function：從 Voice Bank 配對最接近的三個聲音
+// ============================================================
+
+exports.matchVoiceFromBank = onCall(
+  {
+    region: REGION,
+  },
+  async (request) => {
+    requireLogin(request);
+
+    const {
+      description,
+      characterName,
+      gender,
+      age,
+    } = request.data || {};
+
+    const normalizedDescription =
+      String(description || "").trim();
+
+    if (!normalizedDescription) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少聲音描述"
+      );
+    }
+
+    const requestedProfile =
+      normalizeVoiceRequest({
+        description:
+          normalizedDescription,
+        gender,
+        age,
+      });
+
+    console.log(
+      "========== matchVoiceFromBank =========="
+    );
+    console.log(
+      "uid:",
+      request.auth?.uid
+    );
+    console.log(
+      "characterName:",
+      characterName || ""
+    );
+    console.log(
+      "description:",
+      normalizedDescription
+    );
+    console.log(
+      "requestedProfile:",
+      JSON.stringify(
+        requestedProfile
+      )
+    );
+
+    const snapshot = await db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("voice_bank")
+      .where("enabled", "==", true)
+      .get();
+
+    if (snapshot.empty) {
+      throw new HttpsError(
+        "not-found",
+        "請再試一次喔"
+      );
+    }
+
+    const matches = snapshot.docs
+      .map((doc) => {
+        const data = doc.data();
+
+        const rawDefaultSettings =
+          data.defaultSettings;
+
+        const defaultSettings =
+          rawDefaultSettings &&
+          typeof rawDefaultSettings ===
+            "object"
+            ? rawDefaultSettings
+            : {};
+
+        const voiceData = {
+          documentId: doc.id,
+
+          voiceId: String(
+            data.voiceId || ""
+          ).trim(),
+
+          name:
+            String(
+              data.name || ""
+            ).trim() ||
+            "未命名聲音",
+
+          gender: String(
+            data.gender || ""
+          )
+            .trim()
+            .toLowerCase(),
+
+          age: String(
+            data.age || ""
+          )
+            .trim()
+            .toLowerCase(),
+
+          tags: Array.isArray(
+            data.tags
+          )
+            ? data.tags
+            : [],
+
+          traits:
+            data.traits &&
+            typeof data.traits ===
+              "object"
+              ? data.traits
+              : {},
+
+          defaultSettings,
+
+          previewUrl: String(
+            data.previewUrl || ""
+          ).trim(),
+        };
+
+        return {
+          ...voiceData,
+          score: calculateVoiceScore(
+            requestedProfile,
+            voiceData
+          ),
+        };
+      })
+      .filter(
+        (voice) =>
+          voice.voiceId &&
+          voice.score > -9999
+      )
+      .sort(
+        (a, b) =>
+          b.score - a.score
+      )
+      .slice(0, 3);
+
+    if (matches.length === 0) {
+      throw new HttpsError(
+        "not-found",
+        "請再試一次"
+      );
+    }
+
+    console.log(
+      "========== Voice Match Result =========="
+    );
+
+    console.log(
+      JSON.stringify(
+        matches.map((voice) => ({
+          voiceId: voice.voiceId,
+          name: voice.name,
+          score: voice.score,
+          gender: voice.gender,
+          age: voice.age,
+          tags: voice.tags,
+        }))
+      )
+    );
+
+    return {
+      requestedProfile,
+      previews: matches.map(
+        (voice) => ({
+          voiceId: voice.voiceId,
+          name: voice.name,
+          previewUrl:
+            voice.previewUrl,
+          score: voice.score,
+          tags: voice.tags,
+          traits: voice.traits,
+          defaultSettings:
+            voice.defaultSettings,
+        })
+      ),
+    };
+  }
+);
+
+exports.uploadVoiceBank = onCall(
+  {
+    region: REGION,
+  },
+  async (request) => {
+    requireLogin(request);
+
+    // 只有你的 Firebase UID 可以執行。
+    const officialCreatorUids = new Set([
+      "B71k2kyooubYsOtIO1nkiBwyBXt2",
+    ]);
+
+    const uid = request.auth?.uid;
+
+    if (!uid || !officialCreatorUids.has(uid)) {
+      throw new HttpsError(
+        "permission-denied",
+        "你沒有初始化 Voice Bank 的權限"
+      );
+    }
+
+    const voices = [
+      {
+        documentId: "male_college_low_01",
+        voiceId: "H9O9f48DKXnZzFpd3IDY",
+        name: "低沉男大學生",
+        gender: "male",
+        age: "young",
+        enabled: true,
+        tags: [
+          "低沉",
+          "成熟",
+          "磁性",
+          "可靠",
+        ],
+        traits: {
+          depth: 0.82,
+          warmth: 0.55,
+          energy: 0.48,
+          softness: 0.42,
+          maturity: 0.68,
+          brightness: 0.32,
+        },
+        defaultSettings: {
+          stability: 0.45,
+          style: 0.55,
+        },
+        previewUrl: "",
+      },
+      {
+        documentId: "male_highschool_youth_01",
+        voiceId: "xq9zKRI69Pfk0TE4Oke4",
+        name: "青春男高中生",
+        gender: "male",
+        age: "young",
+        enabled: true,
+        tags: [
+          "少年",
+          "活潑",
+          "陽光",
+          "青春",
+        ],
+        traits: {
+          depth: 0.28,
+          warmth: 0.72,
+          energy: 0.90,
+          softness: 0.52,
+          maturity: 0.24,
+          brightness: 0.88,
+        },
+        defaultSettings: {
+          stability: 0.35,
+          style: 0.62,
+        },
+        previewUrl: "",
+      },
+      {
+        documentId: "female_gentle_intellectual_01",
+        voiceId: "9lHjugDhwqoxA5MhX0az",
+        name: "溫柔知性女聲",
+        gender: "female",
+        age: "young",
+        enabled: true,
+        tags: [
+          "溫柔",
+          "知性",
+          "成熟",
+          "可靠",
+        ],
+        traits: {
+          depth: 0.48,
+          warmth: 0.88,
+          energy: 0.42,
+          softness: 0.82,
+          maturity: 0.78,
+          brightness: 0.52,
+        },
+        defaultSettings: {
+          stability: 0.52,
+          style: 0.45,
+        },
+        previewUrl: "",
+      },
+      {
+        documentId: "female_cute_01",
+        voiceId: "BT0SH7Hb8NRPpT5xbCgg",
+        name: "可愛甜美女聲",
+        gender: "female",
+        age: "young",
+        enabled: true,
+        tags: [
+          "甜美",
+          "可愛",
+          "活潑",
+          "少女",
+        ],
+        traits: {
+          depth: 0.18,
+          warmth: 0.82,
+          energy: 0.78,
+          softness: 0.88,
+          maturity: 0.24,
+          brightness: 0.94,
+        },
+        defaultSettings: {
+          stability: 0.38,
+          style: 0.60,
+        },
+        previewUrl: "",
+      },
+      {
+        documentId: "female_fresh_01",
+        voiceId: "r6qgCCGI7RWKXCagm158",
+        name: "清爽女聲",
+        gender: "female",
+        age: "young",
+        enabled: true,
+        tags: [
+          "清爽",
+          "陽光",
+          "活潑",
+          "溫柔",
+        ],
+        traits: {
+          depth: 0.30,
+          warmth: 0.72,
+          energy: 0.75,
+          softness: 0.64,
+          maturity: 0.42,
+          brightness: 0.84,
+        },
+        defaultSettings: {
+          stability: 0.42,
+          style: 0.50,
+        },
+        previewUrl: "",
+      },
+      {
+        documentId: "male_robot_high_01",
+        voiceId: "zcdQ6CUofeH2gS9hw3Lx",
+        name: "高音機械男聲",
+        gender: "male",
+        age: "young",
+        enabled: true,
+        tags: [
+          "機械",
+          "科技",
+          "冷淡",
+          "高音",
+        ],
+        traits: {
+          depth: 0.22,
+          warmth: 0.12,
+          energy: 0.48,
+          softness: 0.16,
+          maturity: 0.42,
+          brightness: 0.90,
+        },
+        defaultSettings: {
+          stability: 0.60,
+          style: 0.38,
+        },
+        previewUrl: "",
+      },
+    ];
+
+    const collectionRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("voice_bank");
+
+    const batch = db.batch();
+
+    for (const voice of voices) {
+      const {
+        documentId,
+        ...voiceData
+      } = voice;
+
+      batch.set(
+        collectionRef.doc(documentId),
+        {
+          ...voiceData,
+          updatedAt:
+            FieldValue.serverTimestamp(),
+        },
+        {
+          merge: true,
+        }
+      );
+    }
+
+    await batch.commit();
+
+    console.log(
+      `✅ Voice Bank 已同步 ${voices.length} 筆資料`
+    );
+
+    return {
+      success: true,
+      count: voices.length,
+      documentIds: voices.map(
+        (voice) => voice.documentId
+      ),
+    };
+  }
+);

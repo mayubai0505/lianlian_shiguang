@@ -4410,4 +4410,10 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'खाता पुनर्स्थापित करें';
+
+  @override
+  String get voice_preview => 'वॉयस चलाएं';
+
+  @override
+  String get voice_preview_failed => 'वॉयस चलाने में विफल';
 }

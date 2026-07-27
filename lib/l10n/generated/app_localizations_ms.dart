@@ -4414,4 +4414,10 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'Pulihkan Akaun';
+
+  @override
+  String get voice_preview => 'Mainkan Audio';
+
+  @override
+  String get voice_preview_failed => 'Gagal memainkan audio';
 }

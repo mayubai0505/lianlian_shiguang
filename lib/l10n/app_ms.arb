@@ -2014,5 +2014,7 @@
     "restoreAccountButton": "Pulihkan Akaun",
     "@restoreAccountButton": {
         "description": "Button text to restore account"
-    }
+    },"voice_preview": "Mainkan Audio",
+    "voice_preview_failed": "Gagal memainkan audio"
+
 }

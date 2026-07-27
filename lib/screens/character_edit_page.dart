@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import 'character_model.dart';
 import 'package:http/http.dart' as http; // ✨ 負責跟後端連線
- import 'package:audioplayers/audioplayers.dart'; // 記得匯入
+import 'package:audioplayers/audioplayers.dart'; // 記得匯入
 import '../services/app_constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
@@ -108,10 +108,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   final _socialInteractionController = TextEditingController(); // 社交/環境互動
   final _playerIdentityController = TextEditingController(); // 玩家預設身分
   List<String> getRelationshipOptions(AppLocalizations l10n){ return[l10n.relationship_childhood_friend, // 青梅竹馬
-  l10n.relationship_senior_junior,    // 學長學妹
-  l10n.relationship_bickering_couple,   // 歡喜冤家
-  l10n.relationship_colleagues,       // 職場同事
-  l10n.relationship_other,     // 這裡用翻譯的「其他」
+    l10n.relationship_senior_junior,    // 學長學妹
+    l10n.relationship_bickering_couple,   // 歡喜冤家
+    l10n.relationship_colleagues,       // 職場同事
+    l10n.relationship_other,     // 這裡用翻譯的「其他」
   ];}
   // --- State Variables ---
   bool _isDeleting = false; // 刪除狀態
@@ -583,6 +583,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voice_preview_url': _finalVoicePreviewUrl,
         'voiceStability': _voiceStability,
         'voiceStyle': _voiceStyle,
+        'voiceSource': finalVoiceIdToSave.isEmpty ? null : 'voice_bank',
         'relationships': _relationships, // 🌟 補上這行，Tab 3 的關係就不會消失了！
         'multiCharacters': multiCharactersString,
         'sourceCharacterId': widget.character?.id,
@@ -1228,6 +1229,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voice_preview_url': _finalVoicePreviewUrl,
         'voiceStability': _voiceStability,
         'voiceStyle': _voiceStyle,
+        'voiceSource': finalVoiceIdToSave.isEmpty ? null : 'voice_bank',
         'relationships': _relationships,
         'multiCharacters': multiCharactersString,
         'createdAt': (widget.character != null && widget.character!.createdAt != null)
@@ -1331,7 +1333,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       Navigator.of(context).pop(result);
 
       return;
-      } catch (e) {
+    } catch (e) {
       if (mounted) Navigator.of(context, rootNavigator: true).pop();
       print("!!! 儲存角色時發生錯誤: ${e.toString()}");
       if (mounted) _showErrorDialog(l10n.cannot_save_title, l10n.save_error_detail(e.toString()));
@@ -1654,119 +1656,336 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       }) async {
     final l10n = AppLocalizations.of(context)!;
 
-    final String finalCharacterName = characterName ?? l10n.me;
+    final String finalCharacterName =
+    (characterName?.trim().isNotEmpty ?? false)
+        ? characterName!.trim()
+        : l10n.me;
 
-    setState(() {
-      _isGeneratingVoice = true;
-      _voiceSamples = [];
-      _selectedSampleIndex = null;
-    });
+    if (mounted) {
+      setState(() {
+        _isGeneratingVoice = true;
+        _voiceSamples = [];
+        _selectedSampleIndex = null;
+        _playingSampleIndex = null;
+      });
+    }
 
     try {
-      final String sampleScript = l10n.voice_sample_script;
+      debugPrint('========== 開始配對 Voice Bank ==========');
+      debugPrint('Character: $finalCharacterName');
+      debugPrint('Gender: $gender');
+      debugPrint('Age: $age');
+      debugPrint('Description: ${prompt.trim()}');
 
-      final String voiceDescription =
-          "A $age $gender voice for a character named $finalCharacterName. "
-          "$prompt Studio quality recording, clear pronunciation.";
-
-      final callable = _functions.httpsCallable('createVoicePreviews');
+      final callable = _functions.httpsCallable(
+        'matchVoiceFromBank',
+      );
 
       final result = await callable.call({
-        'sampleScript': sampleScript,
-        'voiceDescription': voiceDescription,
+        'description': prompt.trim(),
+        'characterName': finalCharacterName,
+        'gender': gender,
+        'age': age,
       });
 
-      final responseData = Map<String, dynamic>.from(result.data);
-      final previews = responseData['previews'] as List<dynamic>;
+      debugPrint(
+        '✅ matchVoiceFromBank 回傳：${result.data}',
+      );
 
-      final List<Map<String, dynamic>> newSamples = [];
+      if (result.data is! Map) {
+        throw Exception('語音服務回傳格式錯誤');
+      }
 
-      for (int i = 0; i < previews.length; i++) {
-        final preview = Map<String, dynamic>.from(previews[i]);
+      final responseData = Map<String, dynamic>.from(
+        result.data as Map,
+      );
 
-        final String generatedVoiceId =
-            preview['generated_voice_id']?.toString() ?? '';
+      final rawPreviews = responseData['previews'];
 
-        final String audioBase64 =
-            preview['audio_base_64']?.toString() ?? '';
+      if (rawPreviews is! List) {
+        throw Exception('語音服務沒有回傳 previews');
+      }
 
-        if (generatedVoiceId.isEmpty || audioBase64.isEmpty) {
-          debugPrint("⚠️ 第 $i 個語音樣本資料不完整，已略過");
+      final List<Map<String, dynamic>> matchedSamples = [];
+
+      for (int i = 0; i < rawPreviews.length; i++) {
+        final rawPreview = rawPreviews[i];
+
+        if (rawPreview is! Map) {
+          debugPrint('⚠️ 第 $i 個配對結果格式錯誤，已略過');
           continue;
         }
 
-        final Uint8List audioBytes = base64Decode(audioBase64);
+        final preview = Map<String, dynamic>.from(
+          rawPreview,
+        );
 
-        if (!kIsWeb) {
-          try {
-            final directory = await getTemporaryDirectory();
-            final filePath = '${directory.path}/temp_voice_$i.mp3';
-            final file = File(filePath);
-            await file.writeAsBytes(audioBytes);
-            debugPrint("手機版：已存檔至 $filePath");
-          } catch (e) {
-            debugPrint("手機版存檔失敗: $e");
-          }
-        } else {
-          debugPrint("網頁版：略過存檔，直接使用記憶體數據");
+        final String voiceId =
+            preview['voiceId']?.toString().trim() ??
+                preview['voice_id']?.toString().trim() ??
+                '';
+
+        if (voiceId.isEmpty) {
+          debugPrint('⚠️ 第 $i 個配對結果缺少 voiceId，已略過');
+          continue;
         }
 
-        newSamples.add({
-          'generated_voice_id': generatedVoiceId,
-          'audio_bytes': audioBytes,
-          'preview_url': '',
+        final rawSettings = preview['defaultSettings'];
+        final Map<String, dynamic> defaultSettings =
+        rawSettings is Map
+            ? Map<String, dynamic>.from(rawSettings)
+            : <String, dynamic>{};
+
+        matchedSamples.add({
+          'voice_id': voiceId,
+          'name': preview['name']?.toString().trim() ?? '',
+          'preview_url':
+          preview['previewUrl']?.toString().trim() ??
+              preview['preview_url']?.toString().trim() ??
+              '',
+          'match_score': preview['score'] ?? preview['matchScore'],
+          'default_settings': defaultSettings,
+
+          // 第一次播放後會把試聽音訊暫存在這裡，
+          // 再按一次不需要重新呼叫 API。
+          'audio_bytes': null,
         });
       }
 
-      if (!mounted) return;
-
-      if (newSamples.isNotEmpty) {
-        _selectedSampleIndex = 0;
-        _selectedVoiceId = newSamples[0]['generated_voice_id'];
+      if (matchedSamples.isEmpty) {
+        throw Exception('尋找聲音失敗,請再試一次');
       }
 
+      if (!mounted) return;
+
+      final firstSettings =
+      matchedSamples.first['default_settings'];
+
       setState(() {
-        _voiceSamples = newSamples;
+        _voiceSamples = matchedSamples;
+        _selectedSampleIndex = 0;
+        _selectedVoiceId =
+            matchedSamples.first['voice_id']?.toString();
+
+        if (firstSettings is Map) {
+          final stability = firstSettings['stability'];
+          final style = firstSettings['style'];
+
+          if (stability is num) {
+            _voiceStability =
+                stability.toDouble().clamp(0.1, 0.9);
+          }
+
+          if (style is num) {
+            _voiceStyle =
+                style.toDouble().clamp(0.0, 1.0);
+          }
+        }
+
         _isGeneratingVoice = false;
       });
-    } catch (e) {
-      debugPrint("聲音生成失敗: $e");
+
+      debugPrint(
+        '✅ 成功配對 ${matchedSamples.length} 個 Voice Bank 聲音',
+      );
+    } on FirebaseFunctionsException catch (
+    e,
+    stackTrace
+    ) {
+    debugPrint(
+    '========== Voice Bank 配對失敗 ==========',
+    );
+    debugPrint('code: ${e.code}');
+    debugPrint('message: ${e.message}');
+    debugPrint('details: ${e.details}');
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (!mounted) return;
+
+    setState(() {
+    _isGeneratingVoice = false;
+    });
+
+    ToastUtils.showCenterToast(
+    context,
+    e.message ?? '尋找不完整,請稍後再試',
+    isError: true,
+    );
+    } catch (e, stackTrace) {
+    debugPrint(
+    '========== Voice Bank 配對未知錯誤 ==========',
+    );
+    debugPrint('error: $e');
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (!mounted) return;
+
+    setState(() {
+    _isGeneratingVoice = false;
+    });
+
+    ToastUtils.showCenterToast(
+    context,
+    l10n.elevenlabs_error(
+    e.toString().replaceFirst(
+    'Exception: ',
+    '',
+    ),
+    ),
+    isError: true,
+    );
+    }
+  }
+
+  Future<void> _previewVoiceSample(int index) async {
+    if (index < 0 || index >= _voiceSamples.length) {
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    final sample = _voiceSamples[index];
+
+    final String voiceId =
+        sample['voice_id']?.toString().trim() ?? '';
+
+    if (voiceId.isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        '聲音資料不完整',
+        isError: true,
+      );
+      return;
+    }
+
+    if (_playingSampleIndex == index) {
+      await _audioPlayer.pause();
+
+      if (mounted) {
+        setState(() {
+          _playingSampleIndex = null;
+        });
+      }
+
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _playingSampleIndex = index;
+      });
+    }
+
+    try {
+      final cachedBytes =
+      sample['audio_bytes'] as Uint8List?;
+
+      if (cachedBytes != null &&
+          cachedBytes.isNotEmpty) {
+        await _playVoice(cachedBytes);
+        return;
+      }
+
+      final callable = _functions.httpsCallable(
+        'testVoiceSettings',
+      );
+
+      final result = await callable.call({
+        'voiceId': voiceId,
+        'text': l10n.voice_sample_script,
+        'stability': _voiceStability,
+        'style': _voiceStyle,
+      });
+
+      if (result.data is! Map) {
+        throw Exception('試聽服務回傳格式錯誤');
+      }
+
+      final data = Map<String, dynamic>.from(
+        result.data as Map,
+      );
+
+      final String audioBase64 =
+          data['audio_base_64']?.toString() ?? '';
+
+      if (audioBase64.isEmpty) {
+        throw Exception('試聽音訊資料為空');
+      }
+
+      final Uint8List audioBytes =
+      base64Decode(audioBase64);
 
       if (!mounted) return;
 
       setState(() {
-        _isGeneratingVoice = false;
+        _voiceSamples[index]['audio_bytes'] =
+            audioBytes;
       });
 
-      ToastUtils.showCenterToast(
-        context,
-        l10n.elevenlabs_error(e.toString()),
-        isError: true,
-      );
+      await _playVoice(audioBytes);
+    } on FirebaseFunctionsException catch (
+    e,
+    stackTrace
+    ) {
+    debugPrint(
+    '試聽聲音失敗：${e.code} ${e.message}',
+    );
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (!mounted) return;
+
+    setState(() {
+    _playingSampleIndex = null;
+    });
+
+    ToastUtils.showCenterToast(
+    context,
+    e.message ?? '播放語音失敗',
+    isError: true,
+    );
+    } catch (e, stackTrace) {
+    debugPrint('播放配對聲音失敗：$e');
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (!mounted) return;
+
+    setState(() {
+    _playingSampleIndex = null;
+    });
+
+    ToastUtils.showCenterToast(
+    context,
+    '播放語音失敗',
+    isError: true,
+    );
     }
   }
 
   Future<void> _testVoiceSettings() async {
     final l10n = AppLocalizations.of(context)!;
-    // 🌟 核心修正：讓系統去找「真正存檔的聲音 ID」，如果沒有才去找「剛選中的」
-    final String? targetVoiceId = _generatedVoiceId ?? _selectedVoiceId;
 
-    // 防呆：確認玩家有先選定一個聲音
-    if (targetVoiceId == null || targetVoiceId.isEmpty) {
-      // ✨ 總裁級引導：溫柔提醒玩家為角色注入「聲音的靈魂」
+    final String targetVoiceId =
+    (_generatedVoiceId ?? _selectedVoiceId ?? '')
+        .trim();
+
+    if (targetVoiceId.isEmpty) {
       ToastUtils.showCenterToast(
         context,
         l10n.voice_bind_first,
-        customIcon: Icons.mic_external_off_rounded, // 💡 總裁精選：「找不到麥克風」的圖示，直覺告訴玩家要去設定聲音
-        // 或是使用 Icons.record_voice_over_rounded (配音設定) 也很適合！
+        customIcon: Icons.mic_external_off_rounded,
       );
       return;
     }
 
-    // 1. 上鎖！讓按鈕轉圈圈
-    setState(() => _isTestingSettings = true);
+    if (_isTestingSettings) return;
+
+    setState(() {
+      _isTestingSettings = true;
+    });
+
     try {
-      final callable = _functions.httpsCallable('testVoiceSettings');
+      final callable = _functions.httpsCallable(
+        'testVoiceSettings',
+      );
 
       final result = await callable.call({
         'voiceId': targetVoiceId,
@@ -1775,107 +1994,142 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'style': _voiceStyle,
       });
 
-      final data = Map<String, dynamic>.from(result.data);
-      final Uint8List audioBytes = base64Decode(data['audio_base_64']);
+      if (result.data is! Map) {
+        throw Exception('試聽服務回傳格式錯誤');
+      }
+
+      final data = Map<String, dynamic>.from(
+        result.data as Map,
+      );
+
+      final String audioBase64 =
+          data['audio_base_64']?.toString() ?? '';
+
+      if (audioBase64.isEmpty) {
+        throw Exception('試聽音訊資料為空');
+      }
+
+      final Uint8List audioBytes =
+      base64Decode(audioBase64);
 
       if (!mounted) return;
 
-      // 🌟 大成功！餵給幽靈免疫播放器
-      await _playVoice(audioBytes);
-    } catch (e) {
-      debugPrint("❌ 試聽失敗: $e");
+      _finalAudioBytes = audioBytes;
 
-      if (mounted) {
-        ToastUtils.showCenterToast(
-          context,
-          l10n.voice_test_failed,
-          isError: true,
-        );
-      }
-    }catch (e) {
-      debugPrint("❌ 發生錯誤: $e");
+      await _playVoice(audioBytes);
+    } on FirebaseFunctionsException catch (
+    e,
+    stackTrace
+    ) {
+    debugPrint(
+    '========== testVoiceSettings 失敗 ==========',
+    );
+    debugPrint('code: ${e.code}');
+    debugPrint('message: ${e.message}');
+    debugPrint('details: ${e.details}');
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+    context,
+    e.message ?? l10n.voice_test_failed,
+    isError: true,
+    );
+    } catch (e, stackTrace) {
+    debugPrint('❌ 試聽失敗：$e');
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+    context,
+    l10n.voice_test_failed,
+    isError: true,
+    );
     } finally {
-      // 3. 不管怎樣，最後一定要解鎖
-      if (mounted) {
-        setState(() => _isTestingSettings = false);
-      }
+    if (mounted) {
+    setState(() {
+    _isTestingSettings = false;
+    });
+    }
     }
   }
+
   Future<void> _confirmVoiceSelection() async {
-    if (_selectedSampleIndex == null || _voiceSamples.isEmpty) return;
-
-    final l10n = AppLocalizations.of(context)!;
-
-    setState(() => _isSaving = true);
-
-    final selectedSample = _voiceSamples[_selectedSampleIndex!];
-
-    final String previewVoiceId =
-        selectedSample['generated_voice_id']?.toString() ?? '';
-
-    final Uint8List? selectedAudioBytes =
-    selectedSample['audio_bytes'] as Uint8List?;
-
-    final String previewUrl =
-        selectedSample['preview_url']?.toString() ?? '';
-
-    if (previewVoiceId.isEmpty || selectedAudioBytes == null) {
-      if (mounted) {
-        setState(() => _isSaving = false);
-
-        ToastUtils.showCenterToast(
-          context,
-          l10n.voice_bind_failed,
-          isError: true,
-        );
-      }
+    if (_selectedSampleIndex == null ||
+        _voiceSamples.isEmpty) {
       return;
     }
 
+    if (_isSaving) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final selectedSample =
+    _voiceSamples[_selectedSampleIndex!];
+
+    final String realVoiceId =
+        selectedSample['voice_id']
+            ?.toString()
+            .trim() ??
+            '';
+
+    final String previewUrl =
+        selectedSample['preview_url']
+            ?.toString()
+            .trim() ??
+            '';
+
+    final Uint8List? selectedAudioBytes =
+    selectedSample['audio_bytes']
+    as Uint8List?;
+
+    if (realVoiceId.isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        '選取的聲音資料不完整',
+        isError: true,
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
     try {
-      // ✅ Cloud Function：把 preview voice 轉成正式永久 voice
-      final callable = _functions.httpsCallable('createVoiceFromPreview');
-
-      final result = await callable.call({
-        'voiceName': l10n.voice_name_default(
-          _nameController.text.trim().isNotEmpty
-              ? _nameController.text.trim()
-              : l10n.default_unnamed_character,
-        ),
-        'voiceDescription': l10n.voice_description_default,
-        'generatedVoiceId': previewVoiceId,
-      });
-
-      final data = Map<String, dynamic>.from(result.data);
-
-      // ✅ 成功時直接從 Cloud Function 回傳資料拿正式 voice_id
-      final String realVoiceId =
-          data['voice_id']?.toString() ??
-              data['voiceId']?.toString() ??
-              previewVoiceId;
-
-      debugPrint("✅ 成功獲得正式 Voice ID: $realVoiceId");
+      debugPrint(
+        '✅ Voice選定正式 Voice ID：$realVoiceId',
+      );
 
       if (!mounted) return;
 
-      // ✅ 先更新本頁狀態，讓後續儲存角色時會帶到 voice_id
       setState(() {
         _generatedVoiceId = realVoiceId;
         _selectedVoiceId = realVoiceId;
         _finalAudioBytes = selectedAudioBytes;
         _finalVoicePreviewUrl = previewUrl;
-        _voiceSamples = []; // 清空三張樣本卡片
+        _voiceSamples = [];
+        _selectedSampleIndex = null;
+        _playingSampleIndex = null;
       });
 
-      // ✅ 如果是編輯既有角色，立刻同步到 Firebase
+      // 編輯既有角色時，立即同步 Firestore。
+      // 新建角色則等玩家按下「儲存角色」時，
+      // 由原本 characterData 一起寫入。
       if (widget.character != null) {
-        final currentUser = FirebaseAuth.instance.currentUser;
+        final currentUser =
+            FirebaseAuth.instance.currentUser;
 
-        if (!widget.character!.isPublic && currentUser == null) {
-          throw Exception("找不到使用者，無法更新私人角色語音");
+        if (!widget.character!.isPublic &&
+            currentUser == null) {
+          throw Exception(
+            '找不到使用者，無法更新私人角色語音',
+          );
         }
 
-        final DocumentReference characterRef = widget.character!.isPublic
+        final DocumentReference characterRef =
+        widget.character!.isPublic
             ? FirebaseFirestore.instance
             .collection('artifacts')
             .doc(AppConfig.appId)
@@ -1894,18 +2148,21 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           'voice_preview_url': previewUrl,
           'voiceStability': _voiceStability,
           'voiceStyle': _voiceStyle,
-          'lastUpdated': FieldValue.serverTimestamp(),
+          'voiceSource': 'voice_bank',
+          'lastUpdated':
+          FieldValue.serverTimestamp(),
         });
 
         if (!mounted) return;
 
         ToastUtils.showCenterToast(
           context,
-          l10n.voice_bind_success(widget.character!.name),
+          l10n.voice_bind_success(
+            widget.character!.name,
+          ),
           customIcon: Icons.cloud_done_rounded,
         );
       } else {
-        // ✅ 新建角色階段：只存在本頁狀態，等按「儲存角色」時一起寫進 characterData
         if (!mounted) return;
 
         ToastUtils.showCenterToast(
@@ -1914,20 +2171,47 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           customIcon: Icons.edit_note_rounded,
         );
       }
-    } catch (e) {
-      debugPrint("❌ 語音綁定失敗: $e");
+    } on FirebaseException catch (
+    e,
+    stackTrace
+    ) {
+    debugPrint(
+    '========== 儲存 Voice Bank 選擇失敗 ==========',
+    );
+    debugPrint('plugin: ${e.plugin}');
+    debugPrint('code: ${e.code}');
+    debugPrint('message: ${e.message}');
+    debugPrintStack(stackTrace: stackTrace);
 
-      if (mounted) {
-        ToastUtils.showCenterToast(
-          context,
-          l10n.voice_bind_failed,
-          isError: true,
-        );
-      }
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+    context,
+    '聲音已選取，但角色資料儲存失敗：'
+    '${e.message ?? e.code}',
+    isError: true,
+    );
+    } catch (e, stackTrace) {
+    debugPrint(
+    '========== 選定 Voice Bank 聲音失敗 ==========',
+    );
+    debugPrint('error: $e');
+    debugPrintStack(stackTrace: stackTrace);
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+    context,
+    '綁定聲音失敗：'
+    '${e.toString().replaceFirst("Exception: ", "")}',
+    isError: true,
+    );
     } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
+    if (mounted) {
+    setState(() {
+    _isSaving = false;
+    });
+    }
     }
   }
 
@@ -1968,9 +2252,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     return GestureDetector(
       // 點擊任何空白處時觸發這行：取消當前焦點（收起鍵盤）
-        onTap: () => FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
 
-        // 原本的 PopScope 變成 GestureDetector 的 child
+      // 原本的 PopScope 變成 GestureDetector 的 child
       child: PopScope(
         canPop: _isLeavingPage,
         onPopInvokedWithResult: (didPop, result) async {
@@ -1979,456 +2263,456 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
           await _handleExitPressed();
         },
-      // ✨✨✨ 核心升級：加入 DefaultTabController ✨✨✨
-      child: DefaultTabController(
-        length: 3, // 三個分頁
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              isEditing
-                  ? l10n.edit_character_title(widget.character!.name)
-                  : l10n.createCharacterTitle,
-            ),
-            elevation: 0,
+        // ✨✨✨ 核心升級：加入 DefaultTabController ✨✨✨
+        child: DefaultTabController(
+          length: 3, // 三個分頁
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                isEditing
+                    ? l10n.edit_character_title(widget.character!.name)
+                    : l10n.createCharacterTitle,
+              ),
+              elevation: 0,
 
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded),
-              onPressed: _handleExitPressed,
-            ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                onPressed: _handleExitPressed,
+              ),
 
-            actions: [
-              if (isEditing)
-                IconButton(
-                  icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
-                  tooltip:l10n.test_mode_tooltip,
-                  onPressed: () {
-                    // 🛡️ 總裁防呆第一關：檢查角色是不是還沒出生的「幽靈」
-                    if (widget.character == null) {
-                      // ✨ 總裁級防禦網：測試模式精準攔截！告別突兀的橘色工程色塊
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.test_mode_error,
-                        customIcon: Icons.warning_amber_rounded, // 💡 總裁精選：用優雅的黃色/橘色警告圖示，取代整塊橘色背景
-                        // 如果你覺得這算是嚴重錯誤，也可以直接換成 isError: true
-                      );
-                      return; // 煞車！絕對不准跳轉！
-                    }
+              actions: [
+                if (isEditing)
+                  IconButton(
+                    icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
+                    tooltip:l10n.test_mode_tooltip,
+                    onPressed: () {
+                      // 🛡️ 總裁防呆第一關：檢查角色是不是還沒出生的「幽靈」
+                      if (widget.character == null) {
+                        // ✨ 總裁級防禦網：測試模式精準攔截！告別突兀的橘色工程色塊
+                        ToastUtils.showCenterToast(
+                          context,
+                          l10n.test_mode_error,
+                          customIcon: Icons.warning_amber_rounded, // 💡 總裁精選：用優雅的黃色/橘色警告圖示，取代整塊橘色背景
+                          // 如果你覺得這算是嚴重錯誤，也可以直接換成 isError: true
+                        );
+                        return; // 煞車！絕對不准跳轉！
+                      }
 
 // 💡 放行！
 // ✨ 總裁級過場：測試模式啟動的專屬儀式感
-                    ToastUtils.showCenterToast(
-                      context,
-                      l10n.test_mode_notice,
-                      customIcon: Icons.science_rounded, // 💡 總裁秘技：「實驗室/燒杯」圖示！最適合用在 Test Mode 的放行提示
-                      // 喜歡速度感的話，也可以用 Icons.rocket_launch_rounded (火箭發射) 🚀
-                    );
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(
-                      character: widget.character!, // 這時候用 ! 就絕對安全了
-                      chatMode: 'daily',
-                      sessionId: 'TEST_DRIVE_${DateTime.now().millisecondsSinceEpoch}',
-                      selectedLanguage: l10n.traditional_chinese,
-                      characterId: '',
-                    )));
-                  },
-                ),
-              if (isEditing)
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: _isDeleting ? null : _deleteCharacter,
-                  tooltip:l10n.delete_character_tooltip,
-                ),
-            ],
-            // ✨✨✨ 頂部導航分頁列 ✨✨✨
-            bottom: TabBar(
-              labelColor: theme.colorScheme.primary,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: theme.colorScheme.primary,
-              tabs:  [
-                Tab(icon: const Icon(Icons.menu_book), text: l10n.tab_basic_story),
-                Tab(icon: const Icon(Icons.mic), text: l10n.tab_voice),
-                Tab(icon: const Icon(Icons.hub), text: l10n.tab_relationship),
-              ],
-            ),
-          ),
-          body: Container(
-            decoration: themeNotifier.currentBackground,
-            child: Stack(
-              children: [
-                // ✨✨✨ 根據分頁顯示不同內容 ✨✨✨
-                TabBarView(
-                  children: [
-                    // --- 抽屜 1：基本與劇情 ---
-                    _buildTab1_BasicAndStory(theme, l10n, currentValidGender, currentValidRelationship, genderOptions, relationshipOptions, defaultPersonalityTags),
-
-                    // --- 抽屜 2：語音設定 ---
-                    _buildTab2_Voice(theme),
-
-                    // --- 抽屜 3：關係編輯 ---
-                    _buildTab3_Relationships(theme),
-                  ],
-                ),
-
-                // --- 懸浮儲存按鈕 (維持在最上層，不管哪個分頁都看得到) ---
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    width: double.infinity,
-                    color: theme.scaffoldBackgroundColor.withValues(alpha:0.95),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                        elevation: 4,
-                      ),
-                      onPressed: () {
-                        debugPrint('🟢 強制儲存按鈕被點擊：isEditing=$isEditing, isSaving=$_isSaving, isPublic=$_isPublic');
-                        _saveCharacter();
-                      },
-                      child: _isSaving
-                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : Text(isEditing ? l10n.save_changes_button : l10n.createButton, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    ),
+                      ToastUtils.showCenterToast(
+                        context,
+                        l10n.test_mode_notice,
+                        customIcon: Icons.science_rounded, // 💡 總裁秘技：「實驗室/燒杯」圖示！最適合用在 Test Mode 的放行提示
+                        // 喜歡速度感的話，也可以用 Icons.rocket_launch_rounded (火箭發射) 🚀
+                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(
+                        character: widget.character!, // 這時候用 ! 就絕對安全了
+                        chatMode: 'daily',
+                        sessionId: 'TEST_DRIVE_${DateTime.now().millisecondsSinceEpoch}',
+                        selectedLanguage: l10n.traditional_chinese,
+                        characterId: '',
+                      )));
+                    },
                   ),
-                )
+                if (isEditing)
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    onPressed: _isDeleting ? null : _deleteCharacter,
+                    tooltip:l10n.delete_character_tooltip,
+                  ),
               ],
+              // ✨✨✨ 頂部導航分頁列 ✨✨✨
+              bottom: TabBar(
+                labelColor: theme.colorScheme.primary,
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: theme.colorScheme.primary,
+                tabs:  [
+                  Tab(icon: const Icon(Icons.menu_book), text: l10n.tab_basic_story),
+                  Tab(icon: const Icon(Icons.mic), text: l10n.tab_voice),
+                  Tab(icon: const Icon(Icons.hub), text: l10n.tab_relationship),
+                ],
+              ),
+            ),
+            body: Container(
+              decoration: themeNotifier.currentBackground,
+              child: Stack(
+                children: [
+                  // ✨✨✨ 根據分頁顯示不同內容 ✨✨✨
+                  TabBarView(
+                    children: [
+                      // --- 抽屜 1：基本與劇情 ---
+                      _buildTab1_BasicAndStory(theme, l10n, currentValidGender, currentValidRelationship, genderOptions, relationshipOptions, defaultPersonalityTags),
+
+                      // --- 抽屜 2：語音設定 ---
+                      _buildTab2_Voice(theme),
+
+                      // --- 抽屜 3：關係編輯 ---
+                      _buildTab3_Relationships(theme),
+                    ],
+                  ),
+
+                  // --- 懸浮儲存按鈕 (維持在最上層，不管哪個分頁都看得到) ---
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      width: double.infinity,
+                      color: theme.scaffoldBackgroundColor.withValues(alpha:0.95),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                          elevation: 4,
+                        ),
+                        onPressed: () {
+                          debugPrint('🟢 強制儲存按鈕被點擊：isEditing=$isEditing, isSaving=$_isSaving, isPublic=$_isPublic');
+                          _saveCharacter();
+                        },
+                        child: _isSaving
+                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : Text(isEditing ? l10n.save_changes_button : l10n.createButton, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
       ),
-        ),
     );
   }
 
   Widget _buildTab1_BasicAndStory(ThemeData theme, AppLocalizations l10n, String? currentValidGender, String? currentValidRelationship, List<Map<String, String>> genderOptions, List<String> relationshipOptions, List<String> defaultPersonalityTags) {    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 150.0), // 底部留白給儲存按鈕
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildImageGallery(),
-          const SizedBox(height: 24),
-          // 💡「卡片 1：🧬 基礎資料
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle(l10n.section_basic_info, theme),
-                  _buildTextField(_nameController, l10n.charNameLabel),
-                  _buildTextField(_ageController, l10n.charAgeLabel),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: TextField(
-                      controller: _occupationController,
-                      decoration: InputDecoration(
-                        labelText: l10n.charJobLabel, // 標籤維持原本的多國語系
-                        hintText: l10n.hint_occupation, // ✨ 貼心的 UI 提示
-                        hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
-                        border: const OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      ),
-                    ),
-                  ),
-                  _buildTextField(_birthdayController, l10n.charBirthdayLabel),
-                  _buildTextField(_heightController, l10n.charHeightLabel),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: DropdownButtonFormField<String>(
-                      value: currentValidGender,
-                      hint: Text(l10n.genderNotSelected),
-                      decoration: InputDecoration(
-                        labelText: l10n.charGenderLabel,
-                        border: const OutlineInputBorder(),
-                      ),
-                      items: genderOptions.map((g) {
-                        return DropdownMenuItem<String>(
-                          value: g['id'],
-                          child: Text(g['label']!),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) {
-                        setState(() {
-                          _gender = newValue ?? '';
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildBoxedTextField(_appearanceController, l10n.charAppearanceLabel, maxLength: 500, hintText:l10n.hint_appearance),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // 💡 「卡片 2：🎭 劇本與你的身分」
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle(l10n.section_story_identity, theme),
-                  Text(l10n.story_identity_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer.withValues(alpha:0.4),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: theme.colorScheme.primary.withValues(alpha:0.3)),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.auto_awesome, color: theme.colorScheme.primary, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text.rich(
-                            TextSpan(
-                              children: [
-                               TextSpan(text: l10n.advanced_writing_tips_title, style: TextStyle(fontWeight: FontWeight.bold)),
-                               TextSpan(text: l10n.advanced_writing_tips_1),
-                                TextSpan(text: l10n.advanced_writing_tips_2, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
-                               TextSpan(text:l10n.advanced_writing_tips_3),
-                               TextSpan(text:l10n.advanced_writing_tips_4),
-                                TextSpan(text: l10n.advanced_writing_tips_5, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
-                                TextSpan(text:l10n.advanced_writing_tips_6),
-                              ],
-                            ),
-                            style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildBoxedTextField(
-                      _playerIdentityController,
-                      l10n.player_identity_label,
-                      maxLength: 200,
-                      hintText: l10n.player_identity_hint
-                  ),
-                  const SizedBox(height: 16),
-
-                  DropdownButtonFormField<String>(
-                    // 這裡直接使用類別變數 relationshipKeys
-                    value: relationshipKeys.contains(_selectedRelationship) ? _selectedRelationship : null,
-                    hint: Text(l10n.charInitialRelationshipLabel),
+    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 150.0), // 底部留白給儲存按鈕
+    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildImageGallery(),
+        const SizedBox(height: 24),
+        // 💡「卡片 1：🧬 基礎資料
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle(l10n.section_basic_info, theme),
+                _buildTextField(_nameController, l10n.charNameLabel),
+                _buildTextField(_ageController, l10n.charAgeLabel),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextField(
+                    controller: _occupationController,
                     decoration: InputDecoration(
-                      labelText: l10n.charInitialRelationshipLabel,
+                      labelText: l10n.charJobLabel, // 標籤維持原本的多國語系
+                      hintText: l10n.hint_occupation, // ✨ 貼心的 UI 提示
+                      hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                    ),
+                  ),
+                ),
+                _buildTextField(_birthdayController, l10n.charBirthdayLabel),
+                _buildTextField(_heightController, l10n.charHeightLabel),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: DropdownButtonFormField<String>(
+                    value: currentValidGender,
+                    hint: Text(l10n.genderNotSelected),
+                    decoration: InputDecoration(
+                      labelText: l10n.charGenderLabel,
                       border: const OutlineInputBorder(),
                     ),
-                    items: relationshipKeys.map((key) {
+                    items: genderOptions.map((g) {
                       return DropdownMenuItem<String>(
-                        value: key,
-                        // 這裡如果報錯，代表 relationshipLabels 沒傳進來
-                        // 妳可以直接在裡面定義一次翻譯 Map，或是從外部傳入
-                        child: Text(key == 'relationship_other' ? l10n.relationship_other : _getTranslatedLabel(key, l10n)),
+                        value: g['id'],
+                        child: Text(g['label']!),
                       );
                     }).toList(),
                     onChanged: (newValue) {
                       setState(() {
-                        _selectedRelationship = newValue;
-                        if (newValue != 'relationship_other') {
-                          _customRelationshipController.clear();
-                        }
+                        _gender = newValue ?? '';
                       });
                     },
                   ),
-                  if (_selectedRelationship == 'relationship_other') ...[
-                    const SizedBox(height: 12),
-                    TextField(
-                      scrollPadding: const EdgeInsets.only(bottom: 120),
-                      controller: _customRelationshipController,
-                      decoration: InputDecoration(
-                        hintText: l10n.relationship_other, // 這裡也可以用翻譯
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-
-                  _buildBoxedTextField(
-                      _backgroundController,
-                      l10n.background_label,
-                      maxLength: 800,
-                      hintText: l10n.background_hint
-                  ),
-                  const SizedBox(height: 16),
-                  _buildBoxedTextField(_storySummaryController,l10n.story_summary_label, maxLength: 50),
-                  const SizedBox(height: 16),
-                  _buildBoxedTextField(_storyController, l10n.story_initial_label, maxLength: 2500, hintText:l10n.story_initial_hint),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    scrollPadding: const EdgeInsets.only(bottom: 120),
-                    controller: _firstLineController,
-                    decoration: InputDecoration(labelText: l10n.first_line_label, hintText: l10n.first_line_hint, border: OutlineInputBorder()),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 12),
+                _buildBoxedTextField(_appearanceController, l10n.charAppearanceLabel, maxLength: 500, hintText:l10n.hint_appearance),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          // 💡 「卡片 3：🌟 個性與好感度演變」
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle(l10n.section_personality_evo, theme),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: {...defaultPersonalityTags, ..._personalityTags}.map((tag) {
-                      return _buildTagButton(tag, _personalityTags.contains(tag), theme);
-                    }).toList(),
+        ),
+        const SizedBox(height: 16),
+        // 💡 「卡片 2：🎭 劇本與你的身分」
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle(l10n.section_story_identity, theme),
+                Text(l10n.story_identity_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withValues(alpha:0.4),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: theme.colorScheme.primary.withValues(alpha:0.3)),
                   ),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _personalityController,
-                    decoration: InputDecoration(
-                      labelText: l10n.charOtherPersonalityTagsHint,
-                      suffixIcon: IconButton(icon: const Icon(Icons.add), onPressed: _addCustomPersonalityTag),
-                    ),
-                    onFieldSubmitted: (_) => _addCustomPersonalityTag(),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildBoxedTextField(
-                      _detailedPersonalityController,
-                      l10n.detailed_personality_label,
-                      maxLength: 800,
-                      hintText: l10n.detailed_personality_hint
-                  ),
-                  const SizedBox(height: 16),
-                  Text(l10n.affection_evo_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
-                  const SizedBox(height: 12),
-                  _buildBoxedTextField(_stageStrangerController, l10n.stage_1_label, maxLength: 400, hintText: l10n.stage_1_hint),
-                  const SizedBox(height: 12),
-                  _buildBoxedTextField(_stageAcquaintanceController, l10n.stage_2_label, maxLength: 400, hintText: l10n.stage_2_hint),
-                  const SizedBox(height: 12),
-                  _buildBoxedTextField(_stageIntimateController,l10n.stage_3_label, maxLength: 400, hintText:l10n.stage_3_hint),
-                  const SizedBox(height: 12),
-                  _buildBoxedTextField(_socialInteractionController, l10n.social_interaction_label, maxLength: 400, hintText:l10n.social_interaction_hint),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // 💡 「卡片 4：🗣️ 喜好與習慣」
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle(l10n.section_habits, theme),
-                  _buildBoxedTextField(_likesController, l10n.charLikesLabel, maxLength: 200),
-                  const SizedBox(height: 16),
-                  _buildBoxedTextField(_dislikesController, l10n.charDislikesLabel, maxLength: 200),
-                  const SizedBox(height: 16),
-                  _buildBoxedTextField(_secretsController, l10n.charSecretsLabel, maxLength: 200),
-                  const SizedBox(height: 16),
-                  _buildBoxedTextField(
-                      _toneController,
-                      l10n.charToneLabel,
-                      maxLength: 500,
-                      hintText: l10n.tone_hint_detail
-                  ),
-                  const SizedBox(height: 16),
-                  _buildBoxedTextField(_dialogueExamplesController, l10n.charDialogueExampleLabel, maxLength: 500, hintText: l10n.dialogue_example_hint),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // 💡「卡片 5：🎁 附加設定與彩蛋」
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle(l10n.section_easter_eggs, theme),
-                  if (_easterEggs.isEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(8)),
-                      child: Center(child: Text(l10n.no_easter_eggs)),
-                    ),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _easterEggs.length,
-                    separatorBuilder: (c, i) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final egg = _easterEggs[index];
-                      return Card(
-                        elevation: 1,
-                        color: theme.colorScheme.surfaceVariant.withValues(alpha:0.5),
-                        child: ListTile(
-                          leading: const Icon(Icons.card_giftcard, color: Colors.purple),
-                          title: Text(egg.keyword, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text("${egg.title} - ${egg.setScene ?? l10n.no_scene_change}"),
-                          trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.grey), onPressed: () => setState(() => _easterEggs.removeAt(index))),
-                          onTap: () => _openEasterEggEditor(egg: egg, index: index),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.auto_awesome, color: theme.colorScheme.primary, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(text: l10n.advanced_writing_tips_title, style: TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(text: l10n.advanced_writing_tips_1),
+                              TextSpan(text: l10n.advanced_writing_tips_2, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
+                              TextSpan(text:l10n.advanced_writing_tips_3),
+                              TextSpan(text:l10n.advanced_writing_tips_4),
+                              TextSpan(text: l10n.advanced_writing_tips_5, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
+                              TextSpan(text:l10n.advanced_writing_tips_6),
+                            ],
+                          ),
+                          style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    onPressed: () => _openEasterEggEditor(),
-                    icon: const Icon(Icons.add),
-                    label:Text(l10n.add_easter_egg_button),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.secondaryContainer,
-                        foregroundColor: theme.colorScheme.onSecondaryContainer
-                    ),
+                ),
+                const SizedBox(height: 16),
+                _buildBoxedTextField(
+                    _playerIdentityController,
+                    l10n.player_identity_label,
+                    maxLength: 200,
+                    hintText: l10n.player_identity_hint
+                ),
+                const SizedBox(height: 16),
+
+                DropdownButtonFormField<String>(
+                  // 這裡直接使用類別變數 relationshipKeys
+                  value: relationshipKeys.contains(_selectedRelationship) ? _selectedRelationship : null,
+                  hint: Text(l10n.charInitialRelationshipLabel),
+                  decoration: InputDecoration(
+                    labelText: l10n.charInitialRelationshipLabel,
+                    border: const OutlineInputBorder(),
                   ),
-                  const Divider(height: 32),
-                  Text(l10n.other_extra_info, style: theme.textTheme.titleMedium),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _extraInfoItems.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(_extraInfoItems[index]),
-                        trailing: IconButton(icon: const Icon(Icons.edit_outlined), onPressed: () => _editExtraInfoItem(index)),
-                        onLongPress: () => setState(() => _extraInfoItems.removeAt(index)),
-                      );
-                    },
-                  ),
-                  TextFormField(
-                    controller: _extraInputController,
+                  items: relationshipKeys.map((key) {
+                    return DropdownMenuItem<String>(
+                      value: key,
+                      // 這裡如果報錯，代表 relationshipLabels 沒傳進來
+                      // 妳可以直接在裡面定義一次翻譯 Map，或是從外部傳入
+                      child: Text(key == 'relationship_other' ? l10n.relationship_other : _getTranslatedLabel(key, l10n)),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedRelationship = newValue;
+                      if (newValue != 'relationship_other') {
+                        _customRelationshipController.clear();
+                      }
+                    });
+                  },
+                ),
+                if (_selectedRelationship == 'relationship_other') ...[
+                  const SizedBox(height: 12),
+                  TextField(
+                    scrollPadding: const EdgeInsets.only(bottom: 120),
+                    controller: _customRelationshipController,
                     decoration: InputDecoration(
-                      labelText: l10n.charExtraInfoHint,
-                      suffixIcon: IconButton(icon: const Icon(Icons.add), onPressed: _addExtraInfoItem),
+                      hintText: l10n.relationship_other, // 這裡也可以用翻譯
+                      border: const OutlineInputBorder(),
                     ),
-                    onFieldSubmitted: (_) => _addExtraInfoItem(),
                   ),
                 ],
-              ),
+                const SizedBox(height: 16),
+
+                _buildBoxedTextField(
+                    _backgroundController,
+                    l10n.background_label,
+                    maxLength: 800,
+                    hintText: l10n.background_hint
+                ),
+                const SizedBox(height: 16),
+                _buildBoxedTextField(_storySummaryController,l10n.story_summary_label, maxLength: 50),
+                const SizedBox(height: 16),
+                _buildBoxedTextField(_storyController, l10n.story_initial_label, maxLength: 2500, hintText:l10n.story_initial_hint),
+                const SizedBox(height: 16),
+                TextFormField(
+                  scrollPadding: const EdgeInsets.only(bottom: 120),
+                  controller: _firstLineController,
+                  decoration: InputDecoration(labelText: l10n.first_line_label, hintText: l10n.first_line_hint, border: OutlineInputBorder()),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          _buildPublicPrivateToggle(theme),
-        ],
-      ),
-    );
+        ),
+        const SizedBox(height: 16),
+        // 💡 「卡片 3：🌟 個性與好感度演變」
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle(l10n.section_personality_evo, theme),
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: 4.0,
+                  children: {...defaultPersonalityTags, ..._personalityTags}.map((tag) {
+                    return _buildTagButton(tag, _personalityTags.contains(tag), theme);
+                  }).toList(),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _personalityController,
+                  decoration: InputDecoration(
+                    labelText: l10n.charOtherPersonalityTagsHint,
+                    suffixIcon: IconButton(icon: const Icon(Icons.add), onPressed: _addCustomPersonalityTag),
+                  ),
+                  onFieldSubmitted: (_) => _addCustomPersonalityTag(),
+                ),
+                const SizedBox(height: 16),
+                _buildBoxedTextField(
+                    _detailedPersonalityController,
+                    l10n.detailed_personality_label,
+                    maxLength: 800,
+                    hintText: l10n.detailed_personality_hint
+                ),
+                const SizedBox(height: 16),
+                Text(l10n.affection_evo_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
+                const SizedBox(height: 12),
+                _buildBoxedTextField(_stageStrangerController, l10n.stage_1_label, maxLength: 400, hintText: l10n.stage_1_hint),
+                const SizedBox(height: 12),
+                _buildBoxedTextField(_stageAcquaintanceController, l10n.stage_2_label, maxLength: 400, hintText: l10n.stage_2_hint),
+                const SizedBox(height: 12),
+                _buildBoxedTextField(_stageIntimateController,l10n.stage_3_label, maxLength: 400, hintText:l10n.stage_3_hint),
+                const SizedBox(height: 12),
+                _buildBoxedTextField(_socialInteractionController, l10n.social_interaction_label, maxLength: 400, hintText:l10n.social_interaction_hint),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        // 💡 「卡片 4：🗣️ 喜好與習慣」
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle(l10n.section_habits, theme),
+                _buildBoxedTextField(_likesController, l10n.charLikesLabel, maxLength: 200),
+                const SizedBox(height: 16),
+                _buildBoxedTextField(_dislikesController, l10n.charDislikesLabel, maxLength: 200),
+                const SizedBox(height: 16),
+                _buildBoxedTextField(_secretsController, l10n.charSecretsLabel, maxLength: 200),
+                const SizedBox(height: 16),
+                _buildBoxedTextField(
+                    _toneController,
+                    l10n.charToneLabel,
+                    maxLength: 500,
+                    hintText: l10n.tone_hint_detail
+                ),
+                const SizedBox(height: 16),
+                _buildBoxedTextField(_dialogueExamplesController, l10n.charDialogueExampleLabel, maxLength: 500, hintText: l10n.dialogue_example_hint),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        // 💡「卡片 5：🎁 附加設定與彩蛋」
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionTitle(l10n.section_easter_eggs, theme),
+                if (_easterEggs.isEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(8)),
+                    child: Center(child: Text(l10n.no_easter_eggs)),
+                  ),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _easterEggs.length,
+                  separatorBuilder: (c, i) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final egg = _easterEggs[index];
+                    return Card(
+                      elevation: 1,
+                      color: theme.colorScheme.surfaceVariant.withValues(alpha:0.5),
+                      child: ListTile(
+                        leading: const Icon(Icons.card_giftcard, color: Colors.purple),
+                        title: Text(egg.keyword, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("${egg.title} - ${egg.setScene ?? l10n.no_scene_change}"),
+                        trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.grey), onPressed: () => setState(() => _easterEggs.removeAt(index))),
+                        onTap: () => _openEasterEggEditor(egg: egg, index: index),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
+                  onPressed: () => _openEasterEggEditor(),
+                  icon: const Icon(Icons.add),
+                  label:Text(l10n.add_easter_egg_button),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.secondaryContainer,
+                      foregroundColor: theme.colorScheme.onSecondaryContainer
+                  ),
+                ),
+                const Divider(height: 32),
+                Text(l10n.other_extra_info, style: theme.textTheme.titleMedium),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _extraInfoItems.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(_extraInfoItems[index]),
+                      trailing: IconButton(icon: const Icon(Icons.edit_outlined), onPressed: () => _editExtraInfoItem(index)),
+                      onLongPress: () => setState(() => _extraInfoItems.removeAt(index)),
+                    );
+                  },
+                ),
+                TextFormField(
+                  controller: _extraInputController,
+                  decoration: InputDecoration(
+                    labelText: l10n.charExtraInfoHint,
+                    suffixIcon: IconButton(icon: const Icon(Icons.add), onPressed: _addExtraInfoItem),
+                  ),
+                  onFieldSubmitted: (_) => _addExtraInfoItem(),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildPublicPrivateToggle(theme),
+      ],
+    ),
+  );
   }
   Widget _buildTab2_Voice(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
@@ -2467,7 +2751,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   else if (_voiceSamples.isNotEmpty && _generatedVoiceId == null)
                     Column(
                       children: [
-                       Text(l10n.voice_select_prompt, style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(l10n.voice_select_prompt, style: TextStyle(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 12),
                         // 🌟 產生 3 張聲線卡片
                         ...List.generate(_voiceSamples.length, (index) {
@@ -2478,7 +2762,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                             onTap: () {
                               setState(() {
                                 _selectedSampleIndex = index;
-                                _selectedVoiceId = sample['generated_voice_id'];
+                                _selectedVoiceId = sample['voice_id']?.toString();
                               });
                             },
                             child: Card(
@@ -2501,44 +2785,16 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                                 // 🌟 這裡換成我們強化的 IconButton
                                 trailing: IconButton(
                                   icon: Icon(
-                                    isPlayingThis ? Icons.pause_circle_filled : Icons.play_circle_fill,
+                                    isPlayingThis
+                                        ? Icons.pause_circle_filled
+                                        : Icons.play_circle_fill,
                                     size: 32,
-                                    color: isPlayingThis ? theme.colorScheme.primary : Colors.blue,
+                                    color: isPlayingThis
+                                        ? theme.colorScheme.primary
+                                        : Colors.blue,
                                   ),
-                                  onPressed: () async {
-                                    if (isPlayingThis) {
-                                      // 🛑 暫停
-                                      await _audioPlayer.pause();
-                                      setState(() {
-                                        _playingSampleIndex = null;
-                                      });
-                                    } else {
-                                      // 🎵 播放
-                                      final Uint8List? bytes = sample['audio_bytes'];
-                                      if (bytes != null && bytes.isNotEmpty) {
-                                        // 🌟 1. 先毫無懸念地把圖示變成 ||，讓玩家立刻看到反應
-                                        setState(() {
-                                          _playingSampleIndex = index;
-                                        });
-                                        // 🌟 2. 加上 try-catch 防護，避免 stop() 當機
-                                        try {
-                                          await _audioPlayer.stop();
-                                        } catch (e) {
-                                          debugPrint('停止舊聲音時忽略錯誤');
-                                        }
-                                        // 🌟 3. 開始播放新聲音
-                                        await _playVoice(bytes);
-                                      } else {
-                                        // ✨ 總裁級：語音準備中的優雅過場，把視線焦點還給角色！
-                                        ToastUtils.showCenterToast(
-                                          context, // 💡 如果是在 async 方法中，記得包裝 if (context.mounted)
-                                          l10n.voice_preparing,
-                                          customIcon: Icons.graphic_eq_rounded, // 💡 總裁精選 1：「聲音波形」圖示，完美暗示語音即將播放
-                                          // 💡 總裁精選 2：如果你想強調「讀取中」，也可以用 Icons.hourglass_empty_rounded (沙漏)
-                                        );
-                                      }
-                                    }
-                                  },
+                                  onPressed: () =>
+                                      _previewVoiceSample(index),
                                 ),
                               ),
                             ),
@@ -2574,66 +2830,138 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha:0.1),
+                          color: Colors.green.withValues(
+                            alpha: 0.1,
+                          ),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.green.withValues(alpha:0.5)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.check_circle, color: Colors.green),
-                            const SizedBox(width: 8),
-                            Expanded(child: Text(l10n.voice_bind_success_banner, style: TextStyle(fontWeight: FontWeight.bold))),
-                            // 🌟 總裁解 BUG：重置時必須把舊的「綁定紀錄」徹底清空！
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _generatedVoiceId = null; // 🔑 關鍵 1：解開綁定，這樣才會掉進「顯示三張卡片」的判斷式
-                                  _voiceSamples = [];       // 🔑 關鍵 2：清空舊的試聽檔案
-                                  _selectedSampleIndex = null;
-                                  _playingSampleIndex = null;
-                                  _finalAudioBytes = null;
-                                });
-                                // 徹底清空後，再彈出輸入框讓玩家重新生成
-                                _showVoiceGenerationDialog();
-                              },
-                              child: Text(l10n.voice_remake),
+                          border: Border.all(
+                            color: Colors.green.withValues(
+                              alpha: 0.5,
                             ),
-                            if (_finalAudioBytes != null || (_finalVoicePreviewUrl != null && _finalVoicePreviewUrl!.isNotEmpty))
-                              IconButton(
-                                  icon: Icon(Icons.play_circle_fill, color: theme.colorScheme.primary, size: 32),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    l10n.voice_bind_success_banner,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    softWrap: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              alignment: WrapAlignment.end,
+                              crossAxisAlignment:
+                              WrapCrossAlignment.center,
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: [
+                                TextButton.icon(
+                                  style: TextButton.styleFrom(
+                                    padding:
+                                    const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                    MaterialTapTargetSize
+                                        .shrinkWrap,
+                                  ),
                                   onPressed: () {
-                                    if (_finalAudioBytes != null) {
-                                      // 優先播放剛生成的聲音
-                                      _playVoice(_finalAudioBytes!);
-                                    } else if (_finalVoicePreviewUrl != null) {
-                                      // 否則播放上次存好的網址 (這裡要呼叫支援 URL 的播放函式)
-                                      _audioPlayer.play(UrlSource(_finalVoicePreviewUrl!));
-                                    }
+                                    setState(() {
+                                      _generatedVoiceId = null;
+                                      _selectedVoiceId = null;
+                                      _voiceSamples = [];
+                                      _selectedSampleIndex = null;
+                                      _playingSampleIndex = null;
+                                      _finalAudioBytes = null;
+                                      _finalVoicePreviewUrl = null;
+                                    });
+
+                                    _showVoiceGenerationDialog();
                                   },
-                              ),
+                                  icon: const Icon(
+                                    Icons.refresh_rounded,
+                                    size: 18,
+                                  ),
+                                  label: Text(
+                                    l10n.voice_remake,
+                                  ),
+                                ),
+
+                                IconButton(
+                                  tooltip: '播放語音',
+                                  padding: EdgeInsets.zero,
+                                  constraints:
+                                  const BoxConstraints(
+                                    minWidth: 40,
+                                    minHeight: 40,
+                                  ),
+                                  icon: Icon(
+                                    Icons.play_circle_fill,
+                                    color:
+                                    theme.colorScheme.primary,
+                                    size: 32,
+                                  ),
+                                  onPressed: _isTestingSettings
+                                      ? null
+                                      : _testVoiceSettings,
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       )
 
-                    // 4. 初始狀態（還沒生成，也沒樣板）
+// 4. 初始狀態：尚未生成聲音
                     else
                       Center(
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding:
+                            const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
                           ),
-                          // 🌟 鎖定邏輯 1：如果正在生成，Icon 變成一個小小的轉圈圈；否則保持星星
                           icon: _isGeneratingVoice
                               ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2)
+                            width: 18,
+                            height: 18,
+                            child:
+                            CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
                           )
-                              : const Icon(Icons.auto_awesome),
-                          // 🌟 鎖定邏輯 2：文字也跟著改變，讓玩家知道進度
-                          label: Text(_isGeneratingVoice ? l10n.voice_btn_generating : l10n.voice_btn_generate),
-                          // 🌟 鎖定邏輯 3：如果是生成中，onPressed 設為 null，按鈕會自動變灰且無法點擊
-                          onPressed: _isGeneratingVoice ? null : _showVoiceGenerationDialog,
+                              : const Icon(
+                            Icons.auto_awesome,
+                          ),
+                          label: Text(
+                            _isGeneratingVoice
+                                ? l10n.voice_btn_generating
+                                : l10n.voice_btn_generate,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onPressed: _isGeneratingVoice
+                              ? null
+                              : _showVoiceGenerationDialog,
                         ),
                       ),
                   const SizedBox(height: 24),
@@ -2646,16 +2974,50 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                       Text(l10n.voice_advanced_tuning, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text(l10n.voice_advanced_tuning, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         const SizedBox(height: 16),
 
                         // 🎚️ 滑桿 1：理智線 (Stability)
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(l10n.voice_stability_low, style: TextStyle(fontSize: 12)),
-                            Text(l10n.voice_stability_value(_voiceStability.toStringAsFixed(2)), style: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
-                            Text(l10n.voice_stability_high, style: TextStyle(fontSize: 12)),
+                            Expanded(
+                              child: Text(
+                                l10n.voice_stability_low,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
+                              child: Text(
+                                l10n.voice_stability_value(
+                                  _voiceStability.toStringAsFixed(2),
+                                ),
+                                style: const TextStyle(
+                                  color: Colors.pinkAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                l10n.voice_stability_high,
+                                textAlign: TextAlign.end,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                         Slider(
@@ -2668,11 +3030,45 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         const SizedBox(height: 8),
                         // 🎚️ 滑桿 2：戲劇表現 (Style)
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                           Text(l10n.voice_style_low, style: TextStyle(fontSize: 12)),
-                            Text(l10n.voice_style_value(_voiceStyle.toStringAsFixed(2)), style: const TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
-                            Text(l10n.voice_style_high, style: TextStyle(fontSize: 12)),
+                            Expanded(
+                              child: Text(
+                                l10n.voice_style_low,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
+                              child: Text(
+                                l10n.voice_style_value(
+                                  _voiceStyle.toStringAsFixed(2),
+                                ),
+                                style: const TextStyle(
+                                  color: Colors.pinkAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                l10n.voice_style_high,
+                                textAlign: TextAlign.end,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                         Slider(

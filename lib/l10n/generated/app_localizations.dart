@@ -7701,6 +7701,18 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'恢復帳號'**
   String get restoreAccountButton;
+
+  /// No description provided for @voice_preview.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'播放語音'**
+  String get voice_preview;
+
+  /// No description provided for @voice_preview_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'播放語音失敗'**
+  String get voice_preview_failed;
 }
 
 class _AppLocalizationsDelegate

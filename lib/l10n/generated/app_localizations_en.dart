@@ -4373,4 +4373,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'Restore Account';
+
+  @override
+  String get voice_preview => 'Play Voice';
+
+  @override
+  String get voice_preview_failed => 'Failed to play voice';
 }

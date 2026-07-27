@@ -2220,5 +2220,7 @@
   "restoreAccountButton": "Restore Account",
   "@restoreAccountButton": {
     "description": "Button text to restore account"
-  }
+  },
+  "voice_preview": "Play Voice",
+  "voice_preview_failed": "Failed to play voice"
 }

@@ -4431,4 +4431,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'Restaurar conta';
+
+  @override
+  String get voice_preview => 'Reproduzir Áudio';
+
+  @override
+  String get voice_preview_failed => 'Falha ao reproduzir o áudio';
 }

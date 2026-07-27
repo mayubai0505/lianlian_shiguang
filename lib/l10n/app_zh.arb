@@ -2151,5 +2151,7 @@
   "restoreAccountButton": "恢復帳號",
   "@restoreAccountButton": {
     "description": "Button text to restore account"
-  }
+  },
+  "voice_preview": "播放語音",
+  "voice_preview_failed": "播放語音失敗"
 }

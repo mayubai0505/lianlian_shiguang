@@ -3,6 +3,7 @@
     "@google-cloud/translate": "^9.3.0",
     "axios": "^1.14.0",
     "cors": "^2.8.6",
+    "firebase-admin": "^14.2.0",
     "node-fetch": "^3.3.2",
     "opencc-js": "^1.0.5"
   }

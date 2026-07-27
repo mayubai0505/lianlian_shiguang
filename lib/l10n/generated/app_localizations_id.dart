@@ -4409,4 +4409,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'Pulihkan Akun';
+
+  @override
+  String get voice_preview => 'Putar Suara';
+
+  @override
+  String get voice_preview_failed => 'Gagal memutar suara';
 }

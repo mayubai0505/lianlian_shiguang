@@ -2006,5 +2006,7 @@
   "restoreAccountButton": "アカウントを復元",
   "@restoreAccountButton": {
     "description": "Button text to restore account"
-  }
+  },
+  "voice_preview": "ボイスを再生",
+  "voice_preview_failed": "ボイスの再生に失敗しました"
 }

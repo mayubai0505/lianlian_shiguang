@@ -4199,4 +4199,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get restoreAccountButton => '계정 복구';
+
+  @override
+  String get voice_preview => '보이스 재생';
+
+  @override
+  String get voice_preview_failed => '보이스 재생 실패';
 }

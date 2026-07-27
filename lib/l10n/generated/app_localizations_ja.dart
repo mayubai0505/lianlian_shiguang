@@ -4183,4 +4183,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'アカウントを復元';
+
+  @override
+  String get voice_preview => 'ボイスを再生';
+
+  @override
+  String get voice_preview_failed => 'ボイスの再生に失敗しました';
 }

@@ -4352,4 +4352,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'استعادة الحساب';
+
+  @override
+  String get voice_preview => 'تشغيل الصوت';
+
+  @override
+  String get voice_preview_failed => 'فشل تشغيل الصوت';
 }

@@ -2178,5 +2178,7 @@
     "restoreAccountButton": "Ressusciter le compte",
     "@restoreAccountButton": {
         "description": "Button text to restore account"
-    }
+    },
+    "voice_preview": "Lire le message vocal",
+    "voice_preview_failed": "Échec de la lecture du message vocal"
 }

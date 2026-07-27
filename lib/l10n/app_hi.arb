@@ -2005,5 +2005,7 @@
     "restoreAccountButton": "खाता पुनर्स्थापित करें",
     "@restoreAccountButton": {
         "description": "Button text to restore account"
-    }
+    },
+    "voice_preview": "वॉयस चलाएं",
+    "voice_preview_failed": "वॉयस चलाने में विफल"
 }

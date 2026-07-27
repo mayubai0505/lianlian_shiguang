@@ -2005,5 +2005,7 @@
     "restoreAccountButton": "กู้คืนบัญชี",
     "@restoreAccountButton": {
         "description": "Button text to restore account"
-    }
+    },
+    "voice_preview": "เล่นเสียง",
+    "voice_preview_failed": "เล่นเสียงไม่สำเร็จ"
 }

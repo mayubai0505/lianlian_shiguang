@@ -6,6 +6,7 @@ import '../services/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/toast_utils.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class AnnouncementNotificationButton extends StatefulWidget {
   const AnnouncementNotificationButton({super.key});
@@ -95,11 +96,28 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
   final TextEditingController _contentController = TextEditingController();
   bool _sendNotification = true;
   bool _isPublishing = false;
+  bool _isUploadingVoiceBank = false;
+
+  final FirebaseFunctions _functions =
+  FirebaseFunctions.instanceFor(
+    region: 'asia-east1',
+  );
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
   }
 
   Future<void> _publish() async {
@@ -149,6 +167,77 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
       }
     } finally {
       if (mounted) setState(() => _isPublishing = false);
+    }
+  }
+
+  Future<void> _uploadVoiceBank() async {
+    if (_isUploadingVoiceBank) return;
+
+    setState(() {
+      _isUploadingVoiceBank = true;
+    });
+
+    try {
+      final callable = _functions.httpsCallable(
+        'uploadVoiceBank',
+      );
+
+      final result = await callable.call();
+
+      final data = result.data is Map
+          ? Map<String, dynamic>.from(
+        result.data as Map,
+      )
+          : <String, dynamic>{};
+
+      final int count =
+          (data['count'] as num?)?.toInt() ?? 0;
+
+      debugPrint(
+        '✅ Voice Bank 同步成功：$data',
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        'Voice Bank 已同步 $count 筆聲音',
+        customIcon: Icons.cloud_done_rounded,
+      );
+    } on FirebaseFunctionsException catch ( e, stackTrace ) {
+    debugPrint(
+    '========== uploadVoiceBank 失敗 ==========',
+    );
+    debugPrint('code: ${e.code}');
+    debugPrint('message: ${e.message}');
+    debugPrint('details: ${e.details}');
+    debugPrintStack(stackTrace: stackTrace,);
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(context, e.message ?? 'Voice Bank 同步失敗', isError: true,);
+
+    } catch (e, stackTrace) {
+    debugPrint(
+    'Voice Bank 同步未知錯誤：$e',
+    );
+    debugPrintStack(
+    stackTrace: stackTrace,
+    );
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+    context,
+    'Voice Bank 同步失敗：$e',
+    isError: true,
+    );
+    } finally {
+    if (mounted) {
+    setState(() {
+    _isUploadingVoiceBank = false;
+    });
+    }
     }
   }
 
@@ -223,19 +312,27 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
           controller: _tabController,
           indicatorColor: Colors.pinkAccent,
           tabs: const [
-            Tab(text: '發布公告'),
-            Tab(text: '未處理檢舉'),
+            Tab(
+              icon: Icon(Icons.campaign_outlined),
+              text: '發布公告',
+            ),
+            Tab(
+              icon: Icon(Icons.report_problem_outlined),
+              text: '未處理檢舉',
+            ),
+            Tab(
+              icon: Icon(Icons.record_voice_over_outlined),
+              text: '聲音庫',
+            ),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          // --- 第一頁：發布公告 (總裁原本的內容) ---
           _buildAnnouncementTab(),
-
-          // --- 第二頁：檢舉處理 (新功能) ---
           _buildReportTab(),
+          _buildVoiceBankTab(),
         ],
       ),
     );
@@ -267,6 +364,266 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildVoiceBankTab() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('voice_bank')
+          .orderBy('name')
+          .snapshots(),
+      builder: (context, snapshot) {
+        final docs = snapshot.data?.docs ?? [];
+
+        return ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.record_voice_over_rounded,
+                          color: Colors.pinkAccent,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Voice Bank 管理',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      '同步後端預設的聲音資料到 Firestore。'
+                          '同一個文件會更新，不會重複建立。',
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        onPressed:
+                        _isUploadingVoiceBank
+                            ? null
+                            : _uploadVoiceBank,
+                        icon: _isUploadingVoiceBank
+                            ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child:
+                          CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : const Icon(
+                          Icons.cloud_upload_rounded,
+                        ),
+                        label: Text(
+                          _isUploadingVoiceBank
+                              ? '同步中...'
+                              : '同步 Voice Bank',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              '目前共 ${docs.length} 個聲音',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            if (snapshot.connectionState ==
+                ConnectionState.waiting)
+              const Padding(
+                padding: EdgeInsets.all(30),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (snapshot.hasError)
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(
+                  '讀取聲音庫失敗：${snapshot.error}',
+                  style: const TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+              )
+            else if (docs.isEmpty)
+                const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Center(
+                      child: Text(
+                        '目前尚未建立 Voice Bank',
+                      ),
+                    ),
+                  ),
+                )
+              else
+                ...docs.map((doc) {
+                  final data =
+                  doc.data()
+                  as Map<String, dynamic>;
+
+                  final String name =
+                      data['name']?.toString() ??
+                          '未命名聲音';
+
+                  final String voiceId =
+                      data['voiceId']?.toString() ??
+                          '';
+
+                  final String gender =
+                      data['gender']?.toString() ??
+                          '';
+
+                  final String age =
+                      data['age']?.toString() ??
+                          '';
+
+                  final bool enabled =
+                      data['enabled'] == true;
+
+                  final tags =
+                  data['tags'] is List
+                      ? List<String>.from(
+                    data['tags'],
+                  )
+                      : <String>[];
+
+                  return Card(
+                    margin:
+                    const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor:
+                        enabled
+                            ? Colors.green
+                            .withValues(
+                          alpha: 0.15,
+                        )
+                            : Colors.grey
+                            .withValues(
+                          alpha: 0.15,
+                        ),
+                        child: Icon(
+                          gender == 'female'
+                              ? Icons.female_rounded
+                              : gender == 'male'
+                              ? Icons.male_rounded
+                              : Icons
+                              .record_voice_over,
+                          color: enabled
+                              ? Colors.green
+                              : Colors.grey,
+                        ),
+                      ),
+                      title: Text(
+                        name,
+                        style: const TextStyle(
+                          fontWeight:
+                          FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text(
+                            '$gender · $age',
+                          ),
+                          Text(
+                            voiceId,
+                            maxLines: 1,
+                            overflow:
+                            TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          if (tags.isNotEmpty)
+                            Padding(
+                              padding:
+                              const EdgeInsets.only(
+                                top: 6,
+                              ),
+                              child: Wrap(
+                                spacing: 5,
+                                runSpacing: 4,
+                                children: tags
+                                    .map(
+                                      (tag) => Chip(
+                                    label: Text(
+                                      tag,
+                                      style:
+                                      const TextStyle(
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                    visualDensity:
+                                    VisualDensity
+                                        .compact,
+                                  ),
+                                )
+                                    .toList(),
+                              ),
+                            ),
+                        ],
+                      ),
+                      trailing: Switch(
+                        value: enabled,
+                        onChanged: (value) async {
+                          try {
+                            await doc.reference.update({
+                              'enabled': value,
+                              'updatedAt':
+                              FieldValue
+                                  .serverTimestamp(),
+                            });
+                          } catch (e) {
+                            if (!mounted) return;
+
+                            ToastUtils
+                                .showCenterToast(
+                              context,
+                              '更新聲音狀態失敗：$e',
+                              isError: true,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                }),
+          ],
+        );
+      },
     );
   }
 

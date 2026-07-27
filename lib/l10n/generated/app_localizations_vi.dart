@@ -4406,4 +4406,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'Khôi phục tài khoản';
+
+  @override
+  String get voice_preview => 'Phát giọng nói';
+
+  @override
+  String get voice_preview_failed => 'Phát giọng nói thất bại';
 }

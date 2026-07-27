@@ -4439,4 +4439,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get restoreAccountButton => 'Restaurar cuenta';
+
+  @override
+  String get voice_preview => 'Reproducir audio';
+
+  @override
+  String get voice_preview_failed => 'Error al reproducir el audio';
 }

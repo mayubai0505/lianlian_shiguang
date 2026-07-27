@@ -4136,6 +4136,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get restoreAccountButton => '恢復帳號';
+
+  @override
+  String get voice_preview => '播放語音';
+
+  @override
+  String get voice_preview_failed => '播放語音失敗';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8270,6 +8276,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get restoreAccountButton => '恢复账号';
+
+  @override
+  String get voice_preview => '播放语音';
+
+  @override
+  String get voice_preview_failed => '播放语音失败';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -12404,4 +12416,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get restoreAccountButton => '恢復帳號';
+
+  @override
+  String get voice_preview => '播放語音';
+
+  @override
+  String get voice_preview_failed => '播放語音失敗';
 }
