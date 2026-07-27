@@ -50,6 +50,7 @@ class _CallOverlayState extends State<CallOverlay> {
 
   List<Map<String, String>> _callHistory = [];
   late AudioPlayer _audioPlayer;
+  AudioPlayer? _sfxPlayer; // 🌟 新增這行：把音效播放器抓在手上管！
   int _timeElapsed = 0;
   final int _maxCallTime = 60;
   Timer? _timer;
@@ -86,16 +87,26 @@ class _CallOverlayState extends State<CallOverlay> {
   Future<void> _initAudioPlayer() async {
     _audioPlayer = AudioPlayer();
     _isPlayerInitialized = true;
+
+    // 🌟 關鍵修改：給播放器裝上「永久的耳朵」
+    // 只要聽到「播完啦」，就自動去叫下一句起床
+    _audioPlayer.onPlayerComplete.listen((_) {
+      debugPrint("🎵 單句播放完畢，準備播放下一句");
+      _playNextInQueue();
+    });
+
     debugPrint("✅ AudioPlayer 換心成功！");
   }
 
   @override
   void dispose() {
-    _streamingHttpClient?.close(); // 🌟 挂斷電話時，光速打斷正在下載的文字串流
+    _streamingHttpClient?.close();
     _timer?.cancel();
     _chatController.dispose();
     _scrollController.dispose();
     _audioPlayer.stop();
+    _sfxPlayer?.stop();     // 🛑 確保釋放音效
+    _sfxPlayer?.dispose();  // 🛑 確保釋放音效
     if (_isPlayerInitialized) {
       _audioPlayer.dispose();
       _isPlayerInitialized = false;
@@ -193,6 +204,7 @@ class _CallOverlayState extends State<CallOverlay> {
     _timer?.cancel();
     if (_isListening) _speech.stop();
     _audioPlayer.stop();
+    _sfxPlayer?.stop(); // 🛑 加上這行：掛電話的瞬間，立刻掐斷嘟嘟聲！
     _streamingHttpClient?.close();
     widget.onCallEnded(_timeElapsed, _inCallMessages);
   }
@@ -280,43 +292,68 @@ class _CallOverlayState extends State<CallOverlay> {
       });
 
       // 發送並監聽串流
+      // 發送並監聽串流
       final response = await _streamingHttpClient!.send(request);
+
       String fullReplyForHistory = "";
+      bool hasFoundSeparator = false; // 🌟 新增：紀錄是不是已經越過「|」邊界了
+      String audioBuffer = "";        // 🌟 新增：只存放要送去發聲的字，不污染畫面字幕
 
       response.stream.transform(utf8.decoder).listen((textChunk) {
         fullReplyForHistory += textChunk;
-        _streamTextBuffer += textChunk;
 
-        // 雙語字幕智慧分流：畫面上只向玩家展示後半段的純字幕
-        String displayText = _streamTextBuffer;
-        if (_streamTextBuffer.contains('|')) {
-          displayText = _streamTextBuffer.split('|').last.trim();
-        }
-
+        // 🌟 1. 畫面字幕更新 (關鍵修正：沒看到 | 之前，絕對不准把字印在畫面上！)
         if (mounted) {
-          setState(() {
-            _sttText = displayText; // 打字機效果流暢更新
-          });
+          if (fullReplyForHistory.contains('|')) {
+            // 已經看到分隔線了，安心把後面的中文字幕印出來
+            setState(() {
+              _sttText = fullReplyForHistory.split('|').last.trim();
+            });
+          } else if (fullReplyForHistory.length > 50) {
+            // 🛡️ 防呆機制：萬一 AI 暴走，寫了 50 個字都沒加 '|' 符號，
+            // 為了避免畫面卡死，還是把字印出來
+            setState(() {
+              _sttText = fullReplyForHistory.trim();
+            });
+          }
         }
 
-        // 🎯 正則斷句：一看到標點符號，立刻神速切下來去轉語音
-        final regExp = RegExp(r'([^。！？\n]+[。！？\n])');
-        Iterable<Match> matches = regExp.allMatches(_streamTextBuffer);
+        // 2. 語音斷句處理 (維持原樣)
+        if (!hasFoundSeparator) {
+          if (textChunk.contains('|')) {
+            hasFoundSeparator = true; // 🚨 發現分隔線！關閉語音通道！
 
-        if (matches.isNotEmpty) {
-          for (var match in matches) {
-            String singleSentence = match.group(0)!;
-            _streamTextBuffer = _streamTextBuffer.substring(singleSentence.length);
+            // 把這一個 textChunk 裡，位在 | 前面的殘餘文字抓出來
+            int pipeIndex = textChunk.indexOf('|');
+            audioBuffer += textChunk.substring(0, pipeIndex);
 
-            // 🔥 送去後端排隊轉語音（此時 AI 還在後方繼續生文字，達成並行！）
-            _processSentenceToVoice(singleSentence);
+            // 既然語音部分已經全劇終，把剩下的字一次送去轉語音
+            if (audioBuffer.trim().isNotEmpty) {
+              _processSentenceToVoice(audioBuffer.trim());
+              audioBuffer = ""; // 清空
+            }
+          } else {
+            // 還沒遇到 |，安心把字加進語音緩衝區
+            audioBuffer += textChunk;
+
+            // 🎯 遇到標點符號就切斷送出 (跟原本一樣)
+            final regExp = RegExp(r'([^，,。！？、\n]+[，,。！？、\n])');
+            Iterable<Match> matches = regExp.allMatches(audioBuffer);
+
+            if (matches.isNotEmpty) {
+              for (var match in matches) {
+                String singleSentence = match.group(0)!;
+                audioBuffer = audioBuffer.substring(singleSentence.length);
+                _processSentenceToVoice(singleSentence.trim());
+              }
+            }
           }
         }
       }, onDone: () async {
-        // 串流收尾，把最後殘留沒標點符號的尾巴也送去轉語音
-        if (_streamTextBuffer.trim().isNotEmpty) {
-          _processSentenceToVoice(_streamTextBuffer);
-          _streamTextBuffer = "";
+        // 串流收尾：如果因為最後一句沒加標點符號而卡在緩衝區，做最後清理
+        if (audioBuffer.trim().isNotEmpty) {
+          _processSentenceToVoice(audioBuffer.trim());
+          audioBuffer = "";
         }
 
         // 把完整帶有 | 的原文塞入歷史紀錄，讓下一次對話有脈絡
@@ -326,6 +363,7 @@ class _CallOverlayState extends State<CallOverlay> {
         _callHistory.add({"role": "assistant", "content": fullReplyForHistory});
 
         if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
           setState(() {
             _inCallMessages.removeWhere((msg) => msg['text'] == l10n.character_thinking(widget.character.name));
             _inCallMessages.add({
@@ -373,30 +411,46 @@ class _CallOverlayState extends State<CallOverlay> {
   }
 
   // 🌟 排隊播放核心：一句播完才能播下一句，充滿真人說話的呼吸節奏
-  void _startQueuePlaybackIfNeeded() async {
+  // 🌟 排隊入口：如果有歌在播就不管，沒歌在播就開始抽號碼牌
+  void _startQueuePlaybackIfNeeded() {
     if (_isAudioQueuePlaying || _audioPlaybackQueue.isEmpty) return;
     _isAudioQueuePlaying = true;
+    _playNextInQueue();
+  }
 
-    while (_audioPlaybackQueue.isNotEmpty) {
-      String nextAudioUrl = _audioPlaybackQueue.removeAt(0);
-      if (mounted) {
-        try {
-          await _audioPlayer.play(UrlSource(nextAudioUrl));
-          await _audioPlayer.onPlayerComplete.first; // 🛑 牢牢卡住，播完才放行下一句
-        } catch (e) {
-          debugPrint("播放佇列音訊失敗: $e");
-        }
+  // 🌟 專職負責「播下一句」的方法
+  Future<void> _playNextInQueue() async {
+    if (_audioPlaybackQueue.isEmpty) {
+      _isAudioQueuePlaying = false; // 佇列空了，解鎖！
+      return;
+    }
+
+    // 從排隊長龍中拿出第一句
+    String nextAudioUrl = _audioPlaybackQueue.removeAt(0);
+
+    if (mounted) {
+      try {
+        debugPrint("▶️ 正在播放新句子...");
+        // 這裡只要下達 play 指令就好，不要再 await onPlayerComplete 了！
+        await _audioPlayer.play(UrlSource(nextAudioUrl));
+      } catch (e) {
+        debugPrint("播放佇列音訊失敗: $e");
+        _playNextInQueue(); // 如果這句網址壞了，直接略過播下一句，不卡死！
       }
     }
-    _isAudioQueuePlaying = false;
   }
 
   // ==================== 🎤 玩家與系統互動事件 ====================
 
   Future<void> _startFirstGreeting() async {
-    // 播放電話接通的嘟聲特效
-    final sfxPlayer = AudioPlayer();
-    sfxPlayer.play(AssetSource('audio/pickup.mp3'));
+    // 🌟 解決文字閃現：一進來就先顯示「接通中」，就不會跑出預設的「請對麥克風說話」了
+    setState(() {
+      _sttText = '電話接通中...';
+    });
+
+    // 使用全域的音效播放器
+    _sfxPlayer = AudioPlayer();
+    _sfxPlayer!.play(AssetSource('audio/pickup.mp3'));
 
     // 🚀 開啟秒回串流管線！
     await _startCallStreamingPipeline("", isFirstGreeting: true);
@@ -404,36 +458,46 @@ class _CallOverlayState extends State<CallOverlay> {
     _startTimer();
   }
 
+  // ==================== 🎤 智能語音辨識中樞 ====================
+
   void _listen() async {
-    final l10n = AppLocalizations.of(context)!;
     if (!_isListening) {
       var status = await Permission.microphone.request();
       if (status != PermissionStatus.granted) return;
 
-      bool available = await _speech.initialize();
+      // 🌟 升級點 1：加上 onStatus 監聽器，賦予它「察言觀色」的能力
+      bool available = await _speech.initialize(
+        onStatus: (status) {
+          debugPrint("🎤 語音辨識狀態: $status");
+          // 偵測到玩家停頓（靜音），系統自動幫忙按下停止並發送！
+          if (status == 'done' || status == 'notListening') {
+            if (_isListening) {
+              _stopAndSend();
+            }
+          }
+        },
+        onError: (error) => debugPrint('🎤 語音辨識錯誤: $error'),
+      );
+
       if (available) {
         setState(() {
           _isListening = true;
-          _sttText = '';
+          // 🌟 升級點 2：給玩家超清晰的指示，不用再疑惑要不要按停止
+          _sttText = '正在聆聽... (講完會自動發送)';
         });
+
         _speech.listen(
-          onResult: (val) => setState(() => _sttText = val.recognizedWords),
+          onResult: (val) {
+            if (mounted) {
+              setState(() => _sttText = val.recognizedWords);
+            }
+          },
           listenOptions: stt.SpeechListenOptions(localeId: 'zh_TW'),
         );
       }
     } else {
-      setState(() => _isListening = false);
-      await _speech.stop();
-
-      final textToSend = _sttText?.trim() ?? '';
-      if (textToSend.isEmpty) return;
-
-      setState(() {
-        _sttText = l10n.character_thinking(widget.character.name);
-      });
-
-      // 🚀 語音說話：直接丟進串流大管線
-      await _startCallStreamingPipeline(textToSend, isFirstGreeting: false);
+      // 玩家手動按按鈕提早結束 (也是走同一個發送通道)
+      _stopAndSend();
     }
   }
 
@@ -481,8 +545,8 @@ class _CallOverlayState extends State<CallOverlay> {
           });
           _scrollToBottom();
 
-          // 這裡做為降級備用：如果第三方事件觸發了純文字，依舊用舊後台發聲
-          _generateAndPlayAudio(text);
+          // 🚨 兇手就是這行！請把它整行刪掉或加雙斜線註解！
+          // _generateAndPlayAudio(text);
         }
       }
     });
@@ -564,6 +628,83 @@ class _CallOverlayState extends State<CallOverlay> {
     });
   }
 
+  void _startListening() async {
+    if (_isListening) return;
+    var status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) return;
+
+    bool available = await _speech.initialize();
+    if (available) {
+      setState(() {
+        _isListening = true;
+        _sttText = '正在聆聽... (鬆開手指發送)';
+      });
+
+      _speech.listen(
+        onResult: (val) {
+          // 🕵️‍♂️ 加上這行超級監視器！只要系統有聽到任何一個字，終端機立刻就會印出來！
+          debugPrint("🎤 即時辨識結果: ${val.recognizedWords}");
+
+          if (mounted) setState(() => _sttText = val.recognizedWords);
+        },
+        // 🌟 關鍵修正：Android 比較認得連字號 (zh-TW)，甚至可以加上 partialResults 確保即時出字
+        listenOptions: stt.SpeechListenOptions(
+          localeId: 'zh-TW',
+          partialResults: true,
+        ),
+      );
+    }
+  }
+
+  // 🌟 2. 鬆開手指的瞬間：停止並發送
+  Future<void> _stopAndSend() async {
+    if (!_isListening) return;
+
+    // 讓子彈飛一會兒，確保語音引擎收到最後一個字
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    setState(() => _isListening = false);
+    await _speech.stop();
+
+    String textToSend = _sttText ?? '';
+    debugPrint("🛑 準備發送的原始文字: $textToSend"); // 🕵️‍♂️ 監視器 1
+
+    if (textToSend.contains('正在聆聽')) {
+      textToSend = ''; // 代表根本沒錄到聲音
+    } else {
+      textToSend = textToSend.trim();
+    }
+
+    // 防呆：如果鬆開時沒錄到任何字，恢復預設文字
+    if (textToSend.isEmpty) {
+      debugPrint("⚠️ 文字為空，啟動防呆機制，取消發送。"); // 🕵️‍♂️ 監視器 2
+      if (mounted) {
+        setState(() {
+          _sttText = AppLocalizations.of(context)!.press_mic_to_speak;
+        });
+      }
+      return;
+    }
+
+    debugPrint("✅ 成功錄取！準備送往雲端: $textToSend"); // 🕵️‍♂️ 監視器 3
+
+    // 成功錄到字，給予發送提示
+    setState(() {
+      _sttText = '🗣️ $textToSend\n\n(發送中...)';
+    });
+
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    if (mounted) {
+      setState(() {
+        _sttText = AppLocalizations.of(context)!.character_thinking(widget.character.name);
+      });
+    }
+
+    // 🚀 正式送進串流管線
+    await _startCallStreamingPipeline(textToSend, isFirstGreeting: false);
+  }
+
   // ==================== 🎨 畫面 UI 渲染中樞 ====================
 
   @override
@@ -633,12 +774,15 @@ class _CallOverlayState extends State<CallOverlay> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildControlButton(icon: Icons.chat_bubble_rounded, color: Colors.white.withValues(alpha: 0.2), onTap: () => setState(() => _isChatMode = true)),
-                  GestureDetector(
-                    onTapDown: (_) => _listen(),
-                    onTapUp: (_) => _listen(),
+                  // 🌟 換成 Listener！絕對不會再被系統誤判成「取消點擊」
+                  Listener(
+                    onPointerDown: (_) => _startListening(), // 手指碰到螢幕
+                    onPointerUp: (_) => _stopAndSend(),      // 手指離開螢幕
+                    onPointerCancel: (_) => _stopAndSend(),  // 系統中斷 (例如來電)
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      height: _isListening ? 70 : 60, width: _isListening ? 70 : 60,
+                      height: _isListening ? 70 : 60,
+                      width: _isListening ? 70 : 60,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: _isListening ? Colors.redAccent : theme.colorScheme.primary,

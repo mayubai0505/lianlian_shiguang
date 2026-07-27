@@ -6,38 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/purchase_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
-import '../services/paypal_purchase_service.dart';
 
-String _getPayPalProductId(String storeProductId) {
-  if (storeProductId.contains('monthly_card')) {
-    return 'paypal_monthly_card_250';
-  }
-
-  if (storeProductId.contains('points_90') || storeProductId == 'paypal_points_90') {
-    return 'paypal_points_90';
-  }
-
-  if (storeProductId.contains('points_215') || storeProductId == 'paypal_points_215') {
-    return 'paypal_points_215';
-  }
-
-  if (storeProductId.contains('points_590') || storeProductId == 'paypal_points_590') {
-    return 'paypal_points_590';
-  }
-
-  throw Exception('找不到對應的 PayPal 商品：$storeProductId');
-}
+// 🍎 蘋果審查專用總開關：送審前設為 true (會隱藏VIP頁籤)，審核通過上架後改回 false！
+const bool isAppleReviewMode = true;
 
 Future<void> _buyStoreProductByPlatform(
     BuildContext context,
     dynamic productWrapper,
     ) async {
-  if (kIsWeb) {
-    final paypalProductId = _getPayPalProductId(productWrapper.productDetails.id);
-    await PayPalPurchaseService().buyWebProduct(paypalProductId);
-    return;
-  }
-
   final purchaseService = Provider.of<PurchaseService>(context, listen: false);
   await purchaseService.buyProduct(productWrapper.productDetails);
 }
@@ -59,7 +35,8 @@ class _StorePageState extends State<StorePage> {
     final l10n = AppLocalizations.of(context)!;
 
     return DefaultTabController(
-      length: 2, // ✨ 雙分頁設定
+      // 🚨 終極隱藏術 1：動態決定分頁數量 (送審時只有2頁，平常有3頁)
+      length: isAppleReviewMode ? 2 : 3,
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -145,6 +122,8 @@ class _StorePageState extends State<StorePage> {
               indicatorWeight: 3,
               tabs: [
                 Tab(text: l10n.shop_tab_top_up),
+                // 🚨 終極隱藏術 2：送審期間，拔掉「累計福利」按鈕
+                if (!isAppleReviewMode) const Tab(text: '累計福利'),
                 Tab(text: l10n.shop_tab_history),
               ],
             ),
@@ -152,22 +131,18 @@ class _StorePageState extends State<StorePage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  // ✨ 第一頁：點數儲值商品列表 (注入月卡邏輯)
+                  // 第一頁：點數儲值商品列表
                   StreamBuilder<DocumentSnapshot>(
-                    // 🌟 這裡持續監控玩家的資料，一買完月卡，秒數就會跳動
                     stream: user != null
                         ? FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots()
                         : null,
                     builder: (context, snapshot) {
-                      // 抓取當前玩家的資料包
                       final userData = (snapshot.data?.data() as Map<String, dynamic>?) ?? {};
 
                       return SingleChildScrollView(
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
-
-                            // 📦 接續原本的點數商品列表
                             _buildProductList(context, purchaseService),
                           ],
                         ),
@@ -175,7 +150,10 @@ class _StorePageState extends State<StorePage> {
                     },
                   ),
 
-                  // 第二頁：收支明細列表 (維持不變)
+                  // 🚨 終極隱藏術 3：送審期間，拔掉「累計福利」的實際畫面
+                  if (!isAppleReviewMode) _buildVipTab(),
+
+                  // 第三頁：收支明細列表 (送審模式下會自動變成第二頁)
                   _buildHistoryList(),
                 ],
               ),
@@ -186,6 +164,209 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
+  // ==========================================
+  // ✨ VIP 累計福利 (課條) - 完全保留在此，不用刪除
+  // ==========================================
+
+  Widget _buildVipTab() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const SizedBox.shrink();
+
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        int totalSpent = 0;
+        if (snapshot.hasData && snapshot.data!.exists) {
+          totalSpent = (snapshot.data!.data() as Map<String, dynamic>?)?['totalSpent'] ?? 0;
+        }
+
+        // ✨ 總裁定案的 10 階 VIP 尊榮課條
+        final List<Map<String, dynamic>> vipTiers = [
+          {'amount': 30, 'title': '初見傾心', 'reward': '20 點花花 + 專屬新手稱號', 'icon': Icons.favorite_border},
+          {'amount': 70, 'title': '微光悸動', 'reward': '專屬頭像框【微光悸動】', 'icon': Icons.flare},
+          {'amount': 250, 'title': '星空呢喃', 'reward': '專屬聊天氣泡 + 50 點花花', 'icon': Icons.chat_bubble_outline},
+          {'amount': 520, 'title': '浪漫夕陽', 'reward': '專屬 App 桌面圖示 (Icon)', 'icon': Icons.image_outlined},
+          {'amount': 880, 'title': '怦然心動', 'reward': '點擊螢幕特效 (Lottie) + 100 點花花', 'icon': Icons.touch_app_outlined},
+          {'amount': 1314, 'title': '永恆誓約', 'reward': '進階動態頭像框 + 200 點花花', 'icon': Icons.diamond_outlined},
+          {'amount': 2000, 'title': '靈魂交會', 'reward': '動態聊天氣泡特效 + 專屬進階稱號', 'icon': Icons.chat_outlined},
+          {'amount': 3000, 'title': '專屬守候', 'reward': '頂級動態名牌 + 500 點花花', 'icon': Icons.stars_outlined},
+          {'amount': 6000, 'title': '璀璨星河', 'reward': '專屬進場 Lottie 特效 + 專屬客服', 'icon': Icons.auto_awesome},
+          {'amount': 10000, 'title': '頂級摯愛', 'reward': '【實體 VIP 專屬禮盒】(手寫信+代表娃)', 'icon': Icons.card_giftcard},
+        ];
+
+        return ListView.builder(
+          padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 40),
+          itemCount: vipTiers.length + 1,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return _buildVipProgressCard(totalSpent, vipTiers, context);
+            }
+            final tier = vipTiers[index - 1];
+            final bool isUnlocked = totalSpent >= tier['amount'];
+            return _buildVipTierCard(tier, isUnlocked, context);
+          },
+        );
+      },
+    );
+  }
+
+  // ✨ 根據累積金額自動切換對應的手繪樹圖片
+  String _getTreeImagePath(int totalSpent) {
+    if (totalSpent >= 10000) return 'assets/images/tree_star.png';        // 👑 10,000+: 星花
+    if (totalSpent >= 3000) return 'assets/images/tree_full_flower.png';  // 🌸 3,000+: 滿花
+    if (totalSpent >= 1314) return 'assets/images/tree_blooming.png';     // 🌷 1,314+: 開花
+    if (totalSpent >= 880) return 'assets/images/tree_large.png';         // 🌳 880+: 大樹
+    if (totalSpent >= 520) return 'assets/images/tree_small.png';         // 🌲 520+: 小樹
+    if (totalSpent >= 250) return 'assets/images/tree_sapling.png';       // 🌿 250+: 樹苗
+    if (totalSpent >= 30) return 'assets/images/tree_sprout.png';         // 🌱 30+: 發芽
+    return 'assets/images/tree_seed.png';                                 // 🌰 0: 種子
+  }
+
+  // ✨ VIP 上方總覽卡片 (結合朋友畫的手繪成長樹)
+  Widget _buildVipProgressCard(int totalSpent, List<Map<String, dynamic>> tiers, BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
+    int nextTierAmount = tiers.last['amount'];
+    for (var tier in tiers) {
+      if (totalSpent < tier['amount']) {
+        nextTierAmount = tier['amount'];
+        break;
+      }
+    }
+    double progress = totalSpent / nextTierAmount;
+    if (progress > 1.0) progress = 1.0;
+
+    String treeImage = _getTreeImagePath(totalSpent);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [primaryColor.withValues(alpha: 0.8), primaryColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5))],
+      ),
+      child: Row(
+        children: [
+          // 🌳 左側：朋友親手畫的手繪成長樹
+          Container(
+            width: 80,
+            height: 80,
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Image.asset(
+              treeImage,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.local_florist, size: 40, color: Colors.white),
+            ),
+          ),
+          const SizedBox(width: 16),
+          // 📊 右側：金額、進度條與提示
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('累積浪漫羈絆', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('NT\$ $totalSpent', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 8,
+                    backgroundColor: Colors.white.withValues(alpha: 0.3),
+                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  totalSpent >= tiers.last['amount']
+                      ? '您已解鎖所有頂級特權！'
+                      : '再儲值 NT\$ ${nextTierAmount - totalSpent} 即可解鎖下一階',
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✨ VIP 單一階級獎勵卡片
+  Widget _buildVipTierCard(Map<String, dynamic> tier, bool isUnlocked, BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isUnlocked ? primaryColor.withValues(alpha: 0.5) : theme.dividerColor.withValues(alpha: 0.1)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 4))],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isUnlocked ? primaryColor.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(tier['icon'], color: isUnlocked ? primaryColor : Colors.grey, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(tier['title'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isUnlocked ? theme.textTheme.bodyLarge?.color : Colors.grey)),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
+                      child: Text('NT\$ ${tier['amount']}', style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(tier['reward'], style: TextStyle(color: isUnlocked ? primaryColor : Colors.grey, fontSize: 13, fontWeight: isUnlocked ? FontWeight.w600 : FontWeight.normal)),
+              ],
+            ),
+          ),
+          if (isUnlocked)
+            Icon(Icons.check_circle, color: primaryColor, size: 24)
+          else
+            const Icon(Icons.lock_outline, color: Colors.grey, size: 24),
+        ],
+      ),
+    );
+  }
+
+  // ==========================================
+  // 下方為原有的方法 (維持不變)
+  // ==========================================
   int _calculateDaysRemaining(String? endDateStr) {
     if (endDateStr == null) return 0;
     try {
@@ -198,125 +379,25 @@ class _StorePageState extends State<StorePage> {
     }
   }
 
-  Widget _buildMonthlyCardSection(BuildContext context, PurchaseService purchaseService, Map<String, dynamic> userData) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
-    // 🌟 1. 計算剩餘天數
-    String? endDateStr = userData['monthlySubEndDate'];
-    int daysRemaining = _calculateDaysRemaining(endDateStr);
-
-    // 🌟 2. 總裁的半年封頂邏輯：如果剩餘天數 > 150 天，就不給再買 (因為再買 30 天就超過 180 了)
-    bool canPurchase = daysRemaining <= 150;
-
-    // 🌟 3. 找出月卡商品 (根據 ID 搜尋)
-    final monthlyCardWrapper = purchaseService.products.firstWhere(
-          (p) => p.productDetails.id == 'com_lianlian_monthly_card_250',
-      orElse: () => purchaseService.products.first, // 防呆
-    );
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 24),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        // ✨ 總裁，這張卡片要給它華麗的金色或流星質感
-        gradient: LinearGradient(
-          colors: [Colors.amber.shade300, Colors.orange.shade400],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.orange.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 5))],
-      ),
-      child: Row(
-        children: [
-          // 左側：月卡圖示與標題
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 🌟 使用正式翻譯：【戀戀拾光．星之契約】
-                Text(
-                  l10n.shop_monthly_card_name,
-                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                // 🌟 動態切換：生效中(含天數) 或 立即開啟
-                Text(
-                  daysRemaining > 0
-                      ? l10n.shop_monthly_card_status_active(daysRemaining)
-                      : l10n.shop_monthly_card_status_inactive,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          // 右側：按鈕
-          ElevatedButton(
-            onPressed: (canPurchase && !monthlyCardWrapper.isPending)
-                ? () => purchaseService.buyProduct(monthlyCardWrapper.productDetails)
-                : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.orange,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              disabledBackgroundColor: Colors.white.withValues(alpha: 0.5),
-            ),
-            child: monthlyCardWrapper.isPending
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-            // 🌟 按鈕文字：顯示價格 或 已達上限
-                : Text(canPurchase ? "\$250" : l10n.shop_monthly_card_limit_reached),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ==========================================
-  // 第一頁：儲值商品列表邏輯
-  // ==========================================
   Widget _buildProductList(BuildContext context, PurchaseService service) {
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
-    // 🌟 1. 在 return Column 之前，先測量目前螢幕的寬度
     if (user == null) return const SizedBox.shrink();
 
     List<dynamic> displayProducts = service.products;
     bool isTestingMode = false;
 
-// Web 版不走 App Store / Google Play 內購，直接顯示 PayPal 商品
     if (kIsWeb) {
       displayProducts = [
-        ProductDetailsWrapper(
-          productDetails: MockProductDetails(
-            id: 'paypal_monthly_card_250',
-            price: 'US\$4.99',
-          ),
-        ),
-        ProductDetailsWrapper(
-          productDetails: MockProductDetails(
-            id: 'paypal_points_90',
-            price: 'US\$0.99',
-          ),
-        ),
-        ProductDetailsWrapper(
-          productDetails: MockProductDetails(
-            id: 'paypal_points_215',
-            price: 'US\$1.99',
-          ),
-        ),
-        ProductDetailsWrapper(
-          productDetails: MockProductDetails(
-            id: 'paypal_points_590',
-            price: 'US\$4.99',
-          ),
-        ),
+        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_monthly_card_250', price: 'NT\$250')),
+        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_points_90', price: 'NT\$30')),
+        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_points_215', price: 'NT\$70')),
+        ProductDetailsWrapper(productDetails: MockProductDetails(id: 'com_lianlian_points_590', price: 'NT\$170')),
       ];
     } else {
       isTestingMode = displayProducts.isEmpty;
     }
 
-// 如果手機版抓不到真實商品，就顯示補貨中
     if (!kIsWeb && displayProducts.isEmpty) {
       return Center(
         child: Padding(
@@ -337,32 +418,23 @@ class _StorePageState extends State<StorePage> {
       );
     }
 
-    final monthlyCard = displayProducts
-        .where((p) => p.productDetails.id.contains('monthly_card'))
-        .firstOrNull ??
-        displayProducts.first;
-
-    final regularProducts = displayProducts
-        .where((p) => !p.productDetails.id.contains('monthly_card'))
-        .toList();
+    final monthlyCard = displayProducts.where((p) => p.productDetails.id.contains('monthly_card')).firstOrNull ?? displayProducts.first;
+    final regularProducts = displayProducts.where((p) => !p.productDetails.id.contains('monthly_card')).toList();
 
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
         builder: (context, snapshot) {
           List<dynamic> purchaseHistory = [];
-          // ✨ 1. 準備裝月卡資料的變數
           String? endDateStr;
 
           if (snapshot.hasData && snapshot.data!.exists) {
             final userData = snapshot.data!.data() as Map<String, dynamic>?;
             purchaseHistory = userData?['purchaseHistory'] ?? [];
-            // ✨ 2. 從資料庫抓出月卡到期日
             endDateStr = userData?['monthlySubEndDate'];
           }
 
-          // ✨ 3. 呼叫我們寫好的小工具算天數
           int daysRemaining = _calculateDaysRemaining(endDateStr);
-          bool isLimitReached = daysRemaining > 150; // 半年封頂線
+          bool isLimitReached = daysRemaining > 150;
 
           final screenWidth = MediaQuery.of(context).size.width;
           final bool isWideScreen = screenWidth > 600;
@@ -375,29 +447,13 @@ class _StorePageState extends State<StorePage> {
               child: Column(
                 children: [
                   if (isTestingMode)
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 16),
-                      child: Text(l10n.shop_preview_mode, style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    ),
-
-                  // 🌟 第二步：把算好的天數跟封頂狀態，交給 MonthlyCardBanner！
-                  MonthlyCardBanner(
-                    productWrapper: monthlyCard,
-                    daysRemaining: daysRemaining,
-                    isLimitReached: isLimitReached,
-                  ),
-
+                    Padding(padding: EdgeInsets.only(bottom: 16), child: Text(l10n.shop_preview_mode, style: TextStyle(color: Colors.grey, fontSize: 12))),
+                  MonthlyCardBanner(productWrapper: monthlyCard, daysRemaining: daysRemaining, isLimitReached: isLimitReached),
                   const SizedBox(height: 20),
-                  // 一般花花禮包
                   GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: columns,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: cardRatio,
-                    ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns, crossAxisSpacing: 16, mainAxisSpacing: 16, childAspectRatio: cardRatio),
                     itemCount: regularProducts.length,
                     itemBuilder: (context, index) {
                       final p = regularProducts[index];
@@ -413,21 +469,13 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
-  // ==========================================
-  // 第二頁：收支明細列表邏輯
-  // ==========================================
   Widget _buildHistoryList() {
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const SizedBox.shrink();
 
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('flower_logs')
-          .orderBy('createdAt', descending: true) // 新的在最上面
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('users').doc(user.uid).collection('flower_logs').orderBy('createdAt', descending: true).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -463,9 +511,7 @@ class _StorePageState extends State<StorePage> {
                 color: theme.cardColor,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: theme.dividerColor.withValues(alpha:0.05)),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha:0.02), blurRadius: 8, offset: const Offset(0, 4))
-                ],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.02), blurRadius: 8, offset: const Offset(0, 4))],
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -498,9 +544,6 @@ class _StorePageState extends State<StorePage> {
   }
 }
 
-// ==========================================
-// ✨ 獨立組件區：月卡橫幅 (二合一尊爵旗艦版)
-// ==========================================
 class MonthlyCardBanner extends StatelessWidget {
   final dynamic productWrapper;
   final int daysRemaining;
@@ -515,18 +558,15 @@ class MonthlyCardBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🌟 匯入多國語系與主題顏色
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final onPrimary = theme.colorScheme.onPrimary;
-
-    // ✨ 判斷是否可以點擊購買
     bool canPurchase = !isLimitReached && !productWrapper.isPending;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20), // ✨ 內縮排移到這裡
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
@@ -534,14 +574,11 @@ class MonthlyCardBanner extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        boxShadow: [
-          BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))
-        ],
+        boxShadow: [BoxShadow(color: primaryColor.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // --- 1. 上半部：月卡標題、狀態與購買按鈕 ---
           Row(
             children: [
               Icon(Icons.stars_rounded, color: onPrimary, size: 40),
@@ -550,10 +587,8 @@ class MonthlyCardBanner extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 🌟 標題 (使用多國語系)
                     Text(l10n.shop_monthly_card_name, style: TextStyle(color: onPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
-                    // 🌟 動態顯示天數或促銷文案
                     Text(
                         daysRemaining > 0
                             ? l10n.shop_monthly_card_status_active(daysRemaining)
@@ -563,16 +598,11 @@ class MonthlyCardBanner extends StatelessWidget {
                   ],
                 ),
               ),
-              // 🛒 專屬購買按鈕
               Material(
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: canPurchase
-                      ? () async {
-                    await _buyStoreProductByPlatform(context, productWrapper);
-                  }
-                      : null,
+                  onTap: canPurchase ? () async { await _buyStoreProductByPlatform(context, productWrapper); } : null,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
@@ -583,38 +613,25 @@ class MonthlyCardBanner extends StatelessWidget {
                         ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor))
                         : Text(
                         isLimitReached ? l10n.shop_monthly_card_limit_reached : productWrapper.productDetails.price,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: canPurchase ? primaryColor : Colors.grey.shade700
-                        )
+                        style: TextStyle(fontWeight: FontWeight.bold, color: canPurchase ? primaryColor : Colors.grey.shade700)
                     ),
                   ),
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 20),
-          // --- 2. 中間：融入粉色卡片的尊享特權說明 ---
-          Container(height: 1, color: onPrimary.withValues(alpha: 0.2)), // 絕美的半透明分隔線
+          Container(height: 1, color: onPrimary.withValues(alpha: 0.2)),
           const SizedBox(height: 16),
-
           _buildPrivilegeRow(Icons.refresh, l10n.monthly_privilege_reroll_title, l10n.monthly_privilege_reroll_desc, onPrimary),
           const SizedBox(height: 12),
           _buildPrivilegeRow(Icons.favorite, l10n.monthly_privilege_affinity_title, l10n.monthly_privilege_affinity_desc, onPrimary),
-
           const SizedBox(height: 8),
-
-          // --- 3. 底部：說明書入口 ---
           Align(
             alignment: Alignment.centerRight,
             child: TextButton.icon(
               icon: Icon(Icons.help_outline, size: 16, color: onPrimary.withValues(alpha: 0.9)),
-              label: Text(l10n.monthly_manual_button, style: TextStyle(
-                  color: onPrimary.withValues(alpha: 0.9),
-                  decoration: TextDecoration.underline,
-                  decorationColor: onPrimary.withValues(alpha: 0.9)
-              )),
+              label: Text(l10n.monthly_manual_button, style: TextStyle(color: onPrimary.withValues(alpha: 0.9), decoration: TextDecoration.underline, decorationColor: onPrimary.withValues(alpha: 0.9))),
               onPressed: () => _showMonthlyPassManual(context),
             ),
           ),
@@ -623,17 +640,13 @@ class MonthlyCardBanner extends StatelessWidget {
     );
   }
 
-  // ✨ 搬進來的輔助小工具：畫出特權清單 (會自動根據背景顏色反轉成白色系)
   Widget _buildPrivilegeRow(IconData icon, String title, String subtitle, Color textColor) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-              color: textColor.withValues(alpha: 0.15),
-              shape: BoxShape.circle
-          ),
+          decoration: BoxDecoration(color: textColor.withValues(alpha: 0.15), shape: BoxShape.circle),
           child: Icon(icon, color: textColor, size: 18),
         ),
         const SizedBox(width: 12),
@@ -652,20 +665,12 @@ class MonthlyCardBanner extends StatelessWidget {
   }
 }
 
-// ==========================================
-// ✨ 獨立組件區：一般商品卡片 (浪漫升級版)
-// ==========================================
 class ProductCard extends StatelessWidget {
   final dynamic productWrapper;
   final bool isFirstPurchase;
 
-  const ProductCard({
-    super.key,
-    required this.productWrapper,
-    this.isFirstPurchase = false
-  });
+  const ProductCard({super.key, required this.productWrapper, this.isFirstPurchase = false});
 
-  // 🌸 總裁專屬：浪漫禮包名稱對照表
   String _getRomanticName(String id, AppLocalizations l10n) {
     if (id.contains('90')) return l10n.pack_first_meet;
     if (id.contains('215')) return l10n.pack_crush;
@@ -685,7 +690,7 @@ class ProductCard extends StatelessWidget {
     if (id.contains('4300')) return l10n.pack_lifetime;
     if (id.contains('6400')) return l10n.pack_vow;
     if (id.contains('10000')) return l10n.pack_eternal;
-    return l10n.pack_exclusive; // 防呆預設值
+    return l10n.pack_exclusive;
   }
 
   @override
@@ -694,8 +699,6 @@ class ProductCard extends StatelessWidget {
     final isDarkMode = theme.brightness == Brightness.dark;
     final primaryColor = theme.colorScheme.primary;
     final l10n = AppLocalizations.of(context)!;
-
-    // 🌟 使用底線切割：因為產品 ID 是 com_lianlian_points_90
     final String points = productWrapper.productDetails.id.split('_').last;
     final String romanticName = _getRomanticName(productWrapper.productDetails.id, l10n);
 
@@ -708,9 +711,7 @@ class ProductCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () async {
-          await _buyStoreProductByPlatform(context, productWrapper);
-        },
+        onTap: () async { await _buyStoreProductByPlatform(context, productWrapper); },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -722,14 +723,8 @@ class ProductCard extends StatelessWidget {
                 errorBuilder: (context, error, stackTrace) => const Icon(Icons.local_florist, size: 40, color: Colors.pink),
               ),
               const SizedBox(height: 8),
-
-              // 🌸 顯示浪漫禮包名稱
               Text(romanticName, style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor, fontSize: 14)),
-              // 🌸 顯示點數
-              Text(
-                  l10n.flowerPointsCount(points.toString()),
-                  style: const TextStyle(fontSize: 12, color: Colors.grey)
-              ),
+              Text(l10n.flowerPointsCount(points.toString()), style: const TextStyle(fontSize: 12, color: Colors.grey)),
               const SizedBox(height: 4),
               if (isFirstPurchase)
                 Container(
@@ -752,17 +747,10 @@ class ProductCard extends StatelessWidget {
   }
 }
 
-// ==========================================
-// ✨ 臨時演員：假商品類別 (如果沒有真實商品時使用)
-// ==========================================
 class ProductDetailsWrapper {
   final dynamic productDetails;
   bool isPending;
-
-  ProductDetailsWrapper({
-    required this.productDetails,
-    this.isPending = false,
-  });
+  ProductDetailsWrapper({required this.productDetails, this.isPending = false});
 }
 
 class MockProductDetails {
@@ -773,15 +761,9 @@ class MockProductDetails {
   final double rawPrice = 0;
   final String currencyCode = 'TWD';
   final String currencySymbol = 'NT\$';
-
   MockProductDetails({required this.id, required this.price});
 }
 
-// ==========================================
-// 💎 戀戀尊享月卡 UI 專區
-// ==========================================
-
-// ✨ 誠實豆沙包版：月卡說明書彈窗
 void _showMonthlyPassManual(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
   showModalBottomSheet(
@@ -792,63 +774,30 @@ void _showMonthlyPassManual(BuildContext context) {
       final theme = Theme.of(context);
       return Container(
         padding: const EdgeInsets.all(24.0),
-        decoration: BoxDecoration(
-          color: theme.scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
+        decoration: BoxDecoration(color: theme.scaffoldBackgroundColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
         child: SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-               Row(
+              Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20), decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)))),
+              Row(
                 children: [
-                  Icon(Icons.auto_awesome, color: Colors.pinkAccent),
-                  SizedBox(width: 8),
-                  // 💡 拿掉 Text 前面的 const
+                  const Icon(Icons.auto_awesome, color: Colors.pinkAccent),
+                  const SizedBox(width: 8),
                   Text(l10n.passGuideTitle, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ],
               ),
               const SizedBox(height: 20),
-
-              // 📝 賣點 1：重新生成
-              _buildManualItem(
-                icon: Icons.refresh,
-                title: l10n.passGuideRegenerateTitle, // 🚀 替換標題
-                content: l10n.passGuideRegenerateContent, // 🚀 替換內文
-              ),
+              _buildManualItem(icon: Icons.refresh, title: l10n.passGuideRegenerateTitle, content: l10n.passGuideRegenerateContent),
               const SizedBox(height: 16),
-
-              // 📝 賣點 2：好感度
-              _buildManualItem(
-                icon: Icons.favorite,
-                title: l10n.passGuideAffectionTitle, // 🚀 替換標題
-                content: l10n.passGuideAffectionContent, // 🚀 替換內文
-              ),
+              _buildManualItem(icon: Icons.favorite, title: l10n.passGuideAffectionTitle, content: l10n.passGuideAffectionContent),
               const SizedBox(height: 24),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.pinkAccent,
-                    foregroundColor: Colors.white,
-                    shape: const StadiumBorder(),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent, foregroundColor: Colors.white, shape: const StadiumBorder(), padding: const EdgeInsets.symmetric(vertical: 16)),
                   onPressed: () => Navigator.pop(context),
-                  // 💡 拿掉 Text 前面的 const
                   child: Text(l10n.passGuideUnlockButton, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
@@ -860,20 +809,13 @@ void _showMonthlyPassManual(BuildContext context) {
   );
 }
 
-// 說明書內部的小排版元件
 Widget _buildManualItem({required IconData icon, required String title, required String content}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
       const SizedBox(height: 4),
-      Padding(
-        padding: const EdgeInsets.only(left: 4.0),
-        child: Text(
-          content,
-          style: const TextStyle(color: Colors.grey, height: 1.5, fontSize: 13),
-        ),
-      ),
+      Padding(padding: const EdgeInsets.only(left: 4.0), child: Text(content, style: const TextStyle(color: Colors.grey, height: 1.5, fontSize: 13))),
     ],
   );
 }

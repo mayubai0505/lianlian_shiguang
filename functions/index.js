@@ -26,8 +26,6 @@ const deepseekApiKey = defineSecret('DEEPSEEK_API_KEY');
 const geminiApiKey = defineSecret('GEMINI_API_KEY');
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
-const paypalClientId = defineSecret("PAYPAL_CLIENT_ID");
-const paypalClientSecret = defineSecret("PAYPAL_CLIENT_SECRET");
 const crypto = require("crypto");
 const APP_ID = "lianlianshiguang";
 
@@ -61,45 +59,6 @@ const WEB_PRODUCTS = {
     type: "points",
   },
 };
-
-const PAYPAL_IS_SANDBOX = true; // 測試先 true；正式上線改 false
-
-const PAYPAL_PRODUCTS = {
-  paypal_monthly_card_250: {
-    name: "星光契約月卡",
-    amount: "4.99",
-    currency: "USD",
-    points: 250,
-    type: "monthly_card",
-  },
-  paypal_points_90: {
-    name: "90 點花花",
-    amount: "0.99",
-    currency: "USD",
-    points: 90,
-    type: "points",
-  },
-  paypal_points_215: {
-    name: "215 點花花",
-    amount: "1.99",
-    currency: "USD",
-    points: 215,
-    type: "points",
-  },
-  paypal_points_590: {
-    name: "590 點花花",
-    amount: "4.99",
-    currency: "USD",
-    points: 590,
-    type: "points",
-  },
-};
-
-function getPayPalBaseUrl() {
-  return PAYPAL_IS_SANDBOX
-    ? "https://api-m.sandbox.paypal.com"
-    : "https://api-m.paypal.com";
-}
 
 let converter = null;
 let translateClient = null;
@@ -201,7 +160,6 @@ exports.generateVoice = onRequest({
                         method: "POST",
                         headers: {
                             "accept": "audio/mpeg",
-                            "Authorization": `Bearer ${apiKey}`,
                             "xi-api-key": apiKey,
                             "Content-Type": "application/json",
                         },
@@ -220,8 +178,11 @@ exports.generateVoice = onRequest({
                 );
 
         if (!elevenResponse.ok) {
-            return res.status(500).json({ error: "ElevenLabs 失敗", detail: await elevenResponse.text() });
-        }
+                    const errorDetail = await elevenResponse.text();
+                    // 🚨 加上這行，逼它在 GCP 後台大聲說出失敗原因！
+                    console.error("🚨 ElevenLabs 拒絕存取，原因:", errorDetail);
+                    return res.status(500).json({ error: "ElevenLabs 失敗", detail: errorDetail });
+                }
 
         const audioBuffer = Buffer.from(await elevenResponse.arrayBuffer());
         const token = crypto.randomUUID();
@@ -1862,7 +1823,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                        }
                    });
                           // 🧠 根據模式壓縮聊天紀錄，確保話題連貫性 (1 輪 = User + AI 共 2 條)
-                          // ==========================================
                           const HISTORY_LIMIT =
                               chatMode === "immersive" ? 14 : // 保留最近 7 輪
                               chatMode === "story"     ? 10 : // 保留最近 5 輪
@@ -2111,7 +2071,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                            // 🔄 總裁的惡鬼催稿迴圈：防爆 + 防亂碼版
                                                                            // ==========================================
                                                                            while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
-                                                                               // 🚄 1. 預設走 OpenRouter 軌道 (給 Gemini 或其他模型用)
                                                                                // 🚄 1. 預設走 OpenRouter 中轉站
                                                                                        let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
                                                                                        let apiKey = openRouterApiKey.value();
@@ -2226,13 +2185,27 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                    const isRefused = triggeredKeyword || rawContent.trim() === "";
 
                                                                                   if (isRefused) {
-                                                                                       console.warn(`🛑 [防禦系統] 偵測到 AI 審查擋刀！(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"}) 攔截寫入與扣款！`);
-                                                                                       // 直接中斷，把 400 錯誤丟回給 Flutter，讓 Flutter 顯示溫柔提示
-                                                                                       return res.status(400).json({
-                                                                                           error: "CENSORED",
-                                                                                           message: "回覆失敗,請重新傳送訊息,本則訊息不扣點數"
-                                                                                       });
-                                                                                   }
+                                                                                              console.warn(`🛑 [防禦系統] 偵測到 AI 審查擋刀或發呆！(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"})`);
+
+                                                                                              // 🌟 核心修改：把直接 return 改成「判斷是否重試」
+                                                                                              // 假設我們允許遇到錯誤時，最多額外重試 2 次 (可以依你的需求調整)
+                                                                                              if (loopCount < MAX_LOOPS + 2) {
+                                                                                                  console.log(`🔄 啟動自動重試機制... (準備進行下一次呼叫)`);
+                                                                                                  loopCount++; // ⚠️ 極度重要：一定要增加次數，不然會變成無限死迴圈！
+
+                                                                                                  // 建議稍微停頓 1.5 秒再重試，避免瞬間狂打 API 被當成惡意攻擊
+                                                                                                  // await new Promise(resolve => setTimeout(resolve, 1500));
+
+                                                                                                  continue; // 🚀 關鍵：跳過下面的程式碼，直接回到 while 迴圈的最上面重新發射！
+                                                                                              }
+
+                                                                                              // 🚨 如果已經重試到極限了，才真正放棄並把 400 錯誤丟回給 Flutter
+                                                                                              console.warn("🛑 重試次數已達上限，徹底放棄，攔截寫入與扣款！");
+                                                                                              return res.status(400).json({
+                                                                                                  error: "CENSORED",
+                                                                                                  message: "他目前在忙，請稍後再試一次喔！" // 換成對玩家友善的提示
+                                                                                              });
+                                                                                          }
 
                                                                                // ==========================================
                                                                                // 🛡️ 三段式 JSON 淨化器
@@ -4313,301 +4286,6 @@ exports.stripeWebhook = onRequest(
   }
 );
 
-async function getPayPalAccessToken() {
-  const auth = Buffer.from(
-    `${paypalClientId.value()}:${paypalClientSecret.value()}`
-  ).toString("base64");
-
-  const response = await axios.post(
-    `${getPayPalBaseUrl()}/v1/oauth2/token`,
-    "grant_type=client_credentials",
-    {
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
-
-  return response.data.access_token;
-}
-
-exports.createPayPalOrder = onCall(
-  {
-    region: REGION,
-    secrets: [paypalClientId, paypalClientSecret],
-  },
-  async (request) => {
-    if (!request.auth) {
-      throw new HttpsError("unauthenticated", "請先登入");
-    }
-
-    const uid = request.auth.uid;
-    const productId = request.data.productId;
-    const product = PAYPAL_PRODUCTS[productId];
-
-    if (!product) {
-      throw new HttpsError("invalid-argument", "未知的 PayPal 商品");
-    }
-
-    const db = admin.firestore();
-    const accessToken = await getPayPalAccessToken();
-
-    const localOrderId = `PP${Date.now()}${Math.floor(Math.random() * 10000)
-      .toString()
-      .padStart(4, "0")}`;
-
-    await db.collection("paypal_orders").doc(localOrderId).set({
-      uid,
-      productId,
-      productName: product.name,
-      amount: product.amount,
-      currency: product.currency,
-      points: product.points,
-      type: product.type,
-      status: "created",
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    const orderResponse = await axios.post(
-      `${getPayPalBaseUrl()}/v2/checkout/orders`,
-      {
-        intent: "CAPTURE",
-        purchase_units: [
-          {
-            reference_id: localOrderId,
-            description: product.name,
-            amount: {
-              currency_code: product.currency,
-              value: product.amount,
-            },
-          },
-        ],
-        application_context: {
-          brand_name: "戀戀拾光",
-          landing_page: "LOGIN",
-          user_action: "PAY_NOW",
-          return_url:
-            `https://${REGION}-${APP_ID}.cloudfunctions.net/paypalReturn` +
-            `?localOrderId=${encodeURIComponent(localOrderId)}`,
-          cancel_url: "https://lianlianshiguang.web.app/?payment=paypal_cancel",
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const paypalOrderId = orderResponse.data.id;
-    const approveLink = orderResponse.data.links.find(
-      (link) => link.rel === "approve"
-    );
-
-    if (!approveLink) {
-      throw new HttpsError("internal", "找不到 PayPal 付款連結");
-    }
-
-    await db.collection("paypal_orders").doc(localOrderId).set(
-      {
-        paypalOrderId,
-        approveUrl: approveLink.href,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      },
-      { merge: true }
-    );
-
-    return {
-      approveUrl: approveLink.href,
-    };
-  }
-);
-
-exports.paypalReturn = onRequest(
-  {
-    region: REGION,
-    secrets: [paypalClientId, paypalClientSecret],
-  },
-  async (req, res) => {
-    try {
-      const localOrderId = req.query.localOrderId;
-      const paypalOrderIdFromReturn = req.query.token;
-
-      if (!localOrderId || !paypalOrderIdFromReturn) {
-        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_missing");
-        return;
-      }
-
-      const db = admin.firestore();
-      const orderRef = db.collection("paypal_orders").doc(localOrderId);
-      const orderDoc = await orderRef.get();
-
-      if (!orderDoc.exists) {
-        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_order_not_found");
-        return;
-      }
-
-      const order = orderDoc.data();
-
-      if (order.status === "paid") {
-        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_already_paid");
-        return;
-      }
-
-      if (order.paypalOrderId !== paypalOrderIdFromReturn) {
-        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_order_mismatch");
-        return;
-      }
-
-      const accessToken = await getPayPalAccessToken();
-
-      const captureResponse = await axios.post(
-        `${getPayPalBaseUrl()}/v2/checkout/orders/${paypalOrderIdFromReturn}/capture`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const captureData = captureResponse.data;
-
-      if (captureData.status !== "COMPLETED") {
-        await orderRef.set(
-          {
-            status: "capture_failed",
-            paypalRaw: captureData,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-          },
-          { merge: true }
-        );
-
-        res.redirect("https://lianlianshiguang.web.app/?payment=paypal_failed");
-        return;
-      }
-
-      const userRef = db.collection("users").doc(order.uid);
-      const eventRef = db
-        .collection("paypal_events")
-        .doc(paypalOrderIdFromReturn);
-
-      await db.runTransaction(async (transaction) => {
-        const eventDoc = await transaction.get(eventRef);
-
-        // 防止重複導回造成重複加點
-        if (eventDoc.exists) {
-          return;
-        }
-
-        const userDoc = await transaction.get(userRef);
-        const userData = userDoc.exists ? userDoc.data() : {};
-
-        const purchaseHistory = Array.isArray(userData.purchaseHistory)
-          ? userData.purchaseHistory
-          : [];
-
-        const isFirstTime = !purchaseHistory.includes(order.productId);
-
-        let pointsToAdd = 0;
-        const updateData = {
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        };
-
-        if (order.type === "monthly_card") {
-          pointsToAdd = order.points;
-
-          const now = new Date();
-          const currentEndDate = userData.monthlySubEndDate
-            ? new Date(userData.monthlySubEndDate)
-            : now;
-
-          const wasAlreadySubscribed = currentEndDate > now;
-          const baseDate = currentEndDate < now ? now : currentEndDate;
-
-          let newEndDate = new Date(baseDate);
-          newEndDate.setDate(newEndDate.getDate() + 30);
-
-          const maxEndDate = new Date(now);
-          maxEndDate.setDate(maxEndDate.getDate() + 180);
-
-          if (newEndDate > maxEndDate) {
-            newEndDate = maxEndDate;
-          }
-
-          updateData.isMonthlySubscribed = true;
-          updateData.monthlySubEndDate = newEndDate.toISOString();
-          updateData.monthlyCardStatus = "active";
-          updateData.maxRegenerateCount = 20;
-
-          if (!wasAlreadySubscribed) {
-            updateData.regenerateCount = 20;
-          }
-        } else if (order.type === "points") {
-          pointsToAdd = isFirstTime ? order.points * 2 : order.points;
-        }
-
-        if (pointsToAdd <= 0) {
-          throw new Error("pointsToAdd invalid");
-        }
-
-        updateData.flowerPoints =
-          admin.firestore.FieldValue.increment(pointsToAdd);
-
-        if (isFirstTime) {
-          updateData.purchaseHistory =
-            admin.firestore.FieldValue.arrayUnion(order.productId);
-        }
-
-        transaction.set(eventRef, {
-          localOrderId,
-          paypalOrderId: paypalOrderIdFromReturn,
-          uid: order.uid,
-          productId: order.productId,
-          points: pointsToAdd,
-          raw: captureData,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-
-        transaction.set(
-          orderRef,
-          {
-            status: "paid",
-            paidAt: admin.firestore.FieldValue.serverTimestamp(),
-            paypalRaw: captureData,
-          },
-          { merge: true }
-        );
-
-        transaction.set(userRef, updateData, { merge: true });
-
-        transaction.set(userRef.collection("flower_logs").doc(), {
-          title:
-            order.type === "monthly_card"
-              ? "網頁啟動：星光契約月卡 🌙"
-              : isFirstTime
-                ? `網頁儲值：${pointsToAdd} 點花花（首購雙倍 🎁）`
-                : `網頁儲值：${pointsToAdd} 點花花`,
-          amount: pointsToAdd,
-          productId: order.productId,
-          source: "paypal_web",
-          localOrderId,
-          paypalOrderId: paypalOrderIdFromReturn,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-      });
-
-      res.redirect("https://lianlianshiguang.web.app/?payment=paypal_success");
-    } catch (err) {
-      console.error("PayPal 付款處理失敗:", err.response?.data || err);
-      res.redirect("https://lianlianshiguang.web.app/?payment=paypal_error");
-    }
-  }
-);
-
 exports.createMomentNotification = onCall(
   {
     region: REGION,
@@ -4977,18 +4655,21 @@ exports.createECPayOrder = functions.https.onRequest((req, res) => {
 
     // 3. 設定訂單內容 (這裡先用程安的草莓蛋糕當作測試)
     const orderParams = {
-        MerchantID: merchantID,
-        MerchantTradeNo: 'LLSG' + now.getTime(),
-        MerchantTradeDate: orderDate,
-        PaymentType: 'aio',
-        TotalAmount: '150',
-        TradeDesc: '戀戀拾光_測試購買',
-        ItemName: '程安的專屬草莓蛋糕',
-        ReturnURL: 'https://us-central1-你的專案ID.cloudfunctions.net/ecpayReturn',
-        ClientBackURL: 'https://你的網頁版網址.com',
-        ChoosePayment: 'ALL',
-        EncryptType: '1'
-    };
+            MerchantID: merchantID,
+            MerchantTradeNo: 'LLSG' + now.getTime(),
+            MerchantTradeDate: orderDate,
+            PaymentType: 'aio',
+            TotalAmount: req.body.amount, // 從前端傳來的金額
+            TradeDesc: '戀戀拾光_點數儲值',
+            ItemName: req.body.itemName,  // 從前端傳來的商品名稱 (例如: 90花花點數)
+            ReturnURL: 'https://asia-east1-您的專案ID.cloudfunctions.net/ecpayReturn',
+            ClientBackURL: 'https://您的網頁版網址.com',
+            ChoosePayment: 'ALL',
+            EncryptType: '1',
+            // ✨ 新增這兩行：偷偷把玩家身分和購買的點數藏在這裡！
+            CustomField1: req.body.userId, // 玩家的 UID
+            CustomField2: req.body.points  // 這次買了多少花花 (數字)
+        };
 
     // 4. 計算綠界最嚴格的 CheckMacValue (檢查碼)
     const keys = Object.keys(orderParams).sort();
@@ -5020,4 +4701,103 @@ exports.createECPayOrder = functions.https.onRequest((req, res) => {
     formHtml += `</form><script>document.getElementById('ecpay-form').submit();</script>`;
 
     res.send(formHtml);
+});
+
+// ==========================================
+// 綠界金流 Webhook：接收付款結果並發放點數
+// ==========================================
+exports.ecpayReturn = functions.https.onRequest(async (req, res) => {
+    // 綠界回傳的資料會放在 req.body 裡面
+    const data = req.body;
+
+    // 1. 把環境變數裡的金鑰拿出來
+    const hashKey = process.env.ECPAY_HASH_KEY;
+    const hashIV = process.env.ECPAY_HASH_IV;
+
+    // 2. 🛡️ 資安防護：驗證 CheckMacValue (檢查碼)
+    // 我們要自己算一次檢查碼，看看跟綠界傳來的是不是一模一樣
+    const receivedMac = data.CheckMacValue;
+
+    // 把 CheckMacValue 從物件中剔除，剩下的參數用來計算
+    const calcData = { ...data };
+    delete calcData.CheckMacValue;
+
+    const keys = Object.keys(calcData).sort();
+    let checkMacStr = `HashKey=${hashKey}`;
+    for (const key of keys) {
+        checkMacStr += `&${key}=${calcData[key]}`;
+    }
+    checkMacStr += `&HashIV=${hashIV}`;
+
+    let encodedStr = encodeURIComponent(checkMacStr)
+        .replace(/%20/g, '+')
+        .replace(/%2d/gi, '-')
+        .replace(/%5f/gi, '_')
+        .replace(/%2e/gi, '.')
+        .replace(/%21/gi, '!')
+        .replace(/%2a/gi, '*')
+        .replace(/%28/gi, '(')
+        .replace(/%29/gi, ')')
+        .toLowerCase();
+
+    const calculatedMac = crypto.createHash('sha256').update(encodedStr).digest('hex').toUpperCase();
+
+    // 如果檢查碼不符，代表可能是駭客偽造的，直接擋掉！
+    if (calculatedMac !== receivedMac) {
+        console.error("❌ 綠界檢查碼驗證失敗！可能是偽造的請求！");
+        return res.send('0|ErrorMessage');
+    }
+
+    // 3. 檢查付款是否成功 (RtnCode === '1' 代表成功)
+    if (data.RtnCode === '1') {
+        const userId = data.CustomField1;   // 我們剛剛藏進去的玩家 UID
+        const pointsToAdd = parseInt(data.CustomField2, 10); // 藏進去的花花數量
+        const tradeNo = data.MerchantTradeNo;
+
+        if (!userId || isNaN(pointsToAdd)) {
+            console.error("❌ 找不到玩家 ID 或點數數量！");
+            return res.send('1|OK'); // 還是回傳 OK，以免綠界一直重試
+        }
+
+        try {
+            const db = admin.firestore();
+            const userRef = db.collection('users').doc(userId);
+
+            // ✨ 啟動資料庫交易 (Transaction)，安全地發放點數並記錄收支明細
+            await db.runTransaction(async (transaction) => {
+                const userDoc = await transaction.get(userRef);
+
+                if (!userDoc.exists) {
+                    throw new Error("玩家不存在");
+                }
+
+                // A. 幫玩家增加花花點數
+                transaction.update(userRef, {
+                    flowerPoints: admin.firestore.FieldValue.increment(pointsToAdd)
+                });
+
+                // B. 在 flower_logs 裡寫入一筆明細 (這樣 App 裡的「收支明細」分頁才看得到)
+                const logRef = userRef.collection('flower_logs').doc(tradeNo);
+                transaction.set(logRef, {
+                    title: `儲值 ${pointsToAdd} 花花`,
+                    amount: pointsToAdd,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    source: 'ECPay',
+                    tradeNo: tradeNo
+                });
+            });
+
+            console.log(`✅ 成功發放 ${pointsToAdd} 點花花給玩家 ${userId}`);
+        } catch (error) {
+            console.error("❌ 更新資料庫失敗: ", error);
+        }
+    } else {
+        // 付款失敗 (例如卡片額度不足、超商代碼過期)
+        console.log(`付款失敗或狀態更新，RtnCode: ${data.RtnCode}, 訊息: ${data.RtnMsg}`);
+    }
+
+    // 4. 🚪 完美送客
+    // 綠界規定：只要我們成功收到通知，就必須回傳這串字。
+    // 如果不回傳這個，綠界會以為我們沒收到，然後一直瘋狂重發通知喔！
+    res.send('1|OK');
 });

@@ -1,7 +1,11 @@
 name: lianlian_shiguang
 description: A new Flutter project.
 publish_to: 'none'
+<<<<<<< HEAD
 version: 1.0.1+52
+=======
+version: 1.0.1+50
+>>>>>>> e383b14b41d1eba136373b42f5f258377b3d9d77
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -93,6 +97,14 @@ flutter:
     - assets/audio/pickup.mp3
     - assets/images/splash_bg_only.png
     - assets/images/butterfly_transparent.png
+    - assets/images/tree_seed.png
+    - assets/images/tree_sprout.png
+    - assets/images/tree_sapling.png
+    - assets/images/tree_small.png
+    - assets/images/tree_large.png
+    - assets/images/tree_blooming.png
+    - assets/images/tree_full_flower.png
+    - assets/images/tree_star.png
   fonts:
     - family: NotoSansTC
       fonts:
