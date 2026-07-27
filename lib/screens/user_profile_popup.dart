@@ -114,8 +114,10 @@ class UserProfilePopup {
                 canPop: !isSaving,
                 onPopInvoked: (didPop) {
                   if (didPop) return; // 如果已經成功退出就不理會
-                  ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(content:Text(l10n.pleaseWait)),
+                  ToastUtils.showCenterToast(
+                    context,
+                    l10n.pleaseWait,
+                    isError: false,
                   );
                 },
                 child: Padding(
@@ -200,8 +202,11 @@ class UserProfilePopup {
                                 onPressed: isSaving ? null : () async {
                                   // 1. 基本防呆
                                   if (profileNameController.text.trim().isEmpty) {
-                                    // 🚀 替換空檔名警告
-                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.profileNameEmptyWarning)));
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n.profileNameEmptyWarning,
+                                      isError: true,
+                                    );
                                     return;
                                   }
 
@@ -352,8 +357,11 @@ class UserProfilePopup {
                                           if (context.mounted) {
                                             setModalState(() => isSaving = false);
                                             // 🚀 替換切換失敗提示
-                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.profileSwitchError(e.toString()))));
-                                          }
+                                            ToastUtils.showCenterToast(
+                                              context,
+                                              l10n.profileSwitchError(e.toString()),
+                                              isError: true,
+                                            );                                          }
                                         }
                                       },
                                     ),

@@ -1428,8 +1428,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         phoneController.text.isEmpty ||
                         addressController.text.isEmpty ||
                         characterController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('請完整填寫收件資訊與心儀的角色名稱喔！')),
+                      ToastUtils.error(
+                        context,
+                        '請完整填寫收件資訊與心儀的角色名稱喔！',
                       );
                       return;
                     }
@@ -1445,8 +1446,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     }, SetOptions(merge: true));
 
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('🎉 收件資訊已成功送出！請期待我們的實體驚喜！')),
+                    ToastUtils.success(
+                      context,
+                      '收件資訊已成功送出！請期待我們的實體驚喜！',
                     );
                   },
                   child: const Text('確認送出'),
@@ -1999,16 +2001,20 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _editProfile() {
-    Navigator.push(
+    Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (context) => const EditProfilePage()),
+      MaterialPageRoute(
+        builder: (context) =>
+        const EditProfilePage(),
+      ),
     ).then((didUpdate) async {
-      if (didUpdate == true) {
-        await _loadProfileFromCache();
-        if (mounted) {
-          setState(() {});
-        }
-      }
+      if (didUpdate != true) return;
+
+      await _loadProfileFromCache();
+
+      if (!mounted) return;
+
+      setState(() {});
     });
   }
 
@@ -2295,6 +2301,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _showSecretDialog(Character character) {
     final l10n = AppLocalizations.of(context)!;
+    final avatarPath = character.avatarPath.trim();
     showDialog(
       context: context,
       builder: (context) {
@@ -2316,11 +2323,15 @@ class _ProfilePageState extends State<ProfilePage> {
               CircleAvatar(
                 radius: 45,
                 backgroundColor: Colors.grey[200],
-                backgroundImage: (character.avatarPath.isNotEmpty && character.avatarPath.startsWith('http'))
-                    ? NetworkImage(character.avatarPath)
+                backgroundImage: avatarPath.isNotEmpty
+                    ? getAvatarImageProvider(avatarPath)
                     : null,
-                child: (!character.avatarPath.startsWith('http'))
-                    ? const Icon(Icons.person, color: Colors.grey, size: 40)
+                child: avatarPath.isEmpty
+                    ? const Icon(
+                  Icons.person,
+                  color: Colors.grey,
+                  size: 40,
+                )
                     : null,
               ),
               const SizedBox(height: 16),

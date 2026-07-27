@@ -19,6 +19,7 @@ import 'package:http/http.dart' as http;
 
 import '../services/toast_utils.dart';
 import 'main_page.dart'; // 專門用來破解網頁版 blob 網址的工具
+import '../utils/image_utils.dart';
 
 //個人檔案
 
@@ -345,94 +346,125 @@ class _EditProfilePageState extends State<EditProfilePage> {
     bool? hasChangedID,
     int targetIndexAfterSave = 3,
   }) async {
-    if (mounted) setState(() => _isSaving = true);
+    if (_isSaving) return;
+
+    if (mounted) {
+      setState(() {
+        _isSaving = true;
+      });
+    }
+
+    Reference? newlyUploadedStorageRef;
+
     try {
       final user = FirebaseAuth.instance.currentUser;
       final prefs = await SharedPreferences.getInstance();
+
+      if (!mounted) return;
+
       final l10n = AppLocalizations.of(context)!;
-      // 預設為現在畫面上的路徑
-      String finalAvatarPath = _avatarPath;
-      // 如果這張照片不是預設圖 (assets) 也不是雲端圖 (http)，代表它是玩家剛裁切好的新照片！
-      // ✨✨✨ 總裁級雲端上傳 + 舊圖自動清理機制 ✨✨✨
-      if (!_avatarPath.startsWith('assets') && !_avatarPath.startsWith('http')) {
-        if (user != null) {
-          // --- A. 準備清理舊圖 (這段是新增的！) ---
-          // 檢查原本的頭像是否已經是雲端網址 (代表有舊圖在 Storage)
-          // 這裡我們去 SharedPreferences 拿最準確的「舊網址」
-          String oldAvatarUrl = prefs.getString('avatarPath') ?? '';
 
-          if (oldAvatarUrl.startsWith('http')) {
-            try {
-              // 從網址反向推導出 Storage 的參考路徑並刪除
-              final oldStorageRef = FirebaseStorage.instance.refFromURL(oldAvatarUrl);
-              await oldStorageRef.delete();
-              print("♻️ 舊水煮蛋已成功回收：$oldAvatarUrl");
-            } catch (e) {
-              // 如果刪除失敗 (例如檔案本來就不存在)，我們印個 log 就好，不卡住存檔流程
-              print("⚠️ 舊圖刪除失敗 (可能已被刪除或不存在): $e");
-            }
-          }
+      // 儲存舊頭像網址。
+      // 必須等新圖片上傳、Firestore 更新都成功後，才能刪除舊圖。
+      final String oldAvatarUrl =
+      (prefs.getString('avatarPath') ?? '').trim();
 
-          // --- B. 執行新圖上傳 (跟原本一樣) ---
-          final fileName = '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-          final storageRef = FirebaseStorage.instance.ref().child('user_avatars').child(fileName);
+      // 預設沿用目前畫面上的頭像。
+      String finalAvatarPath = _avatarPath.trim();
+      bool uploadedNewAvatar = false;
 
-          Uint8List bytes;
+      final bool isAssetAvatar =
+      finalAvatarPath.startsWith('assets/');
 
-          if (kIsWeb) {
-            final response = await http.get(Uri.parse(_avatarPath));
-            bytes = response.bodyBytes;
-          } else {
-            final file = File(_avatarPath);
+      final bool isNetworkAvatar =
+          finalAvatarPath.startsWith('http://') ||
+              finalAvatarPath.startsWith('https://');
 
-            if (!await file.exists()) {
-              throw Exception("找不到選取的頭像檔案：$_avatarPath");
-            }
+      // 不是 Asset、也不是既有網路網址，
+      // 代表它是手機本地裁切圖或 Web blob 圖片。
+      if (!isAssetAvatar && !isNetworkAvatar) {
+        if (user == null) {
+          throw Exception('找不到目前登入的使用者');
+        }
 
-            bytes = await file.readAsBytes();
-          }
+        final String fileName =
+            '${user.uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-          if (bytes.isEmpty) {
-            throw Exception("頭像圖片資料是空的");
-          }
+        final Reference storageRef = FirebaseStorage.instance
+            .ref()
+            .child('user_avatars')
+            .child(fileName);
 
-          await storageRef.putData(
-            bytes,
-            SettableMetadata(contentType: 'image/jpeg'),
+        newlyUploadedStorageRef = storageRef;
+
+        late Uint8List bytes;
+
+        if (kIsWeb) {
+          final response = await http.get(
+            Uri.parse(finalAvatarPath),
           );
 
-          finalAvatarPath = await storageRef.getDownloadURL();
-          print("☁️ 新圖片上傳成功：$finalAvatarPath");
+          if (response.statusCode != 200) {
+            throw Exception(
+              '讀取頭像失敗，狀態碼：${response.statusCode}',
+            );
+          }
+
+          bytes = response.bodyBytes;
+        } else {
+          final file = File(finalAvatarPath);
+
+          if (!await file.exists()) {
+            throw Exception(
+              '找不到選取的頭像檔案：$finalAvatarPath',
+            );
+          }
+
+          bytes = await file.readAsBytes();
         }
+
+        if (bytes.isEmpty) {
+          throw Exception('頭像圖片資料是空的');
+        }
+
+        await storageRef.putData(
+          bytes,
+          SettableMetadata(
+            contentType: 'image/jpeg',
+
+            // 每次檔名都有時間戳，所以相同網址的內容不會改變。
+            // 適合設定一年長效快取。
+            cacheControl:
+            'public,max-age=31536000,immutable',
+          ),
+        );
+
+        finalAvatarPath =
+        await storageRef.getDownloadURL();
+
+        uploadedNewAvatar = true;
+
+        debugPrint(
+          '☁️ 新頭像上傳成功：$finalAvatarPath',
+        );
       }
 
-      // 1. 存入本地 SharedPreferences (這裡存進去的就是完美的 https 網址了！)
-      await prefs.setString('nickname', _nicknameController.text.trim());
-      await prefs.setString('avatarPath', finalAvatarPath); // 👈 存入真實網址
-      await prefs.setString('gender', _gender);
+      final String nickname =
+      _nicknameController.text.trim();
 
-      if (newID != null) {
-        await prefs.setString('playerID', newID);
-      }
-      if (hasChangedID != null) {
-        await prefs.setBool('hasChangedID', hasChangedID);
-      }
-
-      String birthdayStr = _birthDate != null
-          ? "${_birthDate!.year}-${_birthDate!.month.toString().padLeft(2, '0')}-${_birthDate!.day.toString().padLeft(2, '0')}"
+      // 生日資料
+      final String birthdayStr = _birthDate != null
+          ? '${_birthDate!.year}-'
+          '${_birthDate!.month.toString().padLeft(2, '0')}-'
+          '${_birthDate!.day.toString().padLeft(2, '0')}'
           : l10n.authMethodUnknown;
 
-      if (_birthDate != null && _isAgeEditable) {
-        await prefs.setString('birthDate', _birthDate!.toIso8601String());
-        await prefs.setBool('isAgeSet', true);
-      }
-      await prefs.setBool('isProfileComplete', true);
-
-      // ✨ 2. 同步存入雲端 Firebase Firestore (系統跟 AI 都能看到這張水煮蛋了！)
+      // 先寫 Firestore。
+      // 雲端成功後，再更新本機快取，避免本機與雲端不一致。
       if (user != null) {
-        Map<String, dynamic> cloudData = {
-          'nickname': _nicknameController.text.trim(),
-          'avatarPath': finalAvatarPath, // 👈 存入真實網址
+        final Map<String, dynamic> cloudData = {
+          'nickname': nickname,
+          'avatarPath': finalAvatarPath,
           'gender': _gender,
           'updatedAt': FieldValue.serverTimestamp(),
         };
@@ -442,43 +474,186 @@ class _EditProfilePageState extends State<EditProfilePage> {
           cloudData['isAgeSet'] = true;
         }
 
-        if (newID != null) cloudData['playerID'] = newID;
-        if (hasChangedID != null) cloudData['hasChangedID'] = hasChangedID;
+        if (newID != null) {
+          cloudData['playerID'] = newID;
+        }
 
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
-            cloudData, SetOptions(merge: true));
+        if (hasChangedID != null) {
+          cloudData['hasChangedID'] = hasChangedID;
+        }
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set(
+          cloudData,
+          SetOptions(merge: true),
+        );
       }
 
-      if (mounted && popOnSuccess) {
+      // Firestore 儲存成功後，再同步本機資料。
+      await prefs.setString(
+        'nickname',
+        nickname,
+      );
+
+      await prefs.setString(
+        'avatarPath',
+        finalAvatarPath,
+      );
+
+      await prefs.setString(
+        'gender',
+        _gender,
+      );
+
+      if (newID != null) {
+        await prefs.setString(
+          'playerID',
+          newID,
+        );
+      }
+
+      if (hasChangedID != null) {
+        await prefs.setBool(
+          'hasChangedID',
+          hasChangedID,
+        );
+      }
+
+      if (_birthDate != null && _isAgeEditable) {
+        await prefs.setString(
+          'birthDate',
+          _birthDate!.toIso8601String(),
+        );
+
+        await prefs.setBool(
+          'isAgeSet',
+          true,
+        );
+      }
+
+      await prefs.setBool(
+        'isProfileComplete',
+        true,
+      );
+
+      // 新頭像與使用者資料都成功儲存後，
+      // 最後才清除舊的 Firebase Storage 圖片。
+      if (uploadedNewAvatar &&
+          oldAvatarUrl.startsWith('http') &&
+          oldAvatarUrl != finalAvatarPath) {
+        try {
+          final oldStorageRef =
+          FirebaseStorage.instance.refFromURL(
+            oldAvatarUrl,
+          );
+
+          await oldStorageRef.delete();
+
+          debugPrint(
+            '♻️ 舊頭像已清除：$oldAvatarUrl',
+          );
+        } catch (e) {
+          // 舊圖清理失敗不影響新頭像使用。
+          debugPrint(
+            '⚠️ 舊頭像清理失敗：$e',
+          );
+        }
+      }
+
+      // 更新目前頁面的狀態，避免尚未跳頁時仍顯示本地暫存路徑。
+      _avatarPath = finalAvatarPath;
+      _originalAvatarPath = finalAvatarPath;
+      _originalNickname = nickname;
+      _originalGender = _gender;
+      _originalBirthDate = _birthDate;
+
+      if (newID != null) {
+        _originalID = newID;
+      }
+
+      if (hasChangedID != null) {
+        _hasChangedID = hasChangedID;
+      }
+
+      if (!mounted) return;
+
+      if (popOnSuccess) {
         ToastUtils.showCenterToast(
           context,
           l10n.profile_saved_success,
           customIcon: Icons.account_circle_rounded,
         );
 
-        await Future.delayed(const Duration(milliseconds: 300));
+        await Future.delayed(
+          const Duration(milliseconds: 300),
+        );
 
         if (!mounted) return;
 
-        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (_) => MainPage(initialIndex: targetIndexAfterSave),
-          ),
-              (route) => false,
-        );
+        if (widget.isCreating) {
+          // 第一次建立個人資料時，
+          // 才需要進入全新的 MainPage。
+          Navigator.of(
+            context,
+            rootNavigator: true,
+          ).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) => MainPage(
+                initialIndex: targetIndexAfterSave,
+              ),
+            ),
+                (route) => false,
+          );
+        } else {
+          // 一般修改個人資料，只返回原本的個人主頁。
+          // 不重建 MainPage，好友與角色清單都會保留。
+          Navigator.of(context).pop(true);
+        }
+      } else {
+        setState(() {});
       }
     } catch (e) {
-      if (mounted) {
-        // ✨ 總裁級防護：儲存失敗的優雅迫降，讓不可預期的錯誤訊息不再破壞畫面排版！
-        ToastUtils.showCenterToast(
-          context,
-          '儲存失敗: $e',
-          isError: true, // 💡 全域統一的紅色驚嘆號，清楚傳達異常狀態
-        );
+      // 如果新圖片已經上傳，但後面的 Firestore 儲存失敗，
+      // 嘗試刪掉這張沒有被正式採用的孤兒圖片。
+      if (newlyUploadedStorageRef != null) {
+        try {
+          await newlyUploadedStorageRef.delete();
+
+          debugPrint(
+            '♻️ 已清理未完成儲存的新頭像',
+          );
+        } catch (cleanupError) {
+          debugPrint(
+            '⚠️ 未完成頭像清理失敗：$cleanupError',
+          );
+        }
       }
+
+      debugPrint(
+        '❌ 個人資料儲存失敗：$e',
+      );
+
+      if (!mounted) return;
+
+      final l10n = AppLocalizations.of(context)!;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profile_save_failed(
+          e.toString().replaceFirst(
+            'Exception: ',
+            '',
+          ),
+        ),
+        isError: true,
+      );
     } finally {
       if (mounted) {
-        setState(() => _isSaving = false);
+        setState(() {
+          _isSaving = false;
+        });
       }
     }
   }
@@ -545,38 +720,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   // --- ✨ 新增：稍後編輯按鈕的邏輯 ---
   Future<void> _skipEditing() async {
-    // =========================
-    // 一般編輯模式：取消變更，回個人主頁
-    // =========================
+    // 一般編輯模式：直接返回原本的個人主頁
     if (!widget.isCreating) {
-      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => const MainPage(initialIndex: 3),
-        ),
-            (route) => false,
-      );
+      Navigator.of(context).pop(false);
       return;
     }
 
-    // =========================
-    // 首次建立模式：稍後編輯
-    // 自動建立基本資料，然後回聊天主頁
-    // =========================
+    // 以下保留首次建立資料的處理
     if (_isSaving) return;
 
     FocusScope.of(context).unfocus();
 
     try {
-      String nickname = _nicknameController.text.trim();
+      String nickname =
+      _nicknameController.text.trim();
 
-      // 玩家沒填名字，就給預設名字
       if (nickname.isEmpty) {
         nickname = '初識的旅人';
         _nicknameController.text = nickname;
       }
 
-      // 玩家沒填 ID，就自動產生並登記一組
-      final String finalID = await _ensureValidPlayerIDForCurrentUser();
+      final String finalID =
+      await _ensureValidPlayerIDForCurrentUser();
 
       await _saveProfileDataOnly(
         popOnSuccess: true,
@@ -585,13 +750,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         targetIndexAfterSave: 0,
       );
     } catch (e) {
-      if (mounted) {
-        ToastUtils.showCenterToast(
-          context,
-          '建立資料失敗: ${e.toString().replaceFirst("Exception: ", "")}',
-          isError: true,
-        );
-      }
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '建立資料失敗: '
+            '${e.toString().replaceFirst("Exception: ", "")}',
+        isError: true,
+      );
     }
   }
 
@@ -761,21 +927,41 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  ImageProvider getAvatarImageProvider(String path) {
-    // ☁️ 1. 雲端真實網址 (Firebase Storage)
-    if (path.startsWith('http') || path.startsWith('https')) {
-      return NetworkImage(path);
+  ImageProvider _getEditableAvatarProvider(String path) {
+    final normalizedPath = path.trim();
+
+    if (normalizedPath.isEmpty) {
+      return const AssetImage(
+        'assets/images/avatar1.png',
+      );
     }
-    // 🏠 2. 內建預設頭像 (assets/ 開頭)
-    if (path.startsWith('assets/')) {
-      return AssetImage(path);
+
+    // 已上傳的網路圖片，交給共用快取函式
+    if (normalizedPath.startsWith('http://') ||
+        normalizedPath.startsWith('https://')) {
+      return getAvatarImageProvider(normalizedPath);
     }
-    // 🌐 3. 網頁版頭像 (Chrome 模擬器選出來的 blob: 網址)
+
+    // App 內建頭像
+    if (normalizedPath.startsWith('assets/')) {
+      return AssetImage(normalizedPath);
+    }
+
+    // Web 選圖／裁切後的 blob URL
     if (kIsWeb) {
-      return NetworkImage(path);
+      return NetworkImage(normalizedPath);
     }
-    // 📱 4. 手機版剛裁切好的本地端頭像
-    return FileImage(File(path));
+
+    // 手機本地裁切圖片
+    final file = File(normalizedPath);
+
+    if (file.existsSync()) {
+      return FileImage(file);
+    }
+
+    return const AssetImage(
+      'assets/images/avatar1.png',
+    );
   }
 
   @override
@@ -853,7 +1039,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     radius: 55, // 這裡可以調成妳喜歡的大小，55 比原本的 50 再大一點點
                     backgroundColor: Colors.grey[200],
                     // ⚡ 這裡請注意：確認妳用的變數是 _avatarPath 還是 _selectedAvatarPath
-                    backgroundImage: getAvatarImageProvider(_avatarPath),
+                    backgroundImage: _getEditableAvatarProvider(_avatarPath),
                   ),
                   // 編輯按鈕 (相機圖示)
                   Positioned(

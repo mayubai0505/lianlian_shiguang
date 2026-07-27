@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
+import '../services/toast_utils.dart';
+
 class HiddenMomentsPage extends StatelessWidget {
   const HiddenMomentsPage({super.key});
 
@@ -42,8 +44,9 @@ class HiddenMomentsPage extends StatelessWidget {
 
     if (!context.mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.unhide_moment_success)),
+    ToastUtils.success(
+      context,
+      l10n.unhide_moment_success,
     );
   }
 

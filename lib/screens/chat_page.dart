@@ -44,6 +44,7 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 //聊天頁面ˋ
@@ -119,9 +120,14 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   // 在 _ChatPageState 的變數宣告區加上這行：
+  final Map<String, String>
+  _imageDownloadUrlCache = {};
+  bool _hasLoadedBirthdayFreeStatus = false;
   bool _hasPromptedProfileSetup = false; // 用來記住「已經問過玩家了」
   Map<String, dynamic>? _roomConfig;
   bool _isMonthlyPassActive = false;
+  bool _isBirthdayFreeToday = false;
+  final Map<String, String> _imageUrlCache = {};
   bool _isLoadingRoom = true;
   final List<Map<String, dynamic>> _pendingMediaMessages = [];
   final Map<String, String> _audioDownloadUrlCache = {};
@@ -262,9 +268,12 @@ class _ChatPageState extends State<ChatPage> {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        themeNotifier.loadCharacterBackground(_currentCharacter.name);
-      }
+      if (!mounted) return;
+
+      precacheImage(
+        getAvatarImageProvider(_currentCharacter.avatarPath),
+        context,
+      );
     });
     // 1. 準備硬體設備 (維持原樣)
     _audioPlayer = AudioPlayer();
@@ -445,6 +454,30 @@ class _ChatPageState extends State<ChatPage> {
         );
       }
     });
+  }
+
+  Future<void> _loadBirthdayFreeStatus() async {
+    try {
+      final bool result =
+      await _isBirthdayFreeChatActive();
+
+      if (!mounted) return;
+
+      setState(() {
+        _isBirthdayFreeToday = result;
+        _hasLoadedBirthdayFreeStatus = true;
+      });
+    } catch (e) {
+      debugPrint(
+        '⚠️ 讀取生日免費狀態失敗：$e',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _hasLoadedBirthdayFreeStatus = true;
+      });
+    }
   }
 
 
@@ -715,12 +748,19 @@ class _ChatPageState extends State<ChatPage> {
     _initializeChat();
     _listenToFlowerPoints();
 
-    // 載入背景圖（這裡現在會使用正確的角色名字）
+    // 進聊天室時先載入生日免費狀態，
+    // 送訊息時不用再次等待 Firestore。
+    unawaited(_loadBirthdayFreeStatus());
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        Provider.of<ThemeNotifier>(context, listen: false)
-            .loadCharacterBackground(_currentCharacter.name);
-      }
+      if (!mounted) return;
+
+      Provider.of<ThemeNotifier>(
+        context,
+        listen: false,
+      ).loadCharacterBackground(
+        _currentCharacter.name,
+      );
     });
   }
 
@@ -1071,6 +1111,21 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Future<String> _resolveImageUrl(String path) async {
+    if (_imageUrlCache.containsKey(path)) {
+      return _imageUrlCache[path]!;
+    }
+
+    final url =
+    await FirebaseStorage.instance
+        .ref(path)
+        .getDownloadURL();
+
+    _imageUrlCache[path] = url;
+
+    return url;
+  }
+
   Future<String?> _uploadFileToStorage(String filePath, String fileType) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || _sessionId == null) return null;
@@ -1107,7 +1162,12 @@ class _ChatPageState extends State<ChatPage> {
         }
       }
 
-      final metadata = SettableMetadata(contentType: contentType);
+      final metadata = SettableMetadata(
+        contentType: contentType,
+        cacheControl: fileType == 'image'
+            ? 'public,max-age=31536000,immutable'
+            : null,
+      );
 
       if (kIsWeb) {
         final bytes = await XFile(filePath).readAsBytes();
@@ -1300,8 +1360,13 @@ class _ChatPageState extends State<ChatPage> {
       _textController.clear();
       FocusScope.of(context).unfocus();
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('chat_draft_${widget.sessionId}');
+      unawaited(
+        SharedPreferences.getInstance().then(
+              (prefs) => prefs.remove(
+            'chat_draft_${widget.sessionId}',
+          ),
+        ),
+      );
 
       if (_isReferralTrackerActive) {
         await _triggerReferralCounter();
@@ -2457,82 +2522,131 @@ class _ChatPageState extends State<ChatPage> {
     final roomLockKey = _sessionId ?? widget.sessionId ?? widget.character.id;
     try {
       // 🌟 2. 暴力現抓點數：解決 9325 點卻報不夠的問題
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(
-          userId).get();
-      int myActualFlowers = userDoc.data()?['flowerPoints'] ?? 0;
+      final int myActualFlowers = _flowerPoints;
 
-      final bool isFreeToday = await _isBirthdayFreeChatActive();
+// 先取得生日免費狀態，再判斷是否需要扣點。
+      bool isFreeToday;
 
+      if (_hasLoadedBirthdayFreeStatus) {
+        isFreeToday = _isBirthdayFreeToday;
+      } else {
+        try {
+          isFreeToday =
+          await _isBirthdayFreeChatActive();
 
-      // 🌸 決定本次聊天的收費標準（改用 AppConfig 統一管理常數）
+          _isBirthdayFreeToday = isFreeToday;
+          _hasLoadedBirthdayFreeStatus = true;
+        } catch (e) {
+          debugPrint(
+            '⚠️ 即時確認生日免費狀態失敗：$e',
+          );
+
+          // 查詢失敗時採保守策略：視為非免費，
+          // 真正扣點仍應由後端再次驗證。
+          isFreeToday = false;
+        }
+      }
+
+// 🌸 決定本次聊天的收費標準
       int messageCost = AppConfig.costDailyChat;
-      if (_currentMode == ChatMode.story) messageCost = AppConfig.costStoryChat;
-      if (_currentMode == ChatMode.immersive)
-        messageCost = AppConfig.costImmersiveChat;
-      if (_currentMode == ChatMode.gemini)
-        messageCost = AppConfig.costGeminiChat;
 
-      if (!isFreeToday && myActualFlowers < messageCost) {
+      if (_currentMode == ChatMode.story) {
+        messageCost = AppConfig.costStoryChat;
+      } else if (_currentMode == ChatMode.immersive) {
+        messageCost = AppConfig.costImmersiveChat;
+      } else if (_currentMode == ChatMode.gemini) {
+        messageCost = AppConfig.costGeminiChat;
+      }
+
+// 生日免費時跳過前端點數不足檢查
+      if (!isFreeToday &&
+          myActualFlowers < messageCost) {
         if (mounted) {
-          // ✨ 總裁級：無縫接軌商城的專屬互動彈窗
           showDialog(
             context: context,
-            builder: (BuildContext dialogContext) =>
-                AlertDialog(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  title: Row(
-                    children: [
-                      const Icon(Icons.local_florist, color: Colors.pinkAccent),
-                      // 繁花幣的小圖示
-                      const SizedBox(width: 8),
-                      Text(l10n.chat_points_not_enough_title,
-                          style: TextStyle(color: Theme
-                              .of(context)
-                              .colorScheme
-                              .onSurface)),
-                    ],
-                  ),
-                  content: Text(
-                      '${l10n.chat_points_shortage(
-                          myActualFlowers.toString())}\n\n${l10n
-                          .chat_points_not_enough_desc}',
-                      style: const TextStyle(fontSize: 16)
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(dialogContext),
-                      child: Text(l10n.cancelButton ?? '稍後再說',
-                          style: const TextStyle(color: Colors.grey)),
+            builder: (
+                BuildContext dialogContext,
+                ) {
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(20),
+                ),
+                title: Row(
+                  children: [
+                    const Icon(
+                      Icons.local_florist,
+                      color: Colors.pinkAccent,
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme
-                            .of(context)
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.chat_points_not_enough_title,
+                      style: TextStyle(
+                        color: Theme.of(context)
                             .colorScheme
-                            .primary, // 主題色
-                        foregroundColor: Colors.white,
-                        shape: const StadiumBorder(),
+                            .onSurface,
                       ),
-                      onPressed: () {
-                        Navigator.pop(dialogContext); // 1. 先關掉這個提醒視窗
-
-                        // 🚀 2. 總裁專機：立刻載玩家去買月卡或補幣！
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (
-                              context) => const StorePage()), // 確保你有 import store_page
-                        );
-                      },
-                      child:  Text(l10n.goToSubscribeButton),
                     ),
                   ],
                 ),
+                content: Text(
+                  '${l10n.chat_points_shortage(
+                    myActualFlowers.toString(),
+                  )}\n\n'
+                      '${l10n.chat_points_not_enough_desc}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+                    },
+                    child: Text(
+                      l10n.cancelButton,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                      Theme.of(context)
+                          .colorScheme
+                          .primary,
+                      foregroundColor: Colors.white,
+                      shape: const StadiumBorder(),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                          const StorePage(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      l10n.goToSubscribeButton,
+                    ),
+                  ),
+                ],
+              );
+            },
           );
         }
-        _removePendingMediaMessage(pendingMediaId);
+
+        _removePendingMediaMessage(
+          pendingMediaId,
+        );
+
         return;
-      }
+      }_hasLoadedBirthdayFreeStatus = true;
+
       // 🌟 3. 防彈檢查：如果連線失敗，不要強行執行，避免 Unexpected null value
       // ✨ 總裁急救包：給它一點耐心，不要馬上放棄！
       // 🌟 改良後的等待機制：只檢查 Firebase 是否準備好，不管 shouldSave 了
@@ -4195,98 +4309,175 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildChatImage(String imagePathOrUrl) {
-    final path = imagePathOrUrl.trim();
+  Widget _buildChatImage(String rawPath) {
+    final path = rawPath.trim();
 
     if (path.isEmpty) {
-      return Container(
-        height: 180,
-        alignment: Alignment.center,
-        child: const Icon(Icons.broken_image_outlined),
-      );
+      return _buildChatImageError();
     }
 
-    // 1. 真正的網址，或 Web 的 blob 圖片
-    if (path.startsWith('http') || path.startsWith('blob:')) {
-      return Image.network(
-        path,
+    // 1. 真正的 HTTP 網路圖片
+    if (path.startsWith('http://') ||
+        path.startsWith('https://')) {
+      return CachedNetworkImage(
+        imageUrl: path,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            height: 180,
-            alignment: Alignment.center,
-            child: const Icon(Icons.broken_image_outlined),
-          );
+        width: double.infinity,
+
+        // 聊天圖片通常不需要解碼成原始超大尺寸
+        memCacheWidth: 1080,
+
+        placeholder: (context, url) {
+          return _buildChatImageLoading();
+        },
+
+        errorWidget: (context, url, error) {
+          return _buildChatImageError();
         },
       );
     }
 
-    // 2. Firebase Storage path，例如 user_uploads/xxx/image.jpg
+    // 2. Web 剛選取、尚未上傳的 blob 圖片
+    // blob 不能交給 CachedNetworkImage。
+    if (path.startsWith('blob:')) {
+      return Image.network(
+        path,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        filterQuality: FilterQuality.medium,
+        loadingBuilder: (
+            context,
+            child,
+            loadingProgress,
+            ) {
+          if (loadingProgress == null) {
+            return child;
+          }
+
+          return _buildChatImageLoading();
+        },
+        errorBuilder: (
+            context,
+            error,
+            stackTrace,
+            ) {
+          return _buildChatImageError();
+        },
+      );
+    }
+
+    // 3. Firebase Storage 路徑
+    // 例如 user_uploads/xxx/image.jpg
     if (path.startsWith('user_uploads/') ||
         path.startsWith('chat_images/') ||
-        path.startsWith('uploads/')) {
+        path.startsWith('uploads/') ||
+        path.startsWith('gs://')) {
       return FutureBuilder<String>(
-        future: FirebaseStorage.instance.ref(path).getDownloadURL(),
+        future: _resolveImageUrl(path),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(
-              height: 180,
-              alignment: Alignment.center,
-              child: const CircularProgressIndicator(),
-            );
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return _buildChatImageLoading();
           }
 
-          if (!snapshot.hasData || snapshot.data == null) {
-            return Container(
-              height: 180,
-              alignment: Alignment.center,
-              child: const Icon(Icons.broken_image_outlined),
-            );
+          final downloadUrl =
+              snapshot.data?.trim() ?? '';
+
+          if (snapshot.hasError ||
+              downloadUrl.isEmpty) {
+            return _buildChatImageError();
           }
 
-          return Image.network(
-            snapshot.data!,
+          return CachedNetworkImage(
+            imageUrl: downloadUrl,
+            width: double.infinity,
             fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                height: 180,
-                alignment: Alignment.center,
-                child: const Icon(Icons.broken_image_outlined),
-              );
+            memCacheWidth: 1080,
+            placeholder: (context, url) {
+              return _buildChatImageLoading();
+            },
+            errorWidget: (
+                context,
+                url,
+                error,
+                ) {
+              return _buildChatImageError();
             },
           );
         },
       );
     }
 
-    // 3. Web 不走 File
+    // 4. Web 上無法使用 FileImage。
+    // 若不是 http/blob/Storage 路徑，視為無效圖片。
     if (kIsWeb) {
-      return Image.network(
-        path,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            height: 180,
-            alignment: Alignment.center,
-            child: const Icon(Icons.broken_image_outlined),
-          );
-        },
-      );
+      return _buildChatImageError();
     }
 
-    // 4. 手機本機檔案
-    final localPath = path.replaceFirst('file://', '');
+    // 5. Android / iOS 本機圖片
+    final localPath =
+    path.replaceFirst('file://', '');
+
+    final file = File(localPath);
+
+    if (!file.existsSync()) {
+      return _buildChatImageError();
+    }
 
     return Image.file(
-      File(localPath),
+      file,
+      width: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          height: 180,
-          alignment: Alignment.center,
-          child: const Icon(Icons.broken_image_outlined),
-        );
+      filterQuality: FilterQuality.medium,
+
+      // 限制本機圖片的解碼尺寸
+      cacheWidth: 1080,
+
+      errorBuilder: (
+          context,
+          error,
+          stackTrace,
+          ) {
+        return _buildChatImageError();
       },
+    );
+  }
+
+  Widget _buildChatImageLoading() {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      height: 180,
+      color: theme.colorScheme
+          .secondaryContainer,
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: theme.colorScheme.primary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChatImageError() {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      height: 180,
+      color: theme.colorScheme
+          .secondaryContainer,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.broken_image_outlined,
+        size: 36,
+        color: theme.colorScheme
+            .onSecondaryContainer,
+      ),
     );
   }
 
@@ -4906,9 +5097,38 @@ class _ChatPageState extends State<ChatPage> {
     }
     return RichText(text: TextSpan(children: spans));
   }
-  ImageProvider _getAvatarProvider(String path) {
-    if (path.startsWith('http')) return NetworkImage(path);
-    return AssetImage(path);
+  ImageProvider _getAvatarProvider(String rawPath) {
+    final path = rawPath.trim();
+
+    if (path.isEmpty) {
+      return const AssetImage(
+        'assets/images/avatar1.png',
+      );
+    }
+
+    // 網路圖片使用快取
+    if (path.startsWith('http://') ||
+        path.startsWith('https://')) {
+      return CachedNetworkImageProvider(path);
+    }
+
+    // App 內建圖片
+    if (path.startsWith('assets/')) {
+      return AssetImage(path);
+    }
+
+    // 手機本地檔案
+    if (!kIsWeb) {
+      final file = File(path);
+
+      if (file.existsSync()) {
+        return FileImage(file);
+      }
+    }
+
+    return const AssetImage(
+      'assets/images/avatar1.png',
+    );
   }
 
   Widget _buildTypingIndicator() {
@@ -6049,35 +6269,70 @@ class _ChatPageState extends State<ChatPage> {
 
                 // 💬 渲染對話 (這段維持不變)
                 ...selectedMsgs.map((msg) {
-                  final isUser = msg.sender == 'user';
+                  final bool isUser =
+                      msg.sender == 'user';
+
+                  final Color messageTextColor;
+
+                  if (isUser) {
+                    messageTextColor = Colors.white;
+                  } else if (_watermarkStyle == 1) {
+                    messageTextColor = Colors.white;
+                  } else {
+                    messageTextColor = Colors.black87;
+                  }
+
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
+                    padding:
+                    const EdgeInsets.only(bottom: 16),
                     child: Row(
-                      mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: isUser
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
                       children: [
                         if (!isUser) ...[
                           CircleAvatar(
-                            backgroundImage: _getAvatarProvider(_currentCharacter.avatarPath),
                             radius: 16,
+                            backgroundColor: theme
+                                .colorScheme
+                                .secondaryContainer,
+                            backgroundImage:
+                            _getAvatarProvider(
+                              _currentCharacter.avatarPath,
+                            ),
                           ),
                           const SizedBox(width: 8),
                         ],
                         Flexible(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            padding:
+                            const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
-                              // ✨ 模式 0：底色用 onSurface 加上微透明
                               color: _watermarkStyle == 0
-                                  ? theme.colorScheme.onSurface.withValues(alpha: 0.1)
+                                  ? theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.1)
                                   : (_watermarkStyle == 1
-                                  ? Colors.white.withValues(alpha: 0.2)
-                                  : Colors.black.withValues(alpha: 0.05)),
-                              borderRadius: BorderRadius.circular(20),
+                                  ? Colors.white.withValues(
+                                alpha: 0.2,
+                              )
+                                  : Colors.black.withValues(
+                                alpha: 0.05,
+                              )),
+                              borderRadius:
+                              BorderRadius.circular(20),
                             ),
                             child: Text(
                               msg.text,
-                              style: TextStyle(color: isUser ? Colors.white : Colors.black87, fontSize: 15),
+                              style: TextStyle(
+                                color: messageTextColor,
+                                fontSize: 15,
+                                height: 1.35,
+                              ),
                               softWrap: true,
                             ),
                           ),
@@ -6270,9 +6525,27 @@ class _ChatPageState extends State<ChatPage> {
 
     try {
       final msgsToExport = _localMessages
-          .where((m) => _selectedMessageIds.contains(m.id))
+          .where(
+            (m) => _selectedMessageIds.contains(m.id),
+      )
           .toList()
-        ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+        ..sort(
+              (a, b) =>
+              a.timestamp.compareTo(b.timestamp),
+        );
+
+      try {
+        await precacheImage(
+          _getAvatarProvider(
+            _currentCharacter.avatarPath,
+          ),
+          context,
+        );
+      } catch (e) {
+        debugPrint(
+          '截圖前預載角色頭像失敗：$e',
+        );
+      }
 
       // 🚀 字數與換行【極致緊緻版】高度精算
       double canvasHeight = 150.0;
@@ -6295,9 +6568,9 @@ class _ChatPageState extends State<ChatPage> {
             clipBehavior: Clip.hardEdge,
             child: _buildScreenshotCanvas(msgsToExport), // 這裡會讀取最新的 _watermarkStyle
           ),
-          delay: const Duration(milliseconds: 200),
+          delay: const Duration(milliseconds: 120),
           targetSize: Size(400, canvasHeight),
-          pixelRatio: 3.0,
+          pixelRatio: 2.0,
         );
       }
 
@@ -6331,23 +6604,36 @@ class _ChatPageState extends State<ChatPage> {
                         icon: const Icon(Icons.brush),
                         color: theme.colorScheme.primary,
                         tooltip: '更換浮水印顏色',
-                        onPressed: isRecapturing ? null : () async {
-                          // 1. 預覽視窗顯示載入中
-                          setDialogState(() => isRecapturing = true);
-
-                          // 2. 更新顏色狀態
-                          setState(() {
-                            _watermarkStyle = (_watermarkStyle + 1) % 3;
-                          });
-
-                          // 3. 喀嚓！重新拍照
-                          final newBytes = await takePicture();
-
-                          // 4. 把新照片換上去，解除載入狀態
+                        onPressed: isRecapturing
+                            ? null
+                            : () async {
                           setDialogState(() {
-                            imageBytes = newBytes;
-                            isRecapturing = false;
+                            isRecapturing = true;
                           });
+
+                          try {
+                            setState(() {
+                              _watermarkStyle =
+                                  (_watermarkStyle + 1) % 3;
+                            });
+
+                            final newBytes =
+                            await takePicture();
+
+                            if (!innerContext.mounted) return;
+
+                            setDialogState(() {
+                              imageBytes = newBytes;
+                            });
+                          } catch (e) {
+                            debugPrint('重新產生截圖失敗：$e');
+                          } finally {
+                            if (innerContext.mounted) {
+                              setDialogState(() {
+                                isRecapturing = false;
+                              });
+                            }
+                          }
                         },
                       ),
                     ],
@@ -6359,7 +6645,12 @@ class _ChatPageState extends State<ChatPage> {
                         : SingleChildScrollView(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.memory(imageBytes), // 顯示拍好的照片
+                        child: Image.memory(
+                          imageBytes,
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.medium,
+                          cacheWidth: 800,
+                        ),// 顯示拍好的照片
                       ),
                     ),
                   ),
