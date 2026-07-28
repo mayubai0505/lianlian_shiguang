@@ -4,7 +4,6 @@ import 'package:intl/intl.dart'; // 用來格式化時間：flutter pub add intl
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
-
 //系統公告頁面
 
 class AnnouncementListPage extends StatelessWidget {

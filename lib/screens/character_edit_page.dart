@@ -1201,6 +1201,17 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       (widget.character?.createdBy ?? '').trim().isNotEmpty
           ? widget.character!.createdBy
           : currentUser.uid;
+      final creatorProfileDoc = await _db
+        .collection('users')
+        .doc(currentUser.uid)
+        .get();
+
+     final String creatorName =
+    creatorProfileDoc.data()?['nickname']
+        ?.toString()
+        .trim() ??
+    currentUser.displayName?.trim() ??
+    '';
       // 相容舊版，還是把 galleryData 存在主資料夾一份
       final galleryData = _galleryPhotos.map((p) => p.toMap()).toList();
       Map<String, dynamic> characterData = {
@@ -1233,6 +1244,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'isCompleted': true,
         'status': 'published',
         'createdBy': originalCreatedBy,
+        'creatorName': creatorName,
+        'creatorNameLower': creatorName.toLowerCase(),
         'extraInfoItems': _extraInfoItems,
         'content_language': l10n.localeName,
         'stageStranger': _stageStrangerController.text.trim(),

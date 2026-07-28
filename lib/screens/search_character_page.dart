@@ -84,10 +84,13 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
         .collection('public_characters');
 
     if (_searchQuery.isEmpty) {
-      query = query.orderBy('likes', descending: true).limit(6);
+      query = query
+          .orderBy('likesCount', descending: true)
+          .limit(6);
     } else {
-      query = query.where('name', isGreaterThanOrEqualTo: _searchQuery)
-          .where('name', isLessThanOrEqualTo: '$_searchQuery\uf8ff');
+      query = query
+          .orderBy('createdAt', descending: true)
+          .limit(200);
     }
 
     return StreamBuilder<QuerySnapshot>(
@@ -95,7 +98,38 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
 
-        final docs = snapshot.data!.docs;
+        final allDocs = snapshot.data!.docs;
+        final keyword = _searchQuery.toLowerCase();
+
+        final docs = _searchQuery.isEmpty
+            ? allDocs
+            : allDocs.where((doc) {
+          final data =
+          doc.data() as Map<String, dynamic>;
+
+          final String name =
+              data['name']
+                  ?.toString()
+                  .toLowerCase() ??
+                  '';
+
+          final String creatorName =
+              data['creatorName']
+                  ?.toString()
+                  .toLowerCase() ??
+                  '';
+
+          final List<String> tags =
+          List<String>.from(
+            data['personalityTags'] ?? const [],
+          ).map((tag) => tag.toLowerCase()).toList();
+
+          return name.contains(keyword) ||
+              creatorName.contains(keyword) ||
+              tags.any(
+                    (tag) => tag.contains(keyword),
+              );
+        }).toList();
         if (docs.isEmpty) {
           return Center(
               child: Text(l10n.search_no_match_hint,

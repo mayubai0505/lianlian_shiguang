@@ -36,6 +36,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // --- Controllers ---
   final _nicknameController = TextEditingController();
   final _playerIDController = TextEditingController();
+  final _bioController = TextEditingController();
   // ✨ 請確保您有在 class 的頂部加上這一行 ✨
   // --- 狀態變數 ---
   String _gender = '未選擇';
@@ -49,6 +50,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String _originalGender = '未選擇';
   String _originalAvatarPath = 'assets/images/avatar1.png';
   DateTime? _originalBirthDate;
+  String _originalBio = '';
 
   // --- Services ---
   final ImagePicker _picker = ImagePicker();
@@ -67,6 +69,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void dispose() {
     _nicknameController.dispose();
     _playerIDController.dispose();
+    _bioController.dispose();
     super.dispose();
   }
 
@@ -93,7 +96,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _nicknameController.text = data['nickname'] ?? '';
               _gender = data['gender'] ?? l10n.genderNotSelected;
               _avatarPath = data['avatarPath'] ?? 'assets/images/avatar1.png';
-
+              _bioController.text =
+                  data['bio']?.toString() ?? '';
               final bool isAgeSetCloud = data['isAgeSet'] ?? false;
               _isAgeEditable = !isAgeSetCloud;
 
@@ -117,6 +121,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _originalGender = _gender;
               _originalAvatarPath = _avatarPath;
               _originalBirthDate = _birthDate;
+              _originalBio = _bioController.text.trim();
             });
           }
 
@@ -132,7 +137,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       setState(() {
         _nicknameController.text =
         widget.isCreating ? '' : (prefs.getString('nickname') ?? '');
-
+        _bioController.text =
+        widget.isCreating
+            ? ''
+            : (prefs.getString('bio') ?? '');
         _gender = widget.isCreating
             ? '未選擇'
             : (prefs.getString('gender') ?? l10n.genderNotSelected);
@@ -163,6 +171,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _originalGender = _gender;
         _originalAvatarPath = _avatarPath;
         _originalBirthDate = _birthDate;
+        _originalBio = _bioController.text.trim();
       });
     }
   }
@@ -243,14 +252,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   bool _hasAnyProfileChanged() {
-    final currentNickname = _nicknameController.text.trim();
-    final currentID = _playerIDController.text.trim();
+    final currentNickname =
+    _nicknameController.text.trim();
+
+    final currentID =
+    _playerIDController.text.trim();
+
+    final currentBio =
+    _bioController.text.trim();
 
     return currentNickname != _originalNickname ||
         currentID != _originalID ||
+        currentBio != _originalBio ||
         _gender != _originalGender ||
         _avatarPath != _originalAvatarPath ||
-        !_isSameDate(_birthDate, _originalBirthDate);
+        !_isSameDate(
+          _birthDate,
+          _originalBirthDate,
+        );
   }
 
   Future<void> _saveProfile() async {
@@ -451,7 +470,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       final String nickname =
       _nicknameController.text.trim();
-
+      final String bio =
+      _bioController.text.trim();
       // 生日資料
       final String birthdayStr = _birthDate != null
           ? '${_birthDate!.year}-'
@@ -464,6 +484,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (user != null) {
         final Map<String, dynamic> cloudData = {
           'nickname': nickname,
+          'bio': bio,
           'avatarPath': finalAvatarPath,
           'gender': _gender,
           'updatedAt': FieldValue.serverTimestamp(),
@@ -495,6 +516,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       await prefs.setString(
         'nickname',
         nickname,
+      );
+
+      await prefs.setString(
+        'bio',
+        bio,
       );
 
       await prefs.setString(
@@ -566,6 +592,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _avatarPath = finalAvatarPath;
       _originalAvatarPath = finalAvatarPath;
       _originalNickname = nickname;
+      _originalBio = bio;
       _originalGender = _gender;
       _originalBirthDate = _birthDate;
 
@@ -1065,6 +1092,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
               controller: _nicknameController,
               style: TextStyle(color: onSurface),
               decoration: customInputDecoration(l10n.label_your_nickname),
+            ),
+            const SizedBox(height: 20),
+
+            TextField(
+              controller: _bioController,
+              style: TextStyle(
+                color: onSurface,
+                height: 1.5,
+              ),
+              minLines: 3,
+              maxLines: 5,
+              maxLength: 120,
+              textInputAction: TextInputAction.newline,
+              decoration: customInputDecoration(
+                '自我介紹',
+                helper: '簡單介紹自己或你的創作風格',
+              ).copyWith(
+                hintText: '例如：喜歡創作奇幻、病嬌與沉浸式戀愛角色。',
+                alignLabelWithHint: true,
+                counterText: '',
+              ),
             ),
             const SizedBox(height: 20),
 

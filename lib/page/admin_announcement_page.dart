@@ -97,7 +97,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
   bool _sendNotification = true;
   bool _isPublishing = false;
   bool _isUploadingVoiceBank = false;
-
+  bool _isSyncingCreatorNames = false;
   final FirebaseFunctions _functions =
   FirebaseFunctions.instanceFor(
     region: 'asia-east1',
@@ -118,6 +118,143 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
+  }
+
+  Future<void> _syncCreatorNames() async {
+    if (_isSyncingCreatorNames) return;
+
+    setState(() {
+      _isSyncingCreatorNames = true;
+    });
+
+    try {
+      final db = FirebaseFirestore.instance;
+
+      final charactersSnapshot = await db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('public_characters')
+          .get();
+
+      int updatedCount = 0;
+      int skippedCount = 0;
+      int failedCount = 0;
+
+      // 快取已讀過的創作者資料，避免同一位創作者被重複讀取。
+      final Map<String, String> creatorNameCache = {};
+
+      // Firestore batch 一次最多 500 筆操作，
+      // 保守一點每 400 筆提交一次。
+      WriteBatch batch = db.batch();
+      int batchOperationCount = 0;
+
+      Future<void> commitBatchIfNeeded({
+        bool force = false,
+      }) async {
+        if (batchOperationCount == 0) return;
+
+        if (force || batchOperationCount >= 400) {
+          await batch.commit();
+          batch = db.batch();
+          batchOperationCount = 0;
+        }
+      }
+
+      for (final characterDoc in charactersSnapshot.docs) {
+        try {
+          final data = characterDoc.data();
+
+          final String creatorUid =
+              data['createdBy']?.toString().trim() ?? '';
+
+          if (creatorUid.isEmpty) {
+            skippedCount++;
+            debugPrint(
+              '⚠️ 角色 ${characterDoc.id} 沒有 createdBy，略過',
+            );
+            continue;
+          }
+
+          String creatorName =
+              creatorNameCache[creatorUid] ?? '';
+
+          if (!creatorNameCache.containsKey(creatorUid)) {
+            final creatorDoc = await db
+                .collection('users')
+                .doc(creatorUid)
+                .get();
+
+            creatorName =
+                creatorDoc.data()?['nickname']
+                    ?.toString()
+                    .trim() ??
+                    '';
+
+            creatorNameCache[creatorUid] = creatorName;
+          }
+
+          if (creatorName.isEmpty) {
+            skippedCount++;
+            debugPrint(
+              '⚠️ 找不到創作者名稱：$creatorUid',
+            );
+            continue;
+          }
+
+          batch.update(characterDoc.reference, {
+            'creatorName': creatorName,
+            'creatorNameLower':
+            creatorName.toLowerCase(),
+            'creatorMetadataUpdatedAt':
+            FieldValue.serverTimestamp(),
+          });
+
+          batchOperationCount++;
+          updatedCount++;
+
+          await commitBatchIfNeeded();
+        } catch (e) {
+          failedCount++;
+          debugPrint(
+            '❌ 更新角色 ${characterDoc.id} 失敗：$e',
+          );
+        }
+      }
+
+      await commitBatchIfNeeded(force: true);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '同步完成：更新 $updatedCount 個，略過 $skippedCount 個，失敗 $failedCount 個',
+        customIcon: Icons.sync_rounded,
+      );
+
+      debugPrint(
+        '✅ 創作者名稱同步完成：'
+            'updated=$updatedCount, '
+            'skipped=$skippedCount, '
+            'failed=$failedCount',
+      );
+    } catch (e, stackTrace) {
+      debugPrint('❌ 同步創作者名稱失敗：$e');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '同步失敗：$e',
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSyncingCreatorNames = false;
+        });
+      }
+    }
   }
 
   Future<void> _publish() async {
@@ -381,6 +518,66 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
         return ListView(
           padding: const EdgeInsets.all(20),
           children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.manage_accounts_rounded,
+                          color: Colors.deepPurple,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            '創作者名稱同步',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      '根據角色的 createdBy，從 users/{uid} 讀取 nickname，'
+                          '並補上 creatorName 與 creatorNameLower。',
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        onPressed: _isSyncingCreatorNames
+                            ? null
+                            : _syncCreatorNames,
+                        icon: _isSyncingCreatorNames
+                            ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : const Icon(
+                          Icons.sync_rounded,
+                        ),
+                        label: Text(
+                          _isSyncingCreatorNames
+                              ? '同步創作者名稱中...'
+                              : '一鍵同步創作者名稱',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(18),

@@ -120,7 +120,12 @@ class CreatorStudioPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(l10n.my_secret_studio_title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          l10n.my_secret_studio_title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
       ),
@@ -132,109 +137,288 @@ class CreatorStudioPage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const CharacterEditPage()),
+            MaterialPageRoute(
+              builder: (context) =>
+              const CharacterEditPage(),
+            ),
           );
         },
       ),
-      body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: combinedStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
 
-          final charactersList = snapshot.data ?? [];
+      // 第一層：讀取創作者個人資料
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .snapshots(),
+        builder: (context, userSnapshot) {
+          final userData =
+              userSnapshot.data?.data()
+              as Map<String, dynamic>? ??
+                  <String, dynamic>{};
 
-          if (charactersList.isEmpty) return _buildEmptyState(context, theme);
+          final String nickname =
+              userData['nickname']
+                  ?.toString()
+                  .trim() ??
+                  '';
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16).copyWith(bottom: 100),
-            itemCount: charactersList.length,
-            itemBuilder: (context, index) {
-              final item = charactersList[index];
-              final doc = item['doc'] as QueryDocumentSnapshot;
-              final status = item['status'] as String;
-              final data = doc.data() as Map<String, dynamic>;
+          final String bio =
+              userData['bio']
+                  ?.toString()
+                  .trim() ??
+                  '';
 
-              final characterName = data['name'] ?? l10n.unnamed_draft;
-              final avatarUrl = data['avatarPath'];
+          final String avatarPath =
+              userData['avatarPath']
+                  ?.toString()
+                  .trim() ??
+                  '';
 
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  // 🌟 總裁級全能頭像渲染器！
-                  leading: Builder(
-                    builder: (context) {
-                      // 1. 先準備一個預設的假人頭元件
-                      Widget defaultAvatar = CircleAvatar(
-                        radius: 28,
-                        backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.person, color: Colors.grey),
-                      );
+          // 第二層：讀取角色資料
+          return StreamBuilder<
+              List<Map<String, dynamic>>>(
+            stream: combinedStream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState ==
+                  ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
 
-                      // 2. 如果沒有圖片路徑，直接回傳假人頭
-                      if (avatarUrl == null || avatarUrl.isEmpty) {
-                        return defaultAvatar;
-                      }
-
-                      // 3. ✨ 核心魔法：根據路徑類型，決定要用哪個 ImageProvider
-                      ImageProvider imageProvider;
-                      if (avatarUrl.startsWith('http')) {
-                        // 🌍 網路圖片
-                        imageProvider = NetworkImage(avatarUrl);
-                      } else if (avatarUrl.startsWith('/')) {
-                        // 📱 本機相簿圖片 (用 FileImage 包起來)
-                        // 注意：這裡我們用到 dart:io 裡的 File，記得在檔案最上面 import 'dart:io';
-                        imageProvider = FileImage(File(avatarUrl));
-                      } else {
-                        // 🤷‍♀️ 其他怪異路徑 (例如 assets/...)，直接放棄，給假人頭
-                        return defaultAvatar;
-                      }
-
-                      // 4. 把決定好的圖片裝進 CircleAvatar
-                      return CircleAvatar(
-                        radius: 28,
-                        backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                        backgroundImage: imageProvider,
-                        // ✨ 加上這行防止本機圖片有時候載入失敗爆掉
-                        onBackgroundImageError: (exception, stackTrace) {
-                          debugPrint('草稿頭像載入失敗: $exception');
-                        },
-                      );
-                    },
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    '載入角色資料失敗：${snapshot.error}',
                   ),
-                  title: Row(
-                    children: [
-                      Text(characterName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      const SizedBox(width: 8),
-                      if (status == 'draft') _buildDraftBadge(context),
-                      if (status == 'private') _buildPrivateBadge(context),
-                      if (status == 'public') _buildPublicBadge(context),
-                    ],
-                  ),
-                  subtitle: Text(l10n.click_to_edit_story, style: const TextStyle(color: Colors.grey)),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (status == 'draft')
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                          onPressed: () => _deleteDraft(context, doc.id, avatarUrl),
-                        ),
-                      const Icon(Icons.chevron_right, color: Colors.grey),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
+                );
+              }
+
+              final charactersList =
+                  snapshot.data ?? [];
+
+              // 就算沒有角色，也保留創作者介紹卡
+              if (charactersList.isEmpty) {
+                return ListView(
+                  padding: const EdgeInsets.all(16)
+                      .copyWith(bottom: 100),
+                  children: [
+                    _buildCreatorIntroductionCard(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => CharacterEditPage(draftDoc: doc),
-                      ),
+                      theme,
+                      nickname: nickname,
+                      bio: bio,
+                      avatarPath: avatarPath,
+                    ),
+                    const SizedBox(height: 24),
+                    _buildEmptyState(
+                      context,
+                      theme,
+                    ),
+                  ],
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16)
+                    .copyWith(bottom: 100),
+
+                // 多一格放創作者介紹
+                itemCount:
+                charactersList.length + 1,
+
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return _buildCreatorIntroductionCard(
+                      context,
+                      theme,
+                      nickname: nickname,
+                      bio: bio,
+                      avatarPath: avatarPath,
                     );
-                  },
-                ),
+                  }
+
+                  final int characterIndex =
+                      index - 1;
+
+                  final item =
+                  charactersList[
+                  characterIndex];
+
+                  final doc =
+                  item['doc']
+                  as QueryDocumentSnapshot;
+
+                  final String status =
+                  item['status'] as String;
+
+                  final data =
+                  doc.data()
+                  as Map<String, dynamic>;
+
+                  final String characterName =
+                      data['name']
+                          ?.toString() ??
+                          l10n.unnamed_draft;
+
+                  final String? avatarUrl =
+                  data['avatarPath']
+                      ?.toString();
+
+                  return Card(
+                    margin: const EdgeInsets.only(
+                      bottom: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.circular(16),
+                    ),
+                    child: ListTile(
+                      contentPadding:
+                      const EdgeInsets.all(16),
+
+                      leading: Builder(
+                        builder: (context) {
+                          final Widget defaultAvatar =
+                          CircleAvatar(
+                            radius: 28,
+                            backgroundColor: theme
+                                .colorScheme
+                                .surfaceContainerHighest,
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.grey,
+                            ),
+                          );
+
+                          if (avatarUrl == null ||
+                              avatarUrl.isEmpty) {
+                            return defaultAvatar;
+                          }
+
+                          ImageProvider imageProvider;
+
+                          if (avatarUrl.startsWith(
+                            'http',
+                          )) {
+                            imageProvider =
+                                NetworkImage(
+                                  avatarUrl,
+                                );
+                          } else if (avatarUrl
+                              .startsWith('/')) {
+                            imageProvider =
+                                FileImage(
+                                  File(avatarUrl),
+                                );
+                          } else {
+                            return defaultAvatar;
+                          }
+
+                          return CircleAvatar(
+                            radius: 28,
+                            backgroundColor: theme
+                                .colorScheme
+                                .surfaceContainerHighest,
+                            backgroundImage:
+                            imageProvider,
+                            onBackgroundImageError:
+                                (
+                                exception,
+                                stackTrace,
+                                ) {
+                              debugPrint(
+                                '草稿頭像載入失敗: '
+                                    '$exception',
+                              );
+                            },
+                          );
+                        },
+                      ),
+
+                      title: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              characterName,
+                              style:
+                              const TextStyle(
+                                fontWeight:
+                                FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                              maxLines: 1,
+                              overflow:
+                              TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+
+                          if (status == 'draft')
+                            _buildDraftBadge(
+                              context,
+                            ),
+
+                          if (status == 'private')
+                            _buildPrivateBadge(
+                              context,
+                            ),
+
+                          if (status == 'public')
+                            _buildPublicBadge(
+                              context,
+                            ),
+                        ],
+                      ),
+
+                      subtitle: Text(
+                        l10n.click_to_edit_story,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                      ),
+
+                      trailing: Row(
+                        mainAxisSize:
+                        MainAxisSize.min,
+                        children: [
+                          if (status == 'draft')
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color:
+                                Colors.redAccent,
+                              ),
+                              onPressed: () =>
+                                  _deleteDraft(
+                                    context,
+                                    doc.id,
+                                    avatarUrl,
+                                  ),
+                            ),
+
+                          const Icon(
+                            Icons.chevron_right,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CharacterEditPage(
+                                  draftDoc: doc,
+                                ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
               );
             },
           );
@@ -242,6 +426,106 @@ class CreatorStudioPage extends StatelessWidget {
       ),
     );
   }
+
+Widget _buildCreatorIntroductionCard(
+    BuildContext context,
+    ThemeData theme, {
+      required String nickname,
+      required String bio,
+      required String avatarPath,
+    }) {
+  ImageProvider? avatarProvider;
+
+  if (avatarPath.startsWith('http://') ||
+      avatarPath.startsWith('https://')) {
+    avatarProvider =
+        NetworkImage(avatarPath);
+  } else if (avatarPath.startsWith('assets/')) {
+    avatarProvider =
+        AssetImage(avatarPath);
+  }
+
+  return Card(
+    margin: const EdgeInsets.only(bottom: 20),
+    elevation: 0,
+    color: theme.colorScheme.primary
+        .withValues(alpha: 0.06),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+      side: BorderSide(
+        color: theme.colorScheme.primary
+            .withValues(alpha: 0.12),
+      ),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(18),
+      child: Row(
+        crossAxisAlignment:
+        CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor:
+            theme.colorScheme.primary
+                .withValues(alpha: 0.12),
+            backgroundImage: avatarProvider,
+            child: avatarProvider == null
+                ? Icon(
+              Icons.person_rounded,
+              color:
+              theme.colorScheme.primary,
+            )
+                : null,
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nickname.isEmpty
+                      ? '未命名創作者'
+                      : nickname,
+                  style: TextStyle(
+                    color:
+                    theme.colorScheme.onSurface,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (bio.isNotEmpty) ...[
+                  const SizedBox(height: 7),
+                  Text(
+                    bio,
+                    style: TextStyle(
+                      color: theme
+                          .colorScheme.onSurface
+                          .withValues(alpha: 0.7),
+                      fontSize: 13,
+                      height: 1.5,
+                    ),
+                  ),
+                ] else ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    '尚未填寫自我介紹',
+                    style: TextStyle(
+                      color: theme
+                          .colorScheme.onSurface
+                          .withValues(alpha: 0.4),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   // 🏷️ 輔助小元件：草稿標籤
   Widget _buildDraftBadge(BuildContext context) {

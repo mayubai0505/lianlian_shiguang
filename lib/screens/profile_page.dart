@@ -42,6 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // --- 狀態變數 ---
   String _nickname = '';
   String _avatarPath = 'assets/images/avatar1.png';
+  String _bio = '';
   String _playerID = '';
   int _flowerPoints = 0;
   bool _isLoading = true;
@@ -269,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _nickname = data['nickname'] ?? _nickname;
         _avatarPath = data['avatarPath'] ?? _avatarPath;
         _flowerPoints = data['flowerPoints'] ?? 0;
-
+        _bio = data['bio']?.toString().trim() ?? '';
         // 🌟 3. 生日偵測：直接從資料庫的時間戳記判斷
         if (data['userBirthday'] != null) {
           final birthDate = (data['userBirthday'] as Timestamp).toDate();
@@ -289,6 +290,12 @@ class _ProfilePageState extends State<ProfilePage> {
     final prefs = await SharedPreferences.getInstance();
     if (data.containsKey('nickname')) await prefs.setString(
         'nickname', data['nickname']);
+    if (data.containsKey('bio')) {
+      await prefs.setString(
+        'bio',
+        data['bio']?.toString() ?? '',
+      );
+    }
     if (data.containsKey('avatarPath')) await prefs.setString(
         'avatarPath', data['avatarPath']);
   }
@@ -868,6 +875,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         // 優先序：本地緩存 > Firebase 帳號名稱 > 溫柔的預設值
         _nickname = prefs.getString('nickname') ?? (currentUser?.displayName ?? l10n.title_time_travel);
+        _bio = prefs.getString('bio') ?? '';
         _avatarPath = prefs.getString('avatarPath') ?? (currentUser?.photoURL ?? 'assets/images/avatar1.png');
         _playerID = prefs.getString('playerID') ?? '';
       });
@@ -1461,6 +1469,51 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Widget _buildProfileBio() {
+    final theme = Theme.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 14,
+      ),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface
+            .withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.primary
+              .withValues(alpha: 0.12),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "📝 關於我",
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            _bio,
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+              fontSize: 13,
+              height: 1.6,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -1567,6 +1620,11 @@ class _ProfilePageState extends State<ProfilePage> {
             padding: const EdgeInsets.all(16.0),
             children: [
               _buildProfileHeader(),
+
+              if (_bio.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _buildProfileBio(),
+              ],
               const SizedBox(height: 16),
               Row(
                 children: [

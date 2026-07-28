@@ -8,12 +8,12 @@ import 'dart:ui';
 import 'character_model.dart';
 import 'character_profile_page.dart';
 import 'search_character_page.dart';
-import '../widgets/character_image_carousel.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 // 邂逅頁面
 class SelectChatPage extends StatefulWidget {
@@ -745,32 +745,41 @@ Widget buildCachedCharacterAvatar(
     Character character, {
       double radius = 30,
     }) {
-  final imageUrl = character.galleryPaths.isNotEmpty
-      ? character.galleryPaths.first
+  final String avatarUrl =
+  (character.avatarPath ?? '').trim();
+
+  final String imageUrl =
+  avatarUrl.isNotEmpty
+      ? avatarUrl
+      : character.galleryPaths.isNotEmpty
+      ? character.galleryPaths.first.trim()
       : '';
 
-  final size = radius * 2;
+  if (imageUrl.isEmpty) {
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: Theme.of(context)
+          .colorScheme
+          .secondaryContainer,
+      child: const Icon(Icons.person),
+    );
+  }
 
-  return ClipOval(
-    child: SizedBox(
-      width: size,
-      height: size,
-      child: imageUrl.isNotEmpty
-          ? CachedNetworkImage(
-        imageUrl: imageUrl,
-        fit: BoxFit.cover,
-        memCacheWidth: (size * 3).round(),
-        memCacheHeight: (size * 3).round(),
-        placeholder: (context, url) => Container(
-          color: Theme.of(context)
-              .colorScheme
-              .secondaryContainer,
-        ),
-        errorWidget: (context, url, error) =>
-        const Icon(Icons.person),
-      )
-          : const Icon(Icons.person),
-    ),
+  return CircleAvatar(
+    radius: radius,
+    backgroundColor: Theme.of(context)
+        .colorScheme
+        .secondaryContainer,
+    backgroundImage:
+    CachedNetworkImageProvider(imageUrl),
+    onBackgroundImageError: (
+        error,
+        stackTrace,
+        ) {
+      debugPrint(
+        '人氣榜角色頭像載入失敗：$error',
+      );
+    },
   );
 }
 
@@ -834,232 +843,567 @@ class _LatestTab extends StatelessWidget {
   final Function(Character) onAddFriend;
   final Function(Character, bool) onShowOptions;
 
-  const _LatestTab({required this.allCharacters, required this.friendIds, required this.onAddFriend, required this.onShowOptions});
+  const _LatestTab({
+    required this.allCharacters,
+    required this.friendIds,
+    required this.onAddFriend,
+    required this.onShowOptions,
+  });
 
   @override
   Widget build(BuildContext context) {
-    List<Character> sortedList = List.from(allCharacters);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
+    // 網頁或寬螢幕使用桌面版配置。
+    final bool useDesktopLayout =
+        kIsWeb && screenWidth >= 800;
+
+    final double pageHorizontalPadding =
+    useDesktopLayout ? 32 : 16;
+
+    final double maxContentWidth =
+    useDesktopLayout ? 1280 : double.infinity;
+
+    final List<Character> sortedList =
+    List<Character>.from(allCharacters);
+
     sortedList.sort((a, b) {
-      if (a.createdAt == null || b.createdAt == null) return 0;
       return b.createdAt.compareTo(a.createdAt);
     });
 
-    final bannerList = sortedList.take(10).toList();
+    final List<Character> bannerList =
+    sortedList.take(10).toList();
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        if (bannerList.isNotEmpty) ...[
-          const Text("🌟 閃耀新星．強檔推薦", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          // 🌟 完美解決寬扁橫幅切臉問題的「模糊背板 + 中間主體」強檔推薦橫幅
-          SizedBox(
-            height: 220,
-            child: Swiper(
-              itemCount: bannerList.length,
-              autoplay: true,
-              itemBuilder: (context, index) {
-                final char = bannerList[index];
-                final String bannerImg = char.galleryPaths.isNotEmpty ? char.galleryPaths.first : '';
+    return Align(
+      alignment: const Alignment(0, -0.35),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: maxContentWidth,
+        ),
+        child: ListView(
+          padding: EdgeInsets.symmetric(
+            horizontal: pageHorizontalPadding,
+            vertical: 16,
+          ),
+          children: [
+            if (bannerList.isNotEmpty) ...[
+              Text(
+                '🌟 閃耀新星．強檔推薦',
+                style: TextStyle(
+                  fontSize: useDesktopLayout ? 22 : 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
 
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => CharacterProfilePage(character: char, characterId: char.id)));
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        // 1. 🎨 背景層：同張圖片放大鋪滿 + 強力毛玻璃模糊（消除寬扁橫幅的空白與切臉感）
-                        if (bannerImg.isNotEmpty) ...[
-                          CachedNetworkImage(
-                            imageUrl: bannerImg,
-                            fit: BoxFit.cover,
-                            alignment: Alignment.center,
-                            memCacheWidth: 1080,
-                            placeholder: (context, url) => Container(
-                              color: Colors.black12,
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: Colors.black12,
-                            ),
-                          ),
-                          BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                            child: Container(
-                              color: Colors.black.withValues(alpha: 0.35), // 微微壓暗，凸顯中間主角
-                            ),
-                          ),
-                        ],
+              _buildRecommendationBanner(
+                context,
+                bannerList,
+                useDesktopLayout: useDesktopLayout,
+              ),
 
-                        // 2. 👑 前景層：置中完整顯示（contain），確保臉和上半身 100% 完美露在正中間！
-                        Center(
-                          child: bannerImg.isNotEmpty
-                              ? CachedNetworkImage(
-                            imageUrl: bannerImg,
-                            fit: BoxFit.contain,
-                            alignment: Alignment.center,
-                            memCacheWidth: 1080,
-                            placeholder: (context, url) => const SizedBox.shrink(),
-                            errorWidget: (context, url, error) => Image.asset(
-                              'assets/images/blank_avatar.png',
-                              fit: BoxFit.contain,
-                            ),
-                          )
-                              : const Image(image: AssetImage('assets/images/blank_avatar.png')),
-                        ),
+              SizedBox(
+                height: useDesktopLayout ? 36 : 24,
+              ),
+            ],
 
-                        // 3. 🌙 底部漸層陰影（確保左下角的名字清晰可見）
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
-                            ),
-                          ),
-                        ),
+            Text(
+              '✨ 最近上架新角色',
+              style: TextStyle(
+                fontSize: useDesktopLayout ? 22 : 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
 
-                        // 4. 📝 角色名稱
-                        Positioned(
-                          bottom: 16, left: 16, right: 16,
-                          child: Text(
-                            char.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
-                            ),
-                          ),
-                        ),
-                      ],
+            if (useDesktopLayout)
+              _buildDesktopCharacterGrid(
+                context,
+                sortedList,
+              )
+            else
+              _buildMobileStaggeredGrid(
+                context,
+                sortedList,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // =========================================================
+  // 強檔推薦 Banner
+  // =========================================================
+  Widget _buildRecommendationBanner(
+      BuildContext context,
+      List<Character> bannerList, {
+        required bool useDesktopLayout,
+      }) {
+    return SizedBox(
+      height: useDesktopLayout ? 360 : 250,
+      child: Swiper(
+        itemCount: bannerList.length,
+        autoplay: bannerList.length > 1,
+        autoplayDelay: 4500,
+        viewportFraction: useDesktopLayout ? 0.82 : 1.0,
+        scale: useDesktopLayout ? 0.92 : 1.0,
+        itemBuilder: (context, index) {
+          final char = bannerList[index];
+
+          final String bannerImg =
+          char.galleryPaths.isNotEmpty
+              ? char.galleryPaths.first
+              : '';
+
+          return Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: useDesktopLayout ? 8 : 0,
+            ),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CharacterProfilePage(
+                      character: char,
+                      characterId: char.id,
                     ),
                   ),
                 );
               },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(
+                  useDesktopLayout ? 22 : 16,
+                ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (useDesktopLayout)
+                      ..._buildDesktopBannerImage(
+                        bannerImg,
+                      )
+                    else
+                      _buildMobileFullBannerImage(
+                        bannerImg,
+                      ),
+
+                    // 底部漸層只負責讓名字清楚，
+                    // 不會像之前一樣把整張圖壓暗。
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.black.withValues(
+                              alpha: 0.72,
+                            ),
+                          ],
+                          stops: const [
+                            0,
+                            0.58,
+                            1,
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // 只保留名字與身分
+                    Positioned(
+                      left: useDesktopLayout ? 28 : 18,
+                      right: useDesktopLayout ? 28 : 18,
+                      bottom: useDesktopLayout ? 26 : 18,
+                      child: Column(
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            char.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize:
+                              useDesktopLayout ? 28 : 22,
+                              fontWeight: FontWeight.bold,
+                              shadows: const [
+                                Shadow(
+                                  color: Colors.black54,
+                                  blurRadius: 5,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (char.occupation
+                              .trim()
+                              .isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              char.occupation,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white.withValues(
+                                  alpha: 0.88,
+                                ),
+                                fontSize:
+                                useDesktopLayout ? 15 : 13,
+                                fontWeight: FontWeight.w500,
+                                shadows: const [
+                                  Shadow(
+                                    color: Colors.black54,
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+  Widget _buildMobileFullBannerImage(
+      String bannerImg,
+      ) {
+    if (bannerImg.isEmpty) {
+      return Image.asset(
+        'assets/images/blank_avatar.png',
+        fit: BoxFit.cover,
+      );
+    }
+
+    return CachedNetworkImage(
+      imageUrl: bannerImg,
+      width: double.infinity,
+      height: double.infinity,
+
+      // 關鍵：直接把圖片填滿整個 Banner。
+      fit: BoxFit.cover,
+
+      // 稍微往上取景，優先保留人物臉部。
+      alignment: const Alignment(0, -0.18),
+
+      memCacheWidth: 1080,
+      filterQuality: FilterQuality.medium,
+      placeholder: (context, url) => Container(
+        color: Colors.black12,
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      ),
+      errorWidget: (context, url, error) =>
+          Image.asset(
+            'assets/images/blank_avatar.png',
+            fit: BoxFit.cover,
+          ),
+    );
+  }
+  List<Widget> _buildDesktopBannerImage(
+      String bannerImg,
+      ) {
+    if (bannerImg.isEmpty) {
+      return [
+        Image.asset(
+          'assets/images/blank_avatar.png',
+          fit: BoxFit.cover,
+        ),
+      ];
+    }
+
+    return [
+      CachedNetworkImage(
+        imageUrl: bannerImg,
+        fit: BoxFit.cover,
+        alignment: Alignment.center,
+        memCacheWidth: 1600,
+        placeholder: (context, url) => Container(
+          color: Colors.black12,
+        ),
+        errorWidget: (context, url, error) =>
+            Container(
+              color: Colors.black12,
+            ),
+      ),
+
+      BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: 18,
+          sigmaY: 18,
+        ),
+        child: Container(
+          color: Colors.black.withValues(
+            alpha: 0.35,
+          ),
+        ),
+      ),
+
+      Center(
+        child: CachedNetworkImage(
+          imageUrl: bannerImg,
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
+          memCacheWidth: 1400,
+          placeholder: (context, url) =>
+          const SizedBox.shrink(),
+          errorWidget: (context, url, error) =>
+              Image.asset(
+                'assets/images/blank_avatar.png',
+                fit: BoxFit.contain,
+              ),
+        ),
+      ),
+    ];
+  }
+  // =========================================================
+  // 手機版：兩欄高低交錯
+  // =========================================================
+  Widget _buildMobileStaggeredGrid(
+      BuildContext context,
+      List<Character> sortedList,
+      ) {
+    final List<Character> leftCol = [];
+    final List<Character> rightCol = [];
+
+    for (int i = 0; i < sortedList.length; i++) {
+      if (i.isEven) {
+        leftCol.add(sortedList[i]);
+      } else {
+        rightCol.add(sortedList[i]);
+      }
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            children: leftCol.map((char) {
+              return Padding(
+                padding:
+                const EdgeInsets.only(bottom: 12),
+                child: _buildCharacterCard(
+                  context,
+                  char,
+                  isDesktop: false,
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Padding(
+            padding:
+            const EdgeInsets.only(top: 30),
+            child: Column(
+              children: rightCol.map((char) {
+                return Padding(
+                  padding:
+                  const EdgeInsets.only(bottom: 12),
+                  child: _buildCharacterCard(
+                    context,
+                    char,
+                    isDesktop: false,
+                  ),
+                );
+              }).toList(),
             ),
           ),
-          const SizedBox(height: 24),
-        ],
-        const Text("✨ 最近上架新角色", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-
-        // 🏛️ 讓右欄故意往下位移，營造出時髦的高低交錯感！
-        LayoutBuilder(
-          builder: (context, constraints) {
-            List<Character> leftCol = [];
-            List<Character> rightCol = [];
-
-            for (int i = 0; i < sortedList.length; i++) {
-              if (i % 2 == 0) {
-                leftCol.add(sortedList[i]);
-              } else {
-                rightCol.add(sortedList[i]);
-              }
-            }
-
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 左欄正常排
-                Expanded(
-                  child: Column(
-                    children: leftCol.map((char) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildStaggeredCard(context, char),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // 右欄故意加上一個頂部距離（例如 30px），製造高低交錯感！
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 30.0),
-                    child: Column(
-                      children: rightCol.map((char) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _buildStaggeredCard(context, char),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
         ),
       ],
     );
   }
 
-  // 🎨 維持完美比例的卡片
-  Widget _buildStaggeredCard(BuildContext context, Character char) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => CharacterProfilePage(character: char, characterId: char.id)));
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: AspectRatio(
-          aspectRatio: 0.85, // 💡 卡片本身的完美比例不動
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              char.galleryPaths.isNotEmpty
-                  ? CachedNetworkImage(
-                imageUrl: char.galleryPaths.first,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                memCacheWidth: 720,
-                placeholder: (context, url) => Container(
-                  color: Colors.grey.shade200,
-                ),
-                errorWidget: (context, url, error) => Image.asset(
-                  'assets/images/blank_avatar.png',
-                  fit: BoxFit.cover,
-                ),
-              )
-                  : Image.asset(
-                'assets/images/blank_avatar.png',
-                fit: BoxFit.cover,
+  // =========================================================
+  // 網頁版：四欄整齊排列
+  // =========================================================
+  Widget _buildDesktopCharacterGrid(
+      BuildContext context,
+      List<Character> sortedList,
+      ) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final int columnCount;
+
+        if (constraints.maxWidth >= 1200) {
+          columnCount = 4;
+        } else if (constraints.maxWidth >= 850) {
+          columnCount = 3;
+        } else {
+          columnCount = 2;
+        }
+
+        const double spacing = 18;
+
+        final double cardWidth =
+            (constraints.maxWidth -
+                spacing * (columnCount - 1)) /
+                columnCount;
+
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: sortedList.map((char) {
+            return SizedBox(
+              width: cardWidth,
+              child: _buildCharacterCard(
+                context,
+                char,
+                isDesktop: true,
               ),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.75)],
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  // =========================================================
+  // 共用角色卡片
+  // =========================================================
+  Widget _buildCharacterCard(
+      BuildContext context,
+      Character char, {
+        required bool isDesktop,
+      }) {
+    final String imageUrl =
+    char.galleryPaths.isNotEmpty
+        ? char.galleryPaths.first
+        : '';
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  CharacterProfilePage(
+                    character: char,
+                    characterId: char.id,
+                  ),
+            ),
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(
+            isDesktop ? 18 : 16,
+          ),
+          child: AspectRatio(
+            aspectRatio:
+            isDesktop ? 0.78 : 0.85,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (imageUrl.isNotEmpty)
+                  CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    alignment:
+                    Alignment.topCenter,
+                    memCacheWidth:
+                    isDesktop ? 900 : 720,
+                    placeholder:
+                        (context, url) =>
+                        Container(
+                          color: Colors.grey.shade200,
+                        ),
+                    errorWidget:
+                        (context, url, error) =>
+                        Image.asset(
+                          'assets/images/blank_avatar.png',
+                          fit: BoxFit.cover,
+                        ),
+                  )
+                else
+                  Image.asset(
+                    'assets/images/blank_avatar.png',
+                    fit: BoxFit.cover,
+                  ),
+
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(
+                          alpha: 0.78,
+                        ),
+                      ],
+                      stops: const [
+                        0.48,
+                        1,
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      char.name,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      char.occupation,
-                      style: const TextStyle(color: Colors.white70, fontSize: 11),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+
+                Padding(
+                  padding: EdgeInsets.all(
+                    isDesktop ? 16 : 12,
+                  ),
+                  child: Column(
+                    mainAxisAlignment:
+                    MainAxisAlignment.end,
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        char.name,
+                        maxLines: 1,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight:
+                          FontWeight.bold,
+                          fontSize:
+                          isDesktop ? 18 : 15,
+                          shadows: const [
+                            Shadow(
+                              color: Colors.black54,
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (char.occupation
+                          .trim()
+                          .isNotEmpty) ...[
+                        const SizedBox(height: 3),
+                        Text(
+                          char.occupation,
+                          maxLines: 1,
+                          overflow:
+                          TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize:
+                            isDesktop ? 13 : 11,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -1090,30 +1434,73 @@ class _PopularTab extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: ListTile(
-            contentPadding: const EdgeInsets.all(8),
-            leading: buildCachedCharacterAvatar(
-              context,
-              char,
+            contentPadding: const EdgeInsets.all(10),
+            minVerticalPadding: 10,
+
+            leading: SizedBox(
+              width: 58,
+              height: 58,
+              child: buildCachedCharacterAvatar(
+                context,
+                char,
+                radius: 29,
+              ),
             ),
-            title: Text(char.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+
+            title: Text(
+              char.name,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-                Text(char.storySummary, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
+                Text(
+                  char.storySummary,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12),
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.local_fire_department, size: 14, color: Colors.orange),
+                    const Icon(
+                      Icons.local_fire_department,
+                      size: 14,
+                      color: Colors.orange,
+                    ),
                     const SizedBox(width: 4),
-                    Text("遊玩次數: ${char.playCount}", style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                    Text(
+                      '遊玩次數: ${char.playCount}',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+
+            trailing: const Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+            ),
+
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => CharacterProfilePage(character: char, characterId: char.id)));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CharacterProfilePage(
+                    character: char,
+                    characterId: char.id,
+                  ),
+                ),
+              );
             },
           ),
         );
@@ -1133,26 +1520,20 @@ class _TagsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     Set<String> uniqueTags = {};
     for (var char in allCharacters) {
       uniqueTags.addAll(char.personalityTags);
     }
+
     List<String> tagList = uniqueTags.toList();
 
     if (tagList.isEmpty) {
-      return const Center(child: Text("目前還沒有任何標籤資料～"));
+      return const Center(
+        child: Text("目前還沒有任何標籤資料～"),
+      );
     }
-
-    // 🎨 療癒的馬卡龍色系清單（低彩度、柔和護眼）
-    final List<Color> macaronColors = [
-      const Color(0xFFFFB7B2), // 柔粉色
-      const Color(0xFFFFDAC1), // 蜜桃橘
-      const Color(0xFFE2F0CB), // 薄荷綠
-      const Color(0xFFB5EAD7), // 青草藍
-      const Color(0xFFC7CEEA), // 薰衣草紫
-      const Color(0xFFF3C68F), // 奶黃色
-      const Color(0xFFD4A5A5), // 芋頭粉
-    ];
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -1166,38 +1547,48 @@ class _TagsTab extends StatelessWidget {
         itemCount: tagList.length,
         itemBuilder: (context, index) {
           final tag = tagList[index];
-          // 💡 透過索引輪流取馬卡龍色
-          final Color cardColor = macaronColors[index % macaronColors.length];
 
           return InkWell(
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => _TagFilteredCharactersPage(tag: tag, allCharacters: allCharacters),
+                  builder: (_) => _TagFilteredCharactersPage(
+                    tag: tag,
+                    allCharacters: allCharacters,
+                  ),
                 ),
               );
             },
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24),
             child: Container(
               decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(12),
+                color: theme.colorScheme.primary.withValues(
+                  alpha: 0.08,
+                ),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withValues(
+                    alpha: 0.25,
+                  ),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
               alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
               child: Text(
                 "#$tag",
-                style: const TextStyle(
-                  color: Colors.black87, // 搭配馬卡龍底色，用深色文字閱讀起來最舒服
-                  fontWeight: FontWeight.bold,
+                style: TextStyle(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
                 maxLines: 1,
@@ -1241,6 +1632,7 @@ class _TagFilteredCharactersPage extends StatelessWidget {
               leading: buildCachedCharacterAvatar(
                 context,
                 char,
+                radius: 30,
               ),
               title: Text(char.name, style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(char.occupation, style: const TextStyle(fontSize: 12)),
@@ -1327,6 +1719,42 @@ class _CharacterCardState extends State<CharacterCard> {
     }
   }
 
+  Widget _buildFirstCharacterImage() {
+    final String imageUrl =
+    widget.character.galleryPaths.isNotEmpty
+        ? widget.character.galleryPaths.first
+        : '';
+
+    if (imageUrl.isEmpty) {
+      return Image.asset(
+        'assets/images/blank_avatar.png',
+        fit: BoxFit.cover,
+      );
+    }
+
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: BoxFit.cover,
+      alignment: Alignment.topCenter,
+      memCacheWidth: 1080,
+      placeholder: (context, url) => Container(
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest,
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      ),
+      errorWidget: (context, url, error) {
+        return Image.asset(
+          'assets/images/blank_avatar.png',
+          fit: BoxFit.cover,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1358,15 +1786,20 @@ class _CharacterCardState extends State<CharacterCard> {
         (_translatedSummary == null && sharedTranslation == null);
 
     Widget cardWidget = Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25),
+      ),
       elevation: 10,
       clipBehavior: Clip.antiAlias,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CharacterImageCarousel(imagePaths: widget.character.galleryPaths),
+          _buildFirstCharacterImage(),
+
           Positioned(
-            bottom: 0, left: 0, right: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
             child: Container(
               height: 280,
               decoration: BoxDecoration(
@@ -1375,7 +1808,9 @@ class _CharacterCardState extends State<CharacterCard> {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withValues(alpha: 0.85)
+                    Colors.black.withValues(
+                      alpha: 0.85,
+                    ),
                   ],
                 ),
               ),

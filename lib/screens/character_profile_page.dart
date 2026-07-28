@@ -41,6 +41,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
   bool _hasLiked = false;
   bool _isNavigating = false;
   bool _isFollowing = false; // 放在 State 類別的最上方
+  int _currentHeaderPhotoIndex = 0;
   // 🌟 總裁指令：不管是大寫還是小寫，通通都要聽 AppConfig 的話！
   final String APP_ID = AppConfig.appId;
   bool _isTranslating = false;
@@ -1213,6 +1214,323 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     );
   }
 
+  Widget _buildHeaderPhotoCarousel({
+    required bool isDesktop,
+  }) {
+    final List<String> photoUrls = [];
+
+    // 優先使用完整 gallery，因為裡面有正式照片順序。
+    if (widget.character.gallery != null) {
+      for (final photo in widget.character.gallery!) {
+        final String url = photo.imageUrl.trim();
+
+        if (url.isNotEmpty &&
+            !photoUrls.contains(url)) {
+          photoUrls.add(url);
+        }
+      }
+    }
+
+    // gallery 沒資料時，用 galleryPaths 保底。
+    for (final path
+    in widget.character.galleryPaths) {
+      final String url = path.trim();
+
+      if (url.isNotEmpty &&
+          !photoUrls.contains(url)) {
+        photoUrls.add(url);
+      }
+    }
+
+    // 最後才用 avatarPath 保底。
+    final String avatarUrl =
+    (widget.character.avatarPath ?? '').trim();
+
+    if (avatarUrl.isNotEmpty &&
+        !photoUrls.contains(avatarUrl)) {
+      photoUrls.insert(0, avatarUrl);
+    }
+
+    if (photoUrls.isEmpty) {
+      return Container(
+        color: Colors.black,
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.person,
+          size: 100,
+          color: Colors.grey,
+        ),
+      );
+    }
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        PageView.builder(
+          itemCount: photoUrls.length,
+          onPageChanged: (index) {
+            if (!mounted) return;
+
+            setState(() {
+              _currentHeaderPhotoIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            final String imageUrl =
+            photoUrls[index];
+
+            // 第一張公開，第二張以後鎖定。
+            final bool isLocked = index > 0;
+
+            return _buildHeaderPhotoItem(
+              imageUrl: imageUrl,
+              isLocked: isLocked,
+              isDesktop: isDesktop,
+              photoIndex: index,
+            );
+          },
+        ),
+
+        // 多張照片才顯示頁碼圓點。
+        if (photoUrls.length > 1)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 14,
+            child: Row(
+              mainAxisAlignment:
+              MainAxisAlignment.center,
+              children: List.generate(
+                photoUrls.length,
+                    (index) {
+                  final bool selected =
+                      index ==
+                          _currentHeaderPhotoIndex;
+
+                  return AnimatedContainer(
+                    duration: const Duration(
+                      milliseconds: 200,
+                    ),
+                    width: selected ? 18 : 7,
+                    height: 7,
+                    margin:
+                    const EdgeInsets.symmetric(
+                      horizontal: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selected
+                          ? Colors.white
+                          : Colors.white.withValues(
+                        alpha: 0.45,
+                      ),
+                      borderRadius:
+                      BorderRadius.circular(99),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+
+        // 照片張數提示。
+        if (photoUrls.length > 1)
+          Positioned(
+            top: 16,
+            left: 16,
+            child: Container(
+              padding:
+              const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(
+                  alpha: 0.42,
+                ),
+                borderRadius:
+                BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${_currentHeaderPhotoIndex + 1}'
+                    ' / ${photoUrls.length}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderPhotoItem({
+    required String imageUrl,
+    required bool isLocked,
+    required bool isDesktop,
+    required int photoIndex,
+  }) {
+    final Widget image = CachedNetworkImage(
+      imageUrl: imageUrl,
+
+      // 手機填滿整個畫面；網頁保留完整圖片比例。
+      fit: isDesktop
+          ? BoxFit.contain
+          : BoxFit.cover,
+
+      // 手機稍微偏上，優先保留人物臉部。
+      alignment: isDesktop
+          ? Alignment.center
+          : const Alignment(0, -0.18),
+
+      memCacheWidth:
+      isDesktop ? 1400 : 1080,
+
+      placeholder: (context, url) =>
+          Container(
+            color: Colors.black,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white70,
+            ),
+          ),
+
+      errorWidget: (
+          context,
+          url,
+          error,
+          ) {
+        return const ColoredBox(
+          color: Colors.black,
+          child: Center(
+            child: Icon(
+              Icons.broken_image_outlined,
+              size: 80,
+              color: Colors.grey,
+            ),
+          ),
+        );
+      },
+    );
+
+    return Container(
+      color: Colors.black,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (isDesktop) ...[
+            // 網頁版背景鋪滿並模糊，
+            // 中間主圖使用 contain，避免人物被裁切。
+            CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              alignment: Alignment.center,
+              memCacheWidth: 1600,
+              errorWidget: (
+                  context,
+                  url,
+                  error,
+                  ) =>
+                  Container(
+                    color: Colors.black,
+                  ),
+            ),
+
+            BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 16,
+                sigmaY: 16,
+              ),
+              child: Container(
+                color: Colors.black.withValues(
+                  alpha: 0.34,
+                ),
+              ),
+            ),
+
+            Center(child: image),
+          ] else
+          // 手機版直接滿版。
+            image,
+
+          if (isLocked) ...[
+            // 鎖定照片模糊。
+            Positioned.fill(
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: 18,
+                    sigmaY: 18,
+                  ),
+                  child: Container(
+                    color: Colors.black.withValues(
+                      alpha: 0.28,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // 中央鎖頭與提示。
+            Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 18,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(
+                    alpha: 0.48,
+                  ),
+                  borderRadius:
+                  BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withValues(
+                      alpha: 0.18,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.lock_rounded,
+                      color: Colors.white,
+                      size: 38,
+                    ),
+                    const SizedBox(height: 9),
+                    Text(
+                      '專屬照片 ${photoIndex + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight:
+                        FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '提升好感度後解鎖',
+                      style: TextStyle(
+                        color: Colors.white
+                            .withValues(
+                          alpha: 0.75,
+                        ),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -1278,37 +1596,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   ),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                    color: Colors.black,
-                    // 🌟 總裁的聰明邏輯：決定要顯示哪張網址
-                    child: Builder(
-                      builder: (context) {
-                        // 1. 先預設使用「創建角色的照片」 👉 這裡換成妳專屬的 avatarPath 囉！
-                        String targetUrl = widget.character.avatarPath ?? '';
-                        // 2. 如果相簿有照片，就蓋過去，改用相簿的第一張
-                        if (widget.character.gallery != null &&
-                            widget.character.gallery!.isNotEmpty &&
-                            widget.character.gallery![0].imageUrl.trim().isNotEmpty) {
-                          targetUrl = widget.character.gallery![0].imageUrl;
-                        }
-
-                        // 3. 開始畫圖！如果連 avatarPath 都是空的，才顯示灰色圖示
-                        if (targetUrl.trim().isEmpty) {
-                          return const Center(child: Icon(Icons.person, size: 100, color: Colors.grey));
-                        }
-
-                        return Image.network(
-                          targetUrl,
-                          fit: BoxFit.contain, // 💡 小建議：如果覺得留黑邊不好看，可以改成 BoxFit.cover 讓它填滿
-                          alignment: Alignment.center,
-                          errorBuilder: (context, error, stackTrace) {
-                            print("🚨 背景圖載入失敗，壞掉的網址是: $targetUrl");
-                            // 萬一網址壞掉，終極防線：優雅地顯示灰色圖示
-                            return const Center(child: Icon(Icons.person, size: 100, color: Colors.grey));
-                          },
-                        );
-                      },
-                    ),
+                  background: _buildHeaderPhotoCarousel(
+                    isDesktop: isDesktop,
                   ),
                 ),
               ),
