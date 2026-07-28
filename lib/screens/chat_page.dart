@@ -7493,14 +7493,20 @@ class _ChatPageState extends State<ChatPage> {
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: (_freeRegenerateCount > 0)
-                              ? Theme.of(context).colorScheme.primaryContainer
-                              : Colors.grey.withValues(alpha: 0.2),
+                              ? Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: 0.15)
+                              : Colors.grey.withValues(alpha: 0.12),
                           foregroundColor: (_freeRegenerateCount > 0)
                               ? Theme.of(context).colorScheme.primary
                               : Colors.grey,
                           elevation: 0,
                           shape: const StadiumBorder(),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),

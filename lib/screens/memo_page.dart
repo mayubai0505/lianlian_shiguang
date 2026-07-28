@@ -2,12 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/reminder_notification_service.dart';
 import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 //備忘錄
+class MemoReminderCharacter {
+  final String id;
+  final String name;
+  final String personalityType;
 
+  const MemoReminderCharacter({
+    required this.id,
+    required this.name,
+    required this.personalityType,
+  });
+}
 // ✨ 3. 升級 Memo 模型，讓它能和 Firestore 溝通
 class Memo {
   final String id;
@@ -77,22 +88,415 @@ class _MemoPageState extends State<MemoPage> {
     );
   }
 
-  Future<void> _addMemo(String content, DateTime reminderDate) async {
+  Future<void> _addMemo(
+      String content,
+      DateTime reminderDate,
+      ) async {
     if (_userId == null) return;
-    await _memosCollection.add(Memo(
-      id: '', // Firestore 會自動生成 ID
+
+    final bool notificationGranted =
+    await ReminderNotificationService
+        .requestPermission();
+
+    if (!notificationGranted && mounted) {
+      ToastUtils.showCenterToast(
+        context,
+        '尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。',
+        isError: true,
+      );
+    }
+
+    // 💌 找出最近聊天最多的角色。
+    final MemoReminderCharacter
+    reminderCharacter =
+    await _findMostChattedCharacter();
+
+    final docRef =
+    _memosCollection.doc();
+
+    final memo = Memo(
+      id: docRef.id,
       content: content,
       reminderDate: reminderDate,
       createdAt: DateTime.now(),
-    ));
+    );
+
+    /*
+   * 因為 Memo.toJson() 目前沒有提醒角色欄位，
+   * 這裡直接用 Map 寫入額外資料。
+   */
+    await docRef.set(memo);
+
+    await docRef.update({
+      'reminderCharacterId':
+      reminderCharacter.id,
+      'reminderCharacterName':
+      reminderCharacter.name,
+      'reminderPersonalityType':
+      reminderCharacter.personalityType,
+      'notificationEnabled':
+      notificationGranted,
+    });
+
+    if (notificationGranted) {
+      await ReminderNotificationService
+          .scheduleMemoNotification(
+        memoId: docRef.id,
+        reminderDateTime: reminderDate,
+        characterName: reminderCharacter.name,
+        memoContent: content,
+        characterId: reminderCharacter.id,
+        personalityType:
+        reminderCharacter.personalityType,
+      );
+    }
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+      context,
+      notificationGranted
+          ? '備忘錄已儲存，${reminderCharacter.name} 會提醒你！'
+          : '備忘錄已儲存，但尚未開啟通知權限。',
+      customIcon:
+      Icons.notifications_active_outlined,
+    );
+    final pending =
+    await ReminderNotificationService
+        .getPendingNotifications();
+
+    debugPrint(
+        '目前通知數量：${pending.length}');
+
+    for (final n in pending) {
+      debugPrint(
+          '${n.id} ${n.title} ${n.body}');
+    }
   }
 
-  Future<void> _updateMemo(Memo memo, String newContent, DateTime newReminderDate) async {
+  Future<MemoReminderCharacter>
+  _findMostChattedCharacter() async {
+    final String? userId = _userId;
+
+    // 找不到玩家時，使用目前所在角色保底。
+    if (userId == null) {
+      return MemoReminderCharacter(
+        id: widget.character.id,
+        name: widget.character.name,
+        personalityType: '',
+      );
+    }
+
+    try {
+      final snapshot =
+      await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(
+        const String.fromEnvironment(
+          'APP_ID',
+          defaultValue:
+          'lianlianshiguang',
+        ),
+      )
+          .collection('chat_sessions')
+          .where(
+        'userId',
+        isEqualTo: userId,
+      )
+          .orderBy(
+        'updatedAt',
+        descending: true,
+      )
+          .limit(30)
+          .get();
+
+      // 沒有聊天資料時，使用目前角色。
+      if (snapshot.docs.isEmpty) {
+        return MemoReminderCharacter(
+          id: widget.character.id,
+          name: widget.character.name,
+          personalityType: '',
+        );
+      }
+
+      final Map<String, int>
+      scoreByCharacter = <String, int>{};
+
+      final Map<String, String>
+      nameByCharacter = <String, String>{};
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+
+        final String characterId =
+            data['characterId']
+                ?.toString()
+                .trim() ??
+                '';
+
+        if (characterId.isEmpty) {
+          continue;
+        }
+
+        final String characterName =
+            data['characterName']
+                ?.toString()
+                .trim() ??
+                '';
+
+        final int messageCount =
+            (data['messageCount'] as num?)
+                ?.toInt() ??
+                1;
+
+        scoreByCharacter[characterId] =
+            (scoreByCharacter[characterId] ??
+                0) +
+                messageCount;
+
+        if (characterName.isNotEmpty) {
+          nameByCharacter[characterId] =
+              characterName;
+        }
+      }
+
+      if (scoreByCharacter.isEmpty) {
+        return MemoReminderCharacter(
+          id: widget.character.id,
+          name: widget.character.name,
+          personalityType: '',
+        );
+      }
+
+      final sortedEntries =
+      scoreByCharacter.entries.toList()
+        ..sort(
+              (a, b) =>
+              b.value.compareTo(a.value),
+        );
+
+      final String topCharacterId =
+          sortedEntries.first.key;
+
+      String topCharacterName =
+          nameByCharacter[topCharacterId] ??
+              '';
+
+      String personalityType = '';
+
+      // 不論聊天室裡有沒有名字，
+      // 都讀取角色文件取得個性資料。
+      final publicCharacterDoc =
+      await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(
+        const String.fromEnvironment(
+          'APP_ID',
+          defaultValue:
+          'lianlianshiguang',
+        ),
+      )
+          .collection(
+        'public_characters',
+      )
+          .doc(topCharacterId)
+          .get();
+
+      Map<String, dynamic> characterData =
+          publicCharacterDoc.data() ??
+              <String, dynamic>{};
+
+      /*
+     * 如果公開角色集合找不到，
+     * 再嘗試讀取玩家自己的私人角色。
+     */
+      if (characterData.isEmpty) {
+        final privateCharacterDoc =
+        await FirebaseFirestore.instance
+            .collection('artifacts')
+            .doc(
+          const String.fromEnvironment(
+            'APP_ID',
+            defaultValue:
+            'lianlianshiguang',
+          ),
+        )
+            .collection('users')
+            .doc(userId)
+            .collection(
+          'private_characters',
+        )
+            .doc(topCharacterId)
+            .get();
+
+        characterData =
+            privateCharacterDoc.data() ??
+                <String, dynamic>{};
+      }
+
+      // chat_sessions 沒有名字時，
+      // 改從角色文件取得。
+      if (topCharacterName.isEmpty) {
+        topCharacterName =
+            characterData['name']
+                ?.toString()
+                .trim() ??
+                '';
+      }
+
+      final List<String> personalityParts =
+      <String>[];
+
+      final String detailedPersonality =
+          characterData['detailedPersonality']
+              ?.toString()
+              .trim() ??
+              '';
+
+      final String toneAndStyle =
+          characterData['toneAndStyle']
+              ?.toString()
+              .trim() ??
+              '';
+
+      final String personality =
+          characterData['personality']
+              ?.toString()
+              .trim() ??
+              '';
+
+      if (detailedPersonality.isNotEmpty) {
+        personalityParts.add(
+          detailedPersonality,
+        );
+      }
+
+      if (toneAndStyle.isNotEmpty) {
+        personalityParts.add(
+          toneAndStyle,
+        );
+      }
+
+      if (personality.isNotEmpty) {
+        personalityParts.add(
+          personality,
+        );
+      }
+
+      final dynamic rawTags =
+      characterData['personalityTags'];
+
+      if (rawTags is List) {
+        personalityParts.addAll(
+          rawTags
+              .map(
+                (tag) =>
+                tag.toString().trim(),
+          )
+              .where(
+                (tag) => tag.isNotEmpty,
+          ),
+        );
+      }
+
+      personalityType =
+          personalityParts.join(' ');
+
+      return MemoReminderCharacter(
+        id: topCharacterId,
+        name: topCharacterName.isEmpty
+            ? widget.character.name
+            : topCharacterName,
+        personalityType:
+        personalityType,
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '尋找最常聊天角色失敗：$error',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
+
+      // 發生錯誤時使用目前角色，
+      // 不讓備忘錄儲存失敗。
+      return MemoReminderCharacter(
+        id: widget.character.id,
+        name: widget.character.name,
+        personalityType: '',
+      );
+    }
+  }
+
+  Future<void> _updateMemo(
+      Memo memo,
+      String newContent,
+      DateTime newReminderDate,
+      ) async {
     if (_userId == null) return;
-    await _memosCollection.doc(memo.id).update({
+
+    final bool permissionGranted =
+    await ReminderNotificationService
+        .requestPermission();
+
+    final MemoReminderCharacter
+    reminderCharacter =
+    await _findMostChattedCharacter();
+
+    await _memosCollection
+        .doc(memo.id)
+        .update({
       'content': newContent,
-      'reminderDate': Timestamp.fromDate(newReminderDate),
+      'reminderDate':
+      Timestamp.fromDate(
+        newReminderDate,
+      ),
+      'reminderCharacterId':
+      reminderCharacter.id,
+      'reminderCharacterName':
+      reminderCharacter.name,
+      'reminderPersonalityType':
+      reminderCharacter.personalityType,
+      'notificationEnabled':
+      permissionGranted,
+      'updatedAt':
+      FieldValue.serverTimestamp(),
     });
+
+    if (permissionGranted) {
+      await ReminderNotificationService
+          .rescheduleMemoNotification(
+        memoId: memo.id,
+        reminderDateTime:
+        newReminderDate,
+        characterName:
+        reminderCharacter.name,
+        memoContent: newContent,
+        characterId:
+        reminderCharacter.id,
+        personalityType:
+        reminderCharacter.personalityType,
+      );
+    } else {
+      // 原本有通知但玩家後來關閉權限時，
+      // 至少取消 App 中既有的排程。
+      await ReminderNotificationService
+          .cancelMemoNotification(
+        memo.id,
+      );
+    }
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+      context,
+      permissionGranted
+          ? '備忘錄已更新，${reminderCharacter.name} 會提醒你！'
+          : '備忘錄已更新，但目前沒有通知權限。',
+      customIcon:
+      Icons.notifications_active_outlined,
+    );
   }
 
   Future<void> _deleteMemo(String memoId) async {
@@ -112,6 +516,11 @@ class _MemoPageState extends State<MemoPage> {
       ),
     );
     if (confirm == true) {
+      await ReminderNotificationService
+          .cancelMemoNotification(
+        memoId,
+      );
+
       await _memosCollection.doc(memoId).delete();
     }
   }
@@ -153,26 +562,74 @@ class _MemoPageState extends State<MemoPage> {
                       maxLines: 3,
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text(l10n.memo_label_reminder_date),
-                        TextButton.icon(
-                          icon: const Icon(Icons.calendar_today, size: 18),
-                          onPressed: () async {
-                            final DateTime? picked = await showDatePicker(
-                              context: context,
-                              initialDate: selectedDate,
-                              firstDate: DateTime(2020),
-                              lastDate: DateTime(2101),
-                              // ✨ DatePicker 也可以透過 Theme 自動連動，通常不用額外設定
-                            );
-                            if (picked != null) {
-                              setStateInDialog(() => selectedDate = picked);
-                            }
-                          },
-                          label: Text(DateFormat('yyyy/MM/dd').format(selectedDate)),
-                          style: TextButton.styleFrom(foregroundColor: theme.colorScheme.primary),
+                        Text(
+                          l10n.memo_label_reminder_date,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            icon: const Icon(
+                              Icons.calendar_today,
+                              size: 18,
+                            ),
+                            onPressed: () async {
+                              final DateTime? pickedDate =
+                              await showDatePicker(
+                                context: context,
+                                initialDate: selectedDate,
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime(2101),
+                              );
+
+                              if (pickedDate == null) return;
+
+                              final TimeOfDay? pickedTime =
+                              await showTimePicker(
+                                context: context,
+                                initialTime:
+                                TimeOfDay.fromDateTime(
+                                  selectedDate,
+                                ),
+                              );
+
+                              if (pickedTime == null) return;
+
+                              setStateInDialog(() {
+                                selectedDate = DateTime(
+                                  pickedDate.year,
+                                  pickedDate.month,
+                                  pickedDate.day,
+                                  pickedTime.hour,
+                                  pickedTime.minute,
+                                );
+                              });
+                            },
+                            label: Text(
+                              DateFormat(
+                                'yyyy/MM/dd HH:mm',
+                              ).format(selectedDate),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor:
+                              theme.colorScheme.primary,
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 14,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -191,19 +648,34 @@ class _MemoPageState extends State<MemoPage> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   ),
                   child: Text(l10n.memo_action_save),
-                  onPressed: () {
-                    final content = textController.text.trim();
+                  onPressed: () async {
+                    final content =
+                    textController.text.trim();
+
                     if (content.isEmpty) {
-                      // ✨ 總裁級：備忘錄空白防呆，輕量錯誤提示直接抓回玩家視線！
-                      ToastUtils.showCenterToast(context, l10n.memo_error_empty_content, isError: true);
+                      ToastUtils.showCenterToast(
+                        context,
+                        l10n.memo_error_empty_content,
+                        isError: true,
+                      );
                       return;
                     }
 
                     if (existingMemo == null) {
-                      _addMemo(content, selectedDate);
+                      await _addMemo(
+                        content,
+                        selectedDate,
+                      );
                     } else {
-                      _updateMemo(existingMemo, content, selectedDate);
+                      await _updateMemo(
+                        existingMemo,
+                        content,
+                        selectedDate,
+                      );
                     }
+
+                    if (!dialogContext.mounted) return;
+
                     Navigator.of(dialogContext).pop();
                   },
                 ),
@@ -281,7 +753,7 @@ class _MemoPageState extends State<MemoPage> {
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
-                        l10n.memo_reminder_date_display(DateFormat('yyyy/MM/dd').format(memo.reminderDate)),
+                        l10n.memo_reminder_date_display(DateFormat('yyyy/MM/dd HH:mm').format(memo.reminderDate)),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface.withOpacity(0.7),
                         ),

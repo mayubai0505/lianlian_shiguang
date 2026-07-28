@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import '../services/theme_notifier.dart'; // ✨ 引入主題大腦
 import '../services/toast_utils.dart';
 import 'feedback_page.dart';
+import 'help_page.dart';
 import 'language_selection_page.dart'; // ✨ 引入語言選擇頁面
 import 'package:shared_preferences/shared_preferences.dart';
 import '../page/theme_selection_page.dart';
@@ -13,6 +14,7 @@ import '../page/character_management_page.dart';
 import '../page/app_texts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'login_page.dart';
+import 'help_models.dart';
 
 //設定
 
@@ -453,14 +455,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     icon: Icons.privacy_tip_outlined,
-                    title: l10n.privacyPolicy, // ✨ 直接換成多語系變數
+                    title: l10n.privacyPolicy,
                     theme: theme,
                     onTap: () {
-                      // 🚪 開啟隱私權政策的任意門
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LegalDocumentPage(isPrivacyPolicy: true), // 🌟 傳入 true
+                          builder: (context) => const LegalDocumentPage(
+                            type: LegalPageType.privacy,
+                          ),
                         ),
                       );
                     },
@@ -468,14 +471,46 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   _buildSettingsTile(
                     icon: Icons.description_outlined,
-                    title: l10n.termsOfService, // ✨ 直接換成多語系變數
+                    title: l10n.termsOfService,
                     theme: theme,
                     onTap: () {
-                      // 🚪 開啟服務條款的任意門
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LegalDocumentPage(isPrivacyPolicy: false), // 🌟 傳入 false
+                          builder: (context) => const LegalDocumentPage(
+                            type: LegalPageType.terms,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  _buildSettingsTile(
+                    icon: Icons.palette_outlined,
+                    title: "創作者規範",
+                    theme: theme,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LegalDocumentPage(
+                            type: LegalPageType.creator,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  _buildSettingsTile(
+                    icon: Icons.menu_book_rounded,
+                    title: '遊玩指南',
+                    theme: theme,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                          const HelpPage(),
                         ),
                       );
                     },

@@ -13,18 +13,16 @@ import 'screens/chat_page.dart';
 import 'services/theme_notifier.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'screens/splash_loading_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // 🌟 修改這裡：只保留一個數據來源，並給它一個別名
-import 'package:timezone/data/latest.dart' as tz_data;
 import 'dart:async';
 import 'screens/character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'services/reminder_notification_service.dart';
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -51,41 +49,57 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🗑️ 刪除了 FlutterNativeSplash.preserve(...)
-  // 讓系統原生的啟動圖自然結束，直接交接給妳的 SplashLoadingScreen
+  // ✅ Firebase 只初始化一次
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-  tz_data.initializeTimeZones();
-  try {
-    final timeZoneName = await FlutterTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName.toString()));
-  } catch (e) {
-    tz.setLocalLocation(tz.getLocation('Asia/Taipei'));
-  }
+  // ✅ 設定 FCM 背景訊息處理
+  FirebaseMessaging.onBackgroundMessage(
+    _firebaseMessagingBackgroundHandler,
+  );
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // ✅ 初始化備忘錄本機通知
+  // 裡面已經包含 timezone 初始化，不需要在 main() 再做一次
+  await ReminderNotificationService.initialize();
 
   if (kIsWeb && kDebugMode) {
-    debugPrint("🚀 網頁開發模式：暫時跳過 App Check 驗證，避免 400 錯誤");
+    debugPrint(
+      '🚀 網頁開發模式：暫時跳過 App Check 驗證，避免 400 錯誤',
+    );
   } else {
     try {
       await FirebaseAppCheck.instance.activate(
-        providerWeb: ReCaptchaV3Provider('6LfGqrYsAAAAAJfkhg30_VdjJmfDIWo40I9-izIO'),
-        providerAndroid: kReleaseMode ? AndroidPlayIntegrityProvider() : AndroidDebugProvider(),
-        providerApple: kReleaseMode ? AppleDeviceCheckProvider() : AppleDebugProvider(),
+        providerWeb: ReCaptchaV3Provider(
+          '6LfGqrYsAAAAAJfkhg30_VdjJmfDIWo40I9-izIO',
+        ),
+        providerAndroid: kReleaseMode
+            ? AndroidPlayIntegrityProvider()
+            : AndroidDebugProvider(),
+        providerApple: kReleaseMode
+            ? AppleDeviceCheckProvider()
+            : AppleDebugProvider(),
       );
     } catch (e) {
-      debugPrint("App Check 啟動失敗: $e");
+      debugPrint('App Check 啟動失敗: $e');
     }
   }
+
   await setupPushNotifications();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
-        ChangeNotifierProvider(create: (_) => LocaleNotifier()),
-        ChangeNotifierProvider(create: (_) => PurchaseService()..initialize()),
+        ChangeNotifierProvider(
+          create: (_) => ThemeNotifier(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocaleNotifier(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) =>
+          PurchaseService()..initialize(),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -308,7 +322,6 @@ void _handleNotificationClick(RemoteMessage message) {
     );
   }
   // ✨ 總裁新增：路線二！如果是萬能郵差送來的社交互動通知（按讚、留言、關注）
-  // ✨ 總裁修正：如果是社交通知，直接大腳一開，帶她去 InboxPage！
   else if (data['type'] == 'like' || data['type'] == 'comment' || data['type'] == 'follow') {
     debugPrint("📫 玩家點擊了社交通知，準備導向私密信箱頁面");
 
@@ -381,7 +394,6 @@ Future<void> setupPushNotifications() async {
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationClick);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("🤫 收到前景推播，但總裁下令隱藏：${message.notification?.title}");
     });
   } catch (e) {
     debugPrint("❌ 推播初始化發生錯誤: $e");
