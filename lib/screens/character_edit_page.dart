@@ -77,6 +77,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   String? _currentDraftId;
   int? _selectedSampleIndex;
   int? _playingSampleIndex;
+  int? _loadingSampleIndex;
+  bool _isPreloadingFirstVoice = false;
   String? _finalVoicePreviewUrl;
   Uint8List? _finalAudioBytes; // 🌟 加在 _finalVoicePreviewUrl 旁邊
   double _voiceStability = 0.33;
@@ -137,9 +139,22 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     // 1. 初始化播放器
     _audioPlayer = AudioPlayer();
     _audioPlayer.onPlayerStateChanged.listen((state) {
-      debugPrint("🔊 播放器狀態目前是: $state");
-      if (state == PlayerState.completed || state == PlayerState.stopped) {
-        if (mounted) setState(() => _playingSampleIndex = null);
+      debugPrint('🔊 播放器狀態目前是：$state');
+
+      if (!mounted) return;
+
+      switch (state) {
+        case PlayerState.completed:
+          setState(() {
+            _playingSampleIndex = null;
+          });
+          break;
+
+        case PlayerState.playing:
+        case PlayerState.paused:
+        case PlayerState.stopped:
+        case PlayerState.disposed:
+          break;
       }
     });
     _fetchMyCharacters();
@@ -402,6 +417,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     _stageStrangerController.dispose();
     _stageAcquaintanceController.dispose();
     _socialInteractionController.dispose();
+    _audioPlayer.stop();
     _audioPlayer.dispose();
     _playerIdentityController.dispose();
     _stageIntimateController.dispose();
@@ -1647,6 +1663,110 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         false;
   }
 
+  Future<void> _preloadFirstVoiceSample() async {
+    if (_isPreloadingFirstVoice || _voiceSamples.isEmpty) {
+      return;
+    }
+
+    final sample = _voiceSamples.first;
+
+    final String voiceId =
+        sample['voice_id']?.toString().trim() ?? '';
+
+    if (voiceId.isEmpty) return;
+
+    final Uint8List? cachedBytes =
+    sample['audio_bytes'] as Uint8List?;
+
+    if (cachedBytes != null && cachedBytes.isNotEmpty) {
+      return;
+    }
+
+    _isPreloadingFirstVoice = true;
+
+    try {
+      final l10n = AppLocalizations.of(context)!;
+
+      debugPrint(
+        '⏳ 開始背景預載第一個 Voice：$voiceId',
+      );
+
+      final callable = _functions.httpsCallable(
+        'testVoiceSettings',
+      );
+
+      final result = await callable.call({
+        'voiceId': voiceId,
+        'text': l10n.voice_sample_script,
+        'stability': _voiceStability,
+        'style': _voiceStyle,
+        'speed': 0.92,
+      });
+
+      if (result.data is! Map) {
+        debugPrint('⚠️ 第一個 Voice 預載格式錯誤');
+        return;
+      }
+
+      final data = Map<String, dynamic>.from(
+        result.data as Map,
+      );
+
+      final String audioBase64 =
+          data['audio_base_64']?.toString() ?? '';
+
+      if (audioBase64.isEmpty) {
+        debugPrint('⚠️ 第一個 Voice 預載回傳空音訊');
+        return;
+      }
+
+      final Uint8List audioBytes =
+      base64Decode(audioBase64);
+
+      if (audioBytes.isEmpty || !mounted) return;
+
+      // 確認預載期間 Voice 清單沒有被重新生成。
+      if (_voiceSamples.isEmpty) return;
+
+      final String currentFirstVoiceId =
+          _voiceSamples.first['voice_id']
+              ?.toString()
+              .trim() ??
+              '';
+
+      if (currentFirstVoiceId != voiceId) {
+        debugPrint(
+          '⚠️ Voice 清單已更新，略過舊的預載結果',
+        );
+        return;
+      }
+
+      setState(() {
+        _voiceSamples[0]['audio_bytes'] =
+            audioBytes;
+      });
+
+      debugPrint(
+        '✅ 第一個 Voice 已背景預載完成',
+      );
+    } on FirebaseFunctionsException catch ( e, stackTrace ) {
+    // 預載失敗不影響正常使用；
+    // 玩家按下播放時仍會再正式呼叫一次。
+    debugPrint(
+    '⚠️ 第一個 Voice 預載失敗：'
+    '${e.code} ${e.message}',
+    );
+    debugPrintStack(
+    stackTrace: stackTrace,
+    );
+    } catch (e, stackTrace) {
+      debugPrint('⚠️ 第一個 Voice 預載發生錯誤：$e');
+      debugPrintStack(stackTrace: stackTrace);
+    } finally {
+      _isPreloadingFirstVoice = false;
+    }
+  }
+
   // 🌟 1. 括號裡的 characterName 加上問號 (?)，代表「可以不傳」，並拿掉預設值
   Future<void> _generateVoiceFromAPI(
       String prompt, {
@@ -1785,6 +1905,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         _isGeneratingVoice = false;
       });
 
+      unawaited(_preloadFirstVoiceSample());
+
       debugPrint(
         '✅ 成功配對 ${matchedSamples.length} 個 Voice Bank 聲音',
       );
@@ -1842,6 +1964,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       return;
     }
 
+    // 同一張卡片正在生成時，禁止重複點擊。
+    if (_loadingSampleIndex == index) {
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     final sample = _voiceSamples[index];
 
@@ -1857,106 +1984,132 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       return;
     }
 
+    // 點擊目前播放中的 Voice：暫停。
     if (_playingSampleIndex == index) {
       await _audioPlayer.pause();
-
-      if (mounted) {
-        setState(() {
-          _playingSampleIndex = null;
-        });
-      }
-
-      return;
-    }
-
-    if (mounted) {
-      setState(() {
-        _playingSampleIndex = index;
-      });
-    }
-
-    try {
-      final cachedBytes =
-      sample['audio_bytes'] as Uint8List?;
-
-      if (cachedBytes != null &&
-          cachedBytes.isNotEmpty) {
-        await _playVoice(cachedBytes);
-        return;
-      }
-
-      final callable = _functions.httpsCallable(
-        'testVoiceSettings',
-      );
-
-      final result = await callable.call({
-        'voiceId': voiceId,
-        'text': l10n.voice_sample_script,
-        'stability': _voiceStability,
-        'style': _voiceStyle,
-      });
-
-      if (result.data is! Map) {
-        throw Exception('試聽服務回傳格式錯誤');
-      }
-
-      final data = Map<String, dynamic>.from(
-        result.data as Map,
-      );
-
-      final String audioBase64 =
-          data['audio_base_64']?.toString() ?? '';
-
-      if (audioBase64.isEmpty) {
-        throw Exception('試聽音訊資料為空');
-      }
-
-      final Uint8List audioBytes =
-      base64Decode(audioBase64);
 
       if (!mounted) return;
 
       setState(() {
-        _voiceSamples[index]['audio_bytes'] =
-            audioBytes;
+        _playingSampleIndex = null;
+      });
+      return;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _loadingSampleIndex = index;
+    });
+
+    try {
+      final Uint8List? cachedBytes =
+      sample['audio_bytes'] as Uint8List?;
+
+      Uint8List audioBytes;
+
+      // 有預載或先前快取，直接使用。
+      if (cachedBytes != null && cachedBytes.isNotEmpty) {
+        audioBytes = cachedBytes;
+        debugPrint('⚡ 使用 Voice 快取：$voiceId');
+      } else {
+        debugPrint('⏳ Voice 尚未快取，開始生成：$voiceId');
+
+        final callable = _functions.httpsCallable(
+          'testVoiceSettings',
+        );
+
+        final result = await callable.call({
+          'voiceId': voiceId,
+          'text': l10n.voice_sample_script,
+          'stability': _voiceStability,
+          'style': _voiceStyle,
+          'speed': 0.92,
+        });
+
+        if (result.data is! Map) {
+          throw Exception('試聽服務回傳格式錯誤');
+        }
+
+        final data = Map<String, dynamic>.from(
+          result.data as Map,
+        );
+
+        final String audioBase64 =
+            data['audio_base_64']?.toString() ?? '';
+
+        if (audioBase64.isEmpty) {
+          throw Exception('試聽音訊資料為空');
+        }
+
+        audioBytes = base64Decode(audioBase64);
+
+        if (audioBytes.isEmpty) {
+          throw Exception('試聽音訊解析失敗');
+        }
+
+        if (!mounted) return;
+
+        // 確認生成期間 Voice 清單沒有被換掉。
+        if (index >= _voiceSamples.length ||
+            _voiceSamples[index]['voice_id']?.toString() != voiceId) {
+          debugPrint('⚠️ Voice 清單已更新，略過舊音訊');
+          return;
+        }
+
+        setState(() {
+          _voiceSamples[index]['audio_bytes'] = audioBytes;
+        });
+      }
+
+      if (!mounted) return;
+
+      // 先設定播放中的卡片，再正式播放。
+      setState(() {
+        _playingSampleIndex = index;
       });
 
       await _playVoice(audioBytes);
-    } on FirebaseFunctionsException catch (
-    e,
-    stackTrace
-    ) {
-    debugPrint(
-    '試聽聲音失敗：${e.code} ${e.message}',
-    );
-    debugPrintStack(stackTrace: stackTrace);
+    } on FirebaseFunctionsException catch (e, stackTrace) {
+      debugPrint(
+        '試聽聲音失敗：${e.code} ${e.message}',
+      );
+      debugPrintStack(stackTrace: stackTrace);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {
-    _playingSampleIndex = null;
-    });
+      setState(() {
+        _playingSampleIndex = null;
+      });
 
-    ToastUtils.showCenterToast(
-    context,
-    e.message ?? '播放語音失敗',
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        e.message ?? '聲音生成失敗，請稍後再試',
+        isError: true,
+      );
     } catch (e, stackTrace) {
-    debugPrint('播放配對聲音失敗：$e');
-    debugPrintStack(stackTrace: stackTrace);
+      debugPrint('試聽聲音發生錯誤：$e');
+      debugPrintStack(stackTrace: stackTrace);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {
-    _playingSampleIndex = null;
-    });
+      setState(() {
+        _playingSampleIndex = null;
+      });
 
-    ToastUtils.showCenterToast(
-    context,
-    '播放語音失敗',
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        '聲音播放失敗，請再試一次',
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          if (_loadingSampleIndex == index) {
+            _loadingSampleIndex = null;
+          }
+        });
+      }
     }
   }
 
@@ -2784,17 +2937,24 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                                 subtitle:Text(l10n.voice_sample_desc),
                                 // 🌟 這裡換成我們強化的 IconButton
                                 trailing: IconButton(
-                                  icon: Icon(
+                                  onPressed: _loadingSampleIndex == index
+                                      ? null
+                                      : () => _previewVoiceSample(index),
+                                  icon: _loadingSampleIndex == index
+                                      ? const SizedBox(
+                                    width: 28,
+                                    height: 28,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                      : Icon(
                                     isPlayingThis
                                         ? Icons.pause_circle_filled
                                         : Icons.play_circle_fill,
                                     size: 32,
-                                    color: isPlayingThis
-                                        ? theme.colorScheme.primary
-                                        : Colors.blue,
+                                    color: theme.colorScheme.primary,
                                   ),
-                                  onPressed: () =>
-                                      _previewVoiceSample(index),
                                 ),
                               ),
                             ),

@@ -4058,6 +4058,7 @@ exports.testVoiceSettings = onCall(
       text,
       stability,
       style,
+      speed,
     } = request.data || {};
 
     if (!voiceId || !text) {
@@ -4091,6 +4092,7 @@ exports.testVoiceSettings = onCall(
               stability: stability ?? 0.33,
               similarity_boost: 0.75,
               style: style ?? 0.75,
+              speed: speed ?? 0.92,
               use_speaker_boost: true,
             },
           }),
