@@ -860,10 +860,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _refreshData() async {
     if (!mounted) return;
-    await Future.wait([
-      _loadProfileFromCache(),
-      _fetchAllCharacterData(),
-    ]);
+
+    await _fetchAllCharacterData();
   }
 
   Future<void> _loadProfileFromCache() async {
@@ -2076,11 +2074,19 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void _createCharacter() {
-    Navigator.push(
+  Future<void> _createCharacter() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
       context,
-      MaterialPageRoute(builder: (context) => const CharacterEditPage()),
-    ).then((_) => _refreshData());
+      MaterialPageRoute(
+        builder: (context) => const CharacterEditPage(),
+      ),
+    );
+
+    if (!mounted || result == null) return;
+
+    if (result['changed'] == true) {
+      await _refreshData();
+    }
   }
 
   Widget _buildSectionTitle(String title) {
@@ -2195,7 +2201,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             onPressed: () async {
-              final result = await Navigator.push(
+              final result = await Navigator.push<bool>(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const CreatorStudioPage(),
@@ -2204,9 +2210,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               if (!mounted) return;
 
-              if (result is Map && result['changed'] == true) {
-                await _refreshData();
-              } else {
+              if (result == true) {
                 await _refreshData();
               }
             },
@@ -2263,45 +2267,53 @@ class _ProfilePageState extends State<ProfilePage> {
       borderRadius: BorderRadius.circular(12.0),
       onTap: () async {
         if (isMyCharacter) {
-          final result = await Navigator.push(
+          final result = await Navigator.push<Map<String, dynamic>>(
             context,
             MaterialPageRoute(
-              builder: (context) => CharacterEditPage(character: character),
+              builder: (context) =>
+                  CharacterEditPage(character: character),
             ),
           );
-          if (!mounted) return;
-          if (result is Map) {
-            final bool changed = result['changed'] == true;
-            final bool deleted = result['deleted'] == true;
-            final String? deletedCharacterId = result['characterId']?.toString();
-            final String? message = result['message']?.toString();
 
-            if (deleted) {
-              final idToRemove = deletedCharacterId ?? character.id;
-              setState(() {
-                _myCharacters.removeWhere((c) => c.id == idToRemove);
-              });
-              if (message != null && message.isNotEmpty) {
-                ToastUtils.showCenterToast(
-                  context,
-                  message,
-                  customIcon: Icons.person_remove_rounded,
-                );
-              }
-              return;
+          if (!mounted || result == null) return;
+
+          final bool changed = result['changed'] == true;
+          final bool deleted = result['deleted'] == true;
+          final String? deletedCharacterId =
+          result['characterId']?.toString();
+          final String? message =
+          result['message']?.toString();
+
+          if (deleted) {
+            final idToRemove = deletedCharacterId ?? character.id;
+
+            setState(() {
+              _myCharacters.removeWhere((c) => c.id == idToRemove);
+              _friendsList.removeWhere((c) => c.id == idToRemove);
+            });
+
+            if (message != null && message.isNotEmpty) {
+              ToastUtils.showCenterToast(
+                context,
+                message,
+                customIcon: Icons.person_remove_rounded,
+              );
             }
 
-            if (changed) {
-              await _refreshData();
-              if (!mounted) return;
-              setState(() {});
-              if (message != null && message.isNotEmpty) {
-                ToastUtils.showCenterToast(
-                  context,
-                  message,
-                  customIcon: Icons.manage_accounts_rounded,
-                );
-              }
+            return;
+          }
+
+          if (changed) {
+            await _refreshData();
+
+            if (!mounted) return;
+
+            if (message != null && message.isNotEmpty) {
+              ToastUtils.showCenterToast(
+                context,
+                message,
+                customIcon: Icons.manage_accounts_rounded,
+              );
             }
           }
           return;

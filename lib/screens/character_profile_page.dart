@@ -1774,7 +1774,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
     // ✨ 方案 B：檢查雲端是否有共享翻譯
     final shared = widget.character.translations?[currentLang];
-
     // 優先序：本地翻譯 > 共享翻譯 > 原文
     final displayBg = _translatedBackground ?? shared?['background'] ??
         widget.character.background;
@@ -1783,7 +1782,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     final displayTags = _translatedTags ??
         (shared?['personalityTags'] as List?)?.cast<String>() ??
         widget.character.personalityTags;
-    // 判斷是否顯示按鈕：語言不同且雲端/本地都還沒翻過
+    final displayStory = widget.character.initialStory.trim();    // 判斷是否顯示按鈕：語言不同且雲端/本地都還沒翻過
     final bool showTranslateBtn = (currentLang !=
         (widget.character.contentLanguage ?? 'zh')) &&
         (_translatedBackground == null && shared?['background'] == null);
@@ -1977,8 +1976,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
         // 背景故事 (✨ 換成使用 displayBg)
         Text(
-            displayBg.isEmpty ? l10n.background_story_empty : displayBg,
-            style: theme.textTheme.bodyMedium?.copyWith(height: 1.7)
+          displayStory.isEmpty
+              ? l10n.background_story_empty
+              : displayStory,
+          style: theme.textTheme.bodyMedium?.copyWith(height: 1.7),
         ),
         const SizedBox(height: 32), // 留一點呼吸空間
 

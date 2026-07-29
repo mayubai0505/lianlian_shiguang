@@ -9,6 +9,7 @@ import '../services/toast_utils.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import '../services/help_translation_admin_service.dart';
 
+//後台
 class AnnouncementNotificationButton extends StatefulWidget {
   const AnnouncementNotificationButton({super.key});
 
@@ -81,7 +82,6 @@ class _AnnouncementNotificationButtonState extends State<AnnouncementNotificatio
   }
 }
 
-//公告&檢舉
 class AdminAnnouncementPage extends StatefulWidget {
   const AdminAnnouncementPage({super.key});
 

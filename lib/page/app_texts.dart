@@ -32,17 +32,17 @@ class _LegalDocumentPageState
   bool _hasError = false;
 
   String get _pageTitle {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     switch (widget.type) {
       case LegalPageType.privacy:
-        return l10n.privacyPolicy;
+        return l10n?.privacyPolicy ?? '隱私權政策';
 
       case LegalPageType.terms:
-        return l10n.termsOfService;
+        return l10n?.termsOfService ?? '使用條款';
 
       case LegalPageType.creator:
-        return "創作者規範";
+        return '創作者規範';
     }
   }
 

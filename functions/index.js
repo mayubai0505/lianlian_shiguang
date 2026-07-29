@@ -10,7 +10,7 @@ const functions = require("firebase-functions");
 const axios = require('axios');
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const Stripe = require("stripe");
-const { TranslationServiceClient } = require('@google-cloud/translate');
+const { Translate } =require("@google-cloud/translate").v2;
 const {
   getFirestore,
   FieldValue,
@@ -3031,21 +3031,70 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                           });
 
                           // 這個要獨立放在外面，不要被包在 getAiResponse 裡面
-                          exports.translateText = onCall({ region: "asia-east1" }, async (request) => {
-                              if (!request.auth) throw new HttpsError("unauthenticated", "請先登入。");
-                              if (!translateClient) {
-                                          translateClient = new TranslationServiceClient();
-                                      }
-                              const { text, targetLanguage } = request.data;
-                              try {
-                                  // 這裡確保你有在檔案上方定義過 translateClient
-                                  let [translations] = await translateClient.translate(text, targetLanguage);
-                                  return { translatedText: Array.isArray(translations) ? translations[0] : translations };
-                              } catch (error) {
-                                  console.error("翻譯失敗:", error);
-                                  throw new HttpsError("internal", "翻譯失敗");
+                          exports.translateText = onCall(
+                            {
+                              region: "asia-east1",
+                            },
+                            async (request) => {
+                              if (!request.auth) {
+                                throw new HttpsError(
+                                  "unauthenticated",
+                                  "請先登入。",
+                                );
                               }
-                          });
+
+                              const { text, targetLanguage } = request.data;
+
+                              if (
+                                typeof text !== "string" ||
+                                text.trim().length === 0
+                              ) {
+                                throw new HttpsError(
+                                  "invalid-argument",
+                                  "缺少需要翻譯的文字。",
+                                );
+                              }
+
+                              if (
+                                typeof targetLanguage !== "string" ||
+                                targetLanguage.trim().isEmpty
+                              ) {
+                                throw new HttpsError(
+                                  "invalid-argument",
+                                  "缺少目標語言。",
+                                );
+                              }
+
+                              if (!translateClient) {
+                                translateClient = new Translate();
+                              }
+
+                              try {
+                                const [translation] =
+                                    await translateClient.translate(
+                                      text,
+                                      targetLanguage,
+                                    );
+
+                                return {
+                                  translatedText: translation,
+                                };
+                              } catch (error) {
+                                console.error(
+                                  "===== Google Translate Error =====",
+                                );
+                                console.error(error);
+                                console.error(
+                                  "==================================",
+                                );
+
+                                throw new HttpsError(
+                                  "internal",
+                                  error?.message || "翻譯失敗",
+                                );
+                              }
+                            },
+                          );
 
 async function getUserFcmTokens(userId) {
     const db = admin.firestore();
@@ -5088,7 +5137,135 @@ exports.ecpayReturn = functions.https.onRequest(async (req, res) => {
     res.send('1|OK');
 });
 // ============================================================
-// Voice Bank：玩家描述正規化
+// Voice Matching V2：共用設定
+// ============================================================
+
+const VOICE_MATCH_MIN_SCORE = 55;
+
+const VOICE_TRAIT_WEIGHTS = {
+  depth: 5,
+  warmth: 5,
+  energy: 4,
+  softness: 4,
+  maturity: 5,
+  brightness: 3,
+  confidence: 4,
+  romance: 4,
+  elegance: 4,
+  mystery: 4,
+  cuteness: 3,
+};
+
+// 避免 Firestore 中的數值超出 0～1。
+function clampVoiceTrait(value, fallback = 0.5) {
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue)) {
+    return fallback;
+  }
+
+  return Math.max(0, Math.min(1, numberValue));
+}
+
+// 統一年齡格式。
+// 前端目前可能傳 young，Voice Bank 則可能使用 young_adult。
+function normalizeVoiceAge(age) {
+  const value = String(age || "")
+    .trim()
+    .toLowerCase();
+
+  const ageAliases = {
+    teen: "young",
+    teenager: "young",
+    highschool: "young",
+    high_school: "young",
+    student: "young",
+
+    young: "young",
+    youth: "young",
+
+    youngadult: "young_adult",
+    "young-adult": "young_adult",
+    young_adult: "young_adult",
+    college: "young_adult",
+    university: "young_adult",
+
+    adult: "adult",
+    mature_adult: "adult",
+
+    mature: "mature",
+    middle_age: "mature",
+    middleaged: "mature",
+    older: "mature",
+  };
+
+  return ageAliases[value] || value;
+}
+
+// 判斷兩個年齡分類的接近程度。
+// 回傳值：
+// 1 = 完全相符
+// 0.65 = 相鄰年齡
+// 0 = 差距較大
+function getVoiceAgeSimilarity(
+  requestedAge,
+  candidateAge
+) {
+  const requested =
+    normalizeVoiceAge(requestedAge);
+
+  const candidate =
+    normalizeVoiceAge(candidateAge);
+
+  if (!requested || !candidate) {
+    return 0;
+  }
+
+  if (requested === candidate) {
+    return 1;
+  }
+
+  const ageOrder = [
+    "young",
+    "young_adult",
+    "adult",
+    "mature",
+  ];
+
+  const requestedIndex =
+    ageOrder.indexOf(requested);
+
+  const candidateIndex =
+    ageOrder.indexOf(candidate);
+
+  if (
+    requestedIndex === -1 ||
+    candidateIndex === -1
+  ) {
+    return 0;
+  }
+
+  const distance = Math.abs(
+    requestedIndex - candidateIndex
+  );
+
+  if (distance === 1) {
+    return 0.65;
+  }
+
+  return 0;
+}
+
+// 將標籤統一成可比較的格式。
+function normalizeVoiceTag(tag) {
+  return String(tag || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "");
+}
+
+// ============================================================
+// Voice Bank：玩家描述正規化 V2
 // ============================================================
 
 function normalizeVoiceRequest({
@@ -5100,122 +5277,10 @@ function normalizeVoiceRequest({
     .trim()
     .toLowerCase();
 
-  const tags = [];
+  const matchedTags = new Set();
 
-  const tagKeywords = {
-    "低沉": [
-      "低沉",
-      "深沉",
-      "低音",
-      "厚重",
-    ],
-    "成熟": [
-      "成熟",
-      "穩重",
-      "大人",
-      "沉穩",
-    ],
-    "霸總": [
-      "霸總",
-      "總裁",
-      "強勢",
-      "上位者",
-    ],
-    "磁性": [
-      "磁性",
-      "性感",
-      "迷人",
-      "有魅力",
-    ],
-    "溫柔": [
-      "溫柔",
-      "溫暖",
-      "體貼",
-      "柔和",
-    ],
-    "冷淡": [
-      "冷淡",
-      "高冷",
-      "冷酷",
-      "清冷",
-    ],
-    "少年": [
-      "少年",
-      "年輕",
-      "青春",
-      "少年感",
-    ],
-    "活潑": [
-      "活潑",
-      "陽光",
-      "開朗",
-      "元氣",
-    ],
-    "慵懶": [
-      "慵懶",
-      "懶洋洋",
-      "隨性",
-      "漫不經心",
-    ],
-    "病嬌": [
-      "病嬌",
-      "偏執",
-      "佔有慾",
-      "瘋批",
-    ],
-    "知性": [
-      "知性",
-      "斯文",
-      "理性",
-      "學者",
-    ],
-    "沙啞": [
-      "沙啞",
-      "煙嗓",
-      "粗啞",
-      "微啞",
-    ],
-    "甜美": [
-      "甜美",
-      "甜妹",
-      "可愛",
-      "軟萌",
-    ],
-    "御姐": [
-      "御姐",
-      "姐姐",
-      "女王",
-      "成熟姐姐",
-    ],
-    "性感": [
-      "性感",
-      "撩人",
-      "誘惑",
-      "魅惑",
-    ],
-    "可靠": [
-      "可靠",
-      "安心",
-      "沉著",
-      "有安全感",
-    ],
-  };
-
-  for (
-    const [tag, keywords]
-    of Object.entries(tagKeywords)
-  ) {
-    finalKeywordLoop:
-    for (const keyword of keywords) {
-      if (text.includes(keyword)) {
-        tags.push(tag);
-        break finalKeywordLoop;
-      }
-    }
-  }
-
-  // 根據關鍵字推導 traits。
-  // 範圍統一為 0～1。
+  // 沒有明確描述的項目維持中間值，
+  // 避免未提及的特質過度影響配對。
   const traits = {
     depth: 0.5,
     warmth: 0.5,
@@ -5223,169 +5288,645 @@ function normalizeVoiceRequest({
     softness: 0.5,
     maturity: 0.5,
     brightness: 0.5,
+    confidence: 0.5,
+    romance: 0.5,
+    elegance: 0.5,
+    mystery: 0.5,
+    cuteness: 0.5,
   };
 
-  if (
-    tags.includes("低沉") ||
-    tags.includes("沙啞")
-  ) {
-    traits.depth = 0.9;
-    traits.brightness = 0.2;
-  }
+  // 每組可以同時：
+  // 1. 命中多個 Voice Bank 標籤
+  // 2. 調整人物聲音特質
+  const keywordProfiles = [
+    {
+      keywords: [
+        "低沉",
+        "深沉",
+        "低音",
+        "厚重",
+        "渾厚",
+        "沉厚",
+      ],
+      tags: [
+        "低沉",
+        "深沉",
+        "磁性",
+      ],
+      traits: {
+        depth: 0.92,
+        brightness: 0.22,
+        maturity: 0.78,
+      },
+    },
+    {
+      keywords: [
+        "高音",
+        "清亮",
+        "明亮",
+        "清脆",
+      ],
+      tags: [
+        "高音",
+        "明亮",
+        "清晰",
+      ],
+      traits: {
+        depth: 0.20,
+        brightness: 0.92,
+      },
+    },
+    {
+      keywords: [
+        "成熟",
+        "穩重",
+        "沉穩",
+        "大人感",
+        "有閱歷",
+        "老練",
+      ],
+      tags: [
+        "成熟",
+        "穩重",
+        "沉穩",
+        "可靠",
+      ],
+      traits: {
+        maturity: 0.92,
+        confidence: 0.78,
+        energy: 0.40,
+      },
+    },
+    {
+      keywords: [
+        "霸總",
+        "霸道總裁",
+        "總裁",
+        "ceo",
+        "上位者",
+        "強勢",
+        "掌控",
+      ],
+      tags: [
+        "霸總",
+        "霸道總裁",
+        "總裁",
+        "CEO",
+        "強勢",
+        "安全感",
+      ],
+      traits: {
+        depth: 0.88,
+        maturity: 0.90,
+        confidence: 0.98,
+        softness: 0.28,
+        romance: 0.80,
+        elegance: 0.78,
+      },
+    },
+    {
+      keywords: [
+        "溫柔",
+        "溫暖",
+        "體貼",
+        "柔和",
+        "暖男",
+        "暖心",
+      ],
+      tags: [
+        "溫柔",
+        "溫暖",
+        "體貼",
+        "暖男",
+        "安心",
+      ],
+      traits: {
+        warmth: 0.96,
+        softness: 0.86,
+        romance: 0.78,
+      },
+    },
+    {
+      keywords: [
+        "療癒",
+        "治癒",
+        "安撫",
+        "陪伴",
+        "包容",
+        "安心",
+      ],
+      tags: [
+        "療癒",
+        "安撫",
+        "陪伴",
+        "包容",
+        "安心",
+      ],
+      traits: {
+        warmth: 0.98,
+        softness: 0.94,
+        energy: 0.28,
+      },
+    },
+    {
+      keywords: [
+        "心理師",
+        "諮商師",
+        "傾聽",
+        "心理醫生",
+        "諮詢師",
+      ],
+      tags: [
+        "心理師",
+        "諮商師",
+        "傾聽",
+        "耐心",
+        "專業",
+      ],
+      traits: {
+        warmth: 0.92,
+        softness: 0.88,
+        maturity: 0.86,
+        energy: 0.26,
+        confidence: 0.64,
+      },
+    },
+    {
+      keywords: [
+        "高冷",
+        "冷淡",
+        "冷酷",
+        "清冷",
+        "疏離",
+        "冷漠",
+      ],
+      tags: [
+        "高冷",
+        "冷淡",
+        "冷靜",
+        "疏離",
+        "禁慾",
+      ],
+      traits: {
+        warmth: 0.28,
+        energy: 0.28,
+        softness: 0.32,
+        confidence: 0.82,
+        mystery: 0.58,
+      },
+    },
+    {
+      keywords: [
+        "少年",
+        "少年感",
+        "高中生",
+        "青春",
+        "年輕",
+      ],
+      tags: [
+        "少年",
+        "青春",
+        "學生",
+        "清爽",
+      ],
+      traits: {
+        depth: 0.28,
+        energy: 0.82,
+        maturity: 0.24,
+        brightness: 0.88,
+        cuteness: 0.68,
+      },
+    },
+    {
+      keywords: [
+        "活潑",
+        "陽光",
+        "開朗",
+        "元氣",
+        "熱情",
+        "有活力",
+      ],
+      tags: [
+        "活潑",
+        "陽光",
+        "開朗",
+        "元氣",
+        "熱情",
+      ],
+      traits: {
+        energy: 0.94,
+        brightness: 0.92,
+        warmth: 0.78,
+      },
+    },
+    {
+      keywords: [
+        "可愛",
+        "軟萌",
+        "萌",
+        "甜妹",
+        "甜美",
+        "少女感",
+      ],
+      tags: [
+        "可愛",
+        "軟萌",
+        "甜美",
+        "少女感",
+      ],
+      traits: {
+        depth: 0.20,
+        softness: 0.90,
+        brightness: 0.92,
+        cuteness: 0.98,
+        maturity: 0.25,
+      },
+    },
+    {
+      keywords: [
+        "奶狗",
+        "弟弟感",
+        "黏人",
+        "撒嬌",
+        "小奶狗",
+      ],
+      tags: [
+        "奶狗",
+        "弟弟感",
+        "黏人",
+        "撒嬌",
+        "可愛",
+        "男友感",
+      ],
+      traits: {
+        warmth: 0.90,
+        energy: 0.78,
+        softness: 0.82,
+        romance: 0.86,
+        cuteness: 0.96,
+        maturity: 0.32,
+      },
+    },
+    {
+      keywords: [
+        "狼狗",
+        "小狼狗",
+        "野性",
+        "保護慾",
+        "保護欲",
+        "運動系",
+      ],
+      tags: [
+        "狼狗",
+        "野性",
+        "保護欲",
+        "運動系",
+        "強勢",
+        "男友",
+      ],
+      traits: {
+        depth: 0.62,
+        warmth: 0.76,
+        energy: 0.92,
+        confidence: 0.92,
+        romance: 0.86,
+        softness: 0.38,
+      },
+    },
+    {
+      keywords: [
+        "御姐",
+        "御姊",
+        "姐姐感",
+        "成熟姐姐",
+        "成熟姊姊",
+      ],
+      tags: [
+        "御姐",
+        "御姊",
+        "姊姊",
+        "成熟",
+        "優雅",
+      ],
+      traits: {
+        depth: 0.62,
+        maturity: 0.94,
+        confidence: 0.92,
+        romance: 0.84,
+        elegance: 0.92,
+        cuteness: 0.12,
+      },
+    },
+    {
+      keywords: [
+        "女王",
+        "霸氣",
+        "威嚴",
+        "領袖",
+        "權威",
+        "高貴",
+      ],
+      tags: [
+        "女王",
+        "霸氣",
+        "威嚴",
+        "領袖",
+        "權威",
+        "高貴",
+      ],
+      traits: {
+        maturity: 0.96,
+        confidence: 1.0,
+        elegance: 0.96,
+        softness: 0.28,
+        cuteness: 0.04,
+      },
+    },
+    {
+      keywords: [
+        "優雅",
+        "氣質",
+        "紳士",
+        "高貴",
+        "英倫",
+        "執事",
+      ],
+      tags: [
+        "優雅",
+        "氣質",
+        "紳士",
+        "高貴",
+        "英倫",
+        "執事",
+      ],
+      traits: {
+        elegance: 0.98,
+        maturity: 0.84,
+        confidence: 0.80,
+      },
+    },
+    {
+      keywords: [
+        "神秘",
+        "腹黑",
+        "心機",
+        "危險",
+        "邪魅",
+        "暗黑",
+        "禁忌",
+      ],
+      tags: [
+        "神秘",
+        "腹黑",
+        "心機",
+        "危險",
+        "暗黑",
+        "禁忌",
+      ],
+      traits: {
+        mystery: 0.96,
+        confidence: 0.88,
+        warmth: 0.36,
+        brightness: 0.24,
+      },
+    },
+    {
+      keywords: [
+        "性感",
+        "誘惑",
+        "魅惑",
+        "撩人",
+        "迷人",
+        "魅力",
+      ],
+      tags: [
+        "性感",
+        "誘惑",
+        "魅惑",
+        "磁性",
+        "浪漫",
+      ],
+      traits: {
+        depth: 0.70,
+        romance: 0.92,
+        confidence: 0.88,
+        mystery: 0.72,
+      },
+    },
+    {
+      keywords: [
+        "傲嬌",
+        "嘴硬心軟",
+        "任性",
+        "俏皮",
+      ],
+      tags: [
+        "傲嬌",
+        "嘴硬心軟",
+        "任性",
+        "俏皮",
+        "反差",
+      ],
+      traits: {
+        energy: 0.82,
+        confidence: 0.70,
+        romance: 0.72,
+        cuteness: 0.86,
+      },
+    },
+    {
+      keywords: [
+        "天使",
+        "神聖",
+        "純淨",
+        "善良",
+        "希望",
+      ],
+      tags: [
+        "天使",
+        "神聖",
+        "純淨",
+        "善良",
+        "希望",
+      ],
+      traits: {
+        warmth: 0.94,
+        softness: 0.96,
+        brightness: 0.90,
+        elegance: 0.80,
+        cuteness: 0.60,
+      },
+    },
+    {
+      keywords: [
+        "精靈",
+        "空靈",
+        "仙氣",
+        "森林",
+        "奇幻",
+        "夢幻",
+      ],
+      tags: [
+        "精靈",
+        "空靈",
+        "仙氣",
+        "森林",
+        "奇幻",
+        "夢幻",
+      ],
+      traits: {
+        softness: 0.90,
+        brightness: 0.84,
+        elegance: 0.92,
+        mystery: 0.78,
+      },
+    },
+    {
+      keywords: [
+        "惡魔",
+        "魔女",
+        "魅魔",
+        "邪惡",
+      ],
+      tags: [
+        "惡魔",
+        "誘惑",
+        "危險",
+        "暗黑",
+        "魅惑",
+      ],
+      traits: {
+        warmth: 0.30,
+        confidence: 0.98,
+        romance: 0.88,
+        mystery: 0.98,
+        cuteness: 0.05,
+      },
+    },
+    {
+      keywords: [
+        "吸血鬼",
+        "血族",
+        "夜族",
+        "貴族吸血鬼",
+      ],
+      tags: [
+        "吸血鬼",
+        "貴族",
+        "暗黑",
+        "誘惑",
+        "禁忌",
+      ],
+      traits: {
+        depth: 0.84,
+        maturity: 0.88,
+        romance: 0.88,
+        elegance: 0.94,
+        mystery: 0.98,
+      },
+    },
+    {
+      keywords: [
+        "ai",
+        "人工智慧",
+        "機器人",
+        "機械",
+        "電子音",
+        "科技感",
+        "未來感",
+      ],
+      tags: [
+        "AI",
+        "人工智慧",
+        "機器人",
+        "機械",
+        "科技",
+        "未來",
+        "理性",
+      ],
+      traits: {
+        warmth: 0.30,
+        softness: 0.30,
+        confidence: 0.78,
+        mystery: 0.52,
+        romance: 0.22,
+      },
+    },
+    {
+      keywords: [
+        "主播",
+        "主持人",
+        "旁白",
+        "新聞",
+        "播報",
+      ],
+      tags: [
+        "主播",
+        "主持人",
+        "旁白",
+        "新聞",
+        "專業",
+        "清晰",
+      ],
+      traits: {
+        maturity: 0.88,
+        confidence: 0.90,
+        elegance: 0.76,
+        romance: 0.28,
+      },
+    },
+  ];
 
-  if (tags.includes("成熟")) {
-    traits.maturity = 0.9;
-    traits.energy = 0.4;
-  }
+  for (const profile of keywordProfiles) {
+    const isMatched = profile.keywords.some(
+      (keyword) =>
+        text.includes(
+          String(keyword).toLowerCase()
+        )
+    );
 
-  if (tags.includes("霸總")) {
-    traits.depth = Math.max(
-      traits.depth,
-      0.82
-    );
-    traits.maturity = Math.max(
-      traits.maturity,
-      0.85
-    );
-    traits.softness = 0.22;
-    traits.energy = 0.42;
-  }
+    if (!isMatched) {
+      continue;
+    }
 
-  if (tags.includes("磁性")) {
-    traits.depth = Math.max(
-      traits.depth,
-      0.78
-    );
-    traits.warmth = Math.max(
-      traits.warmth,
-      0.58
-    );
-  }
+    for (const tag of profile.tags) {
+      matchedTags.add(tag);
+    }
 
-  if (tags.includes("溫柔")) {
-    traits.warmth = 0.9;
-    traits.softness = 0.86;
-    traits.energy = Math.min(
-      traits.energy,
-      0.48
-    );
-  }
-
-  if (tags.includes("冷淡")) {
-    traits.warmth = 0.22;
-    traits.softness = 0.2;
-    traits.energy = 0.28;
-    traits.brightness = 0.3;
-  }
-
-  if (tags.includes("少年")) {
-    traits.maturity = 0.25;
-    traits.brightness = 0.88;
-    traits.energy = 0.72;
-    traits.depth = Math.min(
-      traits.depth,
-      0.35
-    );
-  }
-
-  if (tags.includes("活潑")) {
-    traits.energy = 0.92;
-    traits.brightness = 0.9;
-    traits.warmth = Math.max(
-      traits.warmth,
-      0.7
-    );
-  }
-
-  if (tags.includes("慵懶")) {
-    traits.energy = 0.22;
-    traits.softness = Math.max(
-      traits.softness,
-      0.6
-    );
-  }
-
-  if (tags.includes("病嬌")) {
-    traits.warmth = 0.35;
-    traits.energy = 0.65;
-    traits.softness = 0.32;
-    traits.brightness = 0.28;
-  }
-
-  if (tags.includes("知性")) {
-    traits.maturity = 0.8;
-    traits.energy = 0.35;
-    traits.warmth = 0.58;
-  }
-
-  if (tags.includes("甜美")) {
-    traits.depth = 0.18;
-    traits.brightness = 0.95;
-    traits.softness = 0.88;
-    traits.warmth = 0.82;
-  }
-
-  if (tags.includes("御姐")) {
-    traits.depth = Math.max(
-      traits.depth,
-      0.62
-    );
-    traits.maturity = 0.9;
-    traits.energy = 0.55;
-    traits.brightness = 0.42;
-  }
-
-  if (tags.includes("性感")) {
-    traits.depth = Math.max(
-      traits.depth,
-      0.72
-    );
-    traits.softness = Math.max(
-      traits.softness,
-      0.65
-    );
-    traits.warmth = Math.max(
-      traits.warmth,
-      0.62
-    );
-  }
-
-  if (tags.includes("可靠")) {
-    traits.maturity = Math.max(
-      traits.maturity,
-      0.82
-    );
-    traits.warmth = Math.max(
-      traits.warmth,
-      0.72
-    );
-    traits.energy = Math.min(
-      traits.energy,
-      0.5
-    );
+    for (
+      const [traitName, traitValue]
+      of Object.entries(profile.traits)
+    ) {
+      traits[traitName] =
+        clampVoiceTrait(traitValue);
+    }
   }
 
   return {
     gender: String(gender || "")
       .trim()
       .toLowerCase(),
-    age: String(age || "")
-      .trim()
-      .toLowerCase(),
-    tags,
+
+    age: normalizeVoiceAge(age),
+
+    tags: Array.from(matchedTags),
+
     traits,
+
     description: text,
   };
 }
 
 // ============================================================
-// Voice Bank：相似度評分
+// Voice Bank：相似度評分 V2
 // ============================================================
 
-function calculateVoiceScore(
+function calculateVoiceMatch(
   requested,
   candidate
 ) {
+  const reasons = [];
+
   const requestedGender =
     String(requested.gender || "")
       .trim()
@@ -5396,70 +5937,113 @@ function calculateVoiceScore(
       .trim()
       .toLowerCase();
 
-  // gender 不同時直接淘汰。
+  // 性別明確不同，直接淘汰。
   if (
     requestedGender &&
     candidateGender &&
     requestedGender !== candidateGender
   ) {
-    return -9999;
+    return {
+      score: -9999,
+      reasons: ["性別不符"],
+    };
   }
 
   let score = 0;
 
-  // 性別
+  // ------------------------------
+  // 1. 性別：20 分
+  // ------------------------------
   if (
     requestedGender &&
     requestedGender === candidateGender
   ) {
-    score += 30;
+    score += 20;
+    reasons.push("性別符合");
+  } else if (!requestedGender) {
+    // 玩家沒有傳性別時，不重罰候選聲音。
+    score += 10;
   }
 
-  // 年齡類型
-  const requestedAge =
-    String(requested.age || "")
-      .trim()
-      .toLowerCase();
+  // ------------------------------
+  // 2. 年齡感：8 分
+  // ------------------------------
+  const ageSimilarity =
+    getVoiceAgeSimilarity(
+      requested.age,
+      candidate.age
+    );
 
-  const candidateAge =
-    String(candidate.age || "")
-      .trim()
-      .toLowerCase();
+  if (ageSimilarity > 0) {
+    score += ageSimilarity * 8;
 
-  if (
-    requestedAge &&
-    candidateAge &&
-    requestedAge === candidateAge
-  ) {
-    score += 15;
-  }
-
-  // 標籤
-  const requestedTags = new Set(
-    Array.isArray(requested.tags)
-      ? requested.tags
-      : []
-  );
-
-  const candidateTags = new Set(
-    Array.isArray(candidate.tags)
-      ? candidate.tags
-      : []
-  );
-
-  for (const tag of requestedTags) {
-    if (candidateTags.has(tag)) {
-      score += 12;
+    if (ageSimilarity === 1) {
+      reasons.push("年齡感符合");
+    } else {
+      reasons.push("年齡感接近");
     }
   }
 
-  // 玩家描述沒有命中任何關鍵字時，
-  // 仍然讓同 gender 的聲音可以進入候選。
-  if (requestedTags.size === 0) {
+  // ------------------------------
+  // 3. 關鍵標籤：22 分
+  // ------------------------------
+  const requestedTags = Array.isArray(
+    requested.tags
+  )
+    ? requested.tags
+    : [];
+
+  const candidateTags = Array.isArray(
+    candidate.tags
+  )
+    ? candidate.tags
+    : [];
+
+  const normalizedCandidateTags =
+    new Set(
+      candidateTags.map(
+        normalizeVoiceTag
+      )
+    );
+
+  const matchedTagNames = [];
+
+  for (const requestedTag of requestedTags) {
+    const normalizedRequestedTag =
+      normalizeVoiceTag(requestedTag);
+
+    if (
+      normalizedCandidateTags.has(
+        normalizedRequestedTag
+      )
+    ) {
+      matchedTagNames.push(
+        requestedTag
+      );
+    }
+  }
+
+  if (requestedTags.length > 0) {
+    const tagMatchRatio =
+      matchedTagNames.length /
+      requestedTags.length;
+
+    score += tagMatchRatio * 22;
+  } else {
+    // 完全沒有命中描述關鍵字時，
+    // 給少量基礎分，但不讓標籤項拿滿。
     score += 5;
   }
 
-  // traits 數值距離
+  for (
+    const tag of matchedTagNames.slice(0, 5)
+  ) {
+    reasons.push(tag);
+  }
+
+  // ------------------------------
+  // 4. 11 項 Traits：45 分
+  // ------------------------------
   const requestedTraits =
     requested.traits &&
     typeof requested.traits === "object"
@@ -5472,35 +6056,21 @@ function calculateVoiceScore(
       ? candidate.traits
       : {};
 
-  const traitWeights = {
-    depth: 14,
-    warmth: 10,
-    energy: 10,
-    softness: 8,
-    maturity: 12,
-    brightness: 8,
-  };
-
   for (
     const [traitName, weight]
-    of Object.entries(traitWeights)
+    of Object.entries(
+      VOICE_TRAIT_WEIGHTS
+    )
   ) {
     const requestedValue =
-      Number(
-        requestedTraits[traitName] ?? 0.5
+      clampVoiceTrait(
+        requestedTraits[traitName]
       );
 
     const candidateValue =
-      Number(
-        candidateTraits[traitName] ?? 0.5
+      clampVoiceTrait(
+        candidateTraits[traitName]
       );
-
-    if (
-      !Number.isFinite(requestedValue) ||
-      !Number.isFinite(candidateValue)
-    ) {
-      continue;
-    }
 
     const difference = Math.abs(
       requestedValue - candidateValue
@@ -5514,12 +6084,57 @@ function calculateVoiceScore(
     score += similarity * weight;
   }
 
-  return Number(score.toFixed(2));
-}
+  // ------------------------------
+  // 5. Search Weight：最多 ±5 分
+  // ------------------------------
+  const rawSearchWeight =
+    Number(candidate.searchWeight ?? 100);
 
-// ============================================================
-// Cloud Function：從 Voice Bank 配對最接近的三個聲音
-// ============================================================
+  const safeSearchWeight =
+    Number.isFinite(rawSearchWeight)
+      ? rawSearchWeight
+      : 100;
+
+  // 90  → -2
+  // 100 →  0
+  // 105 → +1
+  // 110 → +2
+  // 115 → +3
+  const searchWeightBonus =
+    Math.max(
+      -5,
+      Math.min(
+        5,
+        (safeSearchWeight - 100) / 5
+      )
+    );
+
+  score += searchWeightBonus;
+
+  // 統一限制在 0～100。
+  const finalScore = Math.max(
+    0,
+    Math.min(
+      100,
+      Number(score.toFixed(2))
+    )
+  );
+
+  if (searchWeightBonus >= 2) {
+    reasons.push("代表性聲線");
+  }
+
+  // 去除重複原因，最多回傳 6 項。
+  const uniqueReasons = Array.from(
+    new Set(reasons)
+  ).slice(0, 6);
+
+  return {
+    score: finalScore,
+    reasons: uniqueReasons,
+    matchedTags: matchedTagNames,
+  };
+}
 
 exports.matchVoiceFromBank = onCall(
   {
@@ -5554,7 +6169,7 @@ exports.matchVoiceFromBank = onCall(
       });
 
     console.log(
-      "========== matchVoiceFromBank =========="
+      "========== matchVoiceFromBank V2 =========="
     );
     console.log(
       "uid:",
@@ -5585,11 +6200,11 @@ exports.matchVoiceFromBank = onCall(
     if (snapshot.empty) {
       throw new HttpsError(
         "not-found",
-        "請再試一次喔"
+        "目前沒有可用的聲音"
       );
     }
 
-    const matches = snapshot.docs
+    const scoredVoices = snapshot.docs
       .map((doc) => {
         const data = doc.data();
 
@@ -5622,11 +6237,9 @@ exports.matchVoiceFromBank = onCall(
             .trim()
             .toLowerCase(),
 
-          age: String(
-            data.age || ""
-          )
-            .trim()
-            .toLowerCase(),
+          age: normalizeVoiceAge(
+            data.age
+          ),
 
           tags: Array.isArray(
             data.tags
@@ -5641,6 +6254,15 @@ exports.matchVoiceFromBank = onCall(
               ? data.traits
               : {},
 
+          searchWeight:
+            Number.isFinite(
+              Number(data.searchWeight)
+            )
+              ? Number(
+                  data.searchWeight
+                )
+              : 100,
+
           defaultSettings,
 
           previewUrl: String(
@@ -5648,12 +6270,19 @@ exports.matchVoiceFromBank = onCall(
           ).trim(),
         };
 
-        return {
-          ...voiceData,
-          score: calculateVoiceScore(
+        const matchResult =
+          calculateVoiceMatch(
             requestedProfile,
             voiceData
-          ),
+          );
+
+        return {
+          ...voiceData,
+          score: matchResult.score,
+          reasons:
+            matchResult.reasons,
+          matchedTags:
+            matchResult.matchedTags,
         };
       })
       .filter(
@@ -5664,44 +6293,106 @@ exports.matchVoiceFromBank = onCall(
       .sort(
         (a, b) =>
           b.score - a.score
-      )
-      .slice(0, 3);
+      );
 
-    if (matches.length === 0) {
+    if (scoredVoices.length === 0) {
       throw new HttpsError(
         "not-found",
-        "請再試一次"
+        "找不到符合條件的聲音"
       );
     }
 
+    // 正常情況只保留達到最低門檻的聲音。
+    const qualifiedMatches =
+      scoredVoices.filter(
+        (voice) =>
+          voice.score >=
+          VOICE_MATCH_MIN_SCORE
+      );
+
+    // 如果全部低於門檻，仍回傳最高分的前三個，
+    // 避免前端完全無法繼續建立角色。
+    const matches =
+      (
+        qualifiedMatches.length > 0
+          ? qualifiedMatches
+          : scoredVoices
+      ).slice(0, 3);
+
+    const usedFallback =
+      qualifiedMatches.length === 0;
+
     console.log(
-      "========== Voice Match Result =========="
+      "========== Voice Match Result V2 =========="
     );
 
     console.log(
       JSON.stringify(
-        matches.map((voice) => ({
-          voiceId: voice.voiceId,
-          name: voice.name,
-          score: voice.score,
-          gender: voice.gender,
-          age: voice.age,
-          tags: voice.tags,
-        }))
+        {
+          minimumScore:
+            VOICE_MATCH_MIN_SCORE,
+
+          usedFallback,
+
+          matches: matches.map(
+            (voice) => ({
+              voiceId:
+                voice.voiceId,
+              name: voice.name,
+              score: voice.score,
+              gender:
+                voice.gender,
+              age: voice.age,
+              searchWeight:
+                voice.searchWeight,
+              tags: voice.tags,
+              matchedTags:
+                voice.matchedTags,
+              reasons:
+                voice.reasons,
+            })
+          ),
+        }
       )
     );
 
     return {
       requestedProfile,
+
+      minimumScore:
+        VOICE_MATCH_MIN_SCORE,
+
+      usedFallback,
+
       previews: matches.map(
         (voice) => ({
-          voiceId: voice.voiceId,
-          name: voice.name,
+          voiceId:
+            voice.voiceId,
+
+          name:
+            voice.name,
+
           previewUrl:
             voice.previewUrl,
-          score: voice.score,
-          tags: voice.tags,
-          traits: voice.traits,
+
+          score:
+            voice.score,
+
+          tags:
+            voice.tags,
+
+          traits:
+            voice.traits,
+
+          reasons:
+            voice.reasons,
+
+          matchedTags:
+            voice.matchedTags,
+
+          searchWeight:
+            voice.searchWeight,
+
           defaultSettings:
             voice.defaultSettings,
         })
@@ -5709,7 +6400,6 @@ exports.matchVoiceFromBank = onCall(
     };
   }
 );
-
 exports.uploadVoiceBank = onCall(
   {
     region: REGION,
@@ -5732,18 +6422,32 @@ exports.uploadVoiceBank = onCall(
     }
 
     const voices = [
+      // =========================================================
+      // 01｜低沉男大學生
+      // =========================================================
       {
         documentId: "male_college_low_01",
         voiceId: "H9O9f48DKXnZzFpd3IDY",
         name: "低沉男大學生",
         gender: "male",
-        age: "young",
+        age: "young_adult",
+        category: "male",
+        role: "沉穩學長",
+        style: "low_warm",
         enabled: true,
+        displayOrder: 1,
+        searchWeight: 100,
         tags: [
           "低沉",
+          "男大生",
+          "大學生",
+          "學長",
           "成熟",
           "磁性",
+          "沉穩",
           "可靠",
+          "冷靜",
+          "安全感",
         ],
         traits: {
           depth: 0.82,
@@ -5752,6 +6456,11 @@ exports.uploadVoiceBank = onCall(
           softness: 0.42,
           maturity: 0.68,
           brightness: 0.32,
+          confidence: 0.72,
+          romance: 0.62,
+          elegance: 0.55,
+          mystery: 0.40,
+          cuteness: 0.18,
         },
         defaultSettings: {
           stability: 0.45,
@@ -5759,18 +6468,33 @@ exports.uploadVoiceBank = onCall(
         },
         previewUrl: "",
       },
+
+      // =========================================================
+      // 02｜青春男高中生
+      // =========================================================
       {
         documentId: "male_highschool_youth_01",
         voiceId: "xq9zKRI69Pfk0TE4Oke4",
         name: "青春男高中生",
         gender: "male",
         age: "young",
+        category: "male",
+        role: "陽光少年",
+        style: "bright_youth",
         enabled: true,
+        displayOrder: 2,
+        searchWeight: 100,
         tags: [
           "少年",
+          "青春",
           "活潑",
           "陽光",
-          "青春",
+          "學生",
+          "清爽",
+          "元氣",
+          "開朗",
+          "親切",
+          "熱情",
         ],
         traits: {
           depth: 0.28,
@@ -5779,6 +6503,11 @@ exports.uploadVoiceBank = onCall(
           softness: 0.52,
           maturity: 0.24,
           brightness: 0.88,
+          confidence: 0.62,
+          romance: 0.50,
+          elegance: 0.25,
+          mystery: 0.10,
+          cuteness: 0.72,
         },
         defaultSettings: {
           stability: 0.35,
@@ -5786,18 +6515,33 @@ exports.uploadVoiceBank = onCall(
         },
         previewUrl: "",
       },
+
+      // =========================================================
+      // 03｜溫柔知性女聲
+      // =========================================================
       {
         documentId: "female_gentle_intellectual_01",
         voiceId: "9lHjugDhwqoxA5MhX0az",
         name: "溫柔知性女聲",
         gender: "female",
-        age: "young",
+        age: "adult",
+        category: "female",
+        role: "知性姊姊",
+        style: "gentle_intellectual",
         enabled: true,
+        displayOrder: 3,
+        searchWeight: 105,
         tags: [
           "溫柔",
           "知性",
           "成熟",
           "可靠",
+          "姊姊",
+          "優雅",
+          "耐心",
+          "療癒",
+          "穩重",
+          "氣質",
         ],
         traits: {
           depth: 0.48,
@@ -5806,6 +6550,11 @@ exports.uploadVoiceBank = onCall(
           softness: 0.82,
           maturity: 0.78,
           brightness: 0.52,
+          confidence: 0.66,
+          romance: 0.70,
+          elegance: 0.82,
+          mystery: 0.24,
+          cuteness: 0.30,
         },
         defaultSettings: {
           stability: 0.52,
@@ -5813,18 +6562,33 @@ exports.uploadVoiceBank = onCall(
         },
         previewUrl: "",
       },
+
+      // =========================================================
+      // 04｜可愛甜美女聲
+      // =========================================================
       {
         documentId: "female_cute_01",
         voiceId: "BT0SH7Hb8NRPpT5xbCgg",
         name: "可愛甜美女聲",
         gender: "female",
-        age: "young",
+        age: "young_adult",
+        category: "female",
+        role: "甜美女孩",
+        style: "cute_sweet",
         enabled: true,
+        displayOrder: 4,
+        searchWeight: 100,
         tags: [
           "甜美",
           "可愛",
           "活潑",
-          "少女",
+          "少女感",
+          "撒嬌",
+          "軟萌",
+          "元氣",
+          "親切",
+          "明亮",
+          "療癒",
         ],
         traits: {
           depth: 0.18,
@@ -5833,6 +6597,11 @@ exports.uploadVoiceBank = onCall(
           softness: 0.88,
           maturity: 0.24,
           brightness: 0.94,
+          confidence: 0.52,
+          romance: 0.64,
+          elegance: 0.28,
+          mystery: 0.08,
+          cuteness: 0.96,
         },
         defaultSettings: {
           stability: 0.38,
@@ -5840,18 +6609,33 @@ exports.uploadVoiceBank = onCall(
         },
         previewUrl: "",
       },
+
+      // =========================================================
+      // 05｜清爽女聲
+      // =========================================================
       {
         documentId: "female_fresh_01",
         voiceId: "r6qgCCGI7RWKXCagm158",
         name: "清爽女聲",
         gender: "female",
-        age: "young",
+        age: "young_adult",
+        category: "female",
+        role: "陽光女孩",
+        style: "fresh_bright",
         enabled: true,
+        displayOrder: 5,
+        searchWeight: 100,
         tags: [
           "清爽",
           "陽光",
           "活潑",
           "溫柔",
+          "自然",
+          "開朗",
+          "明亮",
+          "親切",
+          "日常",
+          "舒服",
         ],
         traits: {
           depth: 0.30,
@@ -5860,6 +6644,11 @@ exports.uploadVoiceBank = onCall(
           softness: 0.64,
           maturity: 0.42,
           brightness: 0.84,
+          confidence: 0.62,
+          romance: 0.54,
+          elegance: 0.42,
+          mystery: 0.10,
+          cuteness: 0.62,
         },
         defaultSettings: {
           stability: 0.42,
@@ -5867,18 +6656,33 @@ exports.uploadVoiceBank = onCall(
         },
         previewUrl: "",
       },
+
+      // =========================================================
+      // 06｜高音機械男聲
+      // =========================================================
       {
         documentId: "male_robot_high_01",
         voiceId: "zcdQ6CUofeH2gS9hw3Lx",
         name: "高音機械男聲",
         gender: "male",
-        age: "young",
+        age: "adult",
+        category: "ai",
+        role: "機械助手",
+        style: "robotic_high",
         enabled: true,
+        displayOrder: 6,
+        searchWeight: 90,
         tags: [
           "機械",
           "科技",
           "冷淡",
           "高音",
+          "AI",
+          "人工智慧",
+          "電子",
+          "未來",
+          "理性",
+          "助手",
         ],
         traits: {
           depth: 0.22,
@@ -5887,6 +6691,11 @@ exports.uploadVoiceBank = onCall(
           softness: 0.16,
           maturity: 0.42,
           brightness: 0.90,
+          confidence: 0.64,
+          romance: 0.12,
+          elegance: 0.38,
+          mystery: 0.46,
+          cuteness: 0.20,
         },
         defaultSettings: {
           stability: 0.60,
@@ -5894,8 +6703,1112 @@ exports.uploadVoiceBank = onCall(
         },
         previewUrl: "",
       },
-    ];
 
+      // =========================================================
+      // 07｜霸道總裁
+      // =========================================================
+      {
+        documentId: "male_ceo_dominant_01",
+        voiceId: "LmRvVeywStYPHnvjBTWF",
+        name: "霸道總裁",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "霸道總裁",
+        style: "dominant_ceo",
+        enabled: true,
+        displayOrder: 7,
+        searchWeight: 115,
+        tags: [
+          "霸總",
+          "霸道總裁",
+          "總裁",
+          "CEO",
+          "低沉",
+          "成熟",
+          "磁性",
+          "強勢",
+          "沉穩",
+          "可靠",
+          "禁慾",
+          "安全感",
+        ],
+        traits: {
+          depth: 0.92,
+          warmth: 0.52,
+          energy: 0.48,
+          softness: 0.30,
+          maturity: 0.92,
+          brightness: 0.20,
+          confidence: 0.96,
+          romance: 0.82,
+          elegance: 0.82,
+          mystery: 0.44,
+          cuteness: 0.08,
+        },
+        defaultSettings: {
+          stability: 0.50,
+          style: 0.56,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 08｜暖男
+      // =========================================================
+      {
+        documentId: "male_warm_gentle_01",
+        voiceId: "T23j4kFIFF9YsXJ3bg6J",
+        name: "暖男",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "溫柔暖男",
+        style: "warm_gentle",
+        enabled: true,
+        displayOrder: 8,
+        searchWeight: 115,
+        tags: [
+          "暖男",
+          "溫柔",
+          "親切",
+          "耐心",
+          "療癒",
+          "陪伴",
+          "可靠",
+          "安心",
+          "體貼",
+          "溫暖",
+          "男友感",
+        ],
+        traits: {
+          depth: 0.56,
+          warmth: 0.96,
+          energy: 0.44,
+          softness: 0.84,
+          maturity: 0.68,
+          brightness: 0.52,
+          confidence: 0.62,
+          romance: 0.88,
+          elegance: 0.58,
+          mystery: 0.12,
+          cuteness: 0.42,
+        },
+        defaultSettings: {
+          stability: 0.50,
+          style: 0.42,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 09｜高冷學長
+      // =========================================================
+      {
+        documentId: "male_cold_senior_01",
+        voiceId: "uMkUULHxGcMAFH2hQjJT",
+        name: "高冷學長",
+        gender: "male",
+        age: "young_adult",
+        category: "male",
+        role: "高冷學長",
+        style: "cold_intellectual",
+        enabled: true,
+        displayOrder: 9,
+        searchWeight: 110,
+        tags: [
+          "高冷",
+          "學長",
+          "禁慾",
+          "知性",
+          "冷靜",
+          "理性",
+          "沉穩",
+          "安靜",
+          "疏離",
+          "聰明",
+          "冷淡",
+        ],
+        traits: {
+          depth: 0.68,
+          warmth: 0.30,
+          energy: 0.30,
+          softness: 0.36,
+          maturity: 0.72,
+          brightness: 0.28,
+          confidence: 0.82,
+          romance: 0.60,
+          elegance: 0.78,
+          mystery: 0.58,
+          cuteness: 0.12,
+        },
+        defaultSettings: {
+          stability: 0.58,
+          style: 0.38,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 10｜腹黑男
+      // =========================================================
+      {
+        documentId: "male_cunning_01",
+        voiceId: "udNbD82XeRschRIbCliK",
+        name: "腹黑男",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "腹黑紳士",
+        style: "cunning_mysterious",
+        enabled: true,
+        displayOrder: 10,
+        searchWeight: 105,
+        tags: [
+          "腹黑",
+          "神秘",
+          "心機",
+          "聰明",
+          "優雅",
+          "危險",
+          "誘惑",
+          "沉穩",
+          "壞男人",
+          "反差",
+          "戲謔",
+        ],
+        traits: {
+          depth: 0.70,
+          warmth: 0.42,
+          energy: 0.44,
+          softness: 0.46,
+          maturity: 0.78,
+          brightness: 0.30,
+          confidence: 0.88,
+          romance: 0.76,
+          elegance: 0.82,
+          mystery: 0.94,
+          cuteness: 0.10,
+        },
+        defaultSettings: {
+          stability: 0.48,
+          style: 0.64,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 11｜成熟大叔
+      // =========================================================
+      {
+        documentId: "male_mature_uncle_01",
+        voiceId: "Gt4WurSAzDMsJV9RHXb5",
+        name: "成熟大叔",
+        gender: "male",
+        age: "mature",
+        category: "male",
+        role: "成熟大叔",
+        style: "mature_dependable",
+        enabled: true,
+        displayOrder: 11,
+        searchWeight: 105,
+        tags: [
+          "大叔",
+          "成熟",
+          "穩重",
+          "低沉",
+          "可靠",
+          "閱歷",
+          "安心",
+          "溫暖",
+          "包容",
+          "沉著",
+          "安全感",
+        ],
+        traits: {
+          depth: 0.90,
+          warmth: 0.78,
+          energy: 0.34,
+          softness: 0.54,
+          maturity: 0.98,
+          brightness: 0.18,
+          confidence: 0.86,
+          romance: 0.72,
+          elegance: 0.66,
+          mystery: 0.30,
+          cuteness: 0.06,
+        },
+        defaultSettings: {
+          stability: 0.62,
+          style: 0.42,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 12｜狼狗男友
+      // =========================================================
+      {
+        documentId: "male_wolf_boyfriend_01",
+        voiceId: "20fSfDdgdz72KR8SC52z",
+        name: "狼狗男友",
+        gender: "male",
+        age: "young_adult",
+        category: "male",
+        role: "狼狗系男友",
+        style: "energetic_protective",
+        enabled: true,
+        displayOrder: 12,
+        searchWeight: 110,
+        tags: [
+          "狼狗",
+          "男友",
+          "強勢",
+          "熱情",
+          "陽光",
+          "保護欲",
+          "活力",
+          "忠誠",
+          "直率",
+          "運動系",
+          "可靠",
+        ],
+        traits: {
+          depth: 0.62,
+          warmth: 0.78,
+          energy: 0.92,
+          softness: 0.40,
+          maturity: 0.58,
+          brightness: 0.68,
+          confidence: 0.90,
+          romance: 0.86,
+          elegance: 0.32,
+          mystery: 0.18,
+          cuteness: 0.46,
+        },
+        defaultSettings: {
+          stability: 0.38,
+          style: 0.68,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 13｜奶狗男友
+      // =========================================================
+      {
+        documentId: "male_puppy_boyfriend_01",
+        voiceId: "79DKiJlAThNFktKoHtIT",
+        name: "奶狗男友",
+        gender: "male",
+        age: "young_adult",
+        category: "male",
+        role: "奶狗系男友",
+        style: "sweet_playful",
+        enabled: true,
+        displayOrder: 13,
+        searchWeight: 110,
+        tags: [
+          "奶狗",
+          "男友",
+          "弟弟感",
+          "可愛",
+          "撒嬌",
+          "甜",
+          "活潑",
+          "陽光",
+          "黏人",
+          "溫暖",
+          "親切",
+        ],
+        traits: {
+          depth: 0.28,
+          warmth: 0.90,
+          energy: 0.80,
+          softness: 0.78,
+          maturity: 0.34,
+          brightness: 0.88,
+          confidence: 0.48,
+          romance: 0.84,
+          elegance: 0.22,
+          mystery: 0.06,
+          cuteness: 0.94,
+        },
+        defaultSettings: {
+          stability: 0.36,
+          style: 0.62,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 14｜吸血鬼男
+      // =========================================================
+      {
+        documentId: "male_vampire_01",
+        voiceId: "ZPL0oblTQM02VdmLYUhg",
+        name: "吸血鬼男",
+        gender: "male",
+        age: "adult",
+        category: "fantasy",
+        role: "吸血鬼貴族",
+        style: "dark_seductive",
+        enabled: true,
+        displayOrder: 14,
+        searchWeight: 100,
+        tags: [
+          "吸血鬼",
+          "神秘",
+          "低沉",
+          "優雅",
+          "誘惑",
+          "危險",
+          "暗黑",
+          "貴族",
+          "浪漫",
+          "冷豔",
+          "禁忌",
+        ],
+        traits: {
+          depth: 0.84,
+          warmth: 0.38,
+          energy: 0.34,
+          softness: 0.46,
+          maturity: 0.88,
+          brightness: 0.16,
+          confidence: 0.90,
+          romance: 0.88,
+          elegance: 0.94,
+          mystery: 0.98,
+          cuteness: 0.04,
+        },
+        defaultSettings: {
+          stability: 0.54,
+          style: 0.66,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 15｜英國執事
+      // =========================================================
+      {
+        documentId: "male_british_butler_01",
+        voiceId: "9Cuvq6uOfqBTtzKGr9ff",
+        name: "英國執事",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "優雅執事",
+        style: "refined_butler",
+        enabled: true,
+        displayOrder: 15,
+        searchWeight: 100,
+        tags: [
+          "執事",
+          "英國",
+          "英倫",
+          "紳士",
+          "優雅",
+          "禮貌",
+          "專業",
+          "沉穩",
+          "忠誠",
+          "貴族",
+          "可靠",
+        ],
+        traits: {
+          depth: 0.66,
+          warmth: 0.58,
+          energy: 0.34,
+          softness: 0.54,
+          maturity: 0.90,
+          brightness: 0.34,
+          confidence: 0.82,
+          romance: 0.68,
+          elegance: 0.98,
+          mystery: 0.34,
+          cuteness: 0.08,
+        },
+        defaultSettings: {
+          stability: 0.62,
+          style: 0.42,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 16｜心理師（男）
+      // =========================================================
+      {
+        documentId: "male_therapist_01",
+        voiceId: "cdQvlt0ckmjSs7PL6uBL",
+        name: "心理師男聲",
+        gender: "male",
+        age: "adult",
+        category: "male",
+        role: "溫柔心理師",
+        style: "calm_empathetic",
+        enabled: true,
+        displayOrder: 16,
+        searchWeight: 105,
+        tags: [
+          "心理師",
+          "諮商師",
+          "溫柔",
+          "療癒",
+          "冷靜",
+          "耐心",
+          "傾聽",
+          "成熟",
+          "安心",
+          "包容",
+          "可靠",
+        ],
+        traits: {
+          depth: 0.58,
+          warmth: 0.94,
+          energy: 0.24,
+          softness: 0.90,
+          maturity: 0.86,
+          brightness: 0.40,
+          confidence: 0.62,
+          romance: 0.54,
+          elegance: 0.62,
+          mystery: 0.10,
+          cuteness: 0.18,
+        },
+        defaultSettings: {
+          stability: 0.66,
+          style: 0.30,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 17｜鄰家女孩
+      // =========================================================
+      {
+        documentId: "female_neighbor_girl_01",
+        voiceId: "QZpltbNsn61REpnBnoia",
+        name: "鄰家女孩",
+        gender: "female",
+        age: "young_adult",
+        category: "female",
+        role: "鄰家女孩",
+        style: "friendly_natural",
+        enabled: true,
+        displayOrder: 17,
+        searchWeight: 105,
+        tags: [
+          "鄰家女孩",
+          "自然",
+          "親切",
+          "活潑",
+          "溫柔",
+          "日常",
+          "開朗",
+          "朋友感",
+          "清新",
+          "舒服",
+          "真誠",
+        ],
+        traits: {
+          depth: 0.32,
+          warmth: 0.88,
+          energy: 0.72,
+          softness: 0.70,
+          maturity: 0.42,
+          brightness: 0.82,
+          confidence: 0.58,
+          romance: 0.64,
+          elegance: 0.36,
+          mystery: 0.06,
+          cuteness: 0.70,
+        },
+        defaultSettings: {
+          stability: 0.42,
+          style: 0.52,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 18｜傲嬌女孩
+      // =========================================================
+      {
+        documentId: "female_tsundere_01",
+        voiceId: "TNtKaM5juUjkJmE1uRgZ",
+        name: "傲嬌女孩",
+        gender: "female",
+        age: "young_adult",
+        category: "female",
+        role: "傲嬌女孩",
+        style: "tsundere_playful",
+        enabled: true,
+        displayOrder: 18,
+        searchWeight: 105,
+        tags: [
+          "傲嬌",
+          "女孩",
+          "嘴硬心軟",
+          "可愛",
+          "害羞",
+          "活潑",
+          "反差",
+          "任性",
+          "俏皮",
+          "甜美",
+          "有個性",
+        ],
+        traits: {
+          depth: 0.26,
+          warmth: 0.62,
+          energy: 0.82,
+          softness: 0.58,
+          maturity: 0.38,
+          brightness: 0.86,
+          confidence: 0.70,
+          romance: 0.72,
+          elegance: 0.28,
+          mystery: 0.18,
+          cuteness: 0.88,
+        },
+        defaultSettings: {
+          stability: 0.34,
+          style: 0.72,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 19｜成熟御姊
+      // =========================================================
+      {
+        documentId: "female_mature_oneesan_01",
+        voiceId: "pbNOl2gQgFoptYo0KQ99",
+        name: "成熟御姊",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "成熟御姊",
+        style: "mature_elegant",
+        enabled: true,
+        displayOrder: 19,
+        searchWeight: 115,
+        tags: [
+          "御姊",
+          "成熟",
+          "優雅",
+          "性感",
+          "自信",
+          "知性",
+          "氣質",
+          "強勢",
+          "可靠",
+          "沉穩",
+          "姊姊",
+        ],
+        traits: {
+          depth: 0.62,
+          warmth: 0.66,
+          energy: 0.46,
+          softness: 0.52,
+          maturity: 0.94,
+          brightness: 0.40,
+          confidence: 0.94,
+          romance: 0.86,
+          elegance: 0.94,
+          mystery: 0.38,
+          cuteness: 0.12,
+        },
+        defaultSettings: {
+          stability: 0.54,
+          style: 0.58,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 20｜天使女生
+      // =========================================================
+      {
+        documentId: "female_angel_01",
+        voiceId: "8rkjdz33efyiKp8eHzvu",
+        name: "天使女生",
+        gender: "female",
+        age: "young_adult",
+        category: "fantasy",
+        role: "溫柔天使",
+        style: "angelic_soft",
+        enabled: true,
+        displayOrder: 20,
+        searchWeight: 100,
+        tags: [
+          "天使",
+          "溫柔",
+          "純淨",
+          "療癒",
+          "柔和",
+          "神聖",
+          "善良",
+          "夢幻",
+          "安心",
+          "輕柔",
+          "希望",
+        ],
+        traits: {
+          depth: 0.22,
+          warmth: 0.94,
+          energy: 0.32,
+          softness: 0.96,
+          maturity: 0.54,
+          brightness: 0.88,
+          confidence: 0.46,
+          romance: 0.70,
+          elegance: 0.82,
+          mystery: 0.32,
+          cuteness: 0.62,
+        },
+        defaultSettings: {
+          stability: 0.56,
+          style: 0.40,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 21｜惡魔御姊
+      // =========================================================
+      {
+        documentId: "female_demon_oneesan_01",
+        voiceId: "OEbJyckEsa1tZlr6W7a2",
+        name: "惡魔御姊",
+        gender: "female",
+        age: "adult",
+        category: "fantasy",
+        role: "惡魔御姊",
+        style: "demon_seductive",
+        enabled: true,
+        displayOrder: 21,
+        searchWeight: 100,
+        tags: [
+          "惡魔",
+          "御姊",
+          "誘惑",
+          "危險",
+          "神秘",
+          "強勢",
+          "性感",
+          "腹黑",
+          "暗黑",
+          "女王",
+          "魅惑",
+        ],
+        traits: {
+          depth: 0.66,
+          warmth: 0.34,
+          energy: 0.52,
+          softness: 0.40,
+          maturity: 0.90,
+          brightness: 0.26,
+          confidence: 0.98,
+          romance: 0.88,
+          elegance: 0.86,
+          mystery: 0.96,
+          cuteness: 0.06,
+        },
+        defaultSettings: {
+          stability: 0.48,
+          style: 0.72,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 22｜療癒姊姊
+      // =========================================================
+      {
+        documentId: "female_healing_sister_01",
+        voiceId: "YFB2iGvrwZlt5KL8A02x",
+        name: "療癒姊姊",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "療癒姊姊",
+        style: "healing_warm",
+        enabled: true,
+        displayOrder: 22,
+        searchWeight: 115,
+        tags: [
+          "療癒",
+          "姊姊",
+          "溫柔",
+          "包容",
+          "安心",
+          "陪伴",
+          "成熟",
+          "耐心",
+          "溫暖",
+          "可靠",
+          "安撫",
+        ],
+        traits: {
+          depth: 0.44,
+          warmth: 0.98,
+          energy: 0.30,
+          softness: 0.94,
+          maturity: 0.82,
+          brightness: 0.50,
+          confidence: 0.58,
+          romance: 0.76,
+          elegance: 0.68,
+          mystery: 0.08,
+          cuteness: 0.34,
+        },
+        defaultSettings: {
+          stability: 0.62,
+          style: 0.34,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 23｜心理師女聲
+      // =========================================================
+      {
+        documentId: "female_therapist_01",
+        voiceId: "RVWGE4EXdD2LfiJO7Y3Z",
+        name: "心理師女聲",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "知性心理師",
+        style: "empathetic_intellectual",
+        enabled: true,
+        displayOrder: 23,
+        searchWeight: 105,
+        tags: [
+          "心理師",
+          "諮商師",
+          "知性",
+          "溫柔",
+          "療癒",
+          "傾聽",
+          "冷靜",
+          "成熟",
+          "耐心",
+          "包容",
+          "專業",
+        ],
+        traits: {
+          depth: 0.46,
+          warmth: 0.92,
+          energy: 0.28,
+          softness: 0.88,
+          maturity: 0.88,
+          brightness: 0.46,
+          confidence: 0.66,
+          romance: 0.52,
+          elegance: 0.76,
+          mystery: 0.10,
+          cuteness: 0.20,
+        },
+        defaultSettings: {
+          stability: 0.66,
+          style: 0.32,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 24｜精靈女生
+      // =========================================================
+      {
+        documentId: "female_elf_01",
+        voiceId: "NoPw2IqHCHPEcawwW8lS",
+        name: "精靈女生",
+        gender: "female",
+        age: "young_adult",
+        category: "fantasy",
+        role: "精靈少女",
+        style: "ethereal_fantasy",
+        enabled: true,
+        displayOrder: 24,
+        searchWeight: 95,
+        tags: [
+          "精靈",
+          "夢幻",
+          "空靈",
+          "輕柔",
+          "優雅",
+          "自然",
+          "奇幻",
+          "神秘",
+          "純淨",
+          "森林",
+          "仙氣",
+        ],
+        traits: {
+          depth: 0.20,
+          warmth: 0.72,
+          energy: 0.42,
+          softness: 0.90,
+          maturity: 0.54,
+          brightness: 0.84,
+          confidence: 0.50,
+          romance: 0.70,
+          elegance: 0.92,
+          mystery: 0.76,
+          cuteness: 0.56,
+        },
+        defaultSettings: {
+          stability: 0.48,
+          style: 0.58,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 25｜AI 女聲
+      // =========================================================
+      {
+        documentId: "female_ai_01",
+        voiceId: "ApRCBcOW2USliHcIEgjZ",
+        name: "AI 女聲",
+        gender: "female",
+        age: "adult",
+        category: "ai",
+        role: "AI 女助手",
+        style: "ai_clear_warm",
+        enabled: true,
+        displayOrder: 25,
+        searchWeight: 100,
+        tags: [
+          "AI",
+          "人工智慧",
+          "科技",
+          "未來",
+          "智慧",
+          "清晰",
+          "冷靜",
+          "助手",
+          "機器人",
+          "理性",
+          "專業",
+        ],
+        traits: {
+          depth: 0.34,
+          warmth: 0.48,
+          energy: 0.42,
+          softness: 0.46,
+          maturity: 0.68,
+          brightness: 0.74,
+          confidence: 0.78,
+          romance: 0.32,
+          elegance: 0.64,
+          mystery: 0.52,
+          cuteness: 0.30,
+        },
+        defaultSettings: {
+          stability: 0.68,
+          style: 0.32,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 26｜女王
+      // =========================================================
+      {
+        documentId: "female_queen_01",
+        voiceId: "d3cKcjeeHMZTVXCfSttZ",
+        name: "女王",
+        gender: "female",
+        age: "adult",
+        category: "female",
+        role: "威嚴女王",
+        style: "queen_authoritative",
+        enabled: true,
+        displayOrder: 26,
+        searchWeight: 105,
+        tags: [
+          "女王",
+          "威嚴",
+          "強勢",
+          "高貴",
+          "成熟",
+          "自信",
+          "優雅",
+          "領袖",
+          "權威",
+          "冷豔",
+          "霸氣",
+        ],
+        traits: {
+          depth: 0.64,
+          warmth: 0.38,
+          energy: 0.54,
+          softness: 0.30,
+          maturity: 0.96,
+          brightness: 0.34,
+          confidence: 1.00,
+          romance: 0.62,
+          elegance: 0.98,
+          mystery: 0.48,
+          cuteness: 0.04,
+        },
+        defaultSettings: {
+          stability: 0.62,
+          style: 0.58,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 27｜活潑女生
+      // =========================================================
+      {
+        documentId: "female_lively_01",
+        voiceId: "o0sXhSukFUcDJhKYGjTx",
+        name: "活潑女生",
+        gender: "female",
+        age: "young_adult",
+        category: "female",
+        role: "活潑女大生",
+        style: "lively_bright",
+        enabled: true,
+        displayOrder: 27,
+        searchWeight: 105,
+        tags: [
+          "活潑",
+          "女生",
+          "女大生",
+          "元氣",
+          "開朗",
+          "陽光",
+          "青春",
+          "明亮",
+          "熱情",
+          "親切",
+          "可愛",
+        ],
+        traits: {
+          depth: 0.24,
+          warmth: 0.82,
+          energy: 0.96,
+          softness: 0.60,
+          maturity: 0.34,
+          brightness: 0.96,
+          confidence: 0.70,
+          romance: 0.60,
+          elegance: 0.26,
+          mystery: 0.04,
+          cuteness: 0.82,
+        },
+        defaultSettings: {
+          stability: 0.34,
+          style: 0.70,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 28｜主播女聲
+      // =========================================================
+      {
+        documentId: "female_broadcaster_01",
+        voiceId: "1OinDRYy3uD41VyHNDCt",
+        name: "主播女聲",
+        gender: "female",
+        age: "adult",
+        category: "professional",
+        role: "專業主播",
+        style: "broadcast_clear",
+        enabled: true,
+        displayOrder: 28,
+        searchWeight: 95,
+        tags: [
+          "主播",
+          "新聞",
+          "專業",
+          "清晰",
+          "知性",
+          "穩定",
+          "正式",
+          "旁白",
+          "主持人",
+          "成熟",
+          "可信",
+        ],
+        traits: {
+          depth: 0.46,
+          warmth: 0.56,
+          energy: 0.54,
+          softness: 0.44,
+          maturity: 0.88,
+          brightness: 0.58,
+          confidence: 0.90,
+          romance: 0.30,
+          elegance: 0.78,
+          mystery: 0.10,
+          cuteness: 0.10,
+        },
+        defaultSettings: {
+          stability: 0.70,
+          style: 0.32,
+        },
+        previewUrl: "",
+      },
+
+      // =========================================================
+      // 29｜AI 男聲
+      // =========================================================
+      {
+        documentId: "male_ai_01",
+        voiceId: "mFVgAqb6vmxGccYkG2sN",
+        name: "AI 男聲",
+        gender: "male",
+        age: "adult",
+        category: "ai",
+        role: "AI 男助手",
+        style: "ai_male_clear",
+        enabled: true,
+        displayOrder: 29,
+        searchWeight: 100,
+        tags: [
+          "AI",
+          "人工智慧",
+          "科技",
+          "未來",
+          "男助手",
+          "理性",
+          "冷靜",
+          "清晰",
+          "機器人",
+          "智慧",
+          "專業",
+        ],
+        traits: {
+          depth: 0.50,
+          warmth: 0.34,
+          energy: 0.42,
+          softness: 0.34,
+          maturity: 0.72,
+          brightness: 0.58,
+          confidence: 0.82,
+          romance: 0.26,
+          elegance: 0.60,
+          mystery: 0.54,
+          cuteness: 0.14,
+        },
+        defaultSettings: {
+          stability: 0.70,
+          style: 0.34,
+        },
+        previewUrl: "",
+      },
+    ];
     const collectionRef = db
       .collection("artifacts")
       .doc(APP_ID)

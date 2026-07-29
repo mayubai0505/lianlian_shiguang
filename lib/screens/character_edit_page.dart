@@ -665,25 +665,20 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     }
   }
 
-  Future<void> _leaveCharacterEditPage(Map<String, dynamic> result) async {
-    if (!mounted) return;
+  Future<void> _leaveCharacterEditPage(
+      Map<String, dynamic> result,
+      ) async {
+    if (!mounted || _isLeavingPage) return;
 
     setState(() {
       _isLeavingPage = true;
     });
 
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    if (!mounted) return;
-
-    debugPrint('🚪 準備離開角色編輯頁，回到個人主頁：result=$result');
-
-    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => const MainPage(initialIndex: 3),
-      ),
-          (route) => false,
+    debugPrint(
+      '🚪 返回原本的 ProfilePage：$result',
     );
+
+    Navigator.of(context).pop(result);
   }
 
   Future<Map<String, dynamic>?> _showExitConfirmationDialog() async {
@@ -984,7 +979,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       {'label': l10n.detailed_personality_label, 'controller': _detailedPersonalityController, 'limit': 800},
       {'label': l10n.field_background, 'controller': _backgroundController, 'limit': 800},
       {'label': l10n.field_tone, 'controller': _toneController, 'limit': 500},
-      {'label': l10n.field_initial_story, 'controller': _storyController, 'limit': 2500},
+      {'label': l10n.field_initial_story, 'controller': _storyController, 'limit': 800},
     ];
 
 // 🌟 2. 只有一個迴圈，通殺所有字數檢查
@@ -2707,13 +2702,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 _buildBoxedTextField(
                     _backgroundController,
                     l10n.background_label,
-                    maxLength: 800,
+                    maxLength: 2500,
                     hintText: l10n.background_hint
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(_storySummaryController,l10n.story_summary_label, maxLength: 50),
                 const SizedBox(height: 16),
-                _buildBoxedTextField(_storyController, l10n.story_initial_label, maxLength: 2500, hintText:l10n.story_initial_hint),
+                _buildBoxedTextField(_storyController, l10n.story_initial_label, maxLength: 800, hintText:l10n.story_initial_hint),
                 const SizedBox(height: 16),
                 TextFormField(
                   scrollPadding: const EdgeInsets.only(bottom: 120),
