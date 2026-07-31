@@ -20,7 +20,7 @@ import 'package:http/http.dart' as http;
 import '../services/toast_utils.dart';
 import 'main_page.dart'; // 專門用來破解網頁版 blob 網址的工具
 import '../utils/image_utils.dart';
-
+import 'welcome_guide_page.dart';
 //個人檔案
 
 class EditProfilePage extends StatefulWidget {
@@ -683,22 +683,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
         if (!mounted) return;
 
         if (widget.isCreating) {
-          // 第一次建立個人資料時，
-          // 才需要進入全新的 MainPage。
+          // 第一次建立完個人資料後，
+          // 先進入歡迎導覽，再由導覽前往 MainPage。
           Navigator.of(
             context,
             rootNavigator: true,
           ).pushAndRemoveUntil(
             MaterialPageRoute(
-              builder: (_) => MainPage(
-                initialIndex: targetIndexAfterSave,
-              ),
+              builder: (_) => const WelcomeGuidePage(),
             ),
                 (route) => false,
           );
         } else {
           // 一般修改個人資料，只返回原本的個人主頁。
-          // 不重建 MainPage，好友與角色清單都會保留。
           Navigator.of(context).pop(true);
         }
       } else {

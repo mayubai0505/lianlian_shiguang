@@ -176,6 +176,7 @@ class _ChatPageState extends State<ChatPage> {
   final AudioPlayer _voicePreviewPlayer = AudioPlayer();
   // --- 狀態變數 ---
   bool _isGenerating = false;           // 正在生成中
+  bool _isRegenerating = false;
   String? _selectedImagePath;
   // ✨ 補上我們的遊戲 App ID
   // 🌟 總裁指令：拒絕預設值！統一從 AppConfig 抓取 ID
@@ -260,7 +261,6 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
 
-    _checkFirstTimeEntry();
 
     _isGenerating = generatingRooms.contains(_roomLockKey);
 
@@ -352,7 +352,6 @@ class _ChatPageState extends State<ChatPage> {
     _focusNode.dispose();
     _pointsSubscription?.cancel();
     _audioPlayer.dispose();
-    _httpClient?.close(); // 確保離開頁面時關閉網路連線
     _triggerStorySummary(); //劇情摘要
     super.dispose();
   }
@@ -422,33 +421,61 @@ class _ChatPageState extends State<ChatPage> {
       characterId: widget.characterId,
       onSaved: () {
         didSave = true; // 玩家有按儲存！
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(
+          FirebaseAuth.instance.currentUser!.uid,
+        )
+            .set({
+          'profilePromptedCharacterIds':
+          FieldValue.arrayUnion([
+            widget.characterId,
+          ]),
+        }, SetOptions(merge: true));
         _checkProfileCompletion(safeRoomId, widget.characterId); // 🛡️ 這裡也換成安全的 ID
       },
-    ).then((_) {
-      // 🌟 當 UserProfilePopup 關閉時，這裡會被觸發！
+    ).then((_) async {
       if (!didSave && mounted) {
-        final user = FirebaseAuth.instance.currentUser;
+        final user =
+            FirebaseAuth.instance.currentUser;
+
         if (user != null) {
-          FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-            'hasSkippedProfile': true // 貼上永久免擾標籤
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
+            'profilePromptedCharacterIds':
+            FieldValue.arrayUnion([
+              widget.characterId,
+            ]),
           }, SetOptions(merge: true));
         }
-        // 如果玩家沒有存檔 (按了稍後填寫、按關閉、或往下滑掉)
+
+        if (!mounted) return;
+
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius:
+              BorderRadius.circular(16),
+            ),
             title: Text(
-              AppLocalizations.of(context)!.friendlyReminderTitle,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              l10n.friendlyReminderTitle,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             content: Text(
-              AppLocalizations.of(context)!.editProfileHint,
+              l10n.editProfileHint,
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(l10n.common_got_it),
+                onPressed: () =>
+                    Navigator.pop(ctx),
+                child: Text(
+                  l10n.common_got_it,
+                ),
               ),
             ],
           ),
@@ -485,8 +512,10 @@ class _ChatPageState extends State<ChatPage> {
   // ✨ 總裁專屬：全域共用的次數查帳系統
   Future<void> _initRegenerateCount() async {
     final user = FirebaseAuth.instance.currentUser;
-    // 加上對 sessionId 的安全檢查
-    if (user == null || widget.sessionId == null) return;
+    final String? regenerateSessionId =
+        _sessionId ?? widget.sessionId;
+
+    if (user == null || regenerateSessionId == null) return;
 
     try {
       // 🌟🌟🌟 總裁查水表：絕對不要相信本地變數，直接去雲端看最新狀態！
@@ -527,7 +556,7 @@ class _ChatPageState extends State<ChatPage> {
           .collection('users')
           .doc(user.uid)
           .collection('aiRequests')
-          .doc(widget.sessionId);
+          .doc(regenerateSessionId);
 
       // 2. 先去抓對話次數資料
       final docSnapshot = await docRef.get();
@@ -1482,170 +1511,428 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // ✨ 總裁秘製：VIP 無痕重新生成通道！
-  Future<void> _regenerateAIResponse(String aiMessageId, String lastUserText) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null || _isGenerating || _sessionId == null) return;
+  // ✨ VIP 無痕重新生成通道
+  Future<void> _regenerateAIResponse(
+      String aiMessageId,
+      String lastUserText,
+      ) async {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null ||
+        _isGenerating ||
+        _sessionId == null) {
+      return;
+    }
 
     final l10n = AppLocalizations.of(context)!;
     final userId = currentUser.uid;
     final characterId = _currentCharacter.id;
 
-    // 🌟 1. UI 鎖定，並把失敗的舊 AI 台詞從畫面上拔掉！
+    // 只鎖定畫面，不要先刪除舊訊息。
     setState(() {
       _isGenerating = true;
-      _testMessages.removeWhere((msg) => msg.id == aiMessageId);
+      _isRegenerating = true;
     });
-
     try {
-      // 🌟 1. 刪除該筆 AI 訊息
-      if (_messagesCollection != null) {
-        await _messagesCollection!.doc(aiMessageId).delete();
-      }
-
-      // 🌟 2. 喚醒長期記憶：從 Firestore 抓取歷史紀錄 (加上逾時保護與防呆)
-      List<Map<String, String>> actualChatHistory = [];
+      // 讀取歷史紀錄
+      final List<Map<String, String>>
+      actualChatHistory = [];
 
       if (_messagesCollection != null) {
-        final historySnapshot = await _messagesCollection!
-            .orderBy('timestamp', descending: true)
+        final historySnapshot =
+        await _messagesCollection!
+            .orderBy(
+          'timestamp',
+          descending: true,
+        )
             .limit(16)
             .get()
-            .timeout(const Duration(seconds: 10), onTimeout: () {
-          throw Exception('讀取歷史紀錄逾時');
-        });
+            .timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            throw Exception('讀取歷史紀錄逾時');
+          },
+        );
 
-        var docsList = historySnapshot.docs.reversed.toList();
-        for (var doc in docsList) {
-          final data = doc.data() as Map<String, dynamic>;
-          final sender = data['sender'];
+        final docsList =
+        historySnapshot.docs.reversed.toList();
+
+        for (final doc in docsList) {
+          // 不要把準備被重新生成的舊 AI 回覆
+          // 再送進聊天歷史。
+          if (doc.id == aiMessageId) {
+            continue;
+          }
+
+          final data =
+          doc.data() as Map<String, dynamic>;
+
+          final sender =
+          data['sender']?.toString();
+
+          final text =
+              data['text']?.toString().trim() ?? '';
+
+          if (text.isEmpty) {
+            continue;
+          }
+
           if (sender == 'user' || sender == 'ai') {
             actualChatHistory.add({
-              "role": sender == 'ai' ? "assistant" : "user",
-              "text": data['text'] as String? ?? ''
+              'role': sender == 'ai'
+                  ? 'assistant'
+                  : 'user',
+              'text': text,
             });
           }
         }
       } else {
-        var recentTests = _testMessages.take(8).toList().reversed.toList();
-        for (var msg in recentTests) {
-          if (msg.sender == 'user' || msg.sender == 'ai') {
-            actualChatHistory.add({"role": msg.sender == 'ai' ? "assistant" : "user", "text": msg.text});
+        final recentTests = _testMessages
+            .where(
+              (message) =>
+          message.id != aiMessageId,
+        )
+            .take(8)
+            .toList()
+            .reversed
+            .toList();
+
+        for (final message in recentTests) {
+          if (message.sender == 'user' ||
+              message.sender == 'ai') {
+            final text = message.text.trim();
+
+            if (text.isEmpty) {
+              continue;
+            }
+
+            actualChatHistory.add({
+              'role': message.sender == 'ai'
+                  ? 'assistant'
+                  : 'user',
+              'text': text,
+            });
           }
         }
       }
 
-      // 讀取備忘錄與記憶
-      final aboutMeSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('characters').doc(characterId).collection('memories').get();
-      final aboutMeNotes = aboutMeSnapshot.docs.map((doc) => doc.data()['text'] as String? ?? '').toList();
+      // 讀取回憶
+      final aboutMeSnapshot =
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('characters')
+          .doc(characterId)
+          .collection('memories')
+          .get();
+
+      final aboutMeNotes = aboutMeSnapshot.docs
+          .map(
+            (doc) =>
+        doc.data()['text']
+            ?.toString() ??
+            '',
+      )
+          .where(
+            (text) => text.trim().isNotEmpty,
+      )
+          .toList();
+
+      // 讀取備忘錄
       List<String> memos = [];
-      if (_currentMode == ChatMode.daily || _currentMode == ChatMode.gemini) {
-        final memosSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).collection('characters').doc(characterId).collection('memos').get();
-        memos = memosSnapshot.docs.map((doc) => doc.data()['content'] as String? ?? '').toList();
+
+      if (_currentMode == ChatMode.daily ||
+          _currentMode == ChatMode.gemini) {
+        final memosSnapshot =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('characters')
+            .doc(characterId)
+            .collection('memos')
+            .get();
+
+        memos = memosSnapshot.docs
+            .map(
+              (doc) =>
+          doc.data()['content']
+              ?.toString() ??
+              '',
+        )
+            .where(
+              (text) => text.trim().isNotEmpty,
+        )
+            .toList();
       }
 
-      // 🌟 4. 準備請求資料
-      final idToken = await currentUser.getIdToken();
-      String dynamicRelationship = _currentFriendship.relationshipTitle(l10n);
-      String dynamicProfile = _buildDynamicUserProfileString();
-      final String playerGenderForAi = _normalizePlayerGenderForAi(
-        _currentAiProfile['gender']?.toString(),
+      final idToken =
+      await currentUser.getIdToken();
+
+      final dynamicRelationship =
+      _currentFriendship
+          .relationshipTitle(l10n);
+
+      final dynamicProfile =
+      _buildDynamicUserProfileString();
+
+      final playerGenderForAi =
+      _normalizePlayerGenderForAi(
+        _currentAiProfile['gender']
+            ?.toString(),
       );
-      final String playerPronounGuide = _buildPlayerPronounGuide(playerGenderForAi);
+
+      final playerPronounGuide =
+      _buildPlayerPronounGuide(
+        playerGenderForAi,
+      );
 
       final Map<String, dynamic> requestBody = {
-        "audioUrl": "",
-        "userMessage": lastUserText,
-        "chatMode": _currentMode?.name ?? "daily",
-        "isBirthdayFreebie": false,
-        "overrideSystemPrompt": "",
-        "sessionId": _sessionId,
-        "playerName": _playerNickname,
-        "playerGender": playerGenderForAi,
-        "playerPronounGuide": playerPronounGuide,
-        "userProfile": dynamicProfile,
-        "systemDirective": "【最高防護指令】這是玩家要求重新生成的對話。注意：玩家的時空設定與稱呼可能已在此刻發生變更！你必須立刻捨棄歷史紀錄中的舊稱呼，現在起，與你對話的主角稱呼強制更新為「$_playerNickname」，絕對不能叫錯！請視為全新的互動自然地接續。以下是她當前的專屬時空設定：\n$dynamicProfile\n\n你必須嚴格根據這些設定與她互動，並以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。",
-        "aboutMeNotes": aboutMeNotes,
-        "memos": memos,
-        "periodStatus": "未知",
-        "lastStoryTime": _currentStoryTime,
-        "lastStoryLocation": _currentStoryLocation,
-        "characterProfile": {
-          "id": _currentCharacter.id,
-          "name": _currentCharacter.name,
-          "toneAndStyle": _currentCharacter.toneAndStyle?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
-          "background": _currentCharacter.background?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
-          "detailedPersonality": _currentCharacter.detailedPersonality?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
-          "likes": _currentCharacter.likes?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
-          "secrets": _currentCharacter.secrets?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
-          "gender": _currentCharacter.gender,
-          "relationship": dynamicRelationship,
-          "socialRelationships": "",
+        'audioUrl': '',
+        'userMessage': lastUserText,
+        'chatMode':
+        _currentMode?.name ?? 'daily',
+        'isBirthdayFreebie': false,
+        'overrideSystemPrompt': '',
+        'sessionId': _sessionId,
+        'playerName': _playerNickname,
+        'playerGender': playerGenderForAi,
+        'playerPronounGuide':
+        playerPronounGuide,
+        'userProfile': dynamicProfile,
+        'systemDirective':
+        '【最高防護指令】這是玩家要求重新生成的對話。'
+            '注意：玩家的時空設定與稱呼可能已在此刻發生變更！'
+            '你必須立刻捨棄歷史紀錄中的舊稱呼，'
+            '現在起，與你對話的主角稱呼強制更新為'
+            '「$_playerNickname」，絕對不能叫錯！'
+            '請視為全新的互動自然地接續。'
+            '以下是她當前的專屬時空設定：\n'
+            '$dynamicProfile\n\n'
+            '你必須嚴格根據這些設定與她互動，'
+            '並以 JSON 格式回覆，格式為：'
+            '{"response": "你的對話台詞", '
+            '"affectionChange": 數字}。',
+        'aboutMeNotes': aboutMeNotes,
+        'memos': memos,
+        'periodStatus': '未知',
+        'lastStoryTime': _currentStoryTime,
+        'lastStoryLocation':
+        _currentStoryLocation,
+        'characterProfile': {
+          'id': _currentCharacter.id,
+          'name': _currentCharacter.name,
+          'toneAndStyle':
+          _currentCharacter.toneAndStyle
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
+              '',
+          'background':
+          _currentCharacter.background
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
+              '',
+          'detailedPersonality':
+          _currentCharacter
+              .detailedPersonality
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
+              '',
+          'likes':
+          _currentCharacter.likes
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
+              '',
+          'secrets':
+          _currentCharacter.secrets
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
+              '',
+          'gender':
+          _currentCharacter.gender,
+          'relationship':
+          dynamicRelationship,
+          'socialRelationships': '',
         },
-        "chatHistory": actualChatHistory,
+        'chatHistory': actualChatHistory,
       };
 
-      // 🌟 5. 呼叫雲端大腦（設定 45 秒逾時保護）
       _httpClient = http.Client();
-      final response = await _httpClient!.post(
-        Uri.parse('https://asia-east1-lianlianshiguang.cloudfunctions.net/getAiResponse'),
-        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $idToken'},
+
+      final response =
+      await _httpClient!
+          .post(
+        Uri.parse(
+          'https://asia-east1-'
+              'lianlianshiguang.cloudfunctions.net/'
+              'getAiResponse',
+        ),
+        headers: {
+          'Content-Type':
+          'application/json',
+          'Authorization':
+          'Bearer $idToken',
+        },
         body: jsonEncode(requestBody),
-      ).timeout(const Duration(seconds: 45));
+      )
+          .timeout(
+        const Duration(seconds: 45),
+      );
 
-      // 🌟 6. 安全解析回覆
-      if (response.statusCode == 200) {
-        try {
-          final decodedBody = utf8.decode(response.bodyBytes);
-          final responseData = jsonDecode(decodedBody);
+      if (response.statusCode != 200) {
+        debugPrint(
+          '⚠️ 重新生成 HTTP 錯誤碼：'
+              '${response.statusCode}',
+        );
 
-          if (responseData['status'] == 'success') {
-            int finalAffectionChange = responseData['affectionChange'] ?? 0;
+        _handleGenerationError(
+          l10n.error_msg_send_failed,
+        );
+        return;
+      }
 
-            if (mounted) {
-              setState(() {
-                if (finalAffectionChange != 0) {
-                  int oldScore = _currentFriendship;
-                  _currentFriendship += finalAffectionChange;
-                  _checkForLevelUp(oldScore, _currentFriendship);
-                }
-                _isGenerating = false;
-                _isLoading = false;
-              });
-            }
-          } else {
-            _handleGenerationError(l10n.error_system_busy);
-          }
-        } catch (jsonError) {
-          // 🛡️ 攔截 JSON 解析失敗（伺服器回傳非 JSON 的情況）
-          debugPrint('⚠️ 重新生成 JSON 解析崩潰: $jsonError, 原始 Body: ${response.body}');
-          _handleGenerationError(l10n.error_system_busy);
+      final decodedBody =
+      utf8.decode(response.bodyBytes);
+
+      final dynamic decoded =
+      jsonDecode(decodedBody);
+
+      if (decoded is! Map<String, dynamic>) {
+        throw const FormatException(
+          '重新生成回傳格式不正確',
+        );
+      }
+
+      if (decoded['status'] != 'success') {
+        _handleGenerationError(
+          l10n.error_system_busy,
+        );
+        return;
+      }
+
+      // 取得真正的新 AI 回覆
+      final String regeneratedText =
+      (decoded['response'] ?? '')
+          .toString()
+          .trim();
+
+      // 後端雖然說 success，但沒有文字時，
+      // 絕對不能顯示成功或刪除舊訊息。
+      if (regeneratedText.isEmpty) {
+        debugPrint(
+          '⚠️ 重新生成回傳成功，'
+              '但 response 是空字串：$decodedBody',
+        );
+
+        _handleGenerationError(
+          l10n.error_system_busy,
+        );
+        return;
+      }
+
+      if (_messagesCollection == null) {
+        throw Exception(
+          '訊息集合尚未完成初始化',
+        );
+      }
+
+
+// 現在才刪除原本的舊回覆，避免失敗時訊息直接消失。
+      await _messagesCollection!
+          .doc(aiMessageId)
+          .delete();
+
+      final int finalAffectionChange =
+      decoded['affectionChange'] is num
+          ? (decoded['affectionChange']
+      as num)
+          .toInt()
+          : 0;
+
+      if (!mounted) return;
+
+      setState(() {
+        if (finalAffectionChange != 0) {
+          final int oldScore =
+              _currentFriendship;
+
+          _currentFriendship +=
+              finalAffectionChange;
+
+          _checkForLevelUp(
+            oldScore,
+            _currentFriendship,
+          );
         }
-      } else {
-        debugPrint('⚠️ 重新生成 HTTP 錯誤碼: ${response.statusCode}');
-        _handleGenerationError(l10n.error_msg_send_failed);
-      }
-    } catch (e) {
-      // 🔍 把真正的兇手印在除錯台上！
-      debugPrint('❌ 重新生成在前端發生嚴重錯誤: $e');
-      if (mounted) {
-        setState(() {
-          _isGenerating = false;
-          _isLoading = false;
-        });
-        // 暫時把錯誤訊息直接顯示出來，方便抓蟲 (上線後可改回友善提示)
-        _showCenterToast('發生錯誤: $e', isError: true);
-      }
+
+        _isGenerating = false;
+        _isRegenerating = false;
+      });
+
+      // 到這裡才是真的完成：
+      // 已取得非空文字，而且成功寫回 Firestore。
+      debugPrint(
+        '✅ 重新生成完成並成功寫入訊息：'
+            '$aiMessageId',
+      );
+    } catch (e, stackTrace) {
+      debugPrint(
+        '❌ 重新生成在前端發生錯誤：$e',
+      );
+      debugPrint('$stackTrace');
+
+      if (!mounted) return;
+
+      setState(() {
+        _isGenerating = false;
+        _isRegenerating = false;
+      });
+
+      _showCenterToast(
+        '重新生成失敗，原本的訊息已保留，請再試一次。',
+        isError: true,
+      );
     } finally {
       _httpClient?.close();
       _httpClient = null;
     }
   }
-
 // 💡 幫忙簡化 UI 狀態復原的小幫手
   void _handleGenerationError(String errorMessage) {
     if (mounted) {
       setState(() {
         _isGenerating = false;
+        _isRegenerating = false;
         _isLoading = false;
       });
       _showCenterToast(errorMessage, isError: true);
@@ -3439,8 +3726,11 @@ class _ChatPageState extends State<ChatPage> {
     try {
       final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
       final data = doc.data() ?? {};
-      final bool hasSkippedProfile = data['hasSkippedProfile'] == true;
-      final String nickname = data['nickname'] ?? l10n.chat_default_player_name;
+      final List<dynamic> promptedCharacterIds =
+          data['profilePromptedCharacterIds'] ?? [];
+
+      final bool hasPromptedForThisCharacter =
+      promptedCharacterIds.contains(characterId);      final String nickname = data['nickname'] ?? l10n.chat_default_player_name;
       final String birthday = data['birthday'] ?? l10n.authMethodUnknown;
 
       Map<String, dynamic>? activeProfile;
@@ -3472,8 +3762,9 @@ class _ChatPageState extends State<ChatPage> {
           'intro': '這份拾光檔案還在等待主人動筆...'
         };
         // 🌟 條件升級：如果「本次還沒問過」且「玩家以前也沒按過跳過」，才准彈出！
-        if (!_hasPromptedProfileSetup && !hasSkippedProfile) {
-          _hasPromptedProfileSetup = true;
+        if (!_hasPromptedProfileSetup &&
+            !hasPromptedForThisCharacter)
+        {_hasPromptedProfileSetup = true;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _showWelcomeProfilePopup();
@@ -5213,17 +5504,19 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _loadRegenerateCount() async {
     final user = FirebaseAuth.instance.currentUser;
 
-    if (user == null || widget.sessionId == null) {
+    final String? regenerateSessionId =
+        _sessionId ?? widget.sessionId;
+
+    if (user == null || regenerateSessionId == null) {
       return;
     }
-
     final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     final docRef = FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .collection('aiRequests')
-        .doc(widget.sessionId!);
+        .doc(regenerateSessionId);
 
     try {
       final doc = await docRef.get();
@@ -5268,7 +5561,10 @@ class _ChatPageState extends State<ChatPage> {
   Future<bool> _consumeRegenerateCount() async {
     final user = FirebaseAuth.instance.currentUser;
 
-    if (user == null || widget.sessionId == null) {
+    final String? regenerateSessionId =
+        _sessionId ?? widget.sessionId;
+
+    if (user == null || regenerateSessionId == null) {
       return false;
     }
 
@@ -5278,8 +5574,7 @@ class _ChatPageState extends State<ChatPage> {
         .collection('users')
         .doc(user.uid)
         .collection('aiRequests')
-        .doc(widget.sessionId!);
-
+        .doc(regenerateSessionId);
     try {
       int newCount = 0;
 
@@ -7065,8 +7360,66 @@ class _ChatPageState extends State<ChatPage> {
                     if (messages.isEmpty && !_isGenerating) {
                       return Center(child: Text(l10n.chat_empty_msg));
                     }
-                    return _buildMessageList(messages);
-                  },
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: _buildMessageList(messages),
+                        ),
+
+                        if (_isRegenerating)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              16,
+                              8,
+                              16,
+                              12,
+                            ),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest
+                                      .withValues(alpha: 0.75),
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(
+                                      width: 15,
+                                      height: 15,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      '💭 正在重新思考...',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withValues(alpha: 0.72),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                    },
                 ),
               ),
           if (_isScreenshotMode)
@@ -7530,54 +7883,112 @@ class _ChatPageState extends State<ChatPage> {
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        icon: const Icon(Icons.refresh, size: 16),
-                        // 🚀 1. 帶入兩個變數的按鈕文字！
+                        icon: const Icon(
+                          Icons.refresh,
+                          size: 16,
+                        ),
                         label: Text(
-                            l10n.regenerateButtonLabel(_freeRegenerateCount, _maxRegenerateCount),
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)
+                          l10n.regenerateButtonLabel(
+                            _freeRegenerateCount,
+                            _maxRegenerateCount,
+                          ),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         onPressed: () async {
-                          // 1. 擋下機制
-                          if (_freeRegenerateCount <= 0) {
-                            _showSubscriptionDialog();
-                            return;
-                          }
-                          // 2. 檢測對話條件 (直接檢查 _messagesCollection 是否就緒)
-                          if (_messagesCollection == null) {
-                            // 🚀 2. 替換準備中的提示
-                            _showCenterToast(l10n.systemPreparingWait, isError: true);
-                            return;
-                          }
-                          final querySnapshot = await _messagesCollection!.orderBy('timestamp', descending: true).limit(2).get();
-                          if (querySnapshot.docs.length < 2) {
-                            // 🚀 3. 替換沒有對話可生成的提示
-                            _showCenterToast(l10n.noMessagesToRegenerate, isError: true);
-                            return;
-                          }
-                          // 取得 ID 與 Text
-                          final aiMessageId = querySnapshot.docs[0].id;
-                          final userMessageText = (querySnapshot.docs[1].data() as Map<String, dynamic>)['text'] ?? '';
-                          // 3. 扣次數與同步更新
-                          final consumed = await _consumeRegenerateCount();
+                          try {
+                            // 1. 擋下機制
+                            if (_freeRegenerateCount <= 0) {
+                              _showSubscriptionDialog();
+                              return;
+                            }
 
-                          if (!consumed) {
-                            // 先重新同步一次真正的剩餘次數
-                            await _loadRegenerateCount();
+                            // 2. 檢查訊息集合是否就緒
+                            if (_messagesCollection == null) {
+                              _showCenterToast(
+                                l10n.systemPreparingWait,
+                                isError: true,
+                              );
+                              return;
+                            }
+
+                            // 3. 取得最後兩筆訊息
+                            final querySnapshot = await _messagesCollection!
+                                .orderBy(
+                              'timestamp',
+                              descending: true,
+                            )
+                                .limit(2)
+                                .get();
 
                             if (!mounted) return;
 
-                            // 同步後真的沒次數，才叫玩家開月卡
-                            if (_freeRegenerateCount <= 0) {
-                              _showSubscriptionDialog();
-                            } else {
-                              // 還有次數卻扣失敗，代表是同步 / 網路 / 權限問題，不要誤導玩家開月卡
-                              _showCenterToast('重新生成次數同步失敗，請再試一次 😢', isError: true);
+                            if (querySnapshot.docs.length < 2) {
+                              _showCenterToast(
+                                l10n.noMessagesToRegenerate,
+                                isError: true,
+                              );
+                              return;
                             }
 
-                            return;
+                            // 4. 取得 AI 訊息 ID 與上一則玩家訊息
+                            final aiMessageId =
+                                querySnapshot.docs[0].id;
+
+                            final userMessageText =
+                            ((querySnapshot.docs[1].data()
+                            as Map<String, dynamic>)['text'] ??
+                                '')
+                                .toString()
+                                .trim();
+
+                            if (userMessageText.isEmpty) {
+                              _showCenterToast(
+                                l10n.noMessagesToRegenerate,
+                                isError: true,
+                              );
+                              return;
+                            }
+
+                            // 5. 扣除重新生成次數
+                            final consumed =
+                            await _consumeRegenerateCount();
+
+                            if (!consumed) {
+                              await _loadRegenerateCount();
+
+                              if (!mounted) return;
+
+                              if (_freeRegenerateCount <= 0) {
+                                _showSubscriptionDialog();
+                              } else {
+                                _showCenterToast(
+                                  '重新生成次數同步失敗，請再試一次 😢',
+                                  isError: true,
+                                );
+                              }
+
+                              return;
+                            }
+
+                            // 6. 等待重新生成完整執行完畢
+                            await _regenerateAIResponse(
+                              aiMessageId,
+                              userMessageText,
+                            );
+                          } catch (e, stackTrace) {
+                            debugPrint('❌ 重新生成按鈕流程失敗：$e');
+                            debugPrint('$stackTrace');
+
+                            if (!mounted) return;
+
+                            _showCenterToast(
+                              '重新生成失敗，請稍後再試 😢',
+                              isError: true,
+                            );
                           }
-                          // 4. 呼叫重新生成
-                          _regenerateAIResponse(aiMessageId, userMessageText);
                         },
                       ),
 
