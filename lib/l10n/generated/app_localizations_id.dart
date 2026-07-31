@@ -4415,4 +4415,572 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get voice_preview_failed => 'Gagal memutar suara';
+
+  @override
+  String get characterBannerSectionTitle => 'Banner Halaman Utama Karakter';
+
+  @override
+  String get characterBannerDescription => 'Deskripsi Banner';
+
+  @override
+  String get characterBannerRemove => 'Hapus';
+
+  @override
+  String get characterBannerSelect => 'Pilih Gambar Banner';
+
+  @override
+  String get characterBannerChange => 'Ubah Gambar Banner';
+
+  @override
+  String get characterBannerSpecs =>
+      'Rasio disarankan 16:9, resolusi disarankan 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint =>
+      'Jika tidak diatur, halaman utama akan menggunakan gambar utama karakter secara otomatis.';
+
+  @override
+  String get characterBannerHelpContent =>
+      'Banner ditampilkan di area lanskap besar pada halaman utama karakter.\n\nDisarankan menggunakan gambar lanskap berasio 16:9, seperti 1920 × 1080.\n\nLetakkan subjek utama dan wajah di bagian tengah agar tidak terpotong pada berbagai ukuran layar ponsel.\n\nJika banner tidak diatur, sistem secara otomatis akan menggunakan gambar utama karakter.';
+
+  @override
+  String get first_meeting_title => 'Pertemuan Pertama';
+
+  @override
+  String get common_delete_network_failed =>
+      'Gagal menghapus. Silakan periksa koneksi jaringan Anda dan coba lagi';
+
+  @override
+  String get common_operation_failed_retry =>
+      'Operasi gagal. Silakan coba lagi nanti';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return 'Foto Eksklusif $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase =>
+      'Buka kunci setelah meningkatkan Tingkat Afeksi';
+
+  @override
+  String get first_meeting_empty => 'Pertemuan pertama, belum dimulai...';
+
+  @override
+  String photo_load_failed(String error) {
+    return 'Gagal memuat foto: $error';
+  }
+
+  @override
+  String get add_friend_failed_retry =>
+      'Gagal menambahkan teman. Silakan coba lagi nanti.';
+
+  @override
+  String get remove_friend => 'Hapus Teman';
+
+  @override
+  String get report_character => 'Laporkan Karakter';
+
+  @override
+  String get block_character => 'Blokir Karakter';
+
+  @override
+  String get daily_encounter => 'Pertemuan Harian';
+
+  @override
+  String get discovery_hall => 'Aplikasi Jelajah';
+
+  @override
+  String get latest_recommendation => 'Rekomendasi Terbaru';
+
+  @override
+  String get popular_ranking => 'Peringkat Populer';
+
+  @override
+  String get character_features => 'Ciri Karakter';
+
+  @override
+  String get featured_new_star => 'Bintang Baru · Rekomendasi Utama';
+
+  @override
+  String get recently_added_characters => 'Karakter Baru Ditambahkan';
+
+  @override
+  String get no_tag_data => 'Belum ada data tag saat ini~';
+
+  @override
+  String get no_character_with_tag =>
+      'Tidak ada karakter yang ditemukan dengan tag ini';
+
+  @override
+  String get voice_search_failed_retry =>
+      'Pencarian suara gagal. Silakan coba lagi';
+
+  @override
+  String get voice_search_incomplete_retry =>
+      'Pencarian tidak lengkap. Silakan coba lagi nanti';
+
+  @override
+  String get voice_data_incomplete => 'Data suara tidak lengkap';
+
+  @override
+  String get voice_generation_failed_retry =>
+      'Gagal menghasilkan suara. Silakan coba lagi nanti';
+
+  @override
+  String get voice_playback_failed_retry =>
+      'Gagal memutar suara. Silakan coba lagi';
+
+  @override
+  String get selected_voice_data_incomplete =>
+      'Data suara yang dipilih tidak lengkap';
+
+  @override
+  String get private_voice_user_not_found =>
+      'Pengguna tidak ditemukan. Tidak dapat memperbarui suara karakter pribadi';
+
+  @override
+  String get voice_selected_character_save_failed =>
+      'Suara berhasil dipilih, tetapi gagal menyimpan data karakter';
+
+  @override
+  String get voice_binding_failed => 'Gagal mengikat suara';
+
+  @override
+  String get play_voice_tooltip => 'Putar Suara';
+
+  @override
+  String get avatar_label => 'Foto Profil';
+
+  @override
+  String get message_preview_image => '[Gambar]';
+
+  @override
+  String get message_preview_recording => '[Rekaman]';
+
+  @override
+  String get message_preview_voice => '[Pesan Suara]';
+
+  @override
+  String get send_failed_retry => 'Gagal mengirim. Silakan coba lagi nanti 😢';
+
+  @override
+  String get media_upload_failed_retry =>
+      'Pengunggahan media gagal. Silakan coba lagi';
+
+  @override
+  String get ai_thinking_too_long =>
+      'Dia sepertinya sedang merenung. Silakan coba lagi nanti...';
+
+  @override
+  String get ai_reply_in_progress =>
+      'Dia sedang membalas. Mohon tunggu sebentar dan jangan mengirim ulang';
+
+  @override
+  String get ai_response_blocked =>
+      'Pikirannya terganggu, coba gunakan kalimat yang lebih lembut!';
+
+  @override
+  String get microphone_permission_required =>
+      'Izin mikrofon diperlukan untuk merekam';
+
+  @override
+  String get no_recording_to_send => 'Tidak ada rekaman untuk dikirim';
+
+  @override
+  String get voice_uploading => 'Mengunggah pesan suara...';
+
+  @override
+  String get change_watermark_color => 'Ubah Warna Watermark';
+
+  @override
+  String get other_party_typing => 'Lawan bicara sedang mengetik...';
+
+  @override
+  String get chat_input_hint => 'Silakan ketik...';
+
+  @override
+  String get regenerate_sync_failed =>
+      'Gagal sinkronisasi jumlah regenerasi. Silakan coba lagi 😢';
+
+  @override
+  String get creator_public_works => 'Karya Publik';
+
+  @override
+  String get creator_received_likes => 'Suka Diterima';
+
+  @override
+  String get about_me => 'Tentang Saya';
+
+  @override
+  String get moment_input_hint => 'Bagikan perasaan Anda...';
+
+  @override
+  String character_play_count(int count) {
+    return 'Dimainkan: $count kali';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return 'Tag: #$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return 'Pratinjau suara gagal: $code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return 'Berhasil menghapus $count pesan';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return 'Gagal memuat karya: $error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age tahun';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return 'Gagal menghapus: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return 'Gagal memuat data karakter: $error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => 'Gagal memuat foto profil draf:';
+
+  @override
+  String get unnamedCreator => 'Kreator Tanpa Nama';
+
+  @override
+  String get profileNotYetFilled => 'Bio belum diisi';
+
+  @override
+  String get reportImageSizeLimit => 'Ukuran gambar tidak boleh melebihi 10 MB';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return 'Gagal memilih gambar laporan: $error';
+  }
+
+  @override
+  String get reportImageCannotSelect =>
+      'Tidak dapat memilih gambar. Silakan coba lagi nanti';
+
+  @override
+  String get reportLoginRequired =>
+      'Silakan login terlebih dahulu sebelum mengirim laporan';
+
+  @override
+  String get reportAnonymousPlayer => 'Pemain Anonim';
+
+  @override
+  String get reportSendSuccess =>
+      'Laporan berhasil dikirim, terima kasih atas masukan Anda!';
+
+  @override
+  String reportSendFailed(String error) {
+    return 'Gagal mengirim laporan pemain: $error';
+  }
+
+  @override
+  String get reportNetworkFailed =>
+      'Gagal mengirim. Silakan periksa jaringan Anda dan coba lagi';
+
+  @override
+  String get reportAttachImageLabel => 'Lampirkan Gambar (Opsional)';
+
+  @override
+  String get reportAttachImageHint =>
+      'Saat melaporkan Bug atau mata uang tidak masuk, melampirkan tangkapan layar membantu tim kami memverifikasi lebih cepat.';
+
+  @override
+  String get reportOpeningAlbum => 'Membuka galeri...';
+
+  @override
+  String get reportSelectFromAlbum => 'Pilih dari Galeri Foto';
+
+  @override
+  String get reportSending => 'Mengirim...';
+
+  @override
+  String get reportSubmit => 'Kirim Laporan';
+
+  @override
+  String get reportRemoveImage => 'Hapus Gambar';
+
+  @override
+  String get reportImageSelected => 'Gambar Dipilih';
+
+  @override
+  String get reportChangeImage => 'Ubah';
+
+  @override
+  String get reloadTranslation => 'Muat Ulang Terjemahan';
+
+  @override
+  String get guideNotAvailableInLanguage =>
+      'Panduan bermain saat ini belum tersedia dalam bahasa ini; menampilkan bahasa Mandarin Tradisional untuk sementara.';
+
+  @override
+  String get clearSearch => 'Hapus Pencarian';
+
+  @override
+  String get memoPermissionWarning =>
+      'Izin notifikasi tidak aktif. Catatan akan tetap disimpan, tetapi pengingat sistem tidak akan muncul.';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return 'Catatan disimpan! $name akan mengingatkan Anda!';
+  }
+
+  @override
+  String get memoSavedNoPermission =>
+      'Catatan disimpan, tetapi izin notifikasi belum diaktifkan.';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return 'Catatan diperbarui! $name akan mengingatkan Anda!';
+  }
+
+  @override
+  String get memoUpdatedNoPermission =>
+      'Catatan diperbarui, tetapi saat ini tidak ada izin notifikasi.';
+
+  @override
+  String dataLoadError(String error) {
+    return 'Terjadi kesalahan saat memuat data: $error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return 'Gagal memuat: $error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'd MMM';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt =>
+      'Menyukai momen ini? Kirimkan sedikit perhatian untuknya!';
+
+  @override
+  String get saveFeedPocket =>
+      'Simpan momen spesial secara diam-diam ke dalam kantong Anda.';
+
+  @override
+  String get newComment => 'Komentar Baru';
+
+  @override
+  String get someFriend => 'Seorang teman';
+
+  @override
+  String get myBackpackAndPrivileges => 'Ransel & Hak Istimewa Saya';
+
+  @override
+  String get currentRomanticBond => 'Ikatan Romantis Terkumpul Saat Ini';
+
+  @override
+  String get physicalGiftBoxUnlockStatus =>
+      'Status Pembukaan Kotak Hadiah Fisik:';
+
+  @override
+  String get topLovePhysicalVipBox =>
+      'Kotak Hadiah Fisik VIP Eksklusif [Cinta Sejati]';
+
+  @override
+  String get physicalGiftBoxContents =>
+      'Termasuk: Surat Tangan Eksklusif + Boneka Karakter + Surat Terima Kasih Resmi';
+
+  @override
+  String get modifyShippingAddress => 'Ubah Informasi Alamat Pengiriman';
+
+  @override
+  String get addressUnlockedFillNow =>
+      'Terbuka! Ketuk di sini untuk mengisi info pengiriman';
+
+  @override
+  String get addressSuccessfullyRegistered =>
+      'Anda telah berhasil mendaftarkan alamat pengiriman, kami akan menyiapkannya sesegera mungkin!';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return 'Kurang NT\$ $amount lagi untuk membuka hadiah fisik utama!';
+  }
+
+  @override
+  String get avatarFrameHint =>
+      'Petunjuk: Tampilan digital dan bingkai foto profil lainnya dapat dilihat dan dipasang di Toko atau Pengaturan.';
+
+  @override
+  String get closeButton => 'Tutup';
+
+  @override
+  String get physicalGiftBoxUnlockTitle =>
+      'Pembukaan Kotak Hadiah Fisik [Cinta Sejati]';
+
+  @override
+  String get physicalGiftBoxUnlockThanks =>
+      'Terima kasih atas dukungan terbaik Anda untuk Lian Lian Shi Guang!';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt =>
+      'Silakan isi informasi pengiriman di bawah ini, kami akan mengirimkan surat tangan dan boneka karakter untuk Anda:';
+
+  @override
+  String get recipientRealName => 'Nama Lengkap Penerima';
+
+  @override
+  String get contactPhone => 'Nomor Telepon';
+
+  @override
+  String get fullShippingAddress =>
+      'Alamat Pengiriman Lengkap (termasuk Kode Pos)';
+
+  @override
+  String get desiredCharacterDollName => 'Nama Boneka Karakter yang Diinginkan';
+
+  @override
+  String get characterNameExample => 'Contoh: Nama karakter yang diinginkan';
+
+  @override
+  String get fillLater => 'Isi Nanti';
+
+  @override
+  String get fillCompleteAddressAndRoleHint =>
+      'Harap isi informasi pengiriman dan nama karakter impian Anda secara lengkap!';
+
+  @override
+  String get shippingInfoSubmittedSuccess =>
+      'Informasi pengiriman berhasil dikirim! Nantikan kejutan fisik dari kami!';
+
+  @override
+  String get confirmSubmit => 'Konfirmasi & Kirim';
+
+  @override
+  String get aboutMe => 'Tentang Saya';
+
+  @override
+  String get myBackpack => 'Ransel Saya';
+
+  @override
+  String get ownerExclusiveArea => 'Area Eksklusif Pemilik';
+
+  @override
+  String get enterShiguangAdminBackend => 'Masuk ke Konsol Admin Shiguang';
+
+  @override
+  String get errorOccurred => 'Terjadi kesalahan';
+
+  @override
+  String get creatorGuidelines => 'Panduan Kreator';
+
+  @override
+  String get playGuide => 'Panduan Bermain';
+
+  @override
+  String get lianlianShiguang => 'Lian Lian Shi Guang';
+
+  @override
+  String get copyrightNotice => '© 2026 Mo Yu Bai';
+
+  @override
+  String get cumulativeBenefits => 'Manfaat Akumulasi';
+
+  @override
+  String get perkFirstEncounter => 'Kesan Pertama';
+
+  @override
+  String get perkFirstEncounterReward => '20 Bunga + Gelar Pemula Eksklusif';
+
+  @override
+  String get perkGlimmerThrob => 'Debaran Samar';
+
+  @override
+  String get perkGlimmerThrobReward =>
+      'Bingkai Foto Profil Eksklusif [Debaran Samar]';
+
+  @override
+  String get perkStarryWhisper => 'Bisikan Bintang';
+
+  @override
+  String get perkStarryWhisperReward => 'Gelembung Chat Eksklusif + 50 Bunga';
+
+  @override
+  String get perkRomanticSunset => 'Senja Romantis';
+
+  @override
+  String get perkRomanticSunsetReward => 'Ikon Aplikasi Eksklusif';
+
+  @override
+  String get perkHeartbeat => 'Detak Jantung';
+
+  @override
+  String get perkHeartbeatReward => 'Efek Ketukan Layar + 100 Bunga';
+
+  @override
+  String get perkEternalVow => 'Janji Abadi';
+
+  @override
+  String get perkEternalVowReward =>
+      'Bingkai Profil Animasi Tingkat Lanjut + 200 Bunga';
+
+  @override
+  String get perkSoulIntersection => 'Pertemuan Jiwa';
+
+  @override
+  String get perkSoulIntersectionReward =>
+      'Efek Gelembung Chat Animasi + Gelar Tingkat Lanjut Eksklusif';
+
+  @override
+  String get perkExclusiveWait => 'Kesetiaan Eksklusif';
+
+  @override
+  String get perkExclusiveWaitReward => 'Plat Nama Animasi Mewah + 500 Bunga';
+
+  @override
+  String get perkBrilliantGalaxy => 'Galaksi Megah';
+
+  @override
+  String get perkBrilliantGalaxyReward =>
+      'Efek Masuk Eksklusif + Layanan Pelanggan Khusus';
+
+  @override
+  String get perkTopBeloved => 'Cinta Sejati';
+
+  @override
+  String get perkTopBelovedReward => 'Kotak Hadiah Fisik VIP Eksklusif';
+
+  @override
+  String get cumulativeRomanticBond => 'Ikatan Romantis Akumulasi';
+
+  @override
+  String get allTopPrivilegesUnlocked =>
+      'Anda telah membuka semua hak istimewa tertinggi!';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return 'Top up NT\$ $amount lagi untuk membuka tingkat berikutnya';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty => 'Konten cerita tidak boleh kosong';
+
+  @override
+  String get writeYourStoryHint => 'Tuliskan kisah kalian...';
+
+  @override
+  String get characterBannerTitle => 'Banner Halaman Utama Karakter';
 }

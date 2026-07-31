@@ -4,6 +4,7 @@ const { defineSecret } = require('firebase-functions/params');
 const cors = require('cors')({ origin: true });
 const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+const { initializeApp, getApps } = require("firebase-admin/app");
 const OpenCC = require('opencc-js');
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const functions = require("firebase-functions");
@@ -15,14 +16,17 @@ const {
   getFirestore,
   FieldValue,
 } = require("firebase-admin/firestore");
-// 🌟 單一且完整的初始化（包含屬性設定）
-if (admin.apps.length === 0) {
-    admin.initializeApp();
-    admin.firestore().settings({ ignoreUndefinedProperties: true });
+// 🌟 Firebase Admin 單一初始化
+if (getApps().length === 0) {
+  initializeApp();
 }
 
-// 🔥 資料庫實例化
-const db = admin.firestore();
+// 🔥 Firestore 資料庫實例化
+const db = getFirestore();
+
+db.settings({
+  ignoreUndefinedProperties: true,
+});
 const REGION = "asia-east1";
 const openRouterApiKey = defineSecret("OPENROUTER_API_KEY");
 const elevenLabsApiKey = defineSecret("ELEVENLABS_API_KEY");
@@ -4966,176 +4970,6 @@ exports.checkScheduledDelete = onSchedule(
 
   }
 );
-
-// ==========================================
-// 綠界金流測試：產生結帳表單
-// ==========================================
-exports.createECPayOrder = functions.https.onRequest((req, res) => {
-    // 1. 從 .env 安全地把測試金鑰拿出來
-    const merchantID = process.env.ECPAY_MERCHANT_ID;
-    const hashKey = process.env.ECPAY_HASH_KEY;
-    const hashIV = process.env.ECPAY_HASH_IV;
-
-    // 2. 準備綠界需要的「訂單時間」（格式必須是 yyyy/MM/dd HH:mm:ss）
-    // 2. 準備綠界需要的「訂單時間」（最嚴格的 yyyy/MM/dd HH:mm:ss 格式，手動補零最安全）
-        const now = new Date();
-        const twTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // 強制轉換為台灣時間 UTC+8
-        const yyyy = twTime.getUTCFullYear();
-        const MM = String(twTime.getUTCMonth() + 1).padStart(2, '0');
-        const dd = String(twTime.getUTCDate()).padStart(2, '0');
-        const HH = String(twTime.getUTCHours()).padStart(2, '0');
-        const mm = String(twTime.getUTCMinutes()).padStart(2, '0');
-        const ss = String(twTime.getUTCSeconds()).padStart(2, '0');
-        const orderDate = `${yyyy}/${MM}/${dd} ${HH}:${mm}:${ss}`;
-
-    // 3. 設定訂單內容 (這裡先用程安的草莓蛋糕當作測試)
-    const orderParams = {
-            MerchantID: merchantID,
-            MerchantTradeNo: 'LLSG' + now.getTime(),
-            MerchantTradeDate: orderDate,
-            PaymentType: 'aio',
-            TotalAmount: req.body.amount, // 從前端傳來的金額
-            TradeDesc: '戀戀拾光_點數儲值',
-            ItemName: req.body.itemName,  // 從前端傳來的商品名稱 (例如: 90花花點數)
-            ReturnURL: 'https://asia-east1-您的專案ID.cloudfunctions.net/ecpayReturn',
-            ClientBackURL: 'https://您的網頁版網址.com',
-            ChoosePayment: 'ALL',
-            EncryptType: '1',
-            // ✨ 新增這兩行：偷偷把玩家身分和購買的點數藏在這裡！
-            CustomField1: req.body.userId, // 玩家的 UID
-            CustomField2: req.body.points  // 這次買了多少花花 (數字)
-        };
-
-    // 4. 計算綠界最嚴格的 CheckMacValue (檢查碼)
-    const keys = Object.keys(orderParams).sort();
-    let checkMacStr = `HashKey=${hashKey}`;
-    for (const key of keys) {
-        checkMacStr += `&${key}=${orderParams[key]}`;
-    }
-    checkMacStr += `&HashIV=${hashIV}`;
-
-    let encodedStr = encodeURIComponent(checkMacStr)
-        .replace(/%20/g, '+')
-        .replace(/%2d/gi, '-')
-        .replace(/%5f/gi, '_')
-        .replace(/%2e/gi, '.')
-        .replace(/%21/gi, '!')
-        .replace(/%2a/gi, '*')
-        .replace(/%28/gi, '(')
-        .replace(/%29/gi, ')')
-        .toLowerCase();
-
-    const checkMacValue = crypto.createHash('sha256').update(encodedStr).digest('hex').toUpperCase();
-    orderParams.CheckMacValue = checkMacValue;
-
-    // 5. 產出一個帶有隱藏表單的 HTML，並用 JavaScript 自動送出
-    let formHtml = `<form id="ecpay-form" action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5" method="POST">`;
-    for (const key in orderParams) {
-        formHtml += `<input type="hidden" name="${key}" value="${orderParams[key]}" />`;
-    }
-    formHtml += `</form><script>document.getElementById('ecpay-form').submit();</script>`;
-
-    res.send(formHtml);
-});
-
-// ==========================================
-// 綠界金流 Webhook：接收付款結果並發放點數
-// ==========================================
-exports.ecpayReturn = functions.https.onRequest(async (req, res) => {
-    // 綠界回傳的資料會放在 req.body 裡面
-    const data = req.body;
-
-    // 1. 把環境變數裡的金鑰拿出來
-    const hashKey = process.env.ECPAY_HASH_KEY;
-    const hashIV = process.env.ECPAY_HASH_IV;
-
-    // 2. 🛡️ 資安防護：驗證 CheckMacValue (檢查碼)
-    // 我們要自己算一次檢查碼，看看跟綠界傳來的是不是一模一樣
-    const receivedMac = data.CheckMacValue;
-
-    // 把 CheckMacValue 從物件中剔除，剩下的參數用來計算
-    const calcData = { ...data };
-    delete calcData.CheckMacValue;
-
-    const keys = Object.keys(calcData).sort();
-    let checkMacStr = `HashKey=${hashKey}`;
-    for (const key of keys) {
-        checkMacStr += `&${key}=${calcData[key]}`;
-    }
-    checkMacStr += `&HashIV=${hashIV}`;
-
-    let encodedStr = encodeURIComponent(checkMacStr)
-        .replace(/%20/g, '+')
-        .replace(/%2d/gi, '-')
-        .replace(/%5f/gi, '_')
-        .replace(/%2e/gi, '.')
-        .replace(/%21/gi, '!')
-        .replace(/%2a/gi, '*')
-        .replace(/%28/gi, '(')
-        .replace(/%29/gi, ')')
-        .toLowerCase();
-
-    const calculatedMac = crypto.createHash('sha256').update(encodedStr).digest('hex').toUpperCase();
-
-    // 如果檢查碼不符，代表可能是駭客偽造的，直接擋掉！
-    if (calculatedMac !== receivedMac) {
-        console.error("❌ 綠界檢查碼驗證失敗！可能是偽造的請求！");
-        return res.send('0|ErrorMessage');
-    }
-
-    // 3. 檢查付款是否成功 (RtnCode === '1' 代表成功)
-    if (data.RtnCode === '1') {
-        const userId = data.CustomField1;   // 我們剛剛藏進去的玩家 UID
-        const pointsToAdd = parseInt(data.CustomField2, 10); // 藏進去的花花數量
-        const tradeNo = data.MerchantTradeNo;
-
-        if (!userId || isNaN(pointsToAdd)) {
-            console.error("❌ 找不到玩家 ID 或點數數量！");
-            return res.send('1|OK'); // 還是回傳 OK，以免綠界一直重試
-        }
-
-        try {
-            const db = admin.firestore();
-            const userRef = db.collection('users').doc(userId);
-
-            // ✨ 啟動資料庫交易 (Transaction)，安全地發放點數並記錄收支明細
-            await db.runTransaction(async (transaction) => {
-                const userDoc = await transaction.get(userRef);
-
-                if (!userDoc.exists) {
-                    throw new Error("玩家不存在");
-                }
-
-                // A. 幫玩家增加花花點數
-                transaction.update(userRef, {
-                    flowerPoints: admin.firestore.FieldValue.increment(pointsToAdd)
-                });
-
-                // B. 在 flower_logs 裡寫入一筆明細 (這樣 App 裡的「收支明細」分頁才看得到)
-                const logRef = userRef.collection('flower_logs').doc(tradeNo);
-                transaction.set(logRef, {
-                    title: `儲值 ${pointsToAdd} 花花`,
-                    amount: pointsToAdd,
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                    source: 'ECPay',
-                    tradeNo: tradeNo
-                });
-            });
-
-            console.log(`✅ 成功發放 ${pointsToAdd} 點花花給玩家 ${userId}`);
-        } catch (error) {
-            console.error("❌ 更新資料庫失敗: ", error);
-        }
-    } else {
-        // 付款失敗 (例如卡片額度不足、超商代碼過期)
-        console.log(`付款失敗或狀態更新，RtnCode: ${data.RtnCode}, 訊息: ${data.RtnMsg}`);
-    }
-
-    // 4. 🚪 完美送客
-    // 綠界規定：只要我們成功收到通知，就必須回傳這串字。
-    // 如果不回傳這個，綠界會以為我們沒收到，然後一直瘋狂重發通知喔！
-    res.send('1|OK');
-});
 // ============================================================
 // Voice Matching V2：共用設定
 // ============================================================
@@ -7850,3 +7684,8 @@ exports.uploadVoiceBank = onCall(
     };
   }
 );
+
+// ==========================================
+// 💳 TapPay Web 信用卡付款
+// ==========================================
+exports.payByPrime = require("./tappay").payByPrime;

@@ -4358,4 +4358,562 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get voice_preview_failed => 'فشل تشغيل الصوت';
+
+  @override
+  String get characterBannerSectionTitle =>
+      'عنوان لافتة الصفحة الرئيسية للشخصية';
+
+  @override
+  String get characterBannerDescription => 'وصف اللافتة';
+
+  @override
+  String get characterBannerRemove => 'إزالة';
+
+  @override
+  String get characterBannerSelect => 'تحديد صورة اللافتة';
+
+  @override
+  String get characterBannerChange => 'تغيير صورة اللافتة';
+
+  @override
+  String get characterBannerSpecs =>
+      'النسبة الموصى بها 16:9، الحجم الموصى به 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint =>
+      'عند عدم التحديد، ستستخدم الصفحة الرئيسية صورة الشخصية الرئيسية تلقائياً.';
+
+  @override
+  String get characterBannerHelpContent =>
+      'ستظهر اللافتة في المنطقة الأفقية الكبيرة بالصفحة الرئيسية للشخصية.\n\nيُوصى باستخدام صورة أفقية بنسبة 16:9، مثل 1920 × 1080.\n\nيرجى وضع الشخصيات المهمة والوجوه في منتصف الشاشة قدر الإمكان لتجنب قصها على أحجام الهواتف المختلفة.\n\nإذا لم يتم تحديد لافتة، سيستخدم النظام صورة الشخصية الرئيسية تلقائياً.';
+
+  @override
+  String get first_meeting_title => 'اللقاء الأول';
+
+  @override
+  String get common_delete_network_failed =>
+      'فشل الحذف، يرجى التحقق من الشبكة ثم المحاولة مرة أخرى';
+
+  @override
+  String get common_operation_failed_retry =>
+      'فشلت العملية، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return 'صورة حصرية $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase => 'يفتح بعد زيادة مستوى الإعجاب';
+
+  @override
+  String get first_meeting_empty => 'اللقاء الأول، لم يبدأ بعد...';
+
+  @override
+  String photo_load_failed(String error) {
+    return 'فشل تحميل الصورة: $error';
+  }
+
+  @override
+  String get add_friend_failed_retry =>
+      'فشل إضافة الصديق، يرجى المحاولة مرة أخرى لاحقاً.';
+
+  @override
+  String get remove_friend => 'إزالة صديق';
+
+  @override
+  String get report_character => 'الإبلاغ عن الشخصية';
+
+  @override
+  String get block_character => 'حظر الشخصية';
+
+  @override
+  String get daily_encounter => 'لقاء يومي';
+
+  @override
+  String get discovery_hall => 'قاعة الاستكشاف';
+
+  @override
+  String get latest_recommendation => 'أحدث التوصيات';
+
+  @override
+  String get popular_ranking => 'الأكثر شعبية';
+
+  @override
+  String get character_features => 'سمات الشخصية';
+
+  @override
+  String get featured_new_star => 'نجم جديد ساطع．توصيات ممتازة';
+
+  @override
+  String get recently_added_characters => 'شخصيات مضافة حديثاً';
+
+  @override
+  String get no_tag_data => 'لا توجد بيانات وسوم حالياً~';
+
+  @override
+  String get no_character_with_tag => 'لم يتم العثور على شخصية تحمل هذا الوسم';
+
+  @override
+  String get voice_search_failed_retry =>
+      'فشل البحث عن الصوت، يرجى المحاولة مرة أخرى';
+
+  @override
+  String get voice_search_incomplete_retry =>
+      'البحث غير مكتمل، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String get voice_data_incomplete => 'بيانات الصوت غير مكتملة';
+
+  @override
+  String get voice_generation_failed_retry =>
+      'فشل توليد الصوت، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String get voice_playback_failed_retry =>
+      'فشل تشغيل الصوت، يرجى المحاولة مرة أخرى';
+
+  @override
+  String get selected_voice_data_incomplete =>
+      'بيانات الصوت المحددة غير مكتملة';
+
+  @override
+  String get private_voice_user_not_found =>
+      'لم يتم العثور على المستخدم، تعذر تحديث صوت الشخصية الخاصة';
+
+  @override
+  String get voice_selected_character_save_failed =>
+      'تم تحديد الصوت، ولكن فشل حفظ بيانات الشخصية';
+
+  @override
+  String get voice_binding_failed => 'فشل ربط الصوت';
+
+  @override
+  String get play_voice_tooltip => 'تشغيل الصوت';
+
+  @override
+  String get avatar_label => 'الصورة الشخصية';
+
+  @override
+  String get message_preview_image => '[صورة]';
+
+  @override
+  String get message_preview_recording => '[تسجيل صوتي]';
+
+  @override
+  String get message_preview_voice => '[رسالة صوتية]';
+
+  @override
+  String get send_failed_retry =>
+      'فشل الإرسال، يرجى المحاولة مرة أخرى لاحقاً 😢';
+
+  @override
+  String get media_upload_failed_retry =>
+      'فشل تحميل الوسائط، يرجى المحاولة مرة أخرى';
+
+  @override
+  String get ai_thinking_too_long =>
+      'يبدو أنه يستغرق وقتاً في التفكير، يرجى المحاولة مرة أخرى لاحقاً...';
+
+  @override
+  String get ai_reply_in_progress =>
+      'إنه يرد الآن، يرجى الانتظار وعدم الإرسال بشكل مكرر';
+
+  @override
+  String get ai_response_blocked =>
+      'تشتت أفكاره، يرجى استخدام أسلوب أكثر لطفاً!';
+
+  @override
+  String get microphone_permission_required =>
+      'يلزم الحصول على إذن الميكروفون للتسجيل';
+
+  @override
+  String get no_recording_to_send => 'لا يوجد تسجيل لإرساله';
+
+  @override
+  String get voice_uploading => 'جاري تحميل الصوت...';
+
+  @override
+  String get change_watermark_color => 'تغيير لون العلامة المائية';
+
+  @override
+  String get other_party_typing => 'الطرف الآخر يكتب الآن...';
+
+  @override
+  String get chat_input_hint => 'يرجى الإدخال...';
+
+  @override
+  String get regenerate_sync_failed =>
+      'فشل مزامنة عدد مرات إعادة التوليد، يرجى المحاولة مرة أخرى 😢';
+
+  @override
+  String get creator_public_works => 'الأعمال العامة';
+
+  @override
+  String get creator_received_likes => 'الإعجابات المستلمة';
+
+  @override
+  String get about_me => 'نبذة عني';
+
+  @override
+  String get moment_input_hint => 'شاركي مشاعركِ...';
+
+  @override
+  String character_play_count(int count) {
+    return 'عدد مرات اللعب: $count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return 'الوسم: #$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return 'فشلت التجربة الصوتية: $code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return 'تم حذف $count من الرسائل بنجاح';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return 'فشل تحميل الأعمال: $error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age سنة';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return 'فشل الحذف: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return 'فشل تحميل بيانات الشخصية: $error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => 'فشل تحميل صورة المسودة:';
+
+  @override
+  String get unnamedCreator => 'مبدع غير مسمى';
+
+  @override
+  String get profileNotYetFilled => 'لم يتم ملء السيرة الذاتية بعد';
+
+  @override
+  String get reportImageSizeLimit => 'حجم الصورة لا يمكن أن يتجاوز 10 ميغابايت';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return 'فشل تحديد صورة البلاغ: $error';
+  }
+
+  @override
+  String get reportImageCannotSelect =>
+      'تعذر تحديد الصورة، يرجى المحاولة مرة أخرى لاحقاً';
+
+  @override
+  String get reportLoginRequired => 'يرجى تسجيل الدخول أولاً قبل تقديم البلاغ';
+
+  @override
+  String get reportAnonymousPlayer => 'لاعب غير مسمى';
+
+  @override
+  String get reportSendSuccess => 'تم إرسال البلاغ بنجاح، شكراً لملاحظاتكِ!';
+
+  @override
+  String reportSendFailed(String error) {
+    return 'فشل إرسال بلاغ اللاعب: $error';
+  }
+
+  @override
+  String get reportNetworkFailed =>
+      'فشل الإرسال، يرجى التحقق من الشبكة ثم المحاولة مرة أخرى';
+
+  @override
+  String get reportAttachImageLabel => 'إرفاق صورة (اختياري)';
+
+  @override
+  String get reportAttachImageHint =>
+      'عند الإبلاغ عن مشكلة أو عدم وصول الزهور، يمكنكِ إرفاق لقطة شاشة للتحقق من المشكلة.';
+
+  @override
+  String get reportOpeningAlbum => 'جاري فتح ألبوم الصور...';
+
+  @override
+  String get reportSelectFromAlbum => 'تحديد صورة من ألبوم الصور';
+
+  @override
+  String get reportSending => 'جاري الإرسال...';
+
+  @override
+  String get reportSubmit => 'إرسال البلاغ';
+
+  @override
+  String get reportRemoveImage => 'إزالة الصورة';
+
+  @override
+  String get reportImageSelected => 'تم تحديد الصورة';
+
+  @override
+  String get reportChangeImage => 'تغيير';
+
+  @override
+  String get reloadTranslation => 'إعادة تحميل الترجمة';
+
+  @override
+  String get guideNotAvailableInLanguage =>
+      'دليل اللعب غير متوفر بهذه اللغة حالياً، يتم عرض الصينية التقليدية مؤقتاً.';
+
+  @override
+  String get clearSearch => 'مسح البحث';
+
+  @override
+  String get memoPermissionWarning =>
+      'لم يتم إذن الإشعارات، سيتم حفظ المذكرة ولكن لن تظهر تنبيهات النظام.';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return 'تم حفظ المذكرة، سيقوم $name بتذكيركِ!';
+  }
+
+  @override
+  String get memoSavedNoPermission =>
+      'تم حفظ المذكرة، ولكن لم يتم فتح إذن الإشعارات بعد.';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return 'تم تحديث المذكرة، سيقوم $name بتذكيركِ!';
+  }
+
+  @override
+  String get memoUpdatedNoPermission =>
+      'تم تحديث المذكرة، ولكن لا يوجد إذن إشعارات حالياً.';
+
+  @override
+  String dataLoadError(String error) {
+    return 'حدث خطأ أثناء تحميل البيانات: $error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return 'فشل التحميل: $error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'd MMMM';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt => 'هل أعجبتكِ هذه اللحظة؟ أرسلي له بعض الدعم!';
+
+  @override
+  String get saveFeedPocket => 'احفظي اللحظات الخاصة في جيبكِ سراً.';
+
+  @override
+  String get newComment => 'تعليق جديد';
+
+  @override
+  String get someFriend => 'صديق ما';
+
+  @override
+  String get myBackpackAndPrivileges => 'حقيبتي المخصصة والمزايا';
+
+  @override
+  String get currentRomanticBond => 'الرابط المكتسب حالياً';
+
+  @override
+  String get physicalGiftBoxUnlockStatus => 'حالة فتح الصندوق الهدايا المادي:';
+
+  @override
+  String get topLovePhysicalVipBox => 'صندوق الهدايا الحصري VIP 【الحب الأسمى】';
+
+  @override
+  String get physicalGiftBoxContents =>
+      'يشمل: رسالة بخط اليد + دمية ممثلة للشخصية + رسالة شكر رسمية';
+
+  @override
+  String get modifyShippingAddress => 'تعديل معلومات عنوان الشحن';
+
+  @override
+  String get addressUnlockedFillNow => 'تم الفتح! انقري هنا لملء معلومات الشحن';
+
+  @override
+  String get addressSuccessfullyRegistered =>
+      'لقد قمتِ بتسجيل عنوان الشحن بنجاح، سنقوم بإعداده لكِ في أقرب وقت ممكن!';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return 'متبقي NT\$ $amount لفتح الجائزة المادية الكبرى!';
+  }
+
+  @override
+  String get avatarFrameHint =>
+      'تلميح: يمكنكِ عرض وتجهيز المظاهر الرقمية وإطارات الصور الأخرى في المتجر أو الإعدادات الشخصية.';
+
+  @override
+  String get closeButton => 'إغلاق';
+
+  @override
+  String get physicalGiftBoxUnlockTitle =>
+      'فتح صندوق الهدايا المادي 【الحب الأسمى】';
+
+  @override
+  String get physicalGiftBoxUnlockThanks =>
+      'شكراً لدعمكِ الدائم والرائع لـ 《Lian Lian Shi Guang》!';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt =>
+      'يرجى ملء معلومات الشحن التالية، وسنرسل لكِ رسالة مكتوبة بخط اليد ودمية الشخصية الخاصة:';
+
+  @override
+  String get recipientRealName => 'الاسم الحقيقي للمستلم';
+
+  @override
+  String get contactPhone => 'رقم الهاتف';
+
+  @override
+  String get fullShippingAddress => 'عنوان الشحن الكامل (شاملاً الرمز البريدي)';
+
+  @override
+  String get desiredCharacterDollName => 'اسم دمية الشخصية التي ترغبين بها';
+
+  @override
+  String get characterNameExample => 'مثال: اسم الشخصية المراد إدخاله';
+
+  @override
+  String get fillLater => 'الملء لاحقاً';
+
+  @override
+  String get fillCompleteAddressAndRoleHint =>
+      'يرجى ملء معلومات الشحن واسم الشخصية المفضلة بالكامل!';
+
+  @override
+  String get shippingInfoSubmittedSuccess =>
+      'تم إرسال معلومات الشحن بنجاح! يرجى التطلع إلى مفاجأتنا المادية!';
+
+  @override
+  String get confirmSubmit => 'تأكيد الإرسال';
+
+  @override
+  String get aboutMe => 'نبذة عني';
+
+  @override
+  String get myBackpack => 'حقيبتي';
+
+  @override
+  String get ownerExclusiveArea => 'المنطقة الحصرية للمالك';
+
+  @override
+  String get enterShiguangAdminBackend =>
+      'الدخول إلى لوحة إدارة Lian Lian Shi Guang';
+
+  @override
+  String get errorOccurred => 'حدث خطأ';
+
+  @override
+  String get creatorGuidelines => 'إرشادات المبدعين';
+
+  @override
+  String get playGuide => 'دليل اللعب';
+
+  @override
+  String get lianlianShiguang => 'Lian Lian Shi Guang';
+
+  @override
+  String get copyrightNotice => '© 2026 Mo Yu Bai';
+
+  @override
+  String get cumulativeBenefits => 'المزايا التراكمية';
+
+  @override
+  String get perkFirstEncounter => 'الميل الأول';
+
+  @override
+  String get perkFirstEncounterReward => '20 زهرة + لقب مبتدئ حصري';
+
+  @override
+  String get perkGlimmerThrob => 'خفقة الضوء الخافت';
+
+  @override
+  String get perkGlimmerThrobReward => 'إطار صورة حصري 【خفقة الضوء الخافت】';
+
+  @override
+  String get perkStarryWhisper => 'همس النجوم';
+
+  @override
+  String get perkStarryWhisperReward => 'فقاعة دردشة حصرية + 50 زهرة';
+
+  @override
+  String get perkRomanticSunset => 'غروب رومانسي';
+
+  @override
+  String get perkRomanticSunsetReward => 'أيقونة تطبيق مخصصة';
+
+  @override
+  String get perkHeartbeat => 'نبضات القلب';
+
+  @override
+  String get perkHeartbeatReward => 'مؤثرات النقر على الشاشة + 100 زهرة';
+
+  @override
+  String get perkEternalVow => 'العهد الأبدي';
+
+  @override
+  String get perkEternalVowReward => 'إطار صورة متحرك متقدم + 200 زهرة';
+
+  @override
+  String get perkSoulIntersection => 'تقاطع الأرواح';
+
+  @override
+  String get perkSoulIntersectionReward =>
+      'مؤثرات فقاعة دردشة متحركة + لقب متقدم حصري';
+
+  @override
+  String get perkExclusiveWait => 'الانتظار الحصري';
+
+  @override
+  String get perkExclusiveWaitReward => 'بطاقة اسم متحركة فاخرة + 500 زهرة';
+
+  @override
+  String get perkBrilliantGalaxy => 'مجرة متألقة';
+
+  @override
+  String get perkBrilliantGalaxyReward =>
+      'مؤثرات دخول حصرية + خدمة عملاء مخصصة';
+
+  @override
+  String get perkTopBeloved => 'الحب الأسمى';
+
+  @override
+  String get perkTopBelovedReward => 'صندوق الهدايا الحصري VIP المادي';
+
+  @override
+  String get cumulativeRomanticBond => 'الرابط الرومانسي التراكمي';
+
+  @override
+  String get allTopPrivilegesUnlocked => 'لقد قمتِ بفتح جميع المزايا الفاخرة!';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return 'اشحني NT\$ $amount إضافية لفتح المستوى التالي';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty => 'محتوى القصة لا يمكن أن يكون فارغاً';
+
+  @override
+  String get writeYourStoryHint => 'اكتبي قصتكما...';
+
+  @override
+  String get characterBannerTitle => 'لافتة الصفحة الرئيسية للشخصية';
 }

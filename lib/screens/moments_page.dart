@@ -365,7 +365,7 @@ class _MomentsPageState extends State<MomentsPage> {
           title: Text(l10n.moment_delete_confirm_title),
           content:  Text(l10n.delete_warning),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('取消')),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancelButton)),
             TextButton(
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(l10n.action_confirm_delete, style: TextStyle(color: Colors.red))

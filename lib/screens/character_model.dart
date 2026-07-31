@@ -85,6 +85,7 @@ class Character {
   final String id;
   final String name;
   final String avatarPath;
+  final String bannerImagePath;
   final List<String> galleryPaths;
   final List<CharacterPhoto>? gallery;
   final String createdBy;
@@ -135,6 +136,7 @@ class Character {
     required this.id,
     required this.name,
     required this.avatarPath,
+    this.bannerImagePath = '',
     required this.galleryPaths,
     this.gallery,
     required this.createdBy,
@@ -241,6 +243,7 @@ class Character {
       id: doc.id,
       name: data['name'] ?? '',
       avatarPath: avatar,         // ✨ 使用最新的防呆大頭貼
+      bannerImagePath: data['bannerImagePath']?.toString() ?? '',
       gallery: finalGallery,      // ✨ 帶入正確讀取到的相簿陣列
       galleryPaths: List<String>.from(data['galleryPaths'] ?? []),
       storyModeFirstLine: data['storyModeFirstLine'] ?? data['firstLine'] ?? '',
@@ -295,6 +298,7 @@ class Character {
     return {
       'name': name,
       'avatarPath': avatarPath,
+      'bannerImagePath': bannerImagePath,
       'galleryPaths': galleryPaths,
       'gallery': gallery?.map((e) => e.toMap()).toList(),
       'createdBy': createdBy,

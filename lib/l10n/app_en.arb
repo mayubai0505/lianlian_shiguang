@@ -2222,5 +2222,297 @@
     "description": "Button text to restore account"
   },
   "voice_preview": "Play Voice",
-  "voice_preview_failed": "Failed to play voice"
+  "voice_preview_failed": "Failed to play voice",
+  "voice_preview_failed": "Failed to play voice",
+  "characterBannerSectionTitle": "Character Homepage Banner",
+  "characterBannerDescription": "Banner Description",
+  "characterBannerRemove": "Remove",
+  "characterBannerSelect": "Select Banner Image",
+  "characterBannerChange": "Change Banner Image",
+  "characterBannerSpecs": "Recommended ratio 16:9, recommended resolution 1920 × 1080",
+  "characterBannerDefaultHint": "If unset, the homepage will automatically use the character's main avatar.",
+  "characterBannerHelpContent": "The banner displays in the large horizontal section on the character's homepage.\n\nIt is recommended to use a 16:9 horizontal image, such as 1920 × 1080.\n\nPlease place main subjects and faces near the center to avoid cropping on different phone screen sizes.\n\nIf no banner is set, the system will automatically fall back to the character's main avatar.",
+  "first_meeting_title": "First Encounter",
+  "common_delete_network_failed": "Deletion failed. Please check your network connection and try again",
+  "common_operation_failed_retry": "Operation failed. Please try again later",
+  "exclusive_photo_number": "Exclusive Photo {number}",
+  "@exclusive_photo_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "unlock_after_affection_increase": "Unlock after increasing Affection Level",
+  "first_meeting_empty": "First encounter, yet to begin...",
+  "follow_btn": "Follow",
+  "photo_load_failed": "Failed to load photo: {error}",
+  "@photo_load_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "add_friend_failed_retry": "Failed to add friend. Please try again later.",
+  "remove_friend": "Remove Friend",
+  "report_character": "Report Character",
+  "block_character": "Block Character",
+  "daily_encounter": "Daily Encounter",
+  "discovery_hall": "Discovery Hall",
+  "latest_recommendation": "Latest Recommendations",
+  "popular_ranking": "Popularity Ranking",
+  "character_features": "Character Traits",
+  "featured_new_star": "Shining New Star · Featured Recommendation",
+  "recently_added_characters": "Recently Added Characters",
+  "no_tag_data": "No tag data available at the moment~",
+  "no_character_with_tag": "No characters found with this tag",
+  "voice_search_failed_retry": "Voice search failed. Please try again",
+  "voice_search_incomplete_retry": "Voice search incomplete. Please try again later",
+  "voice_data_incomplete": "Voice data is incomplete",
+  "voice_generation_failed_retry": "Voice generation failed. Please try again later",
+  "voice_playback_failed_retry": "Voice playback failed. Please try again",
+  "selected_voice_data_incomplete": "Selected voice data is incomplete",
+  "private_voice_user_not_found": "User not found. Unable to update private character voice",
+  "voice_selected_character_save_failed": "Voice selected, but failed to save character data",
+  "voice_binding_failed": "Voice binding failed",
+  "play_voice_tooltip": "Play Voice",
+  "avatar_label": "Avatar",
+  "message_preview_image": "[Image]",
+  "message_preview_recording": "[Recording]",
+  "message_preview_voice": "[Voice Message]",
+  "send_failed_retry": "Failed to send. Please try again later 😢",
+  "media_upload_failed_retry": "Media upload failed. Please try again",
+  "ai_thinking_too_long": "He seems deep in thought. Please try again later...",
+  "ai_reply_in_progress": "He is currently replying. Please wait a moment and do not resend",
+  "ai_response_blocked": "His thoughts were interrupted. Try phrasing it more gently!",
+  "microphone_permission_required": "Microphone permission is required to record",
+  "no_recording_to_send": "No recording available to send",
+  "voice_uploading": "Uploading voice message...",
+  "change_watermark_color": "Change Watermark Color",
+  "other_party_typing": "The other party is typing...",
+  "chat_input_hint": "Please enter a message...",
+  "regenerate_sync_failed": "Failed to sync regeneration count. Please try again 😢",
+  "creator_public_works": "Public Works",
+  "creator_received_likes": "Likes Received",
+  "about_me": "About Me",
+  "moment_input_hint": "Share your thoughts...",
+  "character_play_count": "Plays: {count}",
+  "@character_play_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tag_page_title": "Tag: #{tag}",
+  "@tag_page_title": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "voice_preview_failed_detail": "Voice preview failed: {code} {message}",
+  "@voice_preview_failed_detail": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "messages_deleted_success": "Successfully deleted {count} messages",
+  "@messages_deleted_success": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_work_load_failed": "Failed to load works: {error}",
+  "@creator_work_load_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "age_years_old": "{age} years old",
+  "@age_years_old": {
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFailedMessage": "Deletion failed: {error}",
+  "@deleteFailedMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loadCharacterDataFailed": "Failed to load character data: {error}",
+  "@loadCharacterDataFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "draftAvatarLoadFailed": "Failed to load draft avatar:",
+  "unnamedCreator": "Unnamed Creator",
+  "profileNotYetFilled": "Bio not yet filled in",
+  "reportImageSizeLimit": "Image size cannot exceed 10 MB",
+  "reportImageSelectFailed": "Failed to select report image: {error}",
+  "@reportImageSelectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportImageCannotSelect": "Unable to select image. Please try again later",
+  "reportLoginRequired": "Please log in before submitting a report",
+  "reportAnonymousPlayer": "Anonymous Player",
+  "reportSendSuccess": "Report submitted successfully. Thank you for your feedback!",
+  "reportSendFailed": "Failed to send player report: {error}",
+  "@reportSendFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportNetworkFailed": "Failed to send. Please check your network and try again",
+  "reportAttachImageLabel": "Attach Image (Optional)",
+  "reportAttachImageHint": "When reporting bugs or missing currency, attaching screenshots helps our team investigate faster.",
+  "reportOpeningAlbum": "Opening photo album...",
+  "reportSelectFromAlbum": "Select from Photo Album",
+  "reportSending": "Submitting...",
+  "reportSubmit": "Submit Report",
+  "reportRemoveImage": "Remove Image",
+  "reportImageSelected": "Image Selected",
+  "reportChangeImage": "Change",
+  "reloadTranslation": "Reload Translation",
+  "guideNotAvailableInLanguage": "Play guide is not currently available in this language; displaying Traditional Chinese temporarily.",
+  "clearSearch": "Clear Search",
+  "memoPermissionWarning": "Notification permission is not enabled. The memo will be saved, but system reminders will not be shown.",
+  "memoSavedWithNotification": "Memo saved! {name} will remind you!",
+  "@memoSavedWithNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memoSavedNoPermission": "Memo saved, but notification permission is not enabled.",
+  "memoUpdatedWithNotification": "Memo updated! {name} will remind you!",
+  "@memoUpdatedWithNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memoUpdatedNoPermission": "Memo updated, but notification permission is not enabled.",
+  "dataLoadError": "An error occurred while loading data: {error}",
+  "@dataLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loadFailed": "Loading failed: {error}",
+  "@loadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dateFormatMonthDay": "MMM d",
+  "timeFormatHourMinute": "HH:mm",
+  "likeFeedPrompt": "Enjoying this moment? Send them some love!",
+  "saveFeedPocket": "Tuck special moments quietly into your pocket.",
+  "newComment": "New Comment",
+  "someFriend": "A friend",
+  "myBackpackAndPrivileges": "My Backpack & Privileges",
+  "currentRomanticBond": "Current Romantic Bond Accumulated",
+  "physicalGiftBoxUnlockStatus": "Physical Gift Box Unlock Status:",
+  "topLovePhysicalVipBox": "[Top Beloved] Physical VIP Exclusive Gift Box",
+  "physicalGiftBoxContents": "Includes: Handwritten Letter + Plush Doll + Official Thank-You Letter",
+  "modifyShippingAddress": "Edit Shipping Address Information",
+  "addressUnlockedFillNow": "Unlocked! Tap here to fill in shipping info",
+  "addressSuccessfullyRegistered": "You have successfully registered your shipping address. We will prepare it for you soon!",
+  "amountNeededForPhysicalPrize": "NT$ {amount} more needed to unlock the physical grand prize!",
+  "@amountNeededForPhysicalPrize": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarFrameHint": "Hint: Additional digital skins and avatar frames can be viewed and equipped in the Shop or Profile Settings.",
+  "closeButton": "Close",
+  "physicalGiftBoxUnlockTitle": "[Top Beloved] Physical Gift Box Unlocked",
+  "physicalGiftBoxUnlockThanks": "Thank you for your ultimate devotion to Lian Lian Shi Guang!",
+  "physicalGiftBoxUnlockPrompt": "Please fill out the following shipping details so we can send your handwritten letter and plush doll:",
+  "recipientRealName": "Recipient's Real Name",
+  "contactPhone": "Contact Phone Number",
+  "fullShippingAddress": "Full Shipping Address (including Postal Code)",
+  "desiredCharacterDollName": "Desired Character Doll Name",
+  "characterNameExample": "E.g., Name of desired character",
+  "fillLater": "Fill Out Later",
+  "fillCompleteAddressAndRoleHint": "Please fill out all shipping info and your chosen character name!",
+  "shippingInfoSubmittedSuccess": "Shipping info submitted successfully! Look forward to your physical surprise!",
+  "confirmSubmit": "Confirm & Submit",
+  "aboutMe": "About Me",
+  "myBackpack": "My Backpack",
+  "ownerExclusiveArea": "Owner Exclusive Portal",
+  "enterShiguangAdminBackend": "Enter Shiguang Admin Console",
+  "errorOccurred": "An error occurred",
+  "creatorGuidelines": "Creator Guidelines",
+  "playGuide": "Play Guide",
+  "lianlianShiguang": "Lian Lian Shi Guang",
+  "copyrightNotice": "© 2026 Mo Yu Bai",
+  "cumulativeBenefits": "Cumulative Rewards",
+  "perkFirstEncounter": "First Encounter",
+  "perkFirstEncounterReward": "20 Flowers + Exclusive Novice Title",
+  "perkGlimmerThrob": "Glimmer Flutter",
+  "perkGlimmerThrobReward": "Exclusive Avatar Frame [Glimmer Flutter]",
+  "perkStarryWhisper": "Starry Whisper",
+  "perkStarryWhisperReward": "Exclusive Chat Bubble + 50 Flowers",
+  "perkRomanticSunset": "Romantic Sunset",
+  "perkRomanticSunsetReward": "Exclusive App Desktop Icon",
+  "perkHeartbeat": "Heartbeat",
+  "perkHeartbeatReward": "Screen Tap Effect + 100 Flowers",
+  "perkEternalVow": "Eternal Vow",
+  "perkEternalVowReward": "Advanced Animated Avatar Frame + 200 Flowers",
+  "perkSoulIntersection": "Soul Intersection",
+  "perkSoulIntersectionReward": "Animated Chat Bubble Effect + Exclusive Advanced Title",
+  "perkExclusiveWait": "Exclusive Devotion",
+  "perkExclusiveWaitReward": "Top Animated Nameplate + 500 Flowers",
+  "perkBrilliantGalaxy": "Brilliant Galaxy",
+  "perkBrilliantGalaxyReward": "Exclusive Entrance Effect + Dedicated Support",
+  "perkTopBeloved": "Top Beloved",
+  "perkTopBelovedReward": "Physical VIP Exclusive Gift Box",
+  "cumulativeRomanticBond": "Cumulative Romantic Bond",
+  "allTopPrivilegesUnlocked": "You have unlocked all top privileges!",
+  "rechargeAmountForNextTier": "Top up NT$ {amount} more to unlock the next tier",
+  "@rechargeAmountForNextTier": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "storyContentCannotBeEmpty": "Story content cannot be empty",
+  "writeYourStoryHint": "Write down your story...",
+  "characterBannerTitle": "Character Homepage Banner"
 }

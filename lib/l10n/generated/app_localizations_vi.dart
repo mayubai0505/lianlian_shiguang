@@ -4412,4 +4412,577 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get voice_preview_failed => 'Phát giọng nói thất bại';
+
+  @override
+  String get characterBannerSectionTitle => 'Banner trang chủ nhân vật';
+
+  @override
+  String get characterBannerDescription => 'Mô tả banner';
+
+  @override
+  String get characterBannerRemove => 'Xóa';
+
+  @override
+  String get characterBannerSelect => 'Chọn ảnh banner';
+
+  @override
+  String get characterBannerChange => 'Thay đổi ảnh banner';
+
+  @override
+  String get characterBannerSpecs =>
+      'Tỷ lệ khuyến nghị 16:9, kích thước khuyến nghị 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint =>
+      'Nếu không cài đặt, trang chủ sẽ tự động sử dụng ảnh đại diện chính của nhân vật.';
+
+  @override
+  String get characterBannerHelpContent =>
+      'Banner sẽ hiển thị ở khu vực hình ngang lớn trên trang chủ của nhân vật.\n\nKhuyến nghị sử dụng hình ảnh ngang tỷ lệ 16:9, ví dụ 1920 × 1080.\n\nNên đặt nhân vật chính và khuôn mặt ở gần trung tâm để tránh bị cắt trên các kích thước màn hình điện thoại khác nhau.\n\nNếu không thiết lập banner, hệ thống sẽ tự động sử dụng ảnh đại diện chính của nhân vật.';
+
+  @override
+  String get first_meeting_title => 'Lần đầu gặp gỡ';
+
+  @override
+  String get common_delete_network_failed =>
+      'Xóa thất bại. Vui lòng kiểm tra kết nối mạng rồi thử lại';
+
+  @override
+  String get common_operation_failed_retry =>
+      'Thao tác thất bại. Vui lòng thử lại sau';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return 'Ảnh độc quyền $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase =>
+      'Mở khóa sau khi tăng Mức độ Hảo cảm';
+
+  @override
+  String get first_meeting_empty => 'Lần đầu gặp gỡ, chưa bắt đầu...';
+
+  @override
+  String photo_load_failed(String error) {
+    return 'Tải ảnh thất bại: $error';
+  }
+
+  @override
+  String get add_friend_failed_retry =>
+      'Thêm bạn thất bại. Vui lòng thử lại sau.';
+
+  @override
+  String get remove_friend => 'Xóa bạn';
+
+  @override
+  String get report_character => 'Báo cáo nhân vật';
+
+  @override
+  String get block_character => 'Chặn nhân vật';
+
+  @override
+  String get daily_encounter => 'Gặp gỡ mỗi ngày';
+
+  @override
+  String get discovery_hall => 'Sảnh khám phá';
+
+  @override
+  String get latest_recommendation => 'Đề xuất mới nhất';
+
+  @override
+  String get popular_ranking => 'Bảng xếp hạng nổi bật';
+
+  @override
+  String get character_features => 'Đặc điểm nhân vật';
+
+  @override
+  String get featured_new_star => 'Ngôi sao mới tỏa sáng · Đề xuất hàng đầu';
+
+  @override
+  String get recently_added_characters => 'Nhân vật mới thêm gần đây';
+
+  @override
+  String get no_tag_data => 'Hiện tại chưa có dữ liệu thẻ~';
+
+  @override
+  String get no_character_with_tag => 'Không tìm thấy nhân vật nào có thẻ này';
+
+  @override
+  String get voice_search_failed_retry =>
+      'Tìm kiếm giọng nói thất bại. Vui lòng thử lại';
+
+  @override
+  String get voice_search_incomplete_retry =>
+      'Tìm kiếm chưa hoàn tất. Vui lòng thử lại sau';
+
+  @override
+  String get voice_data_incomplete => 'Dữ liệu giọng nói không đầy đủ';
+
+  @override
+  String get voice_generation_failed_retry =>
+      'Tạo giọng nói thất bại. Vui lòng thử lại sau';
+
+  @override
+  String get voice_playback_failed_retry =>
+      'Phát giọng nói thất bại. Vui lòng thử lại';
+
+  @override
+  String get selected_voice_data_incomplete =>
+      'Dữ liệu giọng nói đã chọn không đầy đủ';
+
+  @override
+  String get private_voice_user_not_found =>
+      'Không tìm thấy người dùng. Không thể cập nhật giọng nói nhân vật riêng tư';
+
+  @override
+  String get voice_selected_character_save_failed =>
+      'Giọng nói đã chọn nhưng lưu dữ liệu nhân vật thất bại';
+
+  @override
+  String get voice_binding_failed => 'Liên kết giọng nói thất bại';
+
+  @override
+  String get play_voice_tooltip => 'Phát giọng nói';
+
+  @override
+  String get avatar_label => 'Ảnh đại diện';
+
+  @override
+  String get message_preview_image => '[Hình ảnh]';
+
+  @override
+  String get message_preview_recording => '[Bản ghi âm]';
+
+  @override
+  String get message_preview_voice => '[Tin nhắn thoại]';
+
+  @override
+  String get send_failed_retry => 'Gửi thất bại. Vui lòng thử lại sau 😢';
+
+  @override
+  String get media_upload_failed_retry =>
+      'Tải phương tiện lên thất bại. Vui lòng thử lại';
+
+  @override
+  String get ai_thinking_too_long =>
+      'Anh ấy dường như đang trầm tư. Vui lòng thử lại sau...';
+
+  @override
+  String get ai_reply_in_progress =>
+      'Anh ấy đang trả lời, vui lòng chờ một chút và không gửi lặp lại';
+
+  @override
+  String get ai_response_blocked =>
+      'Suy nghĩ của anh ấy đã bị gián đoạn, hãy đổi sang cách nói nhẹ nhàng hơn nhé!';
+
+  @override
+  String get microphone_permission_required =>
+      'Cần quyền truy cập micro để ghi âm';
+
+  @override
+  String get no_recording_to_send => 'Không có bản ghi âm nào để gửi';
+
+  @override
+  String get voice_uploading => 'Đang tải tin nhắn thoại lên...';
+
+  @override
+  String get change_watermark_color => 'Đổi màu hình mờ (watermark)';
+
+  @override
+  String get other_party_typing => 'Đối phương đang nhập...';
+
+  @override
+  String get chat_input_hint => 'Vui lòng nhập...';
+
+  @override
+  String get regenerate_sync_failed =>
+      'Đồng bộ số lần tạo lại thất bại. Vui lòng thử lại 😢';
+
+  @override
+  String get creator_public_works => 'Tác phẩm công khai';
+
+  @override
+  String get creator_received_likes => 'Lượt thích nhận được';
+
+  @override
+  String get about_me => 'Về tôi';
+
+  @override
+  String get moment_input_hint => 'Chia sẻ cảm xúc của bạn...';
+
+  @override
+  String character_play_count(int count) {
+    return 'Số lượt chơi: $count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return 'Thẻ: #$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return 'Nghe thử giọng nói thất bại: $code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return 'Đã xóa thành công $count tin nhắn';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return 'Tải tác phẩm thất bại: $error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age tuổi';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return 'Xóa thất bại: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return 'Tải dữ liệu nhân vật thất bại: $error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => 'Tải ảnh đại diện bản nháp thất bại:';
+
+  @override
+  String get unnamedCreator => 'Nhà sáng tạo ẩn danh';
+
+  @override
+  String get profileNotYetFilled => 'Chưa điền phần giới thiệu bản thân';
+
+  @override
+  String get reportImageSizeLimit =>
+      'Kích thước hình ảnh không được vượt quá 10 MB';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return 'Chọn ảnh báo cáo thất bại: $error';
+  }
+
+  @override
+  String get reportImageCannotSelect =>
+      'Không thể chọn hình ảnh. Vui lòng thử lại sau';
+
+  @override
+  String get reportLoginRequired => 'Vui lòng đăng nhập trước khi gửi báo cáo';
+
+  @override
+  String get reportAnonymousPlayer => 'Người chơi ẩn danh';
+
+  @override
+  String get reportSendSuccess =>
+      'Gửi báo cáo thành công. Cảm ơn ý kiến đóng góp của bạn!';
+
+  @override
+  String reportSendFailed(String error) {
+    return 'Gửi báo cáo người chơi thất bại: $error';
+  }
+
+  @override
+  String get reportNetworkFailed =>
+      'Gửi thất bại. Vui lòng kiểm tra kết nối mạng rồi thử lại';
+
+  @override
+  String get reportAttachImageLabel => 'Đính kèm hình ảnh (Tùy chọn)';
+
+  @override
+  String get reportAttachImageHint =>
+      'Khi báo cáo Bug hoặc tài nguyên chưa vào tài khoản, việc gửi đính kèm ảnh màn hình sẽ giúp đội ngũ xác nhận nhanh hơn.';
+
+  @override
+  String get reportOpeningAlbum => 'Đang mở thư viện ảnh...';
+
+  @override
+  String get reportSelectFromAlbum => 'Chọn ảnh từ thư viện';
+
+  @override
+  String get reportSending => 'Đang gửi...';
+
+  @override
+  String get reportSubmit => 'Gửi báo cáo';
+
+  @override
+  String get reportRemoveImage => 'Xóa hình ảnh';
+
+  @override
+  String get reportImageSelected => 'Đã chọn hình ảnh';
+
+  @override
+  String get reportChangeImage => 'Thay đổi';
+
+  @override
+  String get reloadTranslation => 'Tải lại bản dịch';
+
+  @override
+  String get guideNotAvailableInLanguage =>
+      'Hướng dẫn chơi hiện chưa có sẵn bằng tiếng Việt; tạm thời hiển thị bằng tiếng Trung Phồn thể.';
+
+  @override
+  String get clearSearch => 'Xóa tìm kiếm';
+
+  @override
+  String get memoPermissionWarning =>
+      'Quyền thông báo chưa được bật. Ghi chú vẫn sẽ được lưu nhưng sẽ không hiển thị nhắc nhở hệ thống.';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return 'Đã lưu ghi chú! $name sẽ nhắc nhở bạn!';
+  }
+
+  @override
+  String get memoSavedNoPermission =>
+      'Đã lưu ghi chú, nhưng quyền thông báo chưa được bật.';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return 'Đã cập nhật ghi chú! $name sẽ nhắc nhở bạn!';
+  }
+
+  @override
+  String get memoUpdatedNoPermission =>
+      'Đã cập nhật ghi chú, nhưng hiện tại chưa có quyền thông báo.';
+
+  @override
+  String dataLoadError(String error) {
+    return 'Đã xảy ra lỗi khi tải dữ liệu: $error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return 'Tải thất bại: $error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'd MMM';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt =>
+      'Bạn thích bài viết này? Hãy gửi trao chút tình cảm cho người ấy nhé!';
+
+  @override
+  String get saveFeedPocket =>
+      'Gói gọn những khoảnh khắc đặc biệt cất vào túi riêng của bạn.';
+
+  @override
+  String get newComment => 'Bình luận mới';
+
+  @override
+  String get someFriend => 'Một người bạn';
+
+  @override
+  String get myBackpackAndPrivileges => 'Balo & Đặc quyền của tôi';
+
+  @override
+  String get currentRomanticBond => 'Đã tích lũy mối duyên lãng mạn hiện tại';
+
+  @override
+  String get physicalGiftBoxUnlockStatus =>
+      'Trạng thái mở khóa hộp quà hiện vật:';
+
+  @override
+  String get topLovePhysicalVipBox =>
+      'Hộp quà VIP hiện vật độc quyền 【Đỉnh Cao Chí Ái】';
+
+  @override
+  String get physicalGiftBoxContents =>
+      'Bao gồm: Thư tay độc quyền + Búp bê nhân vật + Thư cảm ơn chính thức';
+
+  @override
+  String get modifyShippingAddress => 'Sửa thông tin địa chỉ nhận hàng';
+
+  @override
+  String get addressUnlockedFillNow =>
+      'Đã mở khóa! Nhấn vào đây để điền thông tin nhận hàng';
+
+  @override
+  String get addressSuccessfullyRegistered =>
+      'Bạn đã đăng ký địa chỉ nhận hàng thành công, chúng tôi sẽ chuẩn bị cho bạn trong thời gian sớm nhất!';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return 'Chỉ còn thiếu NT\$ $amount nữa là có thể mở khóa phần thưởng hiện vật!';
+  }
+
+  @override
+  String get avatarFrameHint =>
+      'Gợi ý: Các giao diện kỹ thuật số và khung ảnh đại diện khác có thể xem và trang bị tại Cửa hàng hoặc Cài đặt cá nhân.';
+
+  @override
+  String get closeButton => 'Đóng';
+
+  @override
+  String get physicalGiftBoxUnlockTitle =>
+      'Mở khóa hộp quà hiện vật 【Đỉnh Cao Chí Ái】';
+
+  @override
+  String get physicalGiftBoxUnlockThanks =>
+      'Cảm ơn sự đồng hành chân thành của bạn dành cho Lian Lian Shi Guang!';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt =>
+      'Vui lòng điền thông tin nhận hàng bên dưới, chúng tôi sẽ gửi thư tay và búp bê nhân vật cho bạn:';
+
+  @override
+  String get recipientRealName => 'Họ và tên thật người nhận';
+
+  @override
+  String get contactPhone => 'Số điện thoại liên hệ';
+
+  @override
+  String get fullShippingAddress =>
+      'Địa chỉ nhận hàng đầy đủ (bao gồm Mã bưu chính)';
+
+  @override
+  String get desiredCharacterDollName => 'Tên nhân vật búp bê muốn nhận';
+
+  @override
+  String get characterNameExample => 'Ví dụ: Tên nhân vật bạn muốn nhận';
+
+  @override
+  String get fillLater => 'Điền sau';
+
+  @override
+  String get fillCompleteAddressAndRoleHint =>
+      'Vui lòng điền đầy đủ thông tin nhận hàng và tên nhân vật bạn yêu thích nhé!';
+
+  @override
+  String get shippingInfoSubmittedSuccess =>
+      'Thông tin nhận hàng đã gửi thành công! Hãy đón chờ bất ngờ hiện vật từ chúng tôi nhé!';
+
+  @override
+  String get confirmSubmit => 'Xác nhận gửi';
+
+  @override
+  String get aboutMe => 'Về tôi';
+
+  @override
+  String get myBackpack => 'Balo của tôi';
+
+  @override
+  String get ownerExclusiveArea => 'Khu vực độc quyền của chủ sở hữu';
+
+  @override
+  String get enterShiguangAdminBackend =>
+      'Vào bảng điều khiển quản trị Shiguang';
+
+  @override
+  String get errorOccurred => 'Đã xảy ra lỗi';
+
+  @override
+  String get creatorGuidelines => 'Quy chuẩn cho nhà sáng tạo';
+
+  @override
+  String get playGuide => 'Hướng dẫn chơi';
+
+  @override
+  String get lianlianShiguang => 'Lian Lian Shi Guang';
+
+  @override
+  String get copyrightNotice => '© 2026 Mặc Ngữ Bạch';
+
+  @override
+  String get cumulativeBenefits => 'Quyền lợi tích lũy';
+
+  @override
+  String get perkFirstEncounter => 'Sơ Kiến Khuynh Tâm';
+
+  @override
+  String get perkFirstEncounterReward =>
+      '20 Hoa Thời Gian + Danh hiệu người chơi mới';
+
+  @override
+  String get perkGlimmerThrob => 'Vi Quang Ký Động';
+
+  @override
+  String get perkGlimmerThrobReward =>
+      'Khung ảnh đại diện độc quyền 【Vi Quang Ký Động】';
+
+  @override
+  String get perkStarryWhisper => 'Tinh Không Như N喃';
+
+  @override
+  String get perkStarryWhisperReward =>
+      'Khung chat độc quyền + 50 Hoa Thời Gian';
+
+  @override
+  String get perkRomanticSunset => 'Lãng Mạn Tịch Dương';
+
+  @override
+  String get perkRomanticSunsetReward => 'Biểu tượng ứng dụng độc quyền';
+
+  @override
+  String get perkHeartbeat => 'Phập Phồng Xao Xuyến';
+
+  @override
+  String get perkHeartbeatReward =>
+      'Hiệu ứng chạm màn hình + 100 Hoa Thời Gian';
+
+  @override
+  String get perkEternalVow => 'Vĩnh Hằng Thệ Ước';
+
+  @override
+  String get perkEternalVowReward =>
+      'Khung ảnh đại diện động cao cấp + 200 Hoa Thời Gian';
+
+  @override
+  String get perkSoulIntersection => 'Linh Hồn Giao Hội';
+
+  @override
+  String get perkSoulIntersectionReward =>
+      'Hiệu ứng khung chat động + Danh hiệu cao cấp độc quyền';
+
+  @override
+  String get perkExclusiveWait => 'Độc Quyền Thủ Hậu';
+
+  @override
+  String get perkExclusiveWaitReward =>
+      'Thẻ tên động đỉnh cao + 500 Hoa Thời Gian';
+
+  @override
+  String get perkBrilliantGalaxy => 'Trái Diệu Tinh Hà';
+
+  @override
+  String get perkBrilliantGalaxyReward =>
+      'Hiệu ứng xuất hiện độc quyền + CSKH riêng biệt';
+
+  @override
+  String get perkTopBeloved => 'Đỉnh Cao Chí Ái';
+
+  @override
+  String get perkTopBelovedReward => 'Hộp quà hiện vật VIP độc quyền';
+
+  @override
+  String get cumulativeRomanticBond => 'Tích lũy duyên lãng mạn';
+
+  @override
+  String get allTopPrivilegesUnlocked =>
+      'Bạn đã mở khóa toàn bộ đặc quyền đỉnh cao!';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return 'Nạp thêm NT\$ $amount để mở khóa cấp tiếp theo';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty =>
+      'Nội dung câu chuyện không được để trống';
+
+  @override
+  String get writeYourStoryHint => 'Viết nên câu chuyện của hai bạn...';
+
+  @override
+  String get characterBannerTitle => 'Banner trang chủ nhân vật';
 }

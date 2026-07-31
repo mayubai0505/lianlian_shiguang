@@ -2048,5 +2048,297 @@
         "description": "Button text to restore account"
     },
     "voice_preview": "تشغيل الصوت",
-    "voice_preview_failed": "فشل تشغيل الصوت"
+    "voice_preview_failed": "فشل تشغيل الصوت",
+    "voice_preview_failed": "فشل تشغيل الصوت",
+    "characterBannerSectionTitle": "عنوان لافتة الصفحة الرئيسية للشخصية",
+    "characterBannerDescription": "وصف اللافتة",
+    "characterBannerRemove": "إزالة",
+    "characterBannerSelect": "تحديد صورة اللافتة",
+    "characterBannerChange": "تغيير صورة اللافتة",
+    "characterBannerSpecs": "النسبة الموصى بها 16:9، الحجم الموصى به 1920 × 1080",
+    "characterBannerDefaultHint": "عند عدم التحديد، ستستخدم الصفحة الرئيسية صورة الشخصية الرئيسية تلقائياً.",
+    "characterBannerHelpContent": "ستظهر اللافتة في المنطقة الأفقية الكبيرة بالصفحة الرئيسية للشخصية.\n\nيُوصى باستخدام صورة أفقية بنسبة 16:9، مثل 1920 × 1080.\n\nيرجى وضع الشخصيات المهمة والوجوه في منتصف الشاشة قدر الإمكان لتجنب قصها على أحجام الهواتف المختلفة.\n\nإذا لم يتم تحديد لافتة، سيستخدم النظام صورة الشخصية الرئيسية تلقائياً.",
+    "first_meeting_title": "اللقاء الأول",
+    "common_delete_network_failed": "فشل الحذف، يرجى التحقق من الشبكة ثم المحاولة مرة أخرى",
+    "common_operation_failed_retry": "فشلت العملية، يرجى المحاولة مرة أخرى لاحقاً",
+    "exclusive_photo_number": "صورة حصرية {number}",
+    "@exclusive_photo_number": {
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "unlock_after_affection_increase": "يفتح بعد زيادة مستوى الإعجاب",
+    "first_meeting_empty": "اللقاء الأول، لم يبدأ بعد...",
+    "follow_btn": "متابعة",
+    "photo_load_failed": "فشل تحميل الصورة: {error}",
+    "@photo_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "add_friend_failed_retry": "فشل إضافة الصديق، يرجى المحاولة مرة أخرى لاحقاً.",
+    "remove_friend": "إزالة صديق",
+    "report_character": "الإبلاغ عن الشخصية",
+    "block_character": "حظر الشخصية",
+    "daily_encounter": "لقاء يومي",
+    "discovery_hall": "قاعة الاستكشاف",
+    "latest_recommendation": "أحدث التوصيات",
+    "popular_ranking": "الأكثر شعبية",
+    "character_features": "سمات الشخصية",
+    "featured_new_star": "نجم جديد ساطع．توصيات ممتازة",
+    "recently_added_characters": "شخصيات مضافة حديثاً",
+    "no_tag_data": "لا توجد بيانات وسوم حالياً~",
+    "no_character_with_tag": "لم يتم العثور على شخصية تحمل هذا الوسم",
+    "voice_search_failed_retry": "فشل البحث عن الصوت، يرجى المحاولة مرة أخرى",
+    "voice_search_incomplete_retry": "البحث غير مكتمل، يرجى المحاولة مرة أخرى لاحقاً",
+    "voice_data_incomplete": "بيانات الصوت غير مكتملة",
+    "voice_generation_failed_retry": "فشل توليد الصوت، يرجى المحاولة مرة أخرى لاحقاً",
+    "voice_playback_failed_retry": "فشل تشغيل الصوت، يرجى المحاولة مرة أخرى",
+    "selected_voice_data_incomplete": "بيانات الصوت المحددة غير مكتملة",
+    "private_voice_user_not_found": "لم يتم العثور على المستخدم، تعذر تحديث صوت الشخصية الخاصة",
+    "voice_selected_character_save_failed": "تم تحديد الصوت، ولكن فشل حفظ بيانات الشخصية",
+    "voice_binding_failed": "فشل ربط الصوت",
+    "play_voice_tooltip": "تشغيل الصوت",
+    "avatar_label": "الصورة الشخصية",
+    "message_preview_image": "[صورة]",
+    "message_preview_recording": "[تسجيل صوتي]",
+    "message_preview_voice": "[رسالة صوتية]",
+    "send_failed_retry": "فشل الإرسال، يرجى المحاولة مرة أخرى لاحقاً 😢",
+    "media_upload_failed_retry": "فشل تحميل الوسائط، يرجى المحاولة مرة أخرى",
+    "ai_thinking_too_long": "يبدو أنه يستغرق وقتاً في التفكير، يرجى المحاولة مرة أخرى لاحقاً...",
+    "ai_reply_in_progress": "إنه يرد الآن، يرجى الانتظار وعدم الإرسال بشكل مكرر",
+    "ai_response_blocked": "تشتت أفكاره، يرجى استخدام أسلوب أكثر لطفاً!",
+    "microphone_permission_required": "يلزم الحصول على إذن الميكروفون للتسجيل",
+    "no_recording_to_send": "لا يوجد تسجيل لإرساله",
+    "voice_uploading": "جاري تحميل الصوت...",
+    "change_watermark_color": "تغيير لون العلامة المائية",
+    "other_party_typing": "الطرف الآخر يكتب الآن...",
+    "chat_input_hint": "يرجى الإدخال...",
+    "regenerate_sync_failed": "فشل مزامنة عدد مرات إعادة التوليد، يرجى المحاولة مرة أخرى 😢",
+    "creator_public_works": "الأعمال العامة",
+    "creator_received_likes": "الإعجابات المستلمة",
+    "about_me": "نبذة عني",
+    "moment_input_hint": "شاركي مشاعركِ...",
+    "character_play_count": "عدد مرات اللعب: {count}",
+    "@character_play_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "tag_page_title": "الوسم: #{tag}",
+    "@tag_page_title": {
+        "placeholders": {
+            "tag": {
+                "type": "String"
+            }
+        }
+    },
+    "voice_preview_failed_detail": "فشلت التجربة الصوتية: {code} {message}",
+    "@voice_preview_failed_detail": {
+        "placeholders": {
+            "code": {
+                "type": "String"
+            },
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "messages_deleted_success": "تم حذف {count} من الرسائل بنجاح",
+    "@messages_deleted_success": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "creator_work_load_failed": "فشل تحميل الأعمال: {error}",
+    "@creator_work_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "age_years_old": "{age} سنة",
+    "@age_years_old": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteFailedMessage": "فشل الحذف: {error}",
+    "@deleteFailedMessage": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadCharacterDataFailed": "فشل تحميل بيانات الشخصية: {error}",
+    "@loadCharacterDataFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "draftAvatarLoadFailed": "فشل تحميل صورة المسودة:",
+    "unnamedCreator": "مبدع غير مسمى",
+    "profileNotYetFilled": "لم يتم ملء السيرة الذاتية بعد",
+    "reportImageSizeLimit": "حجم الصورة لا يمكن أن يتجاوز 10 ميغابايت",
+    "reportImageSelectFailed": "فشل تحديد صورة البلاغ: {error}",
+    "@reportImageSelectFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportImageCannotSelect": "تعذر تحديد الصورة، يرجى المحاولة مرة أخرى لاحقاً",
+    "reportLoginRequired": "يرجى تسجيل الدخول أولاً قبل تقديم البلاغ",
+    "reportAnonymousPlayer": "لاعب غير مسمى",
+    "reportSendSuccess": "تم إرسال البلاغ بنجاح، شكراً لملاحظاتكِ!",
+    "reportSendFailed": "فشل إرسال بلاغ اللاعب: {error}",
+    "@reportSendFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportNetworkFailed": "فشل الإرسال، يرجى التحقق من الشبكة ثم المحاولة مرة أخرى",
+    "reportAttachImageLabel": "إرفاق صورة (اختياري)",
+    "reportAttachImageHint": "عند الإبلاغ عن مشكلة أو عدم وصول الزهور، يمكنكِ إرفاق لقطة شاشة للتحقق من المشكلة.",
+    "reportOpeningAlbum": "جاري فتح ألبوم الصور...",
+    "reportSelectFromAlbum": "تحديد صورة من ألبوم الصور",
+    "reportSending": "جاري الإرسال...",
+    "reportSubmit": "إرسال البلاغ",
+    "reportRemoveImage": "إزالة الصورة",
+    "reportImageSelected": "تم تحديد الصورة",
+    "reportChangeImage": "تغيير",
+    "reloadTranslation": "إعادة تحميل الترجمة",
+    "guideNotAvailableInLanguage": "دليل اللعب غير متوفر بهذه اللغة حالياً، يتم عرض الصينية التقليدية مؤقتاً.",
+    "clearSearch": "مسح البحث",
+    "memoPermissionWarning": "لم يتم إذن الإشعارات، سيتم حفظ المذكرة ولكن لن تظهر تنبيهات النظام.",
+    "memoSavedWithNotification": "تم حفظ المذكرة، سيقوم {name} بتذكيركِ!",
+    "@memoSavedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoSavedNoPermission": "تم حفظ المذكرة، ولكن لم يتم فتح إذن الإشعارات بعد.",
+    "memoUpdatedWithNotification": "تم تحديث المذكرة، سيقوم {name} بتذكيركِ!",
+    "@memoUpdatedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoUpdatedNoPermission": "تم تحديث المذكرة، ولكن لا يوجد إذن إشعارات حالياً.",
+    "dataLoadError": "حدث خطأ أثناء تحميل البيانات: {error}",
+    "@dataLoadError": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadFailed": "فشل التحميل: {error}",
+    "@loadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "dateFormatMonthDay": "d MMMM",
+    "timeFormatHourMinute": "HH:mm",
+    "likeFeedPrompt": "هل أعجبتكِ هذه اللحظة؟ أرسلي له بعض الدعم!",
+    "saveFeedPocket": "احفظي اللحظات الخاصة في جيبكِ سراً.",
+    "newComment": "تعليق جديد",
+    "someFriend": "صديق ما",
+    "myBackpackAndPrivileges": "حقيبتي المخصصة والمزايا",
+    "currentRomanticBond": "الرابط المكتسب حالياً",
+    "physicalGiftBoxUnlockStatus": "حالة فتح الصندوق الهدايا المادي:",
+    "topLovePhysicalVipBox": "صندوق الهدايا الحصري VIP 【الحب الأسمى】",
+    "physicalGiftBoxContents": "يشمل: رسالة بخط اليد + دمية ممثلة للشخصية + رسالة شكر رسمية",
+    "modifyShippingAddress": "تعديل معلومات عنوان الشحن",
+    "addressUnlockedFillNow": "تم الفتح! انقري هنا لملء معلومات الشحن",
+    "addressSuccessfullyRegistered": "لقد قمتِ بتسجيل عنوان الشحن بنجاح، سنقوم بإعداده لكِ في أقرب وقت ممكن!",
+    "amountNeededForPhysicalPrize": "متبقي NT$ {amount} لفتح الجائزة المادية الكبرى!",
+    "@amountNeededForPhysicalPrize": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "avatarFrameHint": "تلميح: يمكنكِ عرض وتجهيز المظاهر الرقمية وإطارات الصور الأخرى في المتجر أو الإعدادات الشخصية.",
+    "closeButton": "إغلاق",
+    "physicalGiftBoxUnlockTitle": "فتح صندوق الهدايا المادي 【الحب الأسمى】",
+    "physicalGiftBoxUnlockThanks": "شكراً لدعمكِ الدائم والرائع لـ 《Lian Lian Shi Guang》!",
+    "physicalGiftBoxUnlockPrompt": "يرجى ملء معلومات الشحن التالية، وسنرسل لكِ رسالة مكتوبة بخط اليد ودمية الشخصية الخاصة:",
+    "recipientRealName": "الاسم الحقيقي للمستلم",
+    "contactPhone": "رقم الهاتف",
+    "fullShippingAddress": "عنوان الشحن الكامل (شاملاً الرمز البريدي)",
+    "desiredCharacterDollName": "اسم دمية الشخصية التي ترغبين بها",
+    "characterNameExample": "مثال: اسم الشخصية المراد إدخاله",
+    "fillLater": "الملء لاحقاً",
+    "fillCompleteAddressAndRoleHint": "يرجى ملء معلومات الشحن واسم الشخصية المفضلة بالكامل!",
+    "shippingInfoSubmittedSuccess": "تم إرسال معلومات الشحن بنجاح! يرجى التطلع إلى مفاجأتنا المادية!",
+    "confirmSubmit": "تأكيد الإرسال",
+    "aboutMe": "نبذة عني",
+    "myBackpack": "حقيبتي",
+    "ownerExclusiveArea": "المنطقة الحصرية للمالك",
+    "enterShiguangAdminBackend": "الدخول إلى لوحة إدارة Lian Lian Shi Guang",
+    "errorOccurred": "حدث خطأ",
+    "creatorGuidelines": "إرشادات المبدعين",
+    "playGuide": "دليل اللعب",
+    "lianlianShiguang": "Lian Lian Shi Guang",
+    "copyrightNotice": "© 2026 Mo Yu Bai",
+    "cumulativeBenefits": "المزايا التراكمية",
+    "perkFirstEncounter": "الميل الأول",
+    "perkFirstEncounterReward": "20 زهرة + لقب مبتدئ حصري",
+    "perkGlimmerThrob": "خفقة الضوء الخافت",
+    "perkGlimmerThrobReward": "إطار صورة حصري 【خفقة الضوء الخافت】",
+    "perkStarryWhisper": "همس النجوم",
+    "perkStarryWhisperReward": "فقاعة دردشة حصرية + 50 زهرة",
+    "perkRomanticSunset": "غروب رومانسي",
+    "perkRomanticSunsetReward": "أيقونة تطبيق مخصصة",
+    "perkHeartbeat": "نبضات القلب",
+    "perkHeartbeatReward": "مؤثرات النقر على الشاشة + 100 زهرة",
+    "perkEternalVow": "العهد الأبدي",
+    "perkEternalVowReward": "إطار صورة متحرك متقدم + 200 زهرة",
+    "perkSoulIntersection": "تقاطع الأرواح",
+    "perkSoulIntersectionReward": "مؤثرات فقاعة دردشة متحركة + لقب متقدم حصري",
+    "perkExclusiveWait": "الانتظار الحصري",
+    "perkExclusiveWaitReward": "بطاقة اسم متحركة فاخرة + 500 زهرة",
+    "perkBrilliantGalaxy": "مجرة متألقة",
+    "perkBrilliantGalaxyReward": "مؤثرات دخول حصرية + خدمة عملاء مخصصة",
+    "perkTopBeloved": "الحب الأسمى",
+    "perkTopBelovedReward": "صندوق الهدايا الحصري VIP المادي",
+    "cumulativeRomanticBond": "الرابط الرومانسي التراكمي",
+    "allTopPrivilegesUnlocked": "لقد قمتِ بفتح جميع المزايا الفاخرة!",
+    "rechargeAmountForNextTier": "اشحني NT$ {amount} إضافية لفتح المستوى التالي",
+    "@rechargeAmountForNextTier": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "storyContentCannotBeEmpty": "محتوى القصة لا يمكن أن يكون فارغاً",
+    "writeYourStoryHint": "اكتبي قصتكما...",
+    "characterBannerTitle": "لافتة الصفحة الرئيسية للشخصية"
 }

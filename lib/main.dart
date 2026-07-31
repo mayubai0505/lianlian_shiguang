@@ -49,61 +49,93 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Firebase 只初始化一次
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
-  // ✅ 設定 FCM 背景訊息處理
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ).timeout(
+      const Duration(seconds: 15),
+    );
+
+  } on TimeoutException {
+  } catch (e, stackTrace) {
+    debugPrintStack(stackTrace: stackTrace);
+  }
+
+
   FirebaseMessaging.onBackgroundMessage(
     _firebaseMessagingBackgroundHandler,
   );
-
-  // ✅ 初始化備忘錄本機通知
-  // 裡面已經包含 timezone 初始化，不需要在 main() 再做一次
-  await ReminderNotificationService.initialize();
-
-  if (kIsWeb && kDebugMode) {
-    debugPrint(
-      '🚀 網頁開發模式：暫時跳過 App Check 驗證，避免 400 錯誤',
-    );
-  } else {
-    try {
-      await FirebaseAppCheck.instance.activate(
-        providerWeb: ReCaptchaV3Provider(
-          '6LfGqrYsAAAAAJfkhg30_VdjJmfDIWo40I9-izIO',
-        ),
-        providerAndroid: kReleaseMode
-            ? AndroidPlayIntegrityProvider()
-            : AndroidDebugProvider(),
-        providerApple: kReleaseMode
-            ? AppleDeviceCheckProvider()
-            : AppleDebugProvider(),
-      );
-    } catch (e) {
-      debugPrint('App Check 啟動失敗: $e');
-    }
-  }
-
-  await setupPushNotifications();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => ThemeNotifier(),
+          create: (_) {
+            return ThemeNotifier();
+          },
         ),
         ChangeNotifierProvider(
-          create: (_) => LocaleNotifier(),
+          create: (_) {
+            return LocaleNotifier();
+          },
         ),
         ChangeNotifierProvider(
-          create: (_) =>
-          PurchaseService()..initialize(),
+          create: (_) {
+            return PurchaseService()..initialize();
+          },
         ),
       ],
       child: const MyApp(),
     ),
   );
+
+  unawaited(
+    _initializeBackgroundServices().then((_) {
+    }).catchError((e, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
+    }),
+  );
+}
+
+Future<void> _initializeBackgroundServices() async {
+  try {
+    await ReminderNotificationService.initialize().timeout(
+      const Duration(seconds: 10),
+    );
+  } on TimeoutException {
+    debugPrint('⚠️ 通知服務初始化逾時');
+  } catch (e, stackTrace) {
+    debugPrint('❌ 通知服務初始化失敗：$e');
+    debugPrintStack(stackTrace: stackTrace);
+  }
+
+  if (kIsWeb && kDebugMode) {
+    debugPrint('ℹ️ Web Debug 模式，略過 Firebase App Check');
+    return;
+  }
+
+  try {
+    await FirebaseAppCheck.instance.activate(
+      providerWeb: ReCaptchaV3Provider(
+        '6LfGqrYsAAAAAJfkhg30_VdjJmfDIWo40I9-izIO',
+      ),
+      providerAndroid: kReleaseMode
+          ? AndroidPlayIntegrityProvider()
+          : AndroidDebugProvider(),
+      providerApple: kReleaseMode
+          ? AppleDeviceCheckProvider()
+          : AppleDebugProvider(),
+    ).timeout(
+      const Duration(seconds: 15),
+    );
+    debugPrint('✅ Firebase App Check 初始化成功');
+  } on TimeoutException {
+    debugPrint('⚠️ Firebase App Check 初始化逾時');
+  } catch (e, stackTrace) {
+    debugPrint('❌ Firebase App Check 初始化失敗：$e');
+    debugPrintStack(stackTrace: stackTrace);
+  }
 }
 
 // ==========================================
@@ -124,12 +156,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    setupPushNotifications();
-    WidgetsBinding.instance.addObserver(this);
-    _updateUserStatus(true);
 
-    // ✨ 設定 2 秒的展示時間，讓玩家可以看見「正在喚醒《戀戀拾光》的宇宙...」如果妳覺得 2 秒太長或太短，可以直接改這裡的數字
-    _appInitFuture = Future.delayed(const Duration(seconds: 2));
+
+    WidgetsBinding.instance.addObserver(this);
+
+    _appInitFuture = Future.delayed(
+      const Duration(seconds: 2),
+    );
+
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      unawaited(_initializeAfterAppStarted());
+    });
   }
 
   @override
@@ -153,6 +192,26 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       FirebaseFirestore.instance.collection('users').doc(user.uid).update({
         'isOnline': isOnline,
       }).catchError((e) => print("更新在線狀態失敗: $e"));
+    }
+  }
+
+  Future<void> _initializeAfterAppStarted() async {
+
+    try {
+      await setupPushNotifications().timeout(
+        const Duration(seconds: 15),
+      );
+
+    } on TimeoutException {
+    } catch (e, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
+    }
+
+
+    try {
+      _updateUserStatus(true);
+    } catch (e, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
     }
   }
 
@@ -377,10 +436,26 @@ Future<void> setupPushNotifications() async {
 
     await messaging.requestPermission(alert: true, badge: true, sound: true);
 
-    String? token = await messaging.getToken();
+    String? token;
+
+    try {
+      token = await messaging.getToken().timeout(
+        const Duration(seconds: 10),
+      );
+    } on TimeoutException {
+      debugPrint('⚠️ 取得 FCM token 逾時，本次略過');
+    }
 
     if (token != null) {
-      await _saveFcmTokenForCurrentUser(token);
+      try {
+        await _saveFcmTokenForCurrentUser(token).timeout(
+          const Duration(seconds: 10),
+        );
+      } on TimeoutException {
+        debugPrint('⚠️ 儲存 FCM token 逾時，本次略過');
+      } catch (e) {
+        debugPrint('❌ 儲存 FCM token 失敗：$e');
+      }
     }
 
 // Token 有時候會被 Firebase 更新，這裡也要同步存回去

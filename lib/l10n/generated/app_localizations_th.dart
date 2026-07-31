@@ -4361,4 +4361,573 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get voice_preview_failed => 'เล่นเสียงไม่สำเร็จ';
+
+  @override
+  String get characterBannerSectionTitle => 'แบนเนอร์หน้าหลักของตัวละคร';
+
+  @override
+  String get characterBannerDescription => 'คำอธิบายแบนเนอร์';
+
+  @override
+  String get characterBannerRemove => 'ลบออก';
+
+  @override
+  String get characterBannerSelect => 'เลือกรูปภาพแบนเนอร์';
+
+  @override
+  String get characterBannerChange => 'เปลี่ยนรูปภาพแบนเนอร์';
+
+  @override
+  String get characterBannerSpecs =>
+      'สัดส่วนที่แนะนำ 16:9, ขนาดที่แนะนำ 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint =>
+      'หากไม่ได้ตั้งค่า หน้าหลักจะใช้รูปโปรไฟล์หลักของตัวละครโดยอัตโนมัติค่ะ';
+
+  @override
+  String get characterBannerHelpContent =>
+      'แบนเนอร์จะแสดงในพื้นที่แนวนอนขนาดใหญ่บนหน้าหลักของตัวละครค่ะ\n\nแนะนำให้ใช้รูปภาพแนวนอนสัดส่วน 16:9 เช่น 1920 × 1080\n\nโปรดวางตัวละครหลักและใบหน้าไว้บริเวณจุดศูนย์กลางของภาพ เพื่อป้องกันไม่ให้ถูกครอบตัดบนหน้าจอโทรศัพท์ขนาดต่างๆ ค่ะ\n\nหากไม่ได้ตั้งค่าแบนเนอร์ ระบบจะใช้รูปภาพหลักของตัวละครโดยอัตโนมัติค่ะ';
+
+  @override
+  String get first_meeting_title => 'พบกันครั้งแรก';
+
+  @override
+  String get common_delete_network_failed =>
+      'ลบไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองใหม่อีกครั้งค่ะ';
+
+  @override
+  String get common_operation_failed_retry =>
+      'การดำเนินการล้มเหลว กรุณาลองใหม่อีกครั้งในภายหลังค่ะ';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return 'รูปถ่ายเอ็กซ์คลูซีฟ $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase =>
+      'ปลดล็อกเมื่อเพิ่มระดับความสนิทสนม';
+
+  @override
+  String get first_meeting_empty => 'พบกันครั้งแรก ยังไม่ได้เริ่ม...';
+
+  @override
+  String photo_load_failed(String error) {
+    return 'โหลดรูปภาพไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get add_friend_failed_retry =>
+      'เพิ่มเพื่อนไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ';
+
+  @override
+  String get remove_friend => 'ลบเพื่อน';
+
+  @override
+  String get report_character => 'รายงานตัวละคร';
+
+  @override
+  String get block_character => 'บล็อกตัวละคร';
+
+  @override
+  String get daily_encounter => 'พบเจอนานา';
+
+  @override
+  String get discovery_hall => 'หอสำรวจ';
+
+  @override
+  String get latest_recommendation => 'แนะนำล่าสุด';
+
+  @override
+  String get popular_ranking => 'อันดับยอดนิยม';
+
+  @override
+  String get character_features => 'ลักษณะเฉพาะของตัวละคร';
+
+  @override
+  String get featured_new_star => 'ดาวดวงใหม่ส่องแสง · แนะนำยอดฮิต';
+
+  @override
+  String get recently_added_characters => 'ตัวละครใหม่ที่เพิ่งเพิ่ม';
+
+  @override
+  String get no_tag_data => 'ขณะนี้ยังไม่มีข้อมูลแท็กค่ะ~';
+
+  @override
+  String get no_character_with_tag => 'ไม่พบตัวละครที่มีแท็กนี้ค่ะ';
+
+  @override
+  String get voice_search_failed_retry =>
+      'ค้นหาเสียงไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ';
+
+  @override
+  String get voice_search_incomplete_retry =>
+      'การค้นหาไม่สมบูรณ์ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ';
+
+  @override
+  String get voice_data_incomplete => 'ข้อมูลเสียงไม่สมบูรณ์ค่ะ';
+
+  @override
+  String get voice_generation_failed_retry =>
+      'สร้างเสียงไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ';
+
+  @override
+  String get voice_playback_failed_retry =>
+      'เล่นเสียงไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ';
+
+  @override
+  String get selected_voice_data_incomplete =>
+      'ข้อมูลเสียงที่เลือกไม่สมบูรณ์ค่ะ';
+
+  @override
+  String get private_voice_user_not_found =>
+      'ไม่พบผู้ใช้ ไม่สามารถอัปเดตเสียงตัวละครส่วนตัวได้ค่ะ';
+
+  @override
+  String get voice_selected_character_save_failed =>
+      'เลือกเสียงเรียบร้อยแล้ว แต่บันทึกข้อมูลตัวละครไม่สำเร็จค่ะ';
+
+  @override
+  String get voice_binding_failed => 'ผูกข้อมูลเสียงไม่สำเร็จค่ะ';
+
+  @override
+  String get play_voice_tooltip => 'เล่นเสียง';
+
+  @override
+  String get avatar_label => 'รูปโปรไฟล์';
+
+  @override
+  String get message_preview_image => '[รูปภาพ]';
+
+  @override
+  String get message_preview_recording => '[เสียงบันทึก]';
+
+  @override
+  String get message_preview_voice => '[ข้อความเสียง]';
+
+  @override
+  String get send_failed_retry =>
+      'ส่งไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ 😢';
+
+  @override
+  String get media_upload_failed_retry =>
+      'อัปโหลดสื่อไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ';
+
+  @override
+  String get ai_thinking_too_long =>
+      'เขาดูเหมือนกำลังครุ่นคิดอยู่ กรุณาลองใหม่อีกครั้งในภายหลัง...';
+
+  @override
+  String get ai_reply_in_progress =>
+      'เขากำลังตอบกลับอยู่ กรุณารอสักครู่และอย่าส่งซ้ำนะคะ';
+
+  @override
+  String get ai_response_blocked =>
+      'ความคิดของเขาถูกรบกวน ลองเปลี่ยนเป็นคำพูดที่นุ่มนวลกว่านี้นะคะ!';
+
+  @override
+  String get microphone_permission_required =>
+      'ต้องได้รับอนุญาตใช้ไมโครโฟนจึงจะสามารถบันทึกเสียงได้ค่ะ';
+
+  @override
+  String get no_recording_to_send => 'ไม่มีเสียงที่บันทึกไว้สำหรับส่งค่ะ';
+
+  @override
+  String get voice_uploading => 'กำลังอัปโหลดข้อความเสียง...';
+
+  @override
+  String get change_watermark_color => 'เปลี่ยนสีลายน้ำ';
+
+  @override
+  String get other_party_typing => 'อีกฝ่ายกำลังพิมพ์...';
+
+  @override
+  String get chat_input_hint => 'กรุณากรอกข้อความ...';
+
+  @override
+  String get regenerate_sync_failed =>
+      'ซิงค์จำนวนครั้งการสร้างใหม่ไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ 😢';
+
+  @override
+  String get creator_public_works => 'ผลงานสาธารณะ';
+
+  @override
+  String get creator_received_likes => 'การกดถูกใจที่ได้รับ';
+
+  @override
+  String get about_me => 'เกี่ยวกับฉัน';
+
+  @override
+  String get moment_input_hint => 'แบ่งปันความรู้สึกของคุณ...';
+
+  @override
+  String character_play_count(int count) {
+    return 'จำนวนครั้งที่เล่น: $count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return 'แท็ก: #$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return 'ทดลองฟังเสียงไม่สำเร็จ: $code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return 'ลบข้อความสำเร็จ $count ข้อความแล้วค่ะ';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return 'โหลดผลงานไม่สำเร็จ: $error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return 'อายุ $age ปี';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return 'ลบไม่สำเร็จ: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return 'โหลดข้อมูลตัวละครไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => 'โหลดรูปโปรไฟล์ร่างไม่สำเร็จ:';
+
+  @override
+  String get unnamedCreator => 'ครีเอเตอร์ไม่ระบุนาม';
+
+  @override
+  String get profileNotYetFilled => 'ยังไม่ได้กรอกแนะนำตัว';
+
+  @override
+  String get reportImageSizeLimit => 'ขนาดรูปภาพต้องไม่เกิน 10 MB ค่ะ';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return 'เลือกรูปภาพรายงานไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get reportImageCannotSelect =>
+      'ไม่สามารถเลือกรูปภาพได้ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ';
+
+  @override
+  String get reportLoginRequired => 'กรุณาเข้าสู่ระบบก่อนส่งรายงานค่ะ';
+
+  @override
+  String get reportAnonymousPlayer => 'ผู้เล่นไม่ระบุนาม';
+
+  @override
+  String get reportSendSuccess =>
+      'ส่งรายงานเรียบร้อยแล้ว ขอบคุณสำหรับความคิดเห็นของคุณค่ะ!';
+
+  @override
+  String reportSendFailed(String error) {
+    return 'ส่งรายงานผู้เล่นไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get reportNetworkFailed =>
+      'ส่งไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองใหม่อีกครั้งค่ะ';
+
+  @override
+  String get reportAttachImageLabel => 'แนบรูปภาพ (ไม่บังคับ)';
+
+  @override
+  String get reportAttachImageHint =>
+      'เมื่อรายงานปัญหาระบบหรือดอกไม้ไม่เข้าบัญชี สามารถแนบภาพแคปหน้าจอเพื่อให้ทีมงานตรวจสอบได้เร็วขึ้นค่ะ';
+
+  @override
+  String get reportOpeningAlbum => 'กำลังเปิดอัลบั้มรูปภาพ...';
+
+  @override
+  String get reportSelectFromAlbum => 'เลือกรูปภาพจากอัลบั้ม';
+
+  @override
+  String get reportSending => 'กำลังส่ง...';
+
+  @override
+  String get reportSubmit => 'ส่งรายงาน';
+
+  @override
+  String get reportRemoveImage => 'ลบรูปภาพออก';
+
+  @override
+  String get reportImageSelected => 'เลือกรูปภาพแล้ว';
+
+  @override
+  String get reportChangeImage => 'เปลี่ยน';
+
+  @override
+  String get reloadTranslation => 'โหลดการแปลใหม่';
+
+  @override
+  String get guideNotAvailableInLanguage =>
+      'ขณะนี้ยังไม่มีคู่มือการเล่นในภาษาภาษาไทย จึงแสดงผลเป็นภาษาจีนตัวเต็มชั่วคราวค่ะ';
+
+  @override
+  String get clearSearch => 'ล้างการค้นหา';
+
+  @override
+  String get memoPermissionWarning =>
+      'ยังไม่ได้เปิดสิทธิ์การแจ้งเตือน บันทึกจะถูกเก็บไว้ แต่จะไม่แสดงการแจ้งเตือนจากระบบค่ะ';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return 'บันทึกเรียบร้อยแล้ว $name จะคอยเตือนคุณนะคะ!';
+  }
+
+  @override
+  String get memoSavedNoPermission =>
+      'บันทึกเรียบร้อยแล้ว แต่ยังไม่ได้เปิดสิทธิ์การแจ้งเตือนค่ะ';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return 'อัปเดตบันทึกเรียบร้อยแล้ว $name จะคอยเตือนคุณนะคะ!';
+  }
+
+  @override
+  String get memoUpdatedNoPermission =>
+      'อัปเดตบันทึกเรียบร้อยแล้ว แต่ขณะนี้ยังไม่มีสิทธิ์การแจ้งเตือนค่ะ';
+
+  @override
+  String dataLoadError(String error) {
+    return 'เกิดข้อผิดพลาดขณะโหลดข้อมูล: $error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return 'โหลดไม่สำเร็จ: $error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'd MMM';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt => 'ชอบโพสต์นี้ไหมคะ? ส่งความรักให้เขาสิ!';
+
+  @override
+  String get saveFeedPocket => 'เก็บช่วงเวลาพิเศษไว้ในกระเป๋าของคุณเงียบๆ';
+
+  @override
+  String get newComment => 'ความคิดเห็นใหม่';
+
+  @override
+  String get someFriend => 'เพื่อนคนหนึ่ง';
+
+  @override
+  String get myBackpackAndPrivileges => 'กระเป๋าและสิทธิพิเศษของฉัน';
+
+  @override
+  String get currentRomanticBond => 'สายสัมพันธ์โรแมนติกที่สะสมได้ในปัจจุบัน';
+
+  @override
+  String get physicalGiftBoxUnlockStatus =>
+      'สถานะการปลดล็อกกล่องของขวัญจับต้องได้:';
+
+  @override
+  String get topLovePhysicalVipBox =>
+      'กล่องของขวัญ VIP เอ็กซ์คลูซีฟ 【รักสุดหัวใจ】';
+
+  @override
+  String get physicalGiftBoxContents =>
+      'ประกอบด้วย: จดหมายเขียนด้วยมือ + ตุ๊กตาตัวละคร + จดหมายขอบคุณอย่างเป็นทางการ';
+
+  @override
+  String get modifyShippingAddress => 'แก้ไขข้อมูลที่อยู่จัดส่ง';
+
+  @override
+  String get addressUnlockedFillNow =>
+      'ปลดล็อกแล้ว! แตะที่นี่เพื่อกรอกข้อมูลจัดส่งค่ะ';
+
+  @override
+  String get addressSuccessfullyRegistered =>
+      'คุณได้ลงทะเบียนที่อยู่จัดส่งเรียบร้อยแล้ว เราจะรีบจัดเตรียมให้โดยเร็วที่สุดค่ะ!';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return 'ขาดอีกเพียง NT\$ $amount ก็จะปลดล็อกของรางวัลจับต้องได้แล้วค่ะ!';
+  }
+
+  @override
+  String get avatarFrameHint =>
+      'คำแนะนำ: สามารถดูและสวมใส่สกินดิจิทัลและกรอบรูปโปรไฟล์อื่นๆ ได้ที่ร้านค้าหรือการตั้งค่าส่วนตัวค่ะ';
+
+  @override
+  String get closeButton => 'ปิด';
+
+  @override
+  String get physicalGiftBoxUnlockTitle =>
+      'ปลดล็อกกล่องของขวัญจับต้องได้ 【รักสุดหัวใจ】';
+
+  @override
+  String get physicalGiftBoxUnlockThanks =>
+      'ขอบคุณสำหรับการสนับสนุนและการเคียงข้าง 《Lian Lian Shi Guang》 เสมอมาค่ะ!';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt =>
+      'กรุณากรอกข้อมูลจัดส่งด้านล่าง เพื่อให้เราจัดส่งจดหมายลายมือและตุ๊กตาตัวละครให้คุณค่ะ:';
+
+  @override
+  String get recipientRealName => 'ชื่อ-นามสกุลจริงของผู้รับ';
+
+  @override
+  String get contactPhone => 'เบอร์โทรศัพท์ติดต่อ';
+
+  @override
+  String get fullShippingAddress => 'ที่อยู่จัดส่งโดยละเอียด (รวมรหัสไปรษณีย์)';
+
+  @override
+  String get desiredCharacterDollName => 'ชื่อตัวละครของตุ๊กตาที่ต้องการรับ';
+
+  @override
+  String get characterNameExample => 'ตัวอย่าง: ชื่อตัวละครที่ต้องการกรอก';
+
+  @override
+  String get fillLater => 'ไว้กรอกทีหลัง';
+
+  @override
+  String get fillCompleteAddressAndRoleHint =>
+      'กรุณากรอกข้อมูลจัดส่งและชื่อตัวละครที่คุณชื่นชอบให้ครบถ้วนนะคะ!';
+
+  @override
+  String get shippingInfoSubmittedSuccess =>
+      'ส่งข้อมูลจัดส่งเรียบร้อยแล้ว! มารอลุ้นรับของขวัญสุดพิเศษกันนะคะ!';
+
+  @override
+  String get confirmSubmit => 'ยืนยันการส่ง';
+
+  @override
+  String get aboutMe => 'เกี่ยวกับฉัน';
+
+  @override
+  String get myBackpack => 'กระเป๋าของฉัน';
+
+  @override
+  String get ownerExclusiveArea => 'พื้นที่เฉพาะเจ้าของ';
+
+  @override
+  String get enterShiguangAdminBackend => 'เข้าสู่คอนโซลผู้ดูแลระบบ Shiguang';
+
+  @override
+  String get errorOccurred => 'เกิดข้อผิดพลาด';
+
+  @override
+  String get creatorGuidelines => 'แนวทางปฏิบัติสำหรับครีเอเตอร์';
+
+  @override
+  String get playGuide => 'คู่มือการเล่น';
+
+  @override
+  String get lianlianShiguang => 'Lian Lian Shi Guang';
+
+  @override
+  String get copyrightNotice => '© 2026 Mo Yu Bai';
+
+  @override
+  String get cumulativeBenefits => 'สิทธิประโยชน์สะสม';
+
+  @override
+  String get perkFirstEncounter => 'แรกรักประทับใจ';
+
+  @override
+  String get perkFirstEncounterReward =>
+      'ดอกไม้แห่งเวลา 20 ดอก + ฉายามือใหม่เฉพาะตัว';
+
+  @override
+  String get perkGlimmerThrob => 'แสงริบหรี่ใจเต้น';
+
+  @override
+  String get perkGlimmerThrobReward =>
+      'กรอบรูปโปรไฟล์เฉพาะตัว 【แสงริบหรี่ใจเต้น】';
+
+  @override
+  String get perkStarryWhisper => 'เสียงกระซิบแห่งดวงดาว';
+
+  @override
+  String get perkStarryWhisperReward =>
+      'กรอบข้อความแชทเฉพาะตัว + ดอกไม้แห่งเวลา 50 ดอก';
+
+  @override
+  String get perkRomanticSunset => 'พระอาทิตย์ตกอันแสนโรแมนติก';
+
+  @override
+  String get perkRomanticSunsetReward => 'ไอคอนหน้าจอแอปแบบเฉพาะตัว';
+
+  @override
+  String get perkHeartbeat => 'เสียงหัวใจเต้น';
+
+  @override
+  String get perkHeartbeatReward =>
+      'เอฟเฟกต์การแตะหน้าจอ + ดอกไม้แห่งเวลา 100 ดอก';
+
+  @override
+  String get perkEternalVow => 'คำสาบานนิรันดร์';
+
+  @override
+  String get perkEternalVowReward =>
+      'กรอบรูปโปรไฟล์ดุ๊กดิ๊กขั้นสูง + ดอกไม้แห่งเวลา 200 ดอก';
+
+  @override
+  String get perkSoulIntersection => 'วิญญาณผูกพัน';
+
+  @override
+  String get perkSoulIntersectionReward =>
+      'เอฟเฟกต์กรอบข้อความแชทดุ๊กดิ๊ก + ฉายาขั้นสูงเฉพาะตัว';
+
+  @override
+  String get perkExclusiveWait => 'การเฝ้ารอเฉพาะตัว';
+
+  @override
+  String get perkExclusiveWaitReward =>
+      'ป้ายชื่อดุ๊กดิ๊กระดับพรีเมียม + ดอกไม้แห่งเวลา 500 ดอก';
+
+  @override
+  String get perkBrilliantGalaxy => 'ทางช้างเผือกทอแสง';
+
+  @override
+  String get perkBrilliantGalaxyReward =>
+      'เอฟเฟกต์ปรากฏตัวเฉพาะตัว + บริการลูกค้า VIP ส่วนตัว';
+
+  @override
+  String get perkTopBeloved => 'รักสุดหัวใจ';
+
+  @override
+  String get perkTopBelovedReward =>
+      'กล่องของขวัญ VIP เอ็กซ์คลูซีฟแบบจับต้องได้';
+
+  @override
+  String get cumulativeRomanticBond => 'สายสัมพันธ์โรแมนติกสะสม';
+
+  @override
+  String get allTopPrivilegesUnlocked =>
+      'คุณได้ปลดล็อกสิทธิพิเศษระดับสูงสุดทั้งหมดแล้วค่ะ!';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return 'เติมเงินเพิ่มอีก NT\$ $amount เพื่อปลดล็อกระดับถัดไป';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty => 'เนื้อเรื่องต้องไม่ว่างเปล่า';
+
+  @override
+  String get writeYourStoryHint => 'เขียนเรื่องราวของคุณ...';
+
+  @override
+  String get characterBannerTitle => 'แบนเนอร์หน้าหลักของตัวละคร';
 }

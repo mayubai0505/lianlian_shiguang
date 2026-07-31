@@ -60,7 +60,7 @@ class ReminderNotificationService {
 
     const androidSettings =
     AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
+      'ic_launcher',
     );
 
     const iosSettings =

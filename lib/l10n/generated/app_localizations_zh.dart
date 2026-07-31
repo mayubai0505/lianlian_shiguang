@@ -4142,6 +4142,526 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get voice_preview_failed => '播放語音失敗';
+
+  @override
+  String get characterBannerSectionTitle => '角色首頁橫幅';
+
+  @override
+  String get characterBannerDescription => '橫幅說明';
+
+  @override
+  String get characterBannerRemove => '移除';
+
+  @override
+  String get characterBannerSelect => '選擇橫幅圖片';
+
+  @override
+  String get characterBannerChange => '更換橫幅圖片';
+
+  @override
+  String get characterBannerSpecs => '建議比例 16:9，建議尺寸 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint => '未設定時，首頁將自動使用角色主圖。';
+
+  @override
+  String get characterBannerHelpContent =>
+      '橫幅會顯示在角色首頁的大型橫向區域。\n\n建議使用 16:9 的橫向圖片，例如 1920 × 1080。\n\n重要人物與臉部請盡量放在畫面中央，避免不同手機尺寸裁切到主體。\n\n若未設定橫幅，系統會自動使用角色主圖。';
+
+  @override
+  String get first_meeting_title => '第一次相遇';
+
+  @override
+  String get common_delete_network_failed => '刪除失敗，請檢查網路後再試';
+
+  @override
+  String get common_operation_failed_retry => '操作失敗，請稍後再試';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return '專屬照片 $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase => '提升好感度後解鎖';
+
+  @override
+  String get first_meeting_empty => '第一次相遇，尚未展開……';
+
+  @override
+  String photo_load_failed(String error) {
+    return '讀取照片失敗：$error';
+  }
+
+  @override
+  String get add_friend_failed_retry => '添加好友失敗，請稍後再試。';
+
+  @override
+  String get remove_friend => '移除好友';
+
+  @override
+  String get report_character => '檢舉角色';
+
+  @override
+  String get block_character => '封鎖角色';
+
+  @override
+  String get daily_encounter => '每日邂逅';
+
+  @override
+  String get discovery_hall => '探索大廳';
+
+  @override
+  String get latest_recommendation => '最新推薦';
+
+  @override
+  String get popular_ranking => '人氣熱榜';
+
+  @override
+  String get character_features => '角色特徵';
+
+  @override
+  String get featured_new_star => '閃耀新星．強檔推薦';
+
+  @override
+  String get recently_added_characters => '最近上架新角色';
+
+  @override
+  String get no_tag_data => '目前還沒有任何標籤資料～';
+
+  @override
+  String get no_character_with_tag => '沒有找到擁有此標籤的角色';
+
+  @override
+  String get voice_search_failed_retry => '尋找聲音失敗，請再試一次';
+
+  @override
+  String get voice_search_incomplete_retry => '尋找不完整，請稍後再試';
+
+  @override
+  String get voice_data_incomplete => '聲音資料不完整';
+
+  @override
+  String get voice_generation_failed_retry => '聲音生成失敗，請稍後再試';
+
+  @override
+  String get voice_playback_failed_retry => '聲音播放失敗，請再試一次';
+
+  @override
+  String get selected_voice_data_incomplete => '選取的聲音資料不完整';
+
+  @override
+  String get private_voice_user_not_found => '找不到使用者，無法更新私人角色語音';
+
+  @override
+  String get voice_selected_character_save_failed => '聲音已選取，但角色資料儲存失敗';
+
+  @override
+  String get voice_binding_failed => '綁定聲音失敗';
+
+  @override
+  String get play_voice_tooltip => '播放語音';
+
+  @override
+  String get avatar_label => '大頭貼';
+
+  @override
+  String get message_preview_image => '[圖片]';
+
+  @override
+  String get message_preview_recording => '[錄音]';
+
+  @override
+  String get message_preview_voice => '[語音訊息]';
+
+  @override
+  String get send_failed_retry => '送出失敗，請稍後再試 😢';
+
+  @override
+  String get media_upload_failed_retry => '媒體上傳失敗，請再試一次';
+
+  @override
+  String get ai_thinking_too_long => '他似乎在沉思，請稍後再試...';
+
+  @override
+  String get ai_reply_in_progress => '他正在回覆中，請稍候一下，不要重複送出';
+
+  @override
+  String get ai_response_blocked => '他的思緒被干擾了，請換個溫和的說法喔！';
+
+  @override
+  String get microphone_permission_required => '需要麥克風權限才能錄音';
+
+  @override
+  String get no_recording_to_send => '沒有可傳送的錄音';
+
+  @override
+  String get voice_uploading => '語音上傳中...';
+
+  @override
+  String get change_watermark_color => '更換浮水印顏色';
+
+  @override
+  String get other_party_typing => '對方正在輸入...';
+
+  @override
+  String get chat_input_hint => '請輸入...';
+
+  @override
+  String get regenerate_sync_failed => '重新生成次數同步失敗，請再試一次 😢';
+
+  @override
+  String get creator_public_works => '公開作品';
+
+  @override
+  String get creator_received_likes => '獲得喜歡';
+
+  @override
+  String get about_me => '關於我';
+
+  @override
+  String get moment_input_hint => '分享你的心情...';
+
+  @override
+  String character_play_count(int count) {
+    return '遊玩次數：$count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return '標籤：#$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return '試聽聲音失敗：$code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return '已成功刪除 $count 則訊息';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return '讀取作品失敗：$error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age歲';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return '刪除失敗: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return '載入角色資料失敗：$error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => '草稿頭像載入失敗:';
+
+  @override
+  String get unnamedCreator => '未命名創作者';
+
+  @override
+  String get profileNotYetFilled => '尚未填寫自我介紹';
+
+  @override
+  String get reportImageSizeLimit => '圖片大小不能超過 10 MB';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return '選擇回報圖片失敗：$error';
+  }
+
+  @override
+  String get reportImageCannotSelect => '無法選擇圖片，請稍後再試';
+
+  @override
+  String get reportLoginRequired => '請先登入後再送出回報';
+
+  @override
+  String get reportAnonymousPlayer => '未命名玩家';
+
+  @override
+  String get reportSendSuccess => '回報已成功送出，謝謝你的意見！';
+
+  @override
+  String reportSendFailed(String error) {
+    return '送出玩家回報失敗：$error';
+  }
+
+  @override
+  String get reportNetworkFailed => '送出失敗，請確認網路後再試';
+
+  @override
+  String get reportAttachImageLabel => '附加圖片（非必填）';
+
+  @override
+  String get reportAttachImageHint => '回報 Bug 或花花未入帳時，可以附上畫面截圖，方便官方確認問題。';
+
+  @override
+  String get reportOpeningAlbum => '開啟相簿中...';
+
+  @override
+  String get reportSelectFromAlbum => '從相簿選擇圖片';
+
+  @override
+  String get reportSending => '送出中...';
+
+  @override
+  String get reportSubmit => '送出回報';
+
+  @override
+  String get reportRemoveImage => '移除圖片';
+
+  @override
+  String get reportImageSelected => '已選擇圖片';
+
+  @override
+  String get reportChangeImage => '更換';
+
+  @override
+  String get reloadTranslation => '重新載入翻譯';
+
+  @override
+  String get guideNotAvailableInLanguage => '目前尚未提供此語言的遊玩指南，暫時顯示繁體中文。';
+
+  @override
+  String get clearSearch => '清除搜尋';
+
+  @override
+  String get memoPermissionWarning => '尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return '備忘錄已儲存，$name 會提醒你！';
+  }
+
+  @override
+  String get memoSavedNoPermission => '備忘錄已儲存，但尚未開啟通知權限。';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return '備忘錄已更新，$name 會提醒你！';
+  }
+
+  @override
+  String get memoUpdatedNoPermission => '備忘錄已更新，但目前沒有通知權限。';
+
+  @override
+  String dataLoadError(String error) {
+    return '讀取資料時發生錯誤：$error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return '讀取失敗：$error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'M月d日';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt => '喜歡這則動態嗎？給他一點心意吧！';
+
+  @override
+  String get saveFeedPocket => '把特別的動態悄悄收進口袋裡。';
+
+  @override
+  String get newComment => '新留言';
+
+  @override
+  String get someFriend => '某位朋友';
+
+  @override
+  String get myBackpackAndPrivileges => '我的專屬背包與特權';
+
+  @override
+  String get currentRomanticBond => '目前累積浪漫羈絆';
+
+  @override
+  String get physicalGiftBoxUnlockStatus => '實體禮盒解鎖狀態：';
+
+  @override
+  String get topLovePhysicalVipBox => '【頂級摯愛】實體 VIP 專屬禮盒';
+
+  @override
+  String get physicalGiftBoxContents => '含：專屬手寫信 + 角色代表娃 + 官方感謝信';
+
+  @override
+  String get modifyShippingAddress => '修改收件地址資訊';
+
+  @override
+  String get addressUnlockedFillNow => '已解鎖！點此填寫收件資訊';
+
+  @override
+  String get addressSuccessfullyRegistered => '您已成功登記收件地址，我們會盡快為您準備！';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return '還差 NT\$ $amount 即可解鎖實體大賞！';
+  }
+
+  @override
+  String get avatarFrameHint => '提示：其他數位外觀與頭像框可在商店或個人設定中查看與裝備。';
+
+  @override
+  String get closeButton => '關閉';
+
+  @override
+  String get physicalGiftBoxUnlockTitle => '【頂級摯愛】實體禮盒解鎖';
+
+  @override
+  String get physicalGiftBoxUnlockThanks => '感謝玩家對《戀戀拾光》的極致守候！';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt => '請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：';
+
+  @override
+  String get recipientRealName => '收件人真實姓名';
+
+  @override
+  String get contactPhone => '聯絡電話';
+
+  @override
+  String get fullShippingAddress => '完整收件地址（含郵遞區號）';
+
+  @override
+  String get desiredCharacterDollName => '想要收到的角色代表娃名字';
+
+  @override
+  String get characterNameExample => '例如：欲輸入的角色名稱';
+
+  @override
+  String get fillLater => '稍後填寫';
+
+  @override
+  String get fillCompleteAddressAndRoleHint => '請完整填寫收件資訊與心儀的角色名稱喔！';
+
+  @override
+  String get shippingInfoSubmittedSuccess => '收件資訊已成功送出！請期待我們的實體驚喜！';
+
+  @override
+  String get confirmSubmit => '確認送出';
+
+  @override
+  String get aboutMe => '關於我';
+
+  @override
+  String get myBackpack => '我的背包';
+
+  @override
+  String get ownerExclusiveArea => '主理人專屬區域';
+
+  @override
+  String get enterShiguangAdminBackend => '進入拾光管理後台';
+
+  @override
+  String get errorOccurred => '發生錯誤';
+
+  @override
+  String get creatorGuidelines => '創作者規範';
+
+  @override
+  String get playGuide => '遊玩指南';
+
+  @override
+  String get lianlianShiguang => '戀戀拾光';
+
+  @override
+  String get copyrightNotice => '© 2026 默語白';
+
+  @override
+  String get cumulativeBenefits => '累計福利';
+
+  @override
+  String get perkFirstEncounter => '初見傾心';
+
+  @override
+  String get perkFirstEncounterReward => '20 點花花 + 專屬新手稱號';
+
+  @override
+  String get perkGlimmerThrob => '微光悸動';
+
+  @override
+  String get perkGlimmerThrobReward => '專屬頭像框【微光悸動】';
+
+  @override
+  String get perkStarryWhisper => '星空呢喃';
+
+  @override
+  String get perkStarryWhisperReward => '專屬聊天氣泡 + 50 點花花';
+
+  @override
+  String get perkRomanticSunset => '浪漫夕陽';
+
+  @override
+  String get perkRomanticSunsetReward => '專屬 App 桌面圖示';
+
+  @override
+  String get perkHeartbeat => '怦然心動';
+
+  @override
+  String get perkHeartbeatReward => '點擊螢幕特效 + 100 點花花';
+
+  @override
+  String get perkEternalVow => '永恆誓約';
+
+  @override
+  String get perkEternalVowReward => '進階動態頭像框 + 200 點花花';
+
+  @override
+  String get perkSoulIntersection => '靈魂交會';
+
+  @override
+  String get perkSoulIntersectionReward => '動態聊天氣泡特效 + 專屬進階稱號';
+
+  @override
+  String get perkExclusiveWait => '專屬守候';
+
+  @override
+  String get perkExclusiveWaitReward => '頂級動態名牌 + 500 點花花';
+
+  @override
+  String get perkBrilliantGalaxy => '璀璨星河';
+
+  @override
+  String get perkBrilliantGalaxyReward => '專屬進場特效 + 專屬客服';
+
+  @override
+  String get perkTopBeloved => '頂級摯愛';
+
+  @override
+  String get perkTopBelovedReward => '實體 VIP 專屬禮盒';
+
+  @override
+  String get cumulativeRomanticBond => '累積浪漫羈絆';
+
+  @override
+  String get allTopPrivilegesUnlocked => '您已解鎖所有頂級特權！';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return '再儲值 NT\$ $amount 即可解鎖下一階';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty => '故事內容不能是空的';
+
+  @override
+  String get writeYourStoryHint => '寫下你們的故事...';
+
+  @override
+  String get characterBannerTitle => '角色首頁橫幅';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -8282,6 +8802,526 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get voice_preview_failed => '播放语音失败';
+
+  @override
+  String get characterBannerSectionTitle => '角色首页横幅';
+
+  @override
+  String get characterBannerDescription => '横幅说明';
+
+  @override
+  String get characterBannerRemove => '移除';
+
+  @override
+  String get characterBannerSelect => '选择横幅图片';
+
+  @override
+  String get characterBannerChange => '更换横幅图片';
+
+  @override
+  String get characterBannerSpecs => '建议比例 16:9，建议尺寸 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint => '未设定时，首页将自动使用角色主图。';
+
+  @override
+  String get characterBannerHelpContent =>
+      '横幅会显示在角色首页的大型横向区域。\n\n建议使用 16:9 的横向图片，例如 1920 × 1080。\n\n重要人物与脸部请尽量放在画面中央，避免不同手机尺寸裁切到主体。\n\n若未设定横幅，系统会自动使用角色主图。';
+
+  @override
+  String get first_meeting_title => '第一次相遇';
+
+  @override
+  String get common_delete_network_failed => '删除失败，请检查网络后再试';
+
+  @override
+  String get common_operation_failed_retry => '操作失败，请稍后再试';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return '专属照片 $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase => '提升好感度后解锁';
+
+  @override
+  String get first_meeting_empty => '第一次相遇，尚未展开……';
+
+  @override
+  String photo_load_failed(String error) {
+    return '读取照片失败：$error';
+  }
+
+  @override
+  String get add_friend_failed_retry => '添加好友失败，请稍后再试。';
+
+  @override
+  String get remove_friend => '移除好友';
+
+  @override
+  String get report_character => '检举角色';
+
+  @override
+  String get block_character => '封锁角色';
+
+  @override
+  String get daily_encounter => '每日邂逅';
+
+  @override
+  String get discovery_hall => '探索大厅';
+
+  @override
+  String get latest_recommendation => '最新推荐';
+
+  @override
+  String get popular_ranking => '人气热榜';
+
+  @override
+  String get character_features => '角色特征';
+
+  @override
+  String get featured_new_star => '闪耀新星．强档推荐';
+
+  @override
+  String get recently_added_characters => '最近上架新角色';
+
+  @override
+  String get no_tag_data => '目前还没有任何标签资料～';
+
+  @override
+  String get no_character_with_tag => '没有找到拥有此标签的角色';
+
+  @override
+  String get voice_search_failed_retry => '寻找声音失败，请再试一次';
+
+  @override
+  String get voice_search_incomplete_retry => '寻找不完整，请稍后再试';
+
+  @override
+  String get voice_data_incomplete => '声音资料不完整';
+
+  @override
+  String get voice_generation_failed_retry => '声音生成失败，请稍后再试';
+
+  @override
+  String get voice_playback_failed_retry => '声音播放失败，请再试一次';
+
+  @override
+  String get selected_voice_data_incomplete => '选取的声音资料不完整';
+
+  @override
+  String get private_voice_user_not_found => '找不到使用者，无法更新私人角色语音';
+
+  @override
+  String get voice_selected_character_save_failed => '声音已选取，但角色资料储存失败';
+
+  @override
+  String get voice_binding_failed => '绑定声音失败';
+
+  @override
+  String get play_voice_tooltip => '播放语音';
+
+  @override
+  String get avatar_label => '头像';
+
+  @override
+  String get message_preview_image => '[图片]';
+
+  @override
+  String get message_preview_recording => '[录音]';
+
+  @override
+  String get message_preview_voice => '[语音讯息]';
+
+  @override
+  String get send_failed_retry => '送出失败，请稍后再试 😢';
+
+  @override
+  String get media_upload_failed_retry => '媒体上传失败，请再试一次';
+
+  @override
+  String get ai_thinking_too_long => '他似乎在沉思，请稍后再试...';
+
+  @override
+  String get ai_reply_in_progress => '他正在回复中，请稍候一下，不要重复送出';
+
+  @override
+  String get ai_response_blocked => '他的思路被干扰了，请换个温和的说法喔！';
+
+  @override
+  String get microphone_permission_required => '需要麦克风权限才能录音';
+
+  @override
+  String get no_recording_to_send => '没有可传送的录音';
+
+  @override
+  String get voice_uploading => '语音上传中...';
+
+  @override
+  String get change_watermark_color => '更换水印颜色';
+
+  @override
+  String get other_party_typing => '对方正在输入...';
+
+  @override
+  String get chat_input_hint => '请输入...';
+
+  @override
+  String get regenerate_sync_failed => '重新生成次数同步失败，请再试一次 😢';
+
+  @override
+  String get creator_public_works => '公开作品';
+
+  @override
+  String get creator_received_likes => '获得喜欢';
+
+  @override
+  String get about_me => '关于我';
+
+  @override
+  String get moment_input_hint => '分享你的心情...';
+
+  @override
+  String character_play_count(int count) {
+    return '游玩次数：$count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return '标签：#$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return '试听声音失败：$code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return '已成功删除 $count 条讯息';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return '读取作品失败：$error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age岁';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return '删除失败: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return '载入角色资料失败：$error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => '草稿头像载入失败:';
+
+  @override
+  String get unnamedCreator => '未命名创作者';
+
+  @override
+  String get profileNotYetFilled => '尚未填写自我介绍';
+
+  @override
+  String get reportImageSizeLimit => '图片大小不能超过 10 MB';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return '选择回报图片失败：$error';
+  }
+
+  @override
+  String get reportImageCannotSelect => '无法选择图片，请稍后再试';
+
+  @override
+  String get reportLoginRequired => '请先登录后再送出回报';
+
+  @override
+  String get reportAnonymousPlayer => '未命名玩家';
+
+  @override
+  String get reportSendSuccess => '回报已成功送出，谢谢你的意见！';
+
+  @override
+  String reportSendFailed(String error) {
+    return '送出玩家回报失败：$error';
+  }
+
+  @override
+  String get reportNetworkFailed => '送出失败，请确认网络后再试';
+
+  @override
+  String get reportAttachImageLabel => '附加图片（非必填）';
+
+  @override
+  String get reportAttachImageHint => '回报 Bug 或花花未入帐时，可以附上画面截图，方便官方确认问题。';
+
+  @override
+  String get reportOpeningAlbum => '开启相册中...';
+
+  @override
+  String get reportSelectFromAlbum => '从相册选择图片';
+
+  @override
+  String get reportSending => '送出中...';
+
+  @override
+  String get reportSubmit => '送出回报';
+
+  @override
+  String get reportRemoveImage => '移除图片';
+
+  @override
+  String get reportImageSelected => '已选择图片';
+
+  @override
+  String get reportChangeImage => '更换';
+
+  @override
+  String get reloadTranslation => '重新载入翻译';
+
+  @override
+  String get guideNotAvailableInLanguage => '目前尚未提供此语言的游玩指南，暂时显示繁体中文。';
+
+  @override
+  String get clearSearch => '清除搜索';
+
+  @override
+  String get memoPermissionWarning => '尚未开启通知权限，备忘录仍会储存，但不会显示系统提醒。';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return '备忘录已储存，$name 会提醒你！';
+  }
+
+  @override
+  String get memoSavedNoPermission => '备忘录已储存，但尚未开启通知权限。';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return '备忘录已更新，$name 会提醒你！';
+  }
+
+  @override
+  String get memoUpdatedNoPermission => '备忘录已更新，但目前没有通知权限。';
+
+  @override
+  String dataLoadError(String error) {
+    return '读取资料时发生错误：$error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return '读取失败：$error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'M月d日';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt => '喜欢这则动态吗？给他一点心意吧！';
+
+  @override
+  String get saveFeedPocket => '把特别的动态悄悄收进口袋里。';
+
+  @override
+  String get newComment => '新留言';
+
+  @override
+  String get someFriend => '某位朋友';
+
+  @override
+  String get myBackpackAndPrivileges => '我的专属背包与特权';
+
+  @override
+  String get currentRomanticBond => '目前累积浪漫羁绊';
+
+  @override
+  String get physicalGiftBoxUnlockStatus => '实体礼盒解锁状态：';
+
+  @override
+  String get topLovePhysicalVipBox => '【顶级挚爱】实体 VIP 专属礼盒';
+
+  @override
+  String get physicalGiftBoxContents => '含：专属手写信 + 角色代表娃 + 官方感谢信';
+
+  @override
+  String get modifyShippingAddress => '修改收件地址资讯';
+
+  @override
+  String get addressUnlockedFillNow => '已解锁！点此填写收件资讯';
+
+  @override
+  String get addressSuccessfullyRegistered => '您已成功登记收件地址，我们会尽快为您准备！';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return '还差 NT\$ $amount 即可解锁实体大赏！';
+  }
+
+  @override
+  String get avatarFrameHint => '提示：其他数位外观与头像框可在商店或个人设定中查看与装备。';
+
+  @override
+  String get closeButton => '关闭';
+
+  @override
+  String get physicalGiftBoxUnlockTitle => '【顶级挚爱】实体礼盒解锁';
+
+  @override
+  String get physicalGiftBoxUnlockThanks => '感谢玩家对《恋恋拾光》的极致守候！';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt => '请填写以下收件资讯，我们将为您寄送专属手写信与角色代表娃娃：';
+
+  @override
+  String get recipientRealName => '收件人真实姓名';
+
+  @override
+  String get contactPhone => '联络电话';
+
+  @override
+  String get fullShippingAddress => '完整收件地址（含邮递区号）';
+
+  @override
+  String get desiredCharacterDollName => '想要收到的角色代表娃名字';
+
+  @override
+  String get characterNameExample => '例如：欲输入的角色名称';
+
+  @override
+  String get fillLater => '稍后填写';
+
+  @override
+  String get fillCompleteAddressAndRoleHint => '请完整填写收件资讯与心仪的角色名称喔！';
+
+  @override
+  String get shippingInfoSubmittedSuccess => '收件资讯已成功送出！请期待我们的实体惊喜！';
+
+  @override
+  String get confirmSubmit => '确认送出';
+
+  @override
+  String get aboutMe => '关于我';
+
+  @override
+  String get myBackpack => '我的背包';
+
+  @override
+  String get ownerExclusiveArea => '主理人专属区域';
+
+  @override
+  String get enterShiguangAdminBackend => '进入拾光管理后台';
+
+  @override
+  String get errorOccurred => '发生错误';
+
+  @override
+  String get creatorGuidelines => '创作者规范';
+
+  @override
+  String get playGuide => '游玩指南';
+
+  @override
+  String get lianlianShiguang => '恋恋拾光';
+
+  @override
+  String get copyrightNotice => '© 2026 默语白';
+
+  @override
+  String get cumulativeBenefits => '累计福利';
+
+  @override
+  String get perkFirstEncounter => '初见倾心';
+
+  @override
+  String get perkFirstEncounterReward => '20 点花花 + 专属新手称号';
+
+  @override
+  String get perkGlimmerThrob => '微光悸动';
+
+  @override
+  String get perkGlimmerThrobReward => '专属头像框【微光悸动】';
+
+  @override
+  String get perkStarryWhisper => '星空呢喃';
+
+  @override
+  String get perkStarryWhisperReward => '专属聊天气泡 + 50 点花花';
+
+  @override
+  String get perkRomanticSunset => '浪漫夕阳';
+
+  @override
+  String get perkRomanticSunsetReward => '专属 App 桌面图示';
+
+  @override
+  String get perkHeartbeat => '怦然心动';
+
+  @override
+  String get perkHeartbeatReward => '点击屏幕特效 + 100 点花花';
+
+  @override
+  String get perkEternalVow => '永恒誓约';
+
+  @override
+  String get perkEternalVowReward => '进阶动态头像框 + 200 点花花';
+
+  @override
+  String get perkSoulIntersection => '灵魂交会';
+
+  @override
+  String get perkSoulIntersectionReward => '动态聊天气泡特效 + 专属进阶称号';
+
+  @override
+  String get perkExclusiveWait => '专属守候';
+
+  @override
+  String get perkExclusiveWaitReward => '顶级动态名牌 + 500 点花花';
+
+  @override
+  String get perkBrilliantGalaxy => '璀璨星河';
+
+  @override
+  String get perkBrilliantGalaxyReward => '专属进场特效 + 专属客服';
+
+  @override
+  String get perkTopBeloved => '顶级挚爱';
+
+  @override
+  String get perkTopBelovedReward => '实体 VIP 专属礼盒';
+
+  @override
+  String get cumulativeRomanticBond => '累积浪漫羁绊';
+
+  @override
+  String get allTopPrivilegesUnlocked => '您已解锁所有顶级特权！';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return '再储值 NT\$ $amount 即可解锁下一阶';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty => '故事内容不能是空的';
+
+  @override
+  String get writeYourStoryHint => '写下你们的故事...';
+
+  @override
+  String get characterBannerTitle => '角色首页横幅';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -12422,4 +13462,524 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get voice_preview_failed => '播放語音失敗';
+
+  @override
+  String get characterBannerSectionTitle => '角色首頁橫幅';
+
+  @override
+  String get characterBannerDescription => '橫幅說明';
+
+  @override
+  String get characterBannerRemove => '移除';
+
+  @override
+  String get characterBannerSelect => '選擇橫幅圖片';
+
+  @override
+  String get characterBannerChange => '更換橫幅圖片';
+
+  @override
+  String get characterBannerSpecs => '建議比例 16:9，建議尺寸 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint => '未設定時，首頁將自動使用角色主圖。';
+
+  @override
+  String get characterBannerHelpContent =>
+      '橫幅會顯示在角色首頁的大型橫向區域。\n\n建議使用 16:9 的橫向圖片，例如 1920 × 1080。\n\n重要人物與臉部請盡量放在畫面中央，避免不同手機尺寸裁切到主體。\n\n若未設定橫幅，系統會自動使用角色主圖。';
+
+  @override
+  String get first_meeting_title => '第一次相遇';
+
+  @override
+  String get common_delete_network_failed => '刪除失敗，請檢查網路後再試';
+
+  @override
+  String get common_operation_failed_retry => '操作失敗，請稍後再試';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return '專屬照片 $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase => '提升好感度後解鎖';
+
+  @override
+  String get first_meeting_empty => '第一次相遇，尚未展開……';
+
+  @override
+  String photo_load_failed(String error) {
+    return '讀取照片失敗：$error';
+  }
+
+  @override
+  String get add_friend_failed_retry => '添加好友失敗，請稍後再試。';
+
+  @override
+  String get remove_friend => '移除好友';
+
+  @override
+  String get report_character => '檢舉角色';
+
+  @override
+  String get block_character => '封鎖角色';
+
+  @override
+  String get daily_encounter => '每日邂逅';
+
+  @override
+  String get discovery_hall => '探索大廳';
+
+  @override
+  String get latest_recommendation => '最新推薦';
+
+  @override
+  String get popular_ranking => '人氣熱榜';
+
+  @override
+  String get character_features => '角色特徵';
+
+  @override
+  String get featured_new_star => '閃耀新星．強檔推薦';
+
+  @override
+  String get recently_added_characters => '最近上架新角色';
+
+  @override
+  String get no_tag_data => '目前還沒有任何標籤資料～';
+
+  @override
+  String get no_character_with_tag => '沒有找到擁有此標籤的角色';
+
+  @override
+  String get voice_search_failed_retry => '尋找聲音失敗，請再試一次';
+
+  @override
+  String get voice_search_incomplete_retry => '尋找不完整，請稍後再試';
+
+  @override
+  String get voice_data_incomplete => '聲音資料不完整';
+
+  @override
+  String get voice_generation_failed_retry => '聲音生成失敗，請稍後再試';
+
+  @override
+  String get voice_playback_failed_retry => '聲音播放失敗，請再試一次';
+
+  @override
+  String get selected_voice_data_incomplete => '選取的聲音資料不完整';
+
+  @override
+  String get private_voice_user_not_found => '找不到使用者，無法更新私人角色語音';
+
+  @override
+  String get voice_selected_character_save_failed => '聲音已選取，但角色資料儲存失敗';
+
+  @override
+  String get voice_binding_failed => '綁定聲音失敗';
+
+  @override
+  String get play_voice_tooltip => '播放語音';
+
+  @override
+  String get avatar_label => '大頭貼';
+
+  @override
+  String get message_preview_image => '[圖片]';
+
+  @override
+  String get message_preview_recording => '[錄音]';
+
+  @override
+  String get message_preview_voice => '[語音訊息]';
+
+  @override
+  String get send_failed_retry => '送出失敗，請稍後再試 😢';
+
+  @override
+  String get media_upload_failed_retry => '媒體上傳失敗，請再試一次';
+
+  @override
+  String get ai_thinking_too_long => '他似乎在沉思，請稍後再試...';
+
+  @override
+  String get ai_reply_in_progress => '他正在回覆中，請稍候一下，不要重複送出';
+
+  @override
+  String get ai_response_blocked => '他的思緒被干擾了，請換個溫和的說法喔！';
+
+  @override
+  String get microphone_permission_required => '需要麥克風權限才能錄音';
+
+  @override
+  String get no_recording_to_send => '沒有可傳送的錄音';
+
+  @override
+  String get voice_uploading => '語音上傳中...';
+
+  @override
+  String get change_watermark_color => '更換浮水印顏色';
+
+  @override
+  String get other_party_typing => '對方正在輸入...';
+
+  @override
+  String get chat_input_hint => '請輸入...';
+
+  @override
+  String get regenerate_sync_failed => '重新生成次數同步失敗，請再試一次 😢';
+
+  @override
+  String get creator_public_works => '公開作品';
+
+  @override
+  String get creator_received_likes => '獲得喜歡';
+
+  @override
+  String get about_me => '關於我';
+
+  @override
+  String get moment_input_hint => '分享你的心情...';
+
+  @override
+  String character_play_count(int count) {
+    return '遊玩次數：$count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return '標籤：#$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return '試聽聲音失敗：$code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return '已成功刪除 $count 則訊息';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return '讀取作品失敗：$error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age歲';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return '刪除失敗: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return '載入角色資料失敗：$error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => '草稿頭像載入失敗:';
+
+  @override
+  String get unnamedCreator => '未命名創作者';
+
+  @override
+  String get profileNotYetFilled => '尚未填寫自我介紹';
+
+  @override
+  String get reportImageSizeLimit => '圖片大小不能超過 10 MB';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return '選擇回報圖片失敗：$error';
+  }
+
+  @override
+  String get reportImageCannotSelect => '無法選擇圖片，請稍後再試';
+
+  @override
+  String get reportLoginRequired => '請先登入後再送出回報';
+
+  @override
+  String get reportAnonymousPlayer => '未命名玩家';
+
+  @override
+  String get reportSendSuccess => '回報已成功送出，謝謝你的意見！';
+
+  @override
+  String reportSendFailed(String error) {
+    return '送出玩家回報失敗：$error';
+  }
+
+  @override
+  String get reportNetworkFailed => '送出失敗，請確認網路後再試';
+
+  @override
+  String get reportAttachImageLabel => '附加圖片（非必填）';
+
+  @override
+  String get reportAttachImageHint => '回報 Bug 或花花未入帳時，可以附上畫面截圖，方便官方確認問題。';
+
+  @override
+  String get reportOpeningAlbum => '開啟相簿中...';
+
+  @override
+  String get reportSelectFromAlbum => '從相簿選擇圖片';
+
+  @override
+  String get reportSending => '送出中...';
+
+  @override
+  String get reportSubmit => '送出回報';
+
+  @override
+  String get reportRemoveImage => '移除圖片';
+
+  @override
+  String get reportImageSelected => '已選擇圖片';
+
+  @override
+  String get reportChangeImage => '更換';
+
+  @override
+  String get reloadTranslation => '重新載入翻譯';
+
+  @override
+  String get guideNotAvailableInLanguage => '目前尚未提供此語言的遊玩指南，暫時顯示繁體中文。';
+
+  @override
+  String get clearSearch => '清除搜尋';
+
+  @override
+  String get memoPermissionWarning => '尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return '備忘錄已儲存，$name 會提醒你！';
+  }
+
+  @override
+  String get memoSavedNoPermission => '備忘錄已儲存，但尚未開啟通知權限。';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return '備忘錄已更新，$name 會提醒你！';
+  }
+
+  @override
+  String get memoUpdatedNoPermission => '備忘錄已更新，但目前沒有通知權限。';
+
+  @override
+  String dataLoadError(String error) {
+    return '讀取資料時發生錯誤：$error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return '讀取失敗：$error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'M月d日';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt => '喜歡這則動態嗎？給他一點心意吧！';
+
+  @override
+  String get saveFeedPocket => '把特別的動態悄悄收進口袋裡。';
+
+  @override
+  String get newComment => '新留言';
+
+  @override
+  String get someFriend => '某位朋友';
+
+  @override
+  String get myBackpackAndPrivileges => '我的專屬背包與特權';
+
+  @override
+  String get currentRomanticBond => '目前累積浪漫羈絆';
+
+  @override
+  String get physicalGiftBoxUnlockStatus => '實體禮盒解鎖狀態：';
+
+  @override
+  String get topLovePhysicalVipBox => '【頂級摯愛】實體 VIP 專屬禮盒';
+
+  @override
+  String get physicalGiftBoxContents => '含：專屬手寫信 + 角色代表娃 + 官方感謝信';
+
+  @override
+  String get modifyShippingAddress => '修改收件地址資訊';
+
+  @override
+  String get addressUnlockedFillNow => '已解鎖！點此填寫收件資訊';
+
+  @override
+  String get addressSuccessfullyRegistered => '您已成功登記收件地址，我們會盡快為您準備！';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return '還差 NT\$ $amount 即可解鎖實體大賞！';
+  }
+
+  @override
+  String get avatarFrameHint => '提示：其他數位外觀與頭像框可在商店或個人設定中查看與裝備。';
+
+  @override
+  String get closeButton => '關閉';
+
+  @override
+  String get physicalGiftBoxUnlockTitle => '【頂級摯愛】實體禮盒解鎖';
+
+  @override
+  String get physicalGiftBoxUnlockThanks => '感謝玩家對《戀戀拾光》的極致守候！';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt => '請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：';
+
+  @override
+  String get recipientRealName => '收件人真實姓名';
+
+  @override
+  String get contactPhone => '聯絡電話';
+
+  @override
+  String get fullShippingAddress => '完整收件地址（含郵遞區號）';
+
+  @override
+  String get desiredCharacterDollName => '想要收到的角色代表娃名字';
+
+  @override
+  String get characterNameExample => '例如：欲輸入的角色名稱';
+
+  @override
+  String get fillLater => '稍後填寫';
+
+  @override
+  String get fillCompleteAddressAndRoleHint => '請完整填寫收件資訊與心儀的角色名稱喔！';
+
+  @override
+  String get shippingInfoSubmittedSuccess => '收件資訊已成功送出！請期待我們的實體驚喜！';
+
+  @override
+  String get confirmSubmit => '確認送出';
+
+  @override
+  String get aboutMe => '關於我';
+
+  @override
+  String get myBackpack => '我的背包';
+
+  @override
+  String get ownerExclusiveArea => '主理人專屬區域';
+
+  @override
+  String get enterShiguangAdminBackend => '進入拾光管理後台';
+
+  @override
+  String get errorOccurred => '發生錯誤';
+
+  @override
+  String get creatorGuidelines => '創作者規範';
+
+  @override
+  String get playGuide => '遊玩指南';
+
+  @override
+  String get lianlianShiguang => '戀戀拾光';
+
+  @override
+  String get copyrightNotice => '© 2026 默語白';
+
+  @override
+  String get cumulativeBenefits => '累計福利';
+
+  @override
+  String get perkFirstEncounter => '初見傾心';
+
+  @override
+  String get perkFirstEncounterReward => '20 點花花 + 專屬新手稱號';
+
+  @override
+  String get perkGlimmerThrob => '微光悸動';
+
+  @override
+  String get perkGlimmerThrobReward => '專屬頭像框【微光悸動】';
+
+  @override
+  String get perkStarryWhisper => '星空呢喃';
+
+  @override
+  String get perkStarryWhisperReward => '專屬聊天氣泡 + 50 點花花';
+
+  @override
+  String get perkRomanticSunset => '浪漫夕陽';
+
+  @override
+  String get perkRomanticSunsetReward => '專屬 App 桌面圖示';
+
+  @override
+  String get perkHeartbeat => '怦然心動';
+
+  @override
+  String get perkHeartbeatReward => '點擊螢幕特效 + 100 點花花';
+
+  @override
+  String get perkEternalVow => '永恆誓約';
+
+  @override
+  String get perkEternalVowReward => '進階動態頭像框 + 200 點花花';
+
+  @override
+  String get perkSoulIntersection => '靈魂交會';
+
+  @override
+  String get perkSoulIntersectionReward => '動態聊天氣泡特效 + 專屬進階稱號';
+
+  @override
+  String get perkExclusiveWait => '專屬守候';
+
+  @override
+  String get perkExclusiveWaitReward => '頂級動態名牌 + 500 點花花';
+
+  @override
+  String get perkBrilliantGalaxy => '璀璨星河';
+
+  @override
+  String get perkBrilliantGalaxyReward => '專屬進場特效 + 專屬客服';
+
+  @override
+  String get perkTopBeloved => '頂級摯愛';
+
+  @override
+  String get perkTopBelovedReward => '實體 VIP 專屬禮盒';
+
+  @override
+  String get cumulativeRomanticBond => '累積浪漫羈絆';
+
+  @override
+  String get allTopPrivilegesUnlocked => '您已解鎖所有頂級特權！';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return '再儲值 NT\$ $amount 即可解鎖下一階';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty => '故事內容不能是空的';
+
+  @override
+  String get writeYourStoryHint => '寫下你們的故事...';
+
+  @override
+  String get characterBannerTitle => '角色首頁橫幅';
 }

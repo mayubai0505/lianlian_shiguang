@@ -2153,5 +2153,302 @@
     "description": "Button text to restore account"
   },
   "voice_preview": "播放語音",
-  "voice_preview_failed": "播放語音失敗"
+  "voice_preview_failed": "播放語音失敗",
+
+  "characterBannerSectionTitle": "角色首頁橫幅",
+  "characterBannerDescription": "橫幅說明",
+  "characterBannerRemove": "移除",
+  "characterBannerSelect": "選擇橫幅圖片",
+  "characterBannerChange": "更換橫幅圖片",
+  "characterBannerSpecs": "建議比例 16:9，建議尺寸 1920 × 1080",
+  "characterBannerDefaultHint": "未設定時，首頁將自動使用角色主圖。",
+  "characterBannerHelpContent": "橫幅會顯示在角色首頁的大型橫向區域。\n\n建議使用 16:9 的橫向圖片，例如 1920 × 1080。\n\n重要人物與臉部請盡量放在畫面中央，避免不同手機尺寸裁切到主體。\n\n若未設定橫幅，系統會自動使用角色主圖。",
+  "first_meeting_title": "第一次相遇",
+  "common_delete_network_failed": "刪除失敗，請檢查網路後再試",
+  "common_operation_failed_retry": "操作失敗，請稍後再試",
+  "exclusive_photo_number": "專屬照片 {number}",
+  "@exclusive_photo_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "unlock_after_affection_increase": "提升好感度後解鎖",
+  "first_meeting_empty": "第一次相遇，尚未展開……",
+  "follow_btn": "關注",
+  "photo_load_failed": "讀取照片失敗：{error}",
+  "@photo_load_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "add_friend_failed_retry": "添加好友失敗，請稍後再試。",
+  "remove_friend": "移除好友",
+  "report_character": "檢舉角色",
+  "block_character": "封鎖角色",
+  "daily_encounter": "每日邂逅",
+  "discovery_hall": "探索大廳",
+  "latest_recommendation": "最新推薦",
+  "popular_ranking": "人氣熱榜",
+  "character_features": "角色特徵",
+  "featured_new_star": "閃耀新星．強檔推薦",
+  "recently_added_characters": "最近上架新角色",
+  "no_tag_data": "目前還沒有任何標籤資料～",
+  "no_character_with_tag": "沒有找到擁有此標籤的角色",
+  "voice_search_failed_retry": "尋找聲音失敗，請再試一次",
+  "voice_search_incomplete_retry": "尋找不完整，請稍後再試",
+  "voice_data_incomplete": "聲音資料不完整",
+  "voice_generation_failed_retry": "聲音生成失敗，請稍後再試",
+  "voice_playback_failed_retry": "聲音播放失敗，請再試一次",
+  "selected_voice_data_incomplete": "選取的聲音資料不完整",
+  "private_voice_user_not_found": "找不到使用者，無法更新私人角色語音",
+  "voice_selected_character_save_failed": "聲音已選取，但角色資料儲存失敗",
+  "voice_binding_failed": "綁定聲音失敗",
+  "play_voice_tooltip": "播放語音",
+  "avatar_label": "大頭貼",
+  "message_preview_image": "[圖片]",
+  "message_preview_recording": "[錄音]",
+  "message_preview_voice": "[語音訊息]",
+  "send_failed_retry": "送出失敗，請稍後再試 😢",
+  "media_upload_failed_retry": "媒體上傳失敗，請再試一次",
+  "ai_thinking_too_long": "他似乎在沉思，請稍後再試...",
+  "ai_reply_in_progress": "他正在回覆中，請稍候一下，不要重複送出",
+  "ai_response_blocked": "他的思緒被干擾了，請換個溫和的說法喔！",
+  "microphone_permission_required": "需要麥克風權限才能錄音",
+  "no_recording_to_send": "沒有可傳送的錄音",
+  "voice_uploading": "語音上傳中...",
+  "change_watermark_color": "更換浮水印顏色",
+  "other_party_typing": "對方正在輸入...",
+  "chat_input_hint": "請輸入...",
+  "regenerate_sync_failed": "重新生成次數同步失敗，請再試一次 😢",
+  "creator_public_works": "公開作品",
+  "creator_received_likes": "獲得喜歡",
+  "about_me": "關於我",
+  "moment_input_hint": "分享你的心情...",
+  "character_play_count": "遊玩次數：{count}",
+  "@character_play_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "tag_page_title": "標籤：#{tag}",
+  "@tag_page_title": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+
+  "voice_preview_failed_detail": "試聽聲音失敗：{code} {message}",
+  "@voice_preview_failed_detail": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+
+  "messages_deleted_success": "已成功刪除 {count} 則訊息",
+  "@messages_deleted_success": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "creator_work_load_failed": "讀取作品失敗：{error}",
+  "@creator_work_load_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "age_years_old": "{age}歲",
+  "@age_years_old": {
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFailedMessage": "刪除失敗: {error}",
+  "@deleteFailedMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loadCharacterDataFailed": "載入角色資料失敗：{error}",
+  "@loadCharacterDataFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "draftAvatarLoadFailed": "草稿頭像載入失敗:",
+  "unnamedCreator": "未命名創作者",
+  "profileNotYetFilled": "尚未填寫自我介紹",
+  "reportImageSizeLimit": "圖片大小不能超過 10 MB",
+  "reportImageSelectFailed": "選擇回報圖片失敗：{error}",
+  "@reportImageSelectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportImageCannotSelect": "無法選擇圖片，請稍後再試",
+  "reportLoginRequired": "請先登入後再送出回報",
+  "reportAnonymousPlayer": "未命名玩家",
+  "reportSendSuccess": "回報已成功送出，謝謝你的意見！",
+  "reportSendFailed": "送出玩家回報失敗：{error}",
+  "@reportSendFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportNetworkFailed": "送出失敗，請確認網路後再試",
+  "reportAttachImageLabel": "附加圖片（非必填）",
+  "reportAttachImageHint": "回報 Bug 或花花未入帳時，可以附上畫面截圖，方便官方確認問題。",
+  "reportOpeningAlbum": "開啟相簿中...",
+  "reportSelectFromAlbum": "從相簿選擇圖片",
+  "reportSending": "送出中...",
+  "reportSubmit": "送出回報",
+  "reportRemoveImage": "移除圖片",
+  "reportImageSelected": "已選擇圖片",
+  "reportChangeImage": "更換",
+  "reloadTranslation": "重新載入翻譯",
+  "guideNotAvailableInLanguage": "目前尚未提供此語言的遊玩指南，暫時顯示繁體中文。",
+  "clearSearch": "清除搜尋",
+  "memoPermissionWarning": "尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。",
+  "memoSavedWithNotification": "備忘錄已儲存，{name} 會提醒你！",
+  "@memoSavedWithNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memoSavedNoPermission": "備忘錄已儲存，但尚未開啟通知權限。",
+  "memoUpdatedWithNotification": "備忘錄已更新，{name} 會提醒你！",
+  "@memoUpdatedWithNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memoUpdatedNoPermission": "備忘錄已更新，但目前沒有通知權限。",
+  "dataLoadError": "讀取資料時發生錯誤：{error}",
+  "@dataLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loadFailed": "讀取失敗：{error}",
+  "@loadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dateFormatMonthDay": "M月d日",
+  "timeFormatHourMinute": "HH:mm",
+  "likeFeedPrompt": "喜歡這則動態嗎？給他一點心意吧！",
+  "saveFeedPocket": "把特別的動態悄悄收進口袋裡。",
+  "newComment": "新留言",
+  "someFriend": "某位朋友",
+  "myBackpackAndPrivileges": "我的專屬背包與特權",
+  "currentRomanticBond": "目前累積浪漫羈絆",
+  "physicalGiftBoxUnlockStatus": "實體禮盒解鎖狀態：",
+  "topLovePhysicalVipBox": "【頂級摯愛】實體 VIP 專屬禮盒",
+  "physicalGiftBoxContents": "含：專屬手寫信 + 角色代表娃 + 官方感謝信",
+  "modifyShippingAddress": "修改收件地址資訊",
+  "addressUnlockedFillNow": "已解鎖！點此填寫收件資訊",
+  "addressSuccessfullyRegistered": "您已成功登記收件地址，我們會盡快為您準備！",
+  "amountNeededForPhysicalPrize": "還差 NT$ {amount} 即可解鎖實體大賞！",
+  "@amountNeededForPhysicalPrize": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarFrameHint": "提示：其他數位外觀與頭像框可在商店或個人設定中查看與裝備。",
+  "closeButton": "關閉",
+  "physicalGiftBoxUnlockTitle": "【頂級摯愛】實體禮盒解鎖",
+  "physicalGiftBoxUnlockThanks": "感謝玩家對《戀戀拾光》的極致守候！",
+  "physicalGiftBoxUnlockPrompt": "請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：",
+  "recipientRealName": "收件人真實姓名",
+  "contactPhone": "聯絡電話",
+  "fullShippingAddress": "完整收件地址（含郵遞區號）",
+  "desiredCharacterDollName": "想要收到的角色代表娃名字",
+  "characterNameExample": "例如：欲輸入的角色名稱",
+  "fillLater": "稍後填寫",
+  "fillCompleteAddressAndRoleHint": "請完整填寫收件資訊與心儀的角色名稱喔！",
+  "shippingInfoSubmittedSuccess": "收件資訊已成功送出！請期待我們的實體驚喜！",
+  "confirmSubmit": "確認送出",
+  "aboutMe": "關於我",
+  "myBackpack": "我的背包",
+  "ownerExclusiveArea": "主理人專屬區域",
+  "enterShiguangAdminBackend": "進入拾光管理後台",
+  "errorOccurred": "發生錯誤",
+  "creatorGuidelines": "創作者規範",
+  "playGuide": "遊玩指南",
+  "lianlianShiguang": "戀戀拾光",
+  "copyrightNotice": "© 2026 默語白",
+  "cumulativeBenefits": "累計福利",
+  "perkFirstEncounter": "初見傾心",
+  "perkFirstEncounterReward": "20 點花花 + 專屬新手稱號",
+  "perkGlimmerThrob": "微光悸動",
+  "perkGlimmerThrobReward": "專屬頭像框【微光悸動】",
+  "perkStarryWhisper": "星空呢喃",
+  "perkStarryWhisperReward": "專屬聊天氣泡 + 50 點花花",
+  "perkRomanticSunset": "浪漫夕陽",
+  "perkRomanticSunsetReward": "專屬 App 桌面圖示",
+  "perkHeartbeat": "怦然心動",
+  "perkHeartbeatReward": "點擊螢幕特效 + 100 點花花",
+  "perkEternalVow": "永恆誓約",
+  "perkEternalVowReward": "進階動態頭像框 + 200 點花花",
+  "perkSoulIntersection": "靈魂交會",
+  "perkSoulIntersectionReward": "動態聊天氣泡特效 + 專屬進階稱號",
+  "perkExclusiveWait": "專屬守候",
+  "perkExclusiveWaitReward": "頂級動態名牌 + 500 點花花",
+  "perkBrilliantGalaxy": "璀璨星河",
+  "perkBrilliantGalaxyReward": "專屬進場特效 + 專屬客服",
+  "perkTopBeloved": "頂級摯愛",
+  "perkTopBelovedReward": "實體 VIP 專屬禮盒",
+  "cumulativeRomanticBond": "累積浪漫羈絆",
+  "allTopPrivilegesUnlocked": "您已解鎖所有頂級特權！",
+  "rechargeAmountForNextTier": "再儲值 NT$ {amount} 即可解鎖下一階",
+  "@rechargeAmountForNextTier": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "storyContentCannotBeEmpty": "故事內容不能是空的",
+  "writeYourStoryHint": "寫下你們的故事...",
+  "characterBannerTitle": "角色首頁橫幅"
 }

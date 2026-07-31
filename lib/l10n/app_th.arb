@@ -2007,5 +2007,297 @@
         "description": "Button text to restore account"
     },
     "voice_preview": "เล่นเสียง",
-    "voice_preview_failed": "เล่นเสียงไม่สำเร็จ"
+    "voice_preview_failed": "เล่นเสียงไม่สำเร็จ",
+    "voice_preview_failed": "เล่นเสียงไม่สำเร็จ",
+    "characterBannerSectionTitle": "แบนเนอร์หน้าหลักของตัวละคร",
+    "characterBannerDescription": "คำอธิบายแบนเนอร์",
+    "characterBannerRemove": "ลบออก",
+    "characterBannerSelect": "เลือกรูปภาพแบนเนอร์",
+    "characterBannerChange": "เปลี่ยนรูปภาพแบนเนอร์",
+    "characterBannerSpecs": "สัดส่วนที่แนะนำ 16:9, ขนาดที่แนะนำ 1920 × 1080",
+    "characterBannerDefaultHint": "หากไม่ได้ตั้งค่า หน้าหลักจะใช้รูปโปรไฟล์หลักของตัวละครโดยอัตโนมัติค่ะ",
+    "characterBannerHelpContent": "แบนเนอร์จะแสดงในพื้นที่แนวนอนขนาดใหญ่บนหน้าหลักของตัวละครค่ะ\n\nแนะนำให้ใช้รูปภาพแนวนอนสัดส่วน 16:9 เช่น 1920 × 1080\n\nโปรดวางตัวละครหลักและใบหน้าไว้บริเวณจุดศูนย์กลางของภาพ เพื่อป้องกันไม่ให้ถูกครอบตัดบนหน้าจอโทรศัพท์ขนาดต่างๆ ค่ะ\n\nหากไม่ได้ตั้งค่าแบนเนอร์ ระบบจะใช้รูปภาพหลักของตัวละครโดยอัตโนมัติค่ะ",
+    "first_meeting_title": "พบกันครั้งแรก",
+    "common_delete_network_failed": "ลบไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองใหม่อีกครั้งค่ะ",
+    "common_operation_failed_retry": "การดำเนินการล้มเหลว กรุณาลองใหม่อีกครั้งในภายหลังค่ะ",
+    "exclusive_photo_number": "รูปถ่ายเอ็กซ์คลูซีฟ {number}",
+    "@exclusive_photo_number": {
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "unlock_after_affection_increase": "ปลดล็อกเมื่อเพิ่มระดับความสนิทสนม",
+    "first_meeting_empty": "พบกันครั้งแรก ยังไม่ได้เริ่ม...",
+    "follow_btn": "ติดตาม",
+    "photo_load_failed": "โหลดรูปภาพไม่สำเร็จ: {error}",
+    "@photo_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "add_friend_failed_retry": "เพิ่มเพื่อนไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ",
+    "remove_friend": "ลบเพื่อน",
+    "report_character": "รายงานตัวละคร",
+    "block_character": "บล็อกตัวละคร",
+    "daily_encounter": "พบเจอนานา",
+    "discovery_hall": "หอสำรวจ",
+    "latest_recommendation": "แนะนำล่าสุด",
+    "popular_ranking": "อันดับยอดนิยม",
+    "character_features": "ลักษณะเฉพาะของตัวละคร",
+    "featured_new_star": "ดาวดวงใหม่ส่องแสง · แนะนำยอดฮิต",
+    "recently_added_characters": "ตัวละครใหม่ที่เพิ่งเพิ่ม",
+    "no_tag_data": "ขณะนี้ยังไม่มีข้อมูลแท็กค่ะ~",
+    "no_character_with_tag": "ไม่พบตัวละครที่มีแท็กนี้ค่ะ",
+    "voice_search_failed_retry": "ค้นหาเสียงไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ",
+    "voice_search_incomplete_retry": "การค้นหาไม่สมบูรณ์ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ",
+    "voice_data_incomplete": "ข้อมูลเสียงไม่สมบูรณ์ค่ะ",
+    "voice_generation_failed_retry": "สร้างเสียงไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ",
+    "voice_playback_failed_retry": "เล่นเสียงไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ",
+    "selected_voice_data_incomplete": "ข้อมูลเสียงที่เลือกไม่สมบูรณ์ค่ะ",
+    "private_voice_user_not_found": "ไม่พบผู้ใช้ ไม่สามารถอัปเดตเสียงตัวละครส่วนตัวได้ค่ะ",
+    "voice_selected_character_save_failed": "เลือกเสียงเรียบร้อยแล้ว แต่บันทึกข้อมูลตัวละครไม่สำเร็จค่ะ",
+    "voice_binding_failed": "ผูกข้อมูลเสียงไม่สำเร็จค่ะ",
+    "play_voice_tooltip": "เล่นเสียง",
+    "avatar_label": "รูปโปรไฟล์",
+    "message_preview_image": "[รูปภาพ]",
+    "message_preview_recording": "[เสียงบันทึก]",
+    "message_preview_voice": "[ข้อความเสียง]",
+    "send_failed_retry": "ส่งไม่สำเร็จ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ 😢",
+    "media_upload_failed_retry": "อัปโหลดสื่อไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ",
+    "ai_thinking_too_long": "เขาดูเหมือนกำลังครุ่นคิดอยู่ กรุณาลองใหม่อีกครั้งในภายหลัง...",
+    "ai_reply_in_progress": "เขากำลังตอบกลับอยู่ กรุณารอสักครู่และอย่าส่งซ้ำนะคะ",
+    "ai_response_blocked": "ความคิดของเขาถูกรบกวน ลองเปลี่ยนเป็นคำพูดที่นุ่มนวลกว่านี้นะคะ!",
+    "microphone_permission_required": "ต้องได้รับอนุญาตใช้ไมโครโฟนจึงจะสามารถบันทึกเสียงได้ค่ะ",
+    "no_recording_to_send": "ไม่มีเสียงที่บันทึกไว้สำหรับส่งค่ะ",
+    "voice_uploading": "กำลังอัปโหลดข้อความเสียง...",
+    "change_watermark_color": "เปลี่ยนสีลายน้ำ",
+    "other_party_typing": "อีกฝ่ายกำลังพิมพ์...",
+    "chat_input_hint": "กรุณากรอกข้อความ...",
+    "regenerate_sync_failed": "ซิงค์จำนวนครั้งการสร้างใหม่ไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ 😢",
+    "creator_public_works": "ผลงานสาธารณะ",
+    "creator_received_likes": "การกดถูกใจที่ได้รับ",
+    "about_me": "เกี่ยวกับฉัน",
+    "moment_input_hint": "แบ่งปันความรู้สึกของคุณ...",
+    "character_play_count": "จำนวนครั้งที่เล่น: {count}",
+    "@character_play_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "tag_page_title": "แท็ก: #{tag}",
+    "@tag_page_title": {
+        "placeholders": {
+            "tag": {
+                "type": "String"
+            }
+        }
+    },
+    "voice_preview_failed_detail": "ทดลองฟังเสียงไม่สำเร็จ: {code} {message}",
+    "@voice_preview_failed_detail": {
+        "placeholders": {
+            "code": {
+                "type": "String"
+            },
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "messages_deleted_success": "ลบข้อความสำเร็จ {count} ข้อความแล้วค่ะ",
+    "@messages_deleted_success": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "creator_work_load_failed": "โหลดผลงานไม่สำเร็จ: {error}",
+    "@creator_work_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "age_years_old": "อายุ {age} ปี",
+    "@age_years_old": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteFailedMessage": "ลบไม่สำเร็จ: {error}",
+    "@deleteFailedMessage": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadCharacterDataFailed": "โหลดข้อมูลตัวละครไม่สำเร็จ: {error}",
+    "@loadCharacterDataFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "draftAvatarLoadFailed": "โหลดรูปโปรไฟล์ร่างไม่สำเร็จ:",
+    "unnamedCreator": "ครีเอเตอร์ไม่ระบุนาม",
+    "profileNotYetFilled": "ยังไม่ได้กรอกแนะนำตัว",
+    "reportImageSizeLimit": "ขนาดรูปภาพต้องไม่เกิน 10 MB ค่ะ",
+    "reportImageSelectFailed": "เลือกรูปภาพรายงานไม่สำเร็จ: {error}",
+    "@reportImageSelectFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportImageCannotSelect": "ไม่สามารถเลือกรูปภาพได้ กรุณาลองใหม่อีกครั้งในภายหลังค่ะ",
+    "reportLoginRequired": "กรุณาเข้าสู่ระบบก่อนส่งรายงานค่ะ",
+    "reportAnonymousPlayer": "ผู้เล่นไม่ระบุนาม",
+    "reportSendSuccess": "ส่งรายงานเรียบร้อยแล้ว ขอบคุณสำหรับความคิดเห็นของคุณค่ะ!",
+    "reportSendFailed": "ส่งรายงานผู้เล่นไม่สำเร็จ: {error}",
+    "@reportSendFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportNetworkFailed": "ส่งไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองใหม่อีกครั้งค่ะ",
+    "reportAttachImageLabel": "แนบรูปภาพ (ไม่บังคับ)",
+    "reportAttachImageHint": "เมื่อรายงานปัญหาระบบหรือดอกไม้ไม่เข้าบัญชี สามารถแนบภาพแคปหน้าจอเพื่อให้ทีมงานตรวจสอบได้เร็วขึ้นค่ะ",
+    "reportOpeningAlbum": "กำลังเปิดอัลบั้มรูปภาพ...",
+    "reportSelectFromAlbum": "เลือกรูปภาพจากอัลบั้ม",
+    "reportSending": "กำลังส่ง...",
+    "reportSubmit": "ส่งรายงาน",
+    "reportRemoveImage": "ลบรูปภาพออก",
+    "reportImageSelected": "เลือกรูปภาพแล้ว",
+    "reportChangeImage": "เปลี่ยน",
+    "reloadTranslation": "โหลดการแปลใหม่",
+    "guideNotAvailableInLanguage": "ขณะนี้ยังไม่มีคู่มือการเล่นในภาษาภาษาไทย จึงแสดงผลเป็นภาษาจีนตัวเต็มชั่วคราวค่ะ",
+    "clearSearch": "ล้างการค้นหา",
+    "memoPermissionWarning": "ยังไม่ได้เปิดสิทธิ์การแจ้งเตือน บันทึกจะถูกเก็บไว้ แต่จะไม่แสดงการแจ้งเตือนจากระบบค่ะ",
+    "memoSavedWithNotification": "บันทึกเรียบร้อยแล้ว {name} จะคอยเตือนคุณนะคะ!",
+    "@memoSavedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoSavedNoPermission": "บันทึกเรียบร้อยแล้ว แต่ยังไม่ได้เปิดสิทธิ์การแจ้งเตือนค่ะ",
+    "memoUpdatedWithNotification": "อัปเดตบันทึกเรียบร้อยแล้ว {name} จะคอยเตือนคุณนะคะ!",
+    "@memoUpdatedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoUpdatedNoPermission": "อัปเดตบันทึกเรียบร้อยแล้ว แต่ขณะนี้ยังไม่มีสิทธิ์การแจ้งเตือนค่ะ",
+    "dataLoadError": "เกิดข้อผิดพลาดขณะโหลดข้อมูล: {error}",
+    "@dataLoadError": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadFailed": "โหลดไม่สำเร็จ: {error}",
+    "@loadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "dateFormatMonthDay": "d MMM",
+    "timeFormatHourMinute": "HH:mm",
+    "likeFeedPrompt": "ชอบโพสต์นี้ไหมคะ? ส่งความรักให้เขาสิ!",
+    "saveFeedPocket": "เก็บช่วงเวลาพิเศษไว้ในกระเป๋าของคุณเงียบๆ",
+    "newComment": "ความคิดเห็นใหม่",
+    "someFriend": "เพื่อนคนหนึ่ง",
+    "myBackpackAndPrivileges": "กระเป๋าและสิทธิพิเศษของฉัน",
+    "currentRomanticBond": "สายสัมพันธ์โรแมนติกที่สะสมได้ในปัจจุบัน",
+    "physicalGiftBoxUnlockStatus": "สถานะการปลดล็อกกล่องของขวัญจับต้องได้:",
+    "topLovePhysicalVipBox": "กล่องของขวัญ VIP เอ็กซ์คลูซีฟ 【รักสุดหัวใจ】",
+    "physicalGiftBoxContents": "ประกอบด้วย: จดหมายเขียนด้วยมือ + ตุ๊กตาตัวละคร + จดหมายขอบคุณอย่างเป็นทางการ",
+    "modifyShippingAddress": "แก้ไขข้อมูลที่อยู่จัดส่ง",
+    "addressUnlockedFillNow": "ปลดล็อกแล้ว! แตะที่นี่เพื่อกรอกข้อมูลจัดส่งค่ะ",
+    "addressSuccessfullyRegistered": "คุณได้ลงทะเบียนที่อยู่จัดส่งเรียบร้อยแล้ว เราจะรีบจัดเตรียมให้โดยเร็วที่สุดค่ะ!",
+    "amountNeededForPhysicalPrize": "ขาดอีกเพียง NT$ {amount} ก็จะปลดล็อกของรางวัลจับต้องได้แล้วค่ะ!",
+    "@amountNeededForPhysicalPrize": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "avatarFrameHint": "คำแนะนำ: สามารถดูและสวมใส่สกินดิจิทัลและกรอบรูปโปรไฟล์อื่นๆ ได้ที่ร้านค้าหรือการตั้งค่าส่วนตัวค่ะ",
+    "closeButton": "ปิด",
+    "physicalGiftBoxUnlockTitle": "ปลดล็อกกล่องของขวัญจับต้องได้ 【รักสุดหัวใจ】",
+    "physicalGiftBoxUnlockThanks": "ขอบคุณสำหรับการสนับสนุนและการเคียงข้าง 《Lian Lian Shi Guang》 เสมอมาค่ะ!",
+    "physicalGiftBoxUnlockPrompt": "กรุณากรอกข้อมูลจัดส่งด้านล่าง เพื่อให้เราจัดส่งจดหมายลายมือและตุ๊กตาตัวละครให้คุณค่ะ:",
+    "recipientRealName": "ชื่อ-นามสกุลจริงของผู้รับ",
+    "contactPhone": "เบอร์โทรศัพท์ติดต่อ",
+    "fullShippingAddress": "ที่อยู่จัดส่งโดยละเอียด (รวมรหัสไปรษณีย์)",
+    "desiredCharacterDollName": "ชื่อตัวละครของตุ๊กตาที่ต้องการรับ",
+    "characterNameExample": "ตัวอย่าง: ชื่อตัวละครที่ต้องการกรอก",
+    "fillLater": "ไว้กรอกทีหลัง",
+    "fillCompleteAddressAndRoleHint": "กรุณากรอกข้อมูลจัดส่งและชื่อตัวละครที่คุณชื่นชอบให้ครบถ้วนนะคะ!",
+    "shippingInfoSubmittedSuccess": "ส่งข้อมูลจัดส่งเรียบร้อยแล้ว! มารอลุ้นรับของขวัญสุดพิเศษกันนะคะ!",
+    "confirmSubmit": "ยืนยันการส่ง",
+    "aboutMe": "เกี่ยวกับฉัน",
+    "myBackpack": "กระเป๋าของฉัน",
+    "ownerExclusiveArea": "พื้นที่เฉพาะเจ้าของ",
+    "enterShiguangAdminBackend": "เข้าสู่คอนโซลผู้ดูแลระบบ Shiguang",
+    "errorOccurred": "เกิดข้อผิดพลาด",
+    "creatorGuidelines": "แนวทางปฏิบัติสำหรับครีเอเตอร์",
+    "playGuide": "คู่มือการเล่น",
+    "lianlianShiguang": "Lian Lian Shi Guang",
+    "copyrightNotice": "© 2026 Mo Yu Bai",
+    "cumulativeBenefits": "สิทธิประโยชน์สะสม",
+    "perkFirstEncounter": "แรกรักประทับใจ",
+    "perkFirstEncounterReward": "ดอกไม้แห่งเวลา 20 ดอก + ฉายามือใหม่เฉพาะตัว",
+    "perkGlimmerThrob": "แสงริบหรี่ใจเต้น",
+    "perkGlimmerThrobReward": "กรอบรูปโปรไฟล์เฉพาะตัว 【แสงริบหรี่ใจเต้น】",
+    "perkStarryWhisper": "เสียงกระซิบแห่งดวงดาว",
+    "perkStarryWhisperReward": "กรอบข้อความแชทเฉพาะตัว + ดอกไม้แห่งเวลา 50 ดอก",
+    "perkRomanticSunset": "พระอาทิตย์ตกอันแสนโรแมนติก",
+    "perkRomanticSunsetReward": "ไอคอนหน้าจอแอปแบบเฉพาะตัว",
+    "perkHeartbeat": "เสียงหัวใจเต้น",
+    "perkHeartbeatReward": "เอฟเฟกต์การแตะหน้าจอ + ดอกไม้แห่งเวลา 100 ดอก",
+    "perkEternalVow": "คำสาบานนิรันดร์",
+    "perkEternalVowReward": "กรอบรูปโปรไฟล์ดุ๊กดิ๊กขั้นสูง + ดอกไม้แห่งเวลา 200 ดอก",
+    "perkSoulIntersection": "วิญญาณผูกพัน",
+    "perkSoulIntersectionReward": "เอฟเฟกต์กรอบข้อความแชทดุ๊กดิ๊ก + ฉายาขั้นสูงเฉพาะตัว",
+    "perkExclusiveWait": "การเฝ้ารอเฉพาะตัว",
+    "perkExclusiveWaitReward": "ป้ายชื่อดุ๊กดิ๊กระดับพรีเมียม + ดอกไม้แห่งเวลา 500 ดอก",
+    "perkBrilliantGalaxy": "ทางช้างเผือกทอแสง",
+    "perkBrilliantGalaxyReward": "เอฟเฟกต์ปรากฏตัวเฉพาะตัว + บริการลูกค้า VIP ส่วนตัว",
+    "perkTopBeloved": "รักสุดหัวใจ",
+    "perkTopBelovedReward": "กล่องของขวัญ VIP เอ็กซ์คลูซีฟแบบจับต้องได้",
+    "cumulativeRomanticBond": "สายสัมพันธ์โรแมนติกสะสม",
+    "allTopPrivilegesUnlocked": "คุณได้ปลดล็อกสิทธิพิเศษระดับสูงสุดทั้งหมดแล้วค่ะ!",
+    "rechargeAmountForNextTier": "เติมเงินเพิ่มอีก NT$ {amount} เพื่อปลดล็อกระดับถัดไป",
+    "@rechargeAmountForNextTier": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "storyContentCannotBeEmpty": "เนื้อเรื่องต้องไม่ว่างเปล่า",
+    "writeYourStoryHint": "เขียนเรื่องราวของคุณ...",
+    "characterBannerTitle": "แบนเนอร์หน้าหลักของตัวละคร"
 }

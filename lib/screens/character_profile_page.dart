@@ -3,8 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import '../services/toast_utils.dart';
-import '../widgets/feature_tip_keys.dart';
-import '../widgets/feature_tip_target.dart';
 import 'chat_page.dart';
 import 'character_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -306,7 +304,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
           if (mounted) {
             ToastUtils.showCenterToast(
               context,
-              "刪除失敗，請檢查網路後再試", // 這裡可以用 l10n.common_delete_failed
+              l10n.common_delete_network_failed, // 這裡可以用 l10n.common_delete_failed
               isError: true,
             );
           }
@@ -330,7 +328,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     } catch (e) {
       print("切換好友狀態失敗: $e");
       if (mounted) {
-        ToastUtils.showCenterToast(context, '操作失敗，請稍後再試', isError: true);
+        ToastUtils.showCenterToast(context, l10n.common_operation_failed_retry, isError: true);
       }
     } finally {
       if (mounted) {
@@ -1371,9 +1369,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     required bool isDesktop,
     required int photoIndex,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final Widget image = CachedNetworkImage(
       imageUrl: imageUrl,
-
       // 手機填滿整個畫面；網頁保留完整圖片比例。
       fit: isDesktop
           ? BoxFit.contain
@@ -1476,7 +1474,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             // 中央鎖頭與提示。
             Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(
+                padding:  EdgeInsets.symmetric(
                   horizontal: 22,
                   vertical: 18,
                 ),
@@ -1502,17 +1500,16 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                     ),
                     const SizedBox(height: 9),
                     Text(
-                      '專屬照片 ${photoIndex + 1}',
+                     l10n.exclusive_photo_number(photoIndex + 1),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 15,
-                        fontWeight:
-                        FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
-                      '提升好感度後解鎖',
+                      l10n.unlock_after_affection_increase,
                       style: TextStyle(
                         color: Colors.white
                             .withValues(
@@ -1977,7 +1974,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         // 背景故事 (✨ 換成使用 displayBg)
         Text(
           displayStory.isEmpty
-              ? l10n.background_story_empty
+              ? l10n.first_meeting_empty
               : displayStory,
           style: theme.textTheme.bodyMedium?.copyWith(height: 1.7),
         ),
@@ -2568,7 +2565,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                       });
                     },
                     icon: Icon(_isFollowing ? Icons.check : Icons.add, size: 18),
-                    label: Text(_isFollowing ? l10n.followed_btn : '關注', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    label: Text(_isFollowing ? l10n.followed_btn : l10n.follow_btn, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -2830,7 +2827,13 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
         }
         // 🚨 防呆：如果轉換失敗或沒資料
         if (snapshot.hasError) {
-          return Center(child: Text("讀取照片失敗: ${snapshot.error}"));
+          return Center(
+            child: Text(
+              l10n.photo_load_failed(
+                snapshot.error?.toString() ?? 'Unknown Error',
+              ),
+            ),
+          );
         }
         // 3. 拿到轉換好的乾淨照片清單
         final gallery = snapshot.data ?? [];

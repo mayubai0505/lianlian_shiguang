@@ -4473,4 +4473,578 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get voice_preview_failed => 'Échec de la lecture du message vocal';
+
+  @override
+  String get characterBannerSectionTitle => 'Bannière de la page du personnage';
+
+  @override
+  String get characterBannerDescription => 'Description de la bannière';
+
+  @override
+  String get characterBannerRemove => 'Supprimer';
+
+  @override
+  String get characterBannerSelect => 'Sélectionner une image de bannière';
+
+  @override
+  String get characterBannerChange => 'Changer l\'image de la bannière';
+
+  @override
+  String get characterBannerSpecs =>
+      'Ratio recommandé 16:9, résolution recommandée 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint =>
+      'Si elle n\'est pas définie, la page utilisera automatiquement l\'image principale du personnage.';
+
+  @override
+  String get characterBannerHelpContent =>
+      'La bannière s\'affiche dans la grande zone horizontale de la page du personnage.\n\nIl est recommandé d\'utiliser une image horizontale 16:9, telle que 1920 × 1080.\n\nPlacez les visages et éléments principaux au centre pour éviter qu\'ils ne soient rognés selon les écrans de téléphone.\n\nSi aucune bannière n\'est définie, le système utilisera automatiquement l\'image principale du personnage.';
+
+  @override
+  String get first_meeting_title => 'Première rencontre';
+
+  @override
+  String get common_delete_network_failed =>
+      'Échec de la suppression. Veuillez vérifier votre connexion réseau et réessayer';
+
+  @override
+  String get common_operation_failed_retry =>
+      'L\'opération a échoué. Veuillez réessayer plus tard';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return 'Photo exclusive $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase =>
+      'Se débloque en augmentant le niveau d\'affection';
+
+  @override
+  String get first_meeting_empty => 'Première rencontre, à venir...';
+
+  @override
+  String photo_load_failed(String error) {
+    return 'Échec du chargement de la photo : $error';
+  }
+
+  @override
+  String get add_friend_failed_retry =>
+      'Échec de l\'ajout d\'ami. Veuillez réessayer plus tard.';
+
+  @override
+  String get remove_friend => 'Supprimer l\'ami';
+
+  @override
+  String get report_character => 'Signaler le personnage';
+
+  @override
+  String get block_character => 'Bloquer le personnage';
+
+  @override
+  String get daily_encounter => 'Rencontre quotidienne';
+
+  @override
+  String get discovery_hall => 'Hall d\'exploration';
+
+  @override
+  String get latest_recommendation => 'Dernières recommandations';
+
+  @override
+  String get popular_ranking => 'Classement de popularité';
+
+  @override
+  String get character_features => 'Traits du personnage';
+
+  @override
+  String get featured_new_star => 'Étoile montante · Recommandé';
+
+  @override
+  String get recently_added_characters => 'Nouveaux personnages récents';
+
+  @override
+  String get no_tag_data => 'Aucune donnée de tag disponible pour le moment~';
+
+  @override
+  String get no_character_with_tag => 'Aucun personnage trouvé avec ce tag';
+
+  @override
+  String get voice_search_failed_retry =>
+      'Échec de la recherche vocale. Veuillez réessayer';
+
+  @override
+  String get voice_search_incomplete_retry =>
+      'Recherche incomplète. Veuillez réessayer plus tard';
+
+  @override
+  String get voice_data_incomplete => 'Données vocales incomplètes';
+
+  @override
+  String get voice_generation_failed_retry =>
+      'Échec de la génération vocale. Veuillez réessayer plus tard';
+
+  @override
+  String get voice_playback_failed_retry =>
+      'Échec de la lecture vocale. Veuillez réessayer';
+
+  @override
+  String get selected_voice_data_incomplete =>
+      'Les données vocales sélectionnées sont incomplètes';
+
+  @override
+  String get private_voice_user_not_found =>
+      'Utilisateur introuvable. Impossible de mettre à jour la voix du personnage privé';
+
+  @override
+  String get voice_selected_character_save_failed =>
+      'Voix sélectionnée, mais échec de la sauvegarde des données du personnage';
+
+  @override
+  String get voice_binding_failed => 'Échec de l\'association de la voix';
+
+  @override
+  String get play_voice_tooltip => 'Lire le message vocal';
+
+  @override
+  String get avatar_label => 'Avatar';
+
+  @override
+  String get message_preview_image => '[Image]';
+
+  @override
+  String get message_preview_recording => '[Enregistrement]';
+
+  @override
+  String get message_preview_voice => '[Message vocal]';
+
+  @override
+  String get send_failed_retry =>
+      'Échec de l\'envoi. Veuillez réessayer plus tard 😢';
+
+  @override
+  String get media_upload_failed_retry =>
+      'Échec du téléchargement du média. Veuillez réessayer';
+
+  @override
+  String get ai_thinking_too_long =>
+      'Il semble plongé dans ses pensées. Veuillez réessayer plus tard...';
+
+  @override
+  String get ai_reply_in_progress =>
+      'Il répond actuellement. Veuillez patienter et ne pas réenvoyer';
+
+  @override
+  String get ai_response_blocked =>
+      'Ses pensées ont été perturbées. Essayez une approche plus douce !';
+
+  @override
+  String get microphone_permission_required =>
+      'Autorisation du micro requise pour enregistrer';
+
+  @override
+  String get no_recording_to_send => 'Aucun enregistrement à envoyer';
+
+  @override
+  String get voice_uploading => 'Téléchargement du message vocal...';
+
+  @override
+  String get change_watermark_color => 'Changer la couleur du filigrane';
+
+  @override
+  String get other_party_typing => 'L\'autre personne écrit...';
+
+  @override
+  String get chat_input_hint => 'Écrivez un message...';
+
+  @override
+  String get regenerate_sync_failed =>
+      'Échec de la synchronisation du nombre de régénérations. Veuillez réessayer 😢';
+
+  @override
+  String get creator_public_works => 'Œuvres publiques';
+
+  @override
+  String get creator_received_likes => 'J\'aime reçus';
+
+  @override
+  String get about_me => 'À propos de moi';
+
+  @override
+  String get moment_input_hint => 'Partagez ce que vous ressentez...';
+
+  @override
+  String character_play_count(int count) {
+    return 'Parties : $count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return 'Tag : #$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return 'Échec de l\'extrait vocal : $code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return '$count messages supprimés avec succès';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return 'Échec du chargement des œuvres : $error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age ans';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return 'Échec de la suppression : $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return 'Échec du chargement des données du personnage : $error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed =>
+      'Échec du chargement de l\'avatar du brouillon :';
+
+  @override
+  String get unnamedCreator => 'Créateur anonyme';
+
+  @override
+  String get profileNotYetFilled => 'Biographie non renseignée';
+
+  @override
+  String get reportImageSizeLimit =>
+      'La taille de l\'image ne peut pas dépasser 10 Mo';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return 'Échec de la sélection de l\'image : $error';
+  }
+
+  @override
+  String get reportImageCannotSelect =>
+      'Impossible de sélectionner l\'image. Veuillez réessayer plus tard';
+
+  @override
+  String get reportLoginRequired =>
+      'Veuillez vous connecter avant d\'envoyer un signalement';
+
+  @override
+  String get reportAnonymousPlayer => 'Joueur anonyme';
+
+  @override
+  String get reportSendSuccess =>
+      'Signalement envoyé avec succès. Merci pour votre aide !';
+
+  @override
+  String reportSendFailed(String error) {
+    return 'Échec de l\'envoi du signalement : $error';
+  }
+
+  @override
+  String get reportNetworkFailed =>
+      'Échec de l\'envoi. Veuillez vérifier votre réseau et réessayer';
+
+  @override
+  String get reportAttachImageLabel => 'Joindre une image (Optionnel)';
+
+  @override
+  String get reportAttachImageHint =>
+      'En cas de bug ou de manque de fleurs, une capture d\'écran aide notre équipe à traiter le problème rapidement.';
+
+  @override
+  String get reportOpeningAlbum => 'Ouverture de la galerie...';
+
+  @override
+  String get reportSelectFromAlbum => 'Choisir depuis la galerie';
+
+  @override
+  String get reportSending => 'Envoi en cours...';
+
+  @override
+  String get reportSubmit => 'Envoyer le signalement';
+
+  @override
+  String get reportRemoveImage => 'Supprimer l\'image';
+
+  @override
+  String get reportImageSelected => 'Image sélectionnée';
+
+  @override
+  String get reportChangeImage => 'Changer';
+
+  @override
+  String get reloadTranslation => 'Recharger la traduction';
+
+  @override
+  String get guideNotAvailableInLanguage =>
+      'Le guide de jeu n\'est pas disponible dans cette langue ; affichage temporaire en chinois traditionnel.';
+
+  @override
+  String get clearSearch => 'Effacer la recherche';
+
+  @override
+  String get memoPermissionWarning =>
+      'L\'autorisation de notification n\'est pas activée. Le mémo sera enregistré sans rappel système.';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return 'Mémo enregistré ! $name vous le rappellera !';
+  }
+
+  @override
+  String get memoSavedNoPermission =>
+      'Mémo enregistré, mais l\'autorisation de notification est désactivée.';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return 'Mémo mis à jour ! $name vous le rappellera !';
+  }
+
+  @override
+  String get memoUpdatedNoPermission =>
+      'Mémo mis à jour, mais l\'autorisation de notification est actuellement désactivée.';
+
+  @override
+  String dataLoadError(String error) {
+    return 'Une erreur est survenue lors du chargement des données : $error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return 'Échec du chargement : $error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'd MMM';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt =>
+      'Vous aimez cette publication ? Laissez-lui un mot doux !';
+
+  @override
+  String get saveFeedPocket =>
+      'Gardez les moments précieux précieusement dans votre poche.';
+
+  @override
+  String get newComment => 'Nouveau commentaire';
+
+  @override
+  String get someFriend => 'Un ami';
+
+  @override
+  String get myBackpackAndPrivileges => 'Mon sac & Privilèges';
+
+  @override
+  String get currentRomanticBond => 'Lien romantique accumulé';
+
+  @override
+  String get physicalGiftBoxUnlockStatus =>
+      'Statut de déblocage du coffret physique :';
+
+  @override
+  String get topLovePhysicalVipBox =>
+      'Coffret cadeau physique VIP [Amour Ultime]';
+
+  @override
+  String get physicalGiftBoxContents =>
+      'Comprend : Lettre manuscrite + Peluche du personnage + Lettre de remerciement officielle';
+
+  @override
+  String get modifyShippingAddress => 'Modifier l\'adresse de livraison';
+
+  @override
+  String get addressUnlockedFillNow =>
+      'Débloqué ! Appuyez ici pour saisir vos coordonnées';
+
+  @override
+  String get addressSuccessfullyRegistered =>
+      'Vos coordonnées ont été enregistrées avec succès ! Nous préparons votre envoi.';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return 'Plus que NT\$ $amount pour débloquer le coffret physique !';
+  }
+
+  @override
+  String get avatarFrameHint =>
+      'Astuce : D\'autres cadres et apparences peuvent être équipés dans la boutique ou les paramètres.';
+
+  @override
+  String get closeButton => 'Fermer';
+
+  @override
+  String get physicalGiftBoxUnlockTitle =>
+      'Déblocage du coffret physique [Amour Ultime]';
+
+  @override
+  String get physicalGiftBoxUnlockThanks =>
+      'Merci pour votre soutien indéfectible envers Lian Lian Shi Guang !';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt =>
+      'Veuillez remplir vos coordonnées ci-dessous pour recevoir votre lettre manuscrite et la peluche :';
+
+  @override
+  String get recipientRealName => 'Nom réel du destinataire';
+
+  @override
+  String get contactPhone => 'Numéro de téléphone';
+
+  @override
+  String get fullShippingAddress =>
+      'Adresse de livraison complète (avec code postal)';
+
+  @override
+  String get desiredCharacterDollName =>
+      'Nom du personnage de la peluche souhaitée';
+
+  @override
+  String get characterNameExample => 'Ex. : Nom du personnage souhaité';
+
+  @override
+  String get fillLater => 'Remplir plus tard';
+
+  @override
+  String get fillCompleteAddressAndRoleHint =>
+      'Veuillez remplir vos coordonnées et le nom du personnage souhaité !';
+
+  @override
+  String get shippingInfoSubmittedSuccess =>
+      'Coordonnées envoyées avec succès ! Attendez-vous à une belle surprise !';
+
+  @override
+  String get confirmSubmit => 'Confirmer et envoyer';
+
+  @override
+  String get aboutMe => 'À propos de moi';
+
+  @override
+  String get myBackpack => 'Mon sac';
+
+  @override
+  String get ownerExclusiveArea => 'Espace réservé au propriétaire';
+
+  @override
+  String get enterShiguangAdminBackend =>
+      'Accéder à la console d\'administration Shiguang';
+
+  @override
+  String get errorOccurred => 'Une erreur est survenue';
+
+  @override
+  String get creatorGuidelines => 'Guide du créateur';
+
+  @override
+  String get playGuide => 'Guide de jeu';
+
+  @override
+  String get lianlianShiguang => 'Lian Lian Shi Guang';
+
+  @override
+  String get copyrightNotice => '© 2026 Mo Yu Bai';
+
+  @override
+  String get cumulativeBenefits => 'Récompenses cumulées';
+
+  @override
+  String get perkFirstEncounter => 'Premier Regard';
+
+  @override
+  String get perkFirstEncounterReward => '20 Fleurs + Titre débutant exclusif';
+
+  @override
+  String get perkGlimmerThrob => 'Lueur Palpitante';
+
+  @override
+  String get perkGlimmerThrobReward =>
+      'Cadre d\'avatar exclusif [Lueur Palpitante]';
+
+  @override
+  String get perkStarryWhisper => 'Murmure Étoilé';
+
+  @override
+  String get perkStarryWhisperReward => 'Bulle de chat exclusive + 50 Fleurs';
+
+  @override
+  String get perkRomanticSunset => 'Coucher de Soleil Romantique';
+
+  @override
+  String get perkRomanticSunsetReward => 'Icône d\'application personnalisée';
+
+  @override
+  String get perkHeartbeat => 'Battement de Cœur';
+
+  @override
+  String get perkHeartbeatReward => 'Effet tactile d\'écran + 100 Fleurs';
+
+  @override
+  String get perkEternalVow => 'Vœu Éternel';
+
+  @override
+  String get perkEternalVowReward =>
+      'Cadre d\'avatar animé avancé + 200 Fleurs';
+
+  @override
+  String get perkSoulIntersection => 'Intersection des Âmes';
+
+  @override
+  String get perkSoulIntersectionReward =>
+      'Effet de bulle animée + Titre avancé exclusif';
+
+  @override
+  String get perkExclusiveWait => 'Dévotion Exclusive';
+
+  @override
+  String get perkExclusiveWaitReward =>
+      'Plaque nominative animée VIP + 500 Fleurs';
+
+  @override
+  String get perkBrilliantGalaxy => 'Galaxie Éclatante';
+
+  @override
+  String get perkBrilliantGalaxyReward =>
+      'Effet d\'entrée exclusif + Service client dédié';
+
+  @override
+  String get perkTopBeloved => 'Amour Ultime';
+
+  @override
+  String get perkTopBelovedReward => 'Coffret cadeau physique VIP exclusif';
+
+  @override
+  String get cumulativeRomanticBond => 'Lien romantique cumulé';
+
+  @override
+  String get allTopPrivilegesUnlocked =>
+      'Vous avez débloqué tous les privilèges ultimes !';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return 'Rechargez encore NT\$ $amount pour débloquer le niveau suivant';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty =>
+      'Le contenu de l\'histoire ne peut pas être vide';
+
+  @override
+  String get writeYourStoryHint => 'Écrivez votre histoire...';
+
+  @override
+  String get characterBannerTitle => 'Bannière de la page du personnage';
 }
