@@ -952,95 +952,179 @@ class _ProfilePageState extends State<ProfilePage> {
   // ==========================================
   Future<void> _bindInviteCode(String inviterId) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null || _isBinding) return;
 
     final l10n = AppLocalizations.of(context)!;
     final trimmedId = inviterId.trim();
 
-    if (trimmedId.isEmpty) return;
+    // 防止空白輸入
+    if (trimmedId.isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profile_referral_err_not_found,
+        isError: true,
+      );
+      return;
+    }
 
-    // 🌟 總裁防禦第一槍：嚴格審查註冊時間，超過 3 天（72小時）直接無情封殺！
-    final creationTime = user.metadata.creationTime ?? DateTime.now();
-    final int hoursSinceCreation = DateTime.now().difference(creationTime).inHours;
+    // 僅限註冊 72 小時內綁定
+    final creationTime =
+        user.metadata.creationTime ?? DateTime.now();
+
+    final int hoursSinceCreation =
+        DateTime.now().difference(creationTime).inHours;
+
     if (hoursSinceCreation > 72) {
-      if (mounted) { // 💡 若有報錯，請記得替換為 context.mounted
-        // ✨ 總裁防禦第一槍：超過新手保護期的輕量提示
-        ToastUtils.showCenterToast(
-          context,
-          l10n.profile_referral_err_expired,
-          isError: true, // 💡 紅色驚嘆號，明確告知規則限制
-        );
-      }
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profile_referral_err_expired,
+        isError: true,
+      );
       return;
     }
 
-// 🌟 總裁防禦第二槍：嚴禁自我崇拜（自己填自己）
-    if (trimmedId == user.uid) {
-      if (mounted) { // 💡 確保安全調用
-        // ✨ 總裁級防呆：俐落擋下無效操作
-        ToastUtils.showCenterToast(
-          context,
-          l10n.profile_referral_err_self,
-          isError: true, // 💡 紅色驚嘆號，讓玩家馬上知道「這招行不通」
-        );
-      }
-      return;
-    }
-
-    setState(() => _isBinding = true);
+    setState(() {
+      _isBinding = true;
+    });
 
     try {
       final db = FirebaseFirestore.instance;
-      final userRef = db.collection('users').doc(user.uid);
+
+      // 目前登入玩家的 users 文件
+      final userRef =
+      db.collection('users').doc(user.uid);
+
       final userDoc = await userRef.get();
 
-      // 🌟 總裁防禦第三槍：終身限綁一次，有過綁定紀錄者不准再點
-      if (userDoc.data()?['invitedBy'] != null) {
-        if (mounted) { // 💡 如果有波浪底線記得換 context.mounted
-          // ✨ 總裁防禦第三槍：溫柔擋下重複領取的企圖
-          ToastUtils.showCenterToast(
-            context,
-            l10n.profile_referral_err_duplicate,
-            isError: true, // 💡 紅色驚嘆號，明確告知「你已經有綁定對象囉」
-          );
-        }
-        return;
+      if (!userDoc.exists) {
+        throw Exception('找不到目前玩家資料');
       }
 
-// 🌟 總裁防禦第四槍：虛擬代碼實體審查（檢查目標邀請人是否存在）
-      final inviterDoc = await db.collection('users').doc(trimmedId).get();
-      if (!inviterDoc.exists) {
-        if (mounted) { // 💡 同上
-          // ✨ 總裁防禦第四槍：查無此人的精準攔截
-          ToastUtils.showCenterToast(
-            context,
-            l10n.profile_referral_err_not_found,
-            isError: true, // 💡 紅色驚嘆號，提示玩家檢查是不是不小心打錯字了
-          );
-        }
-        return;
-      }
+      final currentUserData =
+          userDoc.data() ?? <String, dynamic>{};
 
-      // 🏆 通過重重考驗，正式締結星之契約
-      await userRef.update({
-        'invitedBy': trimmedId,
-        'referralRewardClaimed': false, // 初始化狀態：已綁定，未達標
-        'totalChatMessages': 0,         // 新人計數器初始化歸零
-      });
+      // 終身只能綁定一次
+      final existingInvitedBy =
+          currentUserData['invitedBy']
+              ?.toString()
+              .trim() ??
+              '';
 
-      if (mounted) { // 💡 如果有波浪底線記得換 context.mounted
-        // ✨ 總裁級：成功綁定推薦碼的慶祝回饋，完美的雙贏時刻！
+      if (existingInvitedBy.isNotEmpty) {
+        if (!mounted) return;
+
         ToastUtils.showCenterToast(
           context,
-          l10n.profile_referral_success,
-          customIcon: Icons.handshake_rounded, // 💡 用「握手/結盟」的圖示，完美象徵邀請人與被邀請人建立起《戀戀拾光》的羈絆
+          l10n.profile_referral_err_duplicate,
+          isError: true,
         );
-        _inviteCodeController.clear();
+        return;
       }
-    } catch (e) {
-      debugPrint("🚨 總裁，資料庫綁定發生非預期錯誤: $e");
+
+      // 玩家輸入的是公開 Player ID，
+      // 所以要查 users 文件裡的 playerID 欄位
+      final inviterQuery = await db
+          .collection('users')
+          .where(
+        'playerID',
+        isEqualTo: trimmedId,
+      )
+          .limit(1)
+          .get();
+
+      // 查無此 Player ID
+      if (inviterQuery.docs.isEmpty) {
+        if (!mounted) return;
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profile_referral_err_not_found,
+          isError: true,
+        );
+        return;
+      }
+
+      // 找到的文件 ID 就是邀請人的 Firebase UID
+      final inviterDoc =
+          inviterQuery.docs.first;
+
+      final String inviterUid =
+          inviterDoc.id;
+
+      final inviterData =
+      inviterDoc.data();
+
+      final String inviterPlayerId =
+          inviterData['playerID']
+              ?.toString()
+              .trim() ??
+              trimmedId;
+
+      // 禁止玩家輸入自己的 Player ID
+      if (inviterUid == user.uid) {
+        if (!mounted) return;
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.profile_referral_err_self,
+          isError: true,
+        );
+        return;
+      }
+
+      // 正式綁定
+      //
+      // invitedBy：
+      // 存邀請人的 Firebase UID，之後用來發獎。
+      //
+      // invitedByPlayerID：
+      // 存公開 Player ID，方便畫面顯示與後台查詢。
+      await userRef.update({
+        'invitedBy': inviterUid,
+        'invitedByPlayerID': inviterPlayerId,
+        'referralRewardClaimed': false,
+        'totalChatMessages': 0,
+        'inviteBoundAt':
+        FieldValue.serverTimestamp(),
+      });
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profile_referral_success,
+        customIcon:
+        Icons.handshake_rounded,
+      );
+
+      _inviteCodeController.clear();
+
+      // 收起鍵盤
+      FocusScope.of(context).unfocus();
+    } catch (e, stackTrace) {
+      debugPrint(
+        '🚨 星之邀約綁定發生錯誤：$e',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '綁定失敗，請稍後再試',
+        isError: true,
+      );
     } finally {
-      if (mounted) setState(() => _isBinding = false);
+      if (mounted) {
+        setState(() {
+          _isBinding = false;
+        });
+      }
     }
   }
   // ==========================================
@@ -1053,151 +1137,400 @@ class _ProfilePageState extends State<ProfilePage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    String? invitedBy = userData['invitedBy'];
-    bool isClaimed = userData['referralRewardClaimed'] ?? false;
+    // invitedBy 存的是邀請人的 Firebase UID
+    final String inviterUid =
+        userData['invitedBy']?.toString().trim() ?? '';
 
-    final creationTime = user.metadata.creationTime ?? DateTime.now();
-    final int hoursSinceCreation = DateTime.now().difference(creationTime).inHours;
-    final bool isNewbie = hoursSinceCreation <= 72;
+    // 畫面優先顯示公開 Player ID
+    final String inviterPlayerId =
+        userData['invitedByPlayerID']?.toString().trim() ?? '';
 
-    // 測試期間強行現形：如需上線，解開下方註解即可
-    if ((invitedBy != null && isClaimed) || (invitedBy == null && !isNewbie)) {
+    final bool hasInviter = inviterUid.isNotEmpty;
+
+    final bool isClaimed =
+        userData['referralRewardClaimed'] == true;
+
+    final Timestamp? claimedAtTimestamp =
+    userData['referralRewardClaimedAt'] as Timestamp?;
+
+    final DateTime? claimedAt =
+    claimedAtTimestamp?.toDate();
+
+    final bool completedDisplayExpired =
+        isClaimed &&
+            claimedAt != null &&
+            DateTime.now().difference(claimedAt).inDays >= 7;
+
+    if (completedDisplayExpired) {
       return const SizedBox.shrink();
     }
 
+    final int totalChatMessages =
+        (userData['totalChatMessages'] as num?)?.toInt() ?? 0;
+
+    final int displayedProgress =
+    totalChatMessages > 15 ? 15 : totalChatMessages;
+
+    final creationTime =
+        user.metadata.creationTime ?? DateTime.now();
+
+    final int hoursSinceCreation =
+        DateTime.now().difference(creationTime).inHours;
+
+    final bool isNewbie = hoursSinceCreation <= 72;
+
+    // 沒綁定，而且已經超過 72 小時，才隱藏整欄
+    if (!hasInviter && !isNewbie) {
+      return const SizedBox.shrink();
+    }
+
+    // 顯示邀請人的公開 ID；舊資料沒有時才顯示 UID 縮寫
+    final String inviterDisplayId = inviterPlayerId.isNotEmpty
+        ? inviterPlayerId
+        : inviterUid.length > 8
+        ? '${inviterUid.substring(0, 8)}...'
+        : inviterUid;
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 4), // 左右再往內縮一點
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8), // 縮減上下白邊 (14 -> 8)
+      margin: const EdgeInsets.symmetric(
+        horizontal: 24,
+        vertical: 4,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 10,
+      ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(14), // 更秀氣的微圓角
-        border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.06)), // 超細微邊框
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withValues(
+            alpha: 0.06,
+          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 小巧標題
           Text(
             l10n.profile_referral_title,
             style: TextStyle(
-              fontSize: 12, // 縮小到 12 號字
+              fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              color: theme.colorScheme.onSurface.withValues(
+                alpha: 0.5,
+              ),
             ),
           ),
-          const SizedBox(height: 6), // 緊湊間距
 
-          if (invitedBy != null && !isClaimed)
-          // 催促狀態同步縮小
+          const SizedBox(height: 8),
+
+          // =====================================
+          // 狀態一：已完成並已經領取獎勵
+          // =====================================
+          if (hasInviter && isClaimed)
             Container(
-              padding: const EdgeInsets.all(8),
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.amber.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.green.withValues(alpha: 0.07),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.green.withValues(alpha: 0.15),
+                ),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.mark_chat_read_outlined, color: Colors.amber, size: 16),
-                  const SizedBox(width: 8),
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check_circle_rounded,
+                      color: Colors.green,
+                      size: 20,
+                    ),
+                  ),
+
+                  const SizedBox(width: 10),
+
                   Expanded(
-                    child: Text(
-                      l10n.profile_referral_pending(
-                          invitedBy.length > 5 ? '${invitedBy.substring(0, 5)}...' : invitedBy
-                      ),
-                      style: TextStyle(fontSize: 11, color: theme.colorScheme.onSurface.withValues(alpha: 0.65)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '星之邀約已完成',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
+
+                        const SizedBox(height: 3),
+
+                        Text(
+                          '邀請人：$inviterDisplayId',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.65),
+                          ),
+                        ),
+
+                        const SizedBox(height: 2),
+
+                        Text(
+                          '雙方已獲得 50 花花',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.55),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Text(
+                    '已領取',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
             )
+
+          // =====================================
+          // 狀態二：已綁定，但聊天尚未達標
+          // =====================================
+          else if (hasInviter)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.mark_chat_read_outlined,
+                        color: Colors.amber,
+                        size: 17,
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      Expanded(
+                        child: Text(
+                          '已綁定邀請人：$inviterDisplayId',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ),
+
+                      Text(
+                        '$displayedProgress / 15',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: displayedProgress / 15,
+                      minHeight: 6,
+                      backgroundColor:
+                      Colors.amber.withValues(alpha: 0.12),
+                      valueColor:
+                      const AlwaysStoppedAnimation<Color>(
+                        Colors.amber,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  Text(
+                    '完成 15 句聊天後，雙方各獲得 50 花花',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.5),
+                    ),
+                  ),
+                ],
+              ),
+            )
+
+          // =====================================
+          // 狀態三：尚未綁定，顯示輸入欄
+          // =====================================
           else
-          // 🌟 核心：極致扁平化的 32px 輸入列
             Row(
               children: [
                 Expanded(
                   child: SizedBox(
-                    height: 32, // 🌟 降至 32 像素！極致纖薄
+                    height: 32,
                     child: TextField(
                       controller: _inviteCodeController,
                       style: const TextStyle(fontSize: 12),
                       decoration: InputDecoration(
-                        hintText: l10n.profile_referral_hint,
-                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 11),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                        hintText:
+                        l10n.profile_referral_hint,
+                        hintStyle: TextStyle(
+                          color: Colors.grey.shade400,
+                          fontSize: 11,
+                        ),
+                        contentPadding:
+                        const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 0,
+                        ),
                         filled: true,
-                        fillColor: theme.disabledColor.withValues(alpha: 0.03),
+                        fillColor: theme.disabledColor.withValues(
+                          alpha: 0.03,
+                        ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius:
+                          BorderRadius.circular(8),
                           borderSide: BorderSide.none,
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.withValues(alpha: 0.12)),
+                          borderRadius:
+                          BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.withValues(
+                              alpha: 0.12,
+                            ),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+                          borderRadius:
+                          BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.3),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 8),
-                // 🌟 高度同步 32px 的小鈕
+
                 SizedBox(
                   height: 32,
                   child: ElevatedButton(
                     onPressed: _isBinding
                         ? null
-                        : () => _bindInviteCode(_inviteCodeController.text),
+                        : () => _bindInviteCode(
+                      _inviteCodeController.text,
+                    ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
+                      backgroundColor:
+                      theme.colorScheme.primary,
+                      foregroundColor:
+                      theme.colorScheme.onPrimary,
                       elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(8),
+                      ),
                     ),
                     child: _isBinding
                         ? const SizedBox(
                       width: 12,
                       height: 12,
-                      child: CircularProgressIndicator(strokeWidth: 1.5, color: Colors.white),
+                      child:
+                      CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: Colors.white,
+                      ),
                     )
-                        : Text(l10n.profile_referral_bind_btn, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        : Text(
+                      l10n.profile_referral_bind_btn,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 6), // 給按鈕和問號一點呼吸空間
+
+                const SizedBox(width: 6),
+
                 GestureDetector(
                   onTap: () {
-                    // 點擊後跳出精緻的說明彈窗
                     showDialog(
                       context: context,
-                      builder: (BuildContext context) {
+                      builder: (
+                          BuildContext dialogContext,
+                          ) {
                         return AlertDialog(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius:
+                            BorderRadius.circular(20),
                           ),
                           title: Row(
                             children: [
-                              Icon(Icons.info_outline, color: Colors.pinkAccent),
-                              SizedBox(width: 8),
+                              const Icon(
+                                Icons.info_outline,
+                                color: Colors.pinkAccent,
+                              ),
+                              const SizedBox(width: 8),
                               Text(
-                                l10n.profile_copy_success,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                l10n.profile_referral_rule_title,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
                             ],
                           ),
-                          content:Text(
+                          content: Text(
                             l10n.profile_referral_rule_receiver,
-                            style: TextStyle(fontSize: 14, height: 1.5),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.of(context).pop(), // 關閉彈窗
+                              onPressed: () =>
+                                  Navigator.of(
+                                    dialogContext,
+                                  ).pop(),
                               child: Text(
                                 l10n.common_got_it,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.pinkAccent,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -1209,13 +1542,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     );
                   },
                   child: Container(
-                    height: 32, // 配合前方的極致纖薄，讓點擊區域對齊
+                    height: 32,
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.only(left: 4, right: 4), // 增加手指點擊範圍
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                    ),
                     child: Icon(
                       Icons.help_outline_rounded,
                       size: 18,
-                      color: Colors.grey.shade400, // 淺灰色完美融入畫面不搶戲
+                      color: Colors.grey.shade400,
                     ),
                   ),
                 ),

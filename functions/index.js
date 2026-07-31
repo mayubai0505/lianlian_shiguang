@@ -7689,3 +7689,147 @@ exports.uploadVoiceBank = onCall(
 // 💳 TapPay Web 信用卡付款
 // ==========================================
 exports.payByPrime = require("./tappay").payByPrime;
+
+
+exports.claimReferralReward = onCall(
+  {
+    region: "asia-east1",
+  },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入"
+      );
+    }
+
+    const newcomerUid = request.auth.uid;
+    const newcomerRef =
+      db.collection("users").doc(newcomerUid);
+
+    const rewardAmount = 50;
+    const requiredMessages = 15;
+
+    let rewardGranted = false;
+
+    await db.runTransaction(async (transaction) => {
+      // =========================
+      // 第一階段：全部讀取
+      // =========================
+
+      const newcomerDoc =
+        await transaction.get(newcomerRef);
+
+      if (!newcomerDoc.exists) {
+        throw new HttpsError(
+          "not-found",
+          "找不到新人資料"
+        );
+      }
+
+      const newcomerData =
+        newcomerDoc.data() || {};
+
+      if (
+        newcomerData.referralRewardClaimed === true
+      ) {
+        return;
+      }
+
+      const inviterUid = String(
+        newcomerData.invitedBy || ""
+      ).trim();
+
+      if (!inviterUid) {
+        throw new HttpsError(
+          "failed-precondition",
+          "尚未綁定邀請人"
+        );
+      }
+
+      if (inviterUid === newcomerUid) {
+        throw new HttpsError(
+          "failed-precondition",
+          "不能邀請自己"
+        );
+      }
+
+      const totalChatMessages = Number(
+        newcomerData.totalChatMessages || 0
+      );
+
+      if (totalChatMessages < requiredMessages) {
+        throw new HttpsError(
+          "failed-precondition",
+          `尚未完成 ${requiredMessages} 句聊天`
+        );
+      }
+
+      const inviterRef =
+        db.collection("users").doc(inviterUid);
+
+      const inviterDoc =
+        await transaction.get(inviterRef);
+
+      if (!inviterDoc.exists) {
+        throw new HttpsError(
+          "not-found",
+          "找不到邀請人資料"
+        );
+      }
+
+      const newcomerLogRef = newcomerRef
+        .collection("flower_logs")
+        .doc("referral_newbie_reward");
+
+      const inviterLogRef = inviterRef
+        .collection("flower_logs")
+        .doc(`referral_inviter_${newcomerUid}`);
+
+      // =========================
+      // 第二階段：全部寫入
+      // =========================
+
+      transaction.update(newcomerRef, {
+        referralRewardClaimed: true,
+        referralRewardClaimedAt:
+          FieldValue.serverTimestamp(),
+        flowerPoints:
+          FieldValue.increment(rewardAmount),
+      });
+
+      transaction.update(inviterRef, {
+        flowerPoints:
+          FieldValue.increment(rewardAmount),
+        successfulReferralCount:
+          FieldValue.increment(1),
+      });
+
+      transaction.set(newcomerLogRef, {
+        title: "星之邀約・新人獎勵",
+        amount: rewardAmount,
+        type: "referral_newbie",
+        inviterUid,
+        createdAt:
+          FieldValue.serverTimestamp(),
+      });
+
+      transaction.set(inviterLogRef, {
+        title: "星之邀約・邀請成功",
+        amount: rewardAmount,
+        type: "referral_inviter",
+        newcomerUid,
+        createdAt:
+          FieldValue.serverTimestamp(),
+      });
+
+      rewardGranted = true;
+    });
+
+    return {
+      success: true,
+      rewardGranted,
+      rewardAmount,
+    };
+  }
+);

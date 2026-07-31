@@ -44,6 +44,7 @@ import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 
@@ -1778,71 +1779,90 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _triggerReferralCounter() async {
-    if (_userId == null || !mounted) return; // 加上 mounted 保護
+    if (_userId == null || !mounted) return;
 
-    final l10n = AppLocalizations.of(context)!; // 🌟 載入翻譯字典
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_userId);
 
     _currentReferralChatCount++;
-    debugPrint("🗣️ 新人說話了！當前累計：$_currentReferralChatCount / 15 句");
 
-    final userRef = FirebaseFirestore.instance.collection('users').doc(_userId);
-
-    // 如果還沒到 15 句，只悄悄更新數字
-    if (_currentReferralChatCount < 15) {
-      await userRef.update({'totalChatMessages': _currentReferralChatCount});
-      return;
-    }
-
-    // 剛好滿 15 句！瞬間把監控關掉，防止重複觸發
-    setState(() {
-      _isReferralTrackerActive = false;
-    });
+    debugPrint(
+      '🗣️ 新人說話了！當前累計：'
+          '$_currentReferralChatCount / 15 句',
+    );
 
     try {
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        final userDoc = await transaction.get(userRef);
-        final userData = userDoc.data() ?? {};
-
-        if (userData['referralRewardClaimed'] == true) return; // 安全鎖
-
-        String? inviterId = userData['invitedBy'];
-
-        // 給自己 50 點
-        transaction.update(userRef, {
-          'totalChatMessages': _currentReferralChatCount,
-          'referralRewardClaimed': true,
-          'flowerPoints': FieldValue.increment(50),
-        });
-        transaction.set(userRef.collection('flower_logs').doc(), {
-          'title': l10n.referral_log_newbie_reward, // 🌟 換成翻譯變數
-          'amount': 50,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-
-        // 給邀請人 50 點
-        if (inviterId != null) {
-          final inviterRef = FirebaseFirestore.instance.collection('users').doc(inviterId);
-          final inviterDoc = await transaction.get(inviterRef);
-          if (inviterDoc.exists) {
-            transaction.update(inviterRef, {
-              'flowerPoints': FieldValue.increment(50),
-            });
-            transaction.set(inviterRef.collection('flower_logs').doc(), {
-              'title': l10n.referral_log_inviter_reward, // 🌟 換成翻譯變數
-              'amount': 50,
-              'createdAt': FieldValue.serverTimestamp(),
-            });
-          }
-        }
+      // 每一則都先把進度寫進自己的 users 文件
+      await userRef.update({
+        'totalChatMessages':
+        _currentReferralChatCount,
       });
 
-      // 成功後彈出華麗通知
-      if (mounted) _showReferralSuccessDialog();
+      // 未滿 15 句，不呼叫派彩
+      if (_currentReferralChatCount < 15) {
+        return;
+      }
 
-    } catch (e) {
-      debugPrint("❌ 雙向派彩失敗: $e");
       if (mounted) {
-        setState(() => _isReferralTrackerActive = true); // 失敗重開保險
+        setState(() {
+          _isReferralTrackerActive = false;
+        });
+      }
+
+      final callable =
+      FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable(
+        'claimReferralReward',
+      );
+
+      final result = await callable.call();
+
+      final data = Map<String, dynamic>.from(
+        result.data as Map,
+      );
+
+      final bool rewardGranted =
+          data['rewardGranted'] == true;
+
+      if (!mounted) return;
+
+      if (rewardGranted) {
+        debugPrint(
+          '✅ 星之邀約雙向派彩成功，雙方各獲得 50 花花',
+        );
+
+        _showReferralSuccessDialog();
+      } else {
+        debugPrint(
+          'ℹ️ 星之邀約獎勵已經發放過，不重複派彩',
+        );
+      }
+    } on FirebaseFunctionsException catch (e) {
+      debugPrint(
+        '❌ 星之邀約 Function 失敗：'
+            '${e.code} / ${e.message}',
+      );
+
+      if (mounted) {
+        setState(() {
+          _isReferralTrackerActive = true;
+        });
+      }
+    } catch (e, stackTrace) {
+      debugPrint(
+        '❌ 更新邀請進度或派彩失敗：$e',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
+
+      if (mounted) {
+        setState(() {
+          _isReferralTrackerActive = true;
+        });
       }
     }
   }
