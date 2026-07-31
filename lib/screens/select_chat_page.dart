@@ -28,6 +28,7 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
   final String APP_ID = AppConfig.appId;
   String? _userId;
   Future<List<Character>>? _charactersFuture;
+  String? _lastFirstCharacterId;
   Set<String> _friendIds = {};
   Set<String> _blockedCharacterIds = {};
   final Set<String> _preloadedImageUrls = {};
@@ -150,13 +151,56 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
           .where('isPublic', isEqualTo: true)
           .where('status', isEqualTo: 'published')
           .get();
-      List<Character> characters = await Future.wait(
-          querySnapshot.docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
+
+      final List<Character> characters = await Future.wait(
+        querySnapshot.docs
+            .map(
+              (doc) => Character.fromFirestoreAsync(doc),
+        )
+            .toList(),
       );
-      characters.removeWhere((char) => _blockedCharacterIds.contains(char.id));
+
+      // 排除已封鎖角色。
+      characters.removeWhere(
+            (character) =>
+            _blockedCharacterIds.contains(character.id),
+      );
+
+      if (characters.isEmpty) {
+        return [];
+      }
+
+      // 每次重新進入邂逅頁時，重新打亂角色順序。
+      characters.shuffle();
+
+      // 若有兩位以上角色，避免刷新後第一位
+      // 又剛好是上一輪的第一位。
+      if (characters.length > 1 &&
+          characters.first.id == _lastFirstCharacterId) {
+        final differentIndex = characters.indexWhere(
+              (character) =>
+          character.id != _lastFirstCharacterId,
+        );
+
+        if (differentIndex > 0) {
+          final firstCharacter = characters.first;
+
+          characters[0] = characters[differentIndex];
+          characters[differentIndex] = firstCharacter;
+        }
+      }
+
+      _lastFirstCharacterId = characters.first.id;
+
+      debugPrint(
+        '🎲 本次邂逅第一位角色：'
+            '${characters.first.name} '
+            '(${characters.first.id})',
+      );
+
       return characters;
     } catch (e) {
-      print("讀取邂逅角色失敗: $e");
+      debugPrint('❌ 讀取邂逅角色失敗：$e');
       return [];
     }
   }
