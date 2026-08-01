@@ -4,10 +4,11 @@ import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import 'character_model.dart';
 import 'character_profile_page.dart';
-import 'dart:math'; // ✨ 加上這一行就解決了
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 
 //搜尋頁面
 class SearchCharacterPage extends StatefulWidget {
@@ -20,7 +21,111 @@ class SearchCharacterPage extends StatefulWidget {
 class _SearchCharacterPageState extends State<SearchCharacterPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
+  late final Stream<QuerySnapshot> _charactersStream;
   final String APP_ID = AppConfig.appId;
+  static const String _recentSearchesKey = 'character_recent_searches';
+  static const int _maxRecentSearches = 10;
+  List<String> _recentSearches = [];
+  Timer? _searchSaveDebounce;
+  late final Stream<QuerySnapshot> charactersStream;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _charactersStream = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('public_characters')
+        .where('isPublic', isEqualTo: true)
+        .where('status', isEqualTo: 'published')
+        .orderBy('createdAt', descending: true)
+        .limit(200)
+        .snapshots();
+
+    _loadRecentSearches();
+  }
+
+  int _parseLikesCount(dynamic value) {
+    if (value is num) {
+      return value.toInt();
+    }
+
+    return int.tryParse(
+      value?.toString() ?? '',
+    ) ??
+        0;
+  }
+
+  Future<void> _loadRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList(_recentSearchesKey) ?? const <String>[];
+
+    if (!mounted) return;
+    setState(() {
+      _recentSearches = saved
+          .map((value) => value.trim())
+          .where((value) => value.isNotEmpty)
+          .take(_maxRecentSearches)
+          .toList();
+    });
+  }
+
+  Future<void> _saveRecentSearch(String query) async {
+    final keyword = query.trim();
+    if (keyword.isEmpty) return;
+
+    final updated = <String>[
+      keyword,
+      ..._recentSearches.where(
+            (item) => item.toLowerCase() != keyword.toLowerCase(),
+      ),
+    ].take(_maxRecentSearches).toList();
+
+    if (mounted) {
+      setState(() => _recentSearches = updated);
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_recentSearchesKey, updated);
+  }
+
+  Future<void> _clearRecentSearches() async {
+    if (mounted) {
+      setState(() => _recentSearches = []);
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_recentSearchesKey);
+  }
+
+  void _scheduleRecentSearchSave(String query) {
+    _searchSaveDebounce?.cancel();
+
+    final keyword = query.trim();
+    if (keyword.isEmpty) return;
+
+    _searchSaveDebounce = Timer(
+      const Duration(milliseconds: 800),
+          () => _saveRecentSearch(keyword),
+    );
+  }
+
+  void _applyRecentSearch(String query) {
+    _searchController.text = query;
+    _searchController.selection = TextSelection.collapsed(
+      offset: query.length,
+    );
+    setState(() => _searchQuery = query);
+    _saveRecentSearch(query);
+  }
+
+  @override
+  void dispose() {
+    _searchSaveDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +153,20 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                 controller: _searchController,
                 style: TextStyle(color: theme.colorScheme.onSurface),
                 decoration: InputDecoration(
-                  hintText: l10n.search_name_placeholder,
+                  hintText: '搜尋角色、創作者、職業或標籤',
                   hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5)),
                   prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
+                  suffixIcon: _searchQuery.isEmpty
+                      ? null
+                      : IconButton(
+                    tooltip: '清除',
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () {
+                      _searchSaveDebounce?.cancel();
+                      _searchController.clear();
+                      setState(() => _searchQuery = '');
+                    },
+                  ),
                   filled: true,
                   fillColor: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
                   border: OutlineInputBorder(
@@ -62,9 +178,26 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                     borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.1)),
                   ),
                 ),
-                onChanged: (value) => setState(() => _searchQuery = value.trim()),
+                textInputAction: TextInputAction.search,
+                onChanged: (value) {
+                  final keyword = value.trim();
+                  setState(() => _searchQuery = keyword);
+
+                  if (keyword.isEmpty) {
+                    _searchSaveDebounce?.cancel();
+                  } else {
+                    _scheduleRecentSearchSave(keyword);
+                  }
+                },
+                onSubmitted: (value) {
+                  _searchSaveDebounce?.cancel();
+                  _saveRecentSearch(value);
+                },
               ),
             ),
+
+            if (_searchQuery.isEmpty && _recentSearches.isNotEmpty)
+              _buildRecentSearches(theme),
 
             // 📜 雙排格網結果
             Expanded(
@@ -76,77 +209,287 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     );
   }
 
+
+  Widget _buildRecentSearches(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 2, 16, 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '最近搜尋',
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: _clearRecentSearches,
+                child: Text(
+                  '清除',
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 42,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _recentSearches.length,
+              separatorBuilder: (context, index) =>
+              const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final query = _recentSearches[index];
+
+                return ActionChip(
+                  avatar: Icon(
+                    Icons.history_rounded,
+                    size: 16,
+                    color: theme.colorScheme.primary,
+                  ),
+                  label: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 150),
+                    child: Text(
+                      query,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  backgroundColor:
+                  theme.cardColor.withValues(alpha: 0.55),
+                  side: BorderSide(
+                    color: theme.colorScheme.primary
+                        .withValues(alpha: 0.15),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  onPressed: () => _applyRecentSearch(query),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildGridResults(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
-    Query query = FirebaseFirestore.instance
-        .collection('artifacts')
-        .doc(AppConfig.appId)
-        .collection('public_characters');
-
-    if (_searchQuery.isEmpty) {
-      query = query
-          .orderBy('likesCount', descending: true)
-          .limit(6);
-    } else {
-      query = query
-          .orderBy('createdAt', descending: true)
-          .limit(200);
-    }
 
     return StreamBuilder<QuerySnapshot>(
-      stream: query.snapshots(),
+      stream: _charactersStream,
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-
-        final allDocs = snapshot.data!.docs;
-        final keyword = _searchQuery.toLowerCase();
-
-        final docs = _searchQuery.isEmpty
-            ? allDocs
-            : allDocs.where((doc) {
-          final data =
-          doc.data() as Map<String, dynamic>;
-
-          final String name =
-              data['name']
-                  ?.toString()
-                  .toLowerCase() ??
-                  '';
-
-          final String creatorName =
-              data['creatorName']
-                  ?.toString()
-                  .toLowerCase() ??
-                  '';
-
-          final List<String> tags =
-          List<String>.from(
-            data['personalityTags'] ?? const [],
-          ).map((tag) => tag.toLowerCase()).toList();
-
-          return name.contains(keyword) ||
-              creatorName.contains(keyword) ||
-              tags.any(
-                    (tag) => tag.contains(keyword),
-              );
-        }).toList();
-        if (docs.isEmpty) {
-          return Center(
-              child: Text(l10n.search_no_match_hint,
-                  style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6)))
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            !snapshot.hasData) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
         }
 
-        return GridView.builder(
-          padding: const EdgeInsets.all(12),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.75,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-          ),
-          itemCount: docs.length,
-          itemBuilder: (context, index) => _buildCharacterCard(docs[index], theme),
+        if (snapshot.hasError) {
+          debugPrint('搜尋角色查詢失敗：${snapshot.error}');
+
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                '搜尋資料載入失敗，請稍後再試。',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface.withValues(
+                    alpha: 0.7,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData) {
+          return const SizedBox.shrink();
+        }
+
+        final List<QueryDocumentSnapshot> allDocs =
+            snapshot.data!.docs;
+
+        final String keyword =
+        _searchQuery.trim().toLowerCase();
+
+        late final List<QueryDocumentSnapshot> docs;
+
+        if (keyword.isEmpty) {
+          final List<QueryDocumentSnapshot> popularDocs =
+          List<QueryDocumentSnapshot>.from(allDocs);
+
+          popularDocs.sort((a, b) {
+            final aData =
+            a.data() as Map<String, dynamic>;
+
+            final bData =
+            b.data() as Map<String, dynamic>;
+
+            final int aLikes =
+            _parseLikesCount(aData['likesCount']);
+
+            final int bLikes =
+            _parseLikesCount(bData['likesCount']);
+
+            return bLikes.compareTo(aLikes);
+          });
+
+          docs = popularDocs.take(6).toList();
+        } else {
+          docs = allDocs.where((doc) {
+            final data =
+            doc.data() as Map<String, dynamic>;
+
+            final String name =
+                data['name']
+                    ?.toString()
+                    .toLowerCase() ??
+                    '';
+
+            final String creatorName =
+                data['creatorName']
+                    ?.toString()
+                    .toLowerCase() ??
+                    '';
+
+            final String occupation =
+                data['occupation']
+                    ?.toString()
+                    .toLowerCase() ??
+                    '';
+
+            final String storySummary =
+                data['storySummary']
+                    ?.toString()
+                    .toLowerCase() ??
+                    '';
+
+            final String background =
+                data['background']
+                    ?.toString()
+                    .toLowerCase() ??
+                    '';
+
+            final List<String> tags =
+            List<String>.from(
+              data['personalityTags'] ??
+                  const [],
+            )
+                .map(
+                  (tag) =>
+                  tag.toLowerCase(),
+            )
+                .toList();
+
+            final List<String> identities =
+            List<String>.from(
+              data['identities'] ??
+                  const [],
+            )
+                .map(
+                  (value) =>
+                  value.toLowerCase(),
+            )
+                .toList();
+
+            return name.contains(keyword) ||
+                creatorName.contains(keyword) ||
+                occupation.contains(keyword) ||
+                storySummary.contains(keyword) ||
+                background.contains(keyword) ||
+                identities.any(
+                      (value) =>
+                      value.contains(keyword),
+                ) ||
+                tags.any(
+                      (tag) =>
+                      tag.contains(keyword),
+                );
+          }).toList();
+        }
+
+        if (docs.isEmpty) {
+          return Center(
+            child: Text(
+              l10n.search_no_match_hint,
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(
+                  alpha: 0.6,
+                ),
+              ),
+            ),
+          );
+        }
+
+        final String resultHeader =
+        keyword.isEmpty
+            ? '❤️ 大家最近都在喜歡'
+            : '找到 ${docs.length} 位角色';
+
+        return Column(
+          crossAxisAlignment:
+          CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding:
+              const EdgeInsets.fromLTRB(
+                16,
+                8,
+                16,
+                6,
+              ),
+              child: Text(
+                resultHeader,
+                style: TextStyle(
+                  color:
+                  theme.colorScheme.onSurface,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Expanded(
+              child: GridView.builder(
+                padding:
+                const EdgeInsets.fromLTRB(
+                  12,
+                  6,
+                  12,
+                  12,
+                ),
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.75,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemCount: docs.length,
+                itemBuilder: (
+                    context,
+                    index,
+                    ) {
+                  return _buildCharacterCard(
+                    docs[index],
+                    theme,
+                  );
+                },
+              ),
+            ),
+          ],
         );
       },
     );
@@ -165,6 +508,11 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     final l10n =
     AppLocalizations.of(context)!;
 
+    final dynamic rawLikesCount = charData['likesCount'];
+    final int likesCount = rawLikesCount is num
+        ? rawLikesCount.toInt()
+        : int.tryParse(rawLikesCount?.toString() ?? '') ?? 0;
+
     final String imageUrl = (
         charData['avatar'] ??
             charData['avatarPath'] ??
@@ -173,6 +521,10 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
     return GestureDetector(
       onTap: () async {
+        if (_searchQuery.isNotEmpty) {
+          await _saveRecentSearch(_searchQuery);
+        }
+
         final targetCharacter =
         await Character.fromFirestoreAsync(doc);
 
@@ -302,14 +654,6 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
               ),
 
               // =========================
-              // 玩家留言彈幕
-              // =========================
-              AnimatedDanmu(
-                characterId: doc.id,
-                appId: AppConfig.appId,
-              ),
-
-              // =========================
               // 右上角心動數
               // =========================
               Positioned(
@@ -339,7 +683,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${charData['likesCount'] ?? charData['likes'] ?? 0}',
+                        '$likesCount',
                         style:
                         const TextStyle(
                           color: Colors.white,
@@ -462,158 +806,6 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
     return l10n.character_info_age_only(
       age,
-    );
-  }
-}
-
-// 💬 專屬小工具：會自己呼吸、飄浮的限時動態彈幕
-class AnimatedDanmu extends StatefulWidget {
-  final String characterId; // 接收角色 ID
-  final String appId;       // 接收 appId
-
-  const AnimatedDanmu({
-    super.key,
-    required this.characterId,
-    required this.appId,     // ✨ 這樣寫才是正確的接收方式
-  });
-
-  @override
-  State<AnimatedDanmu> createState() => _AnimatedDanmuState();
-}
-
-class _AnimatedDanmuState extends State<AnimatedDanmu> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _opacity;
-  late Animation<Offset> _position;
-  bool _isInit = false; // ✨ 專屬防護旗標
-  List<String> _echoMessages = []; // ✨ 這裡存放從 Firestore 抓到的留言
-  int _currentIndex = 0;
-  final Random _random = Random();
-  double _top = 20.0;
-  double _left = 20.0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // 1. 初始化動畫 (這部分保持您的精美設定)
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 5));
-    _opacity = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 15),
-      TweenSequenceItem(tween: ConstantTween(1.0), weight: 70),
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 15),
-    ]).animate(_controller);
-
-    _position = TweenSequence<Offset>([
-      TweenSequenceItem(tween: Tween(begin: const Offset(0, 0.5), end: Offset.zero), weight: 20),
-      TweenSequenceItem(tween: ConstantTween(Offset.zero), weight: 80),
-    ]).animate(_controller);
-
-  }
-
-  void _listenToEchoes() {
-    final l10n = AppLocalizations.of(context)!;
-    FirebaseFirestore.instance
-        .collection('artifacts')
-        .doc(AppConfig.appId)
-        .collection('public_characters')
-        .doc(widget.characterId)
-        .collection('echoes') // 👈 抓取您指定的子集合
-        .orderBy('timestamp', descending: true)
-        .limit(10) // 抓最新的 10 則來輪播
-        .snapshots()
-        .listen((snapshot) {
-      if (!mounted) return;
-
-      setState(() {
-        _echoMessages = snapshot.docs
-            .map((doc) => doc.data()['content']?.toString() ?? '')
-            .where((content) => content.isNotEmpty)
-            .toList();
-
-        // 如果完全沒留言，就給一句預設的
-        if (_echoMessages.isEmpty) {
-          _echoMessages = [l10n.empty_state_warmth];
-        }
-      });
-
-      // 如果動畫還沒開始過，就啟動它
-      if (!_controller.isAnimating) {
-        _startDanmuLoop();
-      }
-    });
-  }
-
-  void _startDanmuLoop() {
-    if (!mounted || _echoMessages.isEmpty) return;
-
-    setState(() {
-      _currentIndex = _random.nextInt(_echoMessages.length);
-
-      // 🎲 每次發射前，隨機決定出現在卡片的哪個位置！
-      // 假設卡片寬高比約 0.75，我們把範圍限制在安全區內
-      _top = _random.nextDouble() * 120 + 20;  // 距離頂部 20~140 之間
-      _left = _random.nextDouble() * 60 + 10; // 距離左邊 10~70 之間
-    });
-
-    _controller.forward(from: 0.0).then((_) {
-      if (mounted) {
-        Future.delayed(Duration(seconds: _random.nextInt(2) + 1), _startDanmuLoop);
-      }
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // 🛡️ 啟動防護罩：確保只在剛進頁面時執行一次
-    if (!_isInit) {
-      // ✅ 搬到這裡！這時候 context 已經完全準備好，拿翻譯絕對不會崩潰
-      _listenToEchoes();
-
-      _isInit = true; // 做完就把門鎖上
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_echoMessages.isEmpty) return const SizedBox.shrink();
-
-    return Positioned(
-      top: _top,
-      left: _left,
-      child: FadeTransition(
-        opacity: _opacity,
-        child: SlideTransition(
-          position: _position,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            constraints: const BoxConstraints(maxWidth: 120), // 限制寬度，避免太長超出卡片
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha:0.55),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.white.withValues(alpha:0.15)),
-            ),
-            child: Text(
-              _echoMessages[_currentIndex],
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 10,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  shadows: [Shadow(color: Colors.black26, blurRadius: 2)]
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

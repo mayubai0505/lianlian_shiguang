@@ -5,6 +5,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import 'dart:ui';
+import 'dart:math';
 import 'character_model.dart';
 import 'character_profile_page.dart';
 import 'search_character_page.dart';
@@ -829,8 +830,7 @@ Widget buildCachedCharacterAvatar(
 }
 
 // ==========================================
-// ==========================================
-// 🏛️ 探索大廳檢視元件 (包含三個子分頁)
+// 🏛️ 探索大廳：單頁式探索首頁
 // ==========================================
 class _DiscoveryHallView extends StatelessWidget {
   final List<Character> allCharacters;
@@ -847,43 +847,17 @@ class _DiscoveryHallView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return DefaultTabController(
-      length: 3,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // 讓內容靠左對齊
-        children: [
-          Container(
-            color: Colors.transparent,
-            child: TabBar(
-              isScrollable: true,
-              tabAlignment: TabAlignment.start, // 🔑 關鍵：強制從最左邊開始排列，消滅左側空格！
-              padding: EdgeInsets.zero,          // 🔑 清除預設的外距
-              labelPadding: const EdgeInsets.symmetric(horizontal: 16), // 調整每個標籤之間的間距
-              tabs:  [
-                Tab(text: '🌟 ${l10n.latest_recommendation}'),
-                Tab(text: '🔥 ${l10n.popular_ranking}'),
-                Tab(text: '🏷️ ${l10n.character_features}'),
-              ],
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                _LatestTab(allCharacters: allCharacters, friendIds: friendIds, onAddFriend: onAddFriend, onShowOptions: onShowOptions),
-                _PopularTab(allCharacters: allCharacters, friendIds: friendIds, onAddFriend: onAddFriend, onShowOptions: onShowOptions),
-                _TagsTab(allCharacters: allCharacters, friendIds: friendIds, onAddFriend: onAddFriend, onShowOptions: onShowOptions),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return _LatestTab(
+      allCharacters: allCharacters,
+      friendIds: friendIds,
+      onAddFriend: onAddFriend,
+      onShowOptions: onShowOptions,
     );
   }
 }
 
 // 🌟 分頁一：最新推薦 (保持完美比例 + 呈現時尚的高低交錯感)
-class _LatestTab extends StatelessWidget {
+class _LatestTab extends StatefulWidget {
   final List<Character> allCharacters;
   final Set<String> friendIds;
   final Function(Character) onAddFriend;
@@ -895,6 +869,58 @@ class _LatestTab extends StatelessWidget {
     required this.onAddFriend,
     required this.onShowOptions,
   });
+
+  @override
+  State<_LatestTab> createState() => _LatestTabState();
+}
+
+class _LatestTabState extends State<_LatestTab> {
+  static const List<String> _dailyOpeningLines = [
+    '今天，也許會遇見新的故事。',
+    '今天，讓心動先開口。',
+    '今天，也許有人正等著與你相遇。',
+    '今天，試著走進一段新的故事。',
+    '今天，會遇見怎樣的心動呢？',
+    '今天，也替自己留一點期待。',
+    '今天，新的相遇正在發生。',
+    '今天，也許命運會帶來一點驚喜。',
+    '今天，讓一場相遇慢慢開始。',
+    '今天，也許會有人讓你停下腳步。',
+    '今天，想遇見什麼樣的人？',
+    '今天，別錯過悄悄靠近的緣分。',
+  ];
+
+  late final String _openingLine;
+  late final List<Character> _shuffledBannerCharacters;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final random = Random();
+    final now = DateTime.now();
+    final dayKey = DateTime(now.year, now.month, now.day)
+        .millisecondsSinceEpoch ~/
+        Duration.millisecondsPerDay;
+
+    // 同一天固定顯示同一句；隔天自動換下一句。
+    _openingLine = _dailyOpeningLines[
+    dayKey % _dailyOpeningLines.length
+    ];
+
+    _shuffledBannerCharacters =
+    List<Character>.from(widget.allCharacters)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    // 只讓最近推出的角色進入橫幅候選，再重新打亂。
+    final recentCharacters =
+    _shuffledBannerCharacters.take(10).toList()
+      ..shuffle(random);
+
+    _shuffledBannerCharacters
+      ..clear()
+      ..addAll(recentCharacters);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -911,14 +937,18 @@ class _LatestTab extends StatelessWidget {
     useDesktopLayout ? 1280 : double.infinity;
 
     final List<Character> sortedList =
-    List<Character>.from(allCharacters);
+    List<Character>.from(widget.allCharacters);
 
     sortedList.sort((a, b) {
       return b.createdAt.compareTo(a.createdAt);
     });
 
     final List<Character> bannerList =
-    sortedList.take(10).toList();
+        _shuffledBannerCharacters;
+
+    // 首頁只預覽最近 6 位角色，避免角色增加後首頁無限延伸。
+    final List<Character> latestPreview =
+    sortedList.take(6).toList();
 
     return Align(
       alignment: const Alignment(0, -0.35),
@@ -932,9 +962,12 @@ class _LatestTab extends StatelessWidget {
             vertical: 16,
           ),
           children: [
+            _buildDailyOpening(context, useDesktopLayout),
+            SizedBox(height: useDesktopLayout ? 28 : 20),
+
             if (bannerList.isNotEmpty) ...[
               Text(
-                '🌟 ${l10n.featured_new_star}',
+                '✨ 今天加入戀戀拾光',
                 style: TextStyle(
                   fontSize: useDesktopLayout ? 22 : 18,
                   fontWeight: FontWeight.bold,
@@ -953,26 +986,405 @@ class _LatestTab extends StatelessWidget {
               ),
             ],
 
-            Text(
-              '✨ ${l10n.recently_added_characters}',
-              style: TextStyle(
-                fontSize: useDesktopLayout ? 22 : 18,
-                fontWeight: FontWeight.bold,
-              ),
+            _buildSectionTitle(
+              '❤️ 最近很多人在聊天',
+              useDesktopLayout,
+            ),
+            const SizedBox(height: 12),
+            _buildPopularCharactersSection(
+              context,
+              useDesktopLayout,
+            ),
+            SizedBox(height: useDesktopLayout ? 36 : 28),
+
+            _buildTagsSectionHeader(
+              context,
+              useDesktopLayout,
+            ),
+            const SizedBox(height: 14),
+            _buildTagsSection(context),
+            SizedBox(height: useDesktopLayout ? 40 : 30),
+
+            _buildLatestSectionHeader(
+              context,
+              useDesktopLayout,
+              showMore: sortedList.length > 6,
             ),
             const SizedBox(height: 12),
 
             if (useDesktopLayout)
               _buildDesktopCharacterGrid(
                 context,
-                sortedList,
+                latestPreview,
               )
             else
               _buildMobileStaggeredGrid(
                 context,
-                sortedList,
+                latestPreview,
               ),
+
+            SizedBox(height: useDesktopLayout ? 40 : 28),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(
+      String title,
+      bool useDesktopLayout,
+      ) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: useDesktopLayout ? 22 : 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildLatestSectionHeader(
+      BuildContext context,
+      bool useDesktopLayout, {
+        required bool showMore,
+      }) {
+    final theme = Theme.of(context);
+
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            '✨ 最近來到戀戀拾光',
+            style: TextStyle(
+              fontSize: useDesktopLayout ? 22 : 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        if (showMore)
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => _AllLatestCharactersPage(
+                    allCharacters: widget.allCharacters,
+                  ),
+                ),
+              );
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.primary,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 6,
+              ),
+              visualDensity: VisualDensity.compact,
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '查看更多',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(width: 2),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildTagsSectionHeader(
+      BuildContext context,
+      bool useDesktopLayout,
+      ) {
+    final theme = Theme.of(context);
+
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            '💕 今天想談什麼戀愛？',
+            style: TextStyle(
+              fontSize: useDesktopLayout ? 22 : 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        if (_collectAllTags().length > 18)
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => _AllTagsPage(
+                    allCharacters: widget.allCharacters,
+                  ),
+                ),
+              );
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.primary,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 6,
+              ),
+              visualDensity: VisualDensity.compact,
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '查看更多',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(width: 2),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildPopularCharactersSection(
+      BuildContext context,
+      bool useDesktopLayout,
+      ) {
+    final popularCharacters = List<Character>.from(widget.allCharacters)
+      ..sort((a, b) => b.playCount.compareTo(a.playCount));
+
+    final visibleCharacters = popularCharacters.take(10).toList();
+
+    if (visibleCharacters.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return SizedBox(
+      height: useDesktopLayout ? 245 : 205,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: visibleCharacters.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final character = visibleCharacters[index];
+          final imageUrl = character.galleryPaths.isNotEmpty
+              ? character.galleryPaths.first.trim()
+              : character.avatarPath.trim();
+
+          return SizedBox(
+            width: useDesktopLayout ? 170 : 140,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CharacterProfilePage(
+                        character: character,
+                        characterId: character.id,
+                      ),
+                    ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      if (imageUrl.isNotEmpty)
+                        CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                          memCacheWidth: useDesktopLayout ? 700 : 520,
+                          placeholder: (_, __) => Container(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
+                          ),
+                          errorWidget: (_, __, ___) => Image.asset(
+                            'assets/images/blank_avatar.png',
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      else
+                        Image.asset(
+                          'assets/images/blank_avatar.png',
+                          fit: BoxFit.cover,
+                        ),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.78),
+                            ],
+                            stops: const [0.45, 1],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 12,
+                        right: 12,
+                        bottom: 12,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              character.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: useDesktopLayout ? 16 : 14,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.favorite_rounded,
+                                  color: Colors.white70,
+                                  size: 13,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    '${character.playCount}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  List<String> _collectAllTags() {
+    final uniqueTags = <String>{};
+
+    for (final character in widget.allCharacters) {
+      for (final rawTag in character.personalityTags) {
+        final tag = rawTag.trim().replaceAll(RegExp(r'^#+'), '').trim();
+        if (tag.isNotEmpty) {
+          uniqueTags.add(tag);
+        }
+      }
+    }
+
+    return uniqueTags.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  }
+
+  Widget _buildTagsSection(BuildContext context) {
+    final theme = Theme.of(context);
+    final tags = _collectAllTags().take(18).toList();
+
+    if (tags.isEmpty) {
+      return Text(
+        AppLocalizations.of(context)!.no_tag_data,
+        style: TextStyle(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: tags.map((tag) {
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => _TagFilteredCharactersPage(
+                  tag: tag,
+                  allCharacters: widget.allCharacters,
+                ),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(22),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: theme.colorScheme.primary.withValues(alpha: 0.22),
+              ),
+            ),
+            child: Text(
+              '#$tag',
+              style: TextStyle(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildDailyOpening(
+      BuildContext context,
+      bool useDesktopLayout,
+      ) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        top: useDesktopLayout ? 8 : 2,
+      ),
+      child: Text(
+        _openingLine,
+        textAlign: TextAlign.left,
+        style: TextStyle(
+          color: theme.colorScheme.onSurface,
+          fontSize: useDesktopLayout ? 28 : 22,
+          height: 1.45,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
         ),
       ),
     );
@@ -1641,6 +2053,271 @@ class _TagsTab extends StatelessWidget {
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ✨ 全部最新角色頁
+class _AllLatestCharactersPage extends StatelessWidget {
+  final List<Character> allCharacters;
+
+  const _AllLatestCharactersPage({
+    required this.allCharacters,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final sortedCharacters = List<Character>.from(allCharacters)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('最近來到戀戀拾光'),
+      ),
+      body: sortedCharacters.isEmpty
+          ? const Center(
+        child: Text('目前還沒有角色'),
+      )
+          : LayoutBuilder(
+        builder: (context, constraints) {
+          final bool useDesktopLayout = constraints.maxWidth >= 800;
+          final int columnCount;
+
+          if (constraints.maxWidth >= 1200) {
+            columnCount = 4;
+          } else if (constraints.maxWidth >= 800) {
+            columnCount = 3;
+          } else {
+            columnCount = 2;
+          }
+
+          return GridView.builder(
+            padding: EdgeInsets.fromLTRB(
+              useDesktopLayout ? 32 : 16,
+              20,
+              useDesktopLayout ? 32 : 16,
+              32,
+            ),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: columnCount,
+              crossAxisSpacing: useDesktopLayout ? 18 : 12,
+              mainAxisSpacing: useDesktopLayout ? 18 : 12,
+              childAspectRatio: useDesktopLayout ? 0.78 : 0.72,
+            ),
+            itemCount: sortedCharacters.length,
+            itemBuilder: (context, index) {
+              final character = sortedCharacters[index];
+              final String imageUrl = character.galleryPaths.isNotEmpty
+                  ? character.galleryPaths.first.trim()
+                  : character.avatarPath.trim();
+
+              return MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CharacterProfilePage(
+                          character: character,
+                          characterId: character.id,
+                        ),
+                      ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (imageUrl.isNotEmpty)
+                          CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.topCenter,
+                            memCacheWidth: useDesktopLayout ? 900 : 720,
+                            placeholder: (_, __) => Container(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest,
+                            ),
+                            errorWidget: (_, __, ___) => Image.asset(
+                              'assets/images/blank_avatar.png',
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        else
+                          Image.asset(
+                            'assets/images/blank_avatar.png',
+                            fit: BoxFit.cover,
+                          ),
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.8),
+                              ],
+                              stops: const [0.48, 1],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 12,
+                          right: 12,
+                          bottom: 12,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                character.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: useDesktopLayout ? 17 : 15,
+                                ),
+                              ),
+                              if (character.occupation.trim().isNotEmpty) ...[
+                                const SizedBox(height: 3),
+                                Text(
+                                  character.occupation,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+// 🏷️ 全部標籤頁
+class _AllTagsPage extends StatelessWidget {
+  final List<Character> allCharacters;
+
+  const _AllTagsPage({
+    required this.allCharacters,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final uniqueTags = <String>{};
+
+    for (final character in allCharacters) {
+      for (final rawTag in character.personalityTags) {
+        final tag = rawTag
+            .trim()
+            .replaceAll(RegExp(r'^#+'), '')
+            .trim();
+
+        if (tag.isNotEmpty) {
+          uniqueTags.add(tag);
+        }
+      }
+    }
+
+    final tags = uniqueTags.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('全部戀愛標籤'),
+      ),
+      body: tags.isEmpty
+          ? Center(
+        child: Text(
+          AppLocalizations.of(context)!.no_tag_data,
+        ),
+      )
+          : LayoutBuilder(
+        builder: (context, constraints) {
+          final horizontalPadding =
+          constraints.maxWidth >= 800 ? 32.0 : 16.0;
+          final maxWidth =
+          constraints.maxWidth >= 800 ? 1100.0 : double.infinity;
+
+          return Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: maxWidth,
+              ),
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                  horizontalPadding,
+                  20,
+                  horizontalPadding,
+                  32,
+                ),
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: tags.map((tag) {
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                _TagFilteredCharactersPage(
+                                  tag: tag,
+                                  allCharacters: allCharacters,
+                                ),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(22),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 9,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary
+                              .withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.22),
+                          ),
+                        ),
+                        child: Text(
+                          '#$tag',
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           );
