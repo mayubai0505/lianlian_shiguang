@@ -159,19 +159,42 @@ class NotificationListPage extends StatelessWidget {
                   // 留言內容部分會顯示在這裡 (例如：程安 留言：「看起來很好吃...」)
                   subtitle: Text(body, maxLines: 2, overflow: TextOverflow.ellipsis),
                   trailing: Text(timeText, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  onTap: () {
-                    // 第一步：消滅紅點 (標記已讀)
+                  onTap: () async {
                     if (!isRead) {
-                      _markAsRead(userId, doc.id);
+                      await _markAsRead(userId, doc.id);
                     }
-                    // 第二步：如果有 postId，且是按讚或留言，就帶她去那篇貼文！
+
                     if (postId != null && (type == 'like' || type == 'comment')) {
+                      if (!context.mounted) return;
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          // ✨ 跳轉到「貼文詳細頁」，並把 postId 帶過去
                           builder: (context) => MomentDetailPage(postId: postId),
                         ),
+                      );
+                      return;
+                    }
+
+                    if (type == 'system') {
+                      if (!context.mounted) return;
+
+                      showDialog<void>(
+                        context: context,
+                        builder: (dialogContext) {
+                          return AlertDialog(
+                            title: Text(title),
+                            content: SingleChildScrollView(
+                              child: SelectableText(body),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(dialogContext),
+                                child: const Text('確定'),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     }
                   },
