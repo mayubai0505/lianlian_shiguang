@@ -46,3 +46,16 @@ app.*.map.json
 
 node_modules/
 functions/node_modules/
+
+# Zip / deployment packages
+*.zip
+
+# macOS build output
+macos/build/
+
+# Swift Package Manager workspace data
+**/xcshareddata/swiftpm/
+
+# CocoaPods generated folders
+ios/Pods/
+macos/Pods/
