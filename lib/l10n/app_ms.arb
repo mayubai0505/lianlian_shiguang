@@ -2015,6 +2015,297 @@
     "@restoreAccountButton": {
         "description": "Button text to restore account"
     },"voice_preview": "Mainkan Audio",
-    "voice_preview_failed": "Gagal memainkan audio"
-
+    "voice_preview_failed": "Gagal memainkan audio",
+    "voice_preview_failed": "Gagal memainkan audio",
+    "characterBannerSectionTitle": "Sepanduk Halaman Utama Karakter",
+    "characterBannerDescription": "Penerangan Sepanduk",
+    "characterBannerRemove": "Alih Keluar",
+    "characterBannerSelect": "Pilih Gambar Sepanduk",
+    "characterBannerChange": "Tukar Gambar Sepanduk",
+    "characterBannerSpecs": "Nisbah disyorkan 16:9, saiz disyorkan 1920 × 1080",
+    "characterBannerDefaultHint": "Jika tidak ditetapkan, halaman utama akan menggunakan gambar utama karakter secara automatik.",
+    "characterBannerHelpContent": "Sepanduk akan dipaparkan di kawasan melintang besar pada halaman utama karakter.\n\nDisyorkan menggunakan gambar melintang 16:9, seperti 1920 × 1080.\n\nLetakkan subjek utama dan muka di bahagian tengah untuk mengelakkan pemotongan pada pelbagai saiz skrin telefon.\n\nJika sepanduk tidak ditetapkan, sistem akan menggunakan gambar utama karakter secara automatik.",
+    "first_meeting_title": "Pertemuan Pertama",
+    "common_delete_network_failed": "Gagal memadamkan. Sila semak sambungan rangkaian anda dan cuba lagi",
+    "common_operation_failed_retry": "Operasi gagal. Sila cuba lagi kemudian",
+    "exclusive_photo_number": "Foto Eksklusif {number}",
+    "@exclusive_photo_number": {
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "unlock_after_affection_increase": "Buka kunci selepas meningkatkan Tahap Kejelekitan (Affection)",
+    "first_meeting_empty": "Pertemuan pertama, belum bermula...",
+    "follow_btn": "Ikuti",
+    "photo_load_failed": "Gagal memuatkan foto: {error}",
+    "@photo_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "add_friend_failed_retry": "Gagal menambah rakan. Sila cuba lagi kemudian.",
+    "remove_friend": "Alih Keluar Rakan",
+    "report_character": "Laporkan Karakter",
+    "block_character": "Sekat Karakter",
+    "daily_encounter": "Pertemuan Harian",
+    "discovery_hall": "Dewan Penjelajahan",
+    "latest_recommendation": "Syor Terkini",
+    "popular_ranking": "Carta Populariti",
+    "character_features": "Ciri Karakter",
+    "featured_new_star": "Bintang Baru · Syoran Utama",
+    "recently_added_characters": "Karakter Baru Ditambah",
+    "no_tag_data": "Tiada data tag pada masa ini~",
+    "no_character_with_tag": "Tiada karakter ditemui dengan tag ini",
+    "voice_search_failed_retry": "Carian suara gagal. Sila cuba lagi",
+    "voice_search_incomplete_retry": "Carian tidak lengkap. Sila cuba lagi kemudian",
+    "voice_data_incomplete": "Data suara tidak lengkap",
+    "voice_generation_failed_retry": "Gagal menjana suara. Sila cuba lagi kemudian",
+    "voice_playback_failed_retry": "Gagal memainkan suara. Sila cuba lagi",
+    "selected_voice_data_incomplete": "Data suara yang dipilih tidak lengkap",
+    "private_voice_user_not_found": "Pengguna tidak ditemui. Tidak boleh mengemaskini suara karakter peribadi",
+    "voice_selected_character_save_failed": "Suara dipilih, tetapi gagal menyimpan data karakter",
+    "voice_binding_failed": "Gagal mengikat suara",
+    "play_voice_tooltip": "Mainkan Audio",
+    "avatar_label": "Gambar Profil",
+    "message_preview_image": "[Gambar]",
+    "message_preview_recording": "[Rakaman]",
+    "message_preview_voice": "[Mesej Suara]",
+    "send_failed_retry": "Gagal menghantar. Sila cuba lagi kemudian 😢",
+    "media_upload_failed_retry": "Muat naik media gagal. Sila cuba lagi",
+    "ai_thinking_too_long": "Dia nampaknya sedang berfikir. Sila cuba lagi kemudian...",
+    "ai_reply_in_progress": "Dia sedang membalas. Sila tunggu sebentar dan jangan hantar berulang kali",
+    "ai_response_blocked": "Fikirannya terganggu. Cuba gunakan perkataan yang lebih lembut!",
+    "microphone_permission_required": "Kebenaran mikrofon diperlukan untuk merakam",
+    "no_recording_to_send": "Tiada rakaman untuk dihantar",
+    "voice_uploading": "Memuat naik mesej suara...",
+    "change_watermark_color": "Tukar Warna Tanda Air",
+    "other_party_typing": "Pihak satu lagi sedang menaip...",
+    "chat_input_hint": "Sila taip mesej...",
+    "regenerate_sync_failed": "Gagal menyegerakkan bilangan penjanaan semula. Sila cuba lagi 😢",
+    "creator_public_works": "Karya Awam",
+    "creator_received_likes": "Suka Diterima",
+    "about_me": "Tentang Saya",
+    "moment_input_hint": "Kongsikan perasaan awak...",
+    "character_play_count": "Dimainkan: {count} kali",
+    "@character_play_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "tag_page_title": "Tag: #{tag}",
+    "@tag_page_title": {
+        "placeholders": {
+            "tag": {
+                "type": "String"
+            }
+        }
+    },
+    "voice_preview_failed_detail": "Pratonton suara gagal: {code} {message}",
+    "@voice_preview_failed_detail": {
+        "placeholders": {
+            "code": {
+                "type": "String"
+            },
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "messages_deleted_success": "Berjaya memadamkan {count} mesej",
+    "@messages_deleted_success": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "creator_work_load_failed": "Gagal memuatkan karya: {error}",
+    "@creator_work_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "age_years_old": "{age} tahun",
+    "@age_years_old": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteFailedMessage": "Gagal memadamkan: {error}",
+    "@deleteFailedMessage": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadCharacterDataFailed": "Gagal memuatkan data karakter: {error}",
+    "@loadCharacterDataFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "draftAvatarLoadFailed": "Gagal memuatkan avatar draf:",
+    "unnamedCreator": "Pencipta Tanpa Nama",
+    "profileNotYetFilled": "Bio belum diisi",
+    "reportImageSizeLimit": "Saiz gambar tidak boleh melebihi 10 MB",
+    "reportImageSelectFailed": "Gagal memilih gambar laporan: {error}",
+    "@reportImageSelectFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportImageCannotSelect": "Tidak boleh memilih gambar. Sila cuba lagi kemudian",
+    "reportLoginRequired": "Sila log masuk terlebih dahulu sebelum menghantar laporan",
+    "reportAnonymousPlayer": "Pemain Tanpa Nama",
+    "reportSendSuccess": "Laporan berjaya dihantar, terima kasih atas maklum balas awak!",
+    "reportSendFailed": "Gagal menghantar laporan pemain: {error}",
+    "@reportSendFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportNetworkFailed": "Gagal menghantar. Sila semak rangkaian anda dan cuba lagi",
+    "reportAttachImageLabel": "Lampirkan Gambar (Pilihan)",
+    "reportAttachImageHint": "Semasa melaporkan masalah atau mata wang tidak diterima, melampirkan tangkapan skrin membantu pasukan kami mengesahkannya dengan lebih cepat.",
+    "reportOpeningAlbum": "Membuka galeri...",
+    "reportSelectFromAlbum": "Pilih daripada Galeri",
+    "reportSending": "Menghantar...",
+    "reportSubmit": "Hantar Laporan",
+    "reportRemoveImage": "Alih Keluar Gambar",
+    "reportImageSelected": "Gambar Dipilih",
+    "reportChangeImage": "Tukar",
+    "reloadTranslation": "Muat Semula Terjemahan",
+    "guideNotAvailableInLanguage": "Panduan bermain belum tersedia dalam bahasa ini pada masa ini; memaparkan Bahasa Cina Tradisional buat sementara waktu.",
+    "clearSearch": "Kosongkan Carian",
+    "memoPermissionWarning": "Kebenaran notifikasi tidak diaktifkan. Nota akan disimpan, tetapi peringatan sistem tidak akan dipaparkan.",
+    "memoSavedWithNotification": "Nota disimpan! {name} akan mengingatkan awak!",
+    "@memoSavedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoSavedNoPermission": "Nota disimpan, tetapi kebenaran notifikasi belum diaktifkan.",
+    "memoUpdatedWithNotification": "Nota dikemas kini! {name} akan mengingatkan awak!",
+    "@memoUpdatedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoUpdatedNoPermission": "Nota dikemas kini, tetapi tiada kebenaran notifikasi pada masa ini.",
+    "dataLoadError": "Ralat berlaku semasa memuatkan data: {error}",
+    "@dataLoadError": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadFailed": "Gagal memuatkan: {error}",
+    "@loadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "dateFormatMonthDay": "d MMM",
+    "timeFormatHourMinute": "HH:mm",
+    "likeFeedPrompt": "Suka dengan detik ini? Hantarkan sedikit kasih sayang!",
+    "saveFeedPocket": "Simpan detik istimewa secara senyap ke dalam poket awak.",
+    "newComment": "Komen Baru",
+    "someFriend": "Seorang rakan",
+    "myBackpackAndPrivileges": "Beg Galas & Hak Istimewa Saya",
+    "currentRomanticBond": "Ikatan Romantis Terkumpul Masa Ini",
+    "physicalGiftBoxUnlockStatus": "Status Pembukaan Kotak Hadiah Fizikal:",
+    "topLovePhysicalVipBox": "Kotak Hadiah Fizikal VIP Eksklusif [Cinta Sejati]",
+    "physicalGiftBoxContents": "Termasuk: Surat Tangan Eksklusif + Anak Patung Karakter + Surat Terima Kasih Rasmi",
+    "modifyShippingAddress": "Ubah Alamat Penghantaran",
+    "addressUnlockedFillNow": "Telah dibuka! Ketik di sini untuk mengisi maklumat penghantaran",
+    "addressSuccessfullyRegistered": "Awak telah berjaya mendaftarkan alamat penghantaran, kami akan menyediakannya secepat mungkin!",
+    "amountNeededForPhysicalPrize": "Hanya tinggal NT$ {amount} lagi untuk membuka hadiah fizikal utama!",
+    "@amountNeededForPhysicalPrize": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "avatarFrameHint": "Petunjuk: Penampilan digital dan bingkai profil lain boleh dilihat dan dipakai di Kedai atau Tetapan.",
+    "closeButton": "Tutup",
+    "physicalGiftBoxUnlockTitle": "Pembukaan Kotak Hadiah Fizikal [Cinta Sejati]",
+    "physicalGiftBoxUnlockThanks": "Terima kasih atas sokongan padu awak terhadap Lian Lian Shi Guang!",
+    "physicalGiftBoxUnlockPrompt": "Sila isi maklumat penghantaran di bawah untuk penghantaran surat tangan dan anak patung karakter awak:",
+    "recipientRealName": "Nama Sebenar Penerima",
+    "contactPhone": "Nombor Telefon",
+    "fullShippingAddress": "Alamat Penghantaran Penuh (termasuk Poskod)",
+    "desiredCharacterDollName": "Nama Anak Patung Karakter yang Diingini",
+    "characterNameExample": "Contoh: Nama karakter yang diingini",
+    "fillLater": "Isi Nanti",
+    "fillCompleteAddressAndRoleHint": "Sila isi maklumat penghantaran dan nama karakter idaman awak secara lengkap!",
+    "shippingInfoSubmittedSuccess": "Maklumat penghantaran berjaya dihantar! Nantikan kejutan fizikal daripada kami!",
+    "confirmSubmit": "Sahkan & Hantar",
+    "aboutMe": "Tentang Saya",
+    "myBackpack": "Beg Galas Saya",
+    "ownerExclusiveArea": "Kawasan Eksklusif Pemilik",
+    "enterShiguangAdminBackend": "Masuk ke Konsol Pentadbir Shiguang",
+    "errorOccurred": "Ralat telah berlaku",
+    "creatorGuidelines": "Garis Panduan Pencipta",
+    "playGuide": "Panduan Bermain",
+    "lianlianShiguang": "Lian Lian Shi Guang",
+    "copyrightNotice": "© 2026 Mo Yu Bai",
+    "cumulativeBenefits": "Manfaat Terkumpul",
+    "perkFirstEncounter": "Pertemuan Pertama",
+    "perkFirstEncounterReward": "20 Bunga + Gelar Pemula Eksklusif",
+    "perkGlimmerThrob": "Debaran Samar",
+    "perkGlimmerThrobReward": "Bingkai Profil Eksklusif [Debaran Samar]",
+    "perkStarryWhisper": "Bisikan Bintang",
+    "perkStarryWhisperReward": "Gelembung Chat Eksklusif + 50 Bunga",
+    "perkRomanticSunset": "Senja Romantis",
+    "perkRomanticSunsetReward": "Ikon Aplikasi Eksklusif",
+    "perkHeartbeat": "Debaran Jantung",
+    "perkHeartbeatReward": "Kesan Sentuhan Skrin + 100 Bunga",
+    "perkEternalVow": "Ikrar Abadi",
+    "perkEternalVowReward": "Bingkai Profil Animasi Lanjutan + 200 Bunga",
+    "perkSoulIntersection": "Pertemuan Jiwa",
+    "perkSoulIntersectionReward": "Kesan Gelembung Chat Animasi + Gelar Lanjutan Eksklusif",
+    "perkExclusiveWait": "Kesetiaan Eksklusif",
+    "perkExclusiveWaitReward": "Plak Nama Animasi Mewah + 500 Bunga",
+    "perkBrilliantGalaxy": "Galaksi Gemilang",
+    "perkBrilliantGalaxyReward": "Kesan Masuk Eksklusif + Khidmat Pelanggan Khas",
+    "perkTopBeloved": "Cinta Sejati",
+    "perkTopBelovedReward": "Kotak Hadiah Fizikal VIP Eksklusif",
+    "cumulativeRomanticBond": "Ikatan Romantis Terkumpul",
+    "allTopPrivilegesUnlocked": "Awak telah membuka semua hak istimewa tertinggi!",
+    "rechargeAmountForNextTier": "Tambah nilai NT$ {amount} lagi untuk membuka tahap seterusnya",
+    "@rechargeAmountForNextTier": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "storyContentCannotBeEmpty": "Kandungan cerita tidak boleh kosong",
+    "writeYourStoryHint": "Tuliskan kisah anda...",
+    "characterBannerTitle": "Sepanduk Halaman Utama Karakter"
 }

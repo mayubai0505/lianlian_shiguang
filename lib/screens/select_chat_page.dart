@@ -28,6 +28,7 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
   final String APP_ID = AppConfig.appId;
   String? _userId;
   Future<List<Character>>? _charactersFuture;
+  String? _lastFirstCharacterId;
   Set<String> _friendIds = {};
   Set<String> _blockedCharacterIds = {};
   final Set<String> _preloadedImageUrls = {};
@@ -150,13 +151,56 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
           .where('isPublic', isEqualTo: true)
           .where('status', isEqualTo: 'published')
           .get();
-      List<Character> characters = await Future.wait(
-          querySnapshot.docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
+
+      final List<Character> characters = await Future.wait(
+        querySnapshot.docs
+            .map(
+              (doc) => Character.fromFirestoreAsync(doc),
+        )
+            .toList(),
       );
-      characters.removeWhere((char) => _blockedCharacterIds.contains(char.id));
+
+      // 排除已封鎖角色。
+      characters.removeWhere(
+            (character) =>
+            _blockedCharacterIds.contains(character.id),
+      );
+
+      if (characters.isEmpty) {
+        return [];
+      }
+
+      // 每次重新進入邂逅頁時，重新打亂角色順序。
+      characters.shuffle();
+
+      // 若有兩位以上角色，避免刷新後第一位
+      // 又剛好是上一輪的第一位。
+      if (characters.length > 1 &&
+          characters.first.id == _lastFirstCharacterId) {
+        final differentIndex = characters.indexWhere(
+              (character) =>
+          character.id != _lastFirstCharacterId,
+        );
+
+        if (differentIndex > 0) {
+          final firstCharacter = characters.first;
+
+          characters[0] = characters[differentIndex];
+          characters[differentIndex] = firstCharacter;
+        }
+      }
+
+      _lastFirstCharacterId = characters.first.id;
+
+      debugPrint(
+        '🎲 本次邂逅第一位角色：'
+            '${characters.first.name} '
+            '(${characters.first.id})',
+      );
+
       return characters;
     } catch (e) {
-      print("讀取邂逅角色失敗: $e");
+      debugPrint('❌ 讀取邂逅角色失敗：$e');
       return [];
     }
   }
@@ -332,7 +376,7 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
       }
     } catch (e) {
       if (mounted) {
-        _showResultDialog('添加好友失敗，請稍後再試。', isError: true);
+        _showResultDialog(l10n.add_friend_failed_retry, isError: true);
       }
     }
   }
@@ -455,6 +499,7 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
   }
 
   void _showMoreOptions(Character character, bool isFriend) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -464,7 +509,7 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
               if (isFriend)
                 ListTile(
                   leading: const Icon(Icons.person_remove_outlined, color: Colors.red),
-                  title: const Text('移除好友', style: TextStyle(color: Colors.red)),
+                  title: Text(l10n.remove_friend, style: TextStyle(color: Colors.red)),
                   onTap: () {
                     Navigator.pop(context);
                     _deleteFriend(character);
@@ -472,7 +517,7 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
                 ),
               ListTile(
                 leading: const Icon(Icons.flag_outlined),
-                title: const Text('檢舉角色'),
+                title:  Text(l10n.report_character),
                 onTap: () {
                   Navigator.pop(context);
                   _reportCharacter(character);
@@ -480,7 +525,7 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
               ),
               ListTile(
                 leading: const Icon(Icons.block, color: Colors.orange),
-                title: const Text('封鎖角色', style: TextStyle(color: Colors.orange)),
+                title: Text(l10n.block_character, style: TextStyle(color: Colors.orange)),
                 onTap: () {
                   Navigator.pop(context);
                   _blockCharacter(character);
@@ -563,14 +608,14 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildSmallPillButton(
-                      text: "每日邂逅",
+                      text: l10n.daily_encounter,
                       isSelected: currentIndex == 0,
                       onTap: () => _mainTabController.animateTo(0),
                       theme: theme,
                     ),
                     const SizedBox(width: 4), // 縮小按鈕間距
                     _buildSmallPillButton(
-                      text: "探索大廳",
+                      text: l10n.discovery_hall,
                       isSelected: currentIndex == 1,
                       onTap: () => _mainTabController.animateTo(1),
                       theme: theme,
@@ -802,6 +847,7 @@ class _DiscoveryHallView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return DefaultTabController(
       length: 3,
       child: Column(
@@ -814,10 +860,10 @@ class _DiscoveryHallView extends StatelessWidget {
               tabAlignment: TabAlignment.start, // 🔑 關鍵：強制從最左邊開始排列，消滅左側空格！
               padding: EdgeInsets.zero,          // 🔑 清除預設的外距
               labelPadding: const EdgeInsets.symmetric(horizontal: 16), // 調整每個標籤之間的間距
-              tabs: const [
-                Tab(text: "🌟 最新推薦"),
-                Tab(text: "🔥 人氣熱榜"),
-                Tab(text: "🏷️ 角色特徵"),
+              tabs:  [
+                Tab(text: '🌟 ${l10n.latest_recommendation}'),
+                Tab(text: '🔥 ${l10n.popular_ranking}'),
+                Tab(text: '🏷️ ${l10n.character_features}'),
               ],
             ),
           ),
@@ -853,7 +899,7 @@ class _LatestTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-
+    final l10n = AppLocalizations.of(context)!;
     // 網頁或寬螢幕使用桌面版配置。
     final bool useDesktopLayout =
         kIsWeb && screenWidth >= 800;
@@ -888,7 +934,7 @@ class _LatestTab extends StatelessWidget {
           children: [
             if (bannerList.isNotEmpty) ...[
               Text(
-                '🌟 閃耀新星．強檔推薦',
+                '🌟 ${l10n.featured_new_star}',
                 style: TextStyle(
                   fontSize: useDesktopLayout ? 22 : 18,
                   fontWeight: FontWeight.bold,
@@ -908,7 +954,7 @@ class _LatestTab extends StatelessWidget {
             ],
 
             Text(
-              '✨ 最近上架新角色',
+              '✨ ${l10n.recently_added_characters}',
               style: TextStyle(
                 fontSize: useDesktopLayout ? 22 : 18,
                 fontWeight: FontWeight.bold,
@@ -952,9 +998,11 @@ class _LatestTab extends StatelessWidget {
           final char = bannerList[index];
 
           final String bannerImg =
-          char.galleryPaths.isNotEmpty
-              ? char.galleryPaths.first
-              : '';
+          char.bannerImagePath.trim().isNotEmpty
+              ? char.bannerImagePath.trim()
+              : char.galleryPaths.isNotEmpty
+              ? char.galleryPaths.first.trim()
+              : char.avatarPath.trim();
 
           return Padding(
             padding: EdgeInsets.symmetric(
@@ -1424,7 +1472,7 @@ class _PopularTab extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Character> popularList = List.from(allCharacters);
     popularList.sort((a, b) => b.playCount.compareTo(a.playCount));
-
+    final l10n = AppLocalizations.of(context)!;
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: popularList.length,
@@ -1475,7 +1523,7 @@ class _PopularTab extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '遊玩次數: ${char.playCount}',
+                      l10n.character_play_count(char.playCount),
                       style: const TextStyle(
                         fontSize: 11,
                         color: Colors.grey,
@@ -1521,7 +1569,7 @@ class _TagsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final l10n = AppLocalizations.of(context)!;
     Set<String> uniqueTags = {};
     for (var char in allCharacters) {
       uniqueTags.addAll(char.personalityTags);
@@ -1530,8 +1578,8 @@ class _TagsTab extends StatelessWidget {
     List<String> tagList = uniqueTags.toList();
 
     if (tagList.isEmpty) {
-      return const Center(
-        child: Text("目前還沒有任何標籤資料～"),
+      return Center(
+        child: Text(l10n.no_tag_data),
       );
     }
 
@@ -1612,13 +1660,15 @@ class _TagFilteredCharactersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final filteredChars = allCharacters.where((c) => c.personalityTags.contains(tag)).toList();
-
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text("標籤：#$tag"),
+        title: Text(
+          l10n.tag_page_title(tag),
+        ),
       ),
       body: filteredChars.isEmpty
-          ? const Center(child: Text("沒有找到擁有此標籤的角色"))
+          ? Center(child: Text(l10n.no_character_with_tag))
           : ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: filteredChars.length,

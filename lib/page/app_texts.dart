@@ -1,56 +1,175 @@
 // lib/app_texts.dart
-import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class LegalDocumentPage extends StatelessWidget {
-// 假設妳是用一個 boolean 來判斷：true 代表隱私權，false 代表服務條款
-  final bool isPrivacyPolicy;
+import '../generated/app_localizations.dart';
 
-  const LegalDocumentPage({super.key, required this.isPrivacyPolicy});
+enum LegalPageType {
+  privacy,
+  terms,
+  creator,
+}
+
+class LegalDocumentPage extends StatefulWidget {
+  final LegalPageType type;
+
+  const LegalDocumentPage({
+    super.key,
+    required this.type,
+  });
+
+  @override
+  State<LegalDocumentPage> createState() =>
+      _LegalDocumentPageState();
+}
+
+class _LegalDocumentPageState
+    extends State<LegalDocumentPage> {
+  late final WebViewController _controller;
+
+  bool _isLoading = true;
+
+  bool _hasError = false;
+
+  String get _pageTitle {
+    final l10n = AppLocalizations.of(context);
+
+    switch (widget.type) {
+      case LegalPageType.privacy:
+        return l10n?.privacyPolicy ?? '隱私權政策';
+
+      case LegalPageType.terms:
+        return l10n?.termsOfService ?? '使用條款';
+
+      case LegalPageType.creator:
+        return '創作者規範';
+    }
+  }
+
+  String get _url {
+    switch (widget.type) {
+      case LegalPageType.privacy:
+        return "https://adaptable-roof-829.notion.site/3ab919a541518035ad5ec56427a427ec?source=copy_link";
+
+      case LegalPageType.terms:
+        return "https://app.notion.com/p/3ab919a5415180e89545dce77d552a6c?source=copy_link";
+
+      case LegalPageType.creator:
+        return "https://adaptable-roof-829.notion.site/3ab919a541518004990ec5ad79b80129?source=copy_link";
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.white)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            if (!mounted) return;
+
+            setState(() {
+              _isLoading = true;
+              _hasError = false;
+            });
+          },
+          onPageFinished: (url) {
+            if (!mounted) return;
+
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          onWebResourceError: (error) {
+            if (error.isForMainFrame != true) return;
+
+            if (!mounted) return;
+
+            setState(() {
+              _hasError = true;
+              _isLoading = false;
+            });
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(_url));
+  }
 
   @override
   Widget build(BuildContext context) {
-    // 🌟 1. 取得翻譯通行證
-    final l10n = AppLocalizations.of(context)!;
-
-    // 🌟 2. 根據參數，決定要抓哪一個標題、內容... 還有日期！
-    final String pageTitle = isPrivacyPolicy
-        ? l10n.privacy_policy_title
-        : l10n.terms_title;
-
-    final String pageContent = isPrivacyPolicy
-        ? l10n.privacy_policy_body
-        : l10n.terms_body;
-
-    // 🌟 3. 動態抓取對應的更新日期
-    final String updateTime = isPrivacyPolicy
-        ? l10n.privacy_policy_date
-        : l10n.terms_date;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(pageTitle),
+        title: Text(_pageTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: "重新整理",
+            onPressed: () {
+              _controller.reload();
+            },
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 🕒 第一層：更新時間
-            Text(
-              updateTime,
-              style: const TextStyle(fontSize: 13, color: Colors.grey),
+      body: Stack(
+        children: [
+          if (!_hasError)
+            WebViewWidget(
+              controller: _controller,
             ),
 
-            const SizedBox(height: 16),
-
-            // 📄 第二層：條款主要內容
-            Text(
-              pageContent,
-              style: const TextStyle(fontSize: 14, height: 1.5),
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
             ),
-          ],
-        ),
+
+          if (_hasError)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 70,
+                      color: Colors.redAccent,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "頁面載入失敗",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "請確認網路連線後再試一次。",
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _hasError = false;
+                          _isLoading = true;
+                        });
+
+                        _controller.loadRequest(
+                          Uri.parse(_url),
+                        );
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text("重新載入"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

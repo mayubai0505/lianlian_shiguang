@@ -20,7 +20,7 @@ import 'package:http/http.dart' as http;
 import '../services/toast_utils.dart';
 import 'main_page.dart'; // 專門用來破解網頁版 blob 網址的工具
 import '../utils/image_utils.dart';
-
+import 'welcome_guide_page.dart';
 //個人檔案
 
 class EditProfilePage extends StatefulWidget {
@@ -272,6 +272,67 @@ class _EditProfilePageState extends State<EditProfilePage> {
         );
   }
 
+
+  // --- 生日提醒：首次建立資料時按下「稍後編輯」 ---
+  Future<void> _showBirthdayReminderDialog() async {
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('🎂 小提醒'),
+          content: const Text(
+            '生日將影響角色生日祝福、生日禮物及相關活動。\n\n'
+                '建議確認生日後再完成設定，\n'
+                '以免影響後續生日獎勵。',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('知道了'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // --- 生日確認：首次建立資料且已選擇生日時 ---
+  Future<bool> _showBirthdayConfirmDialog() async {
+    if (!mounted) return false;
+
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('🎂 確認生日'),
+          content: const Text(
+            '請確認生日是否正確。\n\n'
+                '生日將用於生日祝福、生日禮物及相關活動。\n\n'
+                '為避免生日獎勵遭到重複領取，'
+                '生日完成設定後將無法再次修改。\n\n'
+                '是否確定使用這個生日？',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('返回修改'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('確認設定'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return confirmed ?? false;
+  }
+
   Future<void> _saveProfile() async {
     final l10n = AppLocalizations.of(context)!;
 
@@ -283,6 +344,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     // 首次建立：允許空白，系統自動補預設值
     // =========================
     if (widget.isCreating) {
+
+
       try {
         String nickname = _nicknameController.text.trim();
 
@@ -620,22 +683,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
         if (!mounted) return;
 
         if (widget.isCreating) {
-          // 第一次建立個人資料時，
-          // 才需要進入全新的 MainPage。
+          // 第一次建立完個人資料後，
+          // 先進入歡迎導覽，再由導覽前往 MainPage。
           Navigator.of(
             context,
             rootNavigator: true,
           ).pushAndRemoveUntil(
             MaterialPageRoute(
-              builder: (_) => MainPage(
-                initialIndex: targetIndexAfterSave,
-              ),
+              builder: (_) => const WelcomeGuidePage(),
             ),
                 (route) => false,
           );
         } else {
           // 一般修改個人資料，只返回原本的個人主頁。
-          // 不重建 MainPage，好友與角色清單都會保留。
           Navigator.of(context).pop(true);
         }
       } else {
@@ -757,6 +817,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (_isSaving) return;
 
     FocusScope.of(context).unfocus();
+
+    // 只要這次會「第一次設定生日」，就跳確認
+    final bool isSettingBirthdayNow =
+        _birthDate != null &&
+            _isAgeEditable &&
+            !_isSameDate(_birthDate, _originalBirthDate);
+
+    if (isSettingBirthdayNow) {
+      final bool confirmed = await _showBirthdayConfirmDialog();
+
+      if (!confirmed || !mounted) {
+        return;
+      }
+    }
+
+    // 首次建立資料按下「稍後編輯」時，先說明生日用途與限制。
+    await _showBirthdayReminderDialog();
+
+    if (!mounted) return;
 
     try {
       String nickname =

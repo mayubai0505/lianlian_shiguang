@@ -2007,5 +2007,297 @@
         "description": "Button text to restore account"
     },
     "voice_preview": "वॉयस चलाएं",
-    "voice_preview_failed": "वॉयस चलाने में विफल"
+    "voice_preview_failed": "वॉयस चलाने में विफल",
+    "voice_preview_failed": "वॉयस चलाने में विफल",
+    "characterBannerSectionTitle": "कैरेक्टर होमपेज बैनर",
+    "characterBannerDescription": "बैनर विवरण",
+    "characterBannerRemove": "हटाएं",
+    "characterBannerSelect": "बैनर छवि चुनें",
+    "characterBannerChange": "बैनर छवि बदलें",
+    "characterBannerSpecs": "अनुशंसित अनुपात 16:9, अनुशंसित आकार 1920 × 1080",
+    "characterBannerDefaultHint": "यदि सेट नहीं है, तो होमपेज स्वचालित रूप से कैरेक्टर का मुख्य अवतार उपयोग करेगा।",
+    "characterBannerHelpContent": "बैनर कैरेक्टर के मुख्य पृष्ठ पर बड़े क्षैतिज क्षेत्र में प्रदर्शित होता है。\n\n16:9 क्षैतिज छवि का उपयोग करने की सलाह दी जाती है, जैसे 1920 × 1080।\n\nविभिन्न फ़ोन स्क्रीन आकारों पर क्रॉप होने से बचने के लिए मुख्य विषय और चेहरे को केंद्र के पास रखें।\n\nयदि कोई बैनर सेट नहीं है, तो सिस्टम स्वचालित रूप से कैरेक्टर के मुख्य अवतार का उपयोग करेगा।",
+    "first_meeting_title": "पहली मुलाकात",
+    "common_delete_network_failed": "हटाना विफल रहा। कृपया अपने नेटवर्क कनेक्शन की जांच करें और पुनः प्रयास करें",
+    "common_operation_failed_retry": "ऑपरेशन विफल रहा। कृपया बाद में पुनः प्रयास करें",
+    "exclusive_photo_number": "विशेष फोटो {number}",
+    "@exclusive_photo_number": {
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "unlock_after_affection_increase": "स्नेह स्तर बढ़ाने के बाद अनलॉक करें",
+    "first_meeting_empty": "पहली मुलाकात, अभी शुरू होनी बाकी है...",
+    "follow_btn": "फॉलो करें",
+    "photo_load_failed": "फोटो लोड करने में विफल: {error}",
+    "@photo_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "add_friend_failed_retry": "मित्र जोड़ने में विफल। कृपया बाद में पुनः प्रयास करें।",
+    "remove_friend": "मित्र को हटाएं",
+    "report_character": "कैरेक्टर की रिपोर्ट करें",
+    "block_character": "कैरेक्टर को ब्लॉक करें",
+    "daily_encounter": "दैनिक मुलाकात",
+    "discovery_hall": "खोज हॉल",
+    "latest_recommendation": "नवीनतम सिफारिशें",
+    "popular_ranking": "लोकप्रियता रैंकिंग",
+    "character_features": "कैरेक्टर की विशेषताएं",
+    "featured_new_star": "चमकता नया सितारा · विशेष सिफारिश",
+    "recently_added_characters": "हाल ही में जोड़े गए नए कैरेक्टर",
+    "no_tag_data": "वर्तमान में कोई टैग डेटा उपलब्ध नहीं है~",
+    "no_character_with_tag": "इस टैग वाला कोई कैरेक्टर नहीं मिला",
+    "voice_search_failed_retry": "वॉयस खोज विफल। कृपया पुनः प्रयास करें",
+    "voice_search_incomplete_retry": "खोज अधूरी रही। कृपया बाद में पुनः प्रयास करें",
+    "voice_data_incomplete": "वॉयस डेटा अधूरा है",
+    "voice_generation_failed_retry": "वॉयस जनरेशन विफल। कृपया बाद में पुनः प्रयास करें",
+    "voice_playback_failed_retry": "वॉयस प्लेबैक विफल। कृपया पुनः प्रयास करें",
+    "selected_voice_data_incomplete": "चयनित वॉयस डेटा अधूरा है",
+    "private_voice_user_not_found": "उपयोगकर्ता नहीं मिला। निजी कैरेक्टर वॉयस अपडेट करने में असमर्थ",
+    "voice_selected_character_save_failed": "वॉयस चुनी गई, लेकिन कैरेक्टर डेटा सहेजने में विफल",
+    "voice_binding_failed": "वॉयस बाइंडिंग विफल",
+    "play_voice_tooltip": "वॉयस चलाएं",
+    "avatar_label": "अवतार",
+    "message_preview_image": "[छवि]",
+    "message_preview_recording": "[रिकॉर्डिंग]",
+    "message_preview_voice": "[वॉयस मैसेज]",
+    "send_failed_retry": "भेजने में विफल। कृपया बाद में पुनः प्रयास करें 😢",
+    "media_upload_failed_retry": "मीडिया अपलोड विफल। कृपया पुनः प्रयास करें",
+    "ai_thinking_too_long": "वह गहरे विचारों में मग्न लगता है। कृपया बाद में पुनः प्रयास करें...",
+    "ai_reply_in_progress": "वह उत्तर दे रहा है। कृपया प्रतीक्षा करें और बार-बार न भेजें",
+    "ai_response_blocked": "उसके विचारों में बाधा आई है। अधिक विनम्र तरीका अपनाएं!",
+    "microphone_permission_required": "रिकॉर्ड करने के लिए माइक्रोफ़ोन अनुमति आवश्यक है",
+    "no_recording_to_send": "भेजने के लिए कोई रिकॉर्डिंग उपलब्ध नहीं है",
+    "voice_uploading": "वॉयस मैसेज अपलोड हो रहा है...",
+    "change_watermark_color": "वॉटरमार्क का रंग बदलें",
+    "other_party_typing": "सामने वाला टाइप कर रहा है...",
+    "chat_input_hint": "कृपया लिखें...",
+    "regenerate_sync_failed": "पुनर्जनन संख्या सिंक विफल। कृपया पुनः प्रयास करें 😢",
+    "creator_public_works": "सार्वजनिक रचनाएं",
+    "creator_received_likes": "प्राप्त लाइक",
+    "about_me": "मेरे बारे में",
+    "moment_input_hint": "अपनी भावनाएं साझा करें...",
+    "character_play_count": "प्ले संख्या: {count}",
+    "@character_play_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "tag_page_title": "टैग: #{tag}",
+    "@tag_page_title": {
+        "placeholders": {
+            "tag": {
+                "type": "String"
+            }
+        }
+    },
+    "voice_preview_failed_detail": "वॉयस पूर्वावलोकन विफल: {code} {message}",
+    "@voice_preview_failed_detail": {
+        "placeholders": {
+            "code": {
+                "type": "String"
+            },
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "messages_deleted_success": "{count} संदेश सफलतापूर्वक हटा दिए गए",
+    "@messages_deleted_success": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "creator_work_load_failed": "रचनाएं लोड करने में विफल: {error}",
+    "@creator_work_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "age_years_old": "{age} वर्ष",
+    "@age_years_old": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteFailedMessage": "हटाना विफल रहा: {error}",
+    "@deleteFailedMessage": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadCharacterDataFailed": "कैरेक्टर डेटा लोड करने में विफल: {error}",
+    "@loadCharacterDataFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "draftAvatarLoadFailed": "ड्राफ्ट अवतार लोड करने में विफल:",
+    "unnamedCreator": "गुमनाम निर्माता",
+    "profileNotYetFilled": "बायो अभी तक नहीं भरा गया है",
+    "reportImageSizeLimit": "छवि का आकार 10 MB से अधिक नहीं हो सकता",
+    "reportImageSelectFailed": "रिपोर्ट छवि चुनने में विफल: {error}",
+    "@reportImageSelectFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportImageCannotSelect": "छवि चुनने में असमर्थ। कृपया बाद में पुनः प्रयास करें",
+    "reportLoginRequired": "कृपया रिपोर्ट जमा करने से पहले लॉगिन करें",
+    "reportAnonymousPlayer": "अनाम खिलाड़ी",
+    "reportSendSuccess": "रिपोर्ट सफलतापूर्वक भेजी गई। आपकी प्रतिक्रिया के लिए धन्यवाद!",
+    "reportSendFailed": "खिलाड़ी रिपोर्ट भेजने में विफल: {error}",
+    "@reportSendFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportNetworkFailed": "भेजने में विफल। कृपया नेटवर्क जांचें और पुनः प्रयास करें",
+    "reportAttachImageLabel": "छवि संलग्न करें (वैकल्पिक)",
+    "reportAttachImageHint": "बग या गायब मुद्रा की रिपोर्ट करते समय, स्क्रीनशॉट संलग्न करने से हमारी टीम को तेजी से पुष्टि करने में मदद मिलती है।",
+    "reportOpeningAlbum": "फोटो एल्बम खोला जा रहा है...",
+    "reportSelectFromAlbum": "फोटो एल्बम से चुनें",
+    "reportSending": "जमा किया जा रहा है...",
+    "reportSubmit": "रिपोर्ट जमा करें",
+    "reportRemoveImage": "छवि हटाएं",
+    "reportImageSelected": "छवि चुनी गई",
+    "reportChangeImage": "बदलें",
+    "reloadTranslation": "अनुवाद पुनः लोड करें",
+    "guideNotAvailableInLanguage": "गेम गाइड वर्तमान में इस भाषा में उपलब्ध नहीं है; अस्थायी रूप से पारंपरिक चीनी प्रदर्शित की जा रही है।",
+    "clearSearch": "खोज साफ़ करें",
+    "memoPermissionWarning": "नोटिफिकेशन अनुमति सक्षम नहीं है। मेमो सहेजा जाएगा, लेकिन सिस्टम रिमाइंडर नहीं दिखाई देंगे।",
+    "memoSavedWithNotification": "मेमो सहेजा गया! {name} आपको याद दिलाएगा!",
+    "@memoSavedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoSavedNoPermission": "मेमो सहेजा गया, लेकिन नोटिफिकेशन अनुमति चालू नहीं है।",
+    "memoUpdatedWithNotification": "मेमो अपडेट किया गया! {name} आपको याद दिलाएगा!",
+    "@memoUpdatedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoUpdatedNoPermission": "मेमो अपडेट किया गया, लेकिन वर्तमान में कोई नोटिफिकेशन अनुमति नहीं है।",
+    "dataLoadError": "डेटा लोड करते समय एक त्रुटि हुई: {error}",
+    "@dataLoadError": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadFailed": "लोड होना विफल: {error}",
+    "@loadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "dateFormatMonthDay": "d MMM",
+    "timeFormatHourMinute": "HH:mm",
+    "likeFeedPrompt": "क्या आपको यह पोस्ट पसंद आई? उसे थोड़ा प्यार भेजें!",
+    "saveFeedPocket": "खास पलों को चुपके से अपनी जेब में सहेजें।",
+    "newComment": "नया कमेंट",
+    "someFriend": "एक दोस्त",
+    "myBackpackAndPrivileges": "मेरा बैकपैक और विशेषाधिकार",
+    "currentRomanticBond": "वर्तमान में संचित रोमांटिक बंधन",
+    "physicalGiftBoxUnlockStatus": "भौतिक उपहार बॉक्स अनलॉक स्थिति:",
+    "topLovePhysicalVipBox": "विशेष VIP भौतिक उपहार बॉक्स 【सर्वश्रेष्ठ प्रेम】",
+    "physicalGiftBoxContents": "शामिल हैं: हस्तलिखित पत्र + कैरेक्टर गुड़िया + आधिकारिक धन्यवाद पत्र",
+    "modifyShippingAddress": "शिपिंग पता बदलें",
+    "addressUnlockedFillNow": "अनलॉक हो गया! शिपिंग जानकारी भरने के लिए यहाँ टैप करें",
+    "addressSuccessfullyRegistered": "आपने अपना शिपिंग पता सफलतापूर्वक पंजीकृत कर लिया है, हम इसे जल्द ही तैयार करेंगे!",
+    "amountNeededForPhysicalPrize": "भौतिक पुरस्कार अनलॉक करने के लिए अभी NT$ {amount} और चाहिए!",
+    "@amountNeededForPhysicalPrize": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "avatarFrameHint": "संकेत: आप स्टोर या सेटिंग्स में अन्य डिजिटल स्किन और अवतार फ्रेम देख और लगा सकते हैं।",
+    "closeButton": "बंद करें",
+    "physicalGiftBoxUnlockTitle": "भौतिक उपहार बॉक्स अनलॉक 【सर्वश्रेष्ठ प्रेम】",
+    "physicalGiftBoxUnlockThanks": "Lian Lian Shi Guang के प्रति आपके अपार समर्पण के लिए धन्यवाद!",
+    "physicalGiftBoxUnlockPrompt": "कृपया निम्नलिखित शिपिंग विवरण भरें ताकि हम आपका हस्तलिखित पत्र और गुड़िया भेज सकें:",
+    "recipientRealName": "प्राप्तकर्ता का असली नाम",
+    "contactPhone": "संपर्क फोन नंबर",
+    "fullShippingAddress": "पूरा शिपिंग पता (पिन कोड सहित)",
+    "desiredCharacterDollName": "मनचाही कैरेक्टर गुड़िया का नाम",
+    "characterNameExample": "उदा.: मनचाहे कैरेक्टर का नाम",
+    "fillLater": "बाद में भरें",
+    "fillCompleteAddressAndRoleHint": "कृपया शिपिंग जानकारी और मनचाहे कैरेक्टर का नाम पूरी तरह भरें!",
+    "shippingInfoSubmittedSuccess": "शिपिंग जानकारी सफलतापूर्वक भेजी गई! हमारे भौतिक सरप्राइज का इंतजार करें!",
+    "confirmSubmit": "पुष्टि करें और जमा करें",
+    "aboutMe": "मेरे बारे में",
+    "myBackpack": "मेरा बैकपैक",
+    "ownerExclusiveArea": "मालिक का विशेष क्षेत्र",
+    "enterShiguangAdminBackend": "Shiguang एडमिन कंसोल में प्रवेश करें",
+    "errorOccurred": "एक त्रुटि हुई",
+    "creatorGuidelines": "निर्माता दिशानिर्देश",
+    "playGuide": "गेम गाइड",
+    "lianlianShiguang": "Lian Lian Shi Guang",
+    "copyrightNotice": "© 2026 Mo Yu Bai",
+    "cumulativeBenefits": "संचित पुरस्कार",
+    "perkFirstEncounter": "पहला आकर्षण",
+    "perkFirstEncounterReward": "20 फूल + विशेष नौसिखिया शीर्षक",
+    "perkGlimmerThrob": "धुंधली धड़कन",
+    "perkGlimmerThrobReward": "विशेष अवतार फ्रेम 【धुंधली धड़कन】",
+    "perkStarryWhisper": "तारों भरी फुसफुसाहट",
+    "perkStarryWhisperReward": "विशेष चैट बबल + 50 फूल",
+    "perkRomanticSunset": "रोमांटिक सूर्यास्त",
+    "perkRomanticSunsetReward": "विशेष ऐप आइकन",
+    "perkHeartbeat": "दिल की धड़कन",
+    "perkHeartbeatReward": "स्क्रीन टैप इफेक्ट + 100 फूल",
+    "perkEternalVow": "शाश्वत वचन",
+    "perkEternalVowReward": "उन्नत एनिमेटेड अवतार फ्रेम + 200 फूल",
+    "perkSoulIntersection": "आत्माओं का मिलन",
+    "perkSoulIntersectionReward": "एनिमेटेड चैट बबल इफेक्ट + विशेष उन्नत शीर्षक",
+    "perkExclusiveWait": "विशेष समर्पण",
+    "perkExclusiveWaitReward": "प्रीमियम एनिमेटेड नेमप्लेट + 500 फूल",
+    "perkBrilliantGalaxy": "शानदार आकाशगंगा",
+    "perkBrilliantGalaxyReward": "विशेष एंट्री इफेक्ट + समर्पित ग्राहक सेवा",
+    "perkTopBeloved": "सर्वश्रेष्ठ प्रेम",
+    "perkTopBelovedReward": "विशेष VIP भौतिक उपहार बॉक्स",
+    "cumulativeRomanticBond": "संचित रोमांटिक बंधन",
+    "allTopPrivilegesUnlocked": "आपने सभी शीर्ष विशेषाधिकार अनलॉक कर लिए हैं!",
+    "rechargeAmountForNextTier": "अगला स्तर अनलॉक करने के लिए NT$ {amount} का रीचार्ज करें",
+    "@rechargeAmountForNextTier": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "storyContentCannotBeEmpty": "कहानी की सामग्री खाली नहीं हो सकती",
+    "writeYourStoryHint": "अपनी कहानी लिखें...",
+    "characterBannerTitle": "कैरेक्टर होमपेज बैनर"
 }

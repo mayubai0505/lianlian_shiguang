@@ -4,7 +4,7 @@ part of 'firebase_options_platform.dart';
 // 實現 PlatformFirebaseOptionsInterface 接口
 class _PlatformFirebaseOptionsWeb implements PlatformFirebaseOptionsInterface {
   // --- 最終聖劍：我們直接把聖旨刻在這裡！ ---
-  // 請您把您的 Firebase 金鑰， 딱 한번만 (只要一次)，填寫到下面的引號中
+  // 請您把您的 Firebase 金鑰，填寫到下面的引號中
   static final _firebaseOptions = FirebaseOptions(
     apiKey: 'AIzaSyBI_dF1-f8Ue9S5lkX3YRCCC-TxOEKEh4A', // <--- 在這裡貼上您的 apiKey
     appId: '1:892791360631:web:046ed25c34a2d465db4a72', // <--- 在這裡貼上您的 appId

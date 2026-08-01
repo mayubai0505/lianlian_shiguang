@@ -1,39 +1,141 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/purchase_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import '../services/tappay_payment_stub.dart'
+if (dart.library.html) '../services/tappay_payment_web.dart';
 
 // 🍎 蘋果審查專用總開關：送審前設為 true (會隱藏VIP頁籤)，審核通過上架後改回 false！
 const bool isAppleReviewMode = true;
-
-Future<void> _buyStoreProductByPlatform(
-    BuildContext context,
-    dynamic productWrapper,
-    ) async {
-  final purchaseService = Provider.of<PurchaseService>(context, listen: false);
-  await purchaseService.buyProduct(productWrapper.productDetails);
-}
-
 class StorePage extends StatefulWidget {
   const StorePage({super.key});
 
   @override
   State<StorePage> createState() => _StorePageState();
 }
-
 class _StorePageState extends State<StorePage> {
+  bool _isTapPayProcessing = false;
+
+  Future<void> _buyStoreProductByPlatform(
+      BuildContext context,
+      dynamic productWrapper,
+      ) async {
+    final productId =
+    productWrapper.productDetails.id.toString();
+
+    // Flutter Web：使用 TapPay
+    if (kIsWeb) {
+      await _payWithTapPay(
+        productId: productId,
+      );
+      return;
+    }
+
+    // Android / iOS：維持原本的商店內購
+    final purchaseService =
+    Provider.of<PurchaseService>(
+      context,
+      listen: false,
+    );
+
+    await purchaseService.buyProduct(
+      productWrapper.productDetails,
+    );
+  }
+
+  Future<void> _payWithTapPay({
+    required String productId,
+  }) async {
+    if (_isTapPayProcessing) return;
+
+    try {
+      setState(() {
+        _isTapPayProcessing = true;
+      });
+
+      final prime = await showTapPayCardDialog();
+
+      // 玩家按取消
+      if (prime == null || prime.isEmpty) {
+        return;
+      }
+
+      final callable = FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      ).httpsCallable('payByPrime');
+
+      final result = await callable.call({
+        'prime': prime,
+        'productId': productId,
+        'cardholder': {
+          'name': '戀戀拾光玩家',
+          'email':
+          FirebaseAuth.instance.currentUser?.email ?? '',
+          'phoneNumber': '0900000000',
+        },
+      });
+
+      final data = Map<String, dynamic>.from(
+        result.data as Map,
+      );
+
+      if (!mounted) return;
+
+      final pointsAdded = data['pointsAdded'] ?? 0;
+      final message =
+          data['message']?.toString() ?? '付款成功';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            pointsAdded > 0
+                ? '$message，共入帳 $pointsAdded 花花'
+                : message,
+          ),
+        ),
+      );
+    } on FirebaseFunctionsException catch (error) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.message ?? '付款失敗，請稍後再試。',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('付款發生錯誤：$error'),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isTapPayProcessing = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final purchaseService = Provider.of<PurchaseService>(context);
+    final purchaseService =
+    Provider.of<PurchaseService>(context);
+
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+    final isDarkMode =
+        theme.brightness == Brightness.dark;
+
     final user = FirebaseAuth.instance.currentUser;
     final l10n = AppLocalizations.of(context)!;
-
     return DefaultTabController(
       // 🚨 終極隱藏術 1：動態決定分頁數量 (送審時只有2頁，平常有3頁)
       length: isAppleReviewMode ? 2 : 3,
@@ -448,7 +550,17 @@ class _StorePageState extends State<StorePage> {
                 children: [
                   if (isTestingMode)
                     Padding(padding: EdgeInsets.only(bottom: 16), child: Text(l10n.shop_preview_mode, style: TextStyle(color: Colors.grey, fontSize: 12))),
-                  MonthlyCardBanner(productWrapper: monthlyCard, daysRemaining: daysRemaining, isLimitReached: isLimitReached),
+                  MonthlyCardBanner(
+                    productWrapper: monthlyCard,
+                    daysRemaining: daysRemaining,
+                    isLimitReached: isLimitReached,
+                    onPurchase: () async {
+                      await _buyStoreProductByPlatform(
+                        context,
+                        monthlyCard,
+                      );
+                    },
+                  ),
                   const SizedBox(height: 20),
                   GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
@@ -458,7 +570,16 @@ class _StorePageState extends State<StorePage> {
                     itemBuilder: (context, index) {
                       final p = regularProducts[index];
                       bool isFirst = !purchaseHistory.contains(p.productDetails.id);
-                      return ProductCard(productWrapper: p, isFirstPurchase: isFirst);
+                      return ProductCard(
+                        productWrapper: p,
+                        isFirstPurchase: isFirst,
+                        onPurchase: () async {
+                          await _buyStoreProductByPlatform(
+                            context,
+                            p,
+                          );
+                        },
+                      );
                     },
                   ),
                 ],
@@ -548,12 +669,14 @@ class MonthlyCardBanner extends StatelessWidget {
   final dynamic productWrapper;
   final int daysRemaining;
   final bool isLimitReached;
+  final Future<void> Function() onPurchase;
 
   const MonthlyCardBanner({
     super.key,
     required this.productWrapper,
     required this.daysRemaining,
     required this.isLimitReached,
+    required this.onPurchase,
   });
 
   @override
@@ -602,7 +725,7 @@ class MonthlyCardBanner extends StatelessWidget {
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: canPurchase ? () async { await _buyStoreProductByPlatform(context, productWrapper); } : null,
+                  onTap: canPurchase ? onPurchase : null,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
@@ -668,8 +791,14 @@ class MonthlyCardBanner extends StatelessWidget {
 class ProductCard extends StatelessWidget {
   final dynamic productWrapper;
   final bool isFirstPurchase;
+  final Future<void> Function() onPurchase;
 
-  const ProductCard({super.key, required this.productWrapper, this.isFirstPurchase = false});
+  const ProductCard({
+    super.key,
+    required this.productWrapper,
+    this.isFirstPurchase = false,
+    required this.onPurchase,
+  });
 
   String _getRomanticName(String id, AppLocalizations l10n) {
     if (id.contains('90')) return l10n.pack_first_meet;
@@ -711,7 +840,9 @@ class ProductCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () async { await _buyStoreProductByPlatform(context, productWrapper); },
+        onTap: () async {
+          await onPurchase();
+        },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

@@ -1,4 +1,444 @@
-<!DOCTYPE html><html><head>
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.25.0"></script>
+
+<script>
+  window.LianLianTapPay = (() => {
+    const APP_ID = 170390;
+    const APP_KEY = 'app_CleMrLvFOyGas454hHKwasUTisXDdRedMmy3PajzAYNa2tkGFu8li2ZZrnzY';
+        const SERVER_TYPE = 'sandbox';
+
+    let initialized = false;
+    let dialogOpened = false;
+
+    function initializeTapPay() {
+      if (initialized) {
+        return;
+      }
+
+      if (
+        typeof window.TPDirect === 'undefined' ||
+        !window.TPDirect
+      ) {
+        throw new Error(
+          'TapPay SDK 尚未載入，請確認 index.html 的 TapPay script。'
+        );
+      }
+
+      window.TPDirect.setupSDK(
+        APP_ID,
+        APP_KEY,
+        SERVER_TYPE
+      );
+
+      initialized = true;
+    }
+
+    function applyStyles(element, styles) {
+      Object.assign(element.style, styles);
+      return element;
+    }
+
+    function createElement(tag, options = {}) {
+      const element = document.createElement(tag);
+
+      if (options.id) {
+        element.id = options.id;
+      }
+
+      if (options.text !== undefined) {
+        element.textContent = options.text;
+      }
+
+      if (options.type) {
+        element.type = options.type;
+      }
+
+      if (options.styles) {
+        applyStyles(element, options.styles);
+      }
+
+      return element;
+    }
+
+    function createLabel(text) {
+      return createElement('label', {
+        text,
+        styles: {
+          display: 'block',
+          marginBottom: '7px',
+          fontSize: '13px',
+          fontWeight: '600',
+          color: '#514852'
+        }
+      });
+    }
+
+    function showCardDialog() {
+      return new Promise((resolve, reject) => {
+        try {
+          initializeTapPay();
+
+          if (dialogOpened) {
+            reject(new Error('付款視窗已經開啟。'));
+            return;
+          }
+
+          dialogOpened = true;
+
+          const oldOverlay =
+            document.getElementById('tappay-payment-overlay');
+
+          if (oldOverlay) {
+            oldOverlay.remove();
+          }
+
+          const overlay = createElement('div', {
+            id: 'tappay-payment-overlay',
+            styles: {
+              position: 'fixed',
+              left: '0',
+              top: '0',
+              right: '0',
+              bottom: '0',
+              zIndex: '999999',
+              backgroundColor: 'rgba(0, 0, 0, 0.55)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+              boxSizing: 'border-box'
+            }
+          });
+
+          const dialog = createElement('div', {
+            styles: {
+              width: '100%',
+              maxWidth: '430px',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '22px',
+              padding: '24px',
+              boxSizing: 'border-box',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.25)',
+              fontFamily:
+                '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+            }
+          });
+
+          const title = createElement('h2', {
+            text: '信用卡付款',
+            styles: {
+              margin: '0 0 8px',
+              fontSize: '22px',
+              color: '#342B35'
+            }
+          });
+
+          const description = createElement('p', {
+            text: '請輸入信用卡資料',
+            styles: {
+              margin: '0 0 22px',
+              fontSize: '14px',
+              color: '#7B717C'
+            }
+          });
+
+          const cardNumberLabel = createLabel('信用卡號');
+
+          const cardNumberField = createElement('div', {
+            id: 'tappay-card-number'
+          });
+
+          const row = createElement('div', {
+  styles: {
+    display: 'flex',
+    gap: '12px',
+    marginTop: '16px',
+    width: '100%'
+  }
+});
+
+          const expiryColumn = createElement('div', {
+  styles: {
+    flex: '1',
+    minWidth: '0'
+  }
+});
+
+          const expiryLabel = createLabel('有效期限');
+
+          const expiryField = createElement('div', {
+            id: 'tappay-card-expiration-date'
+          });
+
+          expiryColumn.append(
+            expiryLabel,
+            expiryField
+          );
+
+          const ccvColumn = createElement('div', {
+  styles: {
+    flex: '1',
+    minWidth: '0'
+  }
+});
+
+          const ccvLabel = createLabel('安全碼');
+
+          const ccvField = createElement('div', {
+            id: 'tappay-card-ccv'
+          });
+
+          ccvColumn.append(
+            ccvLabel,
+            ccvField
+          );
+
+          row.append(
+            expiryColumn,
+            ccvColumn
+          );
+
+          const errorText = createElement('p', {
+            id: 'tappay-error-message',
+            styles: {
+              minHeight: '20px',
+              margin: '14px 0 0',
+              fontSize: '13px',
+              color: '#D94A4A'
+            }
+          });
+
+          const buttonRow = createElement('div', {
+            styles: {
+              display: 'flex',
+              gap: '12px',
+              marginTop: '12px'
+            }
+          });
+
+          const cancelButton = createElement('button', {
+            text: '取消',
+            type: 'button',
+            styles: {
+              flex: '1',
+              height: '46px',
+              border: '1px solid #D8D1D9',
+              borderRadius: '14px',
+              backgroundColor: '#FFFFFF',
+              color: '#5C535D',
+              fontSize: '15px',
+              cursor: 'pointer'
+            }
+          });
+
+          const payButton = createElement('button', {
+            text: '確認付款',
+            type: 'button',
+            styles: {
+              flex: '1',
+              height: '46px',
+              border: 'none',
+              borderRadius: '14px',
+              backgroundColor: '#D8C3D5',
+              color: '#FFFFFF',
+              fontSize: '15px',
+              fontWeight: '600',
+              cursor: 'not-allowed'
+            }
+          });
+
+          payButton.disabled = true;
+
+          buttonRow.append(
+            cancelButton,
+            payButton
+          );
+
+          dialog.append(
+            title,
+            description,
+            cardNumberLabel,
+            cardNumberField,
+            row,
+            errorText,
+            buttonRow
+          );
+
+          overlay.append(dialog);
+          document.body.append(overlay);
+
+          let completed = false;
+
+          function closeDialog(result) {
+            if (completed) {
+              return;
+            }
+
+            completed = true;
+            dialogOpened = false;
+            overlay.remove();
+            resolve(result);
+          }
+
+          cancelButton.addEventListener('click', () => {
+            closeDialog(null);
+          });
+
+          overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+              closeDialog(null);
+            }
+          });
+
+          function updatePayButton(canGetPrime) {
+            payButton.disabled = !canGetPrime;
+            payButton.style.cursor =
+              canGetPrime ? 'pointer' : 'not-allowed';
+            payButton.style.backgroundColor =
+              canGetPrime ? '#A76E9D' : '#D8C3D5';
+
+            if (canGetPrime) {
+              errorText.textContent = '';
+            }
+          }
+
+          const tappayFieldStyles = {
+  width: '100%',
+  height: '46px',
+  border: '1px solid #D8D1D9',
+  borderRadius: '12px',
+  boxSizing: 'border-box',
+  backgroundColor: '#FFFFFF',
+  overflow: 'hidden'
+};
+
+applyStyles(cardNumberField, tappayFieldStyles);
+applyStyles(expiryField, tappayFieldStyles);
+applyStyles(ccvField, tappayFieldStyles);
+
+          window.TPDirect.card.setup({
+  fields: {
+    number: {
+      element: '#tappay-card-number',
+      placeholder: '4242 4242 4242 4242'
+    },
+    expirationDate: {
+      element: '#tappay-card-expiration-date',
+      placeholder: 'MM / YY'
+    },
+    ccv: {
+      element: '#tappay-card-ccv',
+      placeholder: 'CCV'
+    }
+  },
+
+  styles: {
+    input: {
+      color: '#342B35',
+      'font-size': '16px',
+      height: '46px',
+      'line-height': '46px'
+    },
+
+    'input.ccv': {
+      'font-size': '16px'
+    },
+
+    'input.expiration-date': {
+      'font-size': '16px'
+    },
+
+    'input.card-number': {
+      'font-size': '16px'
+    },
+
+    ':focus': {
+      color: '#342B35'
+    },
+
+    '.valid': {
+      color: '#342B35'
+    },
+
+    '.invalid': {
+      color: '#D94A4A'
+    }
+  },
+
+  isMaskCreditCardNumber: true,
+
+  maskCreditCardNumberRange: {
+    beginIndex: 6,
+    endIndex: 11
+  }
+});
+
+window.TPDirect.card.onUpdate((update) => {
+  updatePayButton(update.canGetPrime === true);
+});
+
+          payButton.addEventListener('click', () => {
+            const status =
+              window.TPDirect.card.getTappayFieldsStatus();
+
+            if (!status.canGetPrime) {
+              errorText.textContent =
+                '請確認卡號、有效期限及安全碼是否正確。';
+              return;
+            }
+
+            payButton.disabled = true;
+            payButton.textContent = '處理中…';
+            payButton.style.cursor = 'not-allowed';
+
+            window.TPDirect.card.getPrime((result) => {
+              if (result.status !== 0) {
+                errorText.textContent =
+                  result.msg ||
+                  '無法取得付款驗證資料，請稍後再試。';
+
+                payButton.disabled = false;
+                payButton.textContent = '確認付款';
+                payButton.style.cursor = 'pointer';
+                return;
+              }
+
+              const prime =
+                result.card && result.card.prime
+                  ? String(result.card.prime)
+                  : '';
+
+              if (!prime) {
+                errorText.textContent =
+                  '未取得 TapPay Prime，請重新輸入。';
+
+                payButton.disabled = false;
+                payButton.textContent = '確認付款';
+                payButton.style.cursor = 'pointer';
+                return;
+              }
+
+              closeDialog(prime);
+            });
+          });
+        } catch (error) {
+          dialogOpened = false;
+          reject(error);
+        }
+      });
+    }
+
+    return {
+      showCardDialog
+    };
+  })();
+</script>
   <meta name="google-signin-client_id" content="892791360631-0q8r6c8kh64k7vm208vkrmpt9rm4i6f4.apps.googleusercontent.com">
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -13,9 +453,6 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="$FLUTTER_BASE_HREF">
-
-  <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
 
@@ -34,30 +471,30 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <style id="splash-screen-style">
     html {
       height: 100%
@@ -145,6 +582,4 @@
 
 
   <script src="flutter_bootstrap.js" async=""></script>
-
-
 </body></html>

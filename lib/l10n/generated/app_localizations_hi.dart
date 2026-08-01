@@ -4416,4 +4416,567 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get voice_preview_failed => 'वॉयस चलाने में विफल';
+
+  @override
+  String get characterBannerSectionTitle => 'कैरेक्टर होमपेज बैनर';
+
+  @override
+  String get characterBannerDescription => 'बैनर विवरण';
+
+  @override
+  String get characterBannerRemove => 'हटाएं';
+
+  @override
+  String get characterBannerSelect => 'बैनर छवि चुनें';
+
+  @override
+  String get characterBannerChange => 'बैनर छवि बदलें';
+
+  @override
+  String get characterBannerSpecs =>
+      'अनुशंसित अनुपात 16:9, अनुशंसित आकार 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint =>
+      'यदि सेट नहीं है, तो होमपेज स्वचालित रूप से कैरेक्टर का मुख्य अवतार उपयोग करेगा।';
+
+  @override
+  String get characterBannerHelpContent =>
+      'बैनर कैरेक्टर के मुख्य पृष्ठ पर बड़े क्षैतिज क्षेत्र में प्रदर्शित होता है。\n\n16:9 क्षैतिज छवि का उपयोग करने की सलाह दी जाती है, जैसे 1920 × 1080।\n\nविभिन्न फ़ोन स्क्रीन आकारों पर क्रॉप होने से बचने के लिए मुख्य विषय और चेहरे को केंद्र के पास रखें।\n\nयदि कोई बैनर सेट नहीं है, तो सिस्टम स्वचालित रूप से कैरेक्टर के मुख्य अवतार का उपयोग करेगा।';
+
+  @override
+  String get first_meeting_title => 'पहली मुलाकात';
+
+  @override
+  String get common_delete_network_failed =>
+      'हटाना विफल रहा। कृपया अपने नेटवर्क कनेक्शन की जांच करें और पुनः प्रयास करें';
+
+  @override
+  String get common_operation_failed_retry =>
+      'ऑपरेशन विफल रहा। कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return 'विशेष फोटो $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase =>
+      'स्नेह स्तर बढ़ाने के बाद अनलॉक करें';
+
+  @override
+  String get first_meeting_empty => 'पहली मुलाकात, अभी शुरू होनी बाकी है...';
+
+  @override
+  String photo_load_failed(String error) {
+    return 'फोटो लोड करने में विफल: $error';
+  }
+
+  @override
+  String get add_friend_failed_retry =>
+      'मित्र जोड़ने में विफल। कृपया बाद में पुनः प्रयास करें।';
+
+  @override
+  String get remove_friend => 'मित्र को हटाएं';
+
+  @override
+  String get report_character => 'कैरेक्टर की रिपोर्ट करें';
+
+  @override
+  String get block_character => 'कैरेक्टर को ब्लॉक करें';
+
+  @override
+  String get daily_encounter => 'दैनिक मुलाकात';
+
+  @override
+  String get discovery_hall => 'खोज हॉल';
+
+  @override
+  String get latest_recommendation => 'नवीनतम सिफारिशें';
+
+  @override
+  String get popular_ranking => 'लोकप्रियता रैंकिंग';
+
+  @override
+  String get character_features => 'कैरेक्टर की विशेषताएं';
+
+  @override
+  String get featured_new_star => 'चमकता नया सितारा · विशेष सिफारिश';
+
+  @override
+  String get recently_added_characters => 'हाल ही में जोड़े गए नए कैरेक्टर';
+
+  @override
+  String get no_tag_data => 'वर्तमान में कोई टैग डेटा उपलब्ध नहीं है~';
+
+  @override
+  String get no_character_with_tag => 'इस टैग वाला कोई कैरेक्टर नहीं मिला';
+
+  @override
+  String get voice_search_failed_retry =>
+      'वॉयस खोज विफल। कृपया पुनः प्रयास करें';
+
+  @override
+  String get voice_search_incomplete_retry =>
+      'खोज अधूरी रही। कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get voice_data_incomplete => 'वॉयस डेटा अधूरा है';
+
+  @override
+  String get voice_generation_failed_retry =>
+      'वॉयस जनरेशन विफल। कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get voice_playback_failed_retry =>
+      'वॉयस प्लेबैक विफल। कृपया पुनः प्रयास करें';
+
+  @override
+  String get selected_voice_data_incomplete => 'चयनित वॉयस डेटा अधूरा है';
+
+  @override
+  String get private_voice_user_not_found =>
+      'उपयोगकर्ता नहीं मिला। निजी कैरेक्टर वॉयस अपडेट करने में असमर्थ';
+
+  @override
+  String get voice_selected_character_save_failed =>
+      'वॉयस चुनी गई, लेकिन कैरेक्टर डेटा सहेजने में विफल';
+
+  @override
+  String get voice_binding_failed => 'वॉयस बाइंडिंग विफल';
+
+  @override
+  String get play_voice_tooltip => 'वॉयस चलाएं';
+
+  @override
+  String get avatar_label => 'अवतार';
+
+  @override
+  String get message_preview_image => '[छवि]';
+
+  @override
+  String get message_preview_recording => '[रिकॉर्डिंग]';
+
+  @override
+  String get message_preview_voice => '[वॉयस मैसेज]';
+
+  @override
+  String get send_failed_retry =>
+      'भेजने में विफल। कृपया बाद में पुनः प्रयास करें 😢';
+
+  @override
+  String get media_upload_failed_retry =>
+      'मीडिया अपलोड विफल। कृपया पुनः प्रयास करें';
+
+  @override
+  String get ai_thinking_too_long =>
+      'वह गहरे विचारों में मग्न लगता है। कृपया बाद में पुनः प्रयास करें...';
+
+  @override
+  String get ai_reply_in_progress =>
+      'वह उत्तर दे रहा है। कृपया प्रतीक्षा करें और बार-बार न भेजें';
+
+  @override
+  String get ai_response_blocked =>
+      'उसके विचारों में बाधा आई है। अधिक विनम्र तरीका अपनाएं!';
+
+  @override
+  String get microphone_permission_required =>
+      'रिकॉर्ड करने के लिए माइक्रोफ़ोन अनुमति आवश्यक है';
+
+  @override
+  String get no_recording_to_send =>
+      'भेजने के लिए कोई रिकॉर्डिंग उपलब्ध नहीं है';
+
+  @override
+  String get voice_uploading => 'वॉयस मैसेज अपलोड हो रहा है...';
+
+  @override
+  String get change_watermark_color => 'वॉटरमार्क का रंग बदलें';
+
+  @override
+  String get other_party_typing => 'सामने वाला टाइप कर रहा है...';
+
+  @override
+  String get chat_input_hint => 'कृपया लिखें...';
+
+  @override
+  String get regenerate_sync_failed =>
+      'पुनर्जनन संख्या सिंक विफल। कृपया पुनः प्रयास करें 😢';
+
+  @override
+  String get creator_public_works => 'सार्वजनिक रचनाएं';
+
+  @override
+  String get creator_received_likes => 'प्राप्त लाइक';
+
+  @override
+  String get about_me => 'मेरे बारे में';
+
+  @override
+  String get moment_input_hint => 'अपनी भावनाएं साझा करें...';
+
+  @override
+  String character_play_count(int count) {
+    return 'प्ले संख्या: $count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return 'टैग: #$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return 'वॉयस पूर्वावलोकन विफल: $code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return '$count संदेश सफलतापूर्वक हटा दिए गए';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return 'रचनाएं लोड करने में विफल: $error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age वर्ष';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return 'हटाना विफल रहा: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return 'कैरेक्टर डेटा लोड करने में विफल: $error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => 'ड्राफ्ट अवतार लोड करने में विफल:';
+
+  @override
+  String get unnamedCreator => 'गुमनाम निर्माता';
+
+  @override
+  String get profileNotYetFilled => 'बायो अभी तक नहीं भरा गया है';
+
+  @override
+  String get reportImageSizeLimit => 'छवि का आकार 10 MB से अधिक नहीं हो सकता';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return 'रिपोर्ट छवि चुनने में विफल: $error';
+  }
+
+  @override
+  String get reportImageCannotSelect =>
+      'छवि चुनने में असमर्थ। कृपया बाद में पुनः प्रयास करें';
+
+  @override
+  String get reportLoginRequired => 'कृपया रिपोर्ट जमा करने से पहले लॉगिन करें';
+
+  @override
+  String get reportAnonymousPlayer => 'अनाम खिलाड़ी';
+
+  @override
+  String get reportSendSuccess =>
+      'रिपोर्ट सफलतापूर्वक भेजी गई। आपकी प्रतिक्रिया के लिए धन्यवाद!';
+
+  @override
+  String reportSendFailed(String error) {
+    return 'खिलाड़ी रिपोर्ट भेजने में विफल: $error';
+  }
+
+  @override
+  String get reportNetworkFailed =>
+      'भेजने में विफल। कृपया नेटवर्क जांचें और पुनः प्रयास करें';
+
+  @override
+  String get reportAttachImageLabel => 'छवि संलग्न करें (वैकल्पिक)';
+
+  @override
+  String get reportAttachImageHint =>
+      'बग या गायब मुद्रा की रिपोर्ट करते समय, स्क्रीनशॉट संलग्न करने से हमारी टीम को तेजी से पुष्टि करने में मदद मिलती है।';
+
+  @override
+  String get reportOpeningAlbum => 'फोटो एल्बम खोला जा रहा है...';
+
+  @override
+  String get reportSelectFromAlbum => 'फोटो एल्बम से चुनें';
+
+  @override
+  String get reportSending => 'जमा किया जा रहा है...';
+
+  @override
+  String get reportSubmit => 'रिपोर्ट जमा करें';
+
+  @override
+  String get reportRemoveImage => 'छवि हटाएं';
+
+  @override
+  String get reportImageSelected => 'छवि चुनी गई';
+
+  @override
+  String get reportChangeImage => 'बदलें';
+
+  @override
+  String get reloadTranslation => 'अनुवाद पुनः लोड करें';
+
+  @override
+  String get guideNotAvailableInLanguage =>
+      'गेम गाइड वर्तमान में इस भाषा में उपलब्ध नहीं है; अस्थायी रूप से पारंपरिक चीनी प्रदर्शित की जा रही है।';
+
+  @override
+  String get clearSearch => 'खोज साफ़ करें';
+
+  @override
+  String get memoPermissionWarning =>
+      'नोटिफिकेशन अनुमति सक्षम नहीं है। मेमो सहेजा जाएगा, लेकिन सिस्टम रिमाइंडर नहीं दिखाई देंगे।';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return 'मेमो सहेजा गया! $name आपको याद दिलाएगा!';
+  }
+
+  @override
+  String get memoSavedNoPermission =>
+      'मेमो सहेजा गया, लेकिन नोटिफिकेशन अनुमति चालू नहीं है।';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return 'मेमो अपडेट किया गया! $name आपको याद दिलाएगा!';
+  }
+
+  @override
+  String get memoUpdatedNoPermission =>
+      'मेमो अपडेट किया गया, लेकिन वर्तमान में कोई नोटिफिकेशन अनुमति नहीं है।';
+
+  @override
+  String dataLoadError(String error) {
+    return 'डेटा लोड करते समय एक त्रुटि हुई: $error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return 'लोड होना विफल: $error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'd MMM';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt =>
+      'क्या आपको यह पोस्ट पसंद आई? उसे थोड़ा प्यार भेजें!';
+
+  @override
+  String get saveFeedPocket => 'खास पलों को चुपके से अपनी जेब में सहेजें।';
+
+  @override
+  String get newComment => 'नया कमेंट';
+
+  @override
+  String get someFriend => 'एक दोस्त';
+
+  @override
+  String get myBackpackAndPrivileges => 'मेरा बैकपैक और विशेषाधिकार';
+
+  @override
+  String get currentRomanticBond => 'वर्तमान में संचित रोमांटिक बंधन';
+
+  @override
+  String get physicalGiftBoxUnlockStatus => 'भौतिक उपहार बॉक्स अनलॉक स्थिति:';
+
+  @override
+  String get topLovePhysicalVipBox =>
+      'विशेष VIP भौतिक उपहार बॉक्स 【सर्वश्रेष्ठ प्रेम】';
+
+  @override
+  String get physicalGiftBoxContents =>
+      'शामिल हैं: हस्तलिखित पत्र + कैरेक्टर गुड़िया + आधिकारिक धन्यवाद पत्र';
+
+  @override
+  String get modifyShippingAddress => 'शिपिंग पता बदलें';
+
+  @override
+  String get addressUnlockedFillNow =>
+      'अनलॉक हो गया! शिपिंग जानकारी भरने के लिए यहाँ टैप करें';
+
+  @override
+  String get addressSuccessfullyRegistered =>
+      'आपने अपना शिपिंग पता सफलतापूर्वक पंजीकृत कर लिया है, हम इसे जल्द ही तैयार करेंगे!';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return 'भौतिक पुरस्कार अनलॉक करने के लिए अभी NT\$ $amount और चाहिए!';
+  }
+
+  @override
+  String get avatarFrameHint =>
+      'संकेत: आप स्टोर या सेटिंग्स में अन्य डिजिटल स्किन और अवतार फ्रेम देख और लगा सकते हैं।';
+
+  @override
+  String get closeButton => 'बंद करें';
+
+  @override
+  String get physicalGiftBoxUnlockTitle =>
+      'भौतिक उपहार बॉक्स अनलॉक 【सर्वश्रेष्ठ प्रेम】';
+
+  @override
+  String get physicalGiftBoxUnlockThanks =>
+      'Lian Lian Shi Guang के प्रति आपके अपार समर्पण के लिए धन्यवाद!';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt =>
+      'कृपया निम्नलिखित शिपिंग विवरण भरें ताकि हम आपका हस्तलिखित पत्र और गुड़िया भेज सकें:';
+
+  @override
+  String get recipientRealName => 'प्राप्तकर्ता का असली नाम';
+
+  @override
+  String get contactPhone => 'संपर्क फोन नंबर';
+
+  @override
+  String get fullShippingAddress => 'पूरा शिपिंग पता (पिन कोड सहित)';
+
+  @override
+  String get desiredCharacterDollName => 'मनचाही कैरेक्टर गुड़िया का नाम';
+
+  @override
+  String get characterNameExample => 'उदा.: मनचाहे कैरेक्टर का नाम';
+
+  @override
+  String get fillLater => 'बाद में भरें';
+
+  @override
+  String get fillCompleteAddressAndRoleHint =>
+      'कृपया शिपिंग जानकारी और मनचाहे कैरेक्टर का नाम पूरी तरह भरें!';
+
+  @override
+  String get shippingInfoSubmittedSuccess =>
+      'शिपिंग जानकारी सफलतापूर्वक भेजी गई! हमारे भौतिक सरप्राइज का इंतजार करें!';
+
+  @override
+  String get confirmSubmit => 'पुष्टि करें और जमा करें';
+
+  @override
+  String get aboutMe => 'मेरे बारे में';
+
+  @override
+  String get myBackpack => 'मेरा बैकपैक';
+
+  @override
+  String get ownerExclusiveArea => 'मालिक का विशेष क्षेत्र';
+
+  @override
+  String get enterShiguangAdminBackend =>
+      'Shiguang एडमिन कंसोल में प्रवेश करें';
+
+  @override
+  String get errorOccurred => 'एक त्रुटि हुई';
+
+  @override
+  String get creatorGuidelines => 'निर्माता दिशानिर्देश';
+
+  @override
+  String get playGuide => 'गेम गाइड';
+
+  @override
+  String get lianlianShiguang => 'Lian Lian Shi Guang';
+
+  @override
+  String get copyrightNotice => '© 2026 Mo Yu Bai';
+
+  @override
+  String get cumulativeBenefits => 'संचित पुरस्कार';
+
+  @override
+  String get perkFirstEncounter => 'पहला आकर्षण';
+
+  @override
+  String get perkFirstEncounterReward => '20 फूल + विशेष नौसिखिया शीर्षक';
+
+  @override
+  String get perkGlimmerThrob => 'धुंधली धड़कन';
+
+  @override
+  String get perkGlimmerThrobReward => 'विशेष अवतार फ्रेम 【धुंधली धड़कन】';
+
+  @override
+  String get perkStarryWhisper => 'तारों भरी फुसफुसाहट';
+
+  @override
+  String get perkStarryWhisperReward => 'विशेष चैट बबल + 50 फूल';
+
+  @override
+  String get perkRomanticSunset => 'रोमांटिक सूर्यास्त';
+
+  @override
+  String get perkRomanticSunsetReward => 'विशेष ऐप आइकन';
+
+  @override
+  String get perkHeartbeat => 'दिल की धड़कन';
+
+  @override
+  String get perkHeartbeatReward => 'स्क्रीन टैप इफेक्ट + 100 फूल';
+
+  @override
+  String get perkEternalVow => 'शाश्वत वचन';
+
+  @override
+  String get perkEternalVowReward => 'उन्नत एनिमेटेड अवतार फ्रेम + 200 फूल';
+
+  @override
+  String get perkSoulIntersection => 'आत्माओं का मिलन';
+
+  @override
+  String get perkSoulIntersectionReward =>
+      'एनिमेटेड चैट बबल इफेक्ट + विशेष उन्नत शीर्षक';
+
+  @override
+  String get perkExclusiveWait => 'विशेष समर्पण';
+
+  @override
+  String get perkExclusiveWaitReward => 'प्रीमियम एनिमेटेड नेमप्लेट + 500 फूल';
+
+  @override
+  String get perkBrilliantGalaxy => 'शानदार आकाशगंगा';
+
+  @override
+  String get perkBrilliantGalaxyReward =>
+      'विशेष एंट्री इफेक्ट + समर्पित ग्राहक सेवा';
+
+  @override
+  String get perkTopBeloved => 'सर्वश्रेष्ठ प्रेम';
+
+  @override
+  String get perkTopBelovedReward => 'विशेष VIP भौतिक उपहार बॉक्स';
+
+  @override
+  String get cumulativeRomanticBond => 'संचित रोमांटिक बंधन';
+
+  @override
+  String get allTopPrivilegesUnlocked =>
+      'आपने सभी शीर्ष विशेषाधिकार अनलॉक कर लिए हैं!';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return 'अगला स्तर अनलॉक करने के लिए NT\$ $amount का रीचार्ज करें';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty => 'कहानी की सामग्री खाली नहीं हो सकती';
+
+  @override
+  String get writeYourStoryHint => 'अपनी कहानी लिखें...';
+
+  @override
+  String get characterBannerTitle => 'कैरेक्टर होमपेज बैनर';
 }

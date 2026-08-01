@@ -16,7 +16,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
+import '../services/reminder_notification_service.dart';
 //聊天室的名稱更改
 class ChatHomePage extends StatefulWidget {
   const ChatHomePage({super.key});
@@ -34,6 +34,9 @@ class _ChatHomePageState extends State<ChatHomePage> {
   final String _appId = AppConfig.appId;
   final Map<String, Character> _characterCache = {};
   final Set<String> _preloadedAvatarUrls = {};
+  bool _hasHandledInitialNotification =
+  false;
+  bool _hasCheckedNotification = false;
   // 💡 新增：紀錄這頁的氣泡是否已經彈過
   bool _hasChatHomeTipsShown = true;
 // 🔑 新增：專屬這頁的兩個追蹤鑰匙
@@ -42,7 +45,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   @override
   void initState() {
     super.initState();
-    // 🌟 2. 剛進畫面時去翻記事本
+
     _checkChatHomeTutorial();
 
     if (_currentUser != null) {
@@ -50,9 +53,178 @@ class _ChatHomePageState extends State<ChatHomePage> {
           .collection('artifacts')
           .doc(_appId)
           .collection('chat_sessions')
-          .where('userId', isEqualTo: _currentUser!.uid)
-          .orderBy('lastActivity', descending: true)
+          .where(
+        'userId',
+        isEqualTo: _currentUser.uid,
+      )
+          .orderBy(
+        'lastActivity',
+        descending: true,
+      )
           .snapshots();
+    }
+
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) {
+      _checkPendingNotification();
+    });
+  }
+
+  Future<void> _checkPendingNotification() async {
+    if (_hasCheckedNotification ||
+        !mounted ||
+        _currentUser == null) {
+      return;
+    }
+
+    _hasCheckedNotification = true;
+
+    final prefs =
+    await SharedPreferences.getInstance();
+
+    final String? payload = prefs.getString(
+      'pending_notification_payload',
+    );
+
+    if (payload == null ||
+        payload.trim().isEmpty) {
+      return;
+    }
+
+    // 先移除，避免每次進聊天首頁都重複跳轉。
+    await prefs.remove(
+      'pending_notification_payload',
+    );
+
+    debugPrint('🔔 處理待跳轉通知：$payload');
+
+    try {
+      final params =
+      Uri.splitQueryString(payload);
+
+      if (params['type'] != 'memo') {
+        return;
+      }
+
+      final String characterId =
+          params['characterId']?.trim() ?? '';
+
+      if (characterId.isEmpty) {
+        return;
+      }
+
+      await _openChatFromNotification(
+        characterId,
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '解析備忘錄通知失敗：$error',
+      );
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  Future<void> _openChatFromNotification(
+      String characterId,
+      ) async {
+    final user = _currentUser;
+
+    if (user == null || !mounted) {
+      return;
+    }
+
+    try {
+      final snapshot =
+      await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('chat_sessions')
+          .where(
+        'userId',
+        isEqualTo: user.uid,
+      )
+          .get();
+
+      final matchingDocs =
+      snapshot.docs.where((doc) {
+        final data =
+        doc.data() as Map<String, dynamic>;
+
+        return data['characterId']
+            ?.toString()
+            .trim() ==
+            characterId;
+      }).toList();
+
+      if (matchingDocs.isEmpty) {
+        debugPrint(
+          '找不到通知角色的聊天室：$characterId',
+        );
+
+        if (mounted) {
+          ToastUtils.showCenterToast(
+            context,
+            '找不到這個角色的聊天室',
+            isError: true,
+          );
+        }
+
+        return;
+      }
+
+      // 有多個聊天室時，找最後活動時間最新的。
+      matchingDocs.sort((a, b) {
+        final aData =
+        a.data() as Map<String, dynamic>;
+
+        final bData =
+        b.data() as Map<String, dynamic>;
+
+        final Timestamp? aTime =
+        aData['lastActivity'] as Timestamp?;
+
+        final Timestamp? bTime =
+        bData['lastActivity'] as Timestamp?;
+
+        if (aTime == null && bTime == null) {
+          return 0;
+        }
+
+        if (aTime == null) return 1;
+        if (bTime == null) return -1;
+
+        return bTime.compareTo(aTime);
+      });
+
+      final sessionDoc =
+          matchingDocs.first;
+
+      final sessionData =
+      sessionDoc.data()
+      as Map<String, dynamic>;
+
+      final String avatarUrl =
+          sessionData['characterAvatarPath']
+              ?.toString() ??
+              '';
+
+      if (!mounted) return;
+
+      await _navigateToChat(
+        sessionDoc.id,
+        characterId,
+        avatarUrl,
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '從通知尋找聊天室失敗：$error',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
     }
   }
 

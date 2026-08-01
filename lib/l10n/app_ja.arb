@@ -2008,5 +2008,297 @@
     "description": "Button text to restore account"
   },
   "voice_preview": "ボイスを再生",
-  "voice_preview_failed": "ボイスの再生に失敗しました"
+  "voice_preview_failed": "ボイスの再生に失敗しました",
+  "voice_preview_failed": "ボイスの再生に失敗しました",
+  "characterBannerSectionTitle": "キャラクターホームバナー",
+  "characterBannerDescription": "バナーの説明",
+  "characterBannerRemove": "削除",
+  "characterBannerSelect": "バナー画像を選択",
+  "characterBannerChange": "バナー画像を変更",
+  "characterBannerSpecs": "推奨比率 16:9、推奨サイズ 1920 × 1080",
+  "characterBannerDefaultHint": "未設定の場合、ホームには自動的にキャラクターのメイン画像が使用されます。",
+  "characterBannerHelpContent": "バナーはキャラクターホームの大型横長エリアに表示されます。\n\n16:9の横長画像（例：1920 × 1080）の使用を推奨します。\n\n端末の画面サイズによる切り取りを防ぐため、主要人物や顔は中央付近に配置してください。\n\nバナーが未設定の場合、システムは自動的にキャラクターのメイン画像を使用します。",
+  "first_meeting_title": "初めての出会い",
+  "common_delete_network_failed": "削除に失敗しました。 ネットワーク接続を確認してもう一度お試しください",
+  "common_operation_failed_retry": "操作に失敗しました。しばらく経ってからもう一度お試しください",
+  "exclusive_photo_number": "専属写真 {number}",
+  "@exclusive_photo_number": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "unlock_after_affection_increase": "好感度レベルを上げると解放",
+  "first_meeting_empty": "初対面、まだ始まっていません……",
+  "follow_btn": "フォロー",
+  "photo_load_failed": "写真の読み込みに失敗しました：{error}",
+  "@photo_load_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "add_friend_failed_retry": "フレンドの追加に失敗しました。しばらく経ってからもう一度お試しください。",
+  "remove_friend": "フレンドを削除",
+  "report_character": "キャラクターを通報",
+  "block_character": "キャラクターをブロック",
+  "daily_encounter": "デイリー出会い",
+  "discovery_hall": "探索ホール",
+  "latest_recommendation": "最新のおすすめ",
+  "popular_ranking": "人気ランキング",
+  "character_features": "キャラクターの特徴",
+  "featured_new_star": "煌めく新星・イチオシ推薦",
+  "recently_added_characters": "新着キャラクター",
+  "no_tag_data": "現在タグデータはありません～",
+  "no_character_with_tag": "このタグを持つキャラクターは見つかりませんでした",
+  "voice_search_failed_retry": "ボイスの検索に失敗しました。もう一度お試しください",
+  "voice_search_incomplete_retry": "検索が不完全です。しばらく経ってからもう一度お試しください",
+  "voice_data_incomplete": "ボイスデータが不完全です",
+  "voice_generation_failed_retry": "ボイスの生成に失敗しました。しばらく経ってからもう一度お試しください",
+  "voice_playback_failed_retry": "ボイスの再生に失敗しました。もう一度お試しください",
+  "selected_voice_data_incomplete": "選択されたボイスデータが不完全です",
+  "private_voice_user_not_found": "ユーザーが見つかりません。プライベートキャラクターボイスを更新できません",
+  "voice_selected_character_save_failed": "ボイスは選択されましたが、キャラクターデータの保存に失敗しました",
+  "voice_binding_failed": "ボイスの紐付けに失敗しました",
+  "play_voice_tooltip": "ボイスを再生",
+  "avatar_label": "プロフィール画像",
+  "message_preview_image": "[画像]",
+  "message_preview_recording": "[録音]",
+  "message_preview_voice": "[音声メッセージ]",
+  "send_failed_retry": "送信に失敗しました。しばらく経ってからもう一度お試しください 😢",
+  "media_upload_failed_retry": "メディアのアップロードに失敗しました。もう一度お試しください",
+  "ai_thinking_too_long": "彼は深く考え込んでいるようです。しばらく経ってからもう一度お試しください...",
+  "ai_reply_in_progress": "返信中です。重複送信を避け、少々お待ちください",
+  "ai_response_blocked": "彼の思考が乱れてしまいました。もう少し優しい表現で話しかけてみてください！",
+  "microphone_permission_required": "録音にはマイクの権限が必要です",
+  "no_recording_to_send": "送信できる録音データがありません",
+  "voice_uploading": "音声メッセージをアップロード中...",
+  "change_watermark_color": "ウォーターマークの色を変更",
+  "other_party_typing": "相手が入力中...",
+  "chat_input_hint": "メッセージを入力...",
+  "regenerate_sync_failed": "再生成回数の同期に失敗しました。もう一度お試しください 😢",
+  "creator_public_works": "公開作品",
+  "creator_received_likes": "獲得したいいね",
+  "about_me": "自己紹介",
+  "moment_input_hint": "今の気持ちをシェア...",
+  "character_play_count": "プレイ回数：{count}",
+  "@character_play_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tag_page_title": "タグ：#{tag}",
+  "@tag_page_title": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "voice_preview_failed_detail": "ボイス試聴失敗：{code} {message}",
+  "@voice_preview_failed_detail": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "messages_deleted_success": "{count} 件のメッセージを正常に削除しました",
+  "@messages_deleted_success": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "creator_work_load_failed": "作品の読み込みに失敗しました：{error}",
+  "@creator_work_load_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "age_years_old": "{age}歳",
+  "@age_years_old": {
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFailedMessage": "削除失敗: {error}",
+  "@deleteFailedMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loadCharacterDataFailed": "キャラクターデータの読み込み失敗：{error}",
+  "@loadCharacterDataFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "draftAvatarLoadFailed": "下書きアイコンの読み込み失敗:",
+  "unnamedCreator": "名無しのクリエイター",
+  "profileNotYetFilled": "自己紹介文はまだ未記入です",
+  "reportImageSizeLimit": "画像サイズは 10 MB を超えることはできません",
+  "reportImageSelectFailed": "通報画像の選択に失敗しました：{error}",
+  "@reportImageSelectFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportImageCannotSelect": "画像を選択できません。しばらく経ってからもう一度お試しください",
+  "reportLoginRequired": "通報を送信する前にログインしてください",
+  "reportAnonymousPlayer": "名無しのプレイヤー",
+  "reportSendSuccess": "通報が正常に送信されました。ご意見ありがとうございます！",
+  "reportSendFailed": "プレイヤー通報の送信に失敗しました：{error}",
+  "@reportSendFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "reportNetworkFailed": "送信に失敗しました。ネットワークを確認してもう一度お試しください",
+  "reportAttachImageLabel": "画像を添付（任意）",
+  "reportAttachImageHint": "バグや通貨の未反映についての通報では、画面のスクリーンショットを添付いただくと確認がスムーズになります。",
+  "reportOpeningAlbum": "アルバムを開いています...",
+  "reportSelectFromAlbum": "アルバムから画像を選択",
+  "reportSending": "送信中...",
+  "reportSubmit": "通報を送信",
+  "reportRemoveImage": "画像を削除",
+  "reportImageSelected": "画像を選択しました",
+  "reportChangeImage": "変更",
+  "reloadTranslation": "翻訳を再読み込み",
+  "guideNotAvailableInLanguage": "現在この言語のプレイガイドは提供されていません。一時的に繁体字中国語を表示します。",
+  "clearSearch": "検索内容をクリア",
+  "memoPermissionWarning": "通知権限が有効になっていません。メモは保存されますが、システム通知は表示されません。",
+  "memoSavedWithNotification": "メモを保存しました！{name} がお知らせします！",
+  "@memoSavedWithNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memoSavedNoPermission": "メモを保存しましたが、通知権限が有効になっていません。",
+  "memoUpdatedWithNotification": "メモを更新しました！{name} がお知らせします！",
+  "@memoUpdatedWithNotification": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memoUpdatedNoPermission": "メモを更新しましたが、現在通知権限がありません。",
+  "dataLoadError": "データの読み込み中にエラーが発生しました：{error}",
+  "@dataLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loadFailed": "読み込み失敗：{error}",
+  "@loadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dateFormatMonthDay": "M月d日",
+  "timeFormatHourMinute": "HH:mm",
+  "likeFeedPrompt": "この投稿が気に入りましたか？ハートを贈りましょう！",
+  "saveFeedPocket": "特別な投稿をそっとポケットに仕舞いましょう。",
+  "newComment": "新しいコメント",
+  "someFriend": "ある友人",
+  "myBackpackAndPrivileges": "マイリュック＆特権",
+  "currentRomanticBond": "現在獲得したロマンチックキズナ",
+  "physicalGiftBoxUnlockStatus": "リアルギフトボックス解放状況：",
+  "topLovePhysicalVipBox": "【極上の最愛】リアル VIP 専属ギフトボックス",
+  "physicalGiftBoxContents": "内容：専属直筆お手紙 + キャラクターぬいぐるみ + 公式感謝状",
+  "modifyShippingAddress": "お届け先住所の変更",
+  "addressUnlockedFillNow": "解放されました！ここをタップしてお届け先情報を入力してください",
+  "addressSuccessfullyRegistered": "お届け先住所の登録が完了しました。準備を進めさせていただきます！",
+  "amountNeededForPhysicalPrize": "リアル大賞解放まであと NT$ {amount}！",
+  "@amountNeededForPhysicalPrize": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "avatarFrameHint": "ヒント：その他のデジタルスキンやアイコン枠はショップや個人設定で確認・装着できます。",
+  "closeButton": "閉じる",
+  "physicalGiftBoxUnlockTitle": "【極上の最愛】リアルギフトボックス解放",
+  "physicalGiftBoxUnlockThanks": "『恋恋拾光』を温かく見守っていただき、心より感謝申し上げます！",
+  "physicalGiftBoxUnlockPrompt": "以下の発送先情報を入力してください。専属の直筆お手紙とぬいぐるみをお送りします：",
+  "recipientRealName": "受取人本名",
+  "contactPhone": "連絡先電話番号",
+  "fullShippingAddress": "詳細住所（郵便番号を含む）",
+  "desiredCharacterDollName": "ご希望のキャラクターぬいぐるみ名",
+  "characterNameExample": "例：希望するキャラクターの名前",
+  "fillLater": "後で入力する",
+  "fillCompleteAddressAndRoleHint": "お届け先情報とご希望のキャラクター名をすべてご入力ください！",
+  "shippingInfoSubmittedSuccess": "お届け先情報が正常に送信されました！実物のサプライズを楽しみにお待ちください！",
+  "confirmSubmit": "確認して送信",
+  "aboutMe": "自己紹介",
+  "myBackpack": "マイリュック",
+  "ownerExclusiveArea": "オーナー専属エリア",
+  "enterShiguangAdminBackend": "拾光管理コンソールに入る",
+  "errorOccurred": "エラーが発生しました",
+  "creatorGuidelines": "クリエイターガイドライン",
+  "playGuide": "プレイガイド",
+  "lianlianShiguang": "恋恋拾光",
+  "copyrightNotice": "© 2026 黙語白",
+  "cumulativeBenefits": "累計特典",
+  "perkFirstEncounter": "初見一瞬",
+  "perkFirstEncounterReward": "時光花 20個 + 専属ビギナー称号",
+  "perkGlimmerThrob": "微光のときめき",
+  "perkGlimmerThrobReward": "専属アイコン枠【微光のときめき】",
+  "perkStarryWhisper": "星空の囁き",
+  "perkStarryWhisperReward": "専属チャット吹き出し + 時光花 50個",
+  "perkRomanticSunset": "ロマンチックな夕焼け",
+  "perkRomanticSunsetReward": "専属 App デスクトップアイコン",
+  "perkHeartbeat": "胸の高鳴り",
+  "perkHeartbeatReward": "画面タップエフェクト + 時光花 100個",
+  "perkEternalVow": "永恒の誓い",
+  "perkEternalVowReward": "高級動的アイコン枠 + 時光花 200個",
+  "perkSoulIntersection": "交差する魂",
+  "perkSoulIntersectionReward": "動的チャット吹き出しエフェクト + 専属上級称号",
+  "perkExclusiveWait": "専属の守護",
+  "perkExclusiveWaitReward": "極上動的ネームプレート + 時光花 500個",
+  "perkBrilliantGalaxy": "璀璨たる銀河",
+  "perkBrilliantGalaxyReward": "専属入場エフェクト + 専属カスタマーサポート",
+  "perkTopBeloved": "極上の最愛",
+  "perkTopBelovedReward": "リアル VIP 専属ギフトボックス",
+  "cumulativeRomanticBond": "累計ロマンチックキズナ",
+  "allTopPrivilegesUnlocked": "すべての最高級特権を解放しました！",
+  "rechargeAmountForNextTier": "あと NT$ {amount} チャージで次のランクを解放",
+  "@rechargeAmountForNextTier": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "storyContentCannotBeEmpty": "ストーリーの内容を空にすることはできません",
+  "writeYourStoryHint": "ふたりの物語を書き綴りましょう...",
+  "characterBannerTitle": "キャラクターホームバナー"
 }

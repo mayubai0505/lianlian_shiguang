@@ -2006,5 +2006,297 @@
         "description": "Button text to restore account"
     },
     "voice_preview": "Reproducir audio",
-    "voice_preview_failed": "Error al reproducir el audio"
+    "voice_preview_failed": "Error al reproducir el audio",
+    "voice_preview_failed": "Error al reproducir el audio",
+    "characterBannerSectionTitle": "Banner de la página principal del personaje",
+    "characterBannerDescription": "Descripción del banner",
+    "characterBannerRemove": "Eliminar",
+    "characterBannerSelect": "Seleccionar imagen de banner",
+    "characterBannerChange": "Cambiar imagen de banner",
+    "characterBannerSpecs": "Proporción recomendada 16:9, resolución recomendada 1920 × 1080",
+    "characterBannerDefaultHint": "Si no se establece, la página principal usará automáticamente la imagen principal del personaje.",
+    "characterBannerHelpContent": "El banner se muestra en el área horizontal grande de la página del personaje.\n\nSe recomienda usar una imagen horizontal de 16:9, como 1920 × 1080.\n\nColoca los sujetos y rostros principales cerca del centro para evitar recortes en diferentes tamaños de pantalla.\n\nSi no se configura un banner, el sistema usará automáticamente la imagen principal del personaje.",
+    "first_meeting_title": "Primer encuentro",
+    "common_delete_network_failed": "Error al eliminar. Por favor, comprueba tu conexión de red e inténtalo de nuevo",
+    "common_operation_failed_retry": "Error en la operación. Por favor, inténtalo de nuevo más tarde",
+    "exclusive_photo_number": "Foto exclusiva {number}",
+    "@exclusive_photo_number": {
+        "placeholders": {
+            "number": {
+                "type": "int"
+            }
+        }
+    },
+    "unlock_after_affection_increase": "Se desbloquea al aumentar el Nivel de Afecto",
+    "first_meeting_empty": "Primer encuentro, aún por comenzar...",
+    "follow_btn": "Seguir",
+    "photo_load_failed": "Error al cargar la foto: {error}",
+    "@photo_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "add_friend_failed_retry": "Error al añadir amigo. Por favor, inténtalo de nuevo más tarde.",
+    "remove_friend": "Eliminar amigo",
+    "report_character": "Denunciar personaje",
+    "block_character": "Bloquear personaje",
+    "daily_encounter": "Encuentro diario",
+    "discovery_hall": "Sala de exploración",
+    "latest_recommendation": "Últimas recomendaciones",
+    "popular_ranking": "Clasificación de popularidad",
+    "character_features": "Rasgos del personaje",
+    "featured_new_star": "Estrella naciente · Recomendado",
+    "recently_added_characters": "Personajes añadidos recientemente",
+    "no_tag_data": "No hay datos de etiquetas por el momento~",
+    "no_character_with_tag": "No se encontraron personajes con esta etiqueta",
+    "voice_search_failed_retry": "Error al buscar voz. Por favor, inténtalo de nuevo",
+    "voice_search_incomplete_retry": "Búsqueda incompleta. Por favor, inténtalo de nuevo más tarde",
+    "voice_data_incomplete": "Los datos de voz están incompletos",
+    "voice_generation_failed_retry": "Error al generar la voz. Por favor, inténtalo de nuevo más tarde",
+    "voice_playback_failed_retry": "Error al reproducir la voz. Por favor, inténtalo de nuevo",
+    "selected_voice_data_incomplete": "Los datos de la voz seleccionada están incompletos",
+    "private_voice_user_not_found": "Usuario no encontrado. No se puede actualizar la voz del personaje privado",
+    "voice_selected_character_save_failed": "Voz seleccionada, pero ocurrió un error al guardar los datos del personaje",
+    "voice_binding_failed": "Error al vincular la voz",
+    "play_voice_tooltip": "Reproducir audio",
+    "avatar_label": "Avatar",
+    "message_preview_image": "[Imagen]",
+    "message_preview_recording": "[Grabación]",
+    "message_preview_voice": "[Mensaje de voz]",
+    "send_failed_retry": "Error al enviar. Por favor, inténtalo de nuevo más tarde 😢",
+    "media_upload_failed_retry": "Error al subir archivos multimedia. Por favor, inténtalo de nuevo",
+    "ai_thinking_too_long": "Parece estar sumido en sus pensamientos. Por favor, inténtalo más tarde...",
+    "ai_reply_in_progress": "Está respondiendo. Por favor, espera un momento y no reenvíes",
+    "ai_response_blocked": "Sus pensamientos se vieron interrumpidos. ¡Intenta decirlo de forma más amable!",
+    "microphone_permission_required": "Se requiere permiso de micrófono para grabar",
+    "no_recording_to_send": "No hay ninguna grabación para enviar",
+    "voice_uploading": "Subiendo mensaje de voz...",
+    "change_watermark_color": "Cambiar color de marca de agua",
+    "other_party_typing": "La otra persona está escribiendo...",
+    "chat_input_hint": "Escribe un mensaje...",
+    "regenerate_sync_failed": "Error al sincronizar el recuento de regeneración. Inténtalo de nuevo 😢",
+    "creator_public_works": "Obras públicas",
+    "creator_received_likes": "Me gusta recibidos",
+    "about_me": "Sobre mí",
+    "moment_input_hint": "Comparte lo que sientes...",
+    "character_play_count": "Partidas: {count}",
+    "@character_play_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "tag_page_title": "Etiqueta: #{tag}",
+    "@tag_page_title": {
+        "placeholders": {
+            "tag": {
+                "type": "String"
+            }
+        }
+    },
+    "voice_preview_failed_detail": "Error en la vista previa de voz: {code} {message}",
+    "@voice_preview_failed_detail": {
+        "placeholders": {
+            "code": {
+                "type": "String"
+            },
+            "message": {
+                "type": "String"
+            }
+        }
+    },
+    "messages_deleted_success": "Se eliminaron correctamente {count} mensajes",
+    "@messages_deleted_success": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "creator_work_load_failed": "Error al cargar las obras: {error}",
+    "@creator_work_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "age_years_old": "{age} años",
+    "@age_years_old": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteFailedMessage": "Error al eliminar: {error}",
+    "@deleteFailedMessage": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadCharacterDataFailed": "Error al cargar los datos del personaje: {error}",
+    "@loadCharacterDataFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "draftAvatarLoadFailed": "Error al cargar el avatar en borrador:",
+    "unnamedCreator": "Creador sin nombre",
+    "profileNotYetFilled": "Biografía aún no completada",
+    "reportImageSizeLimit": "El tamaño de la imagen no puede superar los 10 MB",
+    "reportImageSelectFailed": "Error al seleccionar la imagen del reporte: {error}",
+    "@reportImageSelectFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportImageCannotSelect": "No se puede seleccionar la imagen. Inténtalo de nuevo más tarde",
+    "reportLoginRequired": "Inicia sesión antes de enviar un reporte",
+    "reportAnonymousPlayer": "Jugador anónimo",
+    "reportSendSuccess": "Reporte enviado con éxito. ¡Gracias por tus comentarios!",
+    "reportSendFailed": "Error al enviar el reporte de jugador: {error}",
+    "@reportSendFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "reportNetworkFailed": "Error al enviar. Por favor, comprueba tu red e inténtalo de nuevo",
+    "reportAttachImageLabel": "Adjuntar imagen (Opcional)",
+    "reportAttachImageHint": "Al reportar errores o falta de saldo, adjuntar capturas de pantalla ayuda a nuestro equipo a verificar el problema.",
+    "reportOpeningAlbum": "Abriendo galería de fotos...",
+    "reportSelectFromAlbum": "Seleccionar de la galería",
+    "reportSending": "Enviando...",
+    "reportSubmit": "Enviar reporte",
+    "reportRemoveImage": "Eliminar imagen",
+    "reportImageSelected": "Imagen seleccionada",
+    "reportChangeImage": "Cambiar",
+    "reloadTranslation": "Recargar traducción",
+    "guideNotAvailableInLanguage": "La guía de juego no está disponible en este idioma actualmente; se muestra en chino tradicional de forma temporal.",
+    "clearSearch": "Borrar búsqueda",
+    "memoPermissionWarning": "El permiso de notificaciones no está activado. La nota se guardará, pero no se mostrarán recordatorios.",
+    "memoSavedWithNotification": "¡Nota guardada! ¡{name} te lo recordará!",
+    "@memoSavedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoSavedNoPermission": "Nota guardada, pero el permiso de notificaciones no está activado.",
+    "memoUpdatedWithNotification": "¡Nota actualizada! ¡{name} te lo recordará!",
+    "@memoUpdatedWithNotification": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "memoUpdatedNoPermission": "Nota actualizada, pero no hay permiso de notificaciones actualmente.",
+    "dataLoadError": "Ocurrió un error al cargar los datos: {error}",
+    "@dataLoadError": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "loadFailed": "Error al cargar: {error}",
+    "@loadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "dateFormatMonthDay": "d 'de' MMM",
+    "timeFormatHourMinute": "HH:mm",
+    "likeFeedPrompt": "¿Te gusta esta publicación? ¡Muéstrale tu cariño!",
+    "saveFeedPocket": "Guarda momentos especiales discretamente en tu bolsillo.",
+    "newComment": "Nuevo comentario",
+    "someFriend": "Un amigo",
+    "myBackpackAndPrivileges": "Mi mochila y privilegios",
+    "currentRomanticBond": "Vínculo romántico acumulado actual",
+    "physicalGiftBoxUnlockStatus": "Estado de desbloqueo de la caja de regalo física:",
+    "topLovePhysicalVipBox": "Caja de regalo VIP exclusiva [Amor Supremo]",
+    "physicalGiftBoxContents": "Incluye: Carta escrita a mano + Peluche del personaje + Carta de agradecimiento oficial",
+    "modifyShippingAddress": "Modificar dirección de envío",
+    "addressUnlockedFillNow": "¡Desbloqueado! Toca aquí para completar los datos de envío",
+    "addressSuccessfullyRegistered": "¡Has registrado tu dirección con éxito! ¡La prepararemos lo antes posible!",
+    "amountNeededForPhysicalPrize": "¡Faltan NT$ {amount} para desbloquear el gran premio físico!",
+    "@amountNeededForPhysicalPrize": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "avatarFrameHint": "Pista: Puedes consultar y equiparte otros aspectos digitales y marcos en la tienda o ajustes.",
+    "closeButton": "Cerrar",
+    "physicalGiftBoxUnlockTitle": "Desbloqueo de la caja de regalo física [Amor Supremo]",
+    "physicalGiftBoxUnlockThanks": "¡Gracias por tu apoyo incondicional a Lian Lian Shi Guang!",
+    "physicalGiftBoxUnlockPrompt": "Completa los siguientes datos de envío para enviarte la carta escrita a mano y el peluche del personaje:",
+    "recipientRealName": "Nombre real del destinatario",
+    "contactPhone": "Teléfono de contacto",
+    "fullShippingAddress": "Dirección completa de envío (con código postal)",
+    "desiredCharacterDollName": "Nombre del peluche del personaje deseado",
+    "characterNameExample": "Ej.: Nombre del personaje deseado",
+    "fillLater": "Rellenar más tarde",
+    "fillCompleteAddressAndRoleHint": "¡Por favor, completa los datos de envío y el nombre de tu personaje deseado!",
+    "shippingInfoSubmittedSuccess": "¡Datos de envío enviados con éxito! ¡Espera nuestra sorpresa física!",
+    "confirmSubmit": "Confirmar y enviar",
+    "aboutMe": "Sobre mí",
+    "myBackpack": "Mi mochila",
+    "ownerExclusiveArea": "Área exclusiva del propietario",
+    "enterShiguangAdminBackend": "Entrar al panel de administración de Lian Lian Shi Guang",
+    "errorOccurred": "Ha ocurrido un error",
+    "creatorGuidelines": "Normas para creadores",
+    "playGuide": "Guía de juego",
+    "lianlianShiguang": "Lian Lian Shi Guang",
+    "copyrightNotice": "© 2026 Mo Yu Bai",
+    "cumulativeBenefits": "Beneficios acumulados",
+    "perkFirstEncounter": "Primer Encuentro",
+    "perkFirstEncounterReward": "20 Flores + Título novato exclusivo",
+    "perkGlimmerThrob": "Destello Palpitante",
+    "perkGlimmerThrobReward": "Marco de avatar exclusivo [Destello Palpitante]",
+    "perkStarryWhisper": "Susurro Estelar",
+    "perkStarryWhisperReward": "Burbuja de chat exclusiva + 50 Flores",
+    "perkRomanticSunset": "Atardecer Romántico",
+    "perkRomanticSunsetReward": "Icono de app personalizado",
+    "perkHeartbeat": "Latido del Corazón",
+    "perkHeartbeatReward": "Efecto al tocar la pantalla + 100 Flores",
+    "perkEternalVow": "Voto Eterno",
+    "perkEternalVowReward": "Marco de avatar animado avanzado + 200 Flores",
+    "perkSoulIntersection": "Intersección de Almas",
+    "perkSoulIntersectionReward": "Efecto de burbuja animada + Título avanzado exclusivo",
+    "perkExclusiveWait": "Devoción Exclusiva",
+    "perkExclusiveWaitReward": "Placa con nombre animada VIP + 500 Flores",
+    "perkBrilliantGalaxy": "Galaxia Brillante",
+    "perkBrilliantGalaxyReward": "Efecto de entrada exclusivo + Atención al cliente dedicada",
+    "perkTopBeloved": "Amor Supremo",
+    "perkTopBelovedReward": "Caja de regalo VIP exclusiva física",
+    "cumulativeRomanticBond": "Vínculo romántico acumulado",
+    "allTopPrivilegesUnlocked": "¡Has desbloqueado todos los privilegios superiores!",
+    "rechargeAmountForNextTier": "Recarga NT$ {amount} más para desbloquear el siguiente nivel",
+    "@rechargeAmountForNextTier": {
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "storyContentCannotBeEmpty": "El contenido de la historia no puede estar vacío",
+    "writeYourStoryHint": "Escribe tu historia...",
+    "characterBannerTitle": "Banner de la página principal del personaje"
 }

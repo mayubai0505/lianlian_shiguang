@@ -160,7 +160,9 @@ class OnboardingPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const LegalDocumentPage(isPrivacyPolicy: false),
+                                  builder: (context) => const LegalDocumentPage(
+                                    type: LegalPageType.terms,
+                                  ),
                                 ),
                               );
                             },
@@ -169,18 +171,32 @@ class OnboardingPage extends StatelessWidget {
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            child: Text(l10n.legal_terms_button, style: TextStyle(fontSize: 12, color: primaryColor)), // ✨ 換成翻譯變數
+                            child: Text(
+                              l10n.legal_terms_button,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: primaryColor,
+                              ),
+                            ),
                           ),
 
-                          Text(l10n.legal_and, style: TextStyle(fontSize: 12, color: onSurface.withOpacity(0.5))), // ✨ 換成翻譯變數
+                          Text(
+                            l10n.legal_and,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: onSurface.withOpacity(0.5),
+                            ),
+                          ),
 
-                          // 🔒 隱私權政策按鈕
+// 🔒 隱私權政策按鈕
                           TextButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const LegalDocumentPage(isPrivacyPolicy: true),
+                                  builder: (context) => const LegalDocumentPage(
+                                    type: LegalPageType.privacy,
+                                  ),
                                 ),
                               );
                             },
@@ -189,7 +205,13 @@ class OnboardingPage extends StatelessWidget {
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            child: Text(l10n.legal_privacy_button, style: TextStyle(fontSize: 12, color: primaryColor)), // ✨ 換成翻譯變數
+                            child: Text(
+                              l10n.privacyPolicy,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: primaryColor,
+                              ),
+                            ),
                           ),
                         ],
                       ),

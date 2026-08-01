@@ -4205,4 +4205,535 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get voice_preview_failed => '보이스 재생 실패';
+
+  @override
+  String get characterBannerSectionTitle => '캐릭터 홈 배너';
+
+  @override
+  String get characterBannerDescription => '배너 설명';
+
+  @override
+  String get characterBannerRemove => '제거';
+
+  @override
+  String get characterBannerSelect => '배너 이미지 선택';
+
+  @override
+  String get characterBannerChange => '배너 이미지 변경';
+
+  @override
+  String get characterBannerSpecs => '권장 비율 16:9, 권장 크기 1920 × 1080';
+
+  @override
+  String get characterBannerDefaultHint =>
+      '설정하지 않으면 홈 화면에 캐릭터의 메인 이미지가 자동으로 사용됩니다.';
+
+  @override
+  String get characterBannerHelpContent =>
+      '배너는 캐릭터 홈의 대형 가로 영역에 표시됩니다.\n\n16:9 가로 이미지(예: 1920 × 1080)를 사용하는 것을 권장합니다.\n\n주요 인물과 얼굴은 화면 중앙에 배치하여 기기 화면 크기에 따라 잘리지 않도록 해주세요.\n\n배너를 설정하지 않으면 시스템이 자동으로 캐릭터의 메인 이미지를 적용합니다.';
+
+  @override
+  String get first_meeting_title => '첫 만남';
+
+  @override
+  String get common_delete_network_failed => '삭제 실패. 네트워크 연결을 확인한 후 다시 시도해 주세요';
+
+  @override
+  String get common_operation_failed_retry => '작업 실패. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String exclusive_photo_number(int number) {
+    return '전용 사진 $number';
+  }
+
+  @override
+  String get unlock_after_affection_increase => '호감도 레벨 상승 후 해제';
+
+  @override
+  String get first_meeting_empty => '첫 만남, 아직 시작되지 않았습니다...';
+
+  @override
+  String photo_load_failed(String error) {
+    return '사진 불러오기 실패: $error';
+  }
+
+  @override
+  String get add_friend_failed_retry => '친구 추가 실패. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get remove_friend => '친구 삭제';
+
+  @override
+  String get report_character => '캐릭터 신고';
+
+  @override
+  String get block_character => '캐릭터 차단';
+
+  @override
+  String get daily_encounter => '매일의 만남';
+
+  @override
+  String get discovery_hall => '탐색 홀';
+
+  @override
+  String get latest_recommendation => '최신 추천';
+
+  @override
+  String get popular_ranking => '인기 순위';
+
+  @override
+  String get character_features => '캐릭터 특징';
+
+  @override
+  String get featured_new_star => '빛나는 신성 · 강력 추천';
+
+  @override
+  String get recently_added_characters => '최근 등록된 신규 캐릭터';
+
+  @override
+  String get no_tag_data => '현재 태그 데이터가 없습니다~';
+
+  @override
+  String get no_character_with_tag => '이 태그를 가진 캐릭터를 찾을 수 없습니다';
+
+  @override
+  String get voice_search_failed_retry => '음성 검색 실패. 다시 시도해 주세요';
+
+  @override
+  String get voice_search_incomplete_retry => '검색 미완료. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get voice_data_incomplete => '음성 데이터가 불완전합니다';
+
+  @override
+  String get voice_generation_failed_retry => '음성 생성 실패. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get voice_playback_failed_retry => '음성 재생 실패. 다시 시도해 주세요';
+
+  @override
+  String get selected_voice_data_incomplete => '선택한 음성 데이터가 불완전합니다';
+
+  @override
+  String get private_voice_user_not_found =>
+      '사용자를 찾을 수 없습니다. 비공개 캐릭터 음성을 업데이트할 수 없습니다';
+
+  @override
+  String get voice_selected_character_save_failed =>
+      '음성은 선택되었으나 캐릭터 데이터 저장에 실패했습니다';
+
+  @override
+  String get voice_binding_failed => '음성 바인딩 실패';
+
+  @override
+  String get play_voice_tooltip => '보이스 재생';
+
+  @override
+  String get avatar_label => '프로필 이미지';
+
+  @override
+  String get message_preview_image => '[사진]';
+
+  @override
+  String get message_preview_recording => '[녹음]';
+
+  @override
+  String get message_preview_voice => '[음성 메시지]';
+
+  @override
+  String get send_failed_retry => '전송 실패. 잠시 후 다시 시도해 주세요 😢';
+
+  @override
+  String get media_upload_failed_retry => '미디어 업로드 실패. 다시 시도해 주세요';
+
+  @override
+  String get ai_thinking_too_long => '그가 깊은 생각에 잠긴 것 같습니다. 잠시 후 다시 시도해 주세요...';
+
+  @override
+  String get ai_reply_in_progress => '답장 중입니다. 중복 전송하지 말고 잠시만 기다려 주세요';
+
+  @override
+  String get ai_response_blocked => '그의 생각이 산만해졌습니다. 조금 더 다정한 표현으로 말해 보세요!';
+
+  @override
+  String get microphone_permission_required => '녹음하려면 마이크 권한이 필요합니다';
+
+  @override
+  String get no_recording_to_send => '전송할 녹음 파일이 없습니다';
+
+  @override
+  String get voice_uploading => '음성 메시지 업로드 중...';
+
+  @override
+  String get change_watermark_color => '워터마크 색상 변경';
+
+  @override
+  String get other_party_typing => '상대방이 입력 중입니다...';
+
+  @override
+  String get chat_input_hint => '메시지를 입력하세요...';
+
+  @override
+  String get regenerate_sync_failed => '재생성 횟수 동기화 실패. 다시 시도해 주세요 😢';
+
+  @override
+  String get creator_public_works => '공개 작품';
+
+  @override
+  String get creator_received_likes => '받은 좋아요';
+
+  @override
+  String get about_me => '자기소개';
+
+  @override
+  String get moment_input_hint => '당신의 마음을 공유하세요...';
+
+  @override
+  String character_play_count(int count) {
+    return '플레이 횟수: $count';
+  }
+
+  @override
+  String tag_page_title(String tag) {
+    return '태그: #$tag';
+  }
+
+  @override
+  String voice_preview_failed_detail(String code, String message) {
+    return '음성 미리듣기 실패: $code $message';
+  }
+
+  @override
+  String messages_deleted_success(int count) {
+    return '$count개의 메시지를 성공적으로 삭제했습니다';
+  }
+
+  @override
+  String creator_work_load_failed(String error) {
+    return '작품 불러오기 실패: $error';
+  }
+
+  @override
+  String age_years_old(String age) {
+    return '$age세';
+  }
+
+  @override
+  String deleteFailedMessage(String error) {
+    return '삭제 실패: $error';
+  }
+
+  @override
+  String loadCharacterDataFailed(String error) {
+    return '캐릭터 데이터 로드 실패: $error';
+  }
+
+  @override
+  String get draftAvatarLoadFailed => '임시 저장 프로필 로드 실패:';
+
+  @override
+  String get unnamedCreator => '이름 없는 크리에이터';
+
+  @override
+  String get profileNotYetFilled => '자기소개가 아직 작성되지 않았습니다';
+
+  @override
+  String get reportImageSizeLimit => '이미지 크기는 10 MB를 초과할 수 없습니다';
+
+  @override
+  String reportImageSelectFailed(String error) {
+    return '신고 이미지 선택 실패: $error';
+  }
+
+  @override
+  String get reportImageCannotSelect => '이미지를 선택할 수 없습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get reportLoginRequired => '신고서를 제출하기 전에 먼저 로그인해 주세요';
+
+  @override
+  String get reportAnonymousPlayer => '이름 없는 플레이어';
+
+  @override
+  String get reportSendSuccess => '신고가 성공적으로 제출되었습니다. 소중한 의견 감사합니다!';
+
+  @override
+  String reportSendFailed(String error) {
+    return '플레이어 신고 제출 실패: $error';
+  }
+
+  @override
+  String get reportNetworkFailed => '전송 실패. 네트워크를 확인한 후 다시 시도해 주세요';
+
+  @override
+  String get reportAttachImageLabel => '이미지 첨부 (선택 사항)';
+
+  @override
+  String get reportAttachImageHint =>
+      '버그 신고나 재화 미지급 문의 시, 화면 스크린샷을 첨부하시면 빠른 확인에 도움이 됩니다.';
+
+  @override
+  String get reportOpeningAlbum => '앨범 열기 중...';
+
+  @override
+  String get reportSelectFromAlbum => '앨범에서 이미지 선택';
+
+  @override
+  String get reportSending => '제출 중...';
+
+  @override
+  String get reportSubmit => '신고 제출';
+
+  @override
+  String get reportRemoveImage => '이미지 제거';
+
+  @override
+  String get reportImageSelected => '이미지 선택됨';
+
+  @override
+  String get reportChangeImage => '변경';
+
+  @override
+  String get reloadTranslation => '번역 다시 불러오기';
+
+  @override
+  String get guideNotAvailableInLanguage =>
+      '현재 이 언어의 이용 가이드가 제공되지 않아 임시로 번체 중국어로 표시됩니다.';
+
+  @override
+  String get clearSearch => '검색어 지우기';
+
+  @override
+  String get memoPermissionWarning =>
+      '알림 권한이 활성화되지 않았습니다. 메모는 저장되지만 시스템 알림은 표시되지 않습니다.';
+
+  @override
+  String memoSavedWithNotification(String name) {
+    return '메모가 저장되었습니다! $name이(가) 알려드릴게요!';
+  }
+
+  @override
+  String get memoSavedNoPermission => '메모가 저장되었으나 알림 권한이 설정되어 있지 않습니다.';
+
+  @override
+  String memoUpdatedWithNotification(String name) {
+    return '메모가 수정되었습니다! $name이(가) 알려드릴게요!';
+  }
+
+  @override
+  String get memoUpdatedNoPermission => '메모가 수정되었으나 현재 알림 권한이 없습니다.';
+
+  @override
+  String dataLoadError(String error) {
+    return '데이터를 불러오는 중 오류가 발생했습니다: $error';
+  }
+
+  @override
+  String loadFailed(String error) {
+    return '불러오기 실패: $error';
+  }
+
+  @override
+  String get dateFormatMonthDay => 'M월 d일';
+
+  @override
+  String get timeFormatHourMinute => 'HH:mm';
+
+  @override
+  String get likeFeedPrompt => '이 포스트가 마음에 드시나요? 마음을 표현해 보세요!';
+
+  @override
+  String get saveFeedPocket => '특별한 포스트를 마음속 주머니에 살며시 담아두세요.';
+
+  @override
+  String get newComment => '새 댓글';
+
+  @override
+  String get someFriend => '어느 친구';
+
+  @override
+  String get myBackpackAndPrivileges => '내 인벤토리 & 특권';
+
+  @override
+  String get currentRomanticBond => '현재 누적된 로맨틱 인연';
+
+  @override
+  String get physicalGiftBoxUnlockStatus => '실물 기프트 박스 해제 상태:';
+
+  @override
+  String get topLovePhysicalVipBox => '【최고의 지애】 실물 VIP 전용 기프트 박스';
+
+  @override
+  String get physicalGiftBoxContents => '구성: 전용 손편지 + 캐릭터 인형 + 공식 감사 편지';
+
+  @override
+  String get modifyShippingAddress => '배송지 정보 수정';
+
+  @override
+  String get addressUnlockedFillNow => '해제 완료! 배송지 정보를 입력하려면 클릭하세요';
+
+  @override
+  String get addressSuccessfullyRegistered =>
+      '배송지가 성공적으로 등록되었습니다. 빠르게 준비해 드리겠습니다!';
+
+  @override
+  String amountNeededForPhysicalPrize(String amount) {
+    return '실물 대상을 해제하려면 NT\$ $amount 남았습니다!';
+  }
+
+  @override
+  String get avatarFrameHint =>
+      '힌트: 기타 디지털 외형 및 테두리는 상점이나 개인 설정에서 확인하고 착용할 수 있습니다.';
+
+  @override
+  String get closeButton => '닫기';
+
+  @override
+  String get physicalGiftBoxUnlockTitle => '【최고의 지애】 실물 기프트 박스 해제';
+
+  @override
+  String get physicalGiftBoxUnlockThanks => '《연연습광》에 대한 변함없는 사랑에 감사드립니다!';
+
+  @override
+  String get physicalGiftBoxUnlockPrompt =>
+      '전용 손편지와 인형을 발송해 드릴 수 있도록 아래 배송지 정보를 입력해 주세요:';
+
+  @override
+  String get recipientRealName => '수령인 실명';
+
+  @override
+  String get contactPhone => '연락처';
+
+  @override
+  String get fullShippingAddress => '상세 배송지 주소 (우편번호 포함)';
+
+  @override
+  String get desiredCharacterDollName => '받고 싶은 캐릭터 인형 이름';
+
+  @override
+  String get characterNameExample => '예: 희망하는 캐릭터 이름';
+
+  @override
+  String get fillLater => '나중에 입력';
+
+  @override
+  String get fillCompleteAddressAndRoleHint =>
+      '배송지 정보와 희망하는 캐릭터 이름을 모두 작성해 주세요!';
+
+  @override
+  String get shippingInfoSubmittedSuccess =>
+      '배송지 정보가 정상적으로 제출되었습니다! 실물 깜짝 선물을 기대해 주세요!';
+
+  @override
+  String get confirmSubmit => '확인 및 제출';
+
+  @override
+  String get aboutMe => '자기소개';
+
+  @override
+  String get myBackpack => '내 인벤토리';
+
+  @override
+  String get ownerExclusiveArea => '마스터 전용 구역';
+
+  @override
+  String get enterShiguangAdminBackend => '연연습광 관리자 콘솔 입장';
+
+  @override
+  String get errorOccurred => '오류가 발생했습니다';
+
+  @override
+  String get creatorGuidelines => '크리에이터 가이드라인';
+
+  @override
+  String get playGuide => '이용 가이드';
+
+  @override
+  String get lianlianShiguang => '연연습광';
+
+  @override
+  String get copyrightNotice => '© 2026 Mo Yu Bai';
+
+  @override
+  String get cumulativeBenefits => '누적 혜택';
+
+  @override
+  String get perkFirstEncounter => '첫눈의 설렘';
+
+  @override
+  String get perkFirstEncounterReward => '시간의 꽃 20송이 + 전용 초보자 칭호';
+
+  @override
+  String get perkGlimmerThrob => '미광의 두근거림';
+
+  @override
+  String get perkGlimmerThrobReward => '전용 프로필 테두리 【미광의 두근거림】';
+
+  @override
+  String get perkStarryWhisper => '별빛 속삭임';
+
+  @override
+  String get perkStarryWhisperReward => '전용 채팅 말풍선 + 시간의 꽃 50송이';
+
+  @override
+  String get perkRomanticSunset => '낭만 노을';
+
+  @override
+  String get perkRomanticSunsetReward => '전용 App 바탕화면 아이콘';
+
+  @override
+  String get perkHeartbeat => '심장 두근거림';
+
+  @override
+  String get perkHeartbeatReward => '화면 터치 이펙트 + 시간의 꽃 100송이';
+
+  @override
+  String get perkEternalVow => '영원한 서약';
+
+  @override
+  String get perkEternalVowReward => '고급 움직이는 프로필 테두리 + 시간의 꽃 200송이';
+
+  @override
+  String get perkSoulIntersection => '영혼의 교차';
+
+  @override
+  String get perkSoulIntersectionReward => '움직이는 채팅 말풍선 이펙트 + 전용 상급 칭호';
+
+  @override
+  String get perkExclusiveWait => '전용의 기다림';
+
+  @override
+  String get perkExclusiveWaitReward => '최고급 움직이는 네임패드 + 시간의 꽃 500송이';
+
+  @override
+  String get perkBrilliantGalaxy => '찬란한 은하';
+
+  @override
+  String get perkBrilliantGalaxyReward => '전용 입장 이펙트 + 전용 고객센터';
+
+  @override
+  String get perkTopBeloved => '최고의 지애';
+
+  @override
+  String get perkTopBelovedReward => '실물 VIP 전용 기프트 박스';
+
+  @override
+  String get cumulativeRomanticBond => '누적 로맨틱 인연';
+
+  @override
+  String get allTopPrivilegesUnlocked => '모든 최고급 특권을 해제하셨습니다!';
+
+  @override
+  String rechargeAmountForNextTier(String amount) {
+    return 'NT\$ $amount 추가 충전 시 다음 단계 해제';
+  }
+
+  @override
+  String get storyContentCannotBeEmpty => '스토리 내용은 비워둘 수 없습니다';
+
+  @override
+  String get writeYourStoryHint => '둘만의 이야기를 작성해 보세요...';
+
+  @override
+  String get characterBannerTitle => '캐릭터 홈 배너';
 }

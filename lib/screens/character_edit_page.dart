@@ -124,6 +124,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   List<String> _extraInfoItems = [];
   // 變成這樣，用來存包含門檻與描述的完整圖片資料
   List<CharacterPhoto> _galleryPhotos = [];
+  // 🖼️ 角色首頁橫幅
+  XFile? _bannerLocalFile;
+  String _bannerImagePath = '';
+  bool _isRemovingBanner = false;
   String? _selectedRelationship;
   List<EasterEgg> _easterEggs = [];//彩蛋
   // 🌟 變數升級為列表
@@ -182,6 +186,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _secretsController.text = char.secrets;
       _appearanceController.text = char.appearance ;
       _dialogueExamplesController.text = char.dialogueExamples;
+      _bannerImagePath = char.bannerImagePath;
       // -- 陣列與清單 (保留妳的安全寫法) --
       _personalityTags = List.from(char.personalityTags);
       _easterEggs = List.from(char.easterEggs);
@@ -303,6 +308,16 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               requiredAffection: 0,
               description: ''
           ));
+        }
+      }
+      final String savedBannerPath =
+          data['bannerImagePath']?.toString() ?? '';
+
+      if (savedBannerPath.isNotEmpty) {
+        if (savedBannerPath.startsWith('http')) {
+          _bannerImagePath = savedBannerPath;
+        } else {
+          _bannerLocalFile = XFile(savedBannerPath);
         }
       }
       _galleryPhotos = tempGallery;
@@ -555,9 +570,20 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         multiCharactersString += "【${targetChar.name}】：$description\n";
       });
 
+      final String draftBannerPath;
+
+      if (_bannerLocalFile != null) {
+        draftBannerPath = _bannerLocalFile!.path;
+      } else if (_isRemovingBanner) {
+        draftBannerPath = '';
+      } else {
+        draftBannerPath = _bannerImagePath;
+      }
+
       // 🌟 4. 終極草稿資料大集合
       final draftData = {
         'avatarPath': currentAvatarPath,
+        'bannerImagePath': draftBannerPath,
         'galleryPaths': galleryPathsOnly,
         'gallery': galleryData,
         'name': _nameController.text.trim(),
@@ -665,25 +691,20 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     }
   }
 
-  Future<void> _leaveCharacterEditPage(Map<String, dynamic> result) async {
-    if (!mounted) return;
+  Future<void> _leaveCharacterEditPage(
+      Map<String, dynamic> result,
+      ) async {
+    if (!mounted || _isLeavingPage) return;
 
     setState(() {
       _isLeavingPage = true;
     });
 
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    if (!mounted) return;
-
-    debugPrint('🚪 準備離開角色編輯頁，回到個人主頁：result=$result');
-
-    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => const MainPage(initialIndex: 3),
-      ),
-          (route) => false,
+    debugPrint(
+      '🚪 返回原本的 ProfilePage：$result',
     );
+
+    Navigator.of(context).pop(result);
   }
 
   Future<Map<String, dynamic>?> _showExitConfirmationDialog() async {
@@ -982,9 +1003,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 // 🌟 1. 配置清單：直接把「標籤、控制器、上限」綁在一起
     final List<Map<String, dynamic>> checkList = [
       {'label': l10n.detailed_personality_label, 'controller': _detailedPersonalityController, 'limit': 800},
-      {'label': l10n.field_background, 'controller': _backgroundController, 'limit': 800},
+      {'label': l10n.field_background, 'controller': _backgroundController, 'limit': 2500},
       {'label': l10n.field_tone, 'controller': _toneController, 'limit': 500},
-      {'label': l10n.field_initial_story, 'controller': _storyController, 'limit': 2500},
+      {'label': l10n.field_initial_story, 'controller': _storyController, 'limit': 800},
     ];
 
 // 🌟 2. 只有一個迴圈，通殺所有字數檢查
@@ -1131,6 +1152,45 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         await Future.wait(uploadTasks);
       }
 
+      String finalBannerImagePath = _bannerImagePath;
+
+// 使用者按過移除
+      if (_isRemovingBanner) {
+        finalBannerImagePath = '';
+      }
+
+// 使用者選了新的本機橫幅
+      if (_bannerLocalFile != null) {
+        final String fileName =
+            'char_${charDocRef.id}_banner_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+        final Reference bannerStorageRef = storage.ref().child(
+          'artifacts/lianlianshiguang/character_banners/$fileName',
+        );
+
+        if (kIsWeb) {
+          final Uint8List bytes =
+          await _bannerLocalFile!.readAsBytes();
+
+          await bannerStorageRef.putData(
+            bytes,
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
+        } else {
+          await bannerStorageRef.putFile(
+            File(_bannerLocalFile!.path),
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
+        }
+
+        finalBannerImagePath =
+        await bannerStorageRef.getDownloadURL();
+
+        _bannerImagePath = finalBannerImagePath;
+        _bannerLocalFile = null;
+        _isRemovingBanner = false;
+      }
+
       // 🌟 【順序優化】：照片都拿到網址了，發號碼牌排隊寫入資料庫！
       List<String> galleryPathsOnly = [];
 
@@ -1216,6 +1276,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       final galleryData = _galleryPhotos.map((p) => p.toMap()).toList();
       Map<String, dynamic> characterData = {
         'avatarPath': galleryPathsOnly.isNotEmpty ? galleryPathsOnly.first : 'assets/images/blank_avatar.png',
+        'bannerImagePath': finalBannerImagePath,
         'galleryPaths': galleryPathsOnly,
         'gallery': galleryData,
         'name': _nameController.text.trim(),
@@ -1535,6 +1596,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       if (easterEggsJson != null) {
         _easterEggs = easterEggsJson.map((jsonStr) => EasterEgg.fromMap(jsonDecode(jsonStr))).toList();
       }
+      final savedBannerPath =
+          prefs.getString('temp_char_bannerImagePath') ?? '';
+
+      if (savedBannerPath.startsWith('http')) {
+        _bannerImagePath = savedBannerPath;
+      } else if (savedBannerPath.isNotEmpty) {
+        _bannerLocalFile = XFile(savedBannerPath);
+      }
     });
   }
 
@@ -1572,6 +1641,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       await prefs.setString('temp_char_relationship', _selectedRelationship!);
     }
     await prefs.setString('temp_char_customRelationship', _customRelationshipController.text.trim());
+    final String tempBannerPath =
+        _bannerLocalFile?.path ?? _bannerImagePath;
+
+    await prefs.setString(
+      'temp_char_bannerImagePath',
+      tempBannerPath,
+    );
   }
 
   Future<void> _clearDraft() async {
@@ -1886,7 +1962,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       }
 
       if (matchedSamples.isEmpty) {
-        throw Exception('尋找聲音失敗,請再試一次');
+        throw Exception(l10n.voice_search_failed_retry);
       }
 
       if (!mounted) return;
@@ -1943,7 +2019,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     ToastUtils.showCenterToast(
     context,
-    e.message ?? '尋找不完整,請稍後再試',
+    e.message ?? l10n.voice_search_incomplete_retry,
     isError: true,
     );
     } catch (e, stackTrace) {
@@ -1991,7 +2067,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     if (voiceId.isEmpty) {
       ToastUtils.showCenterToast(
         context,
-        '聲音資料不完整',
+        l10n.voice_data_incomplete,
         isError: true,
       );
       return;
@@ -2085,7 +2161,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       await _playVoice(audioBytes);
     } on FirebaseFunctionsException catch (e, stackTrace) {
       debugPrint(
-        '試聽聲音失敗：${e.code} ${e.message}',
+        l10n.voice_preview_failed_detail(
+          e.code,
+          e.message ?? '',
+        ),
       );
       debugPrintStack(stackTrace: stackTrace);
 
@@ -2097,7 +2176,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
       ToastUtils.showCenterToast(
         context,
-        e.message ?? '聲音生成失敗，請稍後再試',
+        e.message ?? l10n.voice_generation_failed_retry,
         isError: true,
       );
     } catch (e, stackTrace) {
@@ -2112,7 +2191,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
       ToastUtils.showCenterToast(
         context,
-        '聲音播放失敗，請再試一次',
+        l10n.voice_playback_failed_retry,
         isError: true,
       );
     } finally {
@@ -2253,7 +2332,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     if (realVoiceId.isEmpty) {
       ToastUtils.showCenterToast(
         context,
-        '選取的聲音資料不完整',
+        l10n.selected_voice_data_incomplete,
         isError: true,
       );
       return;
@@ -2290,7 +2369,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         if (!widget.character!.isPublic &&
             currentUser == null) {
           throw Exception(
-            '找不到使用者，無法更新私人角色語音',
+            l10n.private_voice_user_not_found,
           );
         }
 
@@ -2353,8 +2432,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     ToastUtils.showCenterToast(
     context,
-    '聲音已選取，但角色資料儲存失敗：'
-    '${e.message ?? e.code}',
+    l10n.voice_selected_character_save_failed,
     isError: true,
     );
     } catch (e, stackTrace) {
@@ -2368,8 +2446,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     ToastUtils.showCenterToast(
     context,
-    '綁定聲音失敗：'
-    '${e.toString().replaceFirst("Exception: ", "")}',
+    l10n.voice_binding_failed,
     isError: true,
     );
     } finally {
@@ -2556,6 +2633,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        _buildBannerImageSection(),
+        const SizedBox(height: 24),
+
         _buildImageGallery(),
         const SizedBox(height: 24),
         // 💡「卡片 1：🧬 基礎資料
@@ -2707,13 +2787,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 _buildBoxedTextField(
                     _backgroundController,
                     l10n.background_label,
-                    maxLength: 800,
+                    maxLength: 2500,
                     hintText: l10n.background_hint
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(_storySummaryController,l10n.story_summary_label, maxLength: 50),
                 const SizedBox(height: 16),
-                _buildBoxedTextField(_storyController, l10n.story_initial_label, maxLength: 2500, hintText:l10n.story_initial_hint),
+                _buildBoxedTextField(_storyController, l10n.story_initial_label, maxLength: 800, hintText:l10n.story_initial_hint),
                 const SizedBox(height: 16),
                 TextFormField(
                   scrollPadding: const EdgeInsets.only(bottom: 120),
@@ -3079,7 +3159,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                                 ),
 
                                 IconButton(
-                                  tooltip: '播放語音',
+                                  tooltip: l10n.play_voice_tooltip,
                                   padding: EdgeInsets.zero,
                                   constraints:
                                   const BoxConstraints(
@@ -3506,6 +3586,171 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     );
   }
 
+  Widget _buildBannerImageSection() {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final bool hasLocalBanner = _bannerLocalFile != null;
+    final bool hasNetworkBanner =
+        _bannerImagePath.trim().isNotEmpty && !_isRemovingBanner;
+
+    ImageProvider? bannerProvider;
+
+    if (hasLocalBanner) {
+      bannerProvider = _getImageProvider(_bannerLocalFile);
+    } else if (hasNetworkBanner) {
+      bannerProvider = _getImageProvider(_bannerImagePath);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.characterBannerTitle,
+                style: theme.textTheme.titleLarge,
+              ),
+            ),
+            IconButton(
+              tooltip: l10n.characterBannerDescription,
+              onPressed: _showBannerInfoDialog,
+              icon: const Icon(Icons.info_outline_rounded),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+
+        AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: theme.dividerColor,
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: bannerProvider != null
+                ? Stack(
+              fit: StackFit.expand,
+              children: [
+                Image(
+                  image: bannerProvider,
+                  fit: BoxFit.cover,
+                  errorBuilder: (
+                      BuildContext context,
+                      Object error,
+                      StackTrace? stackTrace,
+                      ) {
+                    return const Center(
+                      child: Icon(
+                        Icons.broken_image_outlined,
+                        size: 48,
+                      ),
+                    );
+                  },
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Material(
+                    color: Colors.black.withValues(alpha: 0.55),
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      tooltip: l10n.characterBannerRemove,
+                      onPressed: _removeBannerImage,
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
+                : InkWell(
+              onTap: _pickBannerImage,
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.panorama_outlined,
+                    size: 54,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: 10),
+                  Text(l10n.characterBannerSelect),
+                  SizedBox(height: 4),
+                  Text(
+                    l10n.characterBannerSpecs,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: _pickBannerImage,
+                icon: const Icon(Icons.image_outlined),
+                label: Text(
+                  bannerProvider == null ? l10n.characterBannerSelect : l10n.characterBannerChange,
+                ),
+              ),
+            ),
+            if (bannerProvider != null) ...[
+              const SizedBox(width: 10),
+              OutlinedButton.icon(
+                onPressed: _removeBannerImage,
+                icon: const Icon(Icons.delete_outline_rounded),
+                label:  Text(l10n.characterBannerRemove),
+              ),
+            ],
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.characterBannerDefaultHint,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showBannerInfoDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.characterBannerTitle),
+          content:  Text(
+            l10n.characterBannerHelpContent,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.ok_button),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // --- 全新相簿 UI (抓蟲升級版：Web CORS 防護版) ---
   Widget _buildImageGallery() {
     final l10n = AppLocalizations.of(context)!;
@@ -3598,7 +3843,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                               padding: const EdgeInsets.symmetric(vertical: 2),
                               child: Text(
                                 // 顯示描述或好感度
-                                photo.requiredAffection == 0 ? "大頭貼" : "LV.${photo.requiredAffection}",
+                                photo.requiredAffection == 0 ? l10n.avatar_label : "LV.${photo.requiredAffection}",
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(color: Colors.white, fontSize: 10),
                               ),
@@ -3720,6 +3965,30 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _pickBannerImage() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+      maxWidth: 1920,
+      maxHeight: 1080,
+    );
+
+    if (image == null || !mounted) return;
+
+    setState(() {
+      _bannerLocalFile = image;
+      _isRemovingBanner = false;
+    });
+  }
+
+  void _removeBannerImage() {
+    setState(() {
+      _bannerLocalFile = null;
+      _bannerImagePath = '';
+      _isRemovingBanner = true;
+    });
   }
 
   Widget _buildPublicPrivateToggle(ThemeData theme) {

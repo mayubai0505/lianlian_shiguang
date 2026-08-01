@@ -15,9 +15,6 @@ class PrivateCharacterProfilePage extends StatelessWidget {
     // 🌟 1. 取得多國語系字典
     final l10n = AppLocalizations.of(context)!;
 
-    // ⚠️ 記得在檔案最上方加上這行：
-// import 'chat_page.dart';
-
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
@@ -119,11 +116,17 @@ class PrivateCharacterProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 32),
 
-                      Text(l10n.backgroundStoryLabel, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(l10n.first_meeting_title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 12),
                       Text(
-                        character.background,
-                        style: const TextStyle(fontSize: 15, height: 1.6, color: Colors.grey),
+                        character.initialStory.trim().isNotEmpty
+                            ? character.initialStory
+                            : character.background,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          height: 1.6,
+                          color: Colors.grey,
+                        ),
                       ),
                       const SizedBox(height: 40),
                     ],

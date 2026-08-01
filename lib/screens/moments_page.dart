@@ -25,11 +25,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 //動態牆(朋友圈)
 class MomentsPage extends StatefulWidget {
   const MomentsPage({super.key});
+
   @override
-  State<MomentsPage> createState() => _MomentsPageState();
+  State<MomentsPage> createState() => MomentsPageState();
 }
 
-class _MomentsPageState extends State<MomentsPage> {
+class MomentsPageState extends State<MomentsPage> {
   String? _nickname;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   String? _userId = FirebaseAuth.instance.currentUser?.uid;
@@ -46,6 +47,7 @@ class _MomentsPageState extends State<MomentsPage> {
   // 💡 新增：用來記錄這次開啟畫面時，氣泡彈過沒
   bool _hasMenuTipShown = true;
   bool _menuTutorialFinished = false;
+  BuildContext? _showCaseContext;
   @override
   void initState() {
     super.initState();
@@ -58,6 +60,26 @@ class _MomentsPageState extends State<MomentsPage> {
     if (_userId != null) {
       _friendsStream = _db.collection('users').doc(_userId!).collection('friends').snapshots();
     }
+  }
+
+  void dismissFeatureTips() {
+    final showCaseContext = _showCaseContext;
+
+    if (showCaseContext == null) return;
+
+    try {
+      ShowCaseWidget.of(showCaseContext).dismiss();
+      Tooltip.dismissAllToolTips();
+    } catch (e) {
+      debugPrint('關閉瞬間提示氣泡失敗：$e');
+    }
+  }
+
+  @override
+  void dispose() {
+    dismissFeatureTips();
+    _showCaseContext = null;
+    super.dispose();
   }
 
   // 🌟 3. 新增這個「翻記事本」的專屬功能
@@ -205,14 +227,22 @@ class _MomentsPageState extends State<MomentsPage> {
           });
         }
       },
-      builder: (context) {
+      builder: (showCaseContext) {
+        _showCaseContext = showCaseContext;
 
         // 🚀 2. 畫面一載入，就發射右上角的選單氣泡！
         if (!_hasMenuTipShown) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            ShowCaseWidget.of(context).startShowCase([_menuKey]);
+            if (!mounted) return;
+
+            ShowCaseWidget.of(
+              showCaseContext,
+            ).startShowCase([
+              _menuKey,
+            ]);
           });
-          _hasMenuTipShown = true; // 標記為已發射，避免重複觸發
+
+          _hasMenuTipShown = true;
         }
 
         return DefaultTabController(
@@ -336,6 +366,14 @@ class _MomentsPageState extends State<MomentsPage> {
     );
   }
 
+  void _dismissMomentsTips() {
+    try {
+      ShowCaseWidget.of(context).dismiss();
+    } catch (e) {
+      debugPrint('關閉瞬間導覽提示失敗：$e');
+    }
+  }
+
   Future<void> _editMoment(Moment moment) async {
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
@@ -365,7 +403,7 @@ class _MomentsPageState extends State<MomentsPage> {
           title: Text(l10n.moment_delete_confirm_title),
           content:  Text(l10n.delete_warning),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('取消')),
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancelButton)),
             TextButton(
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(l10n.action_confirm_delete, style: TextStyle(color: Colors.red))

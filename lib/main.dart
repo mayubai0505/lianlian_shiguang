@@ -13,18 +13,16 @@ import 'screens/chat_page.dart';
 import 'services/theme_notifier.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'screens/splash_loading_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // 🌟 修改這裡：只保留一個數據來源，並給它一個別名
-import 'package:timezone/data/latest.dart' as tz_data;
 import 'dart:async';
 import 'screens/character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'services/reminder_notification_service.dart';
 
 String? globalActiveCharacterId;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -51,45 +49,93 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🗑️ 刪除了 FlutterNativeSplash.preserve(...)
-  // 讓系統原生的啟動圖自然結束，直接交接給妳的 SplashLoadingScreen
 
-  tz_data.initializeTimeZones();
   try {
-    final timeZoneName = await FlutterTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(timeZoneName.toString()));
-  } catch (e) {
-    tz.setLocalLocation(tz.getLocation('Asia/Taipei'));
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ).timeout(
+      const Duration(seconds: 15),
+    );
+
+  } on TimeoutException {
+  } catch (e, stackTrace) {
+    debugPrintStack(stackTrace: stackTrace);
   }
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  if (kIsWeb && kDebugMode) {
-    debugPrint("🚀 網頁開發模式：暫時跳過 App Check 驗證，避免 400 錯誤");
-  } else {
-    try {
-      await FirebaseAppCheck.instance.activate(
-        providerWeb: ReCaptchaV3Provider('6LfGqrYsAAAAAJfkhg30_VdjJmfDIWo40I9-izIO'),
-        providerAndroid: kReleaseMode ? AndroidPlayIntegrityProvider() : AndroidDebugProvider(),
-        providerApple: kReleaseMode ? AppleDeviceCheckProvider() : AppleDebugProvider(),
-      );
-    } catch (e) {
-      debugPrint("App Check 啟動失敗: $e");
-    }
-  }
-  await setupPushNotifications();
+  FirebaseMessaging.onBackgroundMessage(
+    _firebaseMessagingBackgroundHandler,
+  );
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
-        ChangeNotifierProvider(create: (_) => LocaleNotifier()),
-        ChangeNotifierProvider(create: (_) => PurchaseService()..initialize()),
+        ChangeNotifierProvider(
+          create: (_) {
+            return ThemeNotifier();
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return LocaleNotifier();
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (_) {
+            return PurchaseService()..initialize();
+          },
+        ),
       ],
       child: const MyApp(),
     ),
   );
+
+  unawaited(
+    _initializeBackgroundServices().then((_) {
+    }).catchError((e, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
+    }),
+  );
+}
+
+Future<void> _initializeBackgroundServices() async {
+  try {
+    await ReminderNotificationService.initialize().timeout(
+      const Duration(seconds: 10),
+    );
+  } on TimeoutException {
+    debugPrint('⚠️ 通知服務初始化逾時');
+  } catch (e, stackTrace) {
+    debugPrint('❌ 通知服務初始化失敗：$e');
+    debugPrintStack(stackTrace: stackTrace);
+  }
+
+  if (kIsWeb && kDebugMode) {
+    debugPrint('ℹ️ Web Debug 模式，略過 Firebase App Check');
+    return;
+  }
+
+  try {
+    await FirebaseAppCheck.instance.activate(
+      providerWeb: ReCaptchaV3Provider(
+        '6LfGqrYsAAAAAJfkhg30_VdjJmfDIWo40I9-izIO',
+      ),
+      providerAndroid: kReleaseMode
+          ? AndroidPlayIntegrityProvider()
+          : AndroidDebugProvider(),
+      providerApple: kReleaseMode
+          ? AppleDeviceCheckProvider()
+          : AppleDebugProvider(),
+    ).timeout(
+      const Duration(seconds: 15),
+    );
+    debugPrint('✅ Firebase App Check 初始化成功');
+  } on TimeoutException {
+    debugPrint('⚠️ Firebase App Check 初始化逾時');
+  } catch (e, stackTrace) {
+    debugPrint('❌ Firebase App Check 初始化失敗：$e');
+    debugPrintStack(stackTrace: stackTrace);
+  }
 }
 
 // ==========================================
@@ -110,12 +156,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    setupPushNotifications();
-    WidgetsBinding.instance.addObserver(this);
-    _updateUserStatus(true);
 
-    // ✨ 設定 2 秒的展示時間，讓玩家可以看見「正在喚醒《戀戀拾光》的宇宙...」如果妳覺得 2 秒太長或太短，可以直接改這裡的數字
-    _appInitFuture = Future.delayed(const Duration(seconds: 2));
+
+    WidgetsBinding.instance.addObserver(this);
+
+    _appInitFuture = Future.delayed(
+      const Duration(seconds: 2),
+    );
+
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      unawaited(_initializeAfterAppStarted());
+    });
   }
 
   @override
@@ -139,6 +192,26 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       FirebaseFirestore.instance.collection('users').doc(user.uid).update({
         'isOnline': isOnline,
       }).catchError((e) => print("更新在線狀態失敗: $e"));
+    }
+  }
+
+  Future<void> _initializeAfterAppStarted() async {
+
+    try {
+      await setupPushNotifications().timeout(
+        const Duration(seconds: 15),
+      );
+
+    } on TimeoutException {
+    } catch (e, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
+    }
+
+
+    try {
+      _updateUserStatus(true);
+    } catch (e, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace);
     }
   }
 
@@ -308,7 +381,6 @@ void _handleNotificationClick(RemoteMessage message) {
     );
   }
   // ✨ 總裁新增：路線二！如果是萬能郵差送來的社交互動通知（按讚、留言、關注）
-  // ✨ 總裁修正：如果是社交通知，直接大腳一開，帶她去 InboxPage！
   else if (data['type'] == 'like' || data['type'] == 'comment' || data['type'] == 'follow') {
     debugPrint("📫 玩家點擊了社交通知，準備導向私密信箱頁面");
 
@@ -364,10 +436,26 @@ Future<void> setupPushNotifications() async {
 
     await messaging.requestPermission(alert: true, badge: true, sound: true);
 
-    String? token = await messaging.getToken();
+    String? token;
+
+    try {
+      token = await messaging.getToken().timeout(
+        const Duration(seconds: 10),
+      );
+    } on TimeoutException {
+      debugPrint('⚠️ 取得 FCM token 逾時，本次略過');
+    }
 
     if (token != null) {
-      await _saveFcmTokenForCurrentUser(token);
+      try {
+        await _saveFcmTokenForCurrentUser(token).timeout(
+          const Duration(seconds: 10),
+        );
+      } on TimeoutException {
+        debugPrint('⚠️ 儲存 FCM token 逾時，本次略過');
+      } catch (e) {
+        debugPrint('❌ 儲存 FCM token 失敗：$e');
+      }
     }
 
 // Token 有時候會被 Firebase 更新，這裡也要同步存回去
@@ -381,7 +469,6 @@ Future<void> setupPushNotifications() async {
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationClick);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("🤫 收到前景推播，但總裁下令隱藏：${message.notification?.title}");
     });
   } catch (e) {
     debugPrint("❌ 推播初始化發生錯誤: $e");

@@ -37,11 +37,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   // ✨ 效能優化：紀錄最後一次檢查日期，避免頻繁讀取資料庫
   String _lastCheckedDateString = "";
   final GlobalKey<SelectChatPageState> _encounterKey = GlobalKey<SelectChatPageState>();
+  final GlobalKey<MomentsPageState> _momentsKey =
+  GlobalKey<MomentsPageState>();
   // ✨ 2. 加上 late，並把鑰匙裝進 SelectChatPage
   late final List<Widget> _pages = [
     const ChatHomePage(), // 0
     SelectChatPage(key: _encounterKey), // 1 👈 鑰匙插在這裡！(注意 const 要拿掉)
-    const MomentsPage(), // 2
+    MomentsPage(key: _momentsKey), // 2
     const ProfilePage(), // 3
   ];
 
@@ -497,20 +499,28 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
   // ✨ 3. 更新點擊邏輯
   void _onItemTapped(int index) {
+    // 從「瞬間」切往其他頁面時，
+    // 主動關閉 Showcase 的提示氣泡。
+    if (_selectedIndex == 2 && index != 2) {
+      _momentsKey.currentState?.dismissFeatureTips();
+    }
+
+    // 同時關閉 Flutter 一般 Tooltip。
+    Tooltip.dismissAllToolTips();
+
     if (_selectedIndex == index) {
-      // 🌟 如果玩家已經在這一頁，又點了一次
+      // 已經在邂逅頁，又再次點擊邂逅時刷新角色。
       if (index == 1) {
-        // 直接按下遙控器，呼叫邂逅頁面裡面的轉圈圈刷新！
         _encounterKey.currentState?.refreshEncounters();
       }
-    } else {
-      // 正常切換頁面
-      setState(() {
-        _selectedIndex = index;
-        // 只要點到那一頁，就把它標記為已啟動
-        _isPageActivated[index] = true;
-      });
+
+      return;
     }
+
+    setState(() {
+      _selectedIndex = index;
+      _isPageActivated[index] = true;
+    });
   }
 
   @override

@@ -14,6 +14,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 //登入介面
 
+enum LoginMethod {
+  google,
+  apple,
+  facebook,
+  email,
+}
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -165,6 +172,65 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  void _showLoginMethodInfoDialog(LoginMethod method) {
+    String title = '';
+    String providerName = '';
+
+    switch (method) {
+      case LoginMethod.google:
+        title = 'Google 快速登入';
+        providerName = 'Google';
+        break;
+
+      case LoginMethod.apple:
+        title = 'Apple 登入';
+        providerName = 'Apple';
+        break;
+
+      case LoginMethod.facebook:
+        title = 'Facebook 登入';
+        providerName = 'Facebook';
+        break;
+
+      case LoginMethod.email:
+        title = '戀戀帳號（Email）';
+        providerName = '戀戀帳號（Email）';
+        break;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Text(
+              '''
+使用 $providerName 登入《戀戀拾光》。
+
+請注意：
+
+• $providerName 與其他登入方式為不同帳號系統。
+
+• 若使用 $providerName 建立帳號，請持續使用相同方式登入。
+
+• 角色資料、聊天紀錄與購買內容不會與其他登入方式互通。
+
+建議首次登入後持續使用相同的登入方式，以避免建立不同帳號而導致資料無法共用。
+''',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('知道了'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
   Future<void> _performLogin(
       Future<Map<String, dynamic>?> Function() loginMethod,
@@ -302,6 +368,7 @@ class _LoginPageState extends State<LoginPage> {
                 // 🚀 Google 登入
                 if (showGoogleLogin) ...[
                   _buildLoginButton(
+                    infoMethod: LoginMethod.google,
                     text: l10n.login_with_google,
                     iconWidget: Image.asset(
                       'assets/images/google_logo.png',
@@ -319,6 +386,7 @@ class _LoginPageState extends State<LoginPage> {
 // ✅ Apple 登入：只在 iOS / iPadOS 顯示
                 if (showAppleLogin) ...[
                   _buildLoginButton(
+                    infoMethod: LoginMethod.apple,
                     text: l10n.login_with_apple,
                     iconWidget: const Icon(
                       Icons.apple,
@@ -339,6 +407,7 @@ class _LoginPageState extends State<LoginPage> {
                 if (showFacebookLogin) ...[
                   const SizedBox(height: 16),
                   _buildLoginButton(
+                    infoMethod: LoginMethod.facebook,
                     text: l10n.login_with_facebook,
                     iconWidget: const Icon(
                       Icons.facebook,
@@ -386,6 +455,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // 專屬信箱登入
                 _buildLoginButton(
+                  infoMethod: LoginMethod.email,
                   text: l10n.login_with_email,
                   iconWidget: const Padding(
                     padding: EdgeInsets.only(right: 16.0),
@@ -546,6 +616,8 @@ class _LoginPageState extends State<LoginPage> {
     required Color backgroundColor,
     required Color textColor,
     required VoidCallback onPressed,
+
+    LoginMethod? infoMethod,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -561,9 +633,15 @@ class _LoginPageState extends State<LoginPage> {
         ),
         onPressed: _isLoginLoading ? null : onPressed,
         child: Stack(
-          alignment: Alignment.centerLeft,
           children: [
-            iconWidget,
+
+            // 左側 Icon
+            Align(
+              alignment: Alignment.centerLeft,
+              child: iconWidget,
+            ),
+
+            // 中間文字
             Center(
               child: Text(
                 text,
@@ -573,6 +651,25 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+
+            // ⭐ 右側 i
+            if (infoMethod != null)
+              Positioned(
+                right: 10,
+                top: 0,
+                bottom: 0,
+                child: IconButton(
+                  splashRadius: 18,
+                  icon: Icon(
+                    Icons.info_outline_rounded,
+                    size: 18,
+                    color: Colors.grey.shade500,
+                  ),
+                  onPressed: () {
+                    _showLoginMethodInfoDialog(infoMethod);
+                  },
+                ),
+              ),
           ],
         ),
       ),

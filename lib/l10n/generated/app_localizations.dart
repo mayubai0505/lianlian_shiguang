@@ -7713,6 +7713,972 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'播放語音失敗'**
   String get voice_preview_failed;
+
+  /// No description provided for @characterBannerSectionTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色首頁橫幅'**
+  String get characterBannerSectionTitle;
+
+  /// No description provided for @characterBannerDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'橫幅說明'**
+  String get characterBannerDescription;
+
+  /// No description provided for @characterBannerRemove.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'移除'**
+  String get characterBannerRemove;
+
+  /// No description provided for @characterBannerSelect.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇橫幅圖片'**
+  String get characterBannerSelect;
+
+  /// No description provided for @characterBannerChange.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更換橫幅圖片'**
+  String get characterBannerChange;
+
+  /// No description provided for @characterBannerSpecs.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建議比例 16:9，建議尺寸 1920 × 1080'**
+  String get characterBannerSpecs;
+
+  /// No description provided for @characterBannerDefaultHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未設定時，首頁將自動使用角色主圖。'**
+  String get characterBannerDefaultHint;
+
+  /// No description provided for @characterBannerHelpContent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'橫幅會顯示在角色首頁的大型橫向區域。\n\n建議使用 16:9 的橫向圖片，例如 1920 × 1080。\n\n重要人物與臉部請盡量放在畫面中央，避免不同手機尺寸裁切到主體。\n\n若未設定橫幅，系統會自動使用角色主圖。'**
+  String get characterBannerHelpContent;
+
+  /// No description provided for @first_meeting_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'第一次相遇'**
+  String get first_meeting_title;
+
+  /// No description provided for @common_delete_network_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗，請檢查網路後再試'**
+  String get common_delete_network_failed;
+
+  /// No description provided for @common_operation_failed_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'操作失敗，請稍後再試'**
+  String get common_operation_failed_retry;
+
+  /// No description provided for @exclusive_photo_number.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬照片 {number}'**
+  String exclusive_photo_number(int number);
+
+  /// No description provided for @unlock_after_affection_increase.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'提升好感度後解鎖'**
+  String get unlock_after_affection_increase;
+
+  /// No description provided for @first_meeting_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'第一次相遇，尚未展開……'**
+  String get first_meeting_empty;
+
+  /// No description provided for @photo_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取照片失敗：{error}'**
+  String photo_load_failed(String error);
+
+  /// No description provided for @add_friend_failed_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'添加好友失敗，請稍後再試。'**
+  String get add_friend_failed_retry;
+
+  /// No description provided for @remove_friend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'移除好友'**
+  String get remove_friend;
+
+  /// No description provided for @report_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉角色'**
+  String get report_character;
+
+  /// No description provided for @block_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖角色'**
+  String get block_character;
+
+  /// No description provided for @daily_encounter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每日邂逅'**
+  String get daily_encounter;
+
+  /// No description provided for @discovery_hall.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'探索大廳'**
+  String get discovery_hall;
+
+  /// No description provided for @latest_recommendation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最新推薦'**
+  String get latest_recommendation;
+
+  /// No description provided for @popular_ranking.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'人氣熱榜'**
+  String get popular_ranking;
+
+  /// No description provided for @character_features.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色特徵'**
+  String get character_features;
+
+  /// No description provided for @featured_new_star.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'閃耀新星．強檔推薦'**
+  String get featured_new_star;
+
+  /// No description provided for @recently_added_characters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最近上架新角色'**
+  String get recently_added_characters;
+
+  /// No description provided for @no_tag_data.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有任何標籤資料～'**
+  String get no_tag_data;
+
+  /// No description provided for @no_character_with_tag.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'沒有找到擁有此標籤的角色'**
+  String get no_character_with_tag;
+
+  /// No description provided for @voice_search_failed_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尋找聲音失敗，請再試一次'**
+  String get voice_search_failed_retry;
+
+  /// No description provided for @voice_search_incomplete_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尋找不完整，請稍後再試'**
+  String get voice_search_incomplete_retry;
+
+  /// No description provided for @voice_data_incomplete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聲音資料不完整'**
+  String get voice_data_incomplete;
+
+  /// No description provided for @voice_generation_failed_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聲音生成失敗，請稍後再試'**
+  String get voice_generation_failed_retry;
+
+  /// No description provided for @voice_playback_failed_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聲音播放失敗，請再試一次'**
+  String get voice_playback_failed_retry;
+
+  /// No description provided for @selected_voice_data_incomplete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選取的聲音資料不完整'**
+  String get selected_voice_data_incomplete;
+
+  /// No description provided for @private_voice_user_not_found.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到使用者，無法更新私人角色語音'**
+  String get private_voice_user_not_found;
+
+  /// No description provided for @voice_selected_character_save_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聲音已選取，但角色資料儲存失敗'**
+  String get voice_selected_character_save_failed;
+
+  /// No description provided for @voice_binding_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'綁定聲音失敗'**
+  String get voice_binding_failed;
+
+  /// No description provided for @play_voice_tooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'播放語音'**
+  String get play_voice_tooltip;
+
+  /// No description provided for @avatar_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'大頭貼'**
+  String get avatar_label;
+
+  /// No description provided for @message_preview_image.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'[圖片]'**
+  String get message_preview_image;
+
+  /// No description provided for @message_preview_recording.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'[錄音]'**
+  String get message_preview_recording;
+
+  /// No description provided for @message_preview_voice.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'[語音訊息]'**
+  String get message_preview_voice;
+
+  /// No description provided for @send_failed_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出失敗，請稍後再試 😢'**
+  String get send_failed_retry;
+
+  /// No description provided for @media_upload_failed_retry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'媒體上傳失敗，請再試一次'**
+  String get media_upload_failed_retry;
+
+  /// No description provided for @ai_thinking_too_long.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'他似乎在沉思，請稍後再試...'**
+  String get ai_thinking_too_long;
+
+  /// No description provided for @ai_reply_in_progress.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'他正在回覆中，請稍候一下，不要重複送出'**
+  String get ai_reply_in_progress;
+
+  /// No description provided for @ai_response_blocked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'他的思緒被干擾了，請換個溫和的說法喔！'**
+  String get ai_response_blocked;
+
+  /// No description provided for @microphone_permission_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'需要麥克風權限才能錄音'**
+  String get microphone_permission_required;
+
+  /// No description provided for @no_recording_to_send.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'沒有可傳送的錄音'**
+  String get no_recording_to_send;
+
+  /// No description provided for @voice_uploading.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'語音上傳中...'**
+  String get voice_uploading;
+
+  /// No description provided for @change_watermark_color.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更換浮水印顏色'**
+  String get change_watermark_color;
+
+  /// No description provided for @other_party_typing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'對方正在輸入...'**
+  String get other_party_typing;
+
+  /// No description provided for @chat_input_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請輸入...'**
+  String get chat_input_hint;
+
+  /// No description provided for @regenerate_sync_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新生成次數同步失敗，請再試一次 😢'**
+  String get regenerate_sync_failed;
+
+  /// No description provided for @creator_public_works.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'公開作品'**
+  String get creator_public_works;
+
+  /// No description provided for @creator_received_likes.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'獲得喜歡'**
+  String get creator_received_likes;
+
+  /// No description provided for @about_me.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關於我'**
+  String get about_me;
+
+  /// No description provided for @moment_input_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享你的心情...'**
+  String get moment_input_hint;
+
+  /// No description provided for @character_play_count.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'遊玩次數：{count}'**
+  String character_play_count(int count);
+
+  /// No description provided for @tag_page_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'標籤：#{tag}'**
+  String tag_page_title(String tag);
+
+  /// No description provided for @voice_preview_failed_detail.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'試聽聲音失敗：{code} {message}'**
+  String voice_preview_failed_detail(String code, String message);
+
+  /// No description provided for @messages_deleted_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已成功刪除 {count} 則訊息'**
+  String messages_deleted_success(int count);
+
+  /// No description provided for @creator_work_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取作品失敗：{error}'**
+  String creator_work_load_failed(String error);
+
+  /// No description provided for @age_years_old.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{age}歲'**
+  String age_years_old(String age);
+
+  /// No description provided for @deleteFailedMessage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗: {error}'**
+  String deleteFailedMessage(String error);
+
+  /// No description provided for @loadCharacterDataFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'載入角色資料失敗：{error}'**
+  String loadCharacterDataFailed(String error);
+
+  /// No description provided for @draftAvatarLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'草稿頭像載入失敗:'**
+  String get draftAvatarLoadFailed;
+
+  /// No description provided for @unnamedCreator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未命名創作者'**
+  String get unnamedCreator;
+
+  /// No description provided for @profileNotYetFilled.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未填寫自我介紹'**
+  String get profileNotYetFilled;
+
+  /// No description provided for @reportImageSizeLimit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'圖片大小不能超過 10 MB'**
+  String get reportImageSizeLimit;
+
+  /// No description provided for @reportImageSelectFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇回報圖片失敗：{error}'**
+  String reportImageSelectFailed(String error);
+
+  /// No description provided for @reportImageCannotSelect.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法選擇圖片，請稍後再試'**
+  String get reportImageCannotSelect;
+
+  /// No description provided for @reportLoginRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再送出回報'**
+  String get reportLoginRequired;
+
+  /// No description provided for @reportAnonymousPlayer.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未命名玩家'**
+  String get reportAnonymousPlayer;
+
+  /// No description provided for @reportSendSuccess.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回報已成功送出，謝謝你的意見！'**
+  String get reportSendSuccess;
+
+  /// No description provided for @reportSendFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出玩家回報失敗：{error}'**
+  String reportSendFailed(String error);
+
+  /// No description provided for @reportNetworkFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出失敗，請確認網路後再試'**
+  String get reportNetworkFailed;
+
+  /// No description provided for @reportAttachImageLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'附加圖片（非必填）'**
+  String get reportAttachImageLabel;
+
+  /// No description provided for @reportAttachImageHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回報 Bug 或花花未入帳時，可以附上畫面截圖，方便官方確認問題。'**
+  String get reportAttachImageHint;
+
+  /// No description provided for @reportOpeningAlbum.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開啟相簿中...'**
+  String get reportOpeningAlbum;
+
+  /// No description provided for @reportSelectFromAlbum.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'從相簿選擇圖片'**
+  String get reportSelectFromAlbum;
+
+  /// No description provided for @reportSending.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出中...'**
+  String get reportSending;
+
+  /// No description provided for @reportSubmit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出回報'**
+  String get reportSubmit;
+
+  /// No description provided for @reportRemoveImage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'移除圖片'**
+  String get reportRemoveImage;
+
+  /// No description provided for @reportImageSelected.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已選擇圖片'**
+  String get reportImageSelected;
+
+  /// No description provided for @reportChangeImage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更換'**
+  String get reportChangeImage;
+
+  /// No description provided for @reloadTranslation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新載入翻譯'**
+  String get reloadTranslation;
+
+  /// No description provided for @guideNotAvailableInLanguage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前尚未提供此語言的遊玩指南，暫時顯示繁體中文。'**
+  String get guideNotAvailableInLanguage;
+
+  /// No description provided for @clearSearch.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'清除搜尋'**
+  String get clearSearch;
+
+  /// No description provided for @memoPermissionWarning.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。'**
+  String get memoPermissionWarning;
+
+  /// No description provided for @memoSavedWithNotification.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄已儲存，{name} 會提醒你！'**
+  String memoSavedWithNotification(String name);
+
+  /// No description provided for @memoSavedNoPermission.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄已儲存，但尚未開啟通知權限。'**
+  String get memoSavedNoPermission;
+
+  /// No description provided for @memoUpdatedWithNotification.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄已更新，{name} 會提醒你！'**
+  String memoUpdatedWithNotification(String name);
+
+  /// No description provided for @memoUpdatedNoPermission.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄已更新，但目前沒有通知權限。'**
+  String get memoUpdatedNoPermission;
+
+  /// No description provided for @dataLoadError.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取資料時發生錯誤：{error}'**
+  String dataLoadError(String error);
+
+  /// No description provided for @loadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取失敗：{error}'**
+  String loadFailed(String error);
+
+  /// No description provided for @dateFormatMonthDay.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'M月d日'**
+  String get dateFormatMonthDay;
+
+  /// No description provided for @timeFormatHourMinute.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'HH:mm'**
+  String get timeFormatHourMinute;
+
+  /// No description provided for @likeFeedPrompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'喜歡這則動態嗎？給他一點心意吧！'**
+  String get likeFeedPrompt;
+
+  /// No description provided for @saveFeedPocket.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'把特別的動態悄悄收進口袋裡。'**
+  String get saveFeedPocket;
+
+  /// No description provided for @newComment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新留言'**
+  String get newComment;
+
+  /// No description provided for @someFriend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'某位朋友'**
+  String get someFriend;
+
+  /// No description provided for @myBackpackAndPrivileges.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的專屬背包與特權'**
+  String get myBackpackAndPrivileges;
+
+  /// No description provided for @currentRomanticBond.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前累積浪漫羈絆'**
+  String get currentRomanticBond;
+
+  /// No description provided for @physicalGiftBoxUnlockStatus.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'實體禮盒解鎖狀態：'**
+  String get physicalGiftBoxUnlockStatus;
+
+  /// No description provided for @topLovePhysicalVipBox.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【頂級摯愛】實體 VIP 專屬禮盒'**
+  String get topLovePhysicalVipBox;
+
+  /// No description provided for @physicalGiftBoxContents.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'含：專屬手寫信 + 角色代表娃 + 官方感謝信'**
+  String get physicalGiftBoxContents;
+
+  /// No description provided for @modifyShippingAddress.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'修改收件地址資訊'**
+  String get modifyShippingAddress;
+
+  /// No description provided for @addressUnlockedFillNow.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已解鎖！點此填寫收件資訊'**
+  String get addressUnlockedFillNow;
+
+  /// No description provided for @addressSuccessfullyRegistered.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您已成功登記收件地址，我們會盡快為您準備！'**
+  String get addressSuccessfullyRegistered;
+
+  /// No description provided for @amountNeededForPhysicalPrize.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還差 NT\$ {amount} 即可解鎖實體大賞！'**
+  String amountNeededForPhysicalPrize(String amount);
+
+  /// No description provided for @avatarFrameHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'提示：其他數位外觀與頭像框可在商店或個人設定中查看與裝備。'**
+  String get avatarFrameHint;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關閉'**
+  String get closeButton;
+
+  /// No description provided for @physicalGiftBoxUnlockTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【頂級摯愛】實體禮盒解鎖'**
+  String get physicalGiftBoxUnlockTitle;
+
+  /// No description provided for @physicalGiftBoxUnlockThanks.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'感謝玩家對《戀戀拾光》的極致守候！'**
+  String get physicalGiftBoxUnlockThanks;
+
+  /// No description provided for @physicalGiftBoxUnlockPrompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：'**
+  String get physicalGiftBoxUnlockPrompt;
+
+  /// No description provided for @recipientRealName.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收件人真實姓名'**
+  String get recipientRealName;
+
+  /// No description provided for @contactPhone.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聯絡電話'**
+  String get contactPhone;
+
+  /// No description provided for @fullShippingAddress.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完整收件地址（含郵遞區號）'**
+  String get fullShippingAddress;
+
+  /// No description provided for @desiredCharacterDollName.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'想要收到的角色代表娃名字'**
+  String get desiredCharacterDollName;
+
+  /// No description provided for @characterNameExample.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：欲輸入的角色名稱'**
+  String get characterNameExample;
+
+  /// No description provided for @fillLater.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'稍後填寫'**
+  String get fillLater;
+
+  /// No description provided for @fillCompleteAddressAndRoleHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請完整填寫收件資訊與心儀的角色名稱喔！'**
+  String get fillCompleteAddressAndRoleHint;
+
+  /// No description provided for @shippingInfoSubmittedSuccess.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收件資訊已成功送出！請期待我們的實體驚喜！'**
+  String get shippingInfoSubmittedSuccess;
+
+  /// No description provided for @confirmSubmit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認送出'**
+  String get confirmSubmit;
+
+  /// No description provided for @aboutMe.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關於我'**
+  String get aboutMe;
+
+  /// No description provided for @myBackpack.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的背包'**
+  String get myBackpack;
+
+  /// No description provided for @ownerExclusiveArea.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'主理人專屬區域'**
+  String get ownerExclusiveArea;
+
+  /// No description provided for @enterShiguangAdminBackend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'進入拾光管理後台'**
+  String get enterShiguangAdminBackend;
+
+  /// No description provided for @errorOccurred.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發生錯誤'**
+  String get errorOccurred;
+
+  /// No description provided for @creatorGuidelines.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者規範'**
+  String get creatorGuidelines;
+
+  /// No description provided for @playGuide.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'遊玩指南'**
+  String get playGuide;
+
+  /// No description provided for @lianlianShiguang.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光'**
+  String get lianlianShiguang;
+
+  /// No description provided for @copyrightNotice.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'© 2026 默語白'**
+  String get copyrightNotice;
+
+  /// No description provided for @cumulativeBenefits.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'累計福利'**
+  String get cumulativeBenefits;
+
+  /// No description provided for @perkFirstEncounter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'初見傾心'**
+  String get perkFirstEncounter;
+
+  /// No description provided for @perkFirstEncounterReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'20 點花花 + 專屬新手稱號'**
+  String get perkFirstEncounterReward;
+
+  /// No description provided for @perkGlimmerThrob.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'微光悸動'**
+  String get perkGlimmerThrob;
+
+  /// No description provided for @perkGlimmerThrobReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬頭像框【微光悸動】'**
+  String get perkGlimmerThrobReward;
+
+  /// No description provided for @perkStarryWhisper.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星空呢喃'**
+  String get perkStarryWhisper;
+
+  /// No description provided for @perkStarryWhisperReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬聊天氣泡 + 50 點花花'**
+  String get perkStarryWhisperReward;
+
+  /// No description provided for @perkRomanticSunset.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'浪漫夕陽'**
+  String get perkRomanticSunset;
+
+  /// No description provided for @perkRomanticSunsetReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬 App 桌面圖示'**
+  String get perkRomanticSunsetReward;
+
+  /// No description provided for @perkHeartbeat.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'怦然心動'**
+  String get perkHeartbeat;
+
+  /// No description provided for @perkHeartbeatReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊螢幕特效 + 100 點花花'**
+  String get perkHeartbeatReward;
+
+  /// No description provided for @perkEternalVow.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'永恆誓約'**
+  String get perkEternalVow;
+
+  /// No description provided for @perkEternalVowReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'進階動態頭像框 + 200 點花花'**
+  String get perkEternalVowReward;
+
+  /// No description provided for @perkSoulIntersection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'靈魂交會'**
+  String get perkSoulIntersection;
+
+  /// No description provided for @perkSoulIntersectionReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動態聊天氣泡特效 + 專屬進階稱號'**
+  String get perkSoulIntersectionReward;
+
+  /// No description provided for @perkExclusiveWait.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬守候'**
+  String get perkExclusiveWait;
+
+  /// No description provided for @perkExclusiveWaitReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頂級動態名牌 + 500 點花花'**
+  String get perkExclusiveWaitReward;
+
+  /// No description provided for @perkBrilliantGalaxy.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'璀璨星河'**
+  String get perkBrilliantGalaxy;
+
+  /// No description provided for @perkBrilliantGalaxyReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬進場特效 + 專屬客服'**
+  String get perkBrilliantGalaxyReward;
+
+  /// No description provided for @perkTopBeloved.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頂級摯愛'**
+  String get perkTopBeloved;
+
+  /// No description provided for @perkTopBelovedReward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'實體 VIP 專屬禮盒'**
+  String get perkTopBelovedReward;
+
+  /// No description provided for @cumulativeRomanticBond.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'累積浪漫羈絆'**
+  String get cumulativeRomanticBond;
+
+  /// No description provided for @allTopPrivilegesUnlocked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您已解鎖所有頂級特權！'**
+  String get allTopPrivilegesUnlocked;
+
+  /// No description provided for @rechargeAmountForNextTier.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'再儲值 NT\$ {amount} 即可解鎖下一階'**
+  String rechargeAmountForNextTier(String amount);
+
+  /// No description provided for @storyContentCannotBeEmpty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'故事內容不能是空的'**
+  String get storyContentCannotBeEmpty;
+
+  /// No description provided for @writeYourStoryHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寫下你們的故事...'**
+  String get writeYourStoryHint;
+
+  /// No description provided for @characterBannerTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色首頁橫幅'**
+  String get characterBannerTitle;
 }
 
 class _AppLocalizationsDelegate
