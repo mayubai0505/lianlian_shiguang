@@ -89,6 +89,7 @@ class Character {
   final List<String> galleryPaths;
   final List<CharacterPhoto>? gallery;
   final String createdBy;
+  final String worldSetting;
   final String? storyModeFirstLine;
   final List<String>? identities;
   final DateTime createdAt;
@@ -140,6 +141,7 @@ class Character {
     required this.galleryPaths,
     this.gallery,
     required this.createdBy,
+    required this.worldSetting,
     required this.createdAt,
     DateTime? lastChatTime,
     this.creatorName = '神祕創作者',
@@ -250,7 +252,10 @@ class Character {
       createdBy: data['createdBy'] ?? '',
       createdAt: (data['createdAt'] as Timestamp? ?? Timestamp.now()).toDate(),
       playCount: data['playCount'] ?? 0,
-      likesCount: data['likesCount'] ?? 0,
+      worldSetting:
+      data['worldSetting']?.toString().trim().isNotEmpty == true
+          ? data['worldSetting'].toString()
+          : data['background']?.toString() ?? '',      likesCount: data['likesCount'] ?? 0,
       age: data['age'] ?? '',
       occupation: data['occupation'] ?? '',
       identities: data['identities'] != null ? List<String>.from(data['identities']) : [],
@@ -316,6 +321,7 @@ class Character {
       'storyModeFirstLine': firstLine,
       'background': background,
       'detailedPersonality': detailedPersonality,
+      'worldSetting': worldSetting,
       'appearance': appearance,
       'gender': gender,
       'isPublic': isPublic,
@@ -365,6 +371,7 @@ Character getCharacterById(String id) {
     initialStory: "初始劇情同步中...",
     firstLine: "正在準備開場白...",
     background: "正在加載背景...",
+    worldSetting: "世界觀載入中...",
     detailedPersonality: "正在加載性格...",
     appearance: "外貌描述加載中...",
     gender: "未知",

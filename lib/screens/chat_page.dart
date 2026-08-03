@@ -1510,7 +1510,7 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  // ✨ 總裁秘製：VIP 無痕重新生成通道！
+
   // ✨ VIP 無痕重新生成通道
   Future<void> _regenerateAIResponse(
       String aiMessageId,
@@ -1783,7 +1783,17 @@ class _ChatPageState extends State<ChatPage> {
           'relationship':
           dynamicRelationship,
           'socialRelationships': '',
-        },
+          'worldSetting':
+          _currentCharacter.worldSetting
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
+              '',        },
         'chatHistory': actualChatHistory,
       };
 

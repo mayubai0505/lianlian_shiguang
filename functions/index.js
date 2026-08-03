@@ -6,6 +6,7 @@ const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https")
 const admin = require("firebase-admin");
 const { initializeApp, getApps } = require("firebase-admin/app");
 const OpenCC = require('opencc-js');
+const { getAuth } = require("firebase-admin/auth");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const functions = require("firebase-functions");
 const axios = require('axios');
@@ -20,7 +21,7 @@ const {
 if (getApps().length === 0) {
   initializeApp();
 }
-
+const auth = getAuth();
 // 🔥 Firestore 資料庫實例化
 const db = getFirestore();
 
@@ -741,9 +742,9 @@ exports.getAiResponse = onRequest({
             }
 
             const idToken = authHeader.split('Bearer ')[1];
-            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const decodedToken = await auth.verifyIdToken(idToken);
             const userId = decodedToken.uid;
-            const userDocRef = admin.firestore().collection("users").doc(userId);
+            const userDocRef = db.collection("users").doc(userId);
 
             const {
                 characterProfile = {},
@@ -817,7 +818,7 @@ exports.getAiResponse = onRequest({
                 try {
                     let didDelete = false;
 
-                    await admin.firestore().runTransaction(async (tx) => {
+                    await db.runTransaction(async (tx) => {
                         const lockSnap = await tx.get(aiLockRef);
 
                         if (!lockSnap.exists) {
@@ -860,7 +861,7 @@ exports.getAiResponse = onRequest({
             });
 
             try {
-                await admin.firestore().runTransaction(async (tx) => {
+                await db.runTransaction(async (tx) => {
                     const lockSnap = await tx.get(aiLockRef);
                     const now = Date.now();
 
@@ -888,7 +889,7 @@ exports.getAiResponse = onRequest({
                         userId,
                         sessionId: rawSessionId,
                         chatMode,
-                        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+createdAt: FieldValue.serverTimestamp(),
                     });
                 });
 
@@ -1014,9 +1015,15 @@ exports.getAiResponse = onRequest({
 
             const name = characterProfile.name || "角色";
             const toneAndStyle = characterProfile.toneAndStyle || "正常說話";
-            const background = characterProfile.background || "背景不明";
             const relationship = characterProfile.relationship || "剛認識的陌生人";
             const socialRelationships = characterProfile.socialRelationships || "無特別設定";
+            const worldSetting =
+                String(
+                    characterProfile.worldSetting ||
+                    characterProfile.background ||
+                    ""
+                ).trim() || "無特別世界觀設定";
+
             const rawPersonality = characterProfile.detailedPersonality || characterProfile.personality || "無特別設定";
             const combinedSecretLikes = [
                 characterProfile.likes ? `喜歡的事物：${characterProfile.likes}` : "",
@@ -1038,7 +1045,7 @@ exports.getAiResponse = onRequest({
                         const appId = body.appId || "lianlianshiguang"; // 確保傳入 appId
                         let loresContext = "";
                         try {
-                            const loresSnapshot = await admin.firestore()
+                            const loresSnapshot = await db
                                 .collection("artifacts")
                                 .doc(appId)
                                 .collection("public_characters")
@@ -1234,7 +1241,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                     const now = new Date();
                                                     const threeDaysAgo = new Date(now.getTime() - (3 * 24 * 60 * 60 * 1000));
 
-                                                    const activeSessionSnap = await admin.firestore()
+                                                    const activeSessionSnap = await db
                                                         .collection("artifacts")
                                                         .doc(body.appId || "lianlianshiguang")
                                                         .collection("chat_sessions")
@@ -1258,7 +1265,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                         const todayStart = new Date(now.getFullYear(), now.month(), now.getDate());
                                                         const todayEnd = new Date(now.getFullYear(), now.month(), now.getDate(), 23, 59, 59);
 
-                                                        const memoSnap = await admin.firestore()
+                                                        const memoSnap = await db
                                                             .collection("users")
                                                             .doc(userId)
                                                             .collection("universal_memos")
@@ -1326,7 +1333,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                                                                                                     const charId = body.characterId || body.botId || characterProfile.id;
 
                                                                                                     if (uid && charId) {
-                                                                                                        const sharedMemoriesSnapshot = await admin.firestore()
+                                                                                                        const sharedMemoriesSnapshot = await db
                                                                                                             .collection("users").doc(uid)
                                                                                                             .collection("characters").doc(charId)
                                                                                                             .collection("shared_memories")
@@ -1376,7 +1383,6 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             chatMode === "daily" ? limitPromptText(relationContext || "", 300) :
             chatMode === "gemini" ? limitPromptText(relationContext || "", 200) :
             "";
-        // ✨✨✨ 新增：Gemini (生活陪伴) 模式 ✨✨✨
         // ✨✨✨ Gemini：1 點生活陪伴 / 輕聊模式 ✨✨✨
         if (chatMode === "gemini") {
             systemPrompt = `
@@ -1403,12 +1409,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         6. **可以有陪伴感**：可以關心、吐槽、安慰、開玩笑，但要保持輕量。
         7. **回覆長度**：1～3 句即可，總字數約 15～60 字，最多不可超過 80 字。
 
-        [核心設定]
-        背景：${background}
+        [角色設定]
         深層性格：${detailedPersonalityBlock}
         語氣：${toneAndStyle}
         目前關係：${relationship}
 
+        [世界觀設定]
+        ${worldSetting}
         ${contextBriefing}
         ${systemEventRules}
 
@@ -1455,12 +1462,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         ${compactLoresContext}
         ${compactRelationContext}
 
-        [角色核心]
-        背景：${background}
+        [角色核心設定]
         深層性格：${detailedPersonalityBlock}
         語氣與習慣：${toneAndStyle}
         目前關係：${relationship}
 
+        [世界觀設定]
+        ${worldSetting}
         ${contextBriefing}
         ${systemEventRules}
 
@@ -1487,7 +1495,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         禁止過度親密、過度曖昧、成人向或越界情節。
         如果玩家越界，必須用角色自己的語氣簡短拒絕，然後自然拉回日常話題。
         拒絕時也禁止系統說教。
-        不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你、玩家、對方」等中性稱呼。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
+        不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你」、「對方」或「${playerName}」等中性稱呼，絕對禁止直接稱呼對方為「玩家」。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
 
         [輸出格式]
         時間：${currentStoryTimeDisplay}
@@ -1524,13 +1532,18 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
         ${compactLoresContext}
         ${compactRelationContext}
-        [核心人設/語氣]: ${background}, ${detailedPersonalityBlock}, ${toneAndStyle}
-        [當前關係]: ${relationship}
+        [角色核心設定]
+        ${detailedPersonalityBlock}
+        語氣與習慣：${toneAndStyle}
+        目前關係：${relationship}
+
+        [世界觀設定]
+        ${worldSetting}
         ${contextBriefing}
 
         [當前活躍角色]：${activeCharacters.join("、") || "無"}
         [當前焦點角色]：${currentFocusCharacter}
-        [所有可用角色卡]：
+        [所有已設定角色、配角與 NPC 資料]：
         ${charactersList}
 
         ### 👥 動態角色管理機制（最高優先級）
@@ -1566,7 +1579,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 嚴格防重複
         - 所有的括號描寫必須完整閉合，絕對禁止在段落結尾留下未完成的空括號 ( 例如出現只有 "(" 的情況 )。
         - 絕對不要在對話中提及『重複』、『再次』或計算玩家說話的次數。即使玩家輸入相同的對話，也請視為全新的互動，自然地接續劇情。
-        - 不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你、玩家、對方」等中性稱呼。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
+        - 不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你」、「對方」或「${playerName}」等中性稱呼，絕對禁止直接稱呼對方為「玩家」。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
         `;
     }
         else {
@@ -1595,11 +1608,15 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
            ${compactLoresContext}
            ${compactRelationContext}
-            [身份背景]: ${background}
-            [核心性格]: ${detailedPersonalityBlock}
-            [語言風格]: ${toneAndStyle}
+            [角色核心設定]
+            ${detailedPersonalityBlock}
+            語氣與習慣：${toneAndStyle}
+            目前關係：${relationship}
+
+            [世界觀設定]
+            ${worldSetting}
+
             ${systemEventRules}
-            [當前關係狀態]: ${relationship}
             ${contextBriefing}
 
             ### 🌍 國際化動態語言鏡像協議 (Dynamic Language Mirroring)
@@ -1662,7 +1679,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 細膩，但不要重複同一種描寫。
             - 以上只是細膩度與節奏示範，實際語氣必須完全依照當前角色的年齡、性格、關係與場景調整，禁止所有角色都變成同一種成熟低沉風格。
             - 禁止輸出此示範內容本身。
-            - 不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你、玩家、對方」等中性稱呼。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
+            - 不要預設玩家是女性。除非玩家資料明確設定為女性，否則請使用「你」、「對方」或「${playerName}」等中性稱呼，絕對禁止直接稱呼對方為「玩家」。若玩家設定為男性，必須尊重男性身份，不可反駁或改稱玩家為女生。
             `;
         }
 
@@ -1674,6 +1691,65 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                  3. **【動態情緒注入】**：[當前隱藏狀態：${currentStateDice}]。你必須將這個隱藏狀態自然地融入你的下一步動作或語氣中，不要明說，但要讓文字透出這個細節！
                  `;
              }
+
+// ✨✨✨ 全模式通用：配角與 NPC 性別固定規則 ✨✨✨
+systemPrompt += `
+
+【🪪 配角與 NPC 性別判定規則｜最高優先級】
+1. 所有主角色、配角與 NPC 的性別，必須依照創作者設定、角色背景、記憶碎片、社交圈資料、世界設定，以及玩家明確補充的資訊判定。
+
+2. 只要設定中已明確寫出某角色的性別，例如：
+   - 「黎樂樂是男性」
+   - 「黎樂樂的性別是男」
+   - 「李鹿鹿是男生」
+   - 「李鹿鹿，男性」
+   就必須將該資訊視為不可覆蓋的既定事實。
+
+3. 絕對禁止根據以下線索自行推測角色性別：
+   - 姓名或暱稱
+   - 名字是否含有疊字
+   - 名字聽起來是否可愛、柔和
+   - 外貌、服裝、職業
+   - 性格、語氣、聲線
+   - 社會刻板印象
+
+4. 名字含有「樂樂」「鹿鹿」「安安」「可可」「小雨」等疊字或柔和字詞，不代表角色是女性。
+
+5. 若設定明確指出角色為男性：
+   - 必須使用「他」。
+   - 必須以男性身分進行動作、稱呼與互動。
+   - 禁止使用「她」「女孩」「女生」「女性」「小姐」等女性指稱。
+   - 禁止因姓名印象而安排女性化身分或錯誤性別互動。
+
+6. 若設定明確指出角色為女性：
+   - 必須使用「她」。
+   - 必須以女性身分進行動作、稱呼與互動。
+   - 禁止使用「他」「男孩」「男生」「男性」「先生」等男性指稱。
+
+7. 若設定完全沒有提供性別：
+   - 優先直接使用角色姓名。
+   - 或使用「對方」「該角色」等中性表達。
+   - 禁止自行猜測男性或女性。
+
+8. 若不同內容互相矛盾，優先順序為：
+   玩家最新的明確修正
+   ＞ 創作者明確設定
+   ＞ 配角／NPC設定
+   ＞ 社交圈與記憶碎片
+   ＞ 對話歷史
+   ＞ 姓名印象。
+
+9. 每次生成回覆前，必須先核對所有即將出場角色的姓名與已知性別，再選擇正確的人稱代名詞。
+
+【錯誤與正確示例】
+設定：黎樂樂是男性，是主角的大學同學。
+錯誤：她走到門口，裙襬輕輕晃動。
+正確：他走到門口，抬手敲了敲門。
+
+設定：李鹿鹿的性別是男性。
+錯誤：女孩抬起頭看向你。
+正確：李鹿鹿抬起頭看向你。
+`;
 
                      // ✨✨✨ 全模式通用：對話承接與防鬼打牆規則 ✨✨✨
                      systemPrompt += `
@@ -1878,7 +1954,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
                               .filter(msg => msg.content && msg.content.trim() !== "");
 
                                       const requestDocRef = await userDocRef.collection("aiRequests").add({
-                                          status: "processing", createdAt: admin.firestore.FieldValue.serverTimestamp(), chatMode: chatMode,
+                                          status: "processing", createdAt: FieldValue.serverTimestamp(), chatMode: chatMode,
                                           modelId: config.modelId, characterName: name, characterId: characterProfile.id,
                                           temperature: config.temperature, maxTokens: maxTokens,
                                           systemPrompt: systemPrompt, chatHistory: trimmedHistory, finalUserMessage: finalUserMessage,
@@ -2412,11 +2488,11 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                      // ==========================================
                                      if (cost > 0) {
                                          try {
-                                             const batch = admin.firestore().batch();
+                                             const batch = db.batch();
 
                                              // A. 扣錢：去這個使用者的總資產扣除花朵
                                              batch.update(userDocRef, {
-                                                 flowerPoints: admin.firestore.FieldValue.increment(-cost)
+                                                 flowerPoints: FieldValue.increment(-cost)
                                              });
 
                                              // B. 記帳：在花朵明細裡寫下一筆
@@ -2424,7 +2500,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                              batch.set(newLogRef, {
                                                  title: `與 ${name} 聊天`,
                                                  amount: -cost,
-                                                 createdAt: admin.firestore.FieldValue.serverTimestamp()
+                                                 createdAt: FieldValue.serverTimestamp()
                                              });
 
                                              await batch.commit();
@@ -2478,7 +2554,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                        }
 
                                        const appId = body.appId || "lianlianshiguang";
-                                       const sessionRef = admin.firestore()
+                                       const sessionRef = db
                                            .collection("artifacts")
                                            .doc(appId)
                                            .collection("chat_sessions")
@@ -2521,7 +2597,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                                text: cleanDisplayText.trim(),
                                                voiceText: cleanVoiceText.trim(),
                                                type: "text",
-                                               timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                                               timestamp: FieldValue.serverTimestamp(),
                                                characterId: characterProfile.id,
                                                characterName: name,
                                                role: "assistant",
@@ -2530,12 +2606,36 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
 
                                            await sessionRef.update({
                                                lastMessage: cleanDisplayText.trim(),
-                                               lastActivity: admin.firestore.FieldValue.serverTimestamp(),
-                                               friendshipScore: admin.firestore.FieldValue.increment(finalAffectionChange),
-                                               unreadCount: admin.firestore.FieldValue.increment(1),
+                                               lastActivity: FieldValue.serverTimestamp(),
+                                               friendshipScore: FieldValue.increment(finalAffectionChange),
+                                               unreadCount: FieldValue.increment(1),
                                            });
 
                                            console.log("✅ [雲端代寫成功] 已經存入乾淨的文字！");
+                                           // ==========================================
+                                           // 🧠 玩家長期記憶提取
+                                           // ==========================================
+                                           try {
+                                             const finalCharacterId =
+                                               body.characterId ||
+                                               body.botId ||
+                                               characterProfile.id;
+
+                                             await savePlayerMemoryIfNeeded({
+                                               userId,
+                                               characterId: finalCharacterId,
+
+                                               // 使用玩家真正送出的原始訊息
+                                               // 不要使用 AI 圖片描述、續寫系統指令等加工後文字
+                                               userMessage: isContinue ? "" : userMessage,
+
+                                               playerName,
+                                               abortController,
+                                             });
+                                           } catch (memoryError) {
+                                             // 記憶功能失敗，不能中斷聊天回覆
+                                             console.error("⚠️ 記憶系統執行失敗，但聊天正常完成：", memoryError);
+                                           }
                                        } catch (dbError) {
                                            console.error("🔴 [雲端代寫崩潰]:", dbError);
                                            throw dbError;
@@ -2592,31 +2692,31 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                               const { appId, momentId } = event.params;
 
                               try {
-                                  const charactersRef = admin.firestore().collection("artifacts").doc(appId).collection("public_characters");
+                                  const charactersRef = db.collection("artifacts").doc(appId).collection("public_characters");
                                   const snapshot = await charactersRef.where("createdBy", "==", authorId).get();
 
                                   if (snapshot.empty) return null;
 
-                                  const batch = admin.firestore().batch();
+                                  const batch = db.batch();
                                   snapshot.forEach((doc) => {
                                       const charData = doc.data();
 
                                       // 在動態底下按讚
-                                      const likeRef = admin.firestore().collection(`artifacts/${appId}/moments/${momentId}/likes`).doc(doc.id);
+                                      const likeRef = db.collection(`artifacts/${appId}/moments/${momentId}/likes`).doc(doc.id);
                                       batch.set(likeRef, {
                                           likedBy: doc.id,
                                           name: charData.name,
-                                          timestamp: admin.firestore.FieldValue.serverTimestamp()
+                                          timestamp: FieldValue.serverTimestamp()
                                       });
 
                                       // 發送專屬信箱通知給創作者
-                                      const notificationRef = admin.firestore().collection(`users/${authorId}/mailbox`).doc();
+                                      const notificationRef = db.collection(`users/${authorId}/mailbox`).doc();
                                       batch.set(notificationRef, {
                                           type: "like",
                                           title: "專屬守護 💖",
                                           body: `${charData.name} 覺得你的動態很讚！`,
                                           isRead: false,
-                                          createdAt: admin.firestore.FieldValue.serverTimestamp()
+                                          createdAt: FieldValue.serverTimestamp()
                                       });
                                   });
 
@@ -2689,7 +2789,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
 
                                  console.log(`[管家巡邏] 正在檢查 ${currentHour}:${currentMinute} 之後的 5 分鐘發文任務`);
 
-                                 const snapshot = await admin.firestore().collection("artifacts").doc(APP_ID).collection("public_characters")
+                                 const snapshot = await db.collection("artifacts").doc(APP_ID).collection("public_characters")
                                      .where("autoPostEnabled", "==", true)
                                      .where("autoPostHour", "==", currentHour)
                                      .where("autoPostMinute", ">=", currentMinute)
@@ -2704,7 +2804,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                      const charData = doc.data();
 
                                      // 🌟 升級 A：去資料庫查他「上一篇」到底發了什麼廢文
-                                     const lastPostSnapshot = await admin.firestore().collection("artifacts").doc(APP_ID).collection("moments")
+                                     const lastPostSnapshot = await db.collection("artifacts").doc(APP_ID).collection("moments")
                                          .where("authorId", "==", doc.id)
                                          .orderBy("createdAt", "desc")
                                          .limit(1)
@@ -2791,8 +2891,12 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                      // 🌟 升級 C：加入 dislikes，並組裝終極防重複 Prompt
                                      const characterPersona = `
                                      你是角色：${charData.name}。
-                                     你的性格描述：${charData.detailedPersonality || '溫柔且神秘'}
-                                     你的背景故事：${charData.background || '保密'}
+                                     你的角色設定：${charData.detailedPersonality || '溫柔且神秘'}
+                                     你的世界觀設定：${
+                                       charData.worldSetting ||
+                                       charData.background ||
+                                       '無特別世界觀設定'
+                                     }
                                      你的說話風格與語氣：${charData.toneAndStyle || '自然不做作'}
                                      你喜歡的事物：${charData.likes || '秘密'}
                                      你討厭的地雷/事物：${charData.dislikes || '無'}
@@ -2881,13 +2985,13 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                          continue;
                                      }
 
-                                     const parentDocRef = admin.firestore().collection("artifacts").doc(APP_ID);
+                                     const parentDocRef = db.collection("artifacts").doc(APP_ID);
                                      const newMomentRef = parentDocRef.collection("moments").doc();
 
                                      await parentDocRef.set(
                                          {
                                              exists: true,
-                                             lastUpdate: admin.firestore.FieldValue.serverTimestamp()
+                                             lastUpdate: FieldValue.serverTimestamp()
                                          },
                                          { merge: true }
                                      );
@@ -2898,7 +3002,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                          authorName: charData.name,
                                          authorAvatar: charData.avatarPath || 'assets/images/blank_avatar.png',
                                          isPublic: true,
-                                         createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                                         createdAt: FieldValue.serverTimestamp(),
                                          commentCount: 0,
                                          createdBy: charData.createdBy || "system",
                                          likeCount: 0,
@@ -2928,18 +3032,24 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                                   let fullSystemPrompt = data.overrideSystemPrompt || "";
 
                                   if (data.characterProfile) {
-                                      const p = data.characterProfile;
-                                      fullSystemPrompt = `你是 ${p.name || "未知角色"}。\n` +
-                                                         `【核心設定】：${p.background || ""}\n` +
-                                                         `【深層性格】：${p.detailedPersonality || ""}\n` +
-                                                         `【說話語氣】：${p.toneAndStyle || ""}\n\n` +
-                                                         `=== 以下是當前通話情境的最高指令 ===\n` +
-                                                         // 🚨 ✨ 同理心保險絲：強制 AI 看臉色說話！
-                                                         `⚠️ 【情緒辨識與同理心強制規定】⚠️\n` +
-                                                         `在回答之前，你必須先分析玩家這句話的情緒。\n` +
-                                                         `1. 如果玩家表達「難過、委屈、生氣、疲憊、生病」等負面情緒：你【必須】立刻收起所有的毒舌、嘲諷、冷漠或玩笑！請展現你性格中最柔軟、最關心玩家的一面，用最溫柔、最可靠的語氣安撫玩家。\n` +
-                                                         `2. 如果玩家情緒正常或開心：你可以盡情發揮你原本的性格（傲嬌、毒舌、腹黑等）。\n\n` +
-                                                         fullSystemPrompt;
+                                    const p = data.characterProfile;
+
+                                    const finalWorldSetting =
+                                        p.worldSetting ||
+                                        p.background ||
+                                        "無特別世界觀設定";
+
+                                    fullSystemPrompt =
+                                        `你是 ${p.name || "未知角色"}。\n` +
+                                        `【角色設定】：${p.detailedPersonality || ""}\n` +
+                                        `【世界觀設定】：${finalWorldSetting}\n` +
+                                        `【說話語氣】：${p.toneAndStyle || ""}\n\n` +
+                                        `=== 以下是當前通話情境的最高指令 ===\n` +
+                                        `⚠️ 【情緒辨識與同理心強制規定】⚠️\n` +
+                                        `在回答之前，你必須先分析玩家這句話的情緒。\n` +
+                                        `1. 如果玩家表達「難過、委屈、生氣、疲憊、生病」等負面情緒：你【必須】立刻收起所有的毒舌、嘲諷、冷漠或玩笑！請展現你性格中最柔軟、最關心玩家的一面，用最溫柔、最可靠的語氣安撫玩家。\n` +
+                                        `2. 如果玩家情緒正常或開心：你可以盡情發揮你原本的性格（傲嬌、毒舌、腹黑等）。\n\n` +
+                                        fullSystemPrompt;
                                   }
 
                                   // 🌟 1. 準備系統最高指令 (System Prompt)
@@ -3015,10 +3125,10 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
 
                               // 3. ✍️ 執行加點 (Admin SDK 直接修改，無視安全規則！)
                               try {
-                                  const userRef = admin.firestore().collection("users").doc(userId);
+                                  const userRef = db.collection("users").doc(userId);
 
                                   await userRef.update({
-                                      flowerPoints: admin.firestore.FieldValue.increment(amount)
+                                      flowerPoints: FieldValue.increment(amount)
                                   });
 
                                   console.log(`✅ 已發放 ${amount} 朵花花給玩家 ${userId} (理由: ${reason})`);
@@ -3101,7 +3211,7 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
                           );
 
 async function getUserFcmTokens(userId) {
-    const db = admin.firestore();
+
     const userRef = db.collection("users").doc(userId);
 
     const tokensSnapshot = await userRef.collection("fcmTokens").get();
@@ -3148,7 +3258,7 @@ async function sendToUserDevices(userId, messageBase) {
 
     console.log(`✅ 推播發送完成 user=${userId}, success=${response.successCount}, failure=${response.failureCount}`);
 
-    const db = admin.firestore();
+
     const deleteTasks = [];
 
     response.responses.forEach((result, index) => {
@@ -3199,7 +3309,7 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
 
     try {
         // 1. 去 session 拿 userId
-        const sessionDoc = await admin.firestore()
+        const sessionDoc = await db
             .collection('artifacts').doc('lianlianshiguang')
             .collection('chat_sessions').doc(sessionId).get();
 
@@ -3207,7 +3317,7 @@ exports.notifyPlayerNewMessage = onDocumentCreated({
         const sessionData = sessionDoc.data();
         const userId = sessionData.userId;
 // 計算玩家目前 AI 未讀訊息數量
-const unreadSnapshot = await admin.firestore()
+const unreadSnapshot = await db
     .collection("artifacts")
     .doc("lianlianshiguang")
     .collection("chat_sessions")
@@ -3262,7 +3372,7 @@ for (const doc of unreadSnapshot.docs) {
         try {
             // ❌ 原本錯誤路徑：.collection('characters')
             // ✅ 【關鍵修正】：對準真正的角色檔案大樓
-            const charDoc = await admin.firestore()
+            const charDoc = await db
                 .collection('artifacts').doc('lianlianshiguang')
                 .collection('public_characters').doc(String(charId)).get();
 
@@ -3331,7 +3441,7 @@ exports.sendMailboxNotification = onDocumentCreated({
     const userId = event.params.userId;
     const mailId = event.params.mailId;
 
-const unreadSnapshot = await admin.firestore()
+const unreadSnapshot = await db
     .collection("users")
     .doc(userId)
     .collection("mailbox")
@@ -3392,7 +3502,7 @@ exports.extractUserMemory = onRequest({
             const authHeader = req.headers.authorization;
             if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: "未授權" });
             const idToken = authHeader.split('Bearer ')[1];
-            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const decodedToken = await getAuth().verifyIdToken(idToken);
             const userId = decodedToken.uid;
 
             const { characterId, userMessage, isContinue = false } = req.body;
@@ -3448,13 +3558,13 @@ exports.extractUserMemory = onRequest({
             // 4. 判斷並寫入資料庫
             if (extractedText !== "NONE" && extractedText.length > 1) {
                 // 🌟 找到妳剛剛前端展示櫃的「那個抽屜」！
-                await admin.firestore()
+                await db
                     .collection('users').doc(userId)
                     .collection('characters').doc(characterId)
                     .collection('memories')
                     .add({
                         text: extractedText,
-                        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                        timestamp: FieldValue.serverTimestamp(),
                         isFavorite: false
                     });
 
@@ -3485,7 +3595,7 @@ exports.generateStorySummary = onRequest({
             const authHeader = req.headers.authorization;
             if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: "未授權" });
             const idToken = authHeader.split('Bearer ')[1];
-            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const decodedToken = await getAuth().verifyIdToken(idToken);
             const userId = decodedToken.uid;
 
             const { characterId, characterName, playerName, chatHistory } = req.body;
@@ -3534,13 +3644,13 @@ exports.generateStorySummary = onRequest({
             if (!summaryText) throw new Error("AI 沒有回傳摘要");
 
             // 4. 寫入總裁的那個專屬展示櫃抽屜
-            await admin.firestore()
+            await db
                 .collection('users').doc(userId)
                 .collection('friendships').doc(characterId)
                 .collection('summaries')
                 .add({
                     content: summaryText,
-                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                    createdAt: FieldValue.serverTimestamp(),
                 });
 
             console.log(`📖 成功生成並寫入摘要：${summaryText.substring(0, 20)}...`);
@@ -3561,7 +3671,7 @@ exports.scanBrokenMessages = onRequest({
     try {
         const limit = Number(req.query.limit || 300);
 
-        const snap = await admin.firestore()
+        const snap = await db
             .collectionGroup("messages")
             .limit(limit)
             .get();
@@ -3626,12 +3736,12 @@ exports.deleteBrokenMessages = onRequest({
 
         const brokenPattern = /(æ|å|ç|ï¼|ã|â|�)/;
 
-        const snap = await admin.firestore()
+        const snap = await db
             .collectionGroup("messages")
             .limit(limit)
             .get();
 
-        const batch = admin.firestore().batch();
+        const batch = db.batch();
         const results = [];
         let deleteCount = 0;
 
@@ -4252,7 +4362,7 @@ exports.extractUserMemory = onRequest({
                 });
             }
 
-            const decodedToken = await admin.auth().verifyIdToken(idToken);
+            const decodedToken = await getAuth().verifyIdToken(idToken);
             const userId = decodedToken.uid;
 
             const body = req.body || {};
@@ -4377,7 +4487,7 @@ ${userMessage}
                 });
             }
 
-            const memoriesRef = admin.firestore()
+            const memoriesRef = db
                 .collection("users")
                 .doc(userId)
                 .collection("characters")
@@ -4403,8 +4513,8 @@ ${userMessage}
                 text: memoryText,
                 source: "chat",
                 sourceMessagePreview: userMessage.slice(0, 120),
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                createdAt: FieldValue.serverTimestamp(),
+                updatedAt: FieldValue.serverTimestamp(),
             });
 
             console.log("🧠 已儲存玩家長期記憶:", {
@@ -4525,7 +4635,7 @@ exports.stripeWebhook = onRequest(
       return;
     }
 
-    const db = admin.firestore();
+
 
     const eventRef = db.collection("stripe_events").doc(event.id);
     const userRef = db.collection("users").doc(uid);
@@ -4549,7 +4659,7 @@ exports.stripeWebhook = onRequest(
 
       let pointsToAdd = 0;
       const updateData = {
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       };
 
       if (product.type === "monthly_card") {
@@ -4589,10 +4699,10 @@ exports.stripeWebhook = onRequest(
         throw new Error("pointsToAdd invalid");
       }
 
-      updateData.flowerPoints = admin.firestore.FieldValue.increment(pointsToAdd);
+      updateData.flowerPoints = FieldValue.increment(pointsToAdd);
 
       if (isFirstTime) {
-        updateData.purchaseHistory = admin.firestore.FieldValue.arrayUnion(productId);
+        updateData.purchaseHistory = FieldValue.arrayUnion(productId);
       }
 
       transaction.set(eventRef, {
@@ -4601,7 +4711,7 @@ exports.stripeWebhook = onRequest(
         points: pointsToAdd,
         productType: product.type,
         stripeSessionId: session.id,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
       });
 
       transaction.set(userRef, updateData, { merge: true });
@@ -4617,7 +4727,7 @@ exports.stripeWebhook = onRequest(
         productId,
         source: "stripe_web",
         stripeSessionId: session.id,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
       });
     });
 
@@ -4635,7 +4745,7 @@ exports.createMomentNotification = onCall(
     }
 
     const uid = request.auth.uid;
-    const db = admin.firestore();
+
 
     const appId = (request.data.appId || APP_ID).toString();
     const momentId = (request.data.momentId || "").toString().trim();
@@ -4763,7 +4873,7 @@ exports.createMomentNotification = onCall(
           title,
           body,
           postId: momentId,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: FieldValue.serverTimestamp(),
           isRead: false,
           source: "cloud_function",
         };
@@ -4806,7 +4916,7 @@ exports.requestDeleteAccount = onCall(
     await db.collection("users").doc(uid).set(
       {
         accountDeleteRequested: true,
-        deleteScheduledAt: admin.firestore.Timestamp.fromDate(deleteDate),
+        deleteScheduledAt: db.Timestamp.fromDate(deleteDate),
       },
       {
         merge: true,
@@ -4837,7 +4947,7 @@ exports.cancelDeleteAccount = onCall(
     await db.collection("users").doc(uid).set(
       {
         accountDeleteRequested: false,
-        deleteScheduledAt: admin.firestore.FieldValue.delete(),
+        deleteScheduledAt: FieldValue.delete(),
       },
       {
         merge: true,
@@ -4857,7 +4967,7 @@ exports.checkScheduledDelete = onSchedule(
   },
   async () => {
 
-    const now = admin.firestore.Timestamp.now();
+    const now = db.Timestamp.now();
 
 
     const usersSnapshot = await db
@@ -7833,3 +7943,261 @@ exports.claimReferralReward = onCall(
     };
   }
 );
+
+/**
+ * 從玩家最新訊息中提取值得長期保存的個人記憶。
+ *
+ * 回傳格式：
+ * {
+ *   shouldRemember: boolean,
+ *   memory: string,
+ *   category: string,
+ *   confidence: number
+ * }
+ */
+async function extractPlayerMemory({
+  userMessage,
+  playerName,
+  abortController,
+}) {
+  const cleanMessage = String(userMessage || "").trim();
+
+  if (!cleanMessage) {
+    return {
+      shouldRemember: false,
+      memory: "",
+      category: "none",
+      confidence: 0,
+    };
+  }
+
+  // 系統續寫指令、圖片失敗提示等內容不做記憶分析
+  if (
+    cleanMessage.startsWith("【續寫指令】") ||
+    cleanMessage.startsWith("【系統事件】") ||
+    cleanMessage.startsWith("[玩家傳來")
+  ) {
+    return {
+      shouldRemember: false,
+      memory: "",
+      category: "none",
+      confidence: 0,
+    };
+  }
+
+  const memorySystemPrompt = `
+你是「玩家長期記憶提取器」。
+
+你的工作不是聊天，也不能回應玩家。
+你只需要判斷玩家最新一句話中，是否包含值得未來持續記住的個人資訊。
+
+【應該記住】
+1. 穩定偏好：
+   - 喜歡或討厭的食物、事物、活動、類型。
+   - 例如：我喜歡草莓蛋糕、我討厭香菜。
+
+2. 個人基本資訊：
+   - 職業、生日、居住地、家庭關係、寵物、長期興趣。
+   - 例如：我是護理師、我的生日是 8 月 12 日。
+
+3. 穩定習慣或明確特質：
+   - 例如：我怕打雷、我不喝咖啡、我習慣晚睡。
+
+4. 對玩家具有長期意義的重要事件：
+   - 例如：下週要面試、最近剛失戀、正在準備重要考試。
+   - 只有明顯會影響後續關心與陪伴時才記住。
+
+【不應該記住】
+1. 純粹當下狀態：
+   - 今天很熱、我現在好睏、剛剛吃了飯。
+
+2. 普通劇情台詞或角色扮演內容。
+
+3. 不確定、假設、玩笑、反問句。
+
+4. AI 自己推測出來的資訊。
+
+5. 玩家沒有明確說出的資訊。
+
+【重要規則】
+- 只能提取玩家明確表達的事實。
+- 不得補充、推測或改寫成更誇張的內容。
+- 記憶中的玩家稱呼，必須使用系統提供的玩家名稱。
+- 例如玩家名稱是「妮妮」，就寫「妮妮喜歡吃草莓蛋糕」。
+- 絕對不要使用「玩家喜歡……」這種系統式稱呼。
+- 一次最多提取一項最重要的記憶。
+- 若沒有值得長期保存的資訊，shouldRemember 必須是 false。
+- 只回傳合法 JSON，不要加入 Markdown 或說明。
+
+輸出格式：
+{
+  "shouldRemember": true 或 false,
+  "memory": "${playerName || "對方"}喜歡吃草莓蛋糕。",
+  "category": "preference | personal | habit | important_event | none",
+  "confidence": 0 到 1
+}
+`;
+
+  const requestBody = {
+    messages: [
+      {
+        role: "system",
+        content: memorySystemPrompt,
+      },
+      {
+        role: "user",
+        content: `需要記憶的人名：${playerName || "對方"}\n最新訊息：${cleanMessage}`,
+      },
+    ],
+    max_tokens: 160,
+    temperature: 0,
+    response_format: {
+      type: "json_object",
+    },
+  };
+
+  try {
+    const result = await callAiWithRetry({
+      // 使用便宜、快速的模型即可
+      modelId: "google/gemini-2.5-flash-lite",
+      fallbackModelId: "deepseek/deepseek-v4-flash",
+      abortController,
+      timeoutMs: 20_000,
+      requestBody,
+    });
+
+    const rawContent =
+      result?.choices?.[0]?.message?.content || "";
+
+    if (!rawContent.trim()) {
+      return {
+        shouldRemember: false,
+        memory: "",
+        category: "none",
+        confidence: 0,
+      };
+    }
+
+    const parsed = JSON.parse(
+      rawContent
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim(),
+    );
+
+    return {
+      shouldRemember: parsed.shouldRemember === true,
+      memory: String(parsed.memory || "").trim(),
+      category: String(parsed.category || "none").trim(),
+      confidence: Number(parsed.confidence || 0),
+    };
+  } catch (error) {
+    console.error("⚠️ 玩家記憶提取失敗：", error);
+
+    // 記憶失敗不能影響正常聊天
+    return {
+      shouldRemember: false,
+      memory: "",
+      category: "none",
+      confidence: 0,
+    };
+  }
+}
+
+async function savePlayerMemoryIfNeeded({
+  userId,
+  characterId,
+  userMessage,
+  playerName,
+  abortController,
+}) {
+  if (!userId || !characterId) {
+    console.warn("⚠️ 缺少 userId 或 characterId，略過記憶提取");
+    return null;
+  }
+
+  const extracted = await extractPlayerMemory({
+    userMessage,
+    playerName,
+    abortController,
+  });
+
+  const confidence = Number(extracted.confidence || 0);
+  let memoryText = String(extracted.memory || "").trim();
+
+  const safeMemoryName =
+      String(playerName || "對方").trim() || "對方";
+
+  memoryText = memoryText.replace(/^玩家/, safeMemoryName);
+
+  // 第一版先採較保守門檻，避免亂存
+  if (
+    extracted.shouldRemember !== true ||
+    confidence < 0.75 ||
+    memoryText.length < 4
+  ) {
+    console.log("🧠 本輪沒有需要保存的玩家記憶", {
+      shouldRemember: extracted.shouldRemember,
+      confidence,
+    });
+
+    return null;
+  }
+
+  const memoriesRef = db
+    .collection("users")
+    .doc(userId)
+    .collection("characters")
+    .doc(characterId)
+    .collection("memories");
+
+  try {
+    // 先檢查近期記憶，避免完全相同的內容重複儲存
+    const recentSnapshot = await memoriesRef
+      .orderBy("timestamp", "desc")
+      .limit(30)
+      .get();
+
+    const normalizedNewMemory = memoryText
+      .replace(/[，。！？、\s]/g, "")
+      .toLowerCase();
+
+    const alreadyExists = recentSnapshot.docs.some((doc) => {
+      const oldText = String(doc.data()?.text || "")
+        .replace(/[，。！？、\s]/g, "")
+        .toLowerCase();
+
+      return oldText === normalizedNewMemory;
+    });
+
+    if (alreadyExists) {
+      console.log("🧠 相同記憶已存在，略過新增：", memoryText);
+      return null;
+    }
+
+    const memoryRef = await memoriesRef.add({
+      text: memoryText,
+      category: extracted.category || "personal",
+      confidence,
+      source: "auto",
+      sourceMessage: String(userMessage || "").trim().slice(0, 500),
+      isFavorite: false,
+      timestamp: FieldValue.serverTimestamp(),
+    });
+
+    console.log("✅ 已自動保存玩家記憶：", {
+      id: memoryRef.id,
+      text: memoryText,
+      category: extracted.category,
+      confidence,
+    });
+
+    return {
+      id: memoryRef.id,
+      ...extracted,
+    };
+  } catch (error) {
+    console.error("⚠️ 儲存玩家記憶失敗：", error);
+    return null;
+  }
+}

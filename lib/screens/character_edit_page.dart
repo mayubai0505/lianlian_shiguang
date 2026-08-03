@@ -22,6 +22,9 @@ import 'dart:typed_data';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'main_page.dart';
 import 'profile_page.dart';
+import 'package:flutter/services.dart';
+import 'package:characters/characters.dart';
+import 'package:intl/intl.dart';
 
 // ✨ 這是一個既能「創建」也能「編輯」的萬能頁面
 class CharacterEditPage extends StatefulWidget {
@@ -81,6 +84,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   bool _isPreloadingFirstVoice = false;
   String? _finalVoicePreviewUrl;
   Uint8List? _finalAudioBytes; // 🌟 加在 _finalVoicePreviewUrl 旁邊
+  bool _isLoadingMyCharacters = true;
   double _voiceStability = 0.33;
   double _voiceStyle = 0.75;
   // --- Controllers ---
@@ -99,6 +103,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   final _secretsController = TextEditingController();
   final _toneController = TextEditingController();
   final _detailedPersonalityController = TextEditingController();
+  final _worldSettingController = TextEditingController();
   final _dialogueExamplesController = TextEditingController();
   final _extraInputController = TextEditingController();
   final _storySummaryController = TextEditingController();
@@ -181,6 +186,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _firstLineController.text = char.firstLine;
       _toneController.text = char.toneAndStyle;
       _detailedPersonalityController.text = char.detailedPersonality;
+      _worldSettingController.text =
+      mapData['worldSetting']?.toString().trim().isNotEmpty == true
+          ? mapData['worldSetting'].toString()
+          : char.background;
       _likesController.text = char.likes;
       _dislikesController.text = char.dislikes;
       _secretsController.text = char.secrets;
@@ -249,6 +258,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _heightController.text = data['height']?.toString() ?? '';
       _appearanceController.text = data['appearance'] ?? '';
       _backgroundController.text = data['background'] ?? '';
+      _worldSettingController.text =
+      data['worldSetting']?.toString().trim().isNotEmpty == true
+          ? data['worldSetting'].toString()
+          : data['background']?.toString() ?? '';
       _storySummaryController.text = data['storySummary'] ?? '';
       _storyController.text = data['story'] ?? '';
       _firstLineController.text = data['storyModeFirstLine'] ?? '';
@@ -420,6 +433,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     _backgroundController.dispose();
     _storyController.dispose();
     _detailedPersonalityController.dispose();
+    _worldSettingController.dispose();
     _likesController.dispose();
     _dislikesController.dispose();
     _secretsController.dispose();
@@ -544,6 +558,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
             height: '',
             gender: '',
             background: '',
+            worldSetting: '',
             storySummary: '',
             initialStory: '',
             firstLine: '',
@@ -596,6 +611,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'appearance': _appearanceController.text.trim(),
         'personalityTags': _personalityTags,
         'detailedPersonality': _detailedPersonalityController.text.trim(),
+        'worldSetting': _worldSettingController.text.trim(),
         'background': _backgroundController.text.trim(),
         'likes': _likesController.text.trim(),
         'dislikes': _dislikesController.text.trim(),
@@ -949,42 +965,66 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   // ✨✨✨ 抓取創作者名下的所有角色 (供關係編輯器使用)
   Future<void> _fetchMyCharacters() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+
+    if (user == null) {
+      if (mounted) {
+        setState(() {
+          _isLoadingMyCharacters = false;
+        });
+      }
+      return;
+    }
 
     try {
-      // 1. 抓取公開角色 (且是自己創建的)
-      final publicDocs = await _db.collection('artifacts').doc(AppConfig.appId)
+      final publicDocs = await _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
           .collection('public_characters')
           .where('createdBy', isEqualTo: user.uid)
           .get();
 
-      // 2. 抓取私密角色
-      final privateDocs = await _db.collection('artifacts').doc(AppConfig.appId)
-          .collection('users').doc(user.uid)
+      final privateDocs = await _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('users')
+          .doc(user.uid)
           .collection('private_characters')
           .get();
 
-      // ✨ 使用 Future.wait 等待所有非同步任務完成
       final publicChars = await Future.wait(
-          publicDocs.docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
+        publicDocs.docs
+            .map((doc) => Character.fromFirestoreAsync(doc))
+            .toList(),
       );
+
       final privateChars = await Future.wait(
-          privateDocs.docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
+        privateDocs.docs
+            .map((doc) => Character.fromFirestoreAsync(doc))
+            .toList(),
       );
+
+      if (!mounted) return;
+
+      setState(() {
+        _myCharacters = [
+          ...publicChars,
+          ...privateChars,
+        ];
+
+        _isLoadingMyCharacters = false;
+      });
+    } catch (e) {
+      debugPrint('抓取角色關係清單失敗: $e');
 
       if (mounted) {
         setState(() {
-          // 將公開與私密角色合併放入名單
-          _myCharacters = [...publicChars, ...privateChars];
+          _isLoadingMyCharacters = false;
         });
       }
-    } catch (e) {
-      print("抓取角色關係清單失敗: $e");
     }
   }
 
   Future<void> _saveCharacter() async {
-    debugPrint('🟡 進入 _saveCharacter：isSaving=$_isSaving, isEditing=$isEditing, isPublic=$_isPublic');
 
     if (_isSaving) {
       debugPrint('⛔ _saveCharacter 被擋：_isSaving 已經是 true');
@@ -998,14 +1038,37 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _showErrorDialog(l10n.cannot_save_title, l10n.cannot_save_content);
       return;
     }
+    if (_gender.trim().isEmpty) {
+      _showErrorDialog(
+        l10n.content_missing,
+        '請選擇角色性別。',
+      );
+      return;
+    }
     final String finalVoiceIdToSave = _generatedVoiceId ?? _selectedVoiceId ?? '';
 
 // 🌟 1. 配置清單：直接把「標籤、控制器、上限」綁在一起
     final List<Map<String, dynamic>> checkList = [
-      {'label': l10n.detailed_personality_label, 'controller': _detailedPersonalityController, 'limit': 800},
-      {'label': l10n.field_background, 'controller': _backgroundController, 'limit': 2500},
-      {'label': l10n.field_tone, 'controller': _toneController, 'limit': 500},
-      {'label': l10n.field_initial_story, 'controller': _storyController, 'limit': 800},
+      {
+        'label': '角色設定',
+        'controller': _detailedPersonalityController,
+        'limit': 5000,
+      },
+      {
+        'label': '世界觀',
+        'controller': _worldSettingController,
+        'limit': 10000,
+      },
+      {
+        'label': l10n.field_tone,
+        'controller': _toneController,
+        'limit': 500,
+      },
+      {
+        'label': l10n.field_initial_story,
+        'controller': _storyController,
+        'limit': 800,
+      },
     ];
 
 // 🌟 2. 只有一個迴圈，通殺所有字數檢查
@@ -1024,11 +1087,18 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     }
 
     if (_detailedPersonalityController.text.trim().length < 10) {
-      _showErrorDialog(l10n.content_missing, l10n.content_missing_personality);
+      _showErrorDialog(
+        l10n.content_missing,
+        '角色設定至少需要填寫 10 字。',
+      );
       return;
     }
-    if (_backgroundController.text.trim().length < 20) {
-      _showErrorDialog(l10n.content_missing, l10n.content_missing_bg);
+
+    if (_worldSettingController.text.trim().length < 20) {
+      _showErrorDialog(
+        l10n.content_missing,
+        '世界觀至少需要填寫 20 字。',
+      );
       return;
     }
     if (_toneController.text.trim().isEmpty) {
@@ -1224,6 +1294,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
             height: '',
             gender: '',
             background: '',
+            worldSetting: '',
             storySummary: '',
             initialStory: '',
             firstLine: '',
@@ -1289,6 +1360,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'appearance': _appearanceController.text.trim(),
         'personalityTags': _personalityTags,
         'detailedPersonality': _detailedPersonalityController.text.trim(),
+        'worldSetting': _worldSettingController.text.trim(),
+
+// 舊版相容欄位暫時保留
         'background': _backgroundController.text.trim(),
         'likes': _likesController.text.trim(),
         'dislikes': _dislikesController.text.trim(),
@@ -1398,8 +1472,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       }
       // 關閉轉圈圈並跳出成功訊息
       if (!mounted) return;
-
-// 先關掉 loading dialog
       // 先關掉 loading dialog
       if (mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -1574,6 +1646,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _appearanceController.text = prefs.getString('temp_char_appearance') ?? '';
       _personalityTags = prefs.getStringList('temp_char_personalityTags') ?? [];
       _detailedPersonalityController.text = prefs.getString('temp_char_detailedPersonality') ?? '';
+      _worldSettingController.text =
+          prefs.getString('temp_char_worldSetting') ??
+              prefs.getString('temp_char_background') ??
+              '';
       _backgroundController.text = prefs.getString('temp_char_background') ?? '';
       _storyController.text = prefs.getString('temp_char_story') ?? '';
       _isPublic = prefs.getBool('temp_char_isPublic') ?? true;
@@ -1619,6 +1695,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     await prefs.setString('temp_char_appearance', _appearanceController.text.trim());
     await prefs.setStringList('temp_char_personalityTags', _personalityTags);
     await prefs.setString('temp_char_detailedPersonality', _detailedPersonalityController.text.trim());
+    await prefs.setString(
+      'temp_char_worldSetting',
+      _worldSettingController.text.trim(),
+    );
     await prefs.setString('temp_char_background', _backgroundController.text.trim());
     await prefs.setString('temp_char_story', _storyController.text.trim());
     await prefs.setBool('temp_char_isPublic', _isPublic);
@@ -2598,26 +2678,52 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   // --- 懸浮儲存按鈕 (維持在最上層，不管哪個分頁都看得到) ---
                   Align(
                     alignment: Alignment.bottomCenter,
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      width: double.infinity,
-                      color: theme.scaffoldBackgroundColor.withValues(alpha:0.95),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                          elevation: 4,
+                    child: SafeArea(
+                      top: false,
+                      child: Container(
+                        padding: const EdgeInsets.all(16.0),
+                        width: double.infinity,
+                        color: theme.scaffoldBackgroundColor.withValues(alpha: 0.95),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            elevation: 4,
+                          ),
+                          onPressed: () {
+                            debugPrint(
+                              '🟢 強制儲存按鈕被點擊：'
+                                  'isEditing=$isEditing, '
+                                  'isSaving=$_isSaving, '
+                                  'isPublic=$_isPublic',
+                            );
+
+                            _saveCharacter();
+                          },
+                          child: _isSaving
+                              ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                              : Text(
+                            isEditing
+                                ? l10n.save_changes_button
+                                : l10n.createButton,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
-                        onPressed: () {
-                          debugPrint('🟢 強制儲存按鈕被點擊：isEditing=$isEditing, isSaving=$_isSaving, isPublic=$_isPublic');
-                          _saveCharacter();
-                        },
-                        child: _isSaving
-                            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : Text(isEditing ? l10n.save_changes_button : l10n.createButton, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -2636,8 +2742,25 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         _buildBannerImageSection(),
         const SizedBox(height: 24),
 
-        _buildImageGallery(),
-        const SizedBox(height: 24),
+        Row(
+          children: [
+            Text(
+              '角色圖片',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text(
+              ' *',
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        _buildImageGallery(),        const SizedBox(height: 24),
         // 💡「卡片 1：🧬 基礎資料
         Card(
           elevation: 2,
@@ -2648,7 +2771,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSectionTitle(l10n.section_basic_info, theme),
-                _buildTextField(_nameController, l10n.charNameLabel),
+                _buildTextField(_nameController, l10n.charNameLabel, isRequired: true,),
                 _buildTextField(_ageController, l10n.charAgeLabel),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -2671,7 +2794,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     value: currentValidGender,
                     hint: Text(l10n.genderNotSelected),
                     decoration: InputDecoration(
-                      labelText: l10n.charGenderLabel,
+                      label: _buildRequiredLabel(
+                        l10n.charGenderLabel,
+                        theme,
+                      ),
                       border: const OutlineInputBorder(),
                     ),
                     items: genderOptions.map((g) {
@@ -2785,10 +2911,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 const SizedBox(height: 16),
 
                 _buildBoxedTextField(
-                    _backgroundController,
-                    l10n.background_label,
-                    maxLength: 2500,
-                    hintText: l10n.background_hint
+                  _worldSettingController,
+                  '世界觀',
+                  maxLength: 10000,
+                  hintText: '描述世界背景、歷史、時代、地區、勢力、制度、科技、魔法與世界規則。',
+                  isRequired: true,
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(_storySummaryController,l10n.story_summary_label, maxLength: 50),
@@ -2833,10 +2960,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(
-                    _detailedPersonalityController,
-                    l10n.detailed_personality_label,
-                    maxLength: 800,
-                    hintText: l10n.detailed_personality_hint
+                  _detailedPersonalityController,
+                  '角色設定',
+                  maxLength: 5000,
+                  hintText: '描述角色個性、價值觀、思考方式、情緒反應、行為習慣、說話方式與核心信念。',
+                  isRequired: true,
                 ),
                 const SizedBox(height: 16),
                 Text(l10n.affection_evo_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
@@ -2870,10 +2998,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 _buildBoxedTextField(_secretsController, l10n.charSecretsLabel, maxLength: 200),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(
-                    _toneController,
-                    l10n.charToneLabel,
-                    maxLength: 500,
-                    hintText: l10n.tone_hint_detail
+                  _toneController,
+                  l10n.charToneLabel,
+                  maxLength: 500,
+                  hintText: l10n.tone_hint_detail,
+                  isRequired: true,
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(_dialogueExamplesController, l10n.charDialogueExampleLabel, maxLength: 500, hintText: l10n.dialogue_example_hint),
@@ -3360,14 +3489,28 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   }
   Widget _buildTab3_Relationships(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
+
+    if (_isLoadingMyCharacters) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 100.0),
+      padding: const EdgeInsets.fromLTRB(
+        16.0,
+        16.0,
+        16.0,
+        100.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Card(
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -3376,70 +3519,117 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildSectionTitle(l10n.section_social_circle, theme),
-                      IconButton(onPressed: _showAddRelationshipDialog, icon: const Icon(Icons.group_add, color: Colors.blue)),
+                      _buildSectionTitle(
+                        l10n.section_social_circle,
+                        theme,
+                      ),
+                      IconButton(
+                        onPressed: _showAddRelationshipDialog,
+                        icon: const Icon(
+                          Icons.group_add,
+                          color: Colors.blue,
+                        ),
+                      ),
                     ],
                   ),
-                  Text(l10n.social_circle_desc,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                  Text(
+                    l10n.social_circle_desc,
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
                   const SizedBox(height: 16),
 
                   if (_relationships.isEmpty)
-                    Center(child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Text(l10n.social_no_drama, style: TextStyle(color: Colors.grey)),
-                    )),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Text(
+                          l10n.social_no_drama,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
 
-                  // 迴圈顯示已建立的關係
                   ..._relationships.entries.map((entry) {
-                    final targetId = entry.key;
-                    final attitude = entry.value;
+                    final String targetId = entry.key;
+                    final String attitude = entry.value;
+
+                    Character? targetCharacter;
+
+                    try {
+                      targetCharacter = _myCharacters.firstWhere(
+                            (character) => character.id == targetId,
+                      );
+                    } catch (_) {
+                      targetCharacter = null;
+                    }
+
+                    final String displayName =
+                    targetCharacter?.name.trim().isNotEmpty == true
+                        ? targetCharacter!.name.trim()
+                        : '未知角色';
+
+                    final String avatarUrl =
+                        targetCharacter?.avatarPath.trim() ?? '';
 
                     return Card(
                       margin: const EdgeInsets.only(top: 8),
-                      color: theme.colorScheme.surfaceVariant.withValues(alpha:0.5),
-
-                      // ✨ 派尋人小精靈去查名字！
-                      child: FutureBuilder<DocumentSnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection('artifacts')
-                            .doc(AppConfig.appId)
-                            .collection('public_characters') // 假設對象都是公開角色
-                            .doc(targetId)
-                            .get(),
-                        builder: (context, snapshot) {
-                          String displayName = targetId;
-                          String avatarUrl = '';
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            displayName =l10n.loading_text;
-                          } else if (snapshot.hasData && snapshot.data!.exists) {
-                            final data = snapshot.data!.data() as Map<String, dynamic>;
-                            displayName = data['name'] ?? targetId;
-                            avatarUrl = data['avatarPath'] ?? '';
-                          }
-                          return ListTile(
-                            // ✨ 如果有大頭貼就顯示，沒有就顯示預設 icon
-                            leading: avatarUrl.isNotEmpty && avatarUrl.startsWith('http')
-                                ? CircleAvatar(backgroundImage: NetworkImage(avatarUrl))
-                                : const Icon(Icons.compare_arrows, color: Colors.pinkAccent),
-
-                            title: Text(l10n.social_target(displayName), style: const TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text(l10n.social_attitude(attitude)),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit_outlined, color: Colors.blueGrey),
-                                  onPressed: () => _showEditRelationshipDialog(targetId, displayName, attitude),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                                  onPressed: () => setState(() => _relationships.remove(targetId)),
-                                ),
-                              ],
+                      color: theme.colorScheme.surfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
+                      child: ListTile(
+                        leading: avatarUrl.isNotEmpty &&
+                            avatarUrl.startsWith('http')
+                            ? CircleAvatar(
+                          backgroundImage: NetworkImage(
+                            avatarUrl,
+                          ),
+                        )
+                            : const Icon(
+                          Icons.compare_arrows,
+                          color: Colors.pinkAccent,
+                        ),
+                        title: Text(
+                          l10n.social_target(displayName),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          l10n.social_attitude(attitude),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.edit_outlined,
+                                color: Colors.blueGrey,
+                              ),
+                              onPressed: () =>
+                                  _showEditRelationshipDialog(
+                                    targetId,
+                                    displayName,
+                                    attitude,
+                                  ),
                             ),
-                          );
-                        },
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.redAccent,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _relationships.remove(targetId);
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }),
@@ -4084,8 +4274,34 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1}) {
-    final theme = Theme.of(context);
+  Widget _buildRequiredLabel(String label, ThemeData theme) {
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: label,
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          const TextSpan(
+            text: ' *',
+            style: TextStyle(
+              color: Colors.redAccent,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller,
+      String label, {
+        int maxLines = 1,
+        bool isRequired = false,
+      }) {    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -4093,8 +4309,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         maxLines: maxLines,
         style: TextStyle(color: theme.textTheme.bodyMedium?.color),
         decoration: InputDecoration(
-          labelText: label,
-          labelStyle:TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.7)),
+          label: isRequired
+              ? _buildRequiredLabel(label, theme)
+              : Text(
+            label,
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
           enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: theme.dividerColor)),
           focusedBorder: UnderlineInputBorder(
@@ -4105,34 +4327,132 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     );
   }
 
-  Widget _buildBoxedTextField(TextEditingController controller, String label, {required int maxLength, String? hintText}) {
+  Widget _buildBoxedTextField(
+      TextEditingController controller,
+      String label, {
+        required int maxLength,
+        String? hintText,
+        bool isRequired = false,
+      }) {
     final theme = Theme.of(context);
-    return TextFormField(
-      controller: controller,
-      style: TextStyle(color: theme.textTheme.bodyMedium?.color),
-      keyboardType: TextInputType.multiline,
-      maxLines: null,
-      maxLength: maxLength,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hintText,
-        hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.4), fontSize: 13),
-        labelStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.7)),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: theme.dividerColor),
+
+    final int currentLength = controller.text.characters.length;
+    final int overflow = currentLength - maxLength;
+
+    final NumberFormat numberFormatter = NumberFormat.decimalPattern();
+
+    final String formattedCurrentLength =
+    numberFormatter.format(currentLength);
+
+    final String formattedMaxLength =
+    numberFormatter.format(maxLength);
+
+    Color counterColor =
+    theme.colorScheme.onSurface.withValues(alpha: 0.6);
+
+    if (overflow > 0) {
+      counterColor = Colors.red;
+    } else if (currentLength >= maxLength - 100) {
+      counterColor = Colors.orange;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          controller: controller,
+          style: TextStyle(
+            color: theme.textTheme.bodyMedium?.color,
+          ),
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+
+          // 保留字數統計，但不要截斷貼上的內容
+          maxLength: maxLength,
+          maxLengthEnforcement: MaxLengthEnforcement.none,
+
+          onChanged: (_) {
+            setState(() {});
+          },
+
+          decoration: InputDecoration(
+            label: isRequired
+                ? _buildRequiredLabel(label, theme)
+                : Text(
+              label,
+              style: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+            ),
+            hintText: hintText,
+            hintStyle: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(
+                alpha: 0.4,
+              ),
+              fontSize: 13,
+            ),
+            labelStyle: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(
+                alpha: 0.7,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: theme.dividerColor,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: theme.dividerColor,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: overflow > 0
+                    ? Colors.red
+                    : theme.colorScheme.primary,
+                width: 2,
+              ),
+            ),
+
+            // 顯示成 2,356 / 2,500
+            counterText:
+            '$formattedCurrentLength / $formattedMaxLength',
+
+            counterStyle: TextStyle(
+              color: counterColor,
+              fontWeight: overflow > 0
+                  ? FontWeight.bold
+                  : FontWeight.normal,
+            ),
+            alignLabelWithHint: true,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 16,
+            ),
+          ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: theme.dividerColor),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: theme.colorScheme.primary, width: 2.0),
-        ),
-        alignLabelWithHint: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16.0),
-      ),
+
+        if (overflow > 0)
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 4,
+              top: 2,
+              bottom: 6,
+            ),
+            child: Text(
+              '⚠ $label 已超出 ${numberFormatter.format(overflow)} 字，請修正後再發布。',
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
