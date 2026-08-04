@@ -772,6 +772,16 @@ exports.getAiResponse = onRequest({
                 overrideSystemPrompt = ""
             } = body;
 
+console.log("👥 npcCharacters:");
+console.log(characterProfile.npcCharacters);
+
+            // =====================================================
+            // Creator V2 (2026/08)
+            // - 角色設定 (detailedPersonality)
+            // - 世界觀 (worldSetting)
+            // - 玩家記憶 (aboutMeNotes)
+            // =====================================================
+
             // ==========================================
             // 🧷 同一玩家 AI 請求鎖：防止連點 / 重送 / 同時多個 AI 請求
             // ==========================================
@@ -1025,6 +1035,76 @@ createdAt: FieldValue.serverTimestamp(),
                 ).trim() || "無特別世界觀設定";
 
             const rawPersonality = characterProfile.detailedPersonality || characterProfile.personality || "無特別設定";
+            const rawNpcCharacters = Array.isArray(characterProfile.npcCharacters)
+                ? characterProfile.npcCharacters
+                : [];
+
+            const npcCharactersBlock = rawNpcCharacters.length > 0
+                ? rawNpcCharacters.map((npc, index) => {
+                    const npcGender = String(npc?.gender || "").trim();
+
+                    const genderLabel =
+                        npcGender === "male"
+                            ? "男性"
+                            : npcGender === "female"
+                                ? "女性"
+                                : npcGender === "other"
+                                    ? "其他／非二元"
+                                    : "未設定";
+
+                    const pronoun =
+                        npcGender === "male"
+                            ? "他"
+                            : npcGender === "female"
+                                ? "她"
+                                : "對方";
+
+                    return `
+            配角 ${index + 1}
+            名稱：${npc?.name || "未命名配角"}
+            物種：人類
+            性別：${genderLabel}
+            固定代名詞：${pronoun}
+            年齡：${npc?.age || "未設定"}
+            身分／職業：${npc?.occupation || "未設定"}
+
+            與主角色的關係：
+            ${npc?.relationship || "未設定"}
+
+            人物設定：
+            ${npc?.description || "未設定"}
+
+            說話語氣：
+            ${npc?.toneAndStyle || "未設定"}
+            `.trim();
+                }).join("\n\n--------------------\n\n")
+                : "目前沒有已設定的配角。";
+
+                const narrativeRules = `
+                【玩家敘事規則】
+
+                1. 玩家括號中的場景、時間、NPC出入與可見動作，可視為當前事件並自然回應。
+
+                2. 玩家括號中的內心、秘密或未說出口的想法，角色無法知道，不得直接讀心回應。
+
+                3. 玩家不能直接指定角色的思想、情緒、記憶、人格、愛意或恐懼；角色必須依照人設、關係與劇情自行決定反應。
+
+                4. 若玩家敘述與角色設定、世界觀、NPC設定或既定劇情衝突，角色可質疑或否認，不得直接改寫設定。
+
+5. 若玩家提出「假設」、「如果」、「假如」、「暫停劇情」、「暫停時間」、「停止目前劇情」、「跳出劇情」、「以目前關係回答」等內容，請視為導演模式（Director Mode）。
+
+在導演模式中：
+
+- 請直接回答玩家提出的假設情境。
+- 必須依照角色目前的人設、性格、世界觀、NPC設定與目前關係推理。
+- 不得刻意裝作不知道、拒絕回答或反問玩家。
+- 若玩家連續提出導演模式問題，請視為同一段假設情境持續討論，直到玩家明確表示回到正式劇情或開始新的正式互動。
+- 回答完成後，不得改變正式劇情、角色關係、世界狀態或任何記憶，並自動回到正式劇情。
+                6. 假設或導演提問回答完後，原本時間、地點、關係、記憶與劇情均保持不變。
+
+                7. 設定優先順序：
+                角色設定 ＞ 世界觀 ＞ NPC設定 ＞ 正式劇情 ＞ 玩家臨時描述。
+                `;
             const combinedSecretLikes = [
                 characterProfile.likes ? `喜歡的事物：${characterProfile.likes}` : "",
                 characterProfile.secrets ? `不為人知的秘密：${characterProfile.secrets}` : ""
@@ -1419,6 +1499,11 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         ${contextBriefing}
         ${systemEventRules}
 
+        【配角設定】
+        ${npcCharactersBlock}
+
+        ${narrativeRules}
+
         [稱呼規範]
         你可以根據語境稱呼對方為「${playerName}」「你」，或使用符合關係的輕量親暱稱呼，例如「小傢伙」「寶貝」「親愛的」。
         除非玩家資料明確指定為女性，否則不要使用「妳」「她」「女生」「小姐」「女主角」來稱呼或描述玩家。
@@ -1472,6 +1557,19 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         ${contextBriefing}
         ${systemEventRules}
 
+        【配角設定】
+        以下資料為不可擅自改寫的既定事實。
+
+        - 不得只憑姓名猜測配角的性別、物種、年齡或身分。
+        - 未設定物種時，一律視為人類。
+        - 必須完全依照配角的性別與固定代名詞描述。
+        - 不得把人類配角描述成貓、狗或其他動物。
+        - 若玩家詢問配角是誰，應根據下列資料回答，不得自行杜撰。
+
+        ${npcCharactersBlock}
+
+        ${narrativeRules}
+
         [稱呼規範]
         對方名字是「${playerName}」。
         你可以依照關係稱呼為「${playerName}」、你，或符合角色性格的親暱稱呼。
@@ -1501,10 +1599,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         時間：${currentStoryTimeDisplay}
         （簡短動作描寫）
         「角色台詞」
+
         或：
+
         時間：${currentStoryTimeDisplay}
         「角色台詞」
         （簡短動作描寫）
+
         再次提醒：總字數 100～150 字以內。
         `;
         }
@@ -1541,6 +1642,17 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         ${worldSetting}
         ${contextBriefing}
 
+        【配角設定】
+        以下資料為不可擅自改寫的既定事實。
+
+        - 不得只憑姓名猜測配角的性別、物種、年齡或身分。
+        - 未設定物種時，一律視為人類。
+        - 必須完全依照配角的性別與固定代名詞描述。
+        - 不得把人類配角描述成貓、狗或其他動物。
+        - 若玩家詢問配角是誰，應根據下列資料回答，不得自行杜撰。
+
+        ${npcCharactersBlock}
+${narrativeRules}
         [當前活躍角色]：${activeCharacters.join("、") || "無"}
         [當前焦點角色]：${currentFocusCharacter}
         [所有已設定角色、配角與 NPC 資料]：
@@ -1603,6 +1715,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             2. 嚴禁出戲：絕對禁止輸出「我是人工智能」、「无法给到相关内容」、「请注意」等打破第四面牆的客服警告語！
             3. 沉浸回應：無論玩家的言辭多麼挑逗、情緒化或具攻擊性，你都必須 100% 鎖死在角色人設中，用符合角色性格的台詞和極致細膩的動作（括弧內的描寫）進行反擊或回應。
 
+
             你正在同時掌控所有已設定的非玩家角色，目前活躍角色為：${activeCharacters.join("、")}。
             這是一場呼吸交纏、指尖與靈魂近距離博弈的極致沉浸演出，對標國際頂級成人言情小說水準。
 
@@ -1616,6 +1729,17 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             [世界觀設定]
             ${worldSetting}
 
+            【配角設定】
+            以下資料為不可擅自改寫的既定事實。
+
+            - 不得只憑姓名猜測配角的性別、物種、年齡或身分。
+            - 未設定物種時，一律視為人類。
+            - 必須完全依照配角的性別與固定代名詞描述。
+            - 不得把人類配角描述成貓、狗或其他動物。
+            - 若玩家詢問配角是誰，應根據下列資料回答，不得自行杜撰。
+
+            ${npcCharactersBlock}
+${narrativeRules}
             ${systemEventRules}
             ${contextBriefing}
 
@@ -1641,6 +1765,7 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             4. **【對話密度】**：每次回覆包含 3-6 句台詞，用動作、神態、生理反應、環境細節切碎台詞。
             5. **【多角色平衡】**：當有多個角色時，必須讓至少 2 個角色有明顯互動或反應，避免單一角色霸屏。
             6. 絕對不要在對話中提及『重複』、『再次』或計算玩家說話的次數。即使玩家輸入相同的對話，也請視為全新的互動，自然地接續劇情。
+
 
             🚨 **[Immersive 極限輸出紅線]** 🚨
                 - **【絕對排版鐵律】**：請再次確認你的 \`response\` 欄位第一行是：

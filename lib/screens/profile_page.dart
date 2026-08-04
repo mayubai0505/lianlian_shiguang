@@ -38,7 +38,8 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
   // --- 狀態變數 ---
   String _nickname = '';
   String _avatarPath = 'assets/images/avatar1.png';
@@ -48,6 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool _isLoading = true;
   List<Character> _friendsList = [];
   List<Character> _myCharacters = [];
+  late TabController _profileTabController;
   late TextEditingController _playerIDController;
   bool _hasChangedID = false;
   String _oldIDFromDB = "";
@@ -76,6 +78,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    _profileTabController = TabController(
+      length: 3,
+      vsync: this,
+    );
 
     // 🌟 第一步：先幫控制器「登記戶口」（這行最重要！）
     _playerIDController = TextEditingController();
@@ -185,6 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _inviteCodeController.dispose(); // ✨ 新增：釋放邀請碼控制器的記憶體，避免漏水！
     _pointsSubscription?.cancel();
     _userDocSubscription?.cancel();
+    _profileTabController.dispose();
     super.dispose();
   }
 
@@ -1853,85 +1860,134 @@ class _ProfilePageState extends State<ProfilePage> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final currentUser = FirebaseAuth.instance.currentUser;
     final String adminUid = 'B71k2kyooubYsOtIO1nkiBwyBXt2';
-    final bool isAdmin = (currentUser?.uid == adminUid);
+    final bool isAdmin = currentUser?.uid == adminUid;
     final theme = Theme.of(context);
 
     return Container(
       decoration: themeNotifier.currentBackground,
       child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+        child: CircularProgressIndicator(),
+      )
           : RefreshIndicator(
         onRefresh: _refreshData,
         child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
+          headerSliverBuilder: (
+              context,
+              innerBoxIsScrolled,
+              ) {
             return [
               SliverAppBar(
-                title: Text(l10n.title_personal_homepage),
-                pinned: false,
+                title: Text(
+                  l10n.title_personal_homepage,
+                ),
+                pinned: true,
                 floating: false,
-                snap: false,
                 backgroundColor:
                 Theme.of(context).scaffoldBackgroundColor,
                 forceElevated: innerBoxIsScrolled,
                 actions: [
-                  // 🍎 終極隱藏術 4：如果是送審模式，直接讓這個背包按鈕人間蒸發！
                   if (!isAppleReviewMode)
                     IconButton(
                       tooltip: '我的背包',
-                      icon: const Icon(Icons.card_giftcard),
+                      icon: const Icon(
+                        Icons.card_giftcard,
+                      ),
                       onPressed: () async {
                         if (currentUser == null) return;
 
-                        // 顯示讀取中提示
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (context) => const Center(child: CircularProgressIndicator()),
+                          builder: (context) =>
+                          const Center(
+                            child:
+                            CircularProgressIndicator(),
+                          ),
                         );
 
                         try {
-                          // 1. 去 Firebase 抓取當前玩家的 totalSpent
-                          final userDoc = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
-                          int totalSpent = userDoc.data()?['totalSpent'] ?? 0;
+                          final userDoc =
+                          await FirebaseFirestore
+                              .instance
+                              .collection('users')
+                              .doc(currentUser.uid)
+                              .get();
 
-                          // 2. 檢查是否已經填寫過實體地址
-                          final addressDoc = await FirebaseFirestore.instance.collection('shipping_addresses').doc(currentUser.uid).get();
-                          bool hasSubmittedAddress = addressDoc.exists;
+                          final int totalSpent =
+                              userDoc.data()?[
+                              'totalSpent'] ??
+                                  0;
 
-                          // 關閉 Loading
-                          if (mounted) Navigator.pop(context);
+                          final addressDoc =
+                          await FirebaseFirestore
+                              .instance
+                              .collection(
+                            'shipping_addresses',
+                          )
+                              .doc(currentUser.uid)
+                              .get();
 
-                          // 3. 彈出真正的「背包收藏與 VIP 獎勵總覽」
+                          final bool
+                          hasSubmittedAddress =
+                              addressDoc.exists;
+
                           if (mounted) {
-                            _showBackpackDialog(context, currentUser.uid, totalSpent, hasSubmittedAddress);
+                            Navigator.pop(context);
+                          }
+
+                          if (mounted) {
+                            _showBackpackDialog(
+                              context,
+                              currentUser.uid,
+                              totalSpent,
+                              hasSubmittedAddress,
+                            );
                           }
                         } catch (e) {
-                          if (mounted) Navigator.pop(context);
-                          debugPrint('讀取背包失敗: $e');
+                          if (mounted) {
+                            Navigator.pop(context);
+                          }
+
+                          debugPrint(
+                            '讀取背包失敗: $e',
+                          );
                         }
                       },
                     ),
+
                   IconButton(
-                    tooltip: l10n.title_time_letters,
+                    tooltip:
+                    l10n.title_time_letters,
                     icon: Image.asset(
                       'assets/images/scroll_icon.png',
                       width: 26,
                       height: 26,
-                      color: Theme.of(context).brightness == Brightness.dark
+                      color: Theme.of(context)
+                          .brightness ==
+                          Brightness.dark
                           ? Colors.white
-                          : const Color(0xFF6750A4),
+                          : const Color(
+                        0xFF6750A4,
+                      ),
                     ),
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AnnouncementListPage()),
+                        MaterialPageRoute(
+                          builder: (context) =>
+                          const AnnouncementListPage(),
+                        ),
                       );
                     },
                   ),
+
                   IconButton(
                     icon: Icon(
                       Icons.settings_outlined,
-                      color: Theme.of(context).brightness == Brightness.dark
+                      color: Theme.of(context)
+                          .brightness ==
+                          Brightness.dark
                           ? Colors.white70
                           : Colors.black54,
                     ),
@@ -1939,84 +1995,69 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                            const SettingsPage()),
+                          builder: (context) =>
+                          const SettingsPage(),
+                        ),
                       );
                     },
                   ),
+
                   const SizedBox(width: 8),
                 ],
               ),
+
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                  const EdgeInsets.fromLTRB(
+                    16,
+                    16,
+                    16,
+                    12,
+                  ),
+                  child:
+                  _buildCreatorProfileHeader(),
+                ),
+              ),
+
+              SliverPersistentHeader(
+                pinned: true,
+                delegate:
+                _ProfileTabBarDelegate(
+                  TabBar(
+                    controller:
+                    _profileTabController,
+                    labelColor:
+                    theme.colorScheme.primary,
+                    unselectedLabelColor:
+                    theme
+                        .colorScheme.onSurface
+                        .withValues(
+                      alpha: 0.55,
+                    ),
+                    indicatorColor:
+                    theme.colorScheme.primary,
+                    indicatorWeight: 3,
+                    tabs: const [
+                      Tab(text: '自我介紹'),
+                      Tab(text: '角色'),
+                      Tab(text: '動態'),
+                    ],
+                  ),
+                  backgroundColor:
+                  Theme.of(context)
+                      .scaffoldBackgroundColor,
+                ),
+              ),
             ];
           },
-          body: ListView(
-            padding: const EdgeInsets.all(16.0),
+          body: TabBarView(
+            controller:
+            _profileTabController,
             children: [
-              _buildProfileHeader(),
-
-              if (_bio.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                _buildProfileBio(),
-              ],
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(child: _buildCheckInButton()),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.auto_stories),
-                      label: Text(l10n.tab_heartbeat_diary),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white.withValues(alpha:0.7),
-                        foregroundColor: theme.colorScheme.primary,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      ),
-                      onPressed: _showHeartbeatDiary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance.collection('users').doc(currentUser?.uid).snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData || !snapshot.data!.exists) {
-                    return const SizedBox.shrink();
-                  }
-
-                  final userData = snapshot.data!.data() as Map<String, dynamic>;
-                  return _buildReferralSection(userData);
-                },
-              ),
-              const SizedBox(height: 12),
-              _buildFriendsListSection(),
-              const SizedBox(height: 24),
-              _buildMyCharactersSection(),
-              if (isAdmin) ...[
-                const Divider(thickness: 2, color: Colors.pinkAccent),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text('👑 主理人專屬區域', style: TextStyle(color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.admin_panel_settings),
-                  label: const Text('進入拾光管理後台'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black87,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AdminAnnouncementPage()),
-                    );
-                  },
-                ),
-                const SizedBox(height: 40),
-              ],
+              _buildAboutMeTab(),
+              _buildCharactersTab(),
+              _buildMomentsTab(),
             ],
           ),
         ),
@@ -2056,6 +2097,356 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
   }
+
+Widget _buildCreatorProfileHeader() {
+  final theme = Theme.of(context);
+  final primaryColor = theme.colorScheme.primary;
+  final textColor = theme.colorScheme.onSurface;
+  final subTextColor =
+  textColor.withValues(alpha: 0.65);
+
+  return Column(
+    children: [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: _editProfile,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: _isBirthdayToday
+                    ? [
+                  BoxShadow(
+                    color: primaryColor.withValues(
+                      alpha: 0.4,
+                    ),
+                    blurRadius: 16,
+                    spreadRadius: 4,
+                  ),
+                ]
+                    : null,
+              ),
+              child: CircleAvatar(
+                radius: 46,
+                backgroundColor:
+                primaryColor.withValues(alpha: 0.1),
+                backgroundImage:
+                getAvatarImageProvider(_avatarPath),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 16),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _nickname,
+                        maxLines: 1,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                    ),
+                    if (_isBirthdayToday)
+                      Icon(
+                        Icons.cake_rounded,
+                        size: 20,
+                        color: primaryColor,
+                      ),
+                  ],
+                ),
+
+                const SizedBox(height: 6),
+
+                Text(
+                  _bio.isNotEmpty
+                      ? _bio
+                      : '寫下一句屬於你的自我介紹吧。',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.45,
+                    color: subTextColor,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                OutlinedButton.icon(
+                  onPressed: _editProfile,
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    size: 16,
+                  ),
+                  label: const Text('編輯個人檔案'),
+                  style: OutlinedButton.styleFrom(
+                    visualDensity:
+                    VisualDensity.compact,
+                    padding:
+                    const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+
+      const SizedBox(height: 20),
+
+      Row(
+        children: [
+          Expanded(
+            child: _buildProfileStatItem(
+              value: _friendsList.length,
+              label: '收藏',
+            ),
+          ),
+          Expanded(
+            child: _buildProfileStatItem(
+              value: _myCharacters.length,
+              label: '作品',
+            ),
+          ),
+          Expanded(
+            child: _buildProfileStatItem(
+              value: 0,
+              label: '追蹤',
+            ),
+          ),
+          Expanded(
+            child: _buildProfileStatItem(
+              value: 0,
+              label: '喜歡',
+            ),
+          ),
+        ],
+      ),
+
+      const SizedBox(height: 12),
+
+      Row(
+        children: [
+          Expanded(
+            child: _buildCheckInButton(),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: _showHeartbeatDiary,
+              icon: const Icon(
+                Icons.auto_stories_outlined,
+              ),
+              label: const Text('心動日記'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme
+                    .colorScheme.surface
+                    .withValues(alpha: 0.8),
+                foregroundColor: primaryColor,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                  BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+Widget _buildProfileStatItem({
+  required int value,
+  required String label,
+}) {
+  final theme = Theme.of(context);
+
+  return Column(
+    children: [
+      Text(
+        _formatPoints(value),
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+      const SizedBox(height: 3),
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          color: theme.colorScheme.onSurface
+              .withValues(alpha: 0.55),
+        ),
+      ),
+    ],
+  );
+}
+
+  Widget _buildAboutMeTab() {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (_bio.isNotEmpty)
+          _buildProfileBio()
+        else
+          _buildEmptyBioCard(),
+
+        const SizedBox(height: 16),
+
+        if (currentUser != null)
+          StreamBuilder<DocumentSnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(currentUser.uid)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData ||
+                  !snapshot.data!.exists) {
+                return const SizedBox.shrink();
+              }
+
+              final userData =
+              snapshot.data!.data()
+              as Map<String, dynamic>;
+
+              return _buildReferralSection(userData);
+            },
+          ),
+
+        const SizedBox(height: 16),
+
+        _buildFriendsListSection(),
+      ],
+    );
+  }
+  Widget _buildEmptyBioCard() {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: _editProfile,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface
+              .withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: theme.colorScheme.primary
+                .withValues(alpha: 0.12),
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.edit_note_rounded,
+              size: 36,
+              color: theme.colorScheme.primary
+                  .withValues(alpha: 0.65),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              '還沒有自我介紹',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '點一下寫下關於你的介紹。',
+              style: TextStyle(
+                fontSize: 13,
+                color: theme.colorScheme.onSurface
+                    .withValues(alpha: 0.55),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+Widget _buildCharactersTab() {
+  return RefreshIndicator(
+    onRefresh: _refreshData,
+    child: ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _buildMyCharactersSection(),
+      ],
+    ),
+  );
+}
+
+Widget _buildMomentsTab() {
+  final theme = Theme.of(context);
+
+  return ListView(
+    padding: const EdgeInsets.all(24),
+    children: [
+      const SizedBox(height: 40),
+
+      Icon(
+        Icons.dynamic_feed_outlined,
+        size: 64,
+        color: theme.colorScheme.primary
+            .withValues(alpha: 0.45),
+      ),
+
+      const SizedBox(height: 16),
+
+      Text(
+        '還沒有動態',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
+
+      const SizedBox(height: 8),
+
+      Text(
+        '之後這裡會顯示你與旗下角色發布的動態。',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 13,
+          height: 1.5,
+          color: theme.colorScheme.onSurface
+              .withValues(alpha: 0.55),
+        ),
+      ),
+    ],
+  );
+}
 
   Widget _buildProfileHeader() {
     final theme = Theme.of(context);
@@ -2761,5 +3152,45 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
     );
+  }
+}
+
+class _ProfileTabBarDelegate
+    extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+  final Color backgroundColor;
+
+  _ProfileTabBarDelegate(
+      this.tabBar, {
+        required this.backgroundColor,
+      });
+
+  @override
+  double get minExtent =>
+      tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent =>
+      tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context,
+      double shrinkOffset,
+      bool overlapsContent,
+      ) {
+    return Material(
+      color: backgroundColor,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(
+      covariant _ProfileTabBarDelegate oldDelegate,
+      ) {
+    return oldDelegate.tabBar != tabBar ||
+        oldDelegate.backgroundColor !=
+            backgroundColor;
   }
 }

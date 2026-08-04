@@ -1067,47 +1067,87 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // ✨ 總裁專屬：聊天室跳轉角色檔案 (已對齊 widget.character 結構)
-  Future<void> _navigateToProfileFromChat(String charId, String charName, String avatarUrl) async {
-    // 顯示讀取圈圈
+  Future<void> _navigateToProfileFromChat(
+      String charId,
+      String charName,
+      String avatarUrl,
+      ) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) =>
+      const Center(child: CircularProgressIndicator()),
     );
 
     try {
-      // 去公開區檢查這尊角色還在不在
-      final doc = await FirebaseFirestore.instance
+      // 1. 先查公開角色
+      final publicDoc = await FirebaseFirestore.instance
           .collection('artifacts')
           .doc(AppConfig.appId)
           .collection('public_characters')
           .doc(charId)
           .get();
 
-      if (mounted) Navigator.pop(context); // 關閉讀取圈圈
+      DocumentSnapshot? targetDoc;
 
-      if (doc.exists) {
-        // ✅ 狀況 A：角色還在公開海域，大方跳轉！
-        final characterData = await Character.fromFirestoreAsync(doc);
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CharacterProfilePage(
-                character: characterData,
-                characterId: charId,
-                sessionId: _sessionId,
-              ),
+      if (publicDoc.exists) {
+        targetDoc = publicDoc;
+      } else if (currentUser != null) {
+        // 2. 公開區沒有，再查目前登入者自己的私人角色
+        final privateDoc = await FirebaseFirestore.instance
+            .collection('artifacts')
+            .doc(AppConfig.appId)
+            .collection('users')
+            .doc(currentUser.uid)
+            .collection('private_characters')
+            .doc(charId)
+            .get();
+
+        if (privateDoc.exists) {
+          targetDoc = privateDoc;
+        }
+      }
+
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      if (targetDoc != null && targetDoc.exists) {
+        final characterData =
+        await Character.fromFirestoreAsync(targetDoc);
+
+        if (!mounted) return;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CharacterProfilePage(
+              character: characterData,
+              characterId: charId,
+              sessionId: _sessionId,
             ),
+          ),
+        );
+      } else {
+        // 不是公開角色，也不是目前玩家自己的私人角色
+        if (mounted) {
+          _showEncryptedProfileDialog(
+            charName,
+            avatarUrl,
           );
         }
-      } else {
-        // 🔒 狀況 B：角色已經變私人或刪除了，彈出神祕機密卡！
-        _showEncryptedProfileDialog(charName, avatarUrl);
       }
     } catch (e) {
-      if (mounted) Navigator.pop(context);
-      print("❌ 跳轉失敗: $e");
+      if (mounted) {
+        Navigator.of(
+          context,
+          rootNavigator: true,
+        ).pop();
+      }
+
+      debugPrint('❌ 跳轉角色檔案失敗: $e');
     }
   }
 
@@ -1686,7 +1726,9 @@ class _ChatPageState extends State<ChatPage> {
       _buildPlayerPronounGuide(
         playerGenderForAi,
       );
-
+      print('🔥🔥🔥 已進入真正的 requestBody 區塊');
+      print('👥 NPC 數量：${_currentCharacter.npcCharacters.length}');
+      print('👥 NPC 完整資料：${_currentCharacter.npcCharacters}');
       final Map<String, dynamic> requestBody = {
         'audioUrl': '',
         'userMessage': lastUserText,
@@ -1794,6 +1836,7 @@ class _ChatPageState extends State<ChatPage> {
             _playerNickname,
           ) ??
               '',        },
+        "npcCharacters": _currentCharacter.npcCharacters,
         'chatHistory': actualChatHistory,
       };
 
@@ -3183,6 +3226,9 @@ class _ChatPageState extends State<ChatPage> {
       final bool hasImage = imagePath != null && imagePath.isNotEmpty;
       final bool hasAudio = audioPath != null && audioPath.isNotEmpty;
       final String playerPronounGuide = _buildPlayerPronounGuide(playerGenderForAi);
+      print('🔥🔥🔥 已進入真正的 requestBody 區塊');
+      print('👥 NPC 數量：${_currentCharacter.npcCharacters.length}');
+      print('👥 NPC 完整資料：${_currentCharacter.npcCharacters}');
       final Map<String, dynamic> requestBody = {
         "imageUrl": hasImage ? (storagePath ?? "") : "",
         "audioUrl": hasAudio ? (storagePath ?? "") : "",
@@ -3208,8 +3254,22 @@ class _ChatPageState extends State<ChatPage> {
           "id": _currentCharacter.id,
           "name": _currentCharacter.name,
           "toneAndStyle": _currentCharacter.toneAndStyle?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
-          "background": _currentCharacter.background?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
-          "detailedPersonality": _currentCharacter.detailedPersonality?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
+          "background":
+          _currentCharacter.background
+              ?.replaceAll('{{玩家名字}}', _playerNickname)
+              .replaceAll('(玩家名字)', _playerNickname) ??
+              "",
+
+          "worldSetting":
+          _currentCharacter.worldSetting
+              .replaceAll('{{玩家名字}}', _playerNickname)
+              .replaceAll('(玩家名字)', _playerNickname),
+
+          "detailedPersonality":
+          _currentCharacter.detailedPersonality
+              ?.replaceAll('{{玩家名字}}', _playerNickname)
+              .replaceAll('(玩家名字)', _playerNickname) ??
+              "",
           "likes": _currentCharacter.likes?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
           "secrets": _currentCharacter.secrets?.replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname) ?? "",
           "gender": _currentCharacter.gender ,
@@ -3217,6 +3277,7 @@ class _ChatPageState extends State<ChatPage> {
           "socialRelationships": _currentCharacter.relationships != null
               ? jsonEncode(_currentCharacter.relationships).replaceAll('{{玩家名字}}', _playerNickname).replaceAll('(玩家名字)', _playerNickname)
               : "",
+          "npcCharacters": _currentCharacter.npcCharacters,
         },
         "chatHistory": actualChatHistory,
       };

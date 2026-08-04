@@ -131,6 +131,7 @@ class Character {
   final double? voiceStability;
   final double? voiceStyle;
   final Map<String, String>? relationships;
+  final List<Map<String, dynamic>> npcCharacters;
   final Map<String, dynamic>? translations;
 
   Character({
@@ -184,6 +185,7 @@ class Character {
     this.voiceStyle,
     this.translations,
     this.relationships,
+    this.npcCharacters = const [],
   }) : this.lastChatTime = lastChatTime ?? DateTime.fromMillisecondsSinceEpoch(0);
 
 
@@ -295,6 +297,15 @@ class Character {
       relationships: data['relationships'] != null
           ? Map<String, String>.from(data['relationships'])
           : {},
+      npcCharacters:
+      (data['npcCharacters'] as List<dynamic>?)
+          ?.map(
+            (item) => Map<String, dynamic>.from(
+          item as Map,
+        ),
+      )
+          .toList() ??
+          [],
       lastChatTime: data['lastChatTime'] != null ? (data['lastChatTime'] as Timestamp).toDate() : null,
     );
   }
@@ -347,6 +358,7 @@ class Character {
       'voiceStability': voiceStability,
       'voiceStyle': voiceStyle,
       'relationships': relationships,
+      'npcCharacters': npcCharacters,
     };
   }
 }
@@ -393,5 +405,6 @@ Character getCharacterById(String id) {
     likedGifts: [],
     dislikedGifts: [],
     relationships: {},
+    npcCharacters: [],
   );
 }

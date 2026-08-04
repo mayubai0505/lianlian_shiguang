@@ -12,6 +12,7 @@ import '../services/toast_utils.dart';
 import 'chat_page.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
+import 'character_npc_tab.dart';
 import 'character_model.dart';
 import 'package:http/http.dart' as http; // ✨ 負責跟後端連線
 import 'package:audioplayers/audioplayers.dart'; // 記得匯入
@@ -72,6 +73,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   List<Map<String, dynamic>> _voiceSamples = [];
   List<Map<String, dynamic>> newSamples = [];
   List<Character> _myCharacters = [];
+  List<Map<String, dynamic>> _npcCharacters = [];
   String? _generatedVoiceId;
   String? _selectedVoiceId;    // 存聲音 ID
   static const String genderIdMale = 'male';
@@ -200,6 +202,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _personalityTags = List.from(char.personalityTags);
       _easterEggs = List.from(char.easterEggs);
       _extraInfoItems = List<String>.from(char.extraInfoItems ); // 👈 統一留這個最安全的！
+      _npcCharacters = List<Map<String, dynamic>>.from(char.npcCharacters,);
       // -- 權限 --
       _isPublic = char.isPublic;
       // -- 新增的進階設定欄位 --
@@ -229,6 +232,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       // -- 關係設定 --
       if (char.relationships != null) {
         _relationships = Map<String, String>.from(char.relationships!);
+        _npcCharacters =
+        List<Map<String, dynamic>>.from(
+          mapData['npcCharacters'] ?? [],
+        );
       }
       String? oldRelation = char.initialRelationship;
       if (oldRelation.isNotEmpty) {        // 假設妳有一個 relationshipKeys 的常數 List
@@ -249,6 +256,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     } else if (widget.draftDoc != null) {
       // ✨✨✨ 路線二：從秘密工作室點擊草稿進來 ✨✨✨
       final data = widget.draftDoc!.data() as Map<String, dynamic>;
+      _npcCharacters =
+      List<Map<String, dynamic>>.from(
+        data['npcCharacters'] ?? [],
+      );
 
       // 1. 【基本欄位對齊】
       _nameController.text = data['name'] ?? '';
@@ -281,6 +292,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _stageAcquaintanceController.text = data['stageAcquaintance'] ?? '';
       _stageIntimateController.text = data['stageIntimate'] ?? '';
       _socialInteractionController.text = data['socialInteraction'] ?? '';
+      _npcCharacters =
+      List<Map<String, dynamic>>.from(
+        data['npcCharacters'] ?? [],
+      );
 
       // 4. 【專屬語音】(修正為資料庫的下底線格式：voice_id)
       _generatedVoiceId = data['voice_id'];
@@ -643,6 +658,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voiceStyle': _voiceStyle,
         'voiceSource': finalVoiceIdToSave.isEmpty ? null : 'voice_bank',
         'relationships': _relationships, // 🌟 補上這行，Tab 3 的關係就不會消失了！
+        'npcCharacters': _npcCharacters,
         'multiCharacters': multiCharactersString,
         'sourceCharacterId': widget.character?.id,
         'sourceWasPublic': widget.character?.isPublic,
@@ -1395,6 +1411,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'voiceStyle': _voiceStyle,
         'voiceSource': finalVoiceIdToSave.isEmpty ? null : 'voice_bank',
         'relationships': _relationships,
+        'npcCharacters': _npcCharacters,   // 👈 加這裡
         'multiCharacters': multiCharactersString,
         'createdAt': (widget.character != null && widget.character!.createdAt != null)
             ? Timestamp.fromDate(widget.character!.createdAt)
@@ -2588,7 +2605,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         },
         // ✨✨✨ 核心升級：加入 DefaultTabController ✨✨✨
         child: DefaultTabController(
-          length: 3, // 三個分頁
+          length: 4, // 三個分頁
           child: Scaffold(
             appBar: AppBar(
               title: Text(
@@ -2650,10 +2667,23 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 labelColor: theme.colorScheme.primary,
                 unselectedLabelColor: Colors.grey,
                 indicatorColor: theme.colorScheme.primary,
-                tabs:  [
-                  Tab(icon: const Icon(Icons.menu_book), text: l10n.tab_basic_story),
-                  Tab(icon: const Icon(Icons.mic), text: l10n.tab_voice),
-                  Tab(icon: const Icon(Icons.hub), text: l10n.tab_relationship),
+                tabs: [
+                  Tab(
+                    icon: const Icon(Icons.menu_book),
+                    text: l10n.tab_basic_story,
+                  ),
+                  Tab(
+                    icon: const Icon(Icons.mic),
+                    text: l10n.tab_voice,
+                  ),
+                  Tab(
+                    icon: const Icon(Icons.hub),
+                    text: l10n.tab_relationship,
+                  ),
+                  const Tab(
+                    icon: Icon(Icons.groups_2_outlined),
+                    text: '配角',
+                  ),
                 ],
               ),
             ),
@@ -2665,13 +2695,33 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   TabBarView(
                     children: [
                       // --- 抽屜 1：基本與劇情 ---
-                      _buildTab1_BasicAndStory(theme, l10n, currentValidGender, currentValidRelationship, genderOptions, relationshipOptions, defaultPersonalityTags),
+                      _buildTab1_BasicAndStory(
+                        theme,
+                        l10n,
+                        currentValidGender,
+                        currentValidRelationship,
+                        genderOptions,
+                        relationshipOptions,
+                        defaultPersonalityTags,
+                      ),
 
                       // --- 抽屜 2：語音設定 ---
                       _buildTab2_Voice(theme),
 
                       // --- 抽屜 3：關係編輯 ---
                       _buildTab3_Relationships(theme),
+
+                      // --- 抽屜 4：配角管理 ---
+                      CharacterNpcTab(
+                        npcCharacters: _npcCharacters,
+                        onAddNpc: _showAddNpcDialog,
+                        onEditNpc: _showEditNpcDialog,
+                        onDeleteNpc: (index) {
+                          setState(() {
+                            _npcCharacters.removeAt(index);
+                          });
+                        },
+                      ),
                     ],
                   ),
 
@@ -3679,6 +3729,321 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           ],
         );
       },
+    );
+  }
+
+  void _showAddNpcDialog() {
+    _showNpcDialog();
+  }
+
+  void _showNpcDialog({
+    Map<String, dynamic>? npc,
+    int? index,
+  }) {
+    final nameController = TextEditingController(
+      text: npc?['name']?.toString() ?? '',
+    );
+
+    final ageController = TextEditingController(
+      text: npc?['age']?.toString() ?? '',
+    );
+
+    final occupationController = TextEditingController(
+      text: npc?['occupation']?.toString() ?? '',
+    );
+
+    final relationshipController = TextEditingController(
+      text: npc?['relationship']?.toString() ?? '',
+    );
+
+    final descriptionController = TextEditingController(
+      text: npc?['description']?.toString() ?? '',
+    );
+
+    final toneController = TextEditingController(
+      text: npc?['toneAndStyle']?.toString() ?? '',
+    );
+
+    String selectedGender =
+        npc?['gender']?.toString() ?? '';
+
+    final bool isEditingNpc =
+        npc != null && index != null;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(
+                isEditingNpc ? '編輯配角' : '新增配角',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: SizedBox(
+                width: 520,
+                child: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          label: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(text: '配角名稱'),
+                                TextSpan(
+                                  text: ' *',
+                                  style: TextStyle(
+                                    color: Colors.redAccent,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      DropdownButtonFormField<String>(
+                        initialValue:
+                        selectedGender.isEmpty
+                            ? null
+                            : selectedGender,
+                        decoration: const InputDecoration(
+                          label: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(text: '性別'),
+                                TextSpan(
+                                  text: ' *',
+                                  style: TextStyle(
+                                    color: Colors.redAccent,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          border: OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'male',
+                            child: Text('男性'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'female',
+                            child: Text('女性'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'other',
+                            child: Text('其他'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setDialogState(() {
+                            selectedGender = value ?? '';
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextField(
+                        controller: ageController,
+                        decoration: const InputDecoration(
+                          labelText: '年齡',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextField(
+                        controller: occupationController,
+                        decoration: const InputDecoration(
+                          labelText: '身分／職業',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextField(
+                        controller: relationshipController,
+                        maxLines: 6,
+                        maxLength: 1500,
+                        decoration: const InputDecoration(
+                          labelText: '與主角色的關係',
+                          hintText:
+                          '描述與主角色的過往、立場、情感、秘密與目前關係。',
+                          border: OutlineInputBorder(),
+                          alignLabelWithHint: true,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextField(
+                        controller: descriptionController,
+                        maxLines: 6,
+                        maxLength: 1500,
+                        decoration: const InputDecoration(
+                          label: Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(text: '人物設定'),
+                                TextSpan(
+                                  text: ' *',
+                                  style: TextStyle(
+                                    color: Colors.redAccent,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          hintText:
+                          '描述個性、外貌、習慣、價值觀、能力、喜好、地雷與重要經歷。',
+                          border: OutlineInputBorder(),
+                          alignLabelWithHint: true,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      TextField(
+                        controller: toneController,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          labelText: '說話語氣',
+                          hintText:
+                          '例如：語速快、愛吐槽、說話直接。',
+                          border: OutlineInputBorder(),
+                          alignLabelWithHint: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text('取消'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final name =
+                    nameController.text.trim();
+
+                    final relationship =
+                    relationshipController.text.trim();
+
+                    final description =
+                    descriptionController.text.trim();
+
+                    if (name.isEmpty) {
+                      ToastUtils.showCenterToast(
+                        context,
+                        '請填寫配角名稱。',
+                        isError: true,
+                      );
+                      return;
+                    }
+
+                    if (selectedGender.isEmpty) {
+                      ToastUtils.showCenterToast(
+                        context,
+                        '請選擇配角性別。',
+                        isError: true,
+                      );
+                      return;
+                    }
+
+                    if (description.isEmpty) {
+                      ToastUtils.showCenterToast(
+                        context,
+                        '請填寫人物設定。',
+                        isError: true,
+                      );
+                      return;
+                    }
+
+                    if (relationship.length > 1500) {
+                      ToastUtils.showCenterToast(
+                        context,
+                        '與主角色的關係已超過 1,500 字。',
+                        isError: true,
+                      );
+                      return;
+                    }
+
+                    if (description.length > 1500) {
+                      ToastUtils.showCenterToast(
+                        context,
+                        '人物設定已超過 1,500 字。',
+                        isError: true,
+                      );
+                      return;
+                    }
+
+                    final updatedNpc =
+                    <String, dynamic>{
+                      'id': npc?['id'] ??
+                          'npc_${DateTime.now().millisecondsSinceEpoch}',
+                      'name': name,
+                      'gender': selectedGender,
+                      'age':
+                      ageController.text.trim(),
+                      'occupation':
+                      occupationController.text.trim(),
+                      'relationship': relationship,
+                      'description': description,
+                      'toneAndStyle':
+                      toneController.text.trim(),
+                    };
+
+                    setState(() {
+                      if (isEditingNpc) {
+                        _npcCharacters[index] =
+                            updatedNpc;
+                      } else {
+                        _npcCharacters.add(
+                          updatedNpc,
+                        );
+                      }
+                    });
+
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text(
+                    isEditingNpc ? '儲存' : '新增',
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showEditNpcDialog(int index) {
+    if (index < 0 ||
+        index >= _npcCharacters.length) {
+      return;
+    }
+
+    _showNpcDialog(
+      npc: _npcCharacters[index],
+      index: index,
     );
   }
 

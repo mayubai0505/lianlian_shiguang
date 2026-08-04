@@ -519,100 +519,163 @@ class MomentsPageState extends State<MomentsPage> {
   // ✨ 總裁專屬：跳轉至角色檔案卡 (含私人/刪除防呆邏輯)
   Future<void> _navigateToCharacterProfile(Moment moment) async {
     final l10n = AppLocalizations.of(context)!;
-    // 1. 如果是創作者本人發的文，目前沒有檔案頁，直接跳過
+
+    // 創作者本人發布的官方／創作者貼文，目前沒有角色檔案頁
     if (moment.isCreatorPost) return;
 
-    // 2. 顯示讀取中，避免網路慢時玩家點好幾次
+    final currentUser = FirebaseAuth.instance.currentUser;
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) =>
+      const Center(child: CircularProgressIndicator()),
     );
 
+    bool loadingDialogClosed = false;
+
+    void closeLoadingDialog() {
+      if (!mounted || loadingDialogClosed) return;
+
+      loadingDialogClosed = true;
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pop();
+    }
+
     try {
-      // 3. 去公開區撈看看這個角色還在不在
-      final doc = await _db
+      DocumentSnapshot<Map<String, dynamic>>? targetDoc;
+
+      // 1. 先查公開角色
+      final publicDoc = await _db
           .collection('artifacts')
           .doc(_appId)
           .collection('public_characters')
           .doc(moment.authorId)
           .get();
 
-      if (mounted) {
-        Navigator.pop(context); // 關閉讀取圈圈
+      if (publicDoc.exists) {
+        targetDoc = publicDoc;
+      } else if (currentUser != null) {
+        // 2. 公開區沒有，再查目前登入者自己的私人角色
+        final privateDoc = await _db
+            .collection('artifacts')
+            .doc(_appId)
+            .collection('users')
+            .doc(currentUser.uid)
+            .collection('private_characters')
+            .doc(moment.authorId)
+            .get();
+
+        if (privateDoc.exists) {
+          targetDoc = privateDoc;
+        }
       }
 
-      if (doc.exists) {
-        // ✨✨✨ 狀況 A：找到角色了！
-        // 把資料夾檔案「解壓縮」成完整的 Character 物件
-        final character = await Character.fromFirestoreAsync(doc);
+      closeLoadingDialog();
 
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CharacterProfilePage(
-                character: character,               // 👈 交出角色詳細資料
-                characterId: moment.authorId,       // 👈 補上剛才漏交的身分證號碼！
-              ),
+      if (targetDoc != null && targetDoc.exists) {
+        final character =
+        await Character.fromFirestoreAsync(targetDoc);
+
+        if (!mounted) return;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CharacterProfilePage(
+              character: character,
+              characterId: moment.authorId,
             ),
-          );
-        }
-      } else {
-        // 🔒🔒🔒 狀況 B：找不到角色 (轉私人或已刪除),直接在這裡彈出一個「機密檔案」的絕美彈窗卡片！
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: Row(
-                children:  [
-                  Icon(Icons.lock_outline, color: Colors.grey),
-                  SizedBox(width: 8),
-                  Text(l10n.chat_secret_file_title, style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
+          ),
+        );
+
+        return;
+      }
+
+      // 既不是公開角色，也不是目前玩家自己的私人角色
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.lock_outline,
+                color: Colors.grey,
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 加上半透明黑底的神秘頭像
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.grey[300],
-                    backgroundImage: getAvatarImageProvider(moment.authorAvatar),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black.withValues(alpha:0.5), // 神秘的暗色遮罩
-                      ),
+              const SizedBox(width: 8),
+              Text(
+                l10n.chat_secret_file_title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                radius: 40,
+                backgroundColor: Colors.grey[300],
+                backgroundImage:
+                getAvatarImageProvider(moment.authorAvatar),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.black.withValues(
+                      alpha: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    moment.authorName,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 12),
-                   Text(
-                    l10n.profile_archived_or_deleted_message,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey, height: 1.5),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child:Text(l10n.leave_silently, style: TextStyle(color: Colors.grey)),
                 ),
-              ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                moment.authorName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.profile_archived_or_deleted_message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.grey,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.pop(dialogContext),
+              child: Text(
+                l10n.leave_silently,
+                style: const TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
             ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) Navigator.pop(context);
-      print("❌ 跳轉角色檔案失敗: $e");
+          ],
+        ),
+      );
+    } catch (e, stackTrace) {
+      closeLoadingDialog();
+
+      debugPrint(
+        '❌ 跳轉角色檔案失敗: $e',
+      );
+      debugPrint('$stackTrace');
     }
   }
 

@@ -11,6 +11,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 //登入介面
 
@@ -29,10 +30,18 @@ class LoginPage extends StatefulWidget {
 }
 bool _isLoginLoading = false;
 class _LoginPageState extends State<LoginPage> {
+  static const String _currentTermsVersion = '1.0';
+  static const String _currentPrivacyVersion = '1.0';
+  // ⚠️ 換成你公開發布後的 Notion 網址
+  static const String _termsNotionUrl =
+      'https://adaptable-roof-829.notion.site/3ab919a5415180e89545dce77d552a6c?source=copy_link';
+
+  static const String _privacyNotionUrl =
+      'https://adaptable-roof-829.notion.site/3ab919a541518035ad5ec56427a427ec?source=copy_link';
+
   final AuthService _authService = AuthService();
   BuildContext? _dialogContext; // 🎯 專門用來記住轉圈圈的 ID
   bool _isLoginLoading = false;
-  bool _termsAccepted = false;
 
   void _showLoadingDialog(BuildContext context) {
     showDialog(
@@ -95,81 +104,49 @@ class _LoginPageState extends State<LoginPage> {
 
 
   // ✨ 處理登入成功後的轉場
-  void _handleLoginSuccess(Map<String, dynamic> resultMap) async { // 💡 記得加上 async
-    final User? user = resultMap['user'] as User?;
-    final bool isNewUser = resultMap['isNewUser'] as bool? ?? false;
+  Future<void> _handleLoginSuccess(
+      Map<String, dynamic> resultMap,
+      ) async {
+    final User? user =
+    resultMap['user'] as User?;
 
-    if (user != null) {
-      // 👇 總裁，把自動更新大頭貼的函式插在這裡！ 👇
-      // 這樣無論是新玩家還是老玩家，登入成功瞬間都會更新大頭貼
-      await syncUserAvatar();
-      // 👆 新增這行 👆
+    final bool isNewUser =
+        resultMap['isNewUser'] as bool? ?? false;
 
-      if (isNewUser) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const OnboardingPage()),
-        );
-      } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainPage()),
-        );
-      }
+    if (user == null) return;
+
+    // 先確認服務條款與隱私權政策
+    final bool agreementAccepted =
+    await _ensureCurrentAgreement(user);
+
+    if (!agreementAccepted) {
+      // 未完成同意，不允許進入 App
+      await _authService.signOut(context);
+      return;
     }
-  }
 
-  bool _checkTermsAccepted() {
-    final l10n = AppLocalizations.of(context)!; // ✨ 新增這行取得語系
-    if (!_termsAccepted) {
-      ToastUtils.showCenterToast(
-        context,
-        l10n.terms_not_accepted_toast, // ✨ 替換：未同意的提示
-        customIcon: Icons.info_outline_rounded,
+    if (!mounted) return;
+
+    // 同步登入帳號的大頭貼
+    await syncUserAvatar();
+
+    if (!mounted) return;
+
+    if (isNewUser) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) =>
+          const OnboardingPage(),
+        ),
       );
-      return false;
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) =>
+          const MainPage(),
+        ),
+      );
     }
-    return true;
-  }
-
-  void _showTermsDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(l10n.terms_title), // ✨ 替換：標題 (記得拿掉 const)
-          content: SingleChildScrollView(
-            child: Text(l10n.terms_content), // ✨ 替換：內容 (記得拿掉 const)
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.common_got_it),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showCommunityRulesDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(l10n.community_rules_title), // ✨ 替換：標題 (記得拿掉 const)
-          content: SingleChildScrollView(
-            child: Text(l10n.community_rules_content), // ✨ 替換：內容 (記得拿掉 const)
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.common_got_it),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _showLoginMethodInfoDialog(LoginMethod method) {
@@ -229,6 +206,318 @@ class _LoginPageState extends State<LoginPage> {
         );
       },
     );
+  }Future<bool> _showExternalPolicyDialog({
+    required String title,
+    required String url,
+  }) async {
+    bool hasOpenedPolicy = false;
+    bool isOpening = false;
+
+    final bool accepted =
+        await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) {
+            return StatefulBuilder(
+              builder: (context, setDialogState) {
+                Future<void> openPolicy() async {
+                  if (isOpening) return;
+
+                  setDialogState(() {
+                    isOpening = true;
+                  });
+
+                  try {
+                    final uri = Uri.tryParse(url);
+
+                    if (uri == null ||
+                        !uri.hasScheme ||
+                        !uri.hasAuthority) {
+                      throw const FormatException(
+                        '條款網址格式不正確',
+                      );
+                    }
+
+                    final bool opened = await launchUrl(
+                      uri,
+                      mode: kIsWeb
+                          ? LaunchMode.platformDefault
+                          : LaunchMode.externalApplication,
+                      webOnlyWindowName: '_blank',
+                    );
+
+                    if (!opened) {
+                      throw Exception('無法開啟條款網址');
+                    }
+
+                    if (!dialogContext.mounted) return;
+
+                    setDialogState(() {
+                      hasOpenedPolicy = true;
+                    });
+                  } catch (e) {
+                    debugPrint('❌ 開啟 $title 失敗：$e');
+
+                    if (dialogContext.mounted) {
+                      ToastUtils.showCenterToast(
+                        dialogContext,
+                        '無法開啟$title，請確認網路後再試。',
+                        customIcon: Icons.link_off_rounded,
+                      );
+                    }
+                  } finally {
+                    if (dialogContext.mounted) {
+                      setDialogState(() {
+                        isOpening = false;
+                      });
+                    }
+                  }
+                }
+
+                return PopScope(
+                  canPop: false,
+                  child: AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    title: Row(
+                      children: [
+                        const Icon(
+                          Icons.description_outlined,
+                          color: Color(0xFF7B1FA2),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '請先開啟並閱讀完整$title。'
+                              '閱讀後回到《戀戀拾光》，即可按下「我已閱讀並同意」。',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.6,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed:
+                            isOpening ? null : openPolicy,
+                            icon: isOpening
+                                ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child:
+                              CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : const Icon(
+                              Icons.open_in_new_rounded,
+                            ),
+                            label: Text(
+                              isOpening
+                                  ? '正在開啟……'
+                                  : '閱讀完整$title',
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        AnimatedContainer(
+                          duration:
+                          const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: hasOpenedPolicy
+                                ? Colors.green.withValues(
+                              alpha: 0.08,
+                            )
+                                : Colors.grey.withValues(
+                              alpha: 0.08,
+                            ),
+                            borderRadius:
+                            BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                hasOpenedPolicy
+                                    ? Icons
+                                    .check_circle_outline
+                                    : Icons.info_outline,
+                                color: hasOpenedPolicy
+                                    ? Colors.green
+                                    : Colors.grey,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  hasOpenedPolicy
+                                      ? '已開啟$title，可以確認同意。'
+                                      : '尚未開啟$title。',
+                                  style: TextStyle(
+                                    color: hasOpenedPolicy
+                                        ? Colors.green
+                                        : Colors.grey.shade700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: isOpening
+                            ? null
+                            : () {
+                          Navigator.of(dialogContext)
+                              .pop(false);
+                        },
+                        child: const Text('取消登入'),
+                      ),
+                      ElevatedButton(
+                        onPressed: hasOpenedPolicy
+                            ? () {
+                          Navigator.of(dialogContext)
+                              .pop(true);
+                        }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                          const Color(0xFF7B1FA2),
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('我已閱讀並同意'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        ) ??
+            false;
+
+    return accepted;
+  }
+
+  Future<bool> _ensureCurrentAgreement(
+      User user,
+      ) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid);
+
+    try {
+      final userDoc = await userRef.get();
+      final data =
+          userDoc.data() ?? <String, dynamic>{};
+
+      final bool termsAreCurrent =
+          data['acceptedTermsVersion'] ==
+              _currentTermsVersion;
+
+      final bool privacyIsCurrent =
+          data['acceptedPrivacyVersion'] ==
+              _currentPrivacyVersion;
+
+      // 同一版本已同意，不再重複顯示
+      if (termsAreCurrent && privacyIsCurrent) {
+        return true;
+      }
+
+      bool acceptedTermsThisTime = termsAreCurrent;
+      bool acceptedPrivacyThisTime = privacyIsCurrent;
+
+      if (!termsAreCurrent) {
+        acceptedTermsThisTime =
+        await _showExternalPolicyDialog(
+          title: l10n.terms_title,
+          url: _termsNotionUrl,
+        );
+
+        if (!acceptedTermsThisTime) {
+          return false;
+        }
+      }
+
+      if (!mounted) return false;
+
+      if (!privacyIsCurrent) {
+        acceptedPrivacyThisTime =
+        await _showExternalPolicyDialog(
+          title: l10n.legal_privacy_button,
+          url: _privacyNotionUrl,
+        );
+
+        if (!acceptedPrivacyThisTime) {
+          return false;
+        }
+      }
+
+      if (!acceptedTermsThisTime ||
+          !acceptedPrivacyThisTime) {
+        return false;
+      }
+
+      await userRef.set({
+        'acceptedTermsVersion':
+        _currentTermsVersion,
+        'acceptedPrivacyVersion':
+        _currentPrivacyVersion,
+        'acceptedTermsAt':
+        FieldValue.serverTimestamp(),
+        'acceptedPrivacyAt':
+        FieldValue.serverTimestamp(),
+        'agreementPlatform': kIsWeb
+            ? 'web'
+            : defaultTargetPlatform.name,
+
+        // 留存當時同意的來源網址，日後較好查核
+        'acceptedTermsUrl': _termsNotionUrl,
+        'acceptedPrivacyUrl':
+        _privacyNotionUrl,
+      }, SetOptions(merge: true));
+
+      debugPrint(
+        '✅ 已記錄條款同意版本：'
+            'terms=$_currentTermsVersion，'
+            'privacy=$_currentPrivacyVersion',
+      );
+
+      return true;
+    } catch (e, stackTrace) {
+      debugPrint('❌ 檢查條款同意狀態失敗：$e');
+      debugPrint('$stackTrace');
+
+      if (mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          '目前無法確認條款狀態，請稍後再試。',
+          customIcon: Icons.error_outline,
+        );
+      }
+
+      return false;
+    }
   }
 
   // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
@@ -269,7 +558,7 @@ class _LoginPageState extends State<LoginPage> {
           }
         }
         print("✅ [3. 成功] 拿到資料了，準備穿越時光隧道 (跳轉中)！");
-        _handleLoginSuccess(result);
+        await _handleLoginSuccess(result);
 
       } else if (result != null && !mounted) {
         print("🚀 [超車提示] 登入其實成功了！資料也拿到了！");
@@ -377,7 +666,6 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: Colors.white,
                     textColor: Colors.black87,
                     onPressed: () {
-                      if (!_checkTermsAccepted()) return;
                       _performLogin(_authService.signInWithGoogle);
                     },
                   ),
@@ -396,7 +684,6 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: Colors.black,
                     textColor: Colors.white,
                     onPressed: () {
-                      if (!_checkTermsAccepted()) return;
                       _performLogin(_authService.signInWithApple);
                     },
                   ),
@@ -417,7 +704,6 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: const Color(0xFF1877F2),
                     textColor: Colors.white,
                     onPressed: () {
-                      if (!_checkTermsAccepted()) return;
                       _performLogin(_authService.signInWithFacebook);
                     },
                   ),
@@ -467,7 +753,6 @@ class _LoginPageState extends State<LoginPage> {
                   backgroundColor: const Color(0xFFBA68C8),
                   textColor: Colors.white,
                   onPressed: () {
-                    if (!_checkTermsAccepted()) return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -476,92 +761,27 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   },
                 ),
+                const SizedBox(height: 20),
 
-                const SizedBox(height: 16),
-
-                _termsAgreementSection(),
-
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                  ),
+                  child: Text(
+                    '首次登入或條款更新時，系統將請您閱讀並同意服務條款及隱私權政策。',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.5,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 40),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _termsAgreementSection() {
-    final l10n = AppLocalizations.of(context)!; // ✨ 新增：取得語系包
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Checkbox(
-            value: _termsAccepted,
-            activeColor: const Color(0xFF7B1FA2),
-            onChanged: _isLoginLoading
-                ? null
-                : (value) {
-              setState(() {
-                _termsAccepted = value ?? false;
-              });
-            },
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Wrap(
-                children: [
-                  // ✨ 替換：我已閱讀並同意
-                  Text(
-                    l10n.terms_checkbox_read_agree,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF6A4A6F),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: _showTermsDialog,
-                    // ✨ 替換：《使用條款》
-                    child: Text(
-                      l10n.terms_checkbox_terms,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF7B1FA2),
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                  // ✨ 替換：與 (and)
-                  Text(
-                    l10n.terms_checkbox_and,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF6A4A6F),
-                    ),
-                  ),
-
-                  GestureDetector(
-                    onTap: _showCommunityRulesDialog,
-                    // ✨ 替換：《社群規範》
-                    child: Text(
-                      l10n.terms_checkbox_rules,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF7B1FA2),
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
