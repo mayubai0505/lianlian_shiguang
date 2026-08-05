@@ -6,6 +6,8 @@ import '../services/toast_utils.dart';
 import 'character_edit_page.dart';
 import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
 import 'dart:io'; // 🌟 讀取手機本機檔案必備！
+import 'character_model.dart';
+import '../utils/image_utils.dart';
 
 // 私人工作室
 class CreatorStudioPage extends StatelessWidget {
@@ -72,18 +74,31 @@ class CreatorStudioPage extends StatelessWidget {
     final theme = Theme.of(context);
 
     if (user == null) {
-      return Scaffold(body: Center(child: Text(l10n.login_required_for_studio)));
+      return Scaffold(
+        body: Center(
+          child: Text(
+            l10n.login_required_for_studio,
+          ),
+        ),
+      );
     }
 
-    // 🌟 總裁級三頻雷達：分別定義三個頻道的監聽器
     final draftStream = FirebaseFirestore.instance
         .collection('draft_characters')
-        .where('createdBy', isEqualTo: user.uid)
+        .where(
+      'createdBy',
+      isEqualTo: user.uid,
+    )
         .snapshots();
 
     final privateStream = FirebaseFirestore.instance
         .collection('artifacts')
-        .doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'))
+        .doc(
+      const String.fromEnvironment(
+        'APP_ID',
+        defaultValue: 'lianlianshiguang',
+      ),
+    )
         .collection('users')
         .doc(user.uid)
         .collection('private_characters')
@@ -91,29 +106,33 @@ class CreatorStudioPage extends StatelessWidget {
 
     final publicStream = FirebaseFirestore.instance
         .collection('artifacts')
-        .doc(const String.fromEnvironment('APP_ID', defaultValue: 'lianlianshiguang'))
+        .doc(
+      const String.fromEnvironment(
+        'APP_ID',
+        defaultValue: 'lianlianshiguang',
+      ),
+    )
         .collection('public_characters')
-        .where('creatorId', isEqualTo: user.uid)
+        .where(
+      'createdBy',
+      isEqualTo: user.uid,
+    )
         .snapshots();
 
-    // 🌟 組合技：將三個雷達畫面疊加在一起！
     final combinedStream = Rx.combineLatest3(
       draftStream,
       privateStream,
       publicStream,
-          (QuerySnapshot drafts, QuerySnapshot privates, QuerySnapshot publics) {
-        List<Map<String, dynamic>> allMyCharacters = [];
-
-        for (var doc in drafts.docs) {
-          allMyCharacters.add({'doc': doc, 'status': 'draft'});
-        }
-        for (var doc in privates.docs) {
-          allMyCharacters.add({'doc': doc, 'status': 'private'});
-        }
-        for (var doc in publics.docs) {
-          allMyCharacters.add({'doc': doc, 'status': 'public'});
-        }
-        return allMyCharacters;
+          (
+          QuerySnapshot drafts,
+          QuerySnapshot privates,
+          QuerySnapshot publics,
+          ) {
+        return {
+          'drafts': drafts.docs,
+          'privates': privates.docs,
+          'publics': publics.docs,
+        };
       },
     );
 
@@ -129,300 +148,437 @@ class CreatorStudioPage extends StatelessWidget {
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.create_new_character_btn),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-              const CharacterEditPage(),
+      body: StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
+        stream: combinedStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState ==
+              ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                '工作室讀取失敗：${snapshot.error}',
+              ),
+            );
+          }
+
+          final data = snapshot.data ??
+              {
+                'drafts': <QueryDocumentSnapshot>[],
+                'privates': <QueryDocumentSnapshot>[],
+                'publics': <QueryDocumentSnapshot>[],
+              };
+
+          final drafts =
+              data['drafts'] ?? <QueryDocumentSnapshot>[];
+
+          final privates =
+              data['privates'] ?? <QueryDocumentSnapshot>[];
+
+          final publics =
+              data['publics'] ?? <QueryDocumentSnapshot>[];
+
+          return ListView(
+            physics:
+            const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              40,
             ),
-          );
-        },
-      ),
-
-      // 第一層：讀取創作者個人資料
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .snapshots(),
-        builder: (context, userSnapshot) {
-          final userData =
-              userSnapshot.data?.data()
-              as Map<String, dynamic>? ??
-                  <String, dynamic>{};
-
-          final String nickname =
-              userData['nickname']
-                  ?.toString()
-                  .trim() ??
-                  '';
-
-          final String bio =
-              userData['bio']
-                  ?.toString()
-                  .trim() ??
-                  '';
-
-          final String avatarPath =
-              userData['avatarPath']
-                  ?.toString()
-                  .trim() ??
-                  '';
-
-          // 第二層：讀取角色資料
-          return StreamBuilder<
-              List<Map<String, dynamic>>>(
-            stream: combinedStream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState ==
-                  ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    '載入角色資料失敗：${snapshot.error}',
-                  ),
-                );
-              }
-
-              final charactersList =
-                  snapshot.data ?? [];
-
-              // 就算沒有角色，也保留創作者介紹卡
-              if (charactersList.isEmpty) {
-                return ListView(
-                  padding: const EdgeInsets.all(16)
-                      .copyWith(bottom: 100),
-                  children: [
-                    _buildCreatorIntroductionCard(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    await Navigator.push(
                       context,
-                      theme,
-                      nickname: nickname,
-                      bio: bio,
-                      avatarPath: avatarPath,
-                    ),
-                    const SizedBox(height: 24),
-                    _buildEmptyState(
-                      context,
-                      theme,
-                    ),
-                  ],
-                );
-              }
-
-              return ListView.builder(
-                padding: const EdgeInsets.all(16)
-                    .copyWith(bottom: 100),
-
-                // 多一格放創作者介紹
-                itemCount:
-                charactersList.length + 1,
-
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _buildCreatorIntroductionCard(
-                      context,
-                      theme,
-                      nickname: nickname,
-                      bio: bio,
-                      avatarPath: avatarPath,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                        const CharacterEditPage(),
+                      ),
                     );
-                  }
-
-                  final int characterIndex =
-                      index - 1;
-
-                  final item =
-                  charactersList[
-                  characterIndex];
-
-                  final doc =
-                  item['doc']
-                  as QueryDocumentSnapshot;
-
-                  final String status =
-                  item['status'] as String;
-
-                  final data =
-                  doc.data()
-                  as Map<String, dynamic>;
-
-                  final String characterName =
-                      data['name']
-                          ?.toString() ??
-                          l10n.unnamed_draft;
-
-                  final String? avatarUrl =
-                  data['avatarPath']
-                      ?.toString();
-
-                  return Card(
-                    margin: const EdgeInsets.only(
-                      bottom: 16,
+                  },
+                  icon: const Icon(
+                    Icons.add_rounded,
+                  ),
+                  label: Text(
+                    l10n.create_new_character_btn,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                    theme.colorScheme.primary,
+                    foregroundColor:
+                    theme.colorScheme.onPrimary,
+                    elevation: 0,
+                    padding:
+                    const EdgeInsets.symmetric(
+                      vertical: 14,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                      BorderRadius.circular(16),
+                      BorderRadius.circular(14),
                     ),
-                    child: ListTile(
-                      contentPadding:
-                      const EdgeInsets.all(16),
+                  ),
+                ),
+              ),
 
-                      leading: Builder(
-                        builder: (context) {
-                          final Widget defaultAvatar =
-                          CircleAvatar(
-                            radius: 28,
-                            backgroundColor: theme
-                                .colorScheme
-                                .surfaceContainerHighest,
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.grey,
-                            ),
-                          );
+              const SizedBox(height: 24),
 
-                          if (avatarUrl == null ||
-                              avatarUrl.isEmpty) {
-                            return defaultAvatar;
-                          }
+              _buildStudioSection(
+                context: context,
+                theme: theme,
+                title: '公開角色',
+                icon: Icons.public_rounded,
+                count: publics.length,
+                emptyText: '目前沒有公開角色',
+                documents: publics,
+                status: 'public',
+              ),
 
-                          ImageProvider imageProvider;
+              const SizedBox(height: 28),
 
-                          if (avatarUrl.startsWith(
-                            'http',
-                          )) {
-                            imageProvider =
-                                NetworkImage(
-                                  avatarUrl,
-                                );
-                          } else if (avatarUrl
-                              .startsWith('/')) {
-                            imageProvider =
-                                FileImage(
-                                  File(avatarUrl),
-                                );
-                          } else {
-                            return defaultAvatar;
-                          }
+              _buildStudioSection(
+                context: context,
+                theme: theme,
+                title: '私人角色',
+                icon: Icons.lock_outline_rounded,
+                count: privates.length,
+                emptyText: '目前沒有私人角色',
+                documents: privates,
+                status: 'private',
+              ),
 
-                          return CircleAvatar(
-                            radius: 28,
-                            backgroundColor: theme
-                                .colorScheme
-                                .surfaceContainerHighest,
-                            backgroundImage:
-                            imageProvider,
-                            onBackgroundImageError:
-                                (
-                                exception,
-                                stackTrace,
-                                ) {
-                              debugPrint(
-                                '草稿頭像載入失敗: '
-                                    '$exception',
-                              );
-                            },
-                          );
-                        },
-                      ),
+              const SizedBox(height: 28),
 
-                      title: Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              characterName,
-                              style:
-                              const TextStyle(
-                                fontWeight:
-                                FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                              maxLines: 1,
-                              overflow:
-                              TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-
-                          if (status == 'draft')
-                            _buildDraftBadge(
-                              context,
-                            ),
-
-                          if (status == 'private')
-                            _buildPrivateBadge(
-                              context,
-                            ),
-
-                          if (status == 'public')
-                            _buildPublicBadge(
-                              context,
-                            ),
-                        ],
-                      ),
-
-                      subtitle: Text(
-                        l10n.click_to_edit_story,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-
-                      trailing: Row(
-                        mainAxisSize:
-                        MainAxisSize.min,
-                        children: [
-                          if (status == 'draft')
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color:
-                                Colors.redAccent,
-                              ),
-                              onPressed: () =>
-                                  _deleteDraft(
-                                    context,
-                                    doc.id,
-                                    avatarUrl,
-                                  ),
-                            ),
-
-                          const Icon(
-                            Icons.chevron_right,
-                            color: Colors.grey,
-                          ),
-                        ],
-                      ),
-
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                CharacterEditPage(
-                                  draftDoc: doc,
-                                ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
-            },
+              _buildStudioSection(
+                context: context,
+                theme: theme,
+                title: '草稿',
+                icon: Icons.edit_note_rounded,
+                count: drafts.length,
+                emptyText: '目前沒有尚未完成的草稿',
+                documents: drafts,
+                status: 'draft',
+              ),
+            ],
           );
         },
+      ),
+    );
+  }
+  Widget _buildStudioSection({
+    required BuildContext context,
+    required ThemeData theme,
+    required String title,
+    required IconData icon,
+    required int count,
+    required String emptyText,
+    required List<QueryDocumentSnapshot> documents,
+    required String status,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary
+                    .withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                icon,
+                size: 19,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+
+            const SizedBox(width: 10),
+
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 9,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.onSurface
+                    .withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface
+                      .withValues(alpha: 0.55),
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 12),
+
+        if (documents.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              vertical: 24,
+              horizontal: 16,
+            ),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface
+                  .withValues(alpha: 0.55),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: theme.colorScheme.onSurface
+                    .withValues(alpha: 0.07),
+              ),
+            ),
+            child: Text(
+              emptyText,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: theme.colorScheme.onSurface
+                    .withValues(alpha: 0.45),
+              ),
+            ),
+          )
+        else
+          ...documents.map(
+                (doc) => _buildStudioCharacterCard(
+              context: context,
+              theme: theme,
+              doc: doc,
+              status: status,
+            ),
+          ),
+      ],
+    );
+  }
+  Widget _buildStudioCharacterCard({
+    required BuildContext context,
+    required ThemeData theme,
+    required QueryDocumentSnapshot doc,
+    required String status,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    final data =
+    doc.data() as Map<String, dynamic>;
+
+    final String characterName =
+    (data['name'] ?? l10n.unnamed_draft)
+        .toString();
+
+    final String avatarPath =
+    (data['avatarPath'] ?? '').toString();
+
+    String statusText;
+    IconData statusIcon;
+
+    switch (status) {
+      case 'public':
+        statusText = '已公開';
+        statusIcon = Icons.public_rounded;
+        break;
+
+      case 'private':
+        statusText = '私人';
+        statusIcon = Icons.lock_outline_rounded;
+        break;
+
+      case 'draft':
+      default:
+        statusText = '草稿';
+        statusIcon = Icons.edit_note_rounded;
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(
+        bottom: 10,
+      ),
+      elevation: 0,
+      color: theme.colorScheme.surface
+          .withValues(alpha: 0.82),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(
+          color: theme.colorScheme.onSurface
+              .withValues(alpha: 0.07),
+        ),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () async {
+          if (status == 'draft') {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CharacterEditPage(
+                  draftDoc: doc,
+                ),
+              ),
+            );
+
+            return;
+          }
+
+          try {
+            final character =
+            await Character.fromFirestoreAsync(doc);
+
+            if (!context.mounted) return;
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CharacterEditPage(
+                  character: character,
+                ),
+              ),
+            );
+          } catch (e) {
+            debugPrint(
+              '❌ 工作室角色開啟失敗：$e',
+            );
+
+            if (!context.mounted) return;
+
+            ToastUtils.showCenterToast(
+              context,
+              '角色資料讀取失敗',
+              isError: true,
+            );
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: SizedBox(
+                  width: 58,
+                  height: 58,
+                  child: Image(
+                    image: getAvatarImageProvider(
+                      avatarPath.isNotEmpty
+                          ? avatarPath
+                          : 'assets/images/avatar1.png',
+                    ),
+                    fit: BoxFit.cover,
+                    errorBuilder: (
+                        context,
+                        error,
+                        stackTrace,
+                        ) {
+                      return Container(
+                        color: theme.colorScheme.primary
+                            .withValues(alpha: 0.08),
+                        child: Icon(
+                          Icons.person_rounded,
+                          color: theme.colorScheme.primary
+                              .withValues(alpha: 0.4),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      characterName,
+                      maxLines: 1,
+                      overflow:
+                      TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Row(
+                      children: [
+                        Icon(
+                          statusIcon,
+                          size: 14,
+                          color: theme
+                              .colorScheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          statusText,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: theme
+                                .colorScheme.onSurface
+                                .withValues(alpha: 0.55),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              if (status == 'draft')
+                IconButton(
+                  tooltip: '刪除草稿',
+                  icon: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed: () {
+                    _deleteDraft(
+                      context,
+                      doc.id,
+                      avatarPath,
+                    );
+                  },
+                )
+              else
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: theme.colorScheme.onSurface
+                      .withValues(alpha: 0.35),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

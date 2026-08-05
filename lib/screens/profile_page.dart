@@ -29,7 +29,11 @@ import 'character_profile_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // 🌟 加上這個！
-
+import '../models/moment_model.dart';
+import 'moment_card.dart';
+import 'edit_moment_page.dart';
+import 'create_moment_page.dart';
+import '../page/creator_follow_list_page.dart';
 //個人主頁
 
 class ProfilePage extends StatefulWidget {
@@ -53,6 +57,7 @@ class _ProfilePageState extends State<ProfilePage>
   late TextEditingController _playerIDController;
   bool _hasChangedID = false;
   String _oldIDFromDB = "";
+  String _profileMomentFilter = 'all';
   StreamSubscription? _pointsSubscription;
   StreamSubscription? _userDocSubscription;
   // --- Firebase 變數 ---
@@ -2104,6 +2109,7 @@ Widget _buildCreatorProfileHeader() {
   final textColor = theme.colorScheme.onSurface;
   final subTextColor =
   textColor.withValues(alpha: 0.65);
+  final l10n = AppLocalizations.of(context)!;
 
   return Column(
     children: [
@@ -2168,19 +2174,171 @@ Widget _buildCreatorProfileHeader() {
                   ],
                 ),
 
-                const SizedBox(height: 6),
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser?.uid)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    String displayID = _oldIDFromDB;
+                    String characterName =
+                        l10n.profile_fallback_character;
 
-                Text(
-                  _bio.isNotEmpty
-                      ? _bio
-                      : '寫下一句屬於你的自我介紹吧。',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 1.45,
-                    color: subTextColor,
-                  ),
+                    if (snapshot.hasData && snapshot.data!.exists) {
+                      final userData =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                      displayID =
+                          userData['playerID'] ?? _oldIDFromDB;
+
+                      characterName =
+                          userData['currentCharacter'] ??
+                              l10n.profile_fallback_character;
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                'ID: $displayID',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: subTextColor,
+                                  fontWeight: _hasChangedID
+                                      ? FontWeight.w500
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 6),
+
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: displayID),
+                                );
+
+                                ToastUtils.showCenterToast(
+                                  context,
+                                  l10n.toast_id_copied,
+                                  customIcon: Icons.copy_rounded,
+                                );
+                              },
+                              child: Icon(
+                                Icons.copy_rounded,
+                                size: 16,
+                                color: subTextColor,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 7),
+
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                l10n.profile_send_invite_btn,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: subTextColor,
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(width: 5),
+
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (dialogContext) {
+                                    return AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadius.circular(20),
+                                      ),
+                                      title: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.info_outline,
+                                            color: Colors.pinkAccent,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            l10n.profile_referral_rule_title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      content: Text(
+                                        l10n.profile_referral_rule_receiver,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          height: 1.5,
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(dialogContext).pop(),
+                                          child: Text(
+                                            l10n.common_got_it,
+                                            style: const TextStyle(
+                                              color: Colors.pinkAccent,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: Icon(
+                                Icons.help_outline_rounded,
+                                size: 15,
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+
+                            const SizedBox(width: 10),
+
+                            GestureDetector(
+                              onTap: () async {
+                                final shareText =
+                                l10n.profile_share_message(
+                                  characterName,
+                                  displayID,
+                                );
+
+                                await SharePlus.instance.share(
+                                  ShareParams(text: shareText),
+                                );
+                              },
+                              child: Icon(
+                                Icons.share_rounded,
+                                size: 17,
+                                color: primaryColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 10),
@@ -2191,18 +2349,15 @@ Widget _buildCreatorProfileHeader() {
                     Icons.edit_outlined,
                     size: 16,
                   ),
-                  label: const Text('編輯個人檔案'),
+                  label: const Text("編輯個人檔案"),
                   style: OutlinedButton.styleFrom(
-                    visualDensity:
-                    VisualDensity.compact,
-                    padding:
-                    const EdgeInsets.symmetric(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                 ),
@@ -2219,7 +2374,7 @@ Widget _buildCreatorProfileHeader() {
           Expanded(
             child: _buildProfileStatItem(
               value: _friendsList.length,
-              label: '收藏',
+              label: '朋友',
             ),
           ),
           Expanded(
@@ -2229,15 +2384,72 @@ Widget _buildCreatorProfileHeader() {
             ),
           ),
           Expanded(
-            child: _buildProfileStatItem(
-              value: 0,
-              label: '追蹤',
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(
+                FirebaseAuth.instance
+                    .currentUser?.uid,
+              )
+                  .collection('following')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                final int followingCount =
+                    snapshot.data?.docs.length ?? 0;
+
+                return _buildProfileStatItem(
+                  value: followingCount,
+                  label: '追蹤',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                        const CreatorFollowListPage(
+                          type:
+                          CreatorFollowListType
+                              .following,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
+
           Expanded(
-            child: _buildProfileStatItem(
-              value: 0,
-              label: '喜歡',
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(
+                FirebaseAuth.instance
+                    .currentUser?.uid,
+              )
+                  .collection('followers')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                final int followersCount =
+                    snapshot.data?.docs.length ?? 0;
+
+                return _buildProfileStatItem(
+                  value: followersCount,
+                  label: '追蹤者',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                        const CreatorFollowListPage(
+                          type:
+                          CreatorFollowListType
+                              .followers,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -2277,34 +2489,109 @@ Widget _buildCreatorProfileHeader() {
   );
 }
 
-Widget _buildProfileStatItem({
-  required int value,
-  required String label,
-}) {
-  final theme = Theme.of(context);
+  void _showMyCharacterActions(
+      Character character,
+      ) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.edit_outlined),
+                title: const Text('編輯角色'),
+                onTap: () async {
+                  Navigator.pop(sheetContext);
 
-  return Column(
-    children: [
-      Text(
-        _formatPoints(value),
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: theme.colorScheme.onSurface,
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CharacterEditPage(
+                        character: character,
+                      ),
+                    ),
+                  );
+
+                  if (!mounted) return;
+                  await _refreshData();
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.visibility_outlined,
+                ),
+                title: const Text('預覽角色檔案'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) {
+                        if (character.isPublic) {
+                          return CharacterProfilePage(
+                            character: character,
+                            characterId: character.id,
+                          );
+                        }
+
+                        return PrivateCharacterProfilePage(
+                          character: character,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProfileStatItem({
+    required int value,
+    required String label,
+    VoidCallback? onTap,
+  }) {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 6,
+        ),
+        child: Column(
+          children: [
+            Text(
+              _formatPoints(value),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color:
+                theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: theme
+                    .colorScheme.onSurface
+                    .withValues(alpha: 0.55),
+              ),
+            ),
+          ],
         ),
       ),
-      const SizedBox(height: 3),
-      Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          color: theme.colorScheme.onSurface
-              .withValues(alpha: 0.55),
-        ),
-      ),
-    ],
-  );
-}
+    );
+  }
 
   Widget _buildAboutMeTab() {
     final currentUser =
@@ -2393,60 +2680,1015 @@ Widget _buildProfileStatItem({
       ),
     );
   }
-Widget _buildCharactersTab() {
-  return RefreshIndicator(
-    onRefresh: _refreshData,
-    child: ListView(
-      padding: const EdgeInsets.all(16),
+  Widget _buildCharactersTab() {
+    final theme = Theme.of(context);
+
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          // ＋ 建立新角色
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                4,
+              ),
+              child: InkWell(
+                onTap: _createCharacter,
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary
+                        .withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: theme.colorScheme.primary
+                          .withValues(alpha: 0.22),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_rounded,
+                        size: 21,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '建立新角色',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          if (_myCharacters.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.person_add_alt_1_rounded,
+                      size: 64,
+                      color: theme.colorScheme.primary
+                          .withValues(alpha: 0.45),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      '還沒有創建角色',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '開始創建你的第一位角色吧。',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface
+                            .withValues(alpha: 0.55),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                12,
+                16,
+                24,
+              ),
+              sliver: SliverGrid(
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.72,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    final character = _myCharacters[index];
+                    return _buildMyCharacterCard(character);
+                  },
+                  childCount: _myCharacters.length,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+  Widget _buildMyCharacterCard(Character character) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
+    final String imagePath =
+    character.avatarPath.trim().isNotEmpty
+        ? character.avatarPath
+        : 'assets/images/avatar1.png';
+
+    final int playCount = character.playCount;
+    final int likesCount = character.likesCount;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () async {
+        final result = await Navigator.push<Map<String, dynamic>>(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                CharacterEditPage(character: character),
+          ),
+        );
+
+        if (!mounted || result == null) return;
+
+        final bool changed = result['changed'] == true;
+        final bool deleted = result['deleted'] == true;
+
+        final String? deletedCharacterId =
+        result['characterId']?.toString();
+
+        final String? message =
+        result['message']?.toString();
+
+        if (deleted) {
+          final idToRemove =
+              deletedCharacterId ?? character.id;
+
+          setState(() {
+            _myCharacters.removeWhere(
+                  (item) => item.id == idToRemove,
+            );
+
+            _friendsList.removeWhere(
+                  (item) => item.id == idToRemove,
+            );
+          });
+
+          if (message != null && message.isNotEmpty) {
+            ToastUtils.showCenterToast(
+              context,
+              message,
+              customIcon: Icons.person_remove_rounded,
+            );
+          }
+
+          return;
+        }
+
+        if (changed) {
+          await _refreshData();
+
+          if (!mounted) return;
+
+          if (message != null && message.isNotEmpty) {
+            ToastUtils.showCenterToast(
+              context,
+              message,
+              customIcon: Icons.manage_accounts_rounded,
+            );
+          }
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface
+              .withValues(alpha: 0.88),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: theme.colorScheme.onSurface
+                .withValues(alpha: 0.08),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image(
+                    image: getAvatarImageProvider(imagePath),
+                    fit: BoxFit.cover,
+                    errorBuilder: (
+                        context,
+                        error,
+                        stackTrace,
+                        ) {
+                      return Container(
+                        color: primaryColor.withValues(
+                          alpha: 0.08,
+                        ),
+                        child: Icon(
+                          Icons.person_rounded,
+                          size: 56,
+                          color: primaryColor.withValues(
+                            alpha: 0.4,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: Material(
+                      color: Colors.black.withValues(alpha: 0.48),
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        tooltip: '角色操作',
+                        visualDensity: VisualDensity.compact,
+                        iconSize: 18,
+                        color: Colors.white,
+                        onPressed: () {
+                          _showMyCharacterActions(character);
+                        },
+                        icon: const Icon(Icons.more_horiz_rounded),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                12,
+                10,
+                12,
+                12,
+              ),
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    character.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: character.isPublic
+                          ? Colors.green.withValues(alpha: 0.10)
+                          : theme.colorScheme.onSurface
+                          .withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          character.isPublic
+                              ? Icons.public_rounded
+                              : Icons.lock_outline_rounded,
+                          size: 12,
+                          color: character.isPublic
+                              ? Colors.green
+                              : theme.colorScheme.onSurface
+                              .withValues(alpha: 0.55),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          character.isPublic ? '公開' : '私人',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: character.isPublic
+                                ? Colors.green
+                                : theme.colorScheme.onSurface
+                                .withValues(alpha: 0.55),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.play_circle_outline_rounded,
+                        size: 15,
+                        color: theme.colorScheme.onSurface
+                            .withValues(alpha: 0.5),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatPoints(playCount),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.58),
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      Icon(
+                        Icons.favorite_border_rounded,
+                        size: 15,
+                        color: theme.colorScheme.onSurface
+                            .withValues(alpha: 0.5),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatPoints(likesCount),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.58),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showProfileAuthorSelectionSheet() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) return;
+
+    String creatorName =
+    _nickname.trim().isNotEmpty ? _nickname : '創作者';
+
+    String creatorAvatar = _avatarPath;
+
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+
+      final data = userDoc.data();
+
+      if (data != null) {
+        creatorName =
+        data['nickname']?.toString().trim().isNotEmpty == true
+            ? data['nickname'].toString().trim()
+            : creatorName;
+
+        creatorAvatar =
+        data['avatarPath']?.toString().trim().isNotEmpty == true
+            ? data['avatarPath'].toString().trim()
+            : creatorAvatar;
+      }
+    } catch (e) {
+      debugPrint('❌ 讀取創作者發布資料失敗：$e');
+    }
+
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight:
+              MediaQuery.of(sheetContext).size.height * 0.72,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 4, 16, 14),
+                  child: Text(
+                    '選擇發布身分',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                const Divider(height: 1),
+
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage:
+                          getAvatarImageProvider(creatorAvatar),
+                        ),
+                        title: Text(
+                          creatorName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: const Text('以創作者本人發布'),
+                        trailing: const Icon(
+                          Icons.edit_document,
+                        ),
+                        onTap: () async {
+                          Navigator.pop(sheetContext);
+
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CreateMomentPage(
+                                authorId:
+                                'creator_${currentUser.uid}',
+                                authorName: creatorName,
+                                authorAvatar: creatorAvatar,
+                                isCreatorPost: true,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      if (_myCharacters.isNotEmpty)
+                        const Divider(height: 1),
+
+                      ..._myCharacters.map((character) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage:
+                            getAvatarImageProvider(
+                              character.avatarPath,
+                            ),
+                          ),
+                          title: Text(character.name),
+                          subtitle: Text(
+                            character.isPublic
+                                ? '公開角色'
+                                : '私人角色',
+                          ),
+                          trailing: Icon(
+                            character.isPublic
+                                ? Icons.public_rounded
+                                : Icons.lock_outline_rounded,
+                            size: 18,
+                          ),
+                          onTap: () async {
+                            Navigator.pop(sheetContext);
+
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => CreateMomentPage(
+                                  authorId: character.id,
+                                  authorName: character.name,
+                                  authorAvatar:
+                                  character.avatarPath,
+                                  isCreatorPost: false,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMomentsTab() {
+    final theme = Theme.of(context);
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      return const Center(
+        child: Text('請先登入'),
+      );
+    }
+
+    return Column(
       children: [
-        _buildMyCharactersSection(),
-      ],
+    Padding(
+    padding: const EdgeInsets.fromLTRB(
+      16,
+      16,
+      16,
+      8,
     ),
-  );
-}
 
-Widget _buildMomentsTab() {
-  final theme = Theme.of(context);
+    child: SizedBox(
+    width: double.infinity,
+    child: OutlinedButton.icon(
+    onPressed: _showProfileAuthorSelectionSheet,
+    icon: const Icon(
+    Icons.add_rounded,
+    size: 21,
+    ),
+    label: const Text(
+    '發布動態',
+    style: TextStyle(
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    style: OutlinedButton.styleFrom(
+    padding: const EdgeInsets.symmetric(
+    vertical: 13,
+    ),
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(14),
+    ),
+    ),
+    ),
+    ),
+    ),
 
-  return ListView(
-    padding: const EdgeInsets.all(24),
-    children: [
-      const SizedBox(height: 40),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            16,
+            0,
+            16,
+            8,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildProfileMomentFilterChip(
+                  label: '全部',
+                  value: 'all',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildProfileMomentFilterChip(
+                  label: '本人',
+                  value: 'creator',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _buildProfileMomentFilterChip(
+                  label: '角色',
+                  value: 'character',
+                ),
+              ),
+            ],
+          ),
+        ),
 
-      Icon(
-        Icons.dynamic_feed_outlined,
-        size: 64,
-        color: theme.colorScheme.primary
-            .withValues(alpha: 0.45),
-      ),
+    Expanded(
+    child: StreamBuilder<QuerySnapshot>(
+    stream: FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('moments')
+          .where(
+        'createdBy',
+        isEqualTo: currentUser.uid,
+      )
+          .orderBy(
+        'createdAt',
+        descending: true,
+      )
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState ==
+            ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-      const SizedBox(height: 16),
+        if (snapshot.hasError) {
+          debugPrint(
+            '❌ 個人動態讀取失敗：${snapshot.error}',
+          );
 
-      Text(
-        '還沒有動態',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: theme.colorScheme.onSurface,
+          return ListView(
+            physics:
+            const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(24),
+            children: [
+              const SizedBox(height: 60),
+              Icon(
+                Icons.error_outline_rounded,
+                size: 56,
+                color: theme.colorScheme.error
+                    .withValues(alpha: 0.6),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                '動態讀取失敗',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '請稍後再試一次。',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface
+                      .withValues(alpha: 0.55),
+                ),
+              ),
+            ],
+          );
+        }
+
+        final docs = snapshot.data?.docs ?? [];
+
+        final allMoments = docs.map((doc) {
+          return Moment.fromFirestore(doc);
+        }).toList();
+
+        final moments = allMoments.where((moment) {
+          switch (_profileMomentFilter) {
+            case 'creator':
+              return moment.isCreatorPost;
+
+            case 'character':
+              return !moment.isCreatorPost;
+
+            case 'all':
+            default:
+              return true;
+          }
+        }).toList();
+
+        if (moments.isEmpty) {
+          String emptyTitle;
+          String emptyDescription;
+
+          switch (_profileMomentFilter) {
+            case 'creator':
+              emptyTitle = '本人還沒有發布動態';
+              emptyDescription = '以創作者身分發布的內容會顯示在這裡。';
+              break;
+
+            case 'character':
+              emptyTitle = '旗下角色還沒有發布動態';
+              emptyDescription = '以角色身分發布的內容會顯示在這裡。';
+              break;
+
+            default:
+              emptyTitle = '還沒有動態';
+              emptyDescription = '你與旗下角色發布的動態會顯示在這裡。';
+          }
+
+          return ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(24),
+            children: [
+              const SizedBox(height: 40),
+              Icon(
+                Icons.dynamic_feed_outlined,
+                size: 56,
+                color: theme.colorScheme.primary
+                    .withValues(alpha: 0.4),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                emptyTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                emptyDescription,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.5,
+                  color: theme.colorScheme.onSurface
+                      .withValues(alpha: 0.55),
+                ),
+              ),
+            ],
+          );
+        }
+
+        return ListView.builder(
+          physics:
+          const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(
+            top: 8,
+            bottom: 24,
+          ),
+          itemCount: moments.length,
+          itemBuilder: (context, index) {
+            final moment = moments[index];
+
+            return MomentCard(
+              key: ValueKey(moment.id),
+              moment: moment,
+              currentUserId: currentUser.uid,
+              showFeatureTips: false,
+
+              // 個人主頁內仍可正常按讚
+              onLikeTapped: () {
+                _handleProfileMomentLike(moment);
+              },
+
+              // 編輯自己的動態
+              onEditTapped: () {
+                _editProfileMoment(moment);
+              },
+
+              // 刪除自己的動態
+              onDeleteTapped: () {
+                _deleteProfileMoment(moment.id);
+              },
+
+              // 點角色頭像時先沿用原有角色跳轉
+              onAvatarTapped: () {
+                _openProfileMomentAuthor(moment);
+              },
+            );
+          },
+        );
+      },
+    ),
+    ),
+      ],
+    );
+  }
+  Widget _buildProfileMomentFilterChip({
+    required String label,
+    required String value,
+  }) {
+    final theme = Theme.of(context);
+
+    final bool isSelected =
+        _profileMomentFilter == value;
+
+    return InkWell(
+      onTap: () {
+        if (_profileMomentFilter == value) return;
+
+        setState(() {
+          _profileMomentFilter = value;
+        });
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(
+          vertical: 9,
+        ),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surface
+              .withValues(alpha: 0.75),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface
+                .withValues(alpha: 0.10),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: isSelected
+                ? FontWeight.bold
+                : FontWeight.w500,
+            color: isSelected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurface
+                .withValues(alpha: 0.65),
+          ),
         ),
       ),
-
-      const SizedBox(height: 8),
-
-      Text(
-        '之後這裡會顯示你與旗下角色發布的動態。',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 13,
-          height: 1.5,
-          color: theme.colorScheme.onSurface
-              .withValues(alpha: 0.55),
+    );
+  }
+  Future<void> _editProfileMoment(
+      Moment moment,
+      ) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditMomentPage(
+          momentToEdit: moment,
         ),
       ),
-    ],
-  );
-}
+    );
+
+    if (!mounted) return;
+
+    if (result is Map &&
+        result['changed'] == true) {
+      setState(() {});
+    }
+  }
+  Future<void> _deleteProfileMoment(
+      String momentId,
+      ) async {
+    final bool confirm =
+        await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) {
+            return AlertDialog(
+              title: const Text('刪除動態'),
+              content: const Text(
+                '確定要永久刪除這篇動態嗎？',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      dialogContext,
+                      false,
+                    );
+                  },
+                  child: const Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      dialogContext,
+                      true,
+                    );
+                  },
+                  child: const Text(
+                    '刪除',
+                    style: TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+            false;
+
+    if (!confirm) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('moments')
+          .doc(momentId)
+          .delete();
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '動態已刪除',
+        customIcon:
+        Icons.delete_outline_rounded,
+      );
+    } catch (e) {
+      debugPrint('❌ 刪除動態失敗：$e');
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '刪除失敗，請稍後再試',
+        isError: true,
+      );
+    }
+  }
+  Future<void> _handleProfileMomentLike(
+      Moment moment,
+      ) async {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .set({
+        'lastTasksResetDate':
+        FieldValue.serverTimestamp(),
+        'dailyTasks.likeProgress':
+        FieldValue.increment(1),
+      }, SetOptions(merge: true));
+
+      await _loadDailyTaskProgress();
+    } catch (e) {
+      debugPrint(
+        '❌ 個人主頁按讚任務更新失敗：$e',
+      );
+    }
+  }
+  void _openProfileMomentAuthor(
+      Moment moment,
+      ) {
+    // 創作者本人發布的動態
+    if (moment.isCreatorPost) {
+      return;
+    }
+
+    Character? targetCharacter;
+
+    for (final character in _myCharacters) {
+      if (character.id == moment.authorId) {
+        targetCharacter = character;
+        break;
+      }
+    }
+
+    if (targetCharacter == null) {
+      ToastUtils.showCenterToast(
+        context,
+        '找不到這個角色的資料',
+        isError: true,
+      );
+      return;
+    }
+
+    final character = targetCharacter;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) {
+          if (character.isPublic) {
+            return CharacterProfilePage(
+              character: character,
+              characterId: character.id,
+            );
+          }
+
+          return PrivateCharacterProfilePage(
+            character: character,
+          );
+        },
+      ),
+    );
+  }
 
   Widget _buildProfileHeader() {
     final theme = Theme.of(context);

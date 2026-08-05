@@ -103,6 +103,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         _checkIfLiked();
         _checkIfFriend();
         _migrateLegacyAffection(); // 啟動搬家小精靈
+        _checkCreatorFollowStatus();
       }
     });
   }
@@ -125,6 +126,181 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       }
       // ✍️ 寫下紀錄，這輩子只彈這一次！
       await prefs.setBool('seen_profile_echo_tip', true);
+    }
+  }
+
+  Future<void> _checkCreatorFollowStatus() async {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) return;
+
+    final String creatorId =
+        widget.character.createdBy;
+
+    if (creatorId.isEmpty ||
+        currentUser.uid == creatorId) {
+      return;
+    }
+
+    try {
+      final followDoc =
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .collection('following')
+          .doc(creatorId)
+          .get();
+
+      if (!mounted) return;
+
+      setState(() {
+        _isFollowing = followDoc.exists;
+      });
+    } catch (e) {
+      debugPrint('❌ 讀取創作者追蹤狀態失敗：$e');
+    }
+  }
+
+  Future<void> _toggleCreatorFollowFromCharacter({
+    required String creatorId,
+    required String creatorName,
+  }) async {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    final l10n =
+    AppLocalizations.of(context)!;
+
+    if (currentUser == null) {
+      ToastUtils.showCenterToast(
+        context,
+        '請先登入',
+        isError: true,
+      );
+      return;
+    }
+
+    if (currentUser.uid == creatorId) {
+      ToastUtils.showCenterToast(
+        context,
+        l10n.follow_own_warning,
+        customIcon:
+        Icons.front_hand_rounded,
+      );
+      return;
+    }
+
+    final db = FirebaseFirestore.instance;
+
+    final followingRef = db
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('following')
+        .doc(creatorId);
+
+    final followerRef = db
+        .collection('users')
+        .doc(creatorId)
+        .collection('followers')
+        .doc(currentUser.uid);
+
+    final bool wasFollowing = _isFollowing;
+
+    setState(() {
+      _isFollowing = !wasFollowing;
+    });
+
+    // 第一階段：只處理追蹤關係
+    try {
+      final batch = db.batch();
+
+      if (wasFollowing) {
+        batch.delete(followingRef);
+        batch.delete(followerRef);
+      } else {
+        batch.set(followingRef, {
+          'creatorId': creatorId,
+          'creatorName': creatorName,
+          'followedAt':
+          FieldValue.serverTimestamp(),
+        });
+
+        batch.set(followerRef, {
+          'followerId': currentUser.uid,
+          'followerName': _playerNickname,
+          'followedAt':
+          FieldValue.serverTimestamp(),
+        });
+      }
+
+      await batch.commit();
+
+      debugPrint(
+        wasFollowing
+            ? '✅ 取消追蹤資料寫入成功'
+            : '✅ 追蹤資料寫入成功',
+      );
+    } catch (e) {
+      debugPrint(
+        '❌ 追蹤關係寫入失敗：$e',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _isFollowing = wasFollowing;
+      });
+
+      ToastUtils.showCenterToast(
+        context,
+        '追蹤操作失敗，請稍後再試',
+        isError: true,
+      );
+
+      return;
+    }
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+      context,
+      wasFollowing
+          ? '已取消追蹤'
+          : '已追蹤 $creatorName',
+      customIcon: wasFollowing
+          ? Icons.person_remove_outlined
+          : Icons.person_add_alt_1_rounded,
+    );
+
+    // 第二階段：通知失敗不能影響追蹤結果
+    if (!wasFollowing) {
+      try {
+        await db
+            .collection('users')
+            .doc(creatorId)
+            .collection('mailbox')
+            .add({
+          'type': 'follow',
+          'title':
+          l10n.mailbox_follow_title,
+          'body': l10n.mailbox_follow_body(
+            widget.character.name,
+          ),
+          'fromId': currentUser.uid,
+          'fromName': _playerNickname,
+          'createdAt':
+          FieldValue.serverTimestamp(),
+          'isRead': false,
+        });
+
+        debugPrint('✅ 追蹤通知寄送成功');
+      } catch (e) {
+        // 通知寄送失敗，不取消已成功的追蹤
+        debugPrint(
+          '⚠️ 追蹤已成功，但通知寄送失敗：$e',
+        );
+      }
     }
   }
 
@@ -561,14 +737,16 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
   }
 
   void _navigateToCreatorProfile() {
-    Navigator.push(context, MaterialPageRoute(
-      builder: (context) =>
-          CreatorProfilePage(
-            creatorId: widget.character.createdBy,
-            creatorName: widget.character.creatorName,
-            characterId: widget.character.id,
-          ),
-    ));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            CreatorProfilePage(
+              creatorId: widget.character.createdBy,
+              creatorName: widget.character.creatorName,
+            ),
+      ),
+    );
   }
 
   void _handleFollow() async {
@@ -2530,39 +2708,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                       elevation: 0,
                     ),
                     onPressed: () async {
-                      // 🔒 防禦塔：如果已經變成「已關注」了，按鈕就失去反應，防連點！
-                      if (_isFollowing) return;
-                      final currentUser = FirebaseAuth.instance.currentUser;
-                      if (currentUser != null && currentUser.uid == creatorId) {
-                        // ✨ 總裁級：溫柔的防呆提示，婉拒「自己追蹤自己」的孤單操作！
-                        ToastUtils.showCenterToast(
-                          context,
-                          l10n.follow_own_warning,
-                          customIcon: Icons.front_hand_rounded, // 💡 總裁細節：跟「不能按自己讚」一樣，用小手圖示溫柔擋下這個動作
-                        );
-                        return;
-                      }
-                      setState(() {
-                        _isFollowing = true;
-                      });
-                      // ✨ 總裁級：成功追蹤的專屬提示，讓建立羈絆的瞬間充滿質感！
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.follow_success_msg(myName, creatorName),
-                        customIcon: Icons.person_add_alt_1_rounded, // 💡 總裁細節：用帶加號的人物圖示，或是 Icons.how_to_reg_rounded (已註冊/確認)，完美傳遞「追蹤成功」的意象
+                      await _toggleCreatorFollowFromCharacter(
+                        creatorId: creatorId,
+                        creatorName: creatorName,
                       );
-                      await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(creatorId)
-                          .collection('mailbox')
-                          .add({
-                        'type': 'follow',
-                        'title': l10n.mailbox_follow_title,
-                        'body': l10n.mailbox_follow_body(widget.character.name),
-                        'fromName': myName,
-                        'createdAt': FieldValue.serverTimestamp(),
-                        'isRead': false,
-                      });
                     },
                     icon: Icon(_isFollowing ? Icons.check : Icons.add, size: 18),
                     label: Text(_isFollowing ? l10n.followed_btn : l10n.follow_btn, style: const TextStyle(fontWeight: FontWeight.bold)),

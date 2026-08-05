@@ -1158,6 +1158,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       DocumentReference charDocRef;
       bool isMovingFolder = false; // ✨ 紀錄是否需要搬家
 
+      // 搬家時暫存舊路徑與記憶碎片，避免只搬主文件、漏掉 lores 子集合
+      DocumentReference? oldDocRefForMove;
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> loreDocsToMove = [];
+
       if (isEditing) {
         // 1. 找出它原本住在哪裡 (依據 widget.character 傳進來的舊狀態)
         DocumentReference oldDocRef = widget.character!.isPublic
@@ -1172,6 +1176,18 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         // 3. 判斷是否搬家
         if (oldDocRef.path != charDocRef.path) {
           isMovingFolder = true;
+          oldDocRefForMove = oldDocRef;
+
+          // Firestore 不會自動搬移子集合，所以先把舊家的記憶碎片全部讀出來
+          final oldLoresSnapshot = await oldDocRef
+              .collection('lores')
+              .get();
+
+          loreDocsToMove = oldLoresSnapshot.docs;
+          debugPrint(
+            '📦 準備搬移 ${loreDocsToMove.length} 則記憶碎片：'
+                '${oldDocRef.path} → ${charDocRef.path}',
+          );
         }
 
         // 🧹 【大掃除魔法】：去「舊家」把照片子集合清掉
@@ -1349,16 +1365,16 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           ? widget.character!.createdBy
           : currentUser.uid;
       final creatorProfileDoc = await _db
-        .collection('users')
-        .doc(currentUser.uid)
-        .get();
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
 
-     final String creatorName =
-    creatorProfileDoc.data()?['nickname']
-        ?.toString()
-        .trim() ??
-    currentUser.displayName?.trim() ??
-    '';
+      final String creatorName =
+          creatorProfileDoc.data()?['nickname']
+              ?.toString()
+              .trim() ??
+              currentUser.displayName?.trim() ??
+              '';
       // 相容舊版，還是把 galleryData 存在主資料夾一份
       final galleryData = _galleryPhotos.map((p) => p.toMap()).toList();
       Map<String, dynamic> characterData = {
@@ -1442,8 +1458,35 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         batch.set(charDocRef, characterData, SetOptions(merge: true));
       }
 
+      // 如果公開／私人狀態改變，連同記憶碎片一起搬到新路徑
+      if (isMovingFolder &&
+          oldDocRefForMove != null &&
+          loreDocsToMove.isNotEmpty) {
+        for (final loreDoc in loreDocsToMove) {
+          final newLoreRef = charDocRef
+              .collection('lores')
+              .doc(loreDoc.id);
+
+          // 保留原本文件 ID 與全部欄位
+          batch.set(
+            newLoreRef,
+            loreDoc.data(),
+            SetOptions(merge: true),
+          );
+
+          // 新家寫入成功後，同一批次刪除舊家的記憶
+          batch.delete(loreDoc.reference);
+        }
+      }
+
       // 🌟 6. 管家，執行 Batch 寫入！
       await batch.commit();
+
+      if (isMovingFolder && loreDocsToMove.isNotEmpty) {
+        debugPrint(
+          '✅ 已完成搬移 ${loreDocsToMove.length} 則記憶碎片',
+        );
+      }
       try {
         final String newAvatarUrl = galleryPathsOnly.isNotEmpty
             ? galleryPathsOnly.first
@@ -1936,15 +1979,15 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         '✅ 第一個 Voice 已背景預載完成',
       );
     } on FirebaseFunctionsException catch ( e, stackTrace ) {
-    // 預載失敗不影響正常使用；
-    // 玩家按下播放時仍會再正式呼叫一次。
-    debugPrint(
-    '⚠️ 第一個 Voice 預載失敗：'
-    '${e.code} ${e.message}',
-    );
-    debugPrintStack(
-    stackTrace: stackTrace,
-    );
+      // 預載失敗不影響正常使用；
+      // 玩家按下播放時仍會再正式呼叫一次。
+      debugPrint(
+        '⚠️ 第一個 Voice 預載失敗：'
+            '${e.code} ${e.message}',
+      );
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
     } catch (e, stackTrace) {
       debugPrint('⚠️ 第一個 Voice 預載發生錯誤：$e');
       debugPrintStack(stackTrace: stackTrace);
@@ -2100,48 +2143,48 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     e,
     stackTrace
     ) {
-    debugPrint(
-    '========== Voice Bank 配對失敗 ==========',
-    );
-    debugPrint('code: ${e.code}');
-    debugPrint('message: ${e.message}');
-    debugPrint('details: ${e.details}');
-    debugPrintStack(stackTrace: stackTrace);
+      debugPrint(
+        '========== Voice Bank 配對失敗 ==========',
+      );
+      debugPrint('code: ${e.code}');
+      debugPrint('message: ${e.message}');
+      debugPrint('details: ${e.details}');
+      debugPrintStack(stackTrace: stackTrace);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {
-    _isGeneratingVoice = false;
-    });
+      setState(() {
+        _isGeneratingVoice = false;
+      });
 
-    ToastUtils.showCenterToast(
-    context,
-    e.message ?? l10n.voice_search_incomplete_retry,
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        e.message ?? l10n.voice_search_incomplete_retry,
+        isError: true,
+      );
     } catch (e, stackTrace) {
-    debugPrint(
-    '========== Voice Bank 配對未知錯誤 ==========',
-    );
-    debugPrint('error: $e');
-    debugPrintStack(stackTrace: stackTrace);
+      debugPrint(
+        '========== Voice Bank 配對未知錯誤 ==========',
+      );
+      debugPrint('error: $e');
+      debugPrintStack(stackTrace: stackTrace);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {
-    _isGeneratingVoice = false;
-    });
+      setState(() {
+        _isGeneratingVoice = false;
+      });
 
-    ToastUtils.showCenterToast(
-    context,
-    l10n.elevenlabs_error(
-    e.toString().replaceFirst(
-    'Exception: ',
-    '',
-    ),
-    ),
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        l10n.elevenlabs_error(
+          e.toString().replaceFirst(
+            'Exception: ',
+            '',
+          ),
+        ),
+        isError: true,
+      );
     }
   }
 
@@ -2363,38 +2406,38 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     e,
     stackTrace
     ) {
-    debugPrint(
-    '========== testVoiceSettings 失敗 ==========',
-    );
-    debugPrint('code: ${e.code}');
-    debugPrint('message: ${e.message}');
-    debugPrint('details: ${e.details}');
-    debugPrintStack(stackTrace: stackTrace);
+      debugPrint(
+        '========== testVoiceSettings 失敗 ==========',
+      );
+      debugPrint('code: ${e.code}');
+      debugPrint('message: ${e.message}');
+      debugPrint('details: ${e.details}');
+      debugPrintStack(stackTrace: stackTrace);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    ToastUtils.showCenterToast(
-    context,
-    e.message ?? l10n.voice_test_failed,
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        e.message ?? l10n.voice_test_failed,
+        isError: true,
+      );
     } catch (e, stackTrace) {
-    debugPrint('❌ 試聽失敗：$e');
-    debugPrintStack(stackTrace: stackTrace);
+      debugPrint('❌ 試聽失敗：$e');
+      debugPrintStack(stackTrace: stackTrace);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    ToastUtils.showCenterToast(
-    context,
-    l10n.voice_test_failed,
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        l10n.voice_test_failed,
+        isError: true,
+      );
     } finally {
-    if (mounted) {
-    setState(() {
-    _isTestingSettings = false;
-    });
-    }
+      if (mounted) {
+        setState(() {
+          _isTestingSettings = false;
+        });
+      }
     }
   }
 
@@ -2517,41 +2560,41 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     e,
     stackTrace
     ) {
-    debugPrint(
-    '========== 儲存 Voice Bank 選擇失敗 ==========',
-    );
-    debugPrint('plugin: ${e.plugin}');
-    debugPrint('code: ${e.code}');
-    debugPrint('message: ${e.message}');
-    debugPrintStack(stackTrace: stackTrace);
+      debugPrint(
+        '========== 儲存 Voice Bank 選擇失敗 ==========',
+      );
+      debugPrint('plugin: ${e.plugin}');
+      debugPrint('code: ${e.code}');
+      debugPrint('message: ${e.message}');
+      debugPrintStack(stackTrace: stackTrace);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    ToastUtils.showCenterToast(
-    context,
-    l10n.voice_selected_character_save_failed,
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        l10n.voice_selected_character_save_failed,
+        isError: true,
+      );
     } catch (e, stackTrace) {
-    debugPrint(
-    '========== 選定 Voice Bank 聲音失敗 ==========',
-    );
-    debugPrint('error: $e');
-    debugPrintStack(stackTrace: stackTrace);
+      debugPrint(
+        '========== 選定 Voice Bank 聲音失敗 ==========',
+      );
+      debugPrint('error: $e');
+      debugPrintStack(stackTrace: stackTrace);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    ToastUtils.showCenterToast(
-    context,
-    l10n.voice_binding_failed,
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        l10n.voice_binding_failed,
+        isError: true,
+      );
     } finally {
-    if (mounted) {
-    setState(() {
-    _isSaving = false;
-    });
-    }
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
   }
 
@@ -4667,29 +4710,29 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         int maxLines = 1,
         bool isRequired = false,
       }) {    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        maxLines: maxLines,
-        style: TextStyle(color: theme.textTheme.bodyMedium?.color),
-        decoration: InputDecoration(
-          label: isRequired
-              ? _buildRequiredLabel(label, theme)
-              : Text(
-            label,
-            style: TextStyle(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      style: TextStyle(color: theme.textTheme.bodyMedium?.color),
+      decoration: InputDecoration(
+        label: isRequired
+            ? _buildRequiredLabel(label, theme)
+            : Text(
+          label,
+          style: TextStyle(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
-          enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: theme.dividerColor)),
-          focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                  color:  theme.colorScheme.primary, width: 2.0)),
         ),
+        enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: theme.dividerColor)),
+        focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+                color:  theme.colorScheme.primary, width: 2.0)),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildBoxedTextField(

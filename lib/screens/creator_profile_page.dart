@@ -8,19 +8,21 @@ import 'character_model.dart';
 import 'creator_studio_page.dart'; // ✨ 總裁的秘密工作室檔案！
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import '../models/moment_model.dart';
+import 'moment_card.dart';
+import 'edit_moment_page.dart';
+import '../services/toast_utils.dart';
 
-//公開頁面
+//創作者公開頁面
 class CreatorProfilePage extends StatelessWidget {
   final String creatorId;
-  final String characterId;
   final String creatorName;
   final String APP_ID = AppConfig.appId;
 
   const CreatorProfilePage({
     super.key,
     required this.creatorId,
-    required this.characterId,
-    required this.creatorName
+    this.creatorName = '',
   });
 
   @override
@@ -37,7 +39,10 @@ class CreatorProfilePage extends StatelessWidget {
           .get(),
       builder: (context, userSnapshot) {
         // 🌟 2. 準備好真實姓名與頭像資料
-        String displayNickname = creatorName; // 從上一頁傳來的預設名字
+        String displayNickname =
+        creatorName.trim().isNotEmpty
+            ? creatorName.trim()
+            : '創作者'; // 從上一頁傳來的預設名字
         // ✨ 新增：準備好保底的 ID (UID 前 8 碼)
         String displayPlayerID = creatorId.length >= 8
             ? creatorId.substring(0, 8).toUpperCase()
@@ -71,6 +76,7 @@ class CreatorProfilePage extends StatelessWidget {
               (userData['bio'] ?? '')
                   .toString()
                   .trim();
+          debugPrint('📝 creatorBio：$creatorBio');
         }
         ImageProvider? imageProvider;
         String? finalPath = avatarPath ?? photoUrl; // 優先順序
@@ -127,43 +133,65 @@ class CreatorProfilePage extends StatelessWidget {
                 ),
                 elevation: 0,
               ),
-              body: Column(
-                children: [
-                  _buildCreatorHeader(
-                    context,
-                    theme,
-                    displayNickname:
-                    displayNickname,
-                    displayPlayerID:
-                    displayPlayerID,
-                    creatorBio:
-                    creatorBio,
-                    imageProvider:
-                    imageProvider,
-                    isOwner:
-                    isOwner,
-                    workCount:
-                    characters.length,
-                    totalLikes:
-                    totalLikes,
-                  ),
-
-                  const Divider(
-                    indent: 32,
-                    endIndent: 32,
-                  ),
-
-                  Expanded(
-                    child: _buildCreatorWorks(
+              body: DefaultTabController(
+                length: 3,
+                child: Column(
+                  children: [
+                    _buildCreatorHeader(
                       context,
                       theme,
-                      l10n,
-                      characters,
-                      isOwner,
-                      characterSnapshot,
+                      creatorId: creatorId,
+                      displayNickname: displayNickname,
+                      displayPlayerID: displayPlayerID,
+                      creatorBio: creatorBio,
+                      imageProvider: imageProvider,
+                      isOwner: isOwner,
+                      workCount: characters.length,
+                      totalLikes: totalLikes,
                     ),
-                  ),
-                ],
+
+                    TabBar(
+                      labelColor: theme.colorScheme.primary,
+                      unselectedLabelColor: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.55),
+                      indicatorColor: theme.colorScheme.primary,
+                      indicatorWeight: 3,
+                      tabs: const [
+                        Tab(text: '自我介紹'),
+                        Tab(text: '角色'),
+                        Tab(text: '動態'),
+                      ],
+                    ),
+
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          _buildCreatorAboutTab(
+                            context,
+                            theme,
+                            creatorBio,
+                          ),
+
+                          _buildCreatorWorks(
+                            context,
+                            theme,
+                            l10n,
+                            characters,
+                            isOwner,
+                            characterSnapshot,
+                          ),
+
+                          _buildCreatorMomentsTab(
+                            context,
+                            theme,
+                            creatorId,
+                            characters,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -171,9 +199,573 @@ class CreatorProfilePage extends StatelessWidget {
       },
     );
   }
+  Widget _buildCreatorAboutTab(
+      BuildContext context,
+      ThemeData theme,
+      String creatorBio,
+      ) {
+    if (creatorBio.trim().isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(24),
+        children: [
+          const SizedBox(height: 60),
+          Icon(
+            Icons.person_outline_rounded,
+            size: 60,
+            color: theme.colorScheme.primary
+                .withValues(alpha: 0.4),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '尚未填寫自我介紹',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '這位創作者還沒有留下介紹。',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: theme.colorScheme.onSurface
+                  .withValues(alpha: 0.55),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(16),
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface
+                .withValues(alpha: 0.72),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.primary
+                  .withValues(alpha: 0.12),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '📝 關於我',
+                style: TextStyle(
+                  color: theme.colorScheme.primary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                creatorBio,
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface
+                      .withValues(alpha: 0.78),
+                  fontSize: 13,
+                  height: 1.6,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+  Widget _buildCreatorMomentsTab(
+      BuildContext context,
+      ThemeData theme,
+      String creatorId,
+      List<Character> characters,
+      ) {
+    final String currentUserId =
+        FirebaseAuth.instance.currentUser?.uid ?? '';
+
+    String selectedFilter = 'all';
+
+    return StatefulBuilder(
+      builder: (
+          context,
+          setFilterState,
+          ) {
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                14,
+                16,
+                8,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildCreatorMomentFilter(
+                      context: context,
+                      label: '全部',
+                      value: 'all',
+                      selectedValue: selectedFilter,
+                      onSelected: (value) {
+                        setFilterState(() {
+                          selectedFilter = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildCreatorMomentFilter(
+                      context: context,
+                      label: '本人',
+                      value: 'creator',
+                      selectedValue: selectedFilter,
+                      onSelected: (value) {
+                        setFilterState(() {
+                          selectedFilter = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildCreatorMomentFilter(
+                      context: context,
+                      label: '角色',
+                      value: 'character',
+                      selectedValue: selectedFilter,
+                      onSelected: (value) {
+                        setFilterState(() {
+                          selectedFilter = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('artifacts')
+                    .doc(AppConfig.appId)
+                    .collection('moments')
+                    .where(
+                  'createdBy',
+                  isEqualTo: creatorId,
+                )
+                    .orderBy(
+                  'createdAt',
+                  descending: true,
+                )
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    debugPrint(
+                      '❌ 公開工作坊動態讀取失敗：'
+                          '${snapshot.error}',
+                    );
+
+                    return _buildCreatorMomentEmptyState(
+                      theme: theme,
+                      icon: Icons.error_outline_rounded,
+                      title: '動態讀取失敗',
+                      description: '請稍後再試一次。',
+                      isError: true,
+                    );
+                  }
+
+                  final docs =
+                      snapshot.data?.docs ?? [];
+
+                  final allMoments = docs
+                      .map(
+                        (doc) =>
+                        Moment.fromFirestore(doc),
+                  )
+                      .where(
+                        (moment) =>
+                    moment.isPublic == true,
+                  )
+                      .toList();
+
+                  final filteredMoments =
+                  allMoments.where((moment) {
+                    switch (selectedFilter) {
+                      case 'creator':
+                        return moment.isCreatorPost;
+
+                      case 'character':
+                        return !moment.isCreatorPost;
+
+                      case 'all':
+                      default:
+                        return true;
+                    }
+                  }).toList();
+
+                  if (filteredMoments.isEmpty) {
+                    String title;
+                    String description;
+
+                    switch (selectedFilter) {
+                      case 'creator':
+                        title = '創作者還沒有發布動態';
+                        description =
+                        '以創作者本人身分發布的公開內容會顯示在這裡。';
+                        break;
+
+                      case 'character':
+                        title = '旗下角色還沒有發布動態';
+                        description =
+                        '旗下公開角色發布的內容會顯示在這裡。';
+                        break;
+
+                      case 'all':
+                      default:
+                        title = '還沒有公開動態';
+                        description =
+                        '創作者本人與旗下角色發布的公開動態會顯示在這裡。';
+                    }
+
+                    return _buildCreatorMomentEmptyState(
+                      theme: theme,
+                      icon:
+                      Icons.dynamic_feed_outlined,
+                      title: title,
+                      description: description,
+                    );
+                  }
+
+                  return ListView.builder(
+                    physics:
+                    const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(
+                      top: 4,
+                      bottom: 24,
+                    ),
+                    itemCount:
+                    filteredMoments.length,
+                    itemBuilder: (
+                        context,
+                        index,
+                        ) {
+                      final moment =
+                      filteredMoments[index];
+
+                      return MomentCard(
+                        key: ValueKey(moment.id),
+                        moment: moment,
+                        currentUserId:
+                        currentUserId,
+                        showFeatureTips: false,
+
+                        // MomentCard 自己會處理按讚資料；
+                        // 工作坊不另外累加每日任務。
+                        onLikeTapped: () {},
+
+                        onEditTapped: () {
+                          _editCreatorMoment(
+                            context,
+                            moment,
+                          );
+                        },
+
+                        onDeleteTapped: () {
+                          _deleteCreatorMoment(
+                            context,
+                            creatorId,
+                            moment.id,
+                          );
+                        },
+
+                        onAvatarTapped: () {
+                          _openCreatorMomentAuthor(
+                            context: context,
+                            moment: moment,
+                            characters: characters,
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Widget _buildCreatorMomentFilter({
+    required BuildContext context,
+    required String label,
+    required String value,
+    required String selectedValue,
+    required ValueChanged<String> onSelected,
+  }) {
+    final theme = Theme.of(context);
+    final bool isSelected =
+        selectedValue == value;
+
+    return InkWell(
+      onTap: () {
+        if (!isSelected) {
+          onSelected(value);
+        }
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: AnimatedContainer(
+        duration:
+        const Duration(milliseconds: 180),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(
+          vertical: 9,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.surface
+              .withValues(alpha: 0.75),
+          borderRadius:
+          BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface
+                .withValues(alpha: 0.10),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: isSelected
+                ? FontWeight.bold
+                : FontWeight.w500,
+            color: isSelected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurface
+                .withValues(alpha: 0.65),
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _buildCreatorMomentEmptyState({
+    required ThemeData theme,
+    required IconData icon,
+    required String title,
+    required String description,
+    bool isError = false,
+  }) {
+    return ListView(
+      physics:
+      const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(24),
+      children: [
+        const SizedBox(height: 50),
+        Icon(
+          icon,
+          size: 58,
+          color: isError
+              ? theme.colorScheme.error
+              .withValues(alpha: 0.55)
+              : theme.colorScheme.primary
+              .withValues(alpha: 0.40),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          description,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            height: 1.5,
+            color: theme.colorScheme.onSurface
+                .withValues(alpha: 0.55),
+          ),
+        ),
+      ],
+    );
+  }
+  void _openCreatorMomentAuthor({
+    required BuildContext context,
+    required Moment moment,
+    required List<Character> characters,
+  }) {
+    // 創作者本人發文，目前停留在工作坊即可。
+    if (moment.isCreatorPost) {
+      return;
+    }
+
+    Character? targetCharacter;
+
+    for (final character in characters) {
+      if (character.id == moment.authorId) {
+        targetCharacter = character;
+        break;
+      }
+    }
+
+    if (targetCharacter == null) {
+      ToastUtils.showCenterToast(
+        context,
+        '這個角色目前無法查看',
+        isError: true,
+      );
+      return;
+    }
+
+    final character = targetCharacter;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CharacterProfilePage(
+          character: character,
+          characterId: character.id,
+        ),
+      ),
+    );
+  }
+  Future<void> _editCreatorMoment(
+      BuildContext context,
+      Moment moment,
+      ) async {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null ||
+        moment.createdBy != currentUser.uid) {
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditMomentPage(
+          momentToEdit: moment,
+        ),
+      ),
+    );
+  }
+  Future<void> _deleteCreatorMoment(
+      BuildContext context,
+      String creatorId,
+      String momentId,
+      ) async {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null ||
+        currentUser.uid != creatorId) {
+      return;
+    }
+
+    final bool confirm =
+        await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) {
+            return AlertDialog(
+              title: const Text('刪除動態'),
+              content: const Text(
+                '確定要永久刪除這篇動態嗎？',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      dialogContext,
+                      false,
+                    );
+                  },
+                  child: const Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      dialogContext,
+                      true,
+                    );
+                  },
+                  child: const Text(
+                    '刪除',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+            false;
+
+    if (!confirm) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('moments')
+          .doc(momentId)
+          .delete();
+
+      if (!context.mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '動態已刪除',
+        customIcon:
+        Icons.delete_outline_rounded,
+      );
+    } catch (e) {
+      debugPrint('❌ 刪除工作坊動態失敗：$e');
+
+      if (!context.mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '刪除失敗，請稍後再試',
+        isError: true,
+      );
+    }
+  }
   Widget _buildCreatorHeader(
       BuildContext context,
       ThemeData theme, {
+        required String creatorId,
         required String displayNickname,
         required String displayPlayerID,
         required String creatorBio,
@@ -182,216 +774,396 @@ class CreatorProfilePage extends StatelessWidget {
         required int workCount,
         required int totalLikes,
       }) {
-    final l10n =
-    AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
+    final primaryColor = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onSurface;
+    final subTextColor =
+    textColor.withValues(alpha: 0.58);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 28,
-        horizontal: 24,
+      padding: const EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        14,
       ),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 46,
-            backgroundColor:
-            Colors.grey.shade200,
-            backgroundImage:
-            imageProvider,
-            child: imageProvider == null
-                ? Icon(
-              Icons.person,
-              size: 46,
-              color:
-              Colors.grey.shade400,
-            )
-                : null,
-          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 46,
+                backgroundColor:
+                primaryColor.withValues(alpha: 0.10),
+                backgroundImage: imageProvider,
+                child: imageProvider == null
+                    ? Icon(
+                  Icons.person_rounded,
+                  size: 46,
+                  color: primaryColor.withValues(
+                    alpha: 0.38,
+                  ),
+                )
+                    : null,
+              ),
 
-          const SizedBox(height: 14),
+              const SizedBox(width: 16),
 
-          Text(
-            displayNickname,
-            textAlign: TextAlign.center,
-            style: theme
-                .textTheme
-                .headlineSmall
-                ?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayNickname,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
 
-          const SizedBox(height: 4),
+                    const SizedBox(height: 6),
 
-          Text(
-            'ID: $displayPlayerID',
-            style: TextStyle(
-              color: theme
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.48),
-              letterSpacing: 1.2,
-              fontSize: 12,
-            ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            'ID: $displayPlayerID',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: subTextColor,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 6),
+
+                        Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 15,
+                          color: primaryColor.withValues(
+                            alpha: 0.75,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Text(
+                      creatorBio.isNotEmpty
+                          ? creatorBio
+                          : '這位創作者還沒有留下介紹。',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.4,
+                        color: textColor.withValues(
+                          alpha: creatorBio.isNotEmpty
+                              ? 0.62
+                              : 0.38,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    if (isOwner)
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                              const CreatorStudioPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.brush_outlined,
+                          size: 16,
+                        ),
+                        label: Text(
+                          l10n.enter_secret_studio,
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      )
+                    else
+                      _buildCreatorFollowButton(
+                        context: context,
+                        creatorId: creatorId,
+                        creatorName: displayNickname,
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 20),
 
           Row(
-            mainAxisAlignment:
-            MainAxisAlignment.center,
             children: [
-              _buildCreatorStat(
-                theme,
-                value: '$workCount',
-                label: '公開作品',
-              ),
-
-              Container(
-                width: 1,
-                height: 32,
-                margin:
-                const EdgeInsets.symmetric(
-                  horizontal: 28,
+              Expanded(
+                child: _buildCreatorStat(
+                  theme,
+                  value: '$workCount',
+                  label: '公開作品',
                 ),
-                color: theme
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.12),
               ),
 
-              _buildCreatorStat(
+              _buildCreatorStatDivider(
                 theme,
-                value: '$totalLikes',
-                label: '獲得喜歡',
+              ),
+
+              Expanded(
+                child: _buildCreatorStat(
+                  theme,
+                  value: '$totalLikes',
+                  label: '獲得喜歡',
+                ),
+              ),
+
+              _buildCreatorStatDivider(
+                theme,
+              ),
+
+              Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(creatorId)
+                      .collection('followers')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    final int followerCount =
+                        snapshot.data?.docs.length ?? 0;
+
+                    return _buildCreatorStat(
+                      theme,
+                      value: _formatCreatorCount(
+                        followerCount,
+                      ),
+                      label: '追蹤者',
+                    );
+                  },
+                ),
               ),
             ],
           ),
-
-          if (creatorBio.isNotEmpty) ...[
-            const SizedBox(height: 22),
-
-            Container(
-              width: double.infinity,
-              padding:
-              const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme
-                    .colorScheme
-                    .surface
-                    .withValues(alpha: 0.72),
-                borderRadius:
-                BorderRadius.circular(18),
-                border: Border.all(
-                  color: theme
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.12),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 4,
-                        height: 18,
-                        decoration:
-                        BoxDecoration(
-                          color: theme
-                              .colorScheme
-                              .primary,
-                          borderRadius:
-                          BorderRadius.circular(
-                            99,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '關於我',
-                        style: TextStyle(
-                          color: theme
-                              .colorScheme
-                              .primary,
-                          fontSize: 15,
-                          fontWeight:
-                          FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Text(
-                    creatorBio,
-                    style: TextStyle(
-                      color: theme
-                          .colorScheme
-                          .onSurface
-                          .withValues(
-                        alpha: 0.78,
-                      ),
-                      fontSize: 13,
-                      height: 1.6,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-
-          if (isOwner) ...[
-            const SizedBox(height: 22),
-
-            ElevatedButton.icon(
-              style:
-              ElevatedButton.styleFrom(
-                backgroundColor: theme
-                    .colorScheme
-                    .primaryContainer,
-                foregroundColor: theme
-                    .colorScheme
-                    .onPrimaryContainer,
-                padding:
-                const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape:
-                RoundedRectangleBorder(
-                  borderRadius:
-                  BorderRadius.circular(24),
-                ),
-              ),
-              icon: const Icon(
-                Icons.brush,
-                size: 20,
-              ),
-              label: Text(
-                l10n.enter_secret_studio,
-                style: const TextStyle(
-                  fontWeight:
-                  FontWeight.bold,
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                    const CreatorStudioPage(),
-                  ),
-                );
-              },
-            ),
-          ],
         ],
       ),
     );
+  }
+  Widget _buildCreatorStatDivider(
+      ThemeData theme,
+      ) {
+    return Container(
+      width: 1,
+      height: 32,
+      color: theme.colorScheme.onSurface
+          .withValues(alpha: 0.10),
+    );
+  }
+  String _formatCreatorCount(
+      int value,
+      ) {
+    if (value >= 1000000) {
+      return '${(value / 1000000).toStringAsFixed(1)}M';
+    }
+
+    if (value >= 1000) {
+      return '${(value / 1000).toStringAsFixed(1)}K';
+    }
+
+    return '$value';
+  }
+  Widget _buildCreatorFollowButton({
+    required BuildContext context,
+    required String creatorId,
+    required String creatorName,
+  }) {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      return OutlinedButton.icon(
+        onPressed: null,
+        icon: const Icon(
+          Icons.person_add_alt_1_rounded,
+          size: 16,
+        ),
+        label: const Text('追蹤'),
+      );
+    }
+
+    final followingRef =
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('following')
+        .doc(creatorId);
+
+    return StreamBuilder<DocumentSnapshot>(
+      stream: followingRef.snapshots(),
+      builder: (context, snapshot) {
+        final bool isFollowing =
+            snapshot.data?.exists == true;
+
+        return OutlinedButton.icon(
+          onPressed: snapshot.connectionState ==
+              ConnectionState.waiting
+              ? null
+              : () {
+            _toggleCreatorFollow(
+              context: context,
+              creatorId: creatorId,
+              creatorName: creatorName,
+              currentlyFollowing:
+              isFollowing,
+            );
+          },
+          icon: Icon(
+            isFollowing
+                ? Icons.check_rounded
+                : Icons.person_add_alt_1_rounded,
+            size: 16,
+          ),
+          label: Text(
+            isFollowing ? '已追蹤' : '追蹤',
+          ),
+          style: OutlinedButton.styleFrom(
+            visualDensity:
+            VisualDensity.compact,
+            padding:
+            const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 8,
+            ),
+            backgroundColor: isFollowing
+                ? Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.08)
+                : null,
+            side: BorderSide(
+              color: Theme.of(context)
+                  .colorScheme
+                  .primary
+                  .withValues(
+                alpha:
+                isFollowing ? 0.28 : 0.65,
+              ),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius:
+              BorderRadius.circular(20),
+            ),
+          ),
+        );
+      },
+    );
+  }
+  Future<void> _toggleCreatorFollow({
+    required BuildContext context,
+    required String creatorId,
+    required String creatorName,
+    required bool currentlyFollowing,
+  }) async {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      ToastUtils.showCenterToast(
+        context,
+        '請先登入',
+        isError: true,
+      );
+      return;
+    }
+
+    if (currentUser.uid == creatorId) {
+      return;
+    }
+
+    final db =
+        FirebaseFirestore.instance;
+
+    final followingRef = db
+        .collection('users')
+        .doc(currentUser.uid)
+        .collection('following')
+        .doc(creatorId);
+
+    final followerRef = db
+        .collection('users')
+        .doc(creatorId)
+        .collection('followers')
+        .doc(currentUser.uid);
+
+    try {
+      final batch = db.batch();
+
+      if (currentlyFollowing) {
+        batch.delete(followingRef);
+        batch.delete(followerRef);
+      } else {
+        batch.set(followingRef, {
+          'creatorId': creatorId,
+          'creatorName': creatorName,
+          'followedAt':
+          FieldValue.serverTimestamp(),
+        });
+
+        batch.set(followerRef, {
+          'followerId': currentUser.uid,
+          'followedAt':
+          FieldValue.serverTimestamp(),
+        });
+      }
+
+      await batch.commit();
+
+      if (!context.mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        currentlyFollowing
+            ? '已取消追蹤'
+            : '已追蹤 $creatorName',
+        customIcon: currentlyFollowing
+            ? Icons.person_remove_outlined
+            : Icons.person_add_alt_1_rounded,
+      );
+    } catch (e) {
+      debugPrint(
+        '❌ 切換創作者追蹤狀態失敗：$e',
+      );
+
+      if (!context.mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '操作失敗，請稍後再試',
+        isError: true,
+      );
+    }
   }
   Widget _buildCreatorStat(
       ThemeData theme, {
