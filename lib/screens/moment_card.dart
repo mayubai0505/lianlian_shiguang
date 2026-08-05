@@ -258,58 +258,105 @@ class _MomentCardState extends State<MomentCard> {
     }
   }
 
-  Future<List<Character>> fetchCharactersFromDatabase() async {
+  Future<List<Character>>
+  fetchCharactersFromDatabase() async {
     try {
-      final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
-      if (currentUserId == null) return [];
+      final currentUser =
+          FirebaseAuth.instance.currentUser;
 
-      // 1. 先抓取「聊過天」的清單 (決定排序)
-      QuerySnapshot chatSnapshot = await FirebaseFirestore.instance
+      if (currentUser == null) {
+        return [];
+      }
+
+      final String currentUserId =
+          currentUser.uid;
+
+      // 玩家聊過的角色，依最近聊天排序
+      final chatSnapshot =
+      await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUserId)
           .collection('chats')
-          .orderBy('lastActivity', descending: true) // 最新的排前面
+          .orderBy(
+        'lastActivity',
+        descending: true,
+      )
           .get();
 
-      // 2. 抓取「大廳」所有的公開角色
-      QuerySnapshot publicSnapshot = await FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(AppConfig.appId)// ⚠️ 這裡填妳的 appId
-          .collection('public_characters')
-          .get();
-
-      // 3. 開始「大團圓」合併邏輯
-      Map<String, Character> allUniqueCharacters = {};
-      List<String> chatOrder = chatSnapshot.docs.map((doc) => doc.id).toList();
-
-      // A. 先處理大廳所有角色，把它們裝進 Map 備用
-      for (var doc in publicSnapshot.docs) {
-        Character character = await Character.fromFirestoreAsync(doc);
-        allUniqueCharacters[character.id] = character;
+      if (chatSnapshot.docs.isEmpty) {
+        return [];
       }
 
-      // B. 根據「聊天順序」重新排序
-      List<Character> sortedList = [];
+      final List<String> chatCharacterIds =
+      chatSnapshot.docs
+          .map((doc) => doc.id)
+          .where((id) => id.trim().isNotEmpty)
+          .toList();
 
-      // 先放「聊過天」的角色 (按最後聊天時間排)
-      for (String charId in chatOrder) {
-        if (allUniqueCharacters.containsKey(charId)) {
-          sortedList.add(allUniqueCharacters[charId]!);
+      final List<Character> characters = [];
+
+      for (final characterId
+      in chatCharacterIds) {
+        try {
+          // 先找公開角色
+          final publicDoc =
+          await FirebaseFirestore.instance
+              .collection('artifacts')
+              .doc(AppConfig.appId)
+              .collection('public_characters')
+              .doc(characterId)
+              .get();
+
+          if (publicDoc.exists) {
+            characters.add(
+              await Character
+                  .fromFirestoreAsync(
+                publicDoc,
+              ),
+            );
+            continue;
+          }
+
+          // 公開區沒有，再找玩家自己的私人角色
+          final privateDoc =
+          await FirebaseFirestore.instance
+              .collection('artifacts')
+              .doc(AppConfig.appId)
+              .collection('users')
+              .doc(currentUserId)
+              .collection(
+            'private_characters',
+          )
+              .doc(characterId)
+              .get();
+
+          if (privateDoc.exists) {
+            characters.add(
+              await Character
+                  .fromFirestoreAsync(
+                privateDoc,
+              ),
+            );
+          }
+        } catch (e) {
+          debugPrint(
+            '⚠️ 讀取聊天角色失敗：'
+                '$characterId，$e',
+          );
         }
       }
 
-      // 再放「還沒聊過」的其他角色
-      for (var char in allUniqueCharacters.values) {
-        if (!chatOrder.contains(char.id)) {
-          sortedList.add(char);
-        }
-      }
+      debugPrint(
+        '📤 可分享動態的聊天角色：'
+            '${characters.length} 位',
+      );
 
-      print("📊 總共找回 ${sortedList.length} 個角色！");
-      return sortedList;
-
+      return characters;
     } catch (e) {
-      print('❌ 抓取失敗: $e');
+      debugPrint(
+        '❌ 讀取聊天角色列表失敗：$e',
+      );
+
       return [];
     }
   }
@@ -387,11 +434,11 @@ class _MomentCardState extends State<MomentCard> {
                                 if (currentUserId == null) return;
 
                                 // 🌟 核心定義：統一使用角色 ID 作為房間 ID，解決「讀取回憶失敗」
-                                final String targetChatId = '${currentUserId}_${char.id}';
                                 final forwardMessage = l10n.moment_forward_template(widget.moment.authorName, widget.moment.content);;
                                 String targetSessionId = '${currentUserId}_${char.id}';
                                 try {
-                                  final String appId = 'lianlianshiguang'; // 🌟 確保這跟妳 ChatPage 裡的 _appId 一樣
+                                  final String appId =
+                                      AppConfig.appId;
 
                                   // 1. 智慧尋找：這次我們要去 chat_sessions 社區找
                                   final existingChats = await FirebaseFirestore.instance
@@ -406,14 +453,6 @@ class _MomentCardState extends State<MomentCard> {
                                     targetSessionId = existingChats.docs.first.id;
                                   }
 
-                                  // 🌟 C. 溫馨提示：讓玩家知道轉發成功了
-                                  if (context.mounted) {
-                                    // ✨ 總裁級：心意轉發的專屬浪漫！將粉紅大色塊化為輕柔的中央印記！
-                                    ToastUtils.showCenterToast(
-                                      context,
-                                      l10n.moment_forward_success(char.name),
-                                      );
-                                  }
                                   // 🌟 2. 核心修正：統一使用 chat_sessions 的路徑
                                   final sessionDocRef = FirebaseFirestore.instance
                                       .collection('artifacts')
@@ -440,6 +479,17 @@ class _MomentCardState extends State<MomentCard> {
                                     'timestamp': FieldValue.serverTimestamp(),
                                     'type': 'text',
                                   });
+
+                                  if (mounted) {
+                                    ToastUtils.showCenterToast(
+                                      this.context,
+                                      l10n.moment_forward_success(
+                                        char.name,
+                                      ),
+                                      customIcon:
+                                      Icons.send_rounded,
+                                    );
+                                  }
 
                                   // 🌟 D. 總裁的背景魔法：偷偷喚醒 AI 大腦！(不跳轉也能回覆)
                                   final idToken = await FirebaseAuth.instance.currentUser?.getIdToken();
@@ -468,74 +518,117 @@ class _MomentCardState extends State<MomentCard> {
                                   );
 
                                   if (response.statusCode == 200) {
-                                    final responseData = jsonDecode(utf8.decode(response.bodyBytes));
-                                    if (responseData['status'] == 'success') {
-                                      final String requestId = responseData['requestId'];
+                                    final String rawResponse =
+                                    utf8.decode(response.bodyBytes);
 
-                                      // 🌟 1. 發給狙擊手一個專屬對講機
-                                      StreamSubscription<DocumentSnapshot>? subscription;
+                                    debugPrint(
+                                      '📦 轉發 AI 原始回傳：$rawResponse',
+                                    );
 
-                                      // 🌟 2. 戴上對講機出任務
-                                      subscription = FirebaseFirestore.instance.collection('users').doc(currentUserId)
-                                          .collection('aiRequests').doc(requestId)
-                                          .snapshots().listen((snapshot) async {
-                                        if (!snapshot.exists) return;
-                                        final data = snapshot.data() as Map<
-                                            String,
-                                            dynamic>;
+                                    final dynamic decoded =
+                                    jsonDecode(rawResponse);
 
-                                        if (data['status'] == 'completed') {
-                                          String rawAiContent = data['response'] ?? "";
-                                          String finalDisplayText = rawAiContent;
+                                    if (decoded is! Map<String, dynamic>) {
+                                      debugPrint(
+                                        '⚠️ 轉發訊息已送出，但 AI 回傳格式不是物件',
+                                      );
+                                      return;
+                                    }
 
-                                          // 🌟 總裁暴力拆箱 2.0 (專治 AI 各種格式出包)
-                                          try {
-                                            String cleanedJson = rawAiContent.replaceAll('```json', '').replaceAll('```', '').trim();
+                                    final Map<String, dynamic> responseData =
+                                        decoded;
 
-                                            // 1. 正常解析 JSON：先鎖定大括號範圍，避免前後有廢話
-                                            int startIndex = cleanedJson.indexOf('{');
-                                            int endIndex = cleanedJson.lastIndexOf('}');
+                                    final String status =
+                                    (responseData['status'] ?? '')
+                                        .toString()
+                                        .trim();
 
-                                            if (startIndex != -1 && endIndex != -1) {
-                                              String jsonString = cleanedJson.substring(startIndex, endIndex + 1);
-                                              final parsedData = jsonDecode(jsonString);
-                                              finalDisplayText = parsedData['response'] ?? rawAiContent;
-                                            }
-                                          } catch (e) {
-                                            print("❌ 正常拆箱失敗，啟動電鋸暴力拆解: $e");
-                                            // 2. 暴力備案：如果 JSON 壞了，直接用語法硬挖 "response": 後面的字！
-                                            final match = RegExp(r'"response"\s*:\s*"([\s\S]*?)"(?=\s*(?:,|}|$))').firstMatch(rawAiContent);
-                                            if (match != null && match.groupCount >= 1) {
-                                              // 把跳脫字元換成真正的換行跟引號
-                                              finalDisplayText = match.group(1)!.replaceAll(r'\n', '\n').replaceAll(r'\"', '"');
-                                            }
-                                          }
+                                    final String requestId =
+                                    (responseData['requestId'] ?? '')
+                                        .toString()
+                                        .trim();
 
-                                          if (finalDisplayText.isNotEmpty) {
-                                            // 🌟 幫 AI 把洗乾淨的回覆寫進聊天室信箱裡！
-                                            await sessionDocRef.collection('messages').add({
-                                              'sender': 'ai',
-                                              'text': finalDisplayText,
-                                              'type': 'text',
-                                              'timestamp': FieldValue.serverTimestamp(),
-                                            });
+                                    final String directResponse =
+                                    (responseData['response'] ?? '')
+                                        .toString()
+                                        .trim();
 
-                                            // 更新大廳列表的最後對話，這樣玩家在外面也會看到他回覆了！
-                                            await sessionDocRef.update({
-                                              'lastMessage': finalDisplayText,
-                                              'lastActivity': FieldValue.serverTimestamp(),
-                                            });
-                                          }
+                                    if (status != 'success') {
+                                      debugPrint(
+                                        '⚠️ 轉發訊息已送出，但 AI 請求未成功：'
+                                            '$responseData',
+                                      );
+                                      return;
+                                    }
 
-                                          // 🌟 任務圓滿達成，狙擊手撤退！(放在 completed 的最後面)
-                                          subscription?.cancel();
+                                    // 有些後端會直接把 AI 回覆放在 response，
+                                    // 不一定會提供 requestId。
+                                    if (directResponse.isNotEmpty) {
+                                      debugPrint('🟠 MomentCard 準備寫入 directResponse');
+                                      debugPrint(
+                                        '✅ AI 已直接回傳內容，交由既有聊天流程寫入：'
+                                            '$directResponse',
+                                      );
+                                      return;
+                                    }
+                                    // 沒有 requestId 時不能去監聽 aiRequests，
+                                    // 但貼文本身已經成功送進聊天室。
+                                    if (requestId.isEmpty) {
+                                      debugPrint(
+                                        '⚠️ 轉發訊息已送出，但後端沒有回 requestId：'
+                                            '$responseData',
+                                      );
+                                      return;
+                                    }
 
-                                        } else if (data['status'] == 'error') {
-                                          // 🌟 萬一 AI 發生錯誤，也要叫狙擊手撤退！
-                                          subscription?.cancel();
+                                    // 🌟 1. 發給狙擊手一個專屬對講機
+                                    // 🔒 防止同一個 completed 狀態被處理兩次
+                                    bool hasHandledAiResponse = false;
+                                    StreamSubscription<DocumentSnapshot>?
+                                    subscription;
+
+// 🌟 2. 戴上對講機出任務
+                                    subscription = FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(currentUserId)
+                                        .collection('aiRequests')
+                                        .doc(requestId)
+                                        .snapshots()
+                                        .listen((snapshot) async {
+                                      if (!snapshot.exists) return;
+
+                                      final data =
+                                      snapshot.data()
+                                      as Map<String, dynamic>;
+
+                                      if (data['status'] == 'completed') {
+                                        debugPrint('🔵 MomentCard 準備寫入 completed response');
+                                        if (hasHandledAiResponse) return;
+
+                                        hasHandledAiResponse = true;
+                                        await subscription?.cancel();
+
+                                        debugPrint(
+                                          '✅ 轉發 AI 請求已完成，'
+                                              '不在 MomentCard 重複寫入訊息',
+                                        );
+
+                                        return;
+                                      } else if (data['status'] == 'error') {
+                                        if (hasHandledAiResponse) {
+                                          return;
                                         }
-                                      });
-                                          }
+
+                                        hasHandledAiResponse = true;
+                                        await subscription?.cancel();
+                                      }
+                                    });
+                                  } else {
+                                    debugPrint(
+                                      '⚠️ 轉發訊息已送出，但 AI HTTP 失敗：'
+                                          '${response.statusCode} '
+                                          '${utf8.decode(response.bodyBytes)}',
+                                    );
                                   }
                                 } catch (e) {
                                   print("❌ 轉發失敗: $e");
@@ -761,9 +854,6 @@ class _MomentCardState extends State<MomentCard> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        final bool isMyPost =
-            widget.moment.createdBy == FirebaseAuth.instance.currentUser?.uid;
-
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -781,28 +871,27 @@ class _MomentCardState extends State<MomentCard> {
 
               // 第一個按鈕：App 內轉發 / 私訊
               ListTile(
-                leading: Icon(
-                  isMyPost ? Icons.send : Icons.reply,
+                leading: const Icon(
+                  Icons.send_outlined,
                   color: Colors.pinkAccent,
                 ),
                 title: Text(
-                  isMyPost
-                      ? l10n.moment_forward_hint
-                      : l10n.moment_reply_private(widget.moment.authorName),
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+                  l10n.moment_forward_hint,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                subtitle: const Text(
+                  '選擇一位聊過天的角色分享這則動態',
                 ),
                 onTap: () {
                   Navigator.pop(context);
 
-                  if (isMyPost) {
-                    _showForwardBottomSheet(context);
-                  } else {
-                    ToastUtils.showCenterToast(
-                      context,
-                      l10n.moment_go_to_chat_msg(widget.moment.authorName),
-                      customIcon: Icons.chat_bubble_outline_rounded,
-                    );
-                  }
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (!mounted) return;
+
+                    _showForwardBottomSheet(this.context);
+                  });
                 },
               ),
 
