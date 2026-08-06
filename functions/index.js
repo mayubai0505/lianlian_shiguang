@@ -2600,174 +2600,362 @@ systemPrompt += `
                                                                                                                                    role: "user",
                                                                                                                                    content: "（系統隱形指令：剛才的劇情尚未結束，請直接從上一句結尾的標點符號後方【無縫往下續寫】，絕對禁止再次輸出「時間：…… | 地點：……」等場景標頭，請直接延續當前的動作與對話，保持故事流暢度。）"
                                                                                                                                });
-                                                                           } // 👈 迴圈在這裡完美閉合！
+                                                                                                                               } // 👈 關閉暴力接文的迴圈
+
 // ==========================================
-// 🛑 總裁鐵門：防堵幽靈回覆與幽靈扣款
-// 放在「扣花花」和「寫入聊天紀錄」之前
+// 🛡️ 安全回覆與扣款系統
+// 原則：有有效回覆，並成功寫入聊天室後，才允許扣點
+// 回覆、聊天室狀態、扣點與明細必須一起成功
 // ==========================================
+
 if (playerConnectionClosed || res.writableEnded || res.destroyed) {
-    console.log("⚠️ 玩家連線已關閉或 HTTP 回應已結束，但 AI 已完成，仍繼續寫入資料庫，避免玩家重送與重複燒錢。");
+    console.log(
+        "⚠️ 玩家 HTTP 連線已關閉，但 AI 已生成完成。" +
+        "仍會嘗試安全寫入聊天室；只有整批寫入成功才會扣點。"
+    );
 }
-                                     // ==========================================
-                                     // 💰💰💰 新增：總裁的雲端收銀台 (絕對不漏接) 💰💰💰
-                                     // ==========================================
-                                     if (cost > 0) {
-                                         try {
-                                             const batch = db.batch();
 
-                                             // A. 扣錢：去這個使用者的總資產扣除花朵
-                                             batch.update(userDocRef, {
-                                                 flowerPoints: FieldValue.increment(-cost)
-                                             });
+if (sessionId) {
+    // ==========================================
+    // 1. 清理 AI 回覆外殼
+    // ==========================================
+    let cleanDisplayText = String(finalResponseText || "");
+    let cleanVoiceText = String(finalVoiceText || "");
 
-                                             // B. 記帳：在花朵明細裡寫下一筆
-                                             const newLogRef = userDocRef.collection('flower_logs').doc();
-                                             batch.set(newLogRef, {
-                                                 title: `與 ${name} 聊天`,
-                                                 amount: -cost,
-                                                 createdAt: FieldValue.serverTimestamp()
-                                             });
+    // 清除 response JSON 外殼
+    if (cleanDisplayText.includes('"response":')) {
+        try {
+            const matches = [
+                ...cleanDisplayText.matchAll(
+                    /"response"\s*:\s*"((?:[^"\\]|\\.)*)"/g
+                ),
+            ];
 
-                                             await batch.commit();
-                                             console.log(`✅ [雲端收銀台] 成功向 ${userId} 收取 ${cost} 朵花花！`);
-                                         } catch (dbError) {
-                                             console.error("🔴 [雲端收銀台崩潰] 收費失敗，但放行對話！", dbError);
-                                         }
-                                     }
+            if (matches.length > 0) {
+                cleanDisplayText = matches
+                    .map((match) => match[1])
+                    .join("\n\n")
+                    .replace(/\\n/g, "\n")
+                    .replace(/\\"/g, '"');
+            }
+        } catch (error) {
+            console.error(
+                "⚠️ 顯示文字脫殼失敗，暫時維持原樣：",
+                error
+            );
+        }
+    }
 
-                                   // ==========================================
-                                   // 🌟🌟🌟 總裁專屬：雲端代寫系統正式啟動 🌟🌟🌟
-                                   // ==========================================
-                                   if (sessionId) {
-                                       // 🌟 總裁修正：脫殼手術
-                                       // 確保存入 text 的內容是「純對話」，不帶任何 JSON 符號
-                                       let cleanDisplayText = String(finalResponseText || "");
-                                       let cleanVoiceText = String(finalVoiceText || "");
+    // 清除 voiceText JSON 外殼
+    if (cleanVoiceText.includes('"voiceText":')) {
+        try {
+            const voiceMatches = [
+                ...cleanVoiceText.matchAll(
+                    /"voiceText"\s*:\s*"((?:[^"\\]|\\.)*)"/g
+                ),
+            ];
 
-                                       // 檢查內容是否還帶著 JSON 的殼
-                                       if (cleanDisplayText.includes('"response":')) {
-                                           try {
-                                               const matches = [...cleanDisplayText.matchAll(/"response"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
+            if (voiceMatches.length > 0) {
+                cleanVoiceText = voiceMatches
+                    .map((match) => match[1])
+                    .join(" ")
+                    .replace(/\\n/g, " ")
+                    .replace(/\\"/g, '"');
+            }
+        } catch (error) {
+            console.error(
+                "⚠️ 語音文字脫殼失敗，暫時維持原樣：",
+                error
+            );
+        }
+    }
 
-                                               if (matches.length > 0) {
-                                                   cleanDisplayText = matches
-                                                       .map(m => m[1])
-                                                       .join("\n\n")
-                                                       .replace(/\\n/g, "\n")
-                                                       .replace(/\\"/g, '"');
-                                               }
-                                           } catch (e) {
-                                               console.error("脫殼失敗，維持原樣", e);
-                                           }
-                                       }
+    // ==========================================
+    // 2. 修復亂碼並限制長度
+    // ==========================================
+    cleanDisplayText = fixMojibake(cleanDisplayText);
+    cleanVoiceText = fixMojibake(cleanVoiceText);
 
-                                       // 對語音文字也做同樣處理
-                                       if (cleanVoiceText.includes('"voiceText":')) {
-                                           try {
-                                               const vMatches = [...cleanVoiceText.matchAll(/"voiceText"\s*:\s*"((?:[^"\\]|\\.)*)"/g)];
+    cleanDisplayText = limitTextLength(
+        cleanDisplayText,
+        MAX_RESPONSE_LENGTH
+    );
 
-                                               if (vMatches.length > 0) {
-                                                   cleanVoiceText = vMatches
-                                                       .map(m => m[1])
-                                                       .join(" ")
-                                                       .replace(/\\n/g, " ")
-                                                       .replace(/\\"/g, '"');
-                                               }
-                                           } catch (e) {
-                                               console.error("語音文字脫殼失敗，維持原樣", e);
-                                           }
-                                       }
+    cleanVoiceText = limitTextLength(
+        cleanVoiceText,
+        MAX_RESPONSE_LENGTH
+    );
 
-                                       const appId = body.appId || "lianlianshiguang";
-                                       const sessionRef = db
-                                           .collection("artifacts")
-                                           .doc(appId)
-                                           .collection("chat_sessions")
-                                           .doc(sessionId);
+    cleanDisplayText = cleanDisplayText
+        .replace(/�/g, "")
+        .trim();
 
-                                       // ==========================================
-                                       // 🛡️ 防空包彈過濾器：如果文字是空的，拒絕寫入
-                                       // ==========================================
-                                       if (!cleanDisplayText || cleanDisplayText.trim() === "") {
-                                           console.log("🛑 [防禦系統] 偵測到 AI 回傳內容為空字串，攔截寫入，避免產生空白泡泡！");
+    cleanVoiceText = cleanVoiceText
+        .replace(/�/g, "")
+        .trim();
 
-                                           const emptyPayload = {
-                                               status: "error",
-                                               errorMessage: "AI 回覆生成異常，已成功攔截空訊息。",
-                                           };
+    console.log(
+        "🧪 FINAL SAVE CHECK:",
+        cleanDisplayText.slice(0, 300)
+    );
 
-                                           if (!res.writableEnded && !res.destroyed) {
-                                               return res.status(200).json(emptyPayload);
-                                           }
+    // ==========================================
+    // 3. 防空回覆：沒有內容就立刻停止，不扣點
+    // ==========================================
+    if (!cleanDisplayText) {
+        console.log(
+            `🛑 [防禦系統] AI 回覆為空，已攔截訊息寫入與扣款。` +
+            ` 玩家：${userId}，角色：${name}，原定扣款：${cost}`
+        );
 
-                                           console.log("📦 空回覆已攔截，但玩家 HTTP 連線已關閉，略過 res.json。");
-                                           return;
-                                       }
+        const emptyPayload = {
+            status: "error",
+            errorCode: "EMPTY_AI_RESPONSE",
+            errorMessage:
+                "AI 回覆生成異常，本次未扣除花花，請稍後再試。",
+            charged: false,
+            cost: 0,
+        };
 
-                                       cleanDisplayText = fixMojibake(cleanDisplayText);
-                                       cleanVoiceText = fixMojibake(cleanVoiceText);
+        if (!res.writableEnded && !res.destroyed) {
+            return res.status(200).json(emptyPayload);
+        }
 
-                                       cleanDisplayText = limitTextLength(cleanDisplayText, MAX_RESPONSE_LENGTH);
-                                       cleanVoiceText = limitTextLength(cleanVoiceText, MAX_RESPONSE_LENGTH);
+        console.log(
+            "📦 空回覆與扣款已攔截，" +
+            "但玩家 HTTP 連線已關閉，略過 res.json。"
+        );
 
-                                       cleanDisplayText = cleanDisplayText.replace(/�/g, "");
-                                       cleanVoiceText = cleanVoiceText.replace(/�/g, "");
+        return;
+    }
 
-                                       console.log("🧪 FINAL SAVE CHECK:", cleanDisplayText.slice(0, 300));
+    const appId =
+        body.appId || "lianlianshiguang";
 
-                                       // ☁️ 寫入資料庫，這會觸發 notifyPlayerNewMessage 推播
-                                       try {
-                                           await sessionRef.collection("messages").add({
-                                               sender: "ai",
-                                               text: cleanDisplayText.trim(),
-                                               voiceText: cleanVoiceText.trim(),
-                                               type: "text",
-                                               timestamp: FieldValue.serverTimestamp(),
-                                               characterId: characterProfile.id,
-                                               characterName: name,
-                                               role: "assistant",
-                                               content: finalResponseText,
-                                           });
+    const sessionRef = db
+        .collection("artifacts")
+        .doc(appId)
+        .collection("chat_sessions")
+        .doc(sessionId);
 
-                                           await sessionRef.update({
-                                               lastMessage: cleanDisplayText.trim(),
-                                               lastActivity: FieldValue.serverTimestamp(),
-                                               friendshipScore: FieldValue.increment(finalAffectionChange),
-                                               unreadCount: FieldValue.increment(1),
-                                           });
+    // ==========================================
+    // 4. 建立同一批次
+    // 回覆、聊天室、扣點、花花明細必須一起成功
+    // ==========================================
+    try {
+        const writeBatch = db.batch();
 
-                                           console.log("✅ [雲端代寫成功] 已經存入乾淨的文字！");
-                                           // ==========================================
-                                           // 🧠 玩家長期記憶提取
-                                           // ==========================================
-                                           try {
-                                             const finalCharacterId =
-                                               body.characterId ||
-                                               body.botId ||
-                                               characterProfile.id;
+        const aiMessageRef = sessionRef
+            .collection("messages")
+            .doc();
 
-                                             await savePlayerMemoryIfNeeded({
-                                               userId,
-                                               characterId: finalCharacterId,
+        // A. 寫入 AI 回覆
+        writeBatch.set(aiMessageRef, {
+            sender: "ai",
+            text: cleanDisplayText,
+            voiceText: cleanVoiceText,
+            type: "text",
+            timestamp: FieldValue.serverTimestamp(),
 
-                                               // 使用玩家真正送出的原始訊息
-                                               // 不要使用 AI 圖片描述、續寫系統指令等加工後文字
-                                               userMessage: isContinue ? "" : userMessage,
+            characterId:
+                characterProfile.id || "",
 
-                                               playerName,
-                                               abortController,
-                                             });
-                                           } catch (memoryError) {
-                                             // 記憶功能失敗，不能中斷聊天回覆
-                                             console.error("⚠️ 記憶系統執行失敗，但聊天正常完成：", memoryError);
-                                           }
-                                       } catch (dbError) {
-                                           console.error("🔴 [雲端代寫崩潰]:", dbError);
-                                           throw dbError;
-                                       }
-                                   } else {
-                                       console.log("⚠️ 沒有 sessionId，略過雲端代寫。");
-                                   }
+            characterName: name,
+            role: "assistant",
+
+            // 保留原始完整回覆，供除錯或其他功能使用
+            content: finalResponseText,
+        });
+
+        // B. 更新聊天室摘要
+        writeBatch.set(
+            sessionRef,
+            {
+                userId,
+                characterId:
+                    characterProfile.id || "",
+
+                characterName: name,
+                lastMessage: cleanDisplayText,
+                lastActivity:
+                    FieldValue.serverTimestamp(),
+
+                friendshipScore:
+                    FieldValue.increment(
+                        finalAffectionChange
+                    ),
+
+                unreadCount:
+                    FieldValue.increment(1),
+            },
+            {
+                merge: true,
+            }
+        );
+
+        // C. 付費模式才加入扣點與花花明細
+        if (cost > 0) {
+            writeBatch.update(userDocRef, {
+                flowerPoints:
+                    FieldValue.increment(-cost),
+            });
+
+            const flowerLogRef = userDocRef
+                .collection("flower_logs")
+                .doc();
+
+            writeBatch.set(flowerLogRef, {
+                title: `與 ${name} 聊天`,
+                amount: -cost,
+
+                characterId:
+                    characterProfile.id || "",
+
+                characterName: name,
+                sessionId,
+                messageId: aiMessageRef.id,
+                chatMode,
+
+                createdAt:
+                    FieldValue.serverTimestamp(),
+            });
+        }
+
+        // D. 一次提交
+        await writeBatch.commit();
+
+        console.log(
+            cost > 0
+                ? `✅ [安全收銀台] AI 回覆已寫入，` +
+                  `成功向 ${userId} 收取 ${cost} 朵花花。` +
+                  ` messageId=${aiMessageRef.id}`
+                : `✅ [安全收銀台] AI 回覆已寫入，` +
+                  `本次為免費對話。` +
+                  ` messageId=${aiMessageRef.id}`
+        );
+        // ==========================================
+        // 🧠 建立長期記憶背景工作單
+        // 只建立 Firestore 文件，不在 HTTP 請求內等待記憶 AI
+        // ==========================================
+        try {
+            const finalCharacterId =
+                body.characterId ||
+                body.botId ||
+                characterProfile.id ||
+                "";
+
+            const originalUserMessage =
+                isContinue === true
+                    ? ""
+                    : String(userMessage || "").trim();
+
+            // 沒有玩家原始訊息時，不需要建立記憶工作
+            if (
+                finalCharacterId &&
+                originalUserMessage
+            ) {
+                const memoryJobRef = db
+                    .collection("artifacts")
+                    .doc(appId)
+                    .collection("memory_jobs")
+                    .doc();
+
+                await memoryJobRef.set({
+                    userId,
+                    characterId: finalCharacterId,
+                    playerName:
+                        String(playerName || "對方").trim() ||
+                        "對方",
+
+                    userMessage:
+                        originalUserMessage.slice(0, 2000),
+
+                    sessionId,
+                    sourceMessageId: aiMessageRef.id,
+
+                    status: "pending",
+                    attempts: 0,
+
+                    createdAt:
+                        FieldValue.serverTimestamp(),
+                });
+
+                console.log(
+                    "🧠 已建立長期記憶背景工作：",
+                    {
+                        jobId: memoryJobRef.id,
+                        userId,
+                        characterId:
+                            finalCharacterId,
+                    }
+                );
+            } else {
+                console.log(
+                    "🧠 本輪沒有可供提取的玩家原始訊息，略過背景記憶工作。"
+                );
+            }
+        } catch (memoryQueueError) {
+            // 建立工作單失敗不能影響已完成的聊天與扣款
+            console.error(
+                "⚠️ 建立長期記憶背景工作失敗，" +
+                "但聊天回覆與扣款已正常完成：",
+                memoryQueueError
+            );
+        }
+    } catch (writeError) {
+        console.error(
+            "🛑 [安全收銀台] 回覆寫入或扣款失敗，" +
+            "整個 Batch 已取消，本次不扣花花：",
+            writeError
+        );
+
+        const failedPayload = {
+            status: "error",
+            errorCode: "MESSAGE_WRITE_FAILED",
+            errorMessage:
+                "回覆暫時無法送達，本次未扣除花花，請稍後再試。",
+            charged: false,
+            cost: 0,
+        };
+
+        if (!res.writableEnded && !res.destroyed) {
+            return res.status(200).json(
+                failedPayload
+            );
+        }
+
+        console.log(
+            "📦 寫入失敗且玩家 HTTP 連線已關閉，" +
+            "整批資料已取消，略過 res.json。"
+        );
+
+        return;
+    }
+} else {
+    // 理論上前面已經擋過缺少 sessionId，
+    // 這裡仍保留最後一道防禦。
+    console.log(
+        "🛑 [防禦系統] 沒有 sessionId，" +
+        "已攔截回覆寫入與扣款。"
+    );
+
+    const missingSessionPayload = {
+        status: "error",
+        errorCode: "MISSING_SESSION_ID",
+        errorMessage:
+            "聊天室資料異常，本次未扣除花花，請重新進入聊天室後再試。",
+        charged: false,
+        cost: 0,
+    };
+
+    if (!res.writableEnded && !res.destroyed) {
+        return res.status(200).json(
+            missingSessionPayload
+        );
+    }
+
+    return;
+}
 
                                    console.log(`✅ 任務完成！總字數: ${finalResponseText.length}，給了 ${finalAffectionChange} 分！`);
 
@@ -2803,6 +2991,226 @@ if (playerConnectionClosed || res.writableEnded || res.destroyed) {
 
                                        }); // 👈 cors 結尾
                                    });     // 👈 getAiResponse onRequest 結尾
+
+
+// =====================================================
+// 🧠 玩家長期記憶背景處理器
+//
+// 觸發路徑：
+// artifacts/{appId}/memory_jobs/{jobId}
+//
+// 此函式與 getAiResponse 完全分離，
+// 不會拖慢玩家收到聊天回覆的時間。
+// =====================================================
+exports.processMemoryJob = onDocumentCreated(
+    {
+        region: REGION,
+        document:
+            "artifacts/{appId}/memory_jobs/{jobId}",
+
+        memory: "512MiB",
+        timeoutSeconds: 120,
+
+        // savePlayerMemoryIfNeeded 內部會呼叫 AI
+        secrets: [
+            openRouterApiKey,
+            geminiApiKey,
+        ],
+    },
+    async (event) => {
+        const snapshot = event.data;
+
+        if (!snapshot) {
+            console.warn(
+                "⚠️ processMemoryJob 沒有收到文件資料"
+            );
+            return;
+        }
+
+        const jobRef = snapshot.ref;
+        const jobData = snapshot.data() || {};
+
+        const appId =
+            event.params.appId;
+
+        const jobId =
+            event.params.jobId;
+
+        const userId =
+            String(jobData.userId || "").trim();
+
+        const characterId =
+            String(
+                jobData.characterId || ""
+            ).trim();
+
+        const playerName =
+            String(
+                jobData.playerName || "對方"
+            ).trim() || "對方";
+
+        const userMessage =
+            String(
+                jobData.userMessage || ""
+            ).trim();
+
+        console.log(
+            "🧠 開始處理長期記憶背景工作：",
+            {
+                appId,
+                jobId,
+                userId,
+                characterId,
+                messageLength:
+                    userMessage.length,
+            }
+        );
+
+        // ==========================================
+        // 1. 基本資料防禦
+        // ==========================================
+        if (
+            !userId ||
+            !characterId ||
+            !userMessage
+        ) {
+            console.warn(
+                "🛑 長期記憶工作資料不完整，停止處理：",
+                {
+                    jobId,
+                    userId,
+                    characterId,
+                    hasMessage:
+                        Boolean(userMessage),
+                }
+            );
+
+            await jobRef.set(
+                {
+                    status: "skipped",
+                    errorCode:
+                        "INVALID_MEMORY_JOB",
+
+                    errorMessage:
+                        "缺少 userId、characterId 或 userMessage。",
+
+                    completedAt:
+                        FieldValue.serverTimestamp(),
+                },
+                {
+                    merge: true,
+                }
+            );
+
+            return;
+        }
+
+        // ==========================================
+        // 2. 標記處理中
+        // ==========================================
+        await jobRef.set(
+            {
+                status: "processing",
+
+                attempts:
+                    FieldValue.increment(1),
+
+                startedAt:
+                    FieldValue.serverTimestamp(),
+            },
+            {
+                merge: true,
+            }
+        );
+
+        try {
+            // 背景函式不依賴玩家 HTTP 連線，
+            // 因此不傳 getAiResponse 的 abortController。
+            const savedMemory =
+                await savePlayerMemoryIfNeeded({
+                    userId,
+                    characterId,
+                    userMessage,
+                    playerName,
+                    abortController: null,
+                });
+
+            // ======================================
+            // 3. 完成
+            // ======================================
+            await jobRef.set(
+                {
+                    status: "completed",
+
+                    memoryCreated:
+                        savedMemory != null,
+
+                    memoryId:
+                        savedMemory?.id || null,
+
+                    completedAt:
+                        FieldValue.serverTimestamp(),
+
+                    errorCode:
+                        FieldValue.delete(),
+
+                    errorMessage:
+                        FieldValue.delete(),
+                },
+                {
+                    merge: true,
+                }
+            );
+
+            console.log(
+                savedMemory
+                    ? "✅ 長期記憶背景工作完成，已保存記憶："
+                    : "✅ 長期記憶背景工作完成，本輪無需保存：",
+                {
+                    jobId,
+                    memoryId:
+                        savedMemory?.id || null,
+                    userId,
+                    characterId,
+                }
+            );
+        } catch (error) {
+            console.error(
+                "❌ 長期記憶背景工作失敗：",
+                {
+                    jobId,
+                    userId,
+                    characterId,
+                    message:
+                        error?.message,
+                    stack:
+                        error?.stack,
+                }
+            );
+
+            await jobRef.set(
+                {
+                    status: "error",
+
+                    errorCode:
+                        "MEMORY_PROCESS_FAILED",
+
+                    errorMessage:
+                        String(
+                            error?.message ||
+                            "未知錯誤"
+                        ).slice(0, 1000),
+
+                    failedAt:
+                        FieldValue.serverTimestamp(),
+                },
+                {
+                    merge: true,
+                }
+            );
+        }
+    }
+);
 
                           exports.onPostCreated = onDocumentCreated({
                               region: "asia-east1",
