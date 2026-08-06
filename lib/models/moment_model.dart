@@ -9,6 +9,7 @@ class Moment {
   final String authorAvatar;
   final String createdBy; // ✨ 1. 新增「創作者ID」欄位
   final String content;
+  final List<Map<String, String>> mentions;
   final String? imageUrl;
   final Timestamp createdAt;
   final int likeCount;
@@ -25,6 +26,7 @@ class Moment {
     required this.authorAvatar,
     required this.createdBy, // ✨ 2. 在建構子中加入
     required this.content,
+    this.mentions = const [],
     this.imageUrl,
     required this.isPublic,
     required this.createdAt,
@@ -88,6 +90,13 @@ class Moment {
       authorAvatar: data['authorAvatar'] ?? 'assets/images/blank_avatar.png',
       createdBy: data['createdBy'] ?? '', // ✨ 3. 從 Firestore 讀取 createdBy
       content: data['content'] ?? '',
+      mentions:
+      (data['mentions'] as List<dynamic>?)
+          ?.map(
+            (e) => Map<String, String>.from(e),
+      )
+          .toList() ??
+          const [],
       imageUrl: data['imageUrl'],
       createdAt: data['createdAt'] ?? Timestamp.now(),
       likeCount: data['likeCount'] ?? 0,

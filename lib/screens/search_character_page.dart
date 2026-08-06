@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
+import '../utils/character_navigator.dart';
 import 'character_model.dart';
 import 'character_profile_page.dart';
 import '../services/app_constants.dart';
@@ -530,15 +531,10 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
         if (!context.mounted) return;
 
-        Navigator.push(
+        await CharacterNavigator.open(
           context,
-          MaterialPageRoute(
-            builder: (context) =>
-                CharacterProfilePage(
-                  character: targetCharacter,
-                  characterId: targetCharacter.id,
-                ),
-          ),
+          characterId: targetCharacter.id,
+          fallbackName: targetCharacter.name,
         );
       },
       child: Container(

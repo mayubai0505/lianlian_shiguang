@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../services/toast_utils.dart';
+import '../utils/character_navigator.dart';
 import 'about_us_page.dart';
 import 'call_screen.dart';
 import 'login_page.dart';
@@ -1072,83 +1073,12 @@ class _ChatPageState extends State<ChatPage> {
       String charName,
       String avatarUrl,
       ) async {
-    final currentUser = FirebaseAuth.instance.currentUser;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) =>
-      const Center(child: CircularProgressIndicator()),
+    await CharacterNavigator.open(
+      context,
+      characterId: charId,
+      fallbackName: charName,
+      sessionId: _sessionId,
     );
-
-    try {
-      // 1. 先查公開角色
-      final publicDoc = await FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('public_characters')
-          .doc(charId)
-          .get();
-
-      DocumentSnapshot? targetDoc;
-
-      if (publicDoc.exists) {
-        targetDoc = publicDoc;
-      } else if (currentUser != null) {
-        // 2. 公開區沒有，再查目前登入者自己的私人角色
-        final privateDoc = await FirebaseFirestore.instance
-            .collection('artifacts')
-            .doc(AppConfig.appId)
-            .collection('users')
-            .doc(currentUser.uid)
-            .collection('private_characters')
-            .doc(charId)
-            .get();
-
-        if (privateDoc.exists) {
-          targetDoc = privateDoc;
-        }
-      }
-
-      if (mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-
-      if (targetDoc != null && targetDoc.exists) {
-        final characterData =
-        await Character.fromFirestoreAsync(targetDoc);
-
-        if (!mounted) return;
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CharacterProfilePage(
-              character: characterData,
-              characterId: charId,
-              sessionId: _sessionId,
-            ),
-          ),
-        );
-      } else {
-        // 不是公開角色，也不是目前玩家自己的私人角色
-        if (mounted) {
-          _showEncryptedProfileDialog(
-            charName,
-            avatarUrl,
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.of(
-          context,
-          rootNavigator: true,
-        ).pop();
-      }
-
-      debugPrint('❌ 跳轉角色檔案失敗: $e');
-    }
   }
 
   // 🔒 這是那個神祕的「檔案已封存」彈窗

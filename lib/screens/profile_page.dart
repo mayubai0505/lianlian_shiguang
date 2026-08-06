@@ -6,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
+import '../repositories/character_repository.dart';
 import '../services/toast_utils.dart';
+import '../utils/character_navigator.dart';
 import '../utils/image_utils.dart';
 import 'package:intl/intl.dart';
 import '../services/theme_notifier.dart';
@@ -25,7 +27,6 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'creator_studio_page.dart';
 import 'package:share_plus/share_plus.dart';
 import 'private_character_profile_page.dart'; // 我們剛剛建好的私人專屬主頁
-import 'character_profile_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // 🌟 加上這個！
@@ -1987,6 +1988,26 @@ class _ProfilePageState extends State<ProfilePage>
                     },
                   ),
 
+                  // 👑 管理後台（只有管理員）
+                  if (isAdmin)
+                    IconButton(
+                      tooltip: '管理後台',
+                      icon: Icon(
+                        Icons.admin_panel_settings_rounded,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : const Color(0xFF6750A4),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminAnnouncementPage(),
+                          ),
+                        );
+                      },
+                    ),
+
                   IconButton(
                     icon: Icon(
                       Icons.settings_outlined,
@@ -2110,6 +2131,8 @@ Widget _buildCreatorProfileHeader() {
   final subTextColor =
   textColor.withValues(alpha: 0.65);
   final l10n = AppLocalizations.of(context)!;
+  final bool isDarkMode =
+      theme.brightness == Brightness.dark;
 
   return Column(
     children: [
@@ -2339,6 +2362,60 @@ Widget _buildCreatorProfileHeader() {
                       ],
                     );
                   },
+                ),
+
+                const SizedBox(height: 10),
+                InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StorePage(),
+                    ),
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDarkMode
+                          ? Colors.grey[800]!.withValues(alpha: 0.6)
+                          : Colors.white.withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: primaryColor.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          isDarkMode
+                              ? 'assets/images/flower_gift_dark.png'
+                              : 'assets/images/flower_gift.png',
+                          height: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatPoints(
+                            _flowerPoints < 0 ? 0 : _flowerPoints,
+                          ),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: primaryColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.add_circle_outline,
+                          size: 16,
+                          color: primaryColor.withValues(alpha: 0.7),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
 
                 const SizedBox(height: 10),
@@ -2819,18 +2896,25 @@ Widget _buildCreatorProfileHeader() {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () async {
-        final result = await Navigator.push<Map<String, dynamic>>(
+        final result =
+        await Navigator.push<Map<String, dynamic>>(
           context,
           MaterialPageRoute(
             builder: (context) =>
-                CharacterEditPage(character: character),
+                CharacterEditPage(
+                  character: character,
+                ),
           ),
         );
 
-        if (!mounted || result == null) return;
+        if (!mounted || result == null) {
+          return;
+        }
 
-        final bool changed = result['changed'] == true;
-        final bool deleted = result['deleted'] == true;
+        final bool changed =
+            result['changed'] == true;
+        final bool deleted =
+            result['deleted'] == true;
 
         final String? deletedCharacterId =
         result['characterId']?.toString();
@@ -2839,8 +2923,13 @@ Widget _buildCreatorProfileHeader() {
         result['message']?.toString();
 
         if (deleted) {
-          final idToRemove =
+          final String idToRemove =
               deletedCharacterId ?? character.id;
+
+          // 🧹 刪除後清除角色快取
+          CharacterRepository.invalidate(
+            idToRemove,
+          );
 
           setState(() {
             _myCharacters.removeWhere(
@@ -2852,11 +2941,13 @@ Widget _buildCreatorProfileHeader() {
             );
           });
 
-          if (message != null && message.isNotEmpty) {
+          if (message != null &&
+              message.isNotEmpty) {
             ToastUtils.showCenterToast(
               context,
               message,
-              customIcon: Icons.person_remove_rounded,
+              customIcon:
+              Icons.person_remove_rounded,
             );
           }
 
@@ -2864,15 +2955,24 @@ Widget _buildCreatorProfileHeader() {
         }
 
         if (changed) {
+          // 🧹 修改後清除舊角色快取
+          CharacterRepository.invalidate(
+            character.id,
+          );
+
           await _refreshData();
 
-          if (!mounted) return;
+          if (!mounted) {
+            return;
+          }
 
-          if (message != null && message.isNotEmpty) {
+          if (message != null &&
+              message.isNotEmpty) {
             ToastUtils.showCenterToast(
               context,
               message,
-              customIcon: Icons.manage_accounts_rounded,
+              customIcon:
+              Icons.manage_accounts_rounded,
             );
           }
         }
@@ -2888,7 +2988,9 @@ Widget _buildCreatorProfileHeader() {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: Colors.black.withValues(
+                alpha: 0.06,
+              ),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -2896,14 +2998,17 @@ Widget _buildCreatorProfileHeader() {
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+          CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Stack(
                 fit: StackFit.expand,
                 children: [
                   Image(
-                    image: getAvatarImageProvider(imagePath),
+                    image: getAvatarImageProvider(
+                      imagePath,
+                    ),
                     fit: BoxFit.cover,
                     errorBuilder: (
                         context,
@@ -2911,13 +3016,15 @@ Widget _buildCreatorProfileHeader() {
                         stackTrace,
                         ) {
                       return Container(
-                        color: primaryColor.withValues(
+                        color: primaryColor
+                            .withValues(
                           alpha: 0.08,
                         ),
                         child: Icon(
                           Icons.person_rounded,
                           size: 56,
-                          color: primaryColor.withValues(
+                          color: primaryColor
+                              .withValues(
                             alpha: 0.4,
                           ),
                         ),
@@ -2929,17 +3036,25 @@ Widget _buildCreatorProfileHeader() {
                     top: 6,
                     right: 6,
                     child: Material(
-                      color: Colors.black.withValues(alpha: 0.48),
+                      color: Colors.black
+                          .withValues(
+                        alpha: 0.48,
+                      ),
                       shape: const CircleBorder(),
                       child: IconButton(
                         tooltip: '角色操作',
-                        visualDensity: VisualDensity.compact,
+                        visualDensity:
+                        VisualDensity.compact,
                         iconSize: 18,
                         color: Colors.white,
                         onPressed: () {
-                          _showMyCharacterActions(character);
+                          _showMyCharacterActions(
+                            character,
+                          );
                         },
-                        icon: const Icon(Icons.more_horiz_rounded),
+                        icon: const Icon(
+                          Icons.more_horiz_rounded,
+                        ),
                       ),
                     ),
                   ),
@@ -2961,51 +3076,75 @@ Widget _buildCreatorProfileHeader() {
                   Text(
                     character.name,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow:
+                    TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
+                      color:
+                      theme.colorScheme.onSurface,
                     ),
                   ),
 
                   const SizedBox(height: 6),
 
                   Container(
-                    padding: const EdgeInsets.symmetric(
+                    padding:
+                    const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
                       color: character.isPublic
-                          ? Colors.green.withValues(alpha: 0.10)
-                          : theme.colorScheme.onSurface
-                          .withValues(alpha: 0.07),
-                      borderRadius: BorderRadius.circular(20),
+                          ? Colors.green.withValues(
+                        alpha: 0.10,
+                      )
+                          : theme
+                          .colorScheme.onSurface
+                          .withValues(
+                        alpha: 0.07,
+                      ),
+                      borderRadius:
+                      BorderRadius.circular(20),
                     ),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize:
+                      MainAxisSize.min,
                       children: [
                         Icon(
                           character.isPublic
                               ? Icons.public_rounded
-                              : Icons.lock_outline_rounded,
+                              : Icons
+                              .lock_outline_rounded,
                           size: 12,
                           color: character.isPublic
                               ? Colors.green
-                              : theme.colorScheme.onSurface
-                              .withValues(alpha: 0.55),
+                              : theme
+                              .colorScheme
+                              .onSurface
+                              .withValues(
+                            alpha: 0.55,
+                          ),
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          character.isPublic ? '公開' : '私人',
+                          character.isPublic
+                              ? '公開'
+                              : '私人',
                           style: TextStyle(
                             fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: character.isPublic
+                            fontWeight:
+                            FontWeight.w600,
+                            color:
+                            character.isPublic
                                 ? Colors.green
-                                : theme.colorScheme.onSurface
-                                .withValues(alpha: 0.55),
+                                : theme
+                                .colorScheme
+                                .onSurface
+                                .withValues(
+                              alpha:
+                              0.55,
+                            ),
                           ),
                         ),
                       ],
@@ -3017,18 +3156,25 @@ Widget _buildCreatorProfileHeader() {
                   Row(
                     children: [
                       Icon(
-                        Icons.play_circle_outline_rounded,
+                        Icons
+                            .play_circle_outline_rounded,
                         size: 15,
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color: theme
+                            .colorScheme.onSurface
+                            .withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         _formatPoints(playCount),
                         style: TextStyle(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.58),
+                          color: theme
+                              .colorScheme.onSurface
+                              .withValues(
+                            alpha: 0.58,
+                          ),
                         ),
                       ),
 
@@ -3037,16 +3183,22 @@ Widget _buildCreatorProfileHeader() {
                       Icon(
                         Icons.favorite_border_rounded,
                         size: 15,
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.5),
+                        color: theme
+                            .colorScheme.onSurface
+                            .withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         _formatPoints(likesCount),
                         style: TextStyle(
                           fontSize: 12,
-                          color: theme.colorScheme.onSurface
-                              .withValues(alpha: 0.58),
+                          color: theme
+                              .colorScheme.onSurface
+                              .withValues(
+                            alpha: 0.58,
+                          ),
                         ),
                       ),
                     ],
@@ -4235,36 +4387,52 @@ Widget _buildCreatorProfileHeader() {
       borderRadius: BorderRadius.circular(12.0),
       onTap: () async {
         if (isMyCharacter) {
-          final result = await Navigator.push<Map<String, dynamic>>(
+          final result =
+          await Navigator.push<Map<String, dynamic>>(
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  CharacterEditPage(character: character),
+                  CharacterEditPage(
+                    character: character,
+                  ),
             ),
           );
 
           if (!mounted || result == null) return;
 
-          final bool changed = result['changed'] == true;
-          final bool deleted = result['deleted'] == true;
+          final bool changed =
+              result['changed'] == true;
+          final bool deleted =
+              result['deleted'] == true;
           final String? deletedCharacterId =
           result['characterId']?.toString();
           final String? message =
           result['message']?.toString();
 
           if (deleted) {
-            final idToRemove = deletedCharacterId ?? character.id;
+            final idToRemove =
+                deletedCharacterId ?? character.id;
+
+            CharacterRepository.invalidate(
+              idToRemove,
+            );
 
             setState(() {
-              _myCharacters.removeWhere((c) => c.id == idToRemove);
-              _friendsList.removeWhere((c) => c.id == idToRemove);
+              _myCharacters.removeWhere(
+                    (c) => c.id == idToRemove,
+              );
+              _friendsList.removeWhere(
+                    (c) => c.id == idToRemove,
+              );
             });
 
-            if (message != null && message.isNotEmpty) {
+            if (message != null &&
+                message.isNotEmpty) {
               ToastUtils.showCenterToast(
                 context,
                 message,
-                customIcon: Icons.person_remove_rounded,
+                customIcon:
+                Icons.person_remove_rounded,
               );
             }
 
@@ -4276,44 +4444,28 @@ Widget _buildCreatorProfileHeader() {
 
             if (!mounted) return;
 
-            if (message != null && message.isNotEmpty) {
+            if (message != null &&
+                message.isNotEmpty) {
               ToastUtils.showCenterToast(
                 context,
                 message,
-                customIcon: Icons.manage_accounts_rounded,
+                customIcon:
+                Icons.manage_accounts_rounded,
               );
             }
           }
-          return;
-        } else {
-          final currentUser = FirebaseAuth.instance.currentUser;
 
-          if (character.isPublic) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CharacterProfilePage(
-                  characterId: character.id,
-                  character: character,
-                ),
-              ),
-            ).then((_) {
-              _refreshData();
-            });
-          } else {
-            if (currentUser != null && character.createdBy == currentUser.uid) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      PrivateCharacterProfilePage(character: character),
-                ),
-              );
-            } else {
-              _showSecretDialog(character);
-            }
-          }
+          return;
         }
+
+        await CharacterNavigator.open(
+          context,
+          characterId: character.id,
+          fallbackName: character.name,
+        );
+
+        if (!mounted) return;
+        await _refreshData();
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

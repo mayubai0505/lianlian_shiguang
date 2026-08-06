@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/theme_notifier.dart';
 import '../models/moment_model.dart';
 import '../services/toast_utils.dart';
+import '../utils/character_navigator.dart';
 import '../widgets/feature_tip_keys.dart';
 import '../widgets/feature_tip_target.dart';
 import 'character_model.dart';
@@ -517,166 +518,17 @@ class MomentsPageState extends State<MomentsPage> {
   }
 
   // ✨ 總裁專屬：跳轉至角色檔案卡 (含私人/刪除防呆邏輯)
-  Future<void> _navigateToCharacterProfile(Moment moment) async {
-    final l10n = AppLocalizations.of(context)!;
-
-    // 創作者本人發布的官方／創作者貼文，目前沒有角色檔案頁
+  Future<void> _navigateToCharacterProfile(
+      Moment moment,
+      ) async {
+    // 創作者本人貼文不是角色，不進角色檔案
     if (moment.isCreatorPost) return;
 
-    final currentUser = FirebaseAuth.instance.currentUser;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) =>
-      const Center(child: CircularProgressIndicator()),
+    await CharacterNavigator.open(
+      context,
+      characterId: moment.authorId,
+      fallbackName: moment.authorName,
     );
-
-    bool loadingDialogClosed = false;
-
-    void closeLoadingDialog() {
-      if (!mounted || loadingDialogClosed) return;
-
-      loadingDialogClosed = true;
-      Navigator.of(
-        context,
-        rootNavigator: true,
-      ).pop();
-    }
-
-    try {
-      DocumentSnapshot<Map<String, dynamic>>? targetDoc;
-
-      // 1. 先查公開角色
-      final publicDoc = await _db
-          .collection('artifacts')
-          .doc(_appId)
-          .collection('public_characters')
-          .doc(moment.authorId)
-          .get();
-
-      if (publicDoc.exists) {
-        targetDoc = publicDoc;
-      } else if (currentUser != null) {
-        // 2. 公開區沒有，再查目前登入者自己的私人角色
-        final privateDoc = await _db
-            .collection('artifacts')
-            .doc(_appId)
-            .collection('users')
-            .doc(currentUser.uid)
-            .collection('private_characters')
-            .doc(moment.authorId)
-            .get();
-
-        if (privateDoc.exists) {
-          targetDoc = privateDoc;
-        }
-      }
-
-      closeLoadingDialog();
-
-      if (targetDoc != null && targetDoc.exists) {
-        final character =
-        await Character.fromFirestoreAsync(targetDoc);
-
-        if (!mounted) return;
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CharacterProfilePage(
-              character: character,
-              characterId: moment.authorId,
-            ),
-          ),
-        );
-
-        return;
-      }
-
-      // 既不是公開角色，也不是目前玩家自己的私人角色
-      if (!mounted) return;
-
-      showDialog(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Row(
-            children: [
-              const Icon(
-                Icons.lock_outline,
-                color: Colors.grey,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                l10n.chat_secret_file_title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Colors.grey[300],
-                backgroundImage:
-                getAvatarImageProvider(moment.authorAvatar),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black.withValues(
-                      alpha: 0.5,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                moment.authorName,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                l10n.profile_archived_or_deleted_message,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  height: 1.5,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext),
-              child: Text(
-                l10n.leave_silently,
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    } catch (e, stackTrace) {
-      closeLoadingDialog();
-
-      debugPrint(
-        '❌ 跳轉角色檔案失敗: $e',
-      );
-      debugPrint('$stackTrace');
-    }
   }
 
     // ✨ 新增：大廳右上角的三條線綜合選單

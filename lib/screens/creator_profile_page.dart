@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // 🌟 記得加這個來判斷身分
 import 'package:cached_network_image/cached_network_image.dart'; // 🌟 讀取雲端圖片用
+import '../utils/character_navigator.dart';
 import 'character_profile_page.dart';
 import 'character_model.dart';
 import 'creator_studio_page.dart'; // ✨ 總裁的秘密工作室檔案！
@@ -619,44 +620,20 @@ class CreatorProfilePage extends StatelessWidget {
       ],
     );
   }
-  void _openCreatorMomentAuthor({
+  Future<void> _openCreatorMomentAuthor({
     required BuildContext context,
     required Moment moment,
     required List<Character> characters,
-  }) {
-    // 創作者本人發文，目前停留在工作坊即可。
+  }) async {
+    // 創作者本人發文，目前停留在工作坊即可
     if (moment.isCreatorPost) {
       return;
     }
 
-    Character? targetCharacter;
-
-    for (final character in characters) {
-      if (character.id == moment.authorId) {
-        targetCharacter = character;
-        break;
-      }
-    }
-
-    if (targetCharacter == null) {
-      ToastUtils.showCenterToast(
-        context,
-        '這個角色目前無法查看',
-        isError: true,
-      );
-      return;
-    }
-
-    final character = targetCharacter;
-
-    Navigator.push(
+    await CharacterNavigator.open(
       context,
-      MaterialPageRoute(
-        builder: (_) => CharacterProfilePage(
-          character: character,
-          characterId: character.id,
-        ),
-      ),
+      characterId: moment.authorId,
+      fallbackName: moment.authorName,
     );
   }
   Future<void> _editCreatorMoment(

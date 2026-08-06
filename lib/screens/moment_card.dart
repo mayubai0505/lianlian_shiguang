@@ -24,6 +24,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' show Platform;
 import 'package:cached_network_image/cached_network_image.dart';
 import '../utils/image_utils.dart';
+import 'private_character_profile_page.dart';
+import '../utils/character_navigator.dart';
 
 class MomentCard extends StatefulWidget {
   final Moment moment;
@@ -99,7 +101,6 @@ class _MomentCardState extends State<MomentCard> {
   void didUpdateWidget(covariant MomentCard oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // 🌟 原本一大串發射程式碼，現在濃縮成這一行！
     if (!oldWidget.showFeatureTips && widget.showFeatureTips) {
       _checkAndShowTips();
     }
@@ -930,6 +931,53 @@ class _MomentCardState extends State<MomentCard> {
     );
   }
 
+  Future<void> _openMentionedCharacter(
+      String characterName,
+      ) async {
+    Map<String, String>? matchedMention;
+
+    for (final mention
+    in widget.moment.mentions) {
+      if (mention['name'] == characterName) {
+        matchedMention = mention;
+        break;
+      }
+    }
+
+    if (matchedMention == null) {
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '這個標記沒有連結到角色檔案',
+        isError: true,
+      );
+      return;
+    }
+
+    final String characterId =
+        matchedMention['characterId']
+            ?.trim() ??
+            '';
+
+    if (characterId.isEmpty) {
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '找不到角色資料',
+        isError: true,
+      );
+      return;
+    }
+
+    await CharacterNavigator.open(
+      context,
+      characterId: characterId,
+      fallbackName: characterName,
+    );
+  }
+
   // ✨ 總裁專屬：文字 Tag 智慧解析器
   Widget _buildContentWithMentions(String text, ThemeData theme) {
     // 1. 設定要尋找的目標：@加上非空白字元
@@ -968,22 +1016,8 @@ class _MomentCardState extends State<MomentCard> {
         ),
         recognizer: TapGestureRecognizer()
           ..onTap = () {
-            // 1. 從動態資料中抓出角色的 ID
-            // 在 MomentCard 裡，通常是 widget.moment.authorId
-            final String targetId = widget.moment.authorId;
-            print("🚀 準備跳轉到角色：$targetId 的個人檔案");
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CharacterProfilePage(
-                  // ✨ 修正一：傳入要求的 characterId
-                  characterId: targetId,
-
-                  // ✨ 修正二：呼叫我們剛剛寫好的全域工具函式
-                  // 記得要把前面的底線 _ 拿掉，直接呼叫 getCharacterById 喔！
-                  character: getCharacterById(targetId),
-                ),
-              ),
+            _openMentionedCharacter(
+              characterName,
             );
           },
       ));
