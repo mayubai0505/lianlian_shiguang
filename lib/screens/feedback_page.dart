@@ -14,8 +14,47 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 // 意見回饋
 
+enum ReportCategory {
+  feedback,
+  bug,
+  suggestion,
+  flower,
+  payment,
+  aiReply,
+  character,
+  moment,
+}
+
 class FeedbackPage extends StatefulWidget {
-  const FeedbackPage({super.key});
+  final ReportCategory category;
+  final String? initialReason;
+  /// true = 從聊天室／角色／貼文進來，
+  /// 類型固定，不讓玩家自己切換。
+  final bool lockCategory;
+
+  final String? characterId;
+  final String? characterName;
+
+  final String? sessionId;
+  final String? messageId;
+
+  final String? momentId;
+
+  /// 例如：被檢舉的 AI 訊息內容
+  final String? reportedContent;
+
+  const FeedbackPage({
+    super.key,
+    this.category = ReportCategory.feedback,
+    this.lockCategory = false,
+    this.characterId,
+    this.characterName,
+    this.sessionId,
+    this.messageId,
+    this.momentId,
+    this.reportedContent,
+    this.initialReason,
+  });
 
   @override
   State<FeedbackPage> createState() =>
@@ -27,7 +66,8 @@ class _FeedbackPageState
   final TextEditingController
   _feedbackController =
   TextEditingController();
-
+  late ReportCategory _selectedCategory;
+  late String _selectedReason;
   final ImagePicker _imagePicker =
   ImagePicker();
 
@@ -36,6 +76,17 @@ class _FeedbackPageState
 
   bool _isPickingImage = false;
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedCategory =
+        widget.category;
+
+    _selectedReason =
+        widget.initialReason ?? '';
+  }
 
   @override
   void dispose() {
@@ -211,6 +262,45 @@ class _FeedbackPageState
     return imageRef.getDownloadURL();
   }
 
+  String _categoryLabel(
+      ReportCategory category,
+      ) {
+    switch (category) {
+      case ReportCategory.feedback:
+        return '一般問題';
+
+      case ReportCategory.bug:
+        return 'Bug 回報';
+
+      case ReportCategory.suggestion:
+        return '功能建議';
+
+      case ReportCategory.flower:
+        return '花花點數問題';
+
+      case ReportCategory.payment:
+        return '儲值／付款問題';
+
+      case ReportCategory.aiReply:
+        return 'AI 回覆異常';
+
+      case ReportCategory.character:
+        return '角色檢舉';
+
+      case ReportCategory.moment:
+        return '貼文檢舉';
+    }
+  }
+
+  bool get _requiresScreenshot {
+    return _selectedCategory ==
+        ReportCategory.bug ||
+        _selectedCategory ==
+            ReportCategory.flower ||
+        _selectedCategory ==
+            ReportCategory.payment;
+  }
+
   Future<void> _submitFeedback() async {
     final l10n =
     AppLocalizations.of(context)!;
@@ -222,6 +312,16 @@ class _FeedbackPageState
       ToastUtils.showCenterToast(
         context,
         l10n.error_feedback_empty,
+        isError: true,
+      );
+      return;
+    }
+
+    if (_requiresScreenshot &&
+        _selectedImage == null) {
+      ToastUtils.showCenterToast(
+        context,
+        '此類問題請附上畫面截圖，方便我們確認狀況',
         isError: true,
       );
       return;
@@ -281,25 +381,74 @@ class _FeedbackPageState
 
       await reportRef.set({
         'type': 'feedback',
+
+        // ⭐ 新的統一分類
+        'category':
+        _selectedCategory.name,
+
+        'categoryLabel':
+        _categoryLabel(
+          _selectedCategory,
+        ),
+
+        // 保留舊欄位相容後台
         'relatedType':
-        'contact_us',
+        _selectedCategory ==
+            ReportCategory.aiReply
+            ? 'chat'
+            : _selectedCategory ==
+            ReportCategory.character
+            ? 'character'
+            : _selectedCategory ==
+            ReportCategory.moment
+            ? 'moment'
+            : 'contact_us',
+
         'status': 'pending',
 
+        // 玩家補充說明
         'content': feedbackText,
+        'reason': _selectedReason,
+
+        // ⭐ 如果是從聊天訊息進來，
+        // 把原本被檢舉內容一起保存
+        'reportedContent':
+        widget.reportedContent ?? '',
+
+        // ⭐ 角色相關
+        'characterId':
+        widget.characterId ?? '',
+
+        'characterName':
+        widget.characterName ?? '',
+
+        // ⭐ 聊天相關
+        'sessionId':
+        widget.sessionId ?? '',
+
+        'messageId':
+        widget.messageId ?? '',
+
+        // ⭐ Moment
+        'momentId':
+        widget.momentId ?? '',
 
         'reporterId': user.uid,
         'createdBy': user.uid,
         'reporterName': nickname,
+
         'reporterEmail':
         user.email ?? '',
 
         'imageUrl':
         uploadedImageUrl ?? '',
+
         'hasImage':
         uploadedImageUrl != null,
 
         'createdAt':
         FieldValue.serverTimestamp(),
+
         'updatedAt':
         FieldValue.serverTimestamp(),
 
@@ -315,11 +464,19 @@ class _FeedbackPageState
         _selectedImageBytes = null;
       });
 
+// ⭐ 如果是從聊天室／角色／貼文進來
+// 就直接回上一頁
+      if (widget.lockCategory &&
+          Navigator.of(context).canPop()) {
+        Navigator.of(context).pop(true);
+        return;
+      }
+
+// ⭐ 一般客服中心維持原本行為
       ToastUtils.showCenterToast(
         context,
         '回報已成功送出，謝謝你的意見！',
-        customIcon:
-        Icons.mark_email_read_rounded,
+        customIcon: Icons.mark_email_read_rounded,
       );
     } catch (error, stackTrace) {
       debugPrint(
@@ -361,9 +518,8 @@ class _FeedbackPageState
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
-          l10n.title_contact_us,
-        ),
+        // ⭐ 標題搬到下面的 ScrollView
+        title: null,
         backgroundColor:
         Colors.transparent,
         elevation: 0,
@@ -395,9 +551,19 @@ class _FeedbackPageState
               crossAxisAlignment:
               CrossAxisAlignment.start,
               children: [
+                // ⭐ 這個「聯絡我們」現在會跟著內容一起滑
                 Text(
-                  l10n
-                      .title_contact_us_heading,
+                  l10n.title_contact_us,
+                  style: theme.textTheme.headlineMedium
+                      ?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                Text(
+                  l10n.title_contact_us_heading,
                   style:
                   theme.textTheme.headlineSmall,
                 ),
@@ -418,6 +584,154 @@ class _FeedbackPageState
                 ),
 
                 const SizedBox(height: 32),
+
+                Text(
+                  '問題類型',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                if (widget.lockCategory)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.cardColor.withValues(
+                        alpha: 0.55,
+                      ),
+                      borderRadius:
+                      BorderRadius.circular(12),
+                      border: Border.all(
+                        color: theme.colorScheme.outline
+                            .withValues(
+                          alpha: 0.18,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.support_agent_rounded,
+                          color:
+                          theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          _categoryLabel(
+                            _selectedCategory,
+                          ),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  DropdownButtonFormField<
+                      ReportCategory>(
+                    value: _selectedCategory,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius:
+                        BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor:
+                      theme.cardColor.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
+                    items: ReportCategory.values
+                        .where(
+                          (category) =>
+                      category !=
+                          ReportCategory
+                              .aiReply &&
+                          category !=
+                              ReportCategory
+                                  .character &&
+                          category !=
+                              ReportCategory
+                                  .moment,
+                    )
+                        .map(
+                          (category) =>
+                          DropdownMenuItem<
+                              ReportCategory>(
+                            value: category,
+                            child: Text(
+                              _categoryLabel(
+                                category,
+                              ),
+                            ),
+                          ),
+                    )
+                        .toList(),
+                    onChanged: _isSubmitting
+                        ? null
+                        : (value) {
+                      if (value == null) return;
+
+                      setState(() {
+                        _selectedCategory =
+                            value;
+                      });
+                    },
+                  ),
+
+                const SizedBox(height: 20),
+
+                if (widget.reportedContent != null &&
+                    widget.reportedContent!
+                        .trim()
+                        .isNotEmpty) ...[
+                  const SizedBox(height: 16),
+
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme
+                          .surfaceContainerHighest
+                          .withValues(
+                        alpha: 0.45,
+                      ),
+                      borderRadius:
+                      BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '被回報的內容',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight:
+                            FontWeight.bold,
+                            color: theme
+                                .colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          widget.reportedContent!,
+                          style: const TextStyle(
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
 
                 TextField(
                   controller:
@@ -454,13 +768,14 @@ class _FeedbackPageState
                           .colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        '附加圖片（非必填）',
-                        style: TextStyle(
+                        _requiresScreenshot
+                            ? '問題截圖（必填）'
+                            : '附加圖片（選填）',
+                        style: const TextStyle(
                           fontSize: 16,
-                          fontWeight:
-                          FontWeight.bold,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -470,13 +785,12 @@ class _FeedbackPageState
                 const SizedBox(height: 6),
 
                 Text(
-                  '回報 Bug 或花花未入帳時，'
-                      '可以附上畫面截圖，方便官方確認問題。',
-                  style: theme
-                      .textTheme.bodySmall
+                  _requiresScreenshot
+                      ? '請附上問題發生時的畫面截圖，方便官方確認實際狀況。'
+                      : '若有相關畫面，也可以附上截圖協助官方確認。',
+                  style: theme.textTheme.bodySmall
                       ?.copyWith(
-                    color: theme
-                        .colorScheme.onSurface
+                    color: theme.colorScheme.onSurface
                         .withValues(
                       alpha: 0.6,
                     ),

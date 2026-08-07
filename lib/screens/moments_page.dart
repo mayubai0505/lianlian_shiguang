@@ -23,6 +23,7 @@ import 'package:showcaseview/showcaseview.dart'; // 🌟 記得加這行
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../services/daily_task_service.dart';
 //動態牆(朋友圈)
 class MomentsPage extends StatefulWidget {
   const MomentsPage({super.key});
@@ -141,40 +142,43 @@ class MomentsPageState extends State<MomentsPage> {
   }
 
 
-  Future<void> _handleLikeTaskProgress(Moment moment) async {
-    final l10n = AppLocalizations.of(context)!;
-    if (_userId == null) return;
-
-    final userDocRef = _db.collection('users').doc(_userId);
-
-    // 1. 本地先更新，讓 UI 有即時感
-    setState(() {
-      _likeProgress++;
-      if (_likeProgress > 3) {
-        _likeProgress = 3;
-      }
-    });
+  Future<void> _handleLikeTaskProgress(
+      Moment moment,
+      ) async {
+    final l10n =
+    AppLocalizations.of(context)!;
 
     try {
-      // 2. 更新雲端任務進度
-      // 重點：要一起更新 lastTasksResetDate
-      await userDocRef.set({
-        'lastTasksResetDate': FieldValue.serverTimestamp(),
-        'dailyTasks.likeProgress': FieldValue.increment(1),
-      }, SetOptions(merge: true));
+      final result =
+      await DailyTaskService.recordMomentLike(
+        momentId: moment.id,
+      );
 
-      // 3. 發送按讚通知：改由 Cloud Function 寫入對方信箱
-      await MomentNotificationService().createMomentNotification(
+      if (!mounted) return;
+
+      // 同一篇今天已經算過，或已完成任務
+      if (!result.counted) {
+        setState(() {
+          _likeProgress = result.progress;
+        });
+        return;
+      }
+
+      setState(() {
+        _likeProgress = result.progress;
+      });
+
+      // 按讚通知仍然保留
+      await MomentNotificationService()
+          .createMomentNotification(
         momentId: moment.id,
         type: 'like',
       );
-      // 4. 重新讀取任務狀態
-      await _loadDailyTaskProgress();
 
-      // 5. 達標提示
-      if (_likeProgress >= 3 && !_isLikeClaimed) {
-        if (!mounted) return;
+      if (!mounted) return;
 
+      if (result.completedNow &&
+          !_isLikeClaimed) {
         ToastUtils.showCenterToast(
           context,
           l10n.task_social_tour_complete,
@@ -182,16 +186,9 @@ class MomentsPageState extends State<MomentsPage> {
         );
       }
     } catch (e) {
-      debugPrint('更新按讚進度失敗: $e');
-
-      if (!mounted) return;
-
-      setState(() {
-        _likeProgress--;
-        if (_likeProgress < 0) {
-          _likeProgress = 0;
-        }
-      });
+      debugPrint(
+        '更新社群巡禮進度失敗：$e',
+      );
     }
   }
   Future<void> _loadDailyTaskProgress() async {
@@ -875,7 +872,9 @@ class PersistentFeed extends StatefulWidget {
   final bool isPublicTab;
   final String userId;
   final String appId;
-  final Function(Moment) onLikeTapped;
+  final Future<void> Function(
+      Moment moment,
+      ) onLikeTapped;
   final Function(String) onDeleteTapped;
   final Function(Moment) onAvatarTapped;
   final Function(Moment) onEditTapped;
@@ -1022,32 +1021,48 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
     _blockedCharactersSub = FirebaseFirestore.instance
         .collection('users')
         .doc(widget.userId)
-        .collection('characters')
-        .where('isBlocked', isEqualTo: true)
+        .collection('blockedCharacters')
         .snapshots()
-        .listen((snapshot) {
-      if (!mounted) return;
+        .listen(
+          (snapshot) {
+        if (!mounted) return;
 
-      setState(() {
-        _blockedCharacterIds
-          ..clear()
-          ..addAll(snapshot.docs.map((doc) => doc.id));
+        setState(() {
+          _blockedCharacterIds
+            ..clear()
+            ..addAll(
+              snapshot.docs.map(
+                    (doc) => doc.id,
+              ),
+            );
 
-        _blockedCharactersLoaded = true;
-        _isLoadingBlockedData =
-        !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
-      });
-    }, onError: (e) {
-      debugPrint('監聽封鎖角色失敗: $e');
+          _blockedCharactersLoaded = true;
 
-      if (!mounted) return;
+          _isLoadingBlockedData =
+          !(
+              _hiddenMomentsLoaded &&
+                  _blockedCharactersLoaded
+          );
+        });
+      },
+      onError: (e) {
+        debugPrint(
+          '監聽封鎖角色失敗: $e',
+        );
 
-      setState(() {
-        _blockedCharactersLoaded = true;
-        _isLoadingBlockedData =
-        !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
-      });
-    });
+        if (!mounted) return;
+
+        setState(() {
+          _blockedCharactersLoaded = true;
+
+          _isLoadingBlockedData =
+          !(
+              _hiddenMomentsLoaded &&
+                  _blockedCharactersLoaded
+          );
+        });
+      },
+    );
   }
 
   Future<void> _hideMoment(Moment moment) async {
@@ -1288,7 +1303,9 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
                   moment: moment,
                   currentUserId: widget.userId,
                   showFeatureTips: index == 0 && widget.showFeatureTips && !_momentFeatureTipsPaused,
-                  onLikeTapped: () => widget.onLikeTapped(moment),
+                  onLikeTapped: () async {
+                    await widget.onLikeTapped(moment);
+                  },
                   onDeleteTapped: () => widget.onDeleteTapped(moment.id),
                   onAvatarTapped: () => widget.onAvatarTapped(moment),
                   onEditTapped: () => widget.onEditTapped(moment),

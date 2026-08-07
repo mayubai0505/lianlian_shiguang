@@ -105,7 +105,7 @@ class _InteractionHistoryPageState extends State<InteractionHistoryPage> {
             return MomentCard(
               moment: moment,
               currentUserId: _currentUserId!,
-              onLikeTapped: () {}, // 歷史紀錄頁面按讚可以不用傳送每日任務
+              onLikeTapped: () async {}, // 歷史紀錄頁面按讚可以不用傳送每日任務
             );
           },
         );

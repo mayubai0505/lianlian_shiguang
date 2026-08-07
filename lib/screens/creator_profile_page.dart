@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // 🌟 記得加這個來判斷身分
 import 'package:cached_network_image/cached_network_image.dart'; // 🌟 讀取雲端圖片用
+import '../services/daily_task_service.dart';
 import '../utils/character_navigator.dart';
 import 'character_profile_page.dart';
 import 'character_model.dart';
@@ -484,8 +485,23 @@ class CreatorProfilePage extends StatelessWidget {
 
                         // MomentCard 自己會處理按讚資料；
                         // 工作坊不另外累加每日任務。
-                        onLikeTapped: () {},
+                        onLikeTapped: () async {
+                          final result =
+                          await DailyTaskService.recordMomentLike(
+                            momentId: moment.id,
+                          );
 
+                          if (!context.mounted) return;
+
+                          if (result.completedNow) {
+                            ToastUtils.showCenterToast(
+                              context,
+                              AppLocalizations.of(context)!
+                                  .task_social_tour_complete,
+                              customIcon: Icons.tour_rounded,
+                            );
+                          }
+                        },
                         onEditTapped: () {
                           _editCreatorMoment(
                             context,

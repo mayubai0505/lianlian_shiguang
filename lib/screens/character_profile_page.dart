@@ -17,6 +17,8 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/character_report_service.dart';
+import '../services/character_block_service.dart';
 //角色卡片內容
 
 class CharacterProfilePage extends StatefulWidget {
@@ -1743,28 +1745,76 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                     child: CircleAvatar(
                       backgroundColor: Colors.black.withValues(alpha:0.4),
                       child: PopupMenuButton<String>(
-                        icon: const Icon(Icons.more_vert, color: Colors.white),
-                        onSelected: (v) {
-                          if (v == 'block') {
-                            // ✨ 總裁級：封鎖角色的俐落提示，給予玩家掌控社交邊界的安心感！
-                            ToastUtils.showCenterToast(
-                              context,
-                              l10n.char_blocked_msg,
-                              customIcon: Icons.person_off_outlined, // 💡 總裁細節：用「人物關閉」或「封鎖」圖示，低調但極度明確地傳達狀態改變
-                            );
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: Colors.white,
+                        ),
+
+                        onSelected: (value) async {
+                          switch (value) {
+                            case 'report':
+                              await CharacterReportService
+                                  .showReportDialog(
+                                context: context,
+                                character: widget.character,
+                                source: 'character_profile',
+                              );
+                              break;
+
+                            case 'block':
+                              final bool blocked =
+                              await CharacterBlockService
+                                  .showBlockDialog(
+                                context: context,
+                                character: widget.character,
+                              );
+
+                              if (!mounted || !blocked) {
+                                return;
+                              }
+
+                              // 封鎖成功後直接離開角色頁
+                              Navigator.pop(
+                                context,
+                                true,
+                              );
+                              break;
                           }
                         },
-                        itemBuilder: (c) => [
-                           PopupMenuItem(
-                              value: 'block',
-                              child: Row(
-                                  children: [
-                                    Icon(Icons.block, color: Colors.red),
-                                    SizedBox(width: 8),
-                                    Text(l10n.block_char, style: TextStyle(color: Colors.red))
-                                  ]
-                              )
-                          )
+
+                        itemBuilder: (context) => [
+                          const PopupMenuItem<String>(
+                            value: 'report',
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.flag_outlined,
+                                  color: Colors.orange,
+                                ),
+                                SizedBox(width: 8),
+                                Text('檢舉角色'),
+                              ],
+                            ),
+                          ),
+
+                          PopupMenuItem<String>(
+                            value: 'block',
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.block,
+                                  color: Colors.red,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  l10n.block_char,
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),

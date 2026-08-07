@@ -11,6 +11,7 @@ enum ToastType {
 
 class ToastUtils {
   static OverlayEntry? _overlayEntry;
+  static OverlayState? _overlayState;
   static Timer? _dismissTimer;
 
   static final ValueNotifier<_ToastData?> _toastNotifier =
@@ -76,12 +77,23 @@ class ToastUtils {
         bool isError = false,
         IconData? customIcon,
       }) {
-    final overlay = Overlay.maybeOf(context);
+    // 永遠使用最外層 Overlay。
+    // 避免 Dialog / PopupMenu / BottomSheet 各自拿到不同 Overlay。
+    final OverlayState? overlay =
+    Overlay.maybeOf(
+      context,
+      rootOverlay: true,
+    );
 
-    if (overlay == null) return;
+    if (overlay == null) {
+      return;
+    }
 
     final toastType =
-        type ?? (isError ? ToastType.error : ToastType.info);
+        type ??
+            (isError
+                ? ToastType.error
+                : ToastType.info);
 
     final toastData = _ToastData(
       message,
@@ -89,43 +101,97 @@ class ToastUtils {
       customIcon,
     );
 
-    // 如果畫面上已經有 Toast，
-    // 直接更新內容並重新計時，不重複插入 Overlay。
-    if (_overlayEntry != null) {
-      _toastNotifier.value = toastData;
+    // 如果 entry 物件還在，
+    // 但其實已經不在 widget tree，
+    // 先把 static 狀態清乾淨。
+    if (_overlayEntry != null &&
+        !_overlayEntry!.mounted) {
+      _overlayEntry = null;
+      _overlayState = null;
+    }
+
+    // 已經有 Toast，而且仍掛在同一個 root Overlay
+    // → 只更新內容，不建立第二個 OverlayEntry。
+    if (_overlayEntry != null &&
+        _overlayEntry!.mounted &&
+        identical(
+          _overlayState,
+          overlay,
+        )) {
+      _toastNotifier.value =
+          toastData;
+
       _restartDismissTimer();
       return;
     }
 
-    _toastNotifier.value = toastData;
+    // 如果舊 Toast 屬於另一個 Overlay，
+    // 先完整移除。
+    if (_overlayEntry != null) {
+      try {
+        if (_overlayEntry!.mounted) {
+          _overlayEntry!.remove();
+        }
+      } catch (e) {
+        debugPrint(
+          '⚠️ 移除舊 Toast Overlay 失敗：$e',
+        );
+      }
 
-    _overlayEntry = OverlayEntry(
+      _overlayEntry = null;
+      _overlayState = null;
+    }
+
+    _dismissTimer?.cancel();
+    _dismissTimer = null;
+
+    _toastNotifier.value =
+        toastData;
+
+    final entry = OverlayEntry(
       builder: (_) {
         return IgnorePointer(
           child: Material(
             color: Colors.transparent,
             child: SafeArea(
               child: Center(
-                child: ValueListenableBuilder<_ToastData?>(
-                  valueListenable: _toastNotifier,
-                  builder: (context, data, child) {
+                child:
+                ValueListenableBuilder<
+                    _ToastData?>(
+                  valueListenable:
+                  _toastNotifier,
+                  builder: (
+                      context,
+                      data,
+                      child,
+                      ) {
                     if (data == null) {
-                      return const SizedBox.shrink();
+                      return const SizedBox
+                          .shrink();
                     }
 
-                    final style = _styleOf(data.type);
+                    final style =
+                    _styleOf(
+                      data.type,
+                    );
 
-                    return TweenAnimationBuilder<double>(
+                    return TweenAnimationBuilder<
+                        double>(
                       key: ValueKey(
-                        '${data.message}-${data.type}-${data.customIcon}',
+                        '${data.message}-'
+                            '${data.type}-'
+                            '${data.customIcon}',
                       ),
                       tween: Tween<double>(
                         begin: 0.88,
                         end: 1,
                       ),
                       duration:
-                      const Duration(milliseconds: 220),
-                      curve: Curves.easeOutBack,
+                      const Duration(
+                        milliseconds: 220,
+                      ),
+                      curve:
+                      Curves.easeOutBack,
                       builder: (
                           context,
                           scale,
@@ -137,50 +203,75 @@ class ToastUtils {
                         );
                       },
                       child: Container(
-                        constraints: const BoxConstraints(
+                        constraints:
+                        const BoxConstraints(
                           maxWidth: 320,
                         ),
-                        margin: const EdgeInsets.symmetric(
+                        margin:
+                        const EdgeInsets
+                            .symmetric(
                           horizontal: 24,
                         ),
-                        padding: const EdgeInsets.symmetric(
+                        padding:
+                        const EdgeInsets
+                            .symmetric(
                           horizontal: 20,
                           vertical: 14,
                         ),
-                        decoration: BoxDecoration(
-                          // 完全不透明
-                          color: style.background,
+                        decoration:
+                        BoxDecoration(
+                          color:
+                          style.background,
                           borderRadius:
-                          BorderRadius.circular(22),
+                          BorderRadius
+                              .circular(
+                            22,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(
+                              color: Colors
+                                  .black
+                                  .withOpacity(
                                 0.16,
                               ),
                               blurRadius: 18,
-                              offset: const Offset(0, 8),
+                              offset:
+                              const Offset(
+                                0,
+                                8,
+                              ),
                             ),
                           ],
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize:
+                          MainAxisSize
+                              .min,
                           children: [
                             Icon(
                               data.customIcon ??
                                   style.icon,
-                              color: style.iconColor,
+                              color:
+                              style.iconColor,
                               size: 22,
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(
+                              width: 10,
+                            ),
                             Flexible(
                               child: Text(
                                 data.message,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                textAlign:
+                                TextAlign
+                                    .center,
+                                style:
+                                const TextStyle(
+                                  color:
+                                  Colors.white,
                                   fontSize: 15.5,
                                   fontWeight:
-                                  FontWeight.w600,
+                                  FontWeight
+                                      .w600,
                                   height: 1.35,
                                 ),
                               ),
@@ -198,8 +289,37 @@ class ToastUtils {
       },
     );
 
-    overlay.insert(_overlayEntry!);
-    _restartDismissTimer();
+    _overlayEntry = entry;
+    _overlayState = overlay;
+
+    // 下一個 frame 再插入，
+    // 避免 Dialog / PopupMenu 正在移除 Overlay 的同一 frame 撞車。
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) {
+      if (_overlayEntry != entry) {
+        return;
+      }
+
+      if (entry.mounted) {
+        return;
+      }
+
+      try {
+        overlay.insert(entry);
+        _restartDismissTimer();
+      } catch (e) {
+        debugPrint(
+          '❌ Toast Overlay 插入失敗：$e',
+        );
+
+        if (_overlayEntry == entry) {
+          _overlayEntry = null;
+          _overlayState = null;
+          _toastNotifier.value =
+          null;
+        }
+      }
+    });
   }
 
   static void _restartDismissTimer() {
@@ -215,8 +335,22 @@ class ToastUtils {
     _dismissTimer?.cancel();
     _dismissTimer = null;
 
-    _overlayEntry?.remove();
+    final entry = _overlayEntry;
+
     _overlayEntry = null;
+    _overlayState = null;
+
+    if (entry != null) {
+      try {
+        if (entry.mounted) {
+          entry.remove();
+        }
+      } catch (e) {
+        debugPrint(
+          '⚠️ Toast Overlay 移除失敗：$e',
+        );
+      }
+    }
 
     _toastNotifier.value = null;
   }

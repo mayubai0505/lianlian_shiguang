@@ -5,33 +5,27 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/moment_model.dart';
 import '../services/toast_utils.dart';
-import '../widgets/feature_tip_keys.dart';
-import '../widgets/feature_tip_target.dart';
 import 'comment_bottom_sheet.dart';
-import 'edit_moment_page.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import 'chat_page.dart';
 import 'character_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'package:flutter/gestures.dart';
-import 'character_profile_page.dart';
 import 'package:showcaseview/showcaseview.dart'; // 🌟 記得在檔案最上方加上這行
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'feedback_page.dart';
 import 'dart:io' show Platform;
 import 'package:cached_network_image/cached_network_image.dart';
 import '../utils/image_utils.dart';
-import 'private_character_profile_page.dart';
 import '../utils/character_navigator.dart';
 
 class MomentCard extends StatefulWidget {
   final Moment moment;
   final String currentUserId;
   final bool isDetailView;
-  final VoidCallback? onLikeTapped;
+  final Future<void> Function()? onLikeTapped;
   final VoidCallback? onDeleteTapped;
   final VoidCallback? onAvatarTapped;
   final VoidCallback? onEditTapped;
@@ -150,47 +144,79 @@ class _MomentCardState extends State<MomentCard> {
   Future<void> _toggleLike() async {
     if (_isLikeStatusLoading) return;
 
-    // 🌟 先抓到總裁的 UID (為了寫進陣列)
-    final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final String? currentUserId =
+        FirebaseAuth.instance.currentUser?.uid;
+
     if (currentUserId == null) return;
 
-    final newLikeState = !_isLiked;
+    final bool newLikeState = !_isLiked;
 
     setState(() {
       _isLiked = newLikeState;
       _likeCount += newLikeState ? 1 : -1;
+
+      if (_likeCount < 0) {
+        _likeCount = 0;
+      }
     });
 
-    if (newLikeState) {
-      widget.onLikeTapped?.call(); // 觸發任務進度
-    }
-
     try {
-      final batch = FirebaseFirestore.instance.batch();
+      final batch =
+      FirebaseFirestore.instance.batch();
+
       if (newLikeState) {
-        batch.set(_likeRef, {'likedAt': FieldValue.serverTimestamp()});
-        // ✨ 合併魔法：同時增加愛心數，並把名字加入陣列！
-        batch.update(_momentRef, {
-          'likeCount': FieldValue.increment(1),
-          'likedBy': FieldValue.arrayUnion([currentUserId]),
-        });
+        batch.set(
+          _likeRef,
+          {
+            'likedAt':
+            FieldValue.serverTimestamp(),
+          },
+        );
+
+        batch.update(
+          _momentRef,
+          {
+            'likeCount':
+            FieldValue.increment(1),
+            'likedBy':
+            FieldValue.arrayUnion([
+              currentUserId,
+            ]),
+          },
+        );
       } else {
         batch.delete(_likeRef);
-        // ✨ 合併魔法：同時減少愛心數，並把名字從陣列移除！
-        batch.update(_momentRef, {
-          'likeCount': FieldValue.increment(-1),
-          'likedBy': FieldValue.arrayRemove([currentUserId]),
-        });
+
+        batch.update(
+          _momentRef,
+          {
+            'likeCount':
+            FieldValue.increment(-1),
+            'likedBy':
+            FieldValue.arrayRemove([
+              currentUserId,
+            ]),
+          },
+        );
       }
+
+      // 先確定按讚真的寫入成功
       await batch.commit();
-    } catch (e) {
-      print("按讚失敗: $e");
-      if (mounted) {
-        setState(() {
-          _isLiked = !newLikeState;
-          _likeCount = widget.moment.likeCount;
-        });
+
+      // 只有「新增按讚」才通知外層處理任務
+      if (newLikeState) {
+        await widget.onLikeTapped?.call();
       }
+    } catch (e) {
+      debugPrint('❌ 按讚失敗：$e');
+
+      if (!mounted) return;
+
+      setState(() {
+        _isLiked = !newLikeState;
+        _likeCount =
+            widget.moment.likeCount;
+      });
     }
   }
 
@@ -779,57 +805,44 @@ class _MomentCardState extends State<MomentCard> {
 
   // 🛡️ 真實檢舉寫入功能 (多國語系版)
   Future<void> _submitReport() async {
-    final String? reporterId = FirebaseAuth.instance.currentUser?.uid;
-    if (reporterId == null) return;
+    final String? reporterId =
+        FirebaseAuth.instance.currentUser?.uid;
 
-    final l10n = AppLocalizations.of(context)!;
+    if (reporterId == null) {
+      ToastUtils.showCenterToast(
+        context,
+        '請先登入後再檢舉貼文',
+        isError: true,
+      );
+      return;
+    }
 
-    // 1. 為了怕玩家誤觸，加一個簡單的確認對話框
-    final bool? confirm = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(l10n.report_moment_title),
-          content: Text(l10n.report_moment_content),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(l10n.cancelButton)
-            ),
-            TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                    l10n.report_confirm_button,
-                    style: const TextStyle(color: Colors.red)
-                )
-            ),
-          ],
-        )
+    final result =
+    await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FeedbackPage(
+          category: ReportCategory.moment,
+          lockCategory: true,
+
+          momentId: widget.moment.id,
+
+          // 這裡把貼文內容直接當成被回報內容帶過去
+          reportedContent:
+          widget.moment.content,
+        ),
+      ),
     );
 
-    if (confirm != true) return;
+    if (!mounted) return;
 
-    try {
-      // 2. 把檢舉資料寫進 Firebase 獨立的 'reports' 集合裡
-      await FirebaseFirestore.instance.collection('reports').add({
-        'reporterId': reporterId,                   // 誰檢舉的
-        'reportedMomentId': widget.moment.id,       // 哪篇動態被檢舉
-        'reportedAuthorId': widget.moment.authorId, // 被檢舉人的 ID
-        'contentSnapshot': widget.moment.content,   // 留存當下的文字當證據
-        'status': 'pending',                        // 處理狀態：待處理
-        'createdAt': FieldValue.serverTimestamp(),  // 檢舉時間
-      });
-
-      // 3. 顯示成功提示給玩家 (與審核員)
-      if (mounted) {
-        // ✨ 改用你原本專案裡習慣的 ToastUtils 會更有一致性
-        ToastUtils.showCenterToast(
-          context,
-          l10n.report_success_message,
-          customIcon: Icons.check_circle_outline_rounded,
-        );
-      }
-    } catch (e) {
-      print("檢舉寫入失敗: $e");
+    if (result == true) {
+      ToastUtils.showCenterToast(
+        context,
+        '檢舉已送出，我們會進行審核',
+        customIcon:
+        Icons.flag_outlined,
+      );
     }
   }
 

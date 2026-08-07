@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import '../services/character_block_service.dart';
 
 
 class CharacterManagementPage extends StatelessWidget {
@@ -27,8 +28,7 @@ class CharacterManagementPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(uid)
-            .collection('characters')
-            .where('isBlocked', isEqualTo: true)
+            .collection('blockedCharacters')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) return Center(child: Text(l10n.connection_error));
@@ -59,7 +59,9 @@ class CharacterManagementPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final charData = docs[index].data() as Map<String, dynamic>;
               final String charId = docs[index].id;
-              final bool isBlocked = charData['isBlocked'] ?? false;
+              final String avatarPath =
+                  charData['avatarPath']?.toString().trim() ?? '';
+              const bool isBlocked = true;
 
               return Card(
                 elevation: 0,
@@ -77,12 +79,18 @@ class CharacterManagementPage extends StatelessWidget {
                           ? colorScheme.surfaceVariant
                           : colorScheme.primaryContainer,
                       // ✨ 完美細節：優先顯示圖片頭像
-                      backgroundImage: charData['avatarPath'] != null
-                          ? NetworkImage(charData['avatarPath'])
+                      backgroundImage: avatarPath.isNotEmpty
+                          ? NetworkImage(avatarPath)
                           : null,
-                      child: charData['avatarPath'] == null
-                          ? Text(charData['name'][0], style: TextStyle(
-                          color: colorScheme.primary))
+                      child: avatarPath.isEmpty
+                          ? Text(
+                        (charData['name']?.toString().isNotEmpty ?? false)
+                            ? charData['name'].toString()[0]
+                            : '?',
+                        style: TextStyle(
+                          color: colorScheme.primary,
+                        ),
+                      )
                           : null,
                     ),
                   ),
@@ -145,12 +153,10 @@ class CharacterManagementPage extends StatelessWidget {
     );
 
     if (confirm == true) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .collection('characters')
-          .doc(charId)
-          .update({'isBlocked': false});
+      await CharacterBlockService.unblockCharacter(
+        context: context,
+        characterId: charId,
+      );
     }
   }
 

@@ -47,7 +47,7 @@ import 'dart:ui' as ui;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
+import 'feedback_page.dart';
 
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive , gemini}
@@ -3938,10 +3938,13 @@ class _ChatPageState extends State<ChatPage> {
             // 🚩 舉報按鈕
             ListTile(
               leading: const Icon(Icons.flag_outlined),
-              title:Text(l10n.chat_msg_report),
+              title: Text(l10n.chat_report_title),
               onTap: () {
                 Navigator.pop(context);
-                _showReportDialog(context, message.text);
+
+                _openChatReportPage(
+                  reportedMessage: message.text,
+                );
               },
             ),
 
@@ -3961,117 +3964,36 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // 🚨 1. 舉報對話的彈出視窗 (🌟 接收傳進來的句子)
-  void _showReportDialog(BuildContext context, String reportedMessage) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(l10n.chat_report_title),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 1. 語言問題
-              ListTile(
-                title: Text(l10n.chat_report_lang),
-                onTap: () {
-                  Navigator.pop(context);
-                  _submitReport(context, l10n.chat_report_lang, reportedMessage);
-                },
-              ),
-              // 2. 內容不當
-              ListTile(
-                title: Text(l10n.chat_report_inapp),
-                onTap: () {
-                  Navigator.pop(context);
-                  _submitReport(context, l10n.chat_report_inapp, reportedMessage);
-                },
-              ),
-              // 3. 邏輯/內容錯誤
-              ListTile(
-                title: Text(l10n.chat_report_context),
-                onTap: () {
-                  Navigator.pop(context);
-                  _submitReport(context, l10n.chat_report_context, reportedMessage);
-                },
-              ),
-              // 4. 其他原因 - 🌟 保留圖示並換成更有質感的
-              ListTile(
-                leading: const Icon(Icons.more_horiz, color: Colors.grey), // 推薦換成這個更像「填寫原因」的圖示
-                title: Text(l10n.chat_report_other),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showOtherReasonDialog(context, reportedMessage);
-                },
-              ),
-            ],
-          ),
-        );
-      },
+  Future<void> _openChatReportPage({
+    required String reportedMessage,
+  }) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FeedbackPage(
+          category: ReportCategory.aiReply,
+          lockCategory: true,
+
+          characterId: widget.character.id,
+          characterName: widget.character.name,
+
+          sessionId: _sessionId,
+
+          reportedContent: reportedMessage,
+        ),
+      ),
     );
-  }
 
-// 🚨 1-1. 新增：專屬「其他原因」的打字視窗 (🌟 接收傳進來的句子)
-  void _showOtherReasonDialog(BuildContext context, String reportedMessage) {
-    final l10n = AppLocalizations.of(context)!;
-    final TextEditingController otherReasonController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title:Text(l10n.chat_report_other),
-          content: TextField(
-            controller: otherReasonController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: l10n.chat_report_hint,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child:Text(l10n.cancel, style: TextStyle(color: Colors.grey)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final text = otherReasonController.text.trim();
-                if (text.isNotEmpty) {
-                  Navigator.pop(context);
-                  // 🌟 打包送出！把翻譯好的「其他原因」和玩家輸入的 $text 完美組合
-                  _submitReport(context, '${l10n.chat_report_other}: $text', reportedMessage);
-                }
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
-              child:Text(l10n.chat_report_submit, style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
+    if (!mounted) return;
 
-// 🚨 1-2. 負責把舉報資料打包送去後台的快遞員 (🌟 把句子存進資料庫)
-  Future<void> _submitReport(BuildContext context, String reason, String reportedMessage) async {
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? 'unknown';
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      await FirebaseFirestore.instance.collection('reports').add({
-        'userId': currentUserId,
-        'reason': reason,
-        'reportedMessage': reportedMessage, // 👈 🌟 破案關鍵！這裡把句子存進去了！
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      if (context.mounted) {
-        // ✨ 總裁級：用優雅的置中提示取代突兀的綠色大方塊！
-        _showCenterToast(l10n.chat_report_success);
-      }
-    } catch (e) {
-      print('舉報失敗: $e');
+    if (result == true) {
+      ToastUtils.showCenterToast(
+        context,
+        '感謝你的回報，我們會盡快確認',
+        customIcon: Icons.mark_email_read_rounded,
+      );
     }
   }
-
 // 💡 2. 給予建議的彈出視窗
   void _showSuggestionDialog(BuildContext context) {
     final TextEditingController suggestionController = TextEditingController();

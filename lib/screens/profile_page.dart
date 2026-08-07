@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
 import '../repositories/character_repository.dart';
+import '../services/moment_notification_service.dart';
 import '../services/toast_utils.dart';
 import '../utils/character_navigator.dart';
 import '../utils/image_utils.dart';
@@ -35,6 +36,7 @@ import 'moment_card.dart';
 import 'edit_moment_page.dart';
 import 'create_moment_page.dart';
 import '../page/creator_follow_list_page.dart';
+import '../services/daily_task_service.dart';
 //個人主頁
 
 class ProfilePage extends StatefulWidget {
@@ -518,6 +520,7 @@ class _ProfilePageState extends State<ProfilePage>
           'storyChatClaimed': false,
           'likeProgress': 0,
           'likeClaimed': false,
+          'likedMomentIds': <String>[],
           'monthlyCardClaimed': false,
         },
       }, SetOptions(merge: true));
@@ -3598,8 +3601,10 @@ Widget _buildCreatorProfileHeader() {
               showFeatureTips: false,
 
               // 個人主頁內仍可正常按讚
-              onLikeTapped: () {
-                _handleProfileMomentLike(moment);
+              onLikeTapped: () async {
+                await _handleProfileMomentLike(
+                  moment,
+                );
               },
 
               // 編輯自己的動態
@@ -3772,26 +3777,41 @@ Widget _buildCreatorProfileHeader() {
   Future<void> _handleProfileMomentLike(
       Moment moment,
       ) async {
-    final currentUser =
-        FirebaseAuth.instance.currentUser;
-
-    if (currentUser == null) return;
-
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser.uid)
-          .set({
-        'lastTasksResetDate':
-        FieldValue.serverTimestamp(),
-        'dailyTasks.likeProgress':
-        FieldValue.increment(1),
-      }, SetOptions(merge: true));
+      final result =
+      await DailyTaskService.recordMomentLike(
+        momentId: moment.id,
+      );
 
-      await _loadDailyTaskProgress();
+      if (!mounted) return;
+
+      setState(() {
+        _likeProgress = result.progress;
+      });
+
+      // 個人主頁按讚也要發通知
+      await MomentNotificationService()
+          .createMomentNotification(
+        momentId: moment.id,
+        type: 'like',
+      );
+
+      if (!mounted) return;
+
+      if (result.completedNow &&
+          !_isLikeClaimed) {
+        final l10n =
+        AppLocalizations.of(context)!;
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.task_social_tour_complete,
+          customIcon: Icons.tour_rounded,
+        );
+      }
     } catch (e) {
       debugPrint(
-        '❌ 個人主頁按讚任務更新失敗：$e',
+        '個人主頁社群巡禮紀錄失敗：$e',
       );
     }
   }

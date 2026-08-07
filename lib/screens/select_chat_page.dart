@@ -15,6 +15,8 @@ import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import '../services/character_report_service.dart';
+import '../services/character_block_service.dart';
 
 // 邂逅頁面
 class SelectChatPage extends StatefulWidget {
@@ -415,88 +417,39 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
     }
   }
 
-  Future<void> _blockCharacter(Character character) async {
-    final l10n = AppLocalizations.of(context)!;
-    if (_userId == null) return;
-    final bool? confirm = await showDialog<bool>(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text(l10n.dialog_title_block),
-              content: Text(l10n.dialog_msg_block(character.name)),
-              actions: [
-                TextButton(onPressed: () => Navigator.of(context).pop(false),
-                    child: Text(l10n.cancel)),
-                TextButton(onPressed: () => Navigator.of(context).pop(true),
-                    child: Text(l10n.block, style: const TextStyle(color: Colors.red))),
-              ],
-            )
+  Future<void> _blockCharacter(
+      Character character,
+      ) async {
+    final bool blocked =
+    await CharacterBlockService
+        .showBlockDialog(
+      context: context,
+      character: character,
     );
 
-    if (confirm == true) {
-      try {
-        await _db.collection('users')
-            .doc(_userId!)
-            .collection('characters')
-            .doc(character.id)
-            .set({
-          'name': character.name,
-          'avatar': character.galleryPaths.isNotEmpty ? character.galleryPaths[0] : '',
-          'isBlocked': true,
-          'blockedAt': FieldValue.serverTimestamp(),
-          'desc': character.background,
-        }, SetOptions(merge: true));
-        _refreshAllData();
-        if (mounted) {
-          _showResultDialog(l10n.snackbar_blocked(character.name));
-        }
-      } catch (e) {
-        if (mounted) _showResultDialog(l10n.snackbar_operation_failed, isError: true);
-      }
+    if (!blocked || !mounted) {
+      return;
     }
+
+    // 畫面立即排除，不必等重新進 App
+    setState(() {
+      _blockedCharacterIds.add(
+        character.id,
+      );
+    });
+
+    await _refreshAllData();
   }
 
-  Future<void> _reportCharacter(Character character) async {
-    final l10n = AppLocalizations.of(context)!;
-    if (_userId == null) return;
-    final reasonController = TextEditingController();
-    final bool? submit = await showDialog<bool>(
-        context: context,
-        builder: (context) =>
-            AlertDialog(
-              title: Text(l10n.dialog_title_report(character.name)),
-              content: TextField(
-                controller: reasonController,
-                decoration: InputDecoration(
-                    hintText: l10n.input_hint_report_reason),
-                maxLines: 3,
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.of(context).pop(false),
-                    child: Text(l10n.cancelButton)),
-                ElevatedButton(onPressed: () => Navigator.of(context).pop(true),
-                    child: Text(l10n.action_submit)),
-              ],
-            )
+  Future<void> _reportCharacter(
+      Character character,
+      ) async {
+    await CharacterReportService
+        .showReportDialog(
+      context: context,
+      character: character,
+      source: 'encounter',
     );
-
-    if (submit == true && reasonController.text.trim().isNotEmpty) {
-      try {
-        await _db.collection('reports').add({
-          'reporterId': _userId,
-          'reportedCharacterId': character.id,
-          'reportedCharacterName': character.name,
-          'reason': reasonController.text.trim(),
-          'timestamp': FieldValue.serverTimestamp(),
-          'status': 'pending',
-        });
-        if (mounted) {
-          _showResultDialog(l10n.snackbar_report_success);
-        }
-      } catch (e) {
-        if (mounted) _showResultDialog(l10n.snackbar_report_fail, isError: true);
-      }
-    }
   }
 
   void _showMoreOptions(Character character, bool isFriend) {
@@ -695,16 +648,28 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
                       loop: false,
                       onTap: (index) async {
                         if (index < characters.length) {
-                          await Navigator.push(
+                          final result =
+                          await Navigator.push<bool>(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    CharacterProfilePage(
-                                      character: characters[index],
-                                      characterId: characters[index].id,
-                                    )),
+                              builder: (context) =>
+                                  CharacterProfilePage(
+                                    character:
+                                    characters[index],
+                                    characterId:
+                                    characters[index].id,
+                                  ),
+                            ),
                           );
-                          _loadFriendIds();
+
+                          if (!mounted) return;
+
+                          if (result == true) {
+                            // 從角色頁封鎖成功
+                            await _refreshAllData();
+                          } else {
+                            await _loadFriendIds();
+                          }
                         }
                       },
                     ),

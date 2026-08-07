@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -392,62 +393,375 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
   // ==========================================
   // ✉️ 客服回覆邏輯 (彈出對話框)
   // ==========================================
-  void _showReplyDialog(String reportId, String reporterId, String originalContent) {
-    final l10n = AppLocalizations.of(context)!;
-    final TextEditingController replyController = TextEditingController();
-    showDialog(
+  Future<void> _showReplyDialog(
+      String reportId,
+      String reporterId,
+      String originalContent,
+      ) async {
+    final l10n =
+    AppLocalizations.of(context)!;
+
+    final replyController =
+    TextEditingController();
+
+    final flowerController =
+    TextEditingController();
+
+    // ==========================================
+    // 第一階段：
+    // Dialog 只負責收資料
+    // 不在 Dialog 裡寫 Firestore
+    // ==========================================
+    final Map<String, dynamic>? result =
+    await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('回覆玩家檢舉/建議'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('玩家內容：$originalContent', style: const TextStyle(color: Colors.grey, fontSize: 13)),
-            const SizedBox(height: 15),
-            TextField(
-              controller: replyController,
-              maxLines: 4,
-              decoration: const InputDecoration(hintText: '輸入回覆內容...', border: OutlineInputBorder()),
+      builder: (dialogContext) {
+        return AlertDialog(
+          title:
+          const Text('回覆玩家檢舉/建議'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize:
+              MainAxisSize.min,
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '玩家內容：$originalContent',
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13,
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                TextField(
+                  controller:
+                  replyController,
+                  maxLines: 4,
+                  decoration:
+                  const InputDecoration(
+                    labelText: '回覆內容',
+                    hintText:
+                    '輸入回覆內容...',
+                    border:
+                    OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 14),
+
+                TextField(
+                  controller:
+                  flowerController,
+                  keyboardType:
+                  TextInputType.number,
+                  decoration:
+                  const InputDecoration(
+                    labelText:
+                    '補償花花點數（選填）',
+                    hintText:
+                    '不補償可留空，例如：5',
+                    prefixIcon: Icon(
+                      Icons
+                          .local_florist_outlined,
+                    ),
+                    border:
+                    OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                const Text(
+                  '若此案件需要補償玩家，再填寫點數即可；留空則只寄送客服回覆。',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(
+                  dialogContext,
+                ).pop();
+              },
+              child: Text(
+                l10n.cancelButton,
+              ),
+            ),
+
+            ElevatedButton(
+              onPressed: () {
+                final replyText =
+                replyController.text
+                    .trim();
+
+                if (replyText.isEmpty) {
+                  // Dialog 裡不要再叫 Overlay Toast，
+                  // 直接用 SnackBar 或乾脆不關閉。
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(
+                    const SnackBar(
+                      content:
+                      Text('請先輸入回覆內容'),
+                    ),
+                  );
+                  return;
+                }
+
+                final flowerText =
+                flowerController.text
+                    .trim();
+
+                final int flowerAmount =
+                flowerText.isEmpty
+                    ? 0
+                    : int.tryParse(
+                  flowerText,
+                ) ??
+                    -1;
+
+                if (flowerAmount < 0) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        '花花點數請輸入正整數',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                if (flowerAmount > 100) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        '單次客服補償最多 100 點花花',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                Navigator.of(
+                  dialogContext,
+                ).pop({
+                  'replyText':
+                  replyText,
+                  'flowerAmount':
+                  flowerAmount,
+                });
+              },
+              child:
+              const Text('確認回覆'),
             ),
           ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child:  Text(l10n.cancelButton)),
-          ElevatedButton(
-            onPressed: () async {
-              if (replyController.text.trim().isEmpty) return;
-              final batch = FirebaseFirestore.instance.batch();
-
-              // 1. 標記案件已處理
-              batch.update(FirebaseFirestore.instance.collection('reports').doc(reportId), {
-                'status': 'resolved',
-                'adminReply': replyController.text.trim(),
-                'resolvedAt': FieldValue.serverTimestamp(),
-              });
-              batch.set(FirebaseFirestore.instance.collection('users').doc(reporterId).collection('mailbox').doc(), {
-                'title': 'cs_reply💌',
-                'body': replyController.text.trim(),
-                'isRead': false,
-                'createdAt': FieldValue.serverTimestamp(),
-              });
-
-              await batch.commit();
-              if (mounted) {
-                Navigator.pop(context);
-                // ✨ 總裁級：任務完成的優雅回饋，讓玩家感受到系統的高效率！
-                ToastUtils.showCenterToast(
-                  context,
-                  '✅ 已處理並寄送回信！',
-                  customIcon: Icons.mark_email_read_rounded, // 💡 用「已讀郵件/已處理」圖示，比單純勾選更精準！
-                );
-              }
-            },
-            child: const Text('確認回覆'),
-          ),
-        ],
-      ),
+        );
+      },
     );
+
+    // 使用者取消
+    if (result == null) {
+      return;
+    }
+
+    if (!mounted) return;
+
+    final String replyText =
+        result['replyText']
+            ?.toString()
+            .trim() ??
+            '';
+
+    final int flowerAmount =
+        result['flowerAmount']
+        as int? ??
+            0;
+
+    if (reporterId.trim().isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        '找不到玩家 UID，無法處理案件',
+        isError: true,
+      );
+      return;
+    }
+
+    // ==========================================
+    // 第二階段：
+    // Dialog 已經完全關閉後
+    // 才開始寫 Firestore
+    // ==========================================
+    try {
+      final db =
+          FirebaseFirestore.instance;
+
+      final batch =
+      db.batch();
+
+      final adminUid =
+          FirebaseAuth
+              .instance
+              .currentUser
+              ?.uid ??
+              '';
+
+      // --------------------------
+      // 1. 處理 report
+      // --------------------------
+      final reportRef = db
+          .collection('reports')
+          .doc(reportId);
+
+      batch.update(
+        reportRef,
+        {
+          'status': 'resolved',
+          'adminReply': replyText,
+          'compensationFlowerPoints':
+          flowerAmount,
+          'compensatedBy':
+          adminUid,
+          'resolvedAt':
+          FieldValue
+              .serverTimestamp(),
+        },
+      );
+
+      // --------------------------
+      // 2. 寄客服信
+      // --------------------------
+      final mailboxRef = db
+          .collection('users')
+          .doc(reporterId)
+          .collection('mailbox')
+          .doc();
+
+      final String mailboxBody =
+      flowerAmount > 0
+          ? '$replyText\n\n'
+          '已補償 $flowerAmount 點花花至您的帳號。'
+          : replyText;
+
+      batch.set(
+        mailboxRef,
+        {
+          'type': 'cs_reply',
+          'title': '客服回覆 💌',
+          'body': mailboxBody,
+          'isRead': false,
+          'createdAt':
+          FieldValue
+              .serverTimestamp(),
+        },
+      );
+
+      // --------------------------
+      // 3. 有補花花才執行
+      // --------------------------
+      if (flowerAmount > 0) {
+        final userRef = db
+            .collection('users')
+            .doc(reporterId);
+
+        batch.update(
+          userRef,
+          {
+            'flowerPoints':
+            FieldValue.increment(
+              flowerAmount,
+            ),
+          },
+        );
+
+        // --------------------------
+        // 4. 花花明細
+        // --------------------------
+        final flowerLogRef =
+        userRef
+            .collection(
+          'flower_logs',
+        )
+            .doc();
+
+        batch.set(
+          flowerLogRef,
+          {
+            'title': '客服補償',
+            'amount':
+            flowerAmount,
+            'reason':
+            '客服案件補償',
+            'reportId':
+            reportId,
+            'adminReply':
+            replyText,
+            'adminUid':
+            adminUid,
+            'type':
+            'cs_compensation',
+            'createdAt':
+            FieldValue
+                .serverTimestamp(),
+          },
+        );
+      }
+
+      await batch.commit();
+
+      if (!mounted) return;
+
+      // StreamBuilder 可能正因 resolved 而重建，
+      // 再讓一個 frame 過去。
+      await Future<void>.delayed(
+        const Duration(
+          milliseconds: 150,
+        ),
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        flowerAmount > 0
+            ? '已處理並補償 $flowerAmount 點花花'
+            : '已處理並寄送回信！',
+        customIcon:
+        flowerAmount > 0
+            ? Icons
+            .local_florist_rounded
+            : Icons
+            .mark_email_read_rounded,
+      );
+    } catch (e, stackTrace) {
+      debugPrint(
+        '❌ 處理客服案件失敗：$e',
+      );
+
+      debugPrintStack(
+        stackTrace:
+        stackTrace,
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '處理失敗，請稍後再試',
+        isError: true,
+      );
+    }
   }
 
   Widget _buildHelpTranslationAdminCard(
@@ -776,11 +1090,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
 
                 _buildPrivateCharactersAdminTab(),
 
-                const _AdminCharacterPlaceholder(
-                  icon: Icons.hourglass_top_rounded,
-                  title: '審核中',
-                  description: '處理等待審核的角色',
-                ),
+                _buildPendingCharactersAdminTab(),
 
                 const _AdminCharacterPlaceholder(
                   icon: Icons.gpp_bad_outlined,
@@ -792,6 +1102,427 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPendingCharactersAdminTab() {
+    return StreamBuilder<
+        QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('pending_characters')
+          .orderBy(
+        'submittedAt',
+        descending: true,
+      )
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                '讀取待審角色失敗：\n${snapshot.error}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.redAccent,
+                ),
+              ),
+            ),
+          );
+        }
+
+        if (snapshot.connectionState ==
+            ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final docs =
+            snapshot.data?.docs ?? [];
+
+        if (docs.isEmpty) {
+          return const _AdminCharacterPlaceholder(
+            icon: Icons.fact_check_outlined,
+            title: '目前沒有待審角色',
+            description: '玩家送出角色審核後會顯示在這裡',
+          );
+        }
+
+        return ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: docs.length,
+          separatorBuilder: (_, __) =>
+          const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            final doc = docs[index];
+            final data = doc.data();
+
+            final String characterId =
+                doc.id;
+
+            final String name =
+                data['name']
+                    ?.toString()
+                    .trim() ??
+                    '未命名角色';
+
+            final String avatar =
+                data['avatarPath']
+                    ?.toString()
+                    .trim() ??
+                    '';
+
+            final String creatorName =
+                data['creatorName']
+                    ?.toString()
+                    .trim() ??
+                    '未知創作者';
+
+            final String creatorId =
+                data['createdBy']
+                    ?.toString()
+                    .trim() ??
+                    '';
+
+            final String occupation =
+                data['occupation']
+                    ?.toString()
+                    .trim() ??
+                    '';
+
+            final Timestamp?
+            submittedTimestamp =
+            data['submittedAt']
+            as Timestamp?;
+
+            final String submittedText =
+            submittedTimestamp == null
+                ? '送審時間未知'
+                : DateFormat(
+              'yyyy/MM/dd HH:mm',
+            ).format(
+              submittedTimestamp
+                  .toDate(),
+            );
+
+            return Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.circular(16),
+                side: BorderSide(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outlineVariant
+                      .withValues(
+                    alpha: 0.55,
+                  ),
+                ),
+              ),
+              child: Padding(
+                padding:
+                const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 34,
+                      backgroundColor:
+                      Colors.grey.shade200,
+                      backgroundImage:
+                      avatar.isNotEmpty
+                          ? getAvatarImageProvider(
+                        avatar,
+                      )
+                          : null,
+                      child: avatar.isEmpty
+                          ? const Icon(
+                        Icons.person_rounded,
+                      )
+                          : null,
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment:
+                        CrossAxisAlignment
+                            .start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  name,
+                                  maxLines: 1,
+                                  overflow:
+                                  TextOverflow
+                                      .ellipsis,
+                                  style:
+                                  const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight:
+                                    FontWeight
+                                        .bold,
+                                  ),
+                                ),
+                              ),
+
+                              Container(
+                                padding:
+                                const EdgeInsets
+                                    .symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration:
+                                BoxDecoration(
+                                  color: Colors
+                                      .orange
+                                      .withValues(
+                                    alpha: 0.10,
+                                  ),
+                                  borderRadius:
+                                  BorderRadius
+                                      .circular(
+                                    20,
+                                  ),
+                                ),
+                                child:
+                                const Text(
+                                  '待審',
+                                  style:
+                                  TextStyle(
+                                    fontSize: 11,
+                                    fontWeight:
+                                    FontWeight
+                                        .w600,
+                                    color:
+                                    Colors.orange,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          if (occupation
+                              .isNotEmpty) ...[
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              occupation,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Theme.of(
+                                  context,
+                                )
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(
+                                  alpha:
+                                  0.65,
+                                ),
+                              ),
+                            ),
+                          ],
+
+                          const SizedBox(
+                            height: 5,
+                          ),
+
+                          Text(
+                            '創作者：$creatorName',
+                            maxLines: 1,
+                            overflow:
+                            TextOverflow
+                                .ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color:
+                              Theme.of(
+                                context,
+                              )
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(
+                                alpha:
+                                0.55,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: 2,
+                          ),
+
+                          Text(
+                            'UID：$creatorId',
+                            maxLines: 1,
+                            overflow:
+                            TextOverflow
+                                .ellipsis,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color:
+                              Theme.of(
+                                context,
+                              )
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(
+                                alpha:
+                                0.40,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: 5,
+                          ),
+
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons
+                                    .schedule_rounded,
+                                size: 14,
+                                color:
+                                Colors.grey,
+                              ),
+                              const SizedBox(
+                                width: 4,
+                              ),
+                              Text(
+                                submittedText,
+                                style:
+                                const TextStyle(
+                                  fontSize: 11,
+                                  color:
+                                  Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    PopupMenuButton<String>(
+                      tooltip: '審核角色',
+                      onSelected:
+                          (value) async {
+                        switch (value) {
+                          case 'approve':
+                            await _adminApprovePendingCharacter(
+                              characterId:
+                              characterId,
+                              characterName:
+                              name,
+                              creatorId:
+                              creatorId,
+                              characterData:
+                              data,
+                            );
+                            break;
+
+                          case 'reject':
+                            await _adminRejectPendingCharacter(
+                              characterId:
+                              characterId,
+                              characterName:
+                              name,
+                              creatorId:
+                              creatorId,
+                              characterData:
+                              data,
+                            );
+                            break;
+
+                          case 'violation':
+                            await _adminPendingCharacterToViolation(
+                              characterId:
+                              characterId,
+                              characterName:
+                              name,
+                              creatorId:
+                              creatorId,
+                              characterData:
+                              data,
+                            );
+                            break;
+                        }
+                      },
+                      itemBuilder: (_) =>
+                      const [
+                        PopupMenuItem(
+                          value: 'approve',
+                          child: ListTile(
+                            contentPadding:
+                            EdgeInsets.zero,
+                            leading: Icon(
+                              Icons
+                                  .check_circle_outline_rounded,
+                              color:
+                              Colors.green,
+                            ),
+                            title:
+                            Text('審核通過'),
+                          ),
+                        ),
+
+                        PopupMenuItem(
+                          value: 'reject',
+                          child: ListTile(
+                            contentPadding:
+                            EdgeInsets.zero,
+                            leading: Icon(
+                              Icons
+                                  .undo_rounded,
+                              color:
+                              Colors.orange,
+                            ),
+                            title:
+                            Text('退回修改'),
+                          ),
+                        ),
+
+                        PopupMenuItem(
+                          value:
+                          'violation',
+                          child: ListTile(
+                            contentPadding:
+                            EdgeInsets.zero,
+                            leading: Icon(
+                              Icons
+                                  .gpp_bad_outlined,
+                              color: Colors
+                                  .redAccent,
+                            ),
+                            title: Text(
+                              '判定違規',
+                              style:
+                              TextStyle(
+                                color: Colors
+                                    .redAccent,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -1022,6 +1753,478 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
         );
       },
     );
+  }
+
+  Future<void> _adminApprovePendingCharacter({
+    required String characterId,
+    required String characterName,
+    required String creatorId,
+    required Map<String, dynamic> characterData,
+  }) async {
+    if (creatorId.trim().isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        '找不到角色創作者 UID，無法通過審核',
+        isError: true,
+      );
+      return;
+    }
+
+    final bool? confirmed =
+    await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('審核通過'),
+          content: Text(
+            '確定要讓「$characterName」通過審核並公開嗎？\n\n'
+                '通過後，角色會從「審核中」移至「公開角色」。',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                  false,
+                );
+              },
+              child: const Text('取消'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                  true,
+                );
+              },
+              child: const Text('確認通過'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      final db =
+          FirebaseFirestore.instance;
+
+      final pendingRef = db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('pending_characters')
+          .doc(characterId);
+
+      final publicRef = db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('public_characters')
+          .doc(characterId);
+
+      final batch = db.batch();
+
+      final Map<String, dynamic> publicData = {
+        ...characterData,
+
+        // 公開狀態
+        'isPublic': true,
+
+        // 審核狀態
+        'moderationStatus': 'approved',
+
+        // 清掉退回或違規可能留下來的欄位
+        'rejectionReason': FieldValue.delete(),
+        'violationReason': FieldValue.delete(),
+
+        // 管理後台紀錄
+        'adminAction': 'approved',
+        'adminUpdatedAt':
+        FieldValue.serverTimestamp(),
+
+        // 正式公開時間
+        'publishedAt':
+        FieldValue.serverTimestamp(),
+
+        // 保留創作者
+        'createdBy': creatorId,
+      };
+
+      // 1. 建立 / 更新公開角色
+      batch.set(
+        publicRef,
+        publicData,
+        SetOptions(merge: true),
+      );
+
+      // 2. 刪除待審角色
+      batch.delete(
+        pendingRef,
+      );
+
+      await batch.commit();
+
+      // 3. 清角色快取
+      CharacterRepository.invalidate(
+        characterId,
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '「$characterName」已通過審核並公開',
+        customIcon:
+        Icons.check_circle_rounded,
+      );
+    } catch (e, stackTrace) {
+      debugPrint(
+        '❌ 審核角色通過失敗：$e',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '審核通過失敗：$e',
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _adminRejectPendingCharacter({
+    required String characterId,
+    required String characterName,
+    required String creatorId,
+    required Map<String, dynamic> characterData,
+  }) async {
+    if (creatorId.trim().isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        '找不到角色創作者 UID，無法退回修改',
+        isError: true,
+      );
+      return;
+    }
+
+    final TextEditingController reasonController =
+    TextEditingController();
+
+    final String? reason =
+    await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('退回修改'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '確定要將「$characterName」退回給創作者修改嗎？',
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: reasonController,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: '退回原因',
+                  hintText: '例如：角色描述需要補充、圖片不符合規範、設定內容需調整',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('取消'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final value =
+                reasonController.text.trim();
+
+                if (value.isEmpty) {
+                  ToastUtils.showCenterToast(
+                    context,
+                    '請先填寫退回原因',
+                    isError: true,
+                  );
+                  return;
+                }
+
+                Navigator.pop(
+                  dialogContext,
+                  value,
+                );
+              },
+              child: const Text('確認退回'),
+            ),
+          ],
+        );
+      },
+    );
+
+    reasonController.dispose();
+
+    if (reason == null ||
+        reason.trim().isEmpty) {
+      return;
+    }
+
+    try {
+      final db =
+          FirebaseFirestore.instance;
+
+      final pendingRef = db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('pending_characters')
+          .doc(characterId);
+
+      final privateRef = db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('users')
+          .doc(creatorId)
+          .collection('private_characters')
+          .doc(characterId);
+
+      final batch = db.batch();
+
+      final Map<String, dynamic> privateData = {
+        ...characterData,
+
+        'isPublic': false,
+
+        // 退回狀態
+        'moderationStatus': 'rejected',
+        'rejectionReason':
+        reason.trim(),
+
+        // 後台紀錄
+        'adminAction': 'rejected',
+        'adminUpdatedAt':
+        FieldValue.serverTimestamp(),
+        'rejectedAt':
+        FieldValue.serverTimestamp(),
+
+        // 保留創作者 UID
+        'createdBy': creatorId,
+      };
+
+      // 搬回創作者私人角色
+      batch.set(
+        privateRef,
+        privateData,
+        SetOptions(merge: true),
+      );
+
+      // 從待審區移除
+      batch.delete(
+        pendingRef,
+      );
+
+      await batch.commit();
+
+      CharacterRepository.invalidate(
+        characterId,
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '已將「$characterName」退回修改',
+        customIcon:
+        Icons.undo_rounded,
+      );
+    } catch (e, stackTrace) {
+      debugPrint(
+        '❌ 退回角色修改失敗：$e',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '退回修改失敗：$e',
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _adminPendingCharacterToViolation({
+    required String characterId,
+    required String characterName,
+    required String creatorId,
+    required Map<String, dynamic> characterData,
+  }) async {
+    final TextEditingController reasonController =
+    TextEditingController();
+
+    final String? reason = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('判定違規'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '確定要將「$characterName」判定為違規並封存嗎？',
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: reasonController,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: '違規原因',
+                  hintText: '例如：侵權、未成年內容、違反創作者規範',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('取消'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+              ),
+              onPressed: () {
+                final value =
+                reasonController.text.trim();
+
+                if (value.isEmpty) {
+                  ToastUtils.showCenterToast(
+                    context,
+                    '請先填寫違規原因',
+                    isError: true,
+                  );
+                  return;
+                }
+
+                Navigator.pop(
+                  dialogContext,
+                  value,
+                );
+              },
+              child: const Text('確認判定違規'),
+            ),
+          ],
+        );
+      },
+    );
+
+    reasonController.dispose();
+
+    if (reason == null ||
+        reason.trim().isEmpty) {
+      return;
+    }
+
+    try {
+      final db =
+          FirebaseFirestore.instance;
+
+      final pendingRef = db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('pending_characters')
+          .doc(characterId);
+
+      final violationRef = db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('violation_characters')
+          .doc(characterId);
+
+      final batch = db.batch();
+
+      final Map<String, dynamic> violationData = {
+        ...characterData,
+
+        'isPublic': false,
+
+        'moderationStatus': 'violation',
+        'violationReason':
+        reason.trim(),
+
+        'originalOwnerId':
+        creatorId,
+
+        'adminAction':
+        'pending_to_violation',
+
+        'adminUpdatedAt':
+        FieldValue.serverTimestamp(),
+
+        'violatedAt':
+        FieldValue.serverTimestamp(),
+
+        'createdBy':
+        creatorId,
+      };
+
+      // 搬到違規角色區
+      batch.set(
+        violationRef,
+        violationData,
+        SetOptions(merge: true),
+      );
+
+      // 從待審區移除
+      batch.delete(
+        pendingRef,
+      );
+
+      await batch.commit();
+
+      CharacterRepository.invalidate(
+        characterId,
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '已將「$characterName」判定為違規並封存',
+        customIcon:
+        Icons.gpp_bad_outlined,
+      );
+    } catch (e, stackTrace) {
+      debugPrint(
+        '❌ 待審角色判定違規失敗：$e',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '判定違規失敗：$e',
+        isError: true,
+      );
+    }
   }
 
   Widget _buildPrivateCharactersAdminTab() {
@@ -2094,8 +3297,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
   Widget _buildReportTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('reports') // 👈 確保跟剛剛修正後的一樣是根目錄
-          .where('status', isEqualTo: 'pending')
+          .collection('reports')
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -2107,11 +3309,29 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const Center(child: Text('目前沒有待處理的案件 ✨'));
+        if (!snapshot.hasData) {
+          return const Center(
+            child: Text('目前沒有待處理的案件 ✨'),
+          );
         }
 
-        var docs = snapshot.data!.docs;
+        final docs = snapshot.data!.docs.where((doc) {
+          final data =
+          doc.data() as Map<String, dynamic>;
+
+          final status =
+          data['status']?.toString().trim();
+
+          return status == null ||
+              status.isEmpty ||
+              status == 'pending';
+        }).toList();
+
+        if (docs.isEmpty) {
+          return const Center(
+            child: Text('目前沒有待處理的案件 ✨'),
+          );
+        }
 
         return ListView.builder(
           itemCount: docs.length,
@@ -2122,24 +3342,62 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
             // ✨ 1. 智慧解析檢舉類型與標題
             String typeText = '一般檢舉';
             String targetName = '';
-            String displayContent = data['content'] ?? '無具體文字';
+            String displayContent =
+                data['content']?.toString() ??
+                    '無具體文字';
 
-            if (data['type'] == 'block_character') {
+            if (data['type'] == 'character' ||
+                data['relatedType'] == 'character') {
+              typeText = '🚩 角色檢舉';
+
+              final characterName =
+              data['reportedCharacterName']
+                  ?.toString()
+                  .trim();
+
+              if (characterName != null &&
+                  characterName.isNotEmpty) {
+                targetName =
+                '角色：$characterName';
+              }
+
+              final reason =
+                  data['reason']?.toString().trim() ?? '';
+
+              final details =
+                  data['details']?.toString().trim() ?? '';
+
+              if (details.isNotEmpty) {
+                displayContent =
+                '檢舉原因：$reason\n補充說明：$details';
+              } else {
+                displayContent =
+                '檢舉原因：$reason';
+              }
+            } else if (data['type'] ==
+                'block_character') {
               typeText = '🚫 封鎖角色';
-              targetName = data['blockedCharacterName'] != null
+
+              targetName =
+              data['blockedCharacterName'] != null
                   ? '角色：${data['blockedCharacterName']}'
                   : '';
-            } else if (data['relatedType'] == 'moment') {
+            } else if (data['relatedType'] ==
+                'moment') {
               typeText = '💬 貼文相關';
-            } else if (data['reportedMessage'] != null || data['reason'] == '回覆不恰當') {
-              // 💡 專門抓出聊天室／訊息回覆檢舉！
+            } else if (
+            data['reportedMessage'] != null ||
+                data['reason'] == '回覆不恰當') {
               typeText = '💬 聊天回覆檢舉';
+
               if (data['reason'] != null) {
-                targetName = '原因：${data['reason']}';
+                targetName =
+                '原因：${data['reason']}';
               }
-              // 如果有被檢舉的訊息內容，優先顯示出來
+
               if (data['reportedMessage'] != null) {
-                displayContent = '被檢舉訊息：「${data['reportedMessage']}」';
+                displayContent =
+                '被檢舉訊息：「${data['reportedMessage']}」';
               }
             }
 
@@ -2169,7 +3427,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
                       const SizedBox(height: 4),
                       Text(
                         '回報者 UID：'
-                            '${data['reporterId'] ?? data['createdBy'] ?? '未知'}',
+                            '${data['reporterId'] ??
+                            data['userId'] ??
+                            data['createdBy'] ??
+                            '未知'}',
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
@@ -2212,7 +3473,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
                 trailing: ElevatedButton(
                   onPressed: () => _showReplyDialog(
                       docs[index].id,
-                      data['reporterId'] ?? data['createdBy'] ?? '',
+                      data['reporterId'] ??data['userId'] ?? data['createdBy'] ?? '',
                       data['content'] ?? data['blockedCharacterName'] ?? '該檢舉項目'
                   ),
                   child: const Text('處理'),
