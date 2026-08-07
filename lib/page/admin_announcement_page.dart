@@ -617,6 +617,23 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
               ?.uid ??
               '';
 
+      // ==========================================
+// 取得案件編號
+// ==========================================
+      final reportSnapshot =
+      await db
+          .collection('reports')
+          .doc(reportId)
+          .get();
+
+      final reportData =
+          reportSnapshot.data() ?? {};
+
+      final String caseNumber =
+          reportData['caseNumber']
+              ?.toString() ??
+              '';
+
       // --------------------------
       // 1. 處理 report
       // --------------------------
@@ -658,12 +675,20 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
         mailboxRef,
         {
           'type': 'cs_reply',
+
           'title': '客服回覆 💌',
+
           'body': mailboxBody,
+
+          // ⭐ 新增
+          'caseNumber': caseNumber,
+
+          'reportId': reportId,
+
           'isRead': false,
+
           'createdAt':
-          FieldValue
-              .serverTimestamp(),
+          FieldValue.serverTimestamp(),
         },
       );
 

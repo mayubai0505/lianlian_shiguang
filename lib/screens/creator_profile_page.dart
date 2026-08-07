@@ -28,173 +28,310 @@ class CreatorProfilePage extends StatelessWidget {
   });
 
   @override
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    final bool isOwner = currentUserId == creatorId;
-    // ✨ 1. 最外層的 FutureBuilder：負責去資料庫查創作者的真實資料
+
+    final String? currentUserId =
+        FirebaseAuth.instance.currentUser?.uid;
+
+    final bool isOwner =
+        currentUserId == creatorId;
+
+    // 1. 先讀取創作者本人的公開資料
     return FutureBuilder<DocumentSnapshot>(
       future: FirebaseFirestore.instance
           .collection('users')
           .doc(creatorId)
           .get(),
-      builder: (context, userSnapshot) {
-        // 🌟 2. 準備好真實姓名與頭像資料
+      builder: (
+          context,
+          userSnapshot,
+          ) {
+        // -----------------------------
+        // 創作者顯示資料
+        // -----------------------------
         String displayNickname =
         creatorName.trim().isNotEmpty
             ? creatorName.trim()
-            : '創作者'; // 從上一頁傳來的預設名字
-        // ✨ 新增：準備好保底的 ID (UID 前 8 碼)
-        String displayPlayerID = creatorId.length >= 8
-            ? creatorId.substring(0, 8).toUpperCase()
+            : '創作者';
+
+        String displayPlayerID =
+        creatorId.length >= 8
+            ? creatorId
+            .substring(0, 8)
+            .toUpperCase()
             : creatorId.toUpperCase();
+
         String? photoUrl;
         String? avatarPath;
         String creatorBio = '';
-        if (userSnapshot.hasData && userSnapshot.data!.exists) {
-          final userData = userSnapshot.data!.data() as Map<String, dynamic>;
-          // 先抓出兩個可能的名字
-          String? nickname = userData['nickname'];
-          String? displayName = userData['displayName'];
-          // ✨ 修正 1：暱稱與本名的「空字串」防護網 + 備胎機制
-          final fetchedNickname = (nickname ?? '').toString().trim();
-          final fetchedDisplayName = (displayName ?? '').toString().trim();
+
+        if (userSnapshot.hasData &&
+            userSnapshot.data!.exists) {
+          final userData =
+          userSnapshot.data!.data()
+          as Map<String, dynamic>;
+
+          final String fetchedNickname =
+          (userData['nickname'] ?? '')
+              .toString()
+              .trim();
+
+          final String fetchedDisplayName =
+          (userData['displayName'] ?? '')
+              .toString()
+              .trim();
+
           if (fetchedNickname.isNotEmpty) {
-            // 第一志願：玩家自己設定的 nickname
-            displayNickname = fetchedNickname;
-          } else if (fetchedDisplayName.isNotEmpty) {
-            // 第二志願：如果 nickname 是空的，就用第三方登入的 displayName
-            displayNickname = fetchedDisplayName;
+            displayNickname =
+                fetchedNickname;
+          } else if (fetchedDisplayName
+              .isNotEmpty) {
+            displayNickname =
+                fetchedDisplayName;
           }
-          // ✨ 修正 2：終於把玩家設定好的「專屬 ID」抓出來啦！
-          final fetchedPlayerID = (userData['playerID'] ?? '').toString().trim();
+
+          final String fetchedPlayerID =
+          (userData['playerID'] ?? '')
+              .toString()
+              .trim();
+
           if (fetchedPlayerID.isNotEmpty) {
-            displayPlayerID = fetchedPlayerID;
+            displayPlayerID =
+                fetchedPlayerID;
           }
-          photoUrl = userData['photoURL'] as String?;
-          avatarPath = userData['avatarPath'] as String?;
+
+          photoUrl =
+          userData['photoURL'] as String?;
+
+          avatarPath =
+          userData['avatarPath'] as String?;
+
           creatorBio =
               (userData['bio'] ?? '')
                   .toString()
                   .trim();
-          debugPrint('📝 creatorBio：$creatorBio');
-        }
-        ImageProvider? imageProvider;
-        String? finalPath = avatarPath ?? photoUrl; // 優先順序
 
-        if (finalPath != null && finalPath.isNotEmpty) {
+          debugPrint(
+            '📝 creatorBio：$creatorBio',
+          );
+        }
+
+        ImageProvider? imageProvider;
+
+        final String? finalPath =
+            avatarPath ?? photoUrl;
+
+        if (finalPath != null &&
+            finalPath.isNotEmpty) {
           if (finalPath.startsWith('http')) {
-            // ✨ 這裡是重點：如果是網路網址，用 NetworkImage
-            imageProvider = NetworkImage(finalPath);
+            imageProvider =
+                NetworkImage(finalPath);
           } else {
-            // ✨ 如果是預設圖路徑（assets/...），用 AssetImage
-            imageProvider = AssetImage(finalPath);
+            imageProvider =
+                AssetImage(finalPath);
           }
         }
 
-        // 🌟 3. 開始畫出整個頁面！
-        return StreamBuilder<List<Character>>(
-          stream: FirebaseFirestore.instance
-              .collection('artifacts')
-              .doc(AppConfig.appId)
-              .collection('public_characters')
-              .where(
-            'createdBy',
-            isEqualTo: creatorId,
+        // =================================================
+        // 2. 監聽目前玩家封鎖的角色
+        // =================================================
+        return StreamBuilder<QuerySnapshot>(
+          stream: currentUserId == null
+              ? null
+              : FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUserId)
+              .collection(
+            'blockedCharacters',
           )
-              .snapshots()
-              .asyncMap((snapshot) async {
-            return Future.wait(
-              snapshot.docs
-                  .map(
-                    (doc) =>
-                    Character.fromFirestoreAsync(doc),
+              .snapshots(),
+          builder: (
+              context,
+              blockedSnapshot,
+              ) {
+            final Set<String>
+            blockedCharacterIds =
+                blockedSnapshot.data?.docs
+                    .map(
+                      (doc) => doc.id,
+                )
+                    .toSet() ??
+                    <String>{};
+
+            // =================================================
+            // 3. 讀取這位創作者建立的公開角色
+            // =================================================
+            return StreamBuilder<
+                List<Character>>(
+              stream: FirebaseFirestore
+                  .instance
+                  .collection('artifacts')
+                  .doc(AppConfig.appId)
+                  .collection(
+                'public_characters',
               )
-                  .toList(),
-            );
-          }),
-          builder: (context, characterSnapshot) {
-            final List<Character> characters =
-                characterSnapshot.data ?? [];
-
-            final int totalLikes = characters.fold<int>(
-              0,
-                  (sum, character) =>
-              sum + character.likesCount,
-            );
-
-            return Scaffold(
-              backgroundColor:
-              theme.scaffoldBackgroundColor,
-              appBar: AppBar(
-                title: Text(
-                  l10n.portfolio_title(
-                    displayNickname,
-                  ),
-                ),
-                elevation: 0,
+                  .where(
+                'createdBy',
+                isEqualTo: creatorId,
+              )
+                  .snapshots()
+                  .asyncMap(
+                    (snapshot) async {
+                  return Future.wait(
+                    snapshot.docs
+                        .map(
+                          (doc) =>
+                          Character
+                              .fromFirestoreAsync(
+                            doc,
+                          ),
+                    )
+                        .toList(),
+                  );
+                },
               ),
-              body: DefaultTabController(
-                length: 3,
-                child: Column(
-                  children: [
-                    _buildCreatorHeader(
-                      context,
-                      theme,
-                      creatorId: creatorId,
-                      displayNickname: displayNickname,
-                      displayPlayerID: displayPlayerID,
-                      creatorBio: creatorBio,
-                      imageProvider: imageProvider,
-                      isOwner: isOwner,
-                      workCount: characters.length,
-                      totalLikes: totalLikes,
-                    ),
+              builder: (
+                  context,
+                  characterSnapshot,
+                  ) {
+                // 原始角色清單
+                final List<Character>
+                allCharacters =
+                    characterSnapshot.data ??
+                        <Character>[];
 
-                    TabBar(
-                      labelColor: theme.colorScheme.primary,
-                      unselectedLabelColor: theme.colorScheme.onSurface
-                          .withValues(alpha: 0.55),
-                      indicatorColor: theme.colorScheme.primary,
-                      indicatorWeight: 3,
-                      tabs: const [
-                        Tab(text: '自我介紹'),
-                        Tab(text: '角色'),
-                        Tab(text: '動態'),
-                      ],
-                    ),
+                // 玩家實際可見角色
+                final List<Character>
+                characters =
+                allCharacters
+                    .where(
+                      (character) =>
+                  !blockedCharacterIds
+                      .contains(
+                    character.id,
+                  ),
+                )
+                    .toList();
 
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          _buildCreatorAboutTab(
-                            context,
-                            theme,
-                            creatorBio,
-                          ),
+                final int totalLikes =
+                characters.fold<int>(
+                  0,
+                      (
+                      sum,
+                      character,
+                      ) =>
+                  sum +
+                      character.likesCount,
+                );
 
-                          _buildCreatorWorks(
-                            context,
-                            theme,
-                            l10n,
-                            characters,
-                            isOwner,
-                            characterSnapshot,
-                          ),
-
-                          _buildCreatorMomentsTab(
-                            context,
-                            theme,
-                            creatorId,
-                            characters,
-                          ),
-                        ],
+                return Scaffold(
+                  backgroundColor:
+                  theme
+                      .scaffoldBackgroundColor,
+                  appBar: AppBar(
+                    title: Text(
+                      l10n.portfolio_title(
+                        displayNickname,
                       ),
                     ),
-                  ],
-                ),
-              ),
+                    elevation: 0,
+                  ),
+                  body:
+                  DefaultTabController(
+                    length: 3,
+                    child: Column(
+                      children: [
+                        _buildCreatorHeader(
+                          context,
+                          theme,
+                          creatorId:
+                          creatorId,
+                          displayNickname:
+                          displayNickname,
+                          displayPlayerID:
+                          displayPlayerID,
+                          creatorBio:
+                          creatorBio,
+                          imageProvider:
+                          imageProvider,
+                          isOwner:
+                          isOwner,
+                          workCount:
+                          characters.length,
+                          totalLikes:
+                          totalLikes,
+                        ),
+
+                        TabBar(
+                          labelColor:
+                          theme
+                              .colorScheme
+                              .primary,
+                          unselectedLabelColor:
+                          theme
+                              .colorScheme
+                              .onSurface
+                              .withValues(
+                            alpha: 0.55,
+                          ),
+                          indicatorColor:
+                          theme
+                              .colorScheme
+                              .primary,
+                          indicatorWeight:
+                          3,
+                          tabs: const [
+                            Tab(
+                              text:
+                              '自我介紹',
+                            ),
+                            Tab(
+                              text:
+                              '角色',
+                            ),
+                            Tab(
+                              text:
+                              '動態',
+                            ),
+                          ],
+                        ),
+
+                        Expanded(
+                          child:
+                          TabBarView(
+                            children: [
+                              _buildCreatorAboutTab(
+                                context,
+                                theme,
+                                creatorBio,
+                              ),
+
+                              _buildCreatorWorks(
+                                context,
+                                theme,
+                                l10n,
+                                characters,
+                                isOwner,
+                                characterSnapshot,
+                              ),
+
+                              _buildCreatorMomentsTab(
+                                context,
+                                theme,
+                                creatorId,
+                                characters,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             );
           },
         );
@@ -401,14 +538,34 @@ class CreatorProfilePage extends StatelessWidget {
                   final docs =
                       snapshot.data?.docs ?? [];
 
+                  final Set<String> visibleCharacterIds =
+                  characters
+                      .map(
+                        (character) => character.id,
+                  )
+                      .toSet();
+
                   final allMoments = docs
                       .map(
                         (doc) =>
                         Moment.fromFirestore(doc),
                   )
                       .where(
-                        (moment) =>
-                    moment.isPublic == true,
+                        (moment) {
+                      if (moment.isPublic != true) {
+                        return false;
+                      }
+
+                      // 創作者本人發文保留
+                      if (moment.isCreatorPost) {
+                        return true;
+                      }
+
+                      // 角色發文只顯示未被封鎖的角色
+                      return visibleCharacterIds.contains(
+                        moment.authorId,
+                      );
+                    },
                   )
                       .toList();
 

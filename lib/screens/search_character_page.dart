@@ -10,6 +10,7 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 
 //搜尋頁面
 class SearchCharacterPage extends StatefulWidget {
@@ -29,7 +30,8 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
   List<String> _recentSearches = [];
   Timer? _searchSaveDebounce;
   late final Stream<QuerySnapshot> charactersStream;
-
+  Set<String> _blockedCharacterIds = {};
+  StreamSubscription<QuerySnapshot>? _blockedCharactersSub;
   @override
   void initState() {
     super.initState();
@@ -45,6 +47,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
         .snapshots();
 
     _loadRecentSearches();
+    _listenBlockedCharacters();
   }
 
   int _parseLikesCount(dynamic value) {
@@ -56,6 +59,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
       value?.toString() ?? '',
     ) ??
         0;
+
   }
 
   Future<void> _loadRecentSearches() async {
@@ -70,6 +74,38 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
           .take(_maxRecentSearches)
           .toList();
     });
+  }
+  void _listenBlockedCharacters() {
+    final user =
+        FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return;
+    }
+
+    _blockedCharactersSub =
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('blockedCharacters')
+            .snapshots()
+            .listen(
+              (snapshot) {
+            if (!mounted) return;
+
+            setState(() {
+              _blockedCharacterIds =
+                  snapshot.docs
+                      .map((doc) => doc.id)
+                      .toSet();
+            });
+          },
+          onError: (e) {
+            debugPrint(
+              '❌ 搜尋頁讀取封鎖角色失敗：$e',
+            );
+          },
+        );
   }
 
   Future<void> _saveRecentSearch(String query) async {
@@ -123,6 +159,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
   @override
   void dispose() {
+    _blockedCharactersSub?.cancel();
     _searchSaveDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
@@ -321,7 +358,14 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
         }
 
         final List<QueryDocumentSnapshot> allDocs =
-            snapshot.data!.docs;
+        snapshot.data!.docs
+            .where(
+              (doc) =>
+          !_blockedCharacterIds.contains(
+            doc.id,
+          ),
+        )
+            .toList();
 
         final String keyword =
         _searchQuery.trim().toLowerCase();

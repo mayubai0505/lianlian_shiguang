@@ -17,6 +17,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../services/character_report_service.dart';
 import '../services/character_block_service.dart';
+import 'dart:async';
 
 // 邂逅頁面
 class SelectChatPage extends StatefulWidget {
@@ -683,8 +684,13 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
               _DiscoveryHallView(
                 allCharacters: characters,
                 friendIds: _friendIds,
+
+                blockedCharacterIds:
+                _blockedCharacterIds,
+
                 onAddFriend: _addFriend,
                 onShowOptions: _showMoreOptions,
+                onRefresh: _refreshAllData,
               ),
             ],
           );
@@ -800,12 +806,20 @@ Widget buildCachedCharacterAvatar(
 class _DiscoveryHallView extends StatelessWidget {
   final List<Character> allCharacters;
   final Set<String> friendIds;
+  final Future<void> Function() onRefresh;
+  // ⭐ 新增
+  final Set<String> blockedCharacterIds;
+
   final Function(Character) onAddFriend;
   final Function(Character, bool) onShowOptions;
 
   const _DiscoveryHallView({
     required this.allCharacters,
     required this.friendIds,
+    required this.onRefresh,
+    // ⭐ 新增
+    required this.blockedCharacterIds,
+
     required this.onAddFriend,
     required this.onShowOptions,
   });
@@ -815,8 +829,10 @@ class _DiscoveryHallView extends StatelessWidget {
     return _LatestTab(
       allCharacters: allCharacters,
       friendIds: friendIds,
+      blockedCharacterIds: blockedCharacterIds,
       onAddFriend: onAddFriend,
       onShowOptions: onShowOptions,
+      onRefresh: onRefresh,
     );
   }
 }
@@ -825,21 +841,40 @@ class _DiscoveryHallView extends StatelessWidget {
 class _LatestTab extends StatefulWidget {
   final List<Character> allCharacters;
   final Set<String> friendIds;
+  final Future<void> Function() onRefresh;
+  // ⭐ 新增
+  final Set<String> blockedCharacterIds;
+
   final Function(Character) onAddFriend;
   final Function(Character, bool) onShowOptions;
 
   const _LatestTab({
     required this.allCharacters,
     required this.friendIds,
+    required this.onRefresh,
+    // ⭐ 新增
+    required this.blockedCharacterIds,
+
     required this.onAddFriend,
     required this.onShowOptions,
   });
 
   @override
-  State<_LatestTab> createState() => _LatestTabState();
+  State<_LatestTab> createState() =>
+      _LatestTabState();
 }
 
 class _LatestTabState extends State<_LatestTab> {
+  List<Character> get _visibleAllCharacters {
+    return widget.allCharacters
+        .where(
+          (character) =>
+      !widget.blockedCharacterIds.contains(
+        character.id,
+      ),
+    )
+        .toList();
+  }
   static const List<String> _dailyOpeningLines = [
     '今天，也許會遇見新的故事。',
     '今天，讓心動先開口。',
@@ -856,13 +891,39 @@ class _LatestTabState extends State<_LatestTab> {
   ];
 
   late final String _openingLine;
-  late final List<Character> _shuffledBannerCharacters;
+  late List<Character>
+  _shuffledBannerCharacters;
+
+  void _rebuildBannerCharacters() {
+    final random = Random();
+
+    final visibleCharacters =
+        _visibleAllCharacters;
+
+    final sortedCharacters =
+    List<Character>.from(
+      visibleCharacters,
+    )
+      ..sort(
+            (a, b) =>
+            b.createdAt.compareTo(
+              a.createdAt,
+            ),
+      );
+
+    final recentCharacters =
+    sortedCharacters
+        .take(10)
+        .toList()
+      ..shuffle(random);
+
+    _shuffledBannerCharacters =
+        recentCharacters;
+  }
 
   @override
   void initState() {
     super.initState();
-
-    final random = Random();
     final now = DateTime.now();
     final dayKey = DateTime(now.year, now.month, now.day)
         .millisecondsSinceEpoch ~/
@@ -872,19 +933,16 @@ class _LatestTabState extends State<_LatestTab> {
     _openingLine = _dailyOpeningLines[
     dayKey % _dailyOpeningLines.length
     ];
+    _rebuildBannerCharacters();
+  }
 
-    _shuffledBannerCharacters =
-    List<Character>.from(widget.allCharacters)
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  @override
+  void didUpdateWidget(
+      covariant _LatestTab oldWidget,
+      ) {
+    super.didUpdateWidget(oldWidget);
 
-    // 只讓最近推出的角色進入橫幅候選，再重新打亂。
-    final recentCharacters =
-    _shuffledBannerCharacters.take(10).toList()
-      ..shuffle(random);
-
-    _shuffledBannerCharacters
-      ..clear()
-      ..addAll(recentCharacters);
+    _rebuildBannerCharacters();
   }
 
   @override
@@ -902,7 +960,9 @@ class _LatestTabState extends State<_LatestTab> {
     useDesktopLayout ? 1280 : double.infinity;
 
     final List<Character> sortedList =
-    List<Character>.from(widget.allCharacters);
+    List<Character>.from(
+      _visibleAllCharacters,
+    );
 
     sortedList.sort((a, b) {
       return b.createdAt.compareTo(a.createdAt);
@@ -1033,7 +1093,10 @@ class _LatestTabState extends State<_LatestTab> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => _AllLatestCharactersPage(
-                    allCharacters: widget.allCharacters,
+                    allCharacters:
+                    _visibleAllCharacters,
+                    onRefresh:
+                    widget.onRefresh,
                   ),
                 ),
               );
@@ -1091,7 +1154,8 @@ class _LatestTabState extends State<_LatestTab> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => _AllTagsPage(
-                    allCharacters: widget.allCharacters,
+                    allCharacters:
+                    _visibleAllCharacters,
                   ),
                 ),
               );
@@ -1129,10 +1193,27 @@ class _LatestTabState extends State<_LatestTab> {
       BuildContext context,
       bool useDesktopLayout,
       ) {
-    final popularCharacters = List<Character>.from(widget.allCharacters)
-      ..sort((a, b) => b.playCount.compareTo(a.playCount));
+    final popularCharacters =
+    List<Character>.from(
+      _visibleAllCharacters,
+    )
+      ..sort(
+            (a, b) =>
+            b.playCount.compareTo(
+              a.playCount,
+            ),
+      );
 
-    final visibleCharacters = popularCharacters.take(10).toList();
+    final visibleCharacters =
+    popularCharacters
+        .take(10)
+        .toList()
+      ..sort(
+            (a, b) =>
+            b.playCount.compareTo(
+              a.playCount,
+            ),
+      );
 
     if (visibleCharacters.isEmpty) {
       return const SizedBox.shrink();
@@ -1155,8 +1236,9 @@ class _LatestTabState extends State<_LatestTab> {
             child: MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
+                onTap: () async {
+                  final result =
+                  await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
                       builder: (_) => CharacterProfilePage(
@@ -1165,6 +1247,12 @@ class _LatestTabState extends State<_LatestTab> {
                       ),
                     ),
                   );
+
+                  if (!mounted) return;
+
+                  if (result == true) {
+                    await widget.onRefresh();
+                  }
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
@@ -1262,7 +1350,8 @@ class _LatestTabState extends State<_LatestTab> {
   List<String> _collectAllTags() {
     final uniqueTags = <String>{};
 
-    for (final character in widget.allCharacters) {
+    for (final character
+    in _visibleAllCharacters) {
       for (final rawTag in character.personalityTags) {
         final tag = rawTag.trim().replaceAll(RegExp(r'^#+'), '').trim();
         if (tag.isNotEmpty) {
@@ -1299,7 +1388,8 @@ class _LatestTabState extends State<_LatestTab> {
               MaterialPageRoute(
                 builder: (_) => _TagFilteredCharactersPage(
                   tag: tag,
-                  allCharacters: widget.allCharacters,
+                  allCharacters:
+                  _visibleAllCharacters,
                 ),
               ),
             );
@@ -1386,16 +1476,24 @@ class _LatestTabState extends State<_LatestTab> {
               horizontal: useDesktopLayout ? 8 : 0,
             ),
             child: GestureDetector(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final result =
+                await Navigator.push<bool>(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => CharacterProfilePage(
-                      character: char,
-                      characterId: char.id,
-                    ),
+                    builder: (_) =>
+                        CharacterProfilePage(
+                          character: char,
+                          characterId: char.id,
+                        ),
                   ),
                 );
+
+                if (!mounted) return;
+
+                if (result == true) {
+                  await widget.onRefresh();
+                }
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(
@@ -1836,301 +1934,314 @@ class _LatestTabState extends State<_LatestTab> {
   }
 }
 
-// 🔥 分頁二：人氣熱榜
-class _PopularTab extends StatelessWidget {
-  final List<Character> allCharacters;
-  final Set<String> friendIds;
-  final Function(Character) onAddFriend;
-  final Function(Character, bool) onShowOptions;
-
-  const _PopularTab({required this.allCharacters, required this.friendIds, required this.onAddFriend, required this.onShowOptions});
-
-  @override
-  Widget build(BuildContext context) {
-    List<Character> popularList = List.from(allCharacters);
-    popularList.sort((a, b) => b.playCount.compareTo(a.playCount));
-    final l10n = AppLocalizations.of(context)!;
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: popularList.length,
-      itemBuilder: (context, index) {
-        final char = popularList[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(10),
-            minVerticalPadding: 10,
-
-            leading: SizedBox(
-              width: 58,
-              height: 58,
-              child: buildCachedCharacterAvatar(
-                context,
-                char,
-                radius: 29,
-              ),
-            ),
-
-            title: Text(
-              char.name,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 4),
-                Text(
-                  char.storySummary,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.local_fire_department,
-                      size: 14,
-                      color: Colors.orange,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      l10n.character_play_count(char.playCount),
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            trailing: const Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-            ),
-
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => CharacterProfilePage(
-                    character: char,
-                    characterId: char.id,
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-}
-
-// 🏷️ 分頁三：角色特徵標籤探索 (多色交錯、絕不眼花版)
-class _TagsTab extends StatelessWidget {
-  final List<Character> allCharacters;
-  final Set<String> friendIds;
-  final Function(Character) onAddFriend;
-  final Function(Character, bool) onShowOptions;
-
-  const _TagsTab({required this.allCharacters, required this.friendIds, required this.onAddFriend, required this.onShowOptions});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
-    Set<String> uniqueTags = {};
-    for (var char in allCharacters) {
-      uniqueTags.addAll(char.personalityTags);
-    }
-
-    List<String> tagList = uniqueTags.toList();
-
-    if (tagList.isEmpty) {
-      return Center(
-        child: Text(l10n.no_tag_data),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 2.4,
-        ),
-        itemCount: tagList.length,
-        itemBuilder: (context, index) {
-          final tag = tagList[index];
-
-          return InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => _TagFilteredCharactersPage(
-                    tag: tag,
-                    allCharacters: allCharacters,
-                  ),
-                ),
-              );
-            },
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(
-                  alpha: 0.08,
-                ),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: theme.colorScheme.primary.withValues(
-                    alpha: 0.25,
-                  ),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-              ),
-              child: Text(
-                "#$tag",
-                style: TextStyle(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
 // ✨ 全部最新角色頁
-class _AllLatestCharactersPage extends StatelessWidget {
+class _AllLatestCharactersPage
+    extends StatefulWidget {
   final List<Character> allCharacters;
+  final Future<void> Function() onRefresh;
 
   const _AllLatestCharactersPage({
     required this.allCharacters,
+    required this.onRefresh,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final sortedCharacters = List<Character>.from(allCharacters)
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  State<_AllLatestCharactersPage>
+  createState() =>
+      _AllLatestCharactersPageState();
+}
 
+class _AllLatestCharactersPageState
+    extends State<_AllLatestCharactersPage> {
+  late List<Character> _visibleCharacters;
+  StreamSubscription<QuerySnapshot>?
+  _blockedCharactersSub;
+  @override
+  void initState() {
+    super.initState();
+
+    // 先放原始資料，避免畫面一開始空白
+    _visibleCharacters =
+    List<Character>.from(
+      widget.allCharacters,
+    )
+      ..sort(
+            (a, b) =>
+            b.createdAt.compareTo(
+              a.createdAt,
+            ),
+      );
+
+    _listenBlockedCharacters();
+  }
+
+  void _listenBlockedCharacters() {
+    final currentUser =
+        FirebaseAuth.instance.currentUser;
+
+    if (currentUser == null) {
+      return;
+    }
+
+    _blockedCharactersSub =
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.uid)
+            .collection('blockedCharacters')
+            .snapshots()
+            .listen(
+              (snapshot) {
+            if (!mounted) return;
+
+            final blockedIds =
+            snapshot.docs
+                .map((doc) => doc.id)
+                .toSet();
+
+            final visible =
+            widget.allCharacters
+                .where(
+                  (character) =>
+              !blockedIds.contains(
+                character.id,
+              ),
+            )
+                .toList()
+              ..sort(
+                    (a, b) =>
+                    b.createdAt.compareTo(
+                      a.createdAt,
+                    ),
+              );
+
+            setState(() {
+              _visibleCharacters = visible;
+            });
+          },
+          onError: (e) {
+            debugPrint(
+              '❌ 查看更多讀取封鎖角色失敗：$e',
+            );
+          },
+        );
+  }
+
+  @override
+  void dispose() {
+    _blockedCharactersSub?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('最近來到戀戀拾光'),
+        title:
+        const Text('最近來到戀戀拾光'),
       ),
-      body: sortedCharacters.isEmpty
+      body: _visibleCharacters.isEmpty
           ? const Center(
-        child: Text('目前還沒有角色'),
+        child: Text(
+          '目前還沒有角色',
+        ),
       )
           : LayoutBuilder(
-        builder: (context, constraints) {
-          final bool useDesktopLayout = constraints.maxWidth >= 800;
+        builder: (
+            context,
+            constraints,
+            ) {
+          final bool
+          useDesktopLayout =
+              constraints.maxWidth >=
+                  800;
+
           final int columnCount;
 
-          if (constraints.maxWidth >= 1200) {
+          if (constraints.maxWidth >=
+              1200) {
             columnCount = 4;
-          } else if (constraints.maxWidth >= 800) {
+          } else if (constraints
+              .maxWidth >=
+              800) {
             columnCount = 3;
           } else {
             columnCount = 2;
           }
 
           return GridView.builder(
-            padding: EdgeInsets.fromLTRB(
-              useDesktopLayout ? 32 : 16,
+            padding:
+            EdgeInsets.fromLTRB(
+              useDesktopLayout
+                  ? 32
+                  : 16,
               20,
-              useDesktopLayout ? 32 : 16,
+              useDesktopLayout
+                  ? 32
+                  : 16,
               32,
             ),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columnCount,
-              crossAxisSpacing: useDesktopLayout ? 18 : 12,
-              mainAxisSpacing: useDesktopLayout ? 18 : 12,
-              childAspectRatio: useDesktopLayout ? 0.78 : 0.72,
+            gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount:
+              columnCount,
+              crossAxisSpacing:
+              useDesktopLayout
+                  ? 18
+                  : 12,
+              mainAxisSpacing:
+              useDesktopLayout
+                  ? 18
+                  : 12,
+              childAspectRatio:
+              useDesktopLayout
+                  ? 0.78
+                  : 0.72,
             ),
-            itemCount: sortedCharacters.length,
-            itemBuilder: (context, index) {
-              final character = sortedCharacters[index];
-              final String imageUrl = character.galleryPaths.isNotEmpty
-                  ? character.galleryPaths.first.trim()
-                  : character.avatarPath.trim();
+            itemCount:
+            _visibleCharacters
+                .length,
+            itemBuilder: (
+                context,
+                index,
+                ) {
+              final character =
+              _visibleCharacters[
+              index];
+
+              final String imageUrl =
+              character
+                  .galleryPaths
+                  .isNotEmpty
+                  ? character
+                  .galleryPaths
+                  .first
+                  .trim()
+                  : character
+                  .avatarPath
+                  .trim();
 
               return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
+                cursor:
+                SystemMouseCursors
+                    .click,
+                child:
+                GestureDetector(
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CharacterProfilePage(
-                          character: character,
-                          characterId: character.id,
-                        ),
+                        builder: (_) =>
+                            CharacterProfilePage(
+                              character: character,
+                              characterId: character.id,
+                            ),
                       ),
                     );
+
+                    if (!mounted) return;
+
+                    final currentUser =
+                        FirebaseAuth.instance.currentUser;
+
+                    if (currentUser == null) return;
+
+                    // ⭐ 回到這個頁面後，直接確認角色是否已被封鎖
+                    final blockedDoc =
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(currentUser.uid)
+                        .collection('blockedCharacters')
+                        .doc(character.id)
+                        .get();
+
+                    if (!mounted) return;
+
+                    if (blockedDoc.exists) {
+                      // ⭐ 立即從目前畫面移除
+                      setState(() {
+                        _visibleCharacters.removeWhere(
+                              (item) =>
+                          item.id == character.id,
+                        );
+                      });
+
+                      // ⭐ 同時通知外層探索大廳重新整理
+                      await widget.onRefresh();
+                    }
                   },
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius:
+                    BorderRadius
+                        .circular(
+                      16,
+                    ),
                     child: Stack(
-                      fit: StackFit.expand,
+                      fit:
+                      StackFit.expand,
                       children: [
-                        if (imageUrl.isNotEmpty)
+                        if (imageUrl
+                            .isNotEmpty)
                           CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            fit: BoxFit.cover,
-                            alignment: Alignment.topCenter,
-                            memCacheWidth: useDesktopLayout ? 900 : 720,
-                            placeholder: (_, __) => Container(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest,
-                            ),
-                            errorWidget: (_, __, ___) => Image.asset(
-                              'assets/images/blank_avatar.png',
-                              fit: BoxFit.cover,
-                            ),
+                            imageUrl:
+                            imageUrl,
+                            fit: BoxFit
+                                .cover,
+                            alignment:
+                            Alignment
+                                .topCenter,
+                            memCacheWidth:
+                            useDesktopLayout
+                                ? 900
+                                : 720,
+                            placeholder:
+                                (_, __) =>
+                                Container(
+                                  color: Theme.of(
+                                      context)
+                                      .colorScheme
+                                      .surfaceContainerHighest,
+                                ),
+                            errorWidget:
+                                (_, __,
+                                ___) =>
+                                Image
+                                    .asset(
+                                  'assets/images/blank_avatar.png',
+                                  fit: BoxFit
+                                      .cover,
+                                ),
                           )
                         else
                           Image.asset(
                             'assets/images/blank_avatar.png',
-                            fit: BoxFit.cover,
+                            fit: BoxFit
+                                .cover,
                           ),
                         Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                          decoration:
+                          BoxDecoration(
+                            gradient:
+                            LinearGradient(
+                              begin:
+                              Alignment
+                                  .topCenter,
+                              end:
+                              Alignment
+                                  .bottomCenter,
                               colors: [
-                                Colors.transparent,
-                                Colors.black.withValues(alpha: 0.8),
+                                Colors
+                                    .transparent,
+                                Colors.black
+                                    .withValues(
+                                  alpha:
+                                  0.8,
+                                ),
                               ],
-                              stops: const [0.48, 1],
+                              stops:
+                              const [
+                                0.48,
+                                1,
+                              ],
                             ),
                           ),
                         ),
@@ -2139,28 +2250,56 @@ class _AllLatestCharactersPage extends StatelessWidget {
                           right: 12,
                           bottom: 12,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment:
+                            CrossAxisAlignment
+                                .start,
+                            mainAxisSize:
+                            MainAxisSize
+                                .min,
                             children: [
                               Text(
-                                character.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: useDesktopLayout ? 17 : 15,
+                                character
+                                    .name,
+                                maxLines:
+                                1,
+                                overflow:
+                                TextOverflow
+                                    .ellipsis,
+                                style:
+                                TextStyle(
+                                  color: Colors
+                                      .white,
+                                  fontWeight:
+                                  FontWeight
+                                      .bold,
+                                  fontSize:
+                                  useDesktopLayout
+                                      ? 17
+                                      : 15,
                                 ),
                               ),
-                              if (character.occupation.trim().isNotEmpty) ...[
-                                const SizedBox(height: 3),
+                              if (character
+                                  .occupation
+                                  .trim()
+                                  .isNotEmpty) ...[
+                                const SizedBox(
+                                  height:
+                                  3,
+                                ),
                                 Text(
-                                  character.occupation,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 12,
+                                  character
+                                      .occupation,
+                                  maxLines:
+                                  1,
+                                  overflow:
+                                  TextOverflow
+                                      .ellipsis,
+                                  style:
+                                  const TextStyle(
+                                    color: Colors
+                                        .white70,
+                                    fontSize:
+                                    12,
                                   ),
                                 ),
                               ],
@@ -2179,7 +2318,6 @@ class _AllLatestCharactersPage extends StatelessWidget {
     );
   }
 }
-
 // 🏷️ 全部標籤頁
 class _AllTagsPage extends StatelessWidget {
   final List<Character> allCharacters;
@@ -2293,44 +2431,173 @@ class _AllTagsPage extends StatelessWidget {
 }
 
 // 🏷️ 點擊特定標籤後跳轉過去的「過濾角色列表頁」
-class _TagFilteredCharactersPage extends StatelessWidget {
+class _TagFilteredCharactersPage
+    extends StatefulWidget {
   final String tag;
   final List<Character> allCharacters;
 
-  const _TagFilteredCharactersPage({required this.tag, required this.allCharacters});
+  const _TagFilteredCharactersPage({
+    required this.tag,
+    required this.allCharacters,
+  });
+
+  @override
+  State<_TagFilteredCharactersPage>
+  createState() =>
+      _TagFilteredCharactersPageState();
+}
+
+class _TagFilteredCharactersPageState
+    extends State<_TagFilteredCharactersPage> {
+  late List<Character> _visibleCharacters;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _visibleCharacters =
+        widget.allCharacters
+            .where(
+              (character) =>
+              character.personalityTags
+                  .contains(widget.tag),
+        )
+            .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final filteredChars = allCharacters.where((c) => c.personalityTags.contains(tag)).toList();
-    final l10n = AppLocalizations.of(context)!;
+    final l10n =
+    AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          l10n.tag_page_title(tag),
+          l10n.tag_page_title(widget.tag),
         ),
       ),
-      body: filteredChars.isEmpty
-          ? Center(child: Text(l10n.no_character_with_tag))
+      body: _visibleCharacters.isEmpty
+          ? Center(
+        child: Text(
+          l10n.no_character_with_tag,
+        ),
+      )
           : ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: filteredChars.length,
-        itemBuilder: (context, index) {
-          final char = filteredChars[index];
+        padding:
+        const EdgeInsets.all(16),
+        itemCount:
+        _visibleCharacters.length,
+        itemBuilder: (
+            context,
+            index,
+            ) {
+          final char =
+          _visibleCharacters[index];
+
           return Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            margin:
+            const EdgeInsets.only(
+              bottom: 12,
+            ),
+            shape:
+            RoundedRectangleBorder(
+              borderRadius:
+              BorderRadius.circular(
+                16,
+              ),
+            ),
             child: ListTile(
-              contentPadding: const EdgeInsets.all(8),
-              leading: buildCachedCharacterAvatar(
+              contentPadding:
+              const EdgeInsets.all(
+                8,
+              ),
+              leading:
+              buildCachedCharacterAvatar(
                 context,
                 char,
                 radius: 30,
               ),
-              title: Text(char.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(char.occupation, style: const TextStyle(fontSize: 12)),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => CharacterProfilePage(character: char, characterId: char.id)));
+              title: Text(
+                char.name,
+                style:
+                const TextStyle(
+                  fontWeight:
+                  FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                char.occupation,
+                style:
+                const TextStyle(
+                  fontSize: 12,
+                ),
+              ),
+              trailing:
+              const Icon(
+                Icons
+                    .arrow_forward_ios,
+                size: 16,
+              ),
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        CharacterProfilePage(
+                          character: char,
+                          characterId:
+                          char.id,
+                        ),
+                  ),
+                );
+
+                if (!mounted) {
+                  return;
+                }
+
+                final currentUser =
+                    FirebaseAuth
+                        .instance
+                        .currentUser;
+
+                if (currentUser ==
+                    null) {
+                  return;
+                }
+
+                final blockedDoc =
+                await FirebaseFirestore
+                    .instance
+                    .collection(
+                  'users',
+                )
+                    .doc(
+                  currentUser
+                      .uid,
+                )
+                    .collection(
+                  'blockedCharacters',
+                )
+                    .doc(
+                  char.id,
+                )
+                    .get();
+
+                if (!mounted) {
+                  return;
+                }
+
+                if (blockedDoc
+                    .exists) {
+                  setState(() {
+                    _visibleCharacters
+                        .removeWhere(
+                          (item) =>
+                      item.id ==
+                          char.id,
+                    );
+                  });
+                }
               },
             ),
           );

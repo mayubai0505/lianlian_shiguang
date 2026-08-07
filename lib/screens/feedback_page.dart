@@ -348,21 +348,50 @@ class _FeedbackPageState
     String? uploadedImageUrl;
 
     try {
+      final db =
+          FirebaseFirestore.instance;
+
+      // ==========================================
+      // 1. 先建立 report 文件 ID
+      // ==========================================
       final DocumentReference<
           Map<String, dynamic>>
       reportRef =
-      FirebaseFirestore.instance
-          .collection('reports')
-          .doc();
+      db.collection('reports').doc();
 
+      // ==========================================
+      // 2. 產生案件編號
+      // 例如：R-20260807-A1B2C3
+      // ==========================================
+      final now = DateTime.now();
+
+      final String datePart =
+          '${now.year}'
+          '${now.month.toString().padLeft(2, '0')}'
+          '${now.day.toString().padLeft(2, '0')}';
+
+      final String shortId =
+      reportRef.id
+          .substring(0, 6)
+          .toUpperCase();
+
+      final String caseNumber =
+          'R-$datePart-$shortId';
+
+      // ==========================================
+      // 3. 有圖片的話先上傳
+      // ==========================================
       uploadedImageUrl =
       await _uploadImage(
         reportId: reportRef.id,
         userId: user.uid,
       );
 
+      // ==========================================
+      // 4. 取得玩家資料
+      // ==========================================
       final userSnapshot =
-      await FirebaseFirestore.instance
+      await db
           .collection('users')
           .doc(user.uid)
           .get();
@@ -379,84 +408,158 @@ class _FeedbackPageState
               user.displayName?.trim() ??
               '未命名玩家';
 
-      await reportRef.set({
-        'type': 'feedback',
+      // ==========================================
+      // 5. 建立 Batch
+      // reports + 系統收件信一起寫入
+      // ==========================================
+      final batch = db.batch();
 
-        // ⭐ 新的統一分類
-        'category':
-        _selectedCategory.name,
+      // ==========================================
+      // 6. 寫入客服案件
+      // ==========================================
+      batch.set(
+        reportRef,
+        {
+          'type': 'feedback',
 
-        'categoryLabel':
-        _categoryLabel(
-          _selectedCategory,
-        ),
+          // ⭐ 案件編號
+          'caseNumber':
+          caseNumber,
 
-        // 保留舊欄位相容後台
-        'relatedType':
-        _selectedCategory ==
-            ReportCategory.aiReply
-            ? 'chat'
-            : _selectedCategory ==
-            ReportCategory.character
-            ? 'character'
-            : _selectedCategory ==
-            ReportCategory.moment
-            ? 'moment'
-            : 'contact_us',
+          // ⭐ 統一分類
+          'category':
+          _selectedCategory.name,
 
-        'status': 'pending',
+          'categoryLabel':
+          _categoryLabel(
+            _selectedCategory,
+          ),
 
-        // 玩家補充說明
-        'content': feedbackText,
-        'reason': _selectedReason,
+          // 保留舊欄位，相容後台
+          'relatedType':
+          _selectedCategory ==
+              ReportCategory.aiReply
+              ? 'chat'
+              : _selectedCategory ==
+              ReportCategory.character
+              ? 'character'
+              : _selectedCategory ==
+              ReportCategory.moment
+              ? 'moment'
+              : 'contact_us',
 
-        // ⭐ 如果是從聊天訊息進來，
-        // 把原本被檢舉內容一起保存
-        'reportedContent':
-        widget.reportedContent ?? '',
+          'status': 'pending',
 
-        // ⭐ 角色相關
-        'characterId':
-        widget.characterId ?? '',
+          // 玩家填寫內容
+          'content':
+          feedbackText,
 
-        'characterName':
-        widget.characterName ?? '',
+          'reason':
+          _selectedReason,
 
-        // ⭐ 聊天相關
-        'sessionId':
-        widget.sessionId ?? '',
+          // 被檢舉／回報內容
+          'reportedContent':
+          widget.reportedContent ?? '',
 
-        'messageId':
-        widget.messageId ?? '',
+          // 角色
+          'characterId':
+          widget.characterId ?? '',
 
-        // ⭐ Moment
-        'momentId':
-        widget.momentId ?? '',
+          'characterName':
+          widget.characterName ?? '',
 
-        'reporterId': user.uid,
-        'createdBy': user.uid,
-        'reporterName': nickname,
+          // 聊天
+          'sessionId':
+          widget.sessionId ?? '',
 
-        'reporterEmail':
-        user.email ?? '',
+          'messageId':
+          widget.messageId ?? '',
 
-        'imageUrl':
-        uploadedImageUrl ?? '',
+          // Moment
+          'momentId':
+          widget.momentId ?? '',
 
-        'hasImage':
-        uploadedImageUrl != null,
+          // 玩家
+          'reporterId':
+          user.uid,
 
-        'createdAt':
-        FieldValue.serverTimestamp(),
+          'createdBy':
+          user.uid,
 
-        'updatedAt':
-        FieldValue.serverTimestamp(),
+          'reporterName':
+          nickname,
 
-        'adminReply': '',
-      });
+          'reporterEmail':
+          user.email ?? '',
+
+          // 圖片
+          'imageUrl':
+          uploadedImageUrl ?? '',
+
+          'hasImage':
+          uploadedImageUrl != null,
+
+          // 時間
+          'createdAt':
+          FieldValue.serverTimestamp(),
+
+          'updatedAt':
+          FieldValue.serverTimestamp(),
+
+          // 管理員回覆
+          'adminReply': '',
+        },
+      );
+
+      // ==========================================
+      // 7. 寫入「已收到你的回報」系統信
+      // ==========================================
+      final mailboxRef =
+      db
+          .collection('users')
+          .doc(user.uid)
+          .collection('mailbox')
+          .doc();
+
+      batch.set(
+        mailboxRef,
+        {
+          'type':
+          'cs_received',
+
+          'title': '【案件已建立】已收到你的回報 💌',
+
+          'body':
+          '我們已收到你的回報，會盡快協助確認。\n\n'
+              '案件編號：$caseNumber\n\n'
+              '若客服有進一步回覆，'
+              '會再透過戀戀拾光信箱通知你。',
+
+          // ⭐ 方便之後客服回覆對應
+          'caseNumber':
+          caseNumber,
+
+          'reportId':
+          reportRef.id,
+
+          'isRead':
+          false,
+
+          'createdAt':
+          FieldValue.serverTimestamp(),
+        },
+      );
+
+      // ==========================================
+      // 8. 一次送出
+      // ==========================================
+      await batch.commit();
 
       if (!mounted) return;
 
+      // ==========================================
+      // 9. 清除畫面內容
+      // ==========================================
       _feedbackController.clear();
 
       setState(() {
@@ -464,24 +567,30 @@ class _FeedbackPageState
         _selectedImageBytes = null;
       });
 
-// ⭐ 如果是從聊天室／角色／貼文進來
-// 就直接回上一頁
+      // ==========================================
+      // 10. 聊天／角色／貼文檢舉
+      // 送完直接回上一頁
+      // ==========================================
       if (widget.lockCategory &&
           Navigator.of(context).canPop()) {
         Navigator.of(context).pop(true);
         return;
       }
 
-// ⭐ 一般客服中心維持原本行為
+      // ==========================================
+      // 11. 一般客服中心
+      // ==========================================
       ToastUtils.showCenterToast(
         context,
         '回報已成功送出，謝謝你的意見！',
-        customIcon: Icons.mark_email_read_rounded,
+        customIcon:
+        Icons.mark_email_read_rounded,
       );
     } catch (error, stackTrace) {
       debugPrint(
         '送出玩家回報失敗：$error',
       );
+
       debugPrintStack(
         stackTrace: stackTrace,
       );
