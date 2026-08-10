@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Moment {
@@ -9,6 +8,7 @@ class Moment {
   final String authorAvatar;
   final String createdBy; // ✨ 1. 新增「創作者ID」欄位
   final String content;
+  final List<String> searchKeywords;
   final List<Map<String, String>> mentions;
   final String? imageUrl;
   final Timestamp createdAt;
@@ -26,6 +26,7 @@ class Moment {
     required this.authorAvatar,
     required this.createdBy, // ✨ 2. 在建構子中加入
     required this.content,
+    this.searchKeywords = const <String>[],
     this.mentions = const [],
     this.imageUrl,
     required this.isPublic,
@@ -90,6 +91,9 @@ class Moment {
       authorAvatar: data['authorAvatar'] ?? 'assets/images/blank_avatar.png',
       createdBy: data['createdBy'] ?? '', // ✨ 3. 從 Firestore 讀取 createdBy
       content: data['content'] ?? '',
+      searchKeywords: List<String>.from(
+        data['searchKeywords'] as List<dynamic>? ?? const <dynamic>[],
+      ),
       mentions:
       (data['mentions'] as List<dynamic>?)
           ?.map(

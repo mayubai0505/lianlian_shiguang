@@ -6,8 +6,6 @@ import '../services/theme_notifier.dart';
 import '../models/moment_model.dart';
 import '../services/toast_utils.dart';
 import '../utils/character_navigator.dart';
-import '../widgets/feature_tip_keys.dart';
-import '../widgets/feature_tip_target.dart';
 import 'character_model.dart';
 import 'create_moment_page.dart';
 import 'moment_card.dart';
@@ -15,7 +13,7 @@ import '../utils/image_utils.dart';
 import '../page/interaction_history_page.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import 'character_profile_page.dart';
+import 'creator_profile_page.dart';
 import '../services/moment_notification_service.dart';
 import 'edit_moment_page.dart';
 import 'hidden_moments_page.dart';
@@ -24,6 +22,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../services/daily_task_service.dart';
+import 'moment_search_page.dart';
+
 //動態牆(朋友圈)
 class MomentsPage extends StatefulWidget {
   const MomentsPage({super.key});
@@ -40,6 +40,7 @@ class MomentsPageState extends State<MomentsPage> {
   int _likeProgress = 0;
   bool _isLikeClaimed = false;
   late Stream<QuerySnapshot> _friendsStream;
+  late Stream<QuerySnapshot> _followingCreatorsStream;
   int _feedReloadKey = 0;
   bool _isOpeningMoreMenu = false;
   int _pauseMomentCardTipsSignal = 0;
@@ -60,7 +61,16 @@ class MomentsPageState extends State<MomentsPage> {
     _checkTutorialStatus();
 
     if (_userId != null) {
-      _friendsStream = _db.collection('users').doc(_userId!).collection('friends').snapshots();
+      _friendsStream = _db
+          .collection('users')
+          .doc(_userId!)
+          .collection('friends')
+          .snapshots();
+      _followingCreatorsStream = _db
+          .collection('users')
+          .doc(_userId!)
+          .collection('following')
+          .snapshots();
     }
   }
 
@@ -110,47 +120,13 @@ class MomentsPageState extends State<MomentsPage> {
     }
   }
 
-  Future<String> _getMyNotificationDisplayName() async {
+  Future<void> _handleLikeTaskProgress(
+    Moment moment,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
 
     try {
-      if (_userId == null || _userId!.isEmpty) {
-        return l10n.friend_unknown;
-      }
-
-      final userDoc = await _db
-          .collection('users')
-          .doc(_userId)
-          .get();
-
-      final data = userDoc.data();
-
-      final rawPlayerID = (data?['playerID'] ?? '').toString().trim();
-
-      if (rawPlayerID.isNotEmpty) {
-        final cleanPlayerID = rawPlayerID.startsWith('@')
-            ? rawPlayerID.substring(1)
-            : rawPlayerID;
-
-        return '@$cleanPlayerID';
-      }
-    } catch (e) {
-      debugPrint('取得通知顯示名稱失敗: $e');
-    }
-
-    return l10n.friend_unknown;
-  }
-
-
-  Future<void> _handleLikeTaskProgress(
-      Moment moment,
-      ) async {
-    final l10n =
-    AppLocalizations.of(context)!;
-
-    try {
-      final result =
-      await DailyTaskService.recordMomentLike(
+      final result = await DailyTaskService.recordMomentLike(
         momentId: moment.id,
       );
 
@@ -169,16 +145,14 @@ class MomentsPageState extends State<MomentsPage> {
       });
 
       // 按讚通知仍然保留
-      await MomentNotificationService()
-          .createMomentNotification(
+      await MomentNotificationService().createMomentNotification(
         momentId: moment.id,
         type: 'like',
       );
 
       if (!mounted) return;
 
-      if (result.completedNow &&
-          !_isLikeClaimed) {
+      if (result.completedNow && !_isLikeClaimed) {
         ToastUtils.showCenterToast(
           context,
           l10n.task_social_tour_complete,
@@ -191,11 +165,15 @@ class MomentsPageState extends State<MomentsPage> {
       );
     }
   }
+
   Future<void> _loadDailyTaskProgress() async {
     if (_userId == null) return;
 
     try {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(_userId).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userId)
+          .get();
       if (doc.exists) {
         final data = doc.data()?['dailyTasks'] ?? {};
         if (mounted) {
@@ -248,7 +226,8 @@ class MomentsPageState extends State<MomentsPage> {
           child: Container(
             decoration: themeNotifier.currentBackground,
             child: NestedScrollView(
-              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
                 return <Widget>[
                   SliverAppBar(
                     title: Text(l10n.wall_title_shiguang),
@@ -261,7 +240,8 @@ class MomentsPageState extends State<MomentsPage> {
                     bottom: TabBar(
                       indicatorColor: Theme.of(context).colorScheme.primary,
                       labelColor: Theme.of(context).colorScheme.primary,
-                      unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
+                      unselectedLabelColor:
+                          Theme.of(context).unselectedWidgetColor,
                       tabs: [
                         Tab(text: l10n.wall_tab_explore),
                         Tab(text: l10n.wall_tab_exclusive),
@@ -269,6 +249,11 @@ class MomentsPageState extends State<MomentsPage> {
                     ),
                     // ✨ 3. 升級版的三條線選單自動導航氣泡
                     actions: [
+                      IconButton(
+                        icon: const Icon(Icons.search),
+                        tooltip: '搜尋拾光牆',
+                        onPressed: _openMomentSearch,
+                      ),
                       Showcase(
                         key: _menuKey,
                         description: l10n.tip_moments_wall_menu,
@@ -284,7 +269,8 @@ class MomentsPageState extends State<MomentsPage> {
                               _pauseMomentCardTipsSignal++;
                             });
 
-                            await Future.delayed(const Duration(milliseconds: 80));
+                            await Future.delayed(
+                                const Duration(milliseconds: 80));
 
                             if (!mounted) return;
 
@@ -313,63 +299,89 @@ class MomentsPageState extends State<MomentsPage> {
     );
   }
 
+  Future<void> _openMomentSearch() async {
+    final String? currentUserId = _userId;
+    if (currentUserId == null) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MomentSearchPage(
+          currentUserId: currentUserId,
+          onAvatarTapped: _navigateToCharacterProfile,
+          onLikeTapped: _handleLikeTaskProgress,
+          onDeleteTapped: _deleteMoment,
+          onEditTapped: _editMoment,
+        ),
+      ),
+    );
+  }
+
   // ✨ 負責抓取好友名單，並顯示兩個分頁的內容
   Widget _buildBodyWithFriendsStream() {
     final l10n = AppLocalizations.of(context)!;
     if (_userId == null) return Center(child: Text(l10n.please_login_first));
 
     return StreamBuilder<QuerySnapshot>(
-      stream: _friendsStream, // 💡 修正 1：改用 initState 裡連好線的 _friendsStream，不要再當場 snapshots() 了！
+      stream:
+          _friendsStream, // 💡 修正 1：改用 initState 裡連好線的 _friendsStream，不要再當場 snapshots() 了！
       builder: (context, friendSnapshot) {
         if (friendSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final friendIds = friendSnapshot.data?.docs.map((doc) => doc.id).toList() ?? [];
+        final friendIds =
+            friendSnapshot.data?.docs.map((doc) => doc.id).toList() ?? [];
         friendIds.add(_userId!);
 
-        return TabBarView(
-          children: [
-            PersistentFeed(
-              key: ValueKey('public_$_feedReloadKey'),
-              friendIds: friendIds,
-              isPublicTab: true,
-              userId: _userId!,
-              appId: _appId,
-              showFeatureTips: _menuTutorialFinished,
-              pauseMomentCardTipsSignal: _pauseMomentCardTipsSignal,
-              resumeMomentCardTipsSignal: _resumeMomentCardTipsSignal,
-              onLikeTapped: _handleLikeTaskProgress,
-              onDeleteTapped: _deleteMoment,
-              onAvatarTapped: _navigateToCharacterProfile,
-              onEditTapped: _editMoment,
-            ),
-            PersistentFeed(
-              key: ValueKey('private_$_feedReloadKey'),
-              friendIds: friendIds,
-              isPublicTab: false,
-              userId: _userId!,
-              appId: _appId,
-              showFeatureTips: false, // 👈 這裡強制改成 false！
-              pauseMomentCardTipsSignal: _pauseMomentCardTipsSignal,
-              resumeMomentCardTipsSignal: _resumeMomentCardTipsSignal,
-              onLikeTapped: _handleLikeTaskProgress,
-              onDeleteTapped: _deleteMoment,
-              onAvatarTapped: _navigateToCharacterProfile,
-              onEditTapped: _editMoment,
-            ),
-          ],
+        return StreamBuilder<QuerySnapshot>(
+          stream: _followingCreatorsStream,
+          builder: (context, followingSnapshot) {
+            if (followingSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final followedCreatorIds =
+                followingSnapshot.data?.docs.map((doc) => doc.id).toList() ??
+                    <String>[];
+
+            return TabBarView(
+              children: [
+                PersistentFeed(
+                  key: ValueKey('public_$_feedReloadKey'),
+                  friendIds: friendIds,
+                  followedCreatorIds: followedCreatorIds,
+                  isPublicTab: true,
+                  userId: _userId!,
+                  appId: _appId,
+                  showFeatureTips: _menuTutorialFinished,
+                  pauseMomentCardTipsSignal: _pauseMomentCardTipsSignal,
+                  resumeMomentCardTipsSignal: _resumeMomentCardTipsSignal,
+                  onLikeTapped: _handleLikeTaskProgress,
+                  onDeleteTapped: _deleteMoment,
+                  onAvatarTapped: _navigateToCharacterProfile,
+                  onEditTapped: _editMoment,
+                ),
+                PersistentFeed(
+                  key: ValueKey('private_$_feedReloadKey'),
+                  friendIds: friendIds,
+                  followedCreatorIds: followedCreatorIds,
+                  isPublicTab: false,
+                  userId: _userId!,
+                  appId: _appId,
+                  showFeatureTips: false, // 👈 這裡強制改成 false！
+                  pauseMomentCardTipsSignal: _pauseMomentCardTipsSignal,
+                  resumeMomentCardTipsSignal: _resumeMomentCardTipsSignal,
+                  onLikeTapped: _handleLikeTaskProgress,
+                  onDeleteTapped: _deleteMoment,
+                  onAvatarTapped: _navigateToCharacterProfile,
+                  onEditTapped: _editMoment,
+                ),
+              ],
+            );
+          },
         );
       },
     );
-  }
-
-  void _dismissMomentsTips() {
-    try {
-      ShowCaseWidget.of(context).dismiss();
-    } catch (e) {
-      debugPrint('關閉瞬間導覽提示失敗：$e');
-    }
   }
 
   Future<void> _editMoment(Moment moment) async {
@@ -396,19 +408,22 @@ class MomentsPageState extends State<MomentsPage> {
     try {
       // 彈出確認視窗，防止手滑
       bool confirm = await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(l10n.moment_delete_confirm_title),
-          content:  Text(l10n.delete_warning),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancelButton)),
-            TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.action_confirm_delete, style: TextStyle(color: Colors.red))
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(l10n.moment_delete_confirm_title),
+              content: Text(l10n.delete_warning),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: Text(l10n.cancelButton)),
+                TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: Text(l10n.action_confirm_delete,
+                        style: TextStyle(color: Colors.red))),
+              ],
             ),
-          ],
-        ),
-      ) ?? false;
+          ) ??
+          false;
 
       if (confirm) {
         await _db
@@ -421,7 +436,8 @@ class MomentsPageState extends State<MomentsPage> {
         ToastUtils.showCenterToast(
           context,
           l10n.delete_success,
-          customIcon: Icons.delete_outline_rounded, // 💡 總裁精選：最直覺的空心垃圾桶圖示，視覺負擔極低
+          customIcon:
+              Icons.delete_outline_rounded, // 💡 總裁精選：最直覺的空心垃圾桶圖示，視覺負擔極低
           // 💡 總裁秘技：如果是針對較輕量的元素（例如標籤或小文字），
           // 使用 Icons.clear_all_rounded 或 Icons.backspace_outlined 也能展現極佳的品味！
         );
@@ -470,10 +486,13 @@ class MomentsPageState extends State<MomentsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(isPublicTab ? Icons.public : Icons.people_alt, size: 50, color: Colors.grey.withValues(alpha:0.5)),
+          Icon(isPublicTab ? Icons.public : Icons.people_alt,
+              size: 50, color: Colors.grey.withValues(alpha: 0.5)),
           const SizedBox(height: 16),
           Text(
-            isPublicTab ? l10n.empty_public_moments_prompt : l10n.empty_private_moments_prompt,
+            isPublicTab
+                ? l10n.empty_public_moments_prompt
+                : l10n.empty_private_moments_prompt,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.grey, fontSize: 16),
           ),
@@ -487,19 +506,32 @@ class MomentsPageState extends State<MomentsPage> {
     try {
       // 1. 同時發出兩邊的資料庫請求
       final responses = await Future.wait([
-        _db.collection('artifacts').doc(_appId).collection('public_characters').where('createdBy', isEqualTo: _userId).get(),
-        _db.collection('artifacts').doc(_appId).collection('users').doc(_userId!).collection('private_characters').get(),
+        _db
+            .collection('artifacts')
+            .doc(_appId)
+            .collection('public_characters')
+            .where('createdBy', isEqualTo: _userId)
+            .get(),
+        _db
+            .collection('artifacts')
+            .doc(_appId)
+            .collection('users')
+            .doc(_userId!)
+            .collection('private_characters')
+            .get(),
       ]);
 
       // 2. ✨ 關鍵：使用 Future.wait 讓所有角色同時進行「圖片網址變身」
       // 我們先分別處理公開與私藏的清單
-      final publicChars = await Future.wait(
-          responses[0].docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
-      );
+      final publicChars = await Future.wait(responses[0]
+          .docs
+          .map((doc) => Character.fromFirestoreAsync(doc))
+          .toList());
 
-      final privateChars = await Future.wait(
-          responses[1].docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
-      );
+      final privateChars = await Future.wait(responses[1]
+          .docs
+          .map((doc) => Character.fromFirestoreAsync(doc))
+          .toList());
 
       // 3. 合併已經變身完成的 Character 物件
       final List<Character> myCharacters = [...publicChars, ...privateChars];
@@ -516,11 +548,35 @@ class MomentsPageState extends State<MomentsPage> {
 
   // ✨ 總裁專屬：跳轉至角色檔案卡 (含私人/刪除防呆邏輯)
   Future<void> _navigateToCharacterProfile(
-      Moment moment,
-      ) async {
-    // 創作者本人貼文不是角色，不進角色檔案
-    if (moment.isCreatorPost) return;
+    Moment moment,
+  ) async {
+    // 創作者本人貼文：前往該創作者的作品集。
+    if (moment.isCreatorPost) {
+      final String creatorId = moment.createdBy.trim();
 
+      if (creatorId.isEmpty) {
+        if (!mounted) return;
+
+        ToastUtils.showCenterToast(
+          context,
+          '找不到這位創作者的資料',
+          isError: true,
+        );
+        return;
+      }
+
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => CreatorProfilePage(
+            creatorId: creatorId,
+            creatorName: moment.authorName,
+          ),
+        ),
+      );
+      return;
+    }
+
+    // 角色貼文：維持原本前往角色檔案的行為。
     await CharacterNavigator.open(
       context,
       characterId: moment.authorId,
@@ -528,106 +584,124 @@ class MomentsPageState extends State<MomentsPage> {
     );
   }
 
-    // ✨ 新增：大廳右上角的三條線綜合選單
+  // ✨ 新增：大廳右上角的三條線綜合選單
   Future<void> _showMoreMenuSheet(BuildContext context) async {
-      final l10n = AppLocalizations.of(context)!;
-      await showModalBottomSheet(
-        context: context,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-        builder: (context) {
-          return SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 頂部把手與標題
-                Container(
-                  margin: const EdgeInsets.only(top: 10, bottom: 10),
-                  height: 4, width: 40,
-                  decoration: BoxDecoration(color: Colors.grey[400], borderRadius: BorderRadius.circular(2)),
-                ),
-                 Padding(
-                  padding: EdgeInsets.only(bottom: 8.0),
-                  child: Text(l10n.more_options, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ),
-                const Divider(height: 1),
+    final l10n = AppLocalizations.of(context)!;
+    await showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 頂部把手與標題
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                height: 4,
+                width: 40,
+                decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(2)),
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: 8.0),
+                child: Text(l10n.more_options,
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+              const Divider(height: 1),
 
-                // 📝 選項 1：發布新動態 (最常用，放最上面)
-                ListTile(
-                  leading: const Icon(Icons.add_circle_outline, color: Colors.blueAccent),
-                  title: Text(l10n.moment_create_title, style: TextStyle(fontWeight: FontWeight.w500)),
-                  onTap: () {
-                    Navigator.pop(context); // 先關閉選單
-                    _showAuthorSelectionSheet(); // 呼叫妳原本的發文選單
-                  },
-                ),
+              // 📝 選項 1：發布新動態 (最常用，放最上面)
+              ListTile(
+                leading: const Icon(Icons.add_circle_outline,
+                    color: Colors.blueAccent),
+                title: Text(l10n.moment_create_title,
+                    style: TextStyle(fontWeight: FontWeight.w500)),
+                onTap: () {
+                  Navigator.pop(context); // 先關閉選單
+                  _showAuthorSelectionSheet(); // 呼叫妳原本的發文選單
+                },
+              ),
 
-                // ⏰ 選項 2：排程管家
-                ListTile(
-                  leading: const Icon(Icons.access_alarm, color: Colors.pinkAccent),
-                  title:Text(l10n.character_post_schedule),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showAutoPostManager(context); // 呼叫妳原本的排程管家
-                  },
-                ),
+              // ⏰ 選項 2：排程管家
+              ListTile(
+                leading:
+                    const Icon(Icons.access_alarm, color: Colors.pinkAccent),
+                title: Text(l10n.character_post_schedule),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showAutoPostManager(context); // 呼叫妳原本的排程管家
+                },
+              ),
 
-                const Divider(),
+              const Divider(),
 
-                // ❤️ 選項 3：按讚過的內容
-                ListTile(
-                  leading: const Icon(Icons.eco_outlined, color: Color(0xFFAED581)),
-                  title: Text(l10n.liked_content),
-                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                  onTap: () {
-                    Navigator.pop(context); // 關閉底部選單
-                    // 🚀 跳轉到互動紀錄牆，並預設打開「按讚(0)」分頁
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => const InteractionHistoryPage(initialIndex: 0),
-                    ));
-                  },
-                ),
-
-                // 🔖 選項 4：收藏內容
-                ListTile(
-                  leading: const Icon(Icons.park_outlined, color: Color(0xFFA1887F)),
-                  title:Text(l10n.my_favorites),
-                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                  onTap: () {
-                    Navigator.pop(context); // 關閉底部選單
-                    // 🚀 跳轉到互動紀錄牆，並預設打開「收藏(1)」分頁
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) => const InteractionHistoryPage(initialIndex: 1),
-                    ));
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.visibility_off_outlined, color: Colors.blueGrey),
-                  // ✨ 替換：隱藏的動態 (拿掉 const)
-                  title: Text(l10n.hidden_moments),
-                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                  onTap: () {
-                    Navigator.pop(context);
-
-                    Navigator.push(
+              // ❤️ 選項 3：按讚過的內容
+              ListTile(
+                leading:
+                    const Icon(Icons.eco_outlined, color: Color(0xFFAED581)),
+                title: Text(l10n.liked_content),
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                onTap: () {
+                  Navigator.pop(context); // 關閉底部選單
+                  // 🚀 跳轉到互動紀錄牆，並預設打開「按讚(0)」分頁
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const HiddenMomentsPage(),
-                      ),
-                    ).then((_) {
-                      if (!mounted) return;
-                      setState(() {
-                        _feedReloadKey++;
-                      });
+                        builder: (context) =>
+                            const InteractionHistoryPage(initialIndex: 0),
+                      ));
+                },
+              ),
+
+              // 🔖 選項 4：收藏內容
+              ListTile(
+                leading:
+                    const Icon(Icons.park_outlined, color: Color(0xFFA1887F)),
+                title: Text(l10n.my_favorites),
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                onTap: () {
+                  Navigator.pop(context); // 關閉底部選單
+                  // 🚀 跳轉到互動紀錄牆，並預設打開「收藏(1)」分頁
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const InteractionHistoryPage(initialIndex: 1),
+                      ));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.visibility_off_outlined,
+                    color: Colors.blueGrey),
+                // ✨ 替換：隱藏的動態 (拿掉 const)
+                title: Text(l10n.hidden_moments),
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                onTap: () {
+                  Navigator.pop(context);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HiddenMomentsPage(),
+                    ),
+                  ).then((_) {
+                    if (!mounted) return;
+                    setState(() {
+                      _feedReloadKey++;
                     });
-                  },
-                ),
-                const SizedBox(height: 10),
-              ],
-            ),
-          );
-        },
-      );
-    }
+                  });
+                },
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   // ✨✨✨ 升級版：身分選擇選單 (加入創作者選項)
   Future<void> _showAuthorSelectionSheet() async {
@@ -659,7 +733,8 @@ class MomentsPageState extends State<MomentsPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(l10n.post_identity_prompt, style: Theme.of(context).textTheme.titleLarge),
+                child: Text(l10n.post_identity_prompt,
+                    style: Theme.of(context).textTheme.titleLarge),
               ),
               const Divider(height: 1),
               Flexible(
@@ -673,21 +748,26 @@ class MomentsPageState extends State<MomentsPage> {
                           creatorAvatar,
                         ),
                         backgroundColor:
-                        Theme.of(context).colorScheme.secondaryContainer,
+                            Theme.of(context).colorScheme.secondaryContainer,
                       ),
-                      title: Text(creatorName, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-                      subtitle:Text(l10n.identity_creator),
-                      trailing: const Icon(Icons.edit_document, color: Colors.blue),
+                      title: Text(creatorName,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.blue)),
+                      subtitle: Text(l10n.identity_creator),
+                      trailing:
+                          const Icon(Icons.edit_document, color: Colors.blue),
                       onTap: () {
                         Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => CreateMomentPage(
-                            authorId: 'creator_$_userId', // 標記為創作者 ID
-                            authorName: creatorName,
-                            authorAvatar: creatorAvatar,
-                            isCreatorPost: true, // 🌟 告訴打字房：這是一篇創作者貼文！
-                          ),
-                        ));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreateMomentPage(
+                                authorId: 'creator_$_userId', // 標記為創作者 ID
+                                authorName: creatorName,
+                                authorAvatar: creatorAvatar,
+                                isCreatorPost: true, // 🌟 告訴打字房：這是一篇創作者貼文！
+                              ),
+                            ));
                       },
                     ),
                     const Divider(),
@@ -695,20 +775,23 @@ class MomentsPageState extends State<MomentsPage> {
                     ...myCharacters.map((character) {
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: getAvatarImageProvider(character.avatarPath), // 確認妳有這個 helper 函式
+                          backgroundImage: getAvatarImageProvider(
+                              character.avatarPath), // 確認妳有這個 helper 函式
                         ),
                         title: Text(character.name),
                         subtitle: Text(l10n.identity_character),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => CreateMomentPage(
-                              authorId: character.id,
-                              authorName: character.name,
-                              authorAvatar: character.avatarPath,
-                              isCreatorPost: false, // 🌟 告訴打字房：這是一篇角色貼文
-                            ),
-                          ));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CreateMomentPage(
+                                  authorId: character.id,
+                                  authorName: character.name,
+                                  authorAvatar: character.avatarPath,
+                                  isCreatorPost: false, // 🌟 告訴打字房：這是一篇角色貼文
+                                ),
+                              ));
                         },
                       );
                     }).toList(),
@@ -731,27 +814,28 @@ class MomentsPageState extends State<MomentsPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (BuildContext context) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.6,
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-               Text(l10n.decide_post_time_prompt, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(l10n.decide_post_time_prompt,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Text(l10n.auto_post_schedule_hint,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13, color: Colors.grey[600])),
               const Divider(height: 20),
-
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('artifacts')
                       .doc(AppConfig.appId)
                       .collection('public_characters')
-                  // 💡 如果妳連私有角色也要排程，未來這裡可能要改用 FutureBuilder 呼叫 _fetchMyCharacters()
+                      // 💡 如果妳連私有角色也要排程，未來這裡可能要改用 FutureBuilder 呼叫 _fetchMyCharacters()
                       .where('createdBy', isEqualTo: _userId)
                       .snapshots(),
                   builder: (context, snapshot) {
@@ -759,7 +843,8 @@ class MomentsPageState extends State<MomentsPage> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return Center(child: Text(l10n.no_characters_created_yet));
+                      return Center(
+                          child: Text(l10n.no_characters_created_yet));
                     }
 
                     final characters = snapshot.data!.docs;
@@ -769,8 +854,10 @@ class MomentsPageState extends State<MomentsPage> {
                       itemBuilder: (context, index) {
                         final doc = characters[index];
                         final data = doc.data() as Map<String, dynamic>;
-                        final String name = data['name'] ?? l10n.unknownCharacter;
-                        final String avatar = data['avatarPath'] ?? 'assets/images/blank_avatar.png';
+                        final String name =
+                            data['name'] ?? l10n.unknownCharacter;
+                        final String avatar = data['avatarPath'] ??
+                            'assets/images/blank_avatar.png';
 
                         final bool isEnabled = data['autoPostEnabled'] ?? false;
                         // 🌟 新增：讀取小時與分鐘 (預設 15:00)
@@ -784,16 +871,22 @@ class MomentsPageState extends State<MomentsPage> {
                             child: Row(
                               children: [
                                 CircleAvatar(
-                                  backgroundImage: getAvatarImageProvider(avatar),
-                                  backgroundColor:
-                                  Theme.of(context).colorScheme.secondaryContainer,
+                                  backgroundImage:
+                                      getAvatarImageProvider(avatar),
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer,
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                      Text(name,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16)),
 
                                       // 🌟 雙重下拉選單 (小時 : 分鐘)
                                       Row(
@@ -806,34 +899,59 @@ class MomentsPageState extends State<MomentsPage> {
                                               items: List.generate(24, (i) {
                                                 return DropdownMenuItem(
                                                   value: i,
-                                                  child: Text(l10n.time_hour(i.toString().padLeft(2, '0')), style: const TextStyle(fontSize: 13)),
+                                                  child: Text(
+                                                      l10n.time_hour(i
+                                                          .toString()
+                                                          .padLeft(2, '0')),
+                                                      style: const TextStyle(
+                                                          fontSize: 13)),
                                                 );
                                               }),
-                                              onChanged: isEnabled ? (newHour) {
-                                                doc.reference.update({'autoPostHour': newHour});
-                                              } : null,
+                                              onChanged: isEnabled
+                                                  ? (newHour) {
+                                                      doc.reference.update({
+                                                        'autoPostHour': newHour
+                                                      });
+                                                    }
+                                                  : null,
                                             ),
                                           ),
                                           const Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 4.0),
-                                            child: Text(':', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 4.0),
+                                            child: Text(':',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                           ),
                                           // 🕒 分鐘選單 (優化版：每 5 分鐘一跳)
                                           DropdownButtonHideUnderline(
                                             child: DropdownButton<int>(
-                                              value: postMinute, // 確保資料庫讀出來的值是 5 的倍數，否則會報錯
+                                              value:
+                                                  postMinute, // 確保資料庫讀出來的值是 5 的倍數，否則會報錯
                                               isDense: true,
                                               // 12 個選項，每個乘以 5 (0, 5, 10, ..., 55)
                                               items: List.generate(12, (index) {
                                                 int minuteValue = index * 5;
                                                 return DropdownMenuItem(
                                                   value: minuteValue,
-                                                  child: Text(l10n.time_minute(minuteValue.toString().padLeft(2, '0')), style: const TextStyle(fontSize: 13)),
+                                                  child: Text(
+                                                      l10n.time_minute(
+                                                          minuteValue
+                                                              .toString()
+                                                              .padLeft(2, '0')),
+                                                      style: const TextStyle(
+                                                          fontSize: 13)),
                                                 );
                                               }),
-                                              onChanged: isEnabled ? (newMinute) {
-                                                doc.reference.update({'autoPostMinute': newMinute});
-                                              } : null,
+                                              onChanged: isEnabled
+                                                  ? (newMinute) {
+                                                      doc.reference.update({
+                                                        'autoPostMinute':
+                                                            newMinute
+                                                      });
+                                                    }
+                                                  : null,
                                             ),
                                           ),
                                         ],
@@ -846,7 +964,8 @@ class MomentsPageState extends State<MomentsPage> {
                                   value: isEnabled,
                                   activeThumbColor: Colors.pinkAccent,
                                   onChanged: (bool newValue) {
-                                    doc.reference.update({'autoPostEnabled': newValue});
+                                    doc.reference
+                                        .update({'autoPostEnabled': newValue});
                                   },
                                 ),
                               ],
@@ -869,12 +988,13 @@ class MomentsPageState extends State<MomentsPage> {
 // ✨ 這是具備「記憶力」且「不會報錯」的動態牆組件
 class PersistentFeed extends StatefulWidget {
   final List<String> friendIds;
+  final List<String> followedCreatorIds;
   final bool isPublicTab;
   final String userId;
   final String appId;
   final Future<void> Function(
-      Moment moment,
-      ) onLikeTapped;
+    Moment moment,
+  ) onLikeTapped;
   final Function(String) onDeleteTapped;
   final Function(Moment) onAvatarTapped;
   final Function(Moment) onEditTapped;
@@ -884,6 +1004,7 @@ class PersistentFeed extends StatefulWidget {
   const PersistentFeed({
     super.key,
     required this.friendIds,
+    required this.followedCreatorIds,
     required this.isPublicTab,
     required this.userId,
     required this.appId,
@@ -900,7 +1021,8 @@ class PersistentFeed extends StatefulWidget {
   State<PersistentFeed> createState() => _PersistentFeedState();
 }
 
-class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAliveClientMixin {
+class _PersistentFeedState extends State<PersistentFeed>
+    with AutomaticKeepAliveClientMixin {
   late Stream<QuerySnapshot> _momentsStream;
   final Set<String> _preloadedMomentImages = {};
   final Set<String> _hiddenMomentIds = {};
@@ -913,17 +1035,28 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
   bool _hiddenMomentsLoaded = false;
   bool _blockedCharactersLoaded = false;
 
+  // 探索頁只載入最新 50 篇，避免一次讀取整個公開動態牆；
+  // 專屬頁則必須讀取完整貼文後再依好友角色篩選，避免很久沒發文的
+  // 好友角色被全站最新 50 篇擠掉。
+  Stream<QuerySnapshot> _createMomentsStream() {
+    Query query = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(widget.appId)
+        .collection('moments')
+        .orderBy('createdAt', descending: true);
+
+    if (widget.isPublicTab) {
+      query = query.limit(50);
+    }
+
+    return query.snapshots();
+  }
+
   @override
   void initState() {
     super.initState();
 
-    _momentsStream = FirebaseFirestore.instance
-        .collection('artifacts')
-        .doc(widget.appId)
-        .collection('moments')
-        .orderBy('createdAt', descending: true)
-        .limit(50)
-        .snapshots();
+    _momentsStream = _createMomentsStream();
 
     _listenBlockedData();
   }
@@ -939,7 +1072,8 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
   void didUpdateWidget(covariant PersistentFeed oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.pauseMomentCardTipsSignal != widget.pauseMomentCardTipsSignal) {
+    if (oldWidget.pauseMomentCardTipsSignal !=
+        widget.pauseMomentCardTipsSignal) {
       if (!_momentFeatureTipsPaused && mounted) {
         setState(() {
           _momentFeatureTipsPaused = true;
@@ -947,7 +1081,8 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
       }
     }
 
-    if (oldWidget.resumeMomentCardTipsSignal != widget.resumeMomentCardTipsSignal) {
+    if (oldWidget.resumeMomentCardTipsSignal !=
+        widget.resumeMomentCardTipsSignal) {
       if (_momentFeatureTipsPaused && mounted) {
         setState(() {
           _momentFeatureTipsPaused = false;
@@ -957,9 +1092,9 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
   }
 
   void _precacheVisibleMoments(
-      BuildContext context,
-      List<Moment> moments,
-      ) {
+    BuildContext context,
+    List<Moment> moments,
+  ) {
     for (final moment in moments.take(4)) {
       final urls = <String>[
         moment.authorAvatar,
@@ -1004,7 +1139,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
 
         _hiddenMomentsLoaded = true;
         _isLoadingBlockedData =
-        !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
+            !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
       });
     }, onError: (e) {
       debugPrint('監聽隱藏動態失敗: $e');
@@ -1014,7 +1149,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
       setState(() {
         _hiddenMomentsLoaded = true;
         _isLoadingBlockedData =
-        !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
+            !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
       });
     });
 
@@ -1024,7 +1159,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
         .collection('blockedCharacters')
         .snapshots()
         .listen(
-          (snapshot) {
+      (snapshot) {
         if (!mounted) return;
 
         setState(() {
@@ -1032,17 +1167,14 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
             ..clear()
             ..addAll(
               snapshot.docs.map(
-                    (doc) => doc.id,
+                (doc) => doc.id,
               ),
             );
 
           _blockedCharactersLoaded = true;
 
           _isLoadingBlockedData =
-          !(
-              _hiddenMomentsLoaded &&
-                  _blockedCharactersLoaded
-          );
+              !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
         });
       },
       onError: (e) {
@@ -1056,10 +1188,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
           _blockedCharactersLoaded = true;
 
           _isLoadingBlockedData =
-          !(
-              _hiddenMomentsLoaded &&
-                  _blockedCharactersLoaded
-          );
+              !(_hiddenMomentsLoaded && _blockedCharactersLoaded);
         });
       },
     );
@@ -1069,22 +1198,22 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
     final l10n = AppLocalizations.of(context)!;
 
     final bool confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.hide_moment_title), // ✨ 替換
-        content: Text(l10n.hide_moment_content), // ✨ 替換
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancelButton),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(l10n.hide_moment_title), // ✨ 替換
+            content: Text(l10n.hide_moment_content), // ✨ 替換
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancelButton),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.hide), // ✨ 替換
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.hide), // ✨ 替換
-          ),
-        ],
-      ),
-    ) ??
+        ) ??
         false;
 
     if (!confirm) return;
@@ -1143,27 +1272,27 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
     }
 
     final bool confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.block_character_title), // ✨ 替換
-        content: Text(
-          l10n.block_character_content(moment.authorName), // ✨ 替換：帶入角色名稱參數
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancelButton),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              l10n.block,
-              style: const TextStyle(color: Colors.red),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(l10n.block_character_title), // ✨ 替換
+            content: Text(
+              l10n.block_character_content(moment.authorName), // ✨ 替換：帶入角色名稱參數
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancelButton),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(
+                  l10n.block,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ) ??
+        ) ??
         false;
 
     if (!confirm) return;
@@ -1178,15 +1307,18 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
           .collection('characters')
           .doc(moment.authorId);
 
-      batch.set(blockedCharacterRef, {
-        'name': moment.authorName,
-        'avatar': moment.authorAvatar,
-        'isBlocked': true,
-        'blockedAt': FieldValue.serverTimestamp(),
-        'desc': '',
-        'blockedFrom': 'moments',
-        'relatedMomentId': moment.id,
-      }, SetOptions(merge: true));
+      batch.set(
+          blockedCharacterRef,
+          {
+            'name': moment.authorName,
+            'avatar': moment.authorAvatar,
+            'isBlocked': true,
+            'blockedAt': FieldValue.serverTimestamp(),
+            'desc': '',
+            'blockedFrom': 'moments',
+            'relatedMomentId': moment.id,
+          },
+          SetOptions(merge: true));
 
       final alertRef = db.collection('moderationAlerts').doc();
 
@@ -1238,13 +1370,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
     return RefreshIndicator(
       onRefresh: () async {
         setState(() {
-          _momentsStream = FirebaseFirestore.instance
-              .collection('artifacts')
-              .doc(widget.appId)
-              .collection('moments')
-              .orderBy('createdAt', descending: true)
-              .limit(50)
-              .snapshots();
+          _momentsStream = _createMomentsStream();
         });
 
         await Future.delayed(const Duration(milliseconds: 500));
@@ -1278,7 +1404,16 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
             if (widget.isPublicTab) {
               return m.isPublic == true;
             } else {
-              return widget.friendIds.contains(m.authorId) || m.createdBy == widget.userId;
+              final bool isFriendCharacter =
+                  widget.friendIds.contains(m.authorId);
+
+              final bool isFollowedCreatorPost = m.isCreatorPost &&
+                  m.isPublic == true &&
+                  widget.followedCreatorIds.contains(m.createdBy);
+
+              final bool isMyPost = m.createdBy == widget.userId;
+
+              return isFriendCharacter || isFollowedCreatorPost || isMyPost;
             }
           }).toList();
 
@@ -1294,15 +1429,17 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
           });
 
           return ListView.builder(
-            padding: EdgeInsets.zero,
-            itemCount: filteredMoments.length,
+              padding: EdgeInsets.zero,
+              itemCount: filteredMoments.length,
               itemBuilder: (context, index) {
                 final moment = filteredMoments[index];
 
                 return MomentCard(
                   moment: moment,
                   currentUserId: widget.userId,
-                  showFeatureTips: index == 0 && widget.showFeatureTips && !_momentFeatureTipsPaused,
+                  showFeatureTips: index == 0 &&
+                      widget.showFeatureTips &&
+                      !_momentFeatureTipsPaused,
                   onLikeTapped: () async {
                     await widget.onLikeTapped(moment);
                   },
@@ -1312,8 +1449,7 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
                   onHideMomentTapped: () => _hideMoment(moment),
                   onBlockCharacterTapped: () => _blockMomentCharacter(moment),
                 );
-              }
-          );
+              });
         },
       ),
     );
@@ -1321,6 +1457,9 @@ class _PersistentFeedState extends State<PersistentFeed> with AutomaticKeepAlive
 
   Widget _buildEmpty() {
     final l10n = AppLocalizations.of(context)!;
-    return Center(child: Text(widget.isPublicTab ? l10n.empty_public_moments_short : l10n.empty_private_moments_short));
+    return Center(
+        child: Text(widget.isPublicTab
+            ? l10n.empty_public_moments_short
+            : l10n.empty_private_moments_short));
   }
 }

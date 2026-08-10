@@ -6,9 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/toast_utils.dart';
 import 'character_model.dart';
 // ⚠️ 總裁請注意：這裡的 import 請替換成您實際的檔案路徑
- import '../models/moment_model.dart';
- import '../models/comment_model.dart';
- import '../utils/image_utils.dart'; // 為了 getAvatarImageProvider
+import '../models/moment_model.dart';
+import '../models/comment_model.dart';
+import '../utils/image_utils.dart'; // 為了 getAvatarImageProvider
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -33,6 +33,7 @@ class CommentBottomSheet extends StatefulWidget {
 
 class _CommentBottomSheetState extends State<CommentBottomSheet> {
   Comment? _replyTarget;
+  final Set<String> _expandedReplyThreads = <String>{};
   // 🌟 總裁指令：不管是大寫還是小寫，通通都要聽 AppConfig 的話！
   final String APP_ID = AppConfig.appId;
   final TextEditingController _commentController = TextEditingController();
@@ -49,6 +50,30 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       _replyTarget = null;
       _commentController.clear();
     });
+  }
+
+  String _resolveRootCommentId(
+      Comment comment,
+      Map<String, Comment> commentsById,
+      ) {
+    Comment current = comment;
+    final Set<String> visitedIds = <String>{comment.id};
+
+    while (current.parentCommentId != null &&
+        current.parentCommentId!.trim().isNotEmpty) {
+      final String parentId = current.parentCommentId!.trim();
+      final Comment? parent = commentsById[parentId];
+
+      // 舊資料的父留言若已被刪除，就讓目前留言自行成為主留言，
+      // 避免整串留言從畫面消失。
+      if (parent == null || !visitedIds.add(parent.id)) {
+        return comment.id;
+      }
+
+      current = parent;
+    }
+
+    return current.id;
   }
 
   @override
@@ -154,7 +179,12 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     if (currentUser == null) return;
 
     final String finalContent = text;
-    final String? parentId = _replyTarget?.id;
+    final Map<String, Comment> commentsById = <String, Comment>{
+      for (final Comment comment in _comments) comment.id: comment,
+    };
+    final String? parentId = _replyTarget == null
+        ? null
+        : _resolveRootCommentId(_replyTarget!, commentsById);
     final String? replyName = _replyTarget?.authorName;
 
     final momentRef = _db
@@ -189,6 +219,9 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
       _isPostingComment = true;
       _replyTarget = null;
       _comments.add(tempComment);
+      if (parentId != null) {
+        _expandedReplyThreads.add(parentId);
+      }
     });
 
     _commentController.clear();
@@ -466,6 +499,88 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
     return l10n.comment_time_just_now;
   }
 
+  Widget _buildCommentTile({
+    required Comment comment,
+    required bool isReply,
+    required String safeAuthorName,
+    required AppLocalizations l10n,
+  }) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final bool isMe = comment.authorId == currentUser?.uid;
+    final String displayName = isMe ? safeAuthorName : comment.authorName;
+    final String displayAvatar =
+    isMe ? _currentAuthorAvatar : comment.authorAvatar;
+
+    return Padding(
+      padding: EdgeInsets.only(left: isReply ? 40.0 : 0.0),
+      child: GestureDetector(
+        onLongPress: () => _showCommentOptions(comment),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: getAvatarImageProvider(displayAvatar),
+          ),
+          title: Row(
+            children: [
+              Flexible(
+                child: Text(
+                  displayName,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              if (isReply) ...[
+                const Icon(Icons.arrow_right, size: 16, color: Colors.grey),
+                Flexible(
+                  child: Text(
+                    '@${comment.replyToName ?? ''}',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Text(comment.content),
+              const SizedBox(height: 4),
+              Text(
+                _formatTimestamp(comment.createdAt, l10n),
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
+              ),
+            ],
+          ),
+          trailing: TextButton(
+            style: TextButton.styleFrom(
+              minimumSize: Size.zero,
+              padding: EdgeInsets.zero,
+            ),
+            onPressed: () {
+              setState(() {
+                _replyTarget = comment;
+              });
+            },
+            child: Text(
+              l10n.comment_reply_btn,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.pinkAccent,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   // --- UI 渲染區 (底部彈窗面板) ---
   @override
   Widget build(BuildContext context) {
@@ -510,64 +625,110 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                 ? const Center(child: CircularProgressIndicator())
                 : _comments.isEmpty
                 ? Center(child: Text(l10n.comment_empty_state))
-                : ListView.builder(
-              itemCount: _comments.length,
-              itemBuilder: (context, index) {
-                final comment = _comments[index];
-                final currentUser = FirebaseAuth.instance.currentUser;
+                : Builder(
+              builder: (context) {
+                final Map<String, Comment> commentsById =
+                <String, Comment>{
+                  for (final Comment comment in _comments)
+                    comment.id: comment,
+                };
+                final List<Comment> rootComments = <Comment>[];
+                final Map<String, List<Comment>> repliesByRoot =
+                <String, List<Comment>>{};
 
-                bool isMe = comment.authorId == currentUser?.uid;
-                String displayName = isMe ? safeAuthorName : comment.authorName;
-                String displayAvatar = isMe ? _currentAuthorAvatar : comment.authorAvatar;
+                for (final Comment comment in _comments) {
+                  final String rootId =
+                  _resolveRootCommentId(comment, commentsById);
 
-                bool isReply = comment.parentCommentId != null;
+                  if (rootId == comment.id) {
+                    rootComments.add(comment);
+                  } else {
+                    repliesByRoot
+                        .putIfAbsent(rootId, () => <Comment>[])
+                        .add(comment);
+                  }
+                }
 
-                return Padding(
-                  padding: EdgeInsets.only(left: isReply ? 40.0 : 0.0),
-                  child: GestureDetector(
-                    onLongPress: () => _showCommentOptions(comment),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: getAvatarImageProvider(displayAvatar),
-                      ),
-                      title: Row(
-                        children: [
-                          Text(
-                            displayName,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                return ListView.builder(
+                  itemCount: rootComments.length,
+                  itemBuilder: (context, index) {
+                    final Comment rootComment = rootComments[index];
+                    final List<Comment> replies =
+                        repliesByRoot[rootComment.id] ?? <Comment>[];
+                    final bool isExpanded = _expandedReplyThreads.contains(
+                      rootComment.id,
+                    );
+                    final List<Comment> visibleReplies = isExpanded
+                        ? replies
+                        : replies.isEmpty
+                        ? <Comment>[]
+                        : <Comment>[replies.last];
+                    final int hiddenReplyCount =
+                        replies.length - visibleReplies.length;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildCommentTile(
+                          comment: rootComment,
+                          isReply: false,
+                          safeAuthorName: safeAuthorName,
+                          l10n: l10n,
+                        ),
+                        for (final Comment reply in visibleReplies)
+                          _buildCommentTile(
+                            comment: reply,
+                            isReply: true,
+                            safeAuthorName: safeAuthorName,
+                            l10n: l10n,
                           ),
-                          if (isReply) ...[
-                            const Icon(Icons.arrow_right, size: 16, color: Colors.grey),
-                            Text(
-                              "@${comment.replyToName}",
-                              style: const TextStyle(color: Colors.blueAccent, fontSize: 12),
+                        if (replies.length > 1)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 72,
+                              right: 16,
+                              bottom: 8,
                             ),
-                          ],
-                        ],
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 4),
-                          Text(comment.content),
-                          const SizedBox(height: 4),
-                          Text(
-                            _formatTimestamp(comment.createdAt, l10n), // ✨ 傳入 l10n
-                            style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: TextButton.icon(
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    if (isExpanded) {
+                                      _expandedReplyThreads.remove(
+                                        rootComment.id,
+                                      );
+                                    } else {
+                                      _expandedReplyThreads.add(
+                                        rootComment.id,
+                                      );
+                                    }
+                                  });
+                                },
+                                icon: Icon(
+                                  isExpanded
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
+                                  size: 18,
+                                ),
+                                label: Text(
+                                  isExpanded
+                                      ? '收起回覆'
+                                      : '查看其他 $hiddenReplyCount 則回覆',
+                                  style: const TextStyle(fontSize: 13),
+                                ),
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
-                      trailing: TextButton(
-                        style: TextButton.styleFrom(minimumSize: Size.zero, padding: EdgeInsets.zero),
-                        child: Text(l10n.comment_reply_btn, style: const TextStyle(fontSize: 12, color: Colors.pinkAccent)),
-                        onPressed: () {
-                          setState(() {
-                            _replyTarget = comment;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
+                      ],
+                    );
+                  },
                 );
               },
             ),

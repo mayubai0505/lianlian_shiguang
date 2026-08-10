@@ -25,14 +25,20 @@ class CharacterProfilePage extends StatefulWidget {
   final String? sessionId;
   final Character character;
   final String characterId;
-  const CharacterProfilePage({super.key, required this.character,required this.characterId,this.sessionId,});
+  const CharacterProfilePage({
+    super.key,
+    required this.character,
+    required this.characterId,
+    this.sessionId,
+  });
 
   @override
   State<CharacterProfilePage> createState() => _CharacterProfilePageState();
 }
 
 // ✨ 加上 SingleTickerProviderStateMixin 才能使用 TabController
-class _CharacterProfilePageState extends State<CharacterProfilePage> with SingleTickerProviderStateMixin {
+class _CharacterProfilePageState extends State<CharacterProfilePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   // ✨ 總裁新增：用來控制「加好友」狀態與讀取動畫
   bool _isFriend = false;
@@ -70,6 +76,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     final currentUser = FirebaseAuth.instance.currentUser;
     return currentUser != null && currentUser.uid == widget.character.createdBy;
   }
+
 // 🔑 1. 新增：時空迴音按鈕的專屬鑰匙
   final GlobalKey _echoKey = GlobalKey();
 
@@ -132,22 +139,18 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
   }
 
   Future<void> _checkCreatorFollowStatus() async {
-    final currentUser =
-        FirebaseAuth.instance.currentUser;
+    final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser == null) return;
 
-    final String creatorId =
-        widget.character.createdBy;
+    final String creatorId = widget.character.createdBy;
 
-    if (creatorId.isEmpty ||
-        currentUser.uid == creatorId) {
+    if (creatorId.isEmpty || currentUser.uid == creatorId) {
       return;
     }
 
     try {
-      final followDoc =
-      await FirebaseFirestore.instance
+      final followDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUser.uid)
           .collection('following')
@@ -168,11 +171,41 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     required String creatorId,
     required String creatorName,
   }) async {
-    final currentUser =
-        FirebaseAuth.instance.currentUser;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
+    final db = FirebaseFirestore.instance;
 
-    final l10n =
-    AppLocalizations.of(context)!;
+    String resolvedCreatorName = creatorName.trim();
+
+    // 角色舊資料中的 creatorName 可能仍是「神秘創作者」，
+    // 因此每次追蹤都以創作者帳號目前的 nickname 為優先來源。
+    try {
+      final creatorSnapshot =
+      await db.collection('users').doc(creatorId).get();
+      final creatorData = creatorSnapshot.data();
+
+      final possibleNames = <String>[
+        creatorData?['nickname']?.toString().trim() ?? '',
+        creatorData?['displayName']?.toString().trim() ?? '',
+        creatorData?['name']?.toString().trim() ?? '',
+      ];
+
+      final accountCreatorName = possibleNames.firstWhere(
+            (name) => name.isNotEmpty,
+        orElse: () => '',
+      );
+
+      if (accountCreatorName.isNotEmpty) {
+        resolvedCreatorName = accountCreatorName;
+      }
+    } catch (e) {
+      debugPrint('⚠️ 讀取創作者名稱失敗，暫用角色資料名稱：$e');
+    }
+
+    if (resolvedCreatorName.isEmpty ||
+        resolvedCreatorName.contains('神秘創作者')) {
+      resolvedCreatorName = '創作者';
+    }
 
     if (currentUser == null) {
       ToastUtils.showCenterToast(
@@ -187,13 +220,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       ToastUtils.showCenterToast(
         context,
         l10n.follow_own_warning,
-        customIcon:
-        Icons.front_hand_rounded,
+        customIcon: Icons.front_hand_rounded,
       );
       return;
     }
-
-    final db = FirebaseFirestore.instance;
 
     final followingRef = db
         .collection('users')
@@ -213,7 +243,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       _isFollowing = !wasFollowing;
     });
 
-    // 第一階段：只處理追蹤關係
     try {
       final batch = db.batch();
 
@@ -223,30 +252,20 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       } else {
         batch.set(followingRef, {
           'creatorId': creatorId,
-          'creatorName': creatorName,
-          'followedAt':
-          FieldValue.serverTimestamp(),
+          'creatorName': resolvedCreatorName,
+          'followedAt': FieldValue.serverTimestamp(),
         });
 
         batch.set(followerRef, {
           'followerId': currentUser.uid,
           'followerName': _playerNickname,
-          'followedAt':
-          FieldValue.serverTimestamp(),
+          'followedAt': FieldValue.serverTimestamp(),
         });
       }
 
       await batch.commit();
-
-      debugPrint(
-        wasFollowing
-            ? '✅ 取消追蹤資料寫入成功'
-            : '✅ 追蹤資料寫入成功',
-      );
     } catch (e) {
-      debugPrint(
-        '❌ 追蹤關係寫入失敗：$e',
-      );
+      debugPrint('❌ 追蹤關係寫入失敗：$e');
 
       if (!mounted) return;
 
@@ -259,7 +278,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         '追蹤操作失敗，請稍後再試',
         isError: true,
       );
-
       return;
     }
 
@@ -267,9 +285,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
     ToastUtils.showCenterToast(
       context,
-      wasFollowing
-          ? '已取消追蹤'
-          : '已追蹤 $creatorName',
+      wasFollowing ? '已取消追蹤' : '已追蹤 $resolvedCreatorName',
       customIcon: wasFollowing
           ? Icons.person_remove_outlined
           : Icons.person_add_alt_1_rounded,
@@ -278,21 +294,15 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     // 第二階段：通知失敗不能影響追蹤結果
     if (!wasFollowing) {
       try {
-        await db
-            .collection('users')
-            .doc(creatorId)
-            .collection('mailbox')
-            .add({
+        await db.collection('users').doc(creatorId).collection('mailbox').add({
           'type': 'follow',
-          'title':
-          l10n.mailbox_follow_title,
+          'title': l10n.mailbox_follow_title,
           'body': l10n.mailbox_follow_body(
             widget.character.name,
           ),
           'fromId': currentUser.uid,
           'fromName': _playerNickname,
-          'createdAt':
-          FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
           'isRead': false,
         });
 
@@ -322,7 +332,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         if (userDoc.exists && userDoc.data() != null) {
           setState(() {
             // 抓取妳資料庫裡存暱稱的欄位（假設叫 'nickname'）
-            _playerNickname = userDoc.data()?['nickname'] ?? l10n.default_new_player;
+            _playerNickname =
+                userDoc.data()?['nickname'] ?? l10n.default_new_player;
           });
         }
       }
@@ -341,13 +352,15 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
       // 把要翻譯的東西打包
       final results = await Future.wait([
-        FirebaseFunctions.instanceFor(region: 'asia-east1').httpsCallable(
-            'translateText').call({
+        FirebaseFunctions.instanceFor(region: 'asia-east1')
+            .httpsCallable('translateText')
+            .call({
           'text': sourceBackground,
           'targetLanguage': targetLang,
         }),
-        FirebaseFunctions.instanceFor(region: 'asia-east1').httpsCallable(
-            'translateText').call({
+        FirebaseFunctions.instanceFor(region: 'asia-east1')
+            .httpsCallable('translateText')
+            .call({
           'text': '$sourceLikes | $sourceDislikes', // 用特殊符號隔開一起翻比較省錢
           'targetLanguage': targetLang,
         }),
@@ -472,7 +485,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
             ToastUtils.showCenterToast(
               context,
-              l10n.snackbar_friend_removed(widget.character.name), // 確保妳的 l10n 檔案裡有定義這個 Key
+              l10n.snackbar_friend_removed(
+                  widget.character.name), // 確保妳的 l10n 檔案裡有定義這個 Key
               customIcon: Icons.person_remove_rounded,
             );
           }
@@ -487,7 +501,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             );
           }
         }
-      }else {
+      } else {
         // 💖 原本不是好友 -> 執行新增
         await friendRef.set({
           'characterId': widget.character.id,
@@ -506,7 +520,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     } catch (e) {
       print("切換好友狀態失敗: $e");
       if (mounted) {
-        ToastUtils.showCenterToast(context, l10n.common_operation_failed_retry, isError: true);
+        ToastUtils.showCenterToast(context, l10n.common_operation_failed_retry,
+            isError: true);
       }
     } finally {
       if (mounted) {
@@ -569,8 +584,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       await CharacterService.recordEncounter({
         'id': widget.character.id,
         'name': widget.character.name,
-        'avatar': widget.character.galleryPaths.isNotEmpty ? widget.character
-            .galleryPaths[0] : '',
+        'avatar': widget.character.galleryPaths.isNotEmpty
+            ? widget.character.galleryPaths[0]
+            : '',
         'desc': widget.character.background,
       });
     } catch (e) {
@@ -596,7 +612,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       // 為了示範，我們先寫一個模擬翻譯，總裁之後要把這裡換成真正的 API 呼叫
       await Future.delayed(const Duration(milliseconds: 800)); // 模擬網路延遲
       // 假設這是 AI 回傳的感性譯文
-      String translatedText = l10n.chat_translation_prefix(content);      // 3. 更新翻譯結果
+      String translatedText =
+      l10n.chat_translation_prefix(content); // 3. 更新翻譯結果
       if (mounted) {
         setState(() {
           _translatedEchoes[docId] = translatedText;
@@ -651,13 +668,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
           .doc(user.uid)
           .get();
 
-      final playerName =
-          userDoc.data()?['nickname'] ??
-              user.displayName ??
-              l10n.chat_mysterious_player;
+      final playerName = userDoc.data()?['nickname'] ??
+          user.displayName ??
+          l10n.chat_mysterious_player;
 
       // 固定通知 ID：同一個玩家對同一個角色按讚，只會有一封通知
-      final notificationId = 'character_like_${widget.character.id}_${user.uid}';
+      final notificationId =
+          'character_like_${widget.character.id}_${user.uid}';
 
       final notificationRef = FirebaseFirestore.instance
           .collection('users')
@@ -665,8 +682,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
           .collection('mailbox')
           .doc(notificationId);
 
-      final bool nowLiked =
-      await FirebaseFirestore.instance.runTransaction<bool>((transaction) async {
+      final bool nowLiked = await FirebaseFirestore.instance
+          .runTransaction<bool>((transaction) async {
         final likerSnapshot = await transaction.get(likerRef);
 
         final bool alreadyLikedInDb = likerSnapshot.exists;
@@ -742,11 +759,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            CreatorProfilePage(
-              creatorId: widget.character.createdBy,
-              creatorName: widget.character.creatorName,
-            ),
+        builder: (context) => CreatorProfilePage(
+          creatorId: widget.character.createdBy,
+          creatorName: widget.character.creatorName,
+        ),
       ),
     );
   }
@@ -770,8 +786,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         .doc(creatorId)
         .collection('mailbox')
         .add({
-      'type': 'follow',              // 🦋 只存代碼，讓信箱去翻譯
-      'fromName': _playerNickname,   // 🦋 把找不到的 myName 換成 _playerNickname
+      'type': 'follow', // 🦋 只存代碼，讓信箱去翻譯
+      'fromName': _playerNickname, // 🦋 把找不到的 myName 換成 _playerNickname
       'createdAt': FieldValue.serverTimestamp(),
       'isRead': false,
     });
@@ -781,7 +797,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       ToastUtils.showCenterToast(
         context,
         l10n.followed_creator_msg(widget.character.creatorName),
-        customIcon: Icons.person_add_alt_1_rounded, // 💡 用帶有「+」號的人物圖示，完美傳達「加入追蹤」的意象！
+        customIcon:
+        Icons.person_add_alt_1_rounded, // 💡 用帶有「+」號的人物圖示，完美傳達「加入追蹤」的意象！
       );
     }
   }
@@ -794,11 +811,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           // 💡 注意：這裡的 const 被我拆到裡面的 Icon 和 SizedBox 去了
           title: Row(children: [
-            const Icon(Icons.sentiment_very_dissatisfied, color: Colors.blueGrey),
+            const Icon(Icons.sentiment_very_dissatisfied,
+                color: Colors.blueGrey),
             const SizedBox(width: 8),
             Text(l10n.dislike_dialog_title) // ✨ 替換：不太喜歡這個角色？
           ]),
@@ -835,7 +853,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   ToastUtils.showCenterToast(
                     context,
                     l10n.dislike_thanks,
-                    customIcon: Icons.feedback_outlined, // 💡 總裁細節：用「意見回饋」的圖示，比直接放一個倒讚 (thumb_down) 讓人感覺更舒服且被尊重！
+                    customIcon: Icons
+                        .feedback_outlined, // 💡 總裁細節：用「意見回饋」的圖示，比直接放一個倒讚 (thumb_down) 讓人感覺更舒服且被尊重！
                   );
                 }
                 await FirebaseFirestore.instance
@@ -843,8 +862,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                     .add({
                   'type': 'character_dislike',
                   'characterId': widget.character.id,
-                  'reporterId': FirebaseAuth.instance.currentUser?.uid ??
-                      'unknown',
+                  'reporterId':
+                  FirebaseAuth.instance.currentUser?.uid ?? 'unknown',
                   'reason': reason,
                   'timestamp': FieldValue.serverTimestamp(),
                 });
@@ -880,19 +899,22 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title:Text(l10n.report_title),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(l10n.report_title),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.report_subtitle, style: TextStyle(fontSize: 13, color: Colors.grey)),
+                    Text(l10n.report_subtitle,
+                        style: TextStyle(fontSize: 13, color: Colors.grey)),
                     const SizedBox(height: 12),
                     // 產生單選列表
                     ...reportOptions.map((reason) {
                       return RadioListTile<String>(
-                        title: Text(reason, style: const TextStyle(fontSize: 14)),
+                        title:
+                        Text(reason, style: const TextStyle(fontSize: 14)),
                         value: reason,
                         groupValue: tempReason,
                         contentPadding: EdgeInsets.zero,
@@ -907,17 +929,21 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(c, null), child:Text(l10n.cancel, style: TextStyle(color: Colors.grey))),
+                TextButton(
+                    onPressed: () => Navigator.pop(c, null),
+                    child: Text(l10n.cancel,
+                        style: TextStyle(color: Colors.grey))),
                 TextButton(
                   // 🌟 如果沒選原因，按鈕就會反灰不能按
-                  onPressed: tempReason == null ? null : () => Navigator.pop(c, tempReason),
-                  child: Text(
-                      l10n.report_confirm,
+                  onPressed: tempReason == null
+                      ? null
+                      : () => Navigator.pop(c, tempReason),
+                  child: Text(l10n.report_confirm,
                       style: TextStyle(
-                          color: tempReason == null ? Colors.grey[300] : Colors.redAccent,
-                          fontWeight: FontWeight.bold
-                      )
-                  ),
+                          color: tempReason == null
+                              ? Colors.grey[300]
+                              : Colors.redAccent,
+                          fontWeight: FontWeight.bold)),
                 ),
               ],
             );
@@ -942,7 +968,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         'reportCount': FieldValue.increment(1),
         'reporters': FieldValue.arrayUnion([user.uid]),
         // 🌟 新增：把玩家選的原因也存進陣列裡！
-        'reportReasons': FieldValue.arrayUnion(['${user.uid.substring(0, 5)}: $selectedReason']),
+        'reportReasons': FieldValue.arrayUnion(
+            ['${user.uid.substring(0, 5)}: $selectedReason']),
       });
 
       if (mounted) {
@@ -974,7 +1001,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       context: context,
       builder: (context) {
         return AlertDialog(
-          title:  Text(l10n.lore_delete_title),
+          title: Text(l10n.lore_delete_title),
           content: Text(l10n.lore_delete_content),
           actions: [
             TextButton(
@@ -982,14 +1009,17 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               child: Text(l10n.lore_delete_cancel),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent),
               onPressed: () => Navigator.pop(context, true), // 點確定回傳 true
-              child:Text(l10n.lore_delete_confirm, style: TextStyle(color: Colors.white)),
+              child: Text(l10n.lore_delete_confirm,
+                  style: TextStyle(color: Colors.white)),
             ),
           ],
         );
       },
-    ) ?? false; // 如果點擊對話框外面關閉，預設也是 false
+    ) ??
+        false; // 如果點擊對話框外面關閉，預設也是 false
     // 如果玩家沒有點擊確定，就直接終止動作
     if (!confirm) return;
     try {
@@ -1008,7 +1038,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         ToastUtils.showCenterToast(
           context,
           l10n.lore_delete_success,
-          customIcon: Icons.auto_delete_outlined, // 💡 使用帶有科技感或魔法感的刪除圖示，非常符合「清除記憶」的意境！
+          customIcon:
+          Icons.auto_delete_outlined, // 💡 使用帶有科技感或魔法感的刪除圖示，非常符合「清除記憶」的意境！
         );
       }
     } catch (e) {
@@ -1045,24 +1076,30 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   children: [
                     TextField(
                       controller: titleController,
-                      decoration: InputDecoration(labelText: l10n.lore_title_label, hintText: l10n.lore_title_hint),
+                      decoration: InputDecoration(
+                          labelText: l10n.lore_title_label,
+                          hintText: l10n.lore_title_hint),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: teaserController,
-                      decoration: InputDecoration(labelText: l10n.lore_teaser_label, hintText:l10n.lore_teaser_hint),
+                      decoration: InputDecoration(
+                          labelText: l10n.lore_teaser_label,
+                          hintText: l10n.lore_teaser_hint),
                       maxLines: 2,
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: contentController,
-                      decoration:InputDecoration(labelText: l10n.lore_content_label, hintText:l10n.lore_content_hint),
+                      decoration: InputDecoration(
+                          labelText: l10n.lore_content_label,
+                          hintText: l10n.lore_content_hint),
                       maxLines: 5,
                     ),
                     const SizedBox(height: 12),
                     // 鎖定設定
                     CheckboxListTile(
-                      title:  Text(l10n.lore_lock_label),
+                      title: Text(l10n.lore_lock_label),
                       subtitle: Text(l10n.lore_lock_desc),
                       value: isHidden,
                       onChanged: (bool? value) {
@@ -1079,7 +1116,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child:Text(l10n.cancel),
+                  child: Text(l10n.cancel),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -1088,7 +1125,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
                     if (title.isEmpty || content.isEmpty) {
                       // ✨ 總裁級防呆：直接用輕量錯誤提示抓住玩家眼球
-                      ToastUtils.showCenterToast(context, l10n.lore_empty_error, isError: true);
+                      ToastUtils.showCenterToast(context, l10n.lore_empty_error,
+                          isError: true);
                       return;
                     }
 
@@ -1118,7 +1156,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         ToastUtils.showCenterToast(
                           context,
                           l10n.lore_add_success,
-                          customIcon: Icons.library_add_check_rounded, // 💡 用一個代表「成功收錄/發布」的精緻圖示
+                          customIcon: Icons
+                              .library_add_check_rounded, // 💡 用一個代表「成功收錄/發布」的精緻圖示
                         );
                       }
                     } catch (e) {
@@ -1151,13 +1190,17 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       context: context,
       builder: (c) => AlertDialog(
         title: Text(l10n.echo_delete_title),
-        content:Text(l10n.echo_delete_content),
+        content: Text(l10n.echo_delete_content),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child:Text(l10n.echo_keep)),
+          TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: Text(l10n.echo_keep)),
           TextButton(
             onPressed: () => Navigator.pop(c, true),
-            child: Text(l10n.delete_btn, style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+            child: Text(l10n.delete_btn,
+                style: TextStyle(
+                    color: Colors.redAccent, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -1173,7 +1216,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         ToastUtils.showCenterToast(
           context,
           l10n.echo_clear_success,
-          customIcon: Icons.delete_sweep_rounded, // 💡 總裁細節：用「輕輕掃去」的圖示，比生硬的垃圾桶更符合 Echo 消散的詩意！
+          customIcon: Icons
+              .delete_sweep_rounded, // 💡 總裁細節：用「輕輕掃去」的圖示，比生硬的垃圾桶更符合 Echo 消散的詩意！
         );
       }
     } catch (e) {
@@ -1194,13 +1238,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-    print("🌌 正在存取的時空迴響路徑: artifacts/${AppConfig
-        .appId}/public_characters/${widget.character.id}/echoes");
+    print(
+        "🌌 正在存取的時空迴響路徑: artifacts/${AppConfig.appId}/public_characters/${widget.character.id}/echoes");
     // 1. 檢查數量是否已達 3 則上限
     final echoesRef = FirebaseFirestore.instance
         .collection('artifacts')
-        .doc(
-        AppConfig.appId)
+        .doc(AppConfig.appId)
         .collection('public_characters')
         .doc(widget.character.id)
         .collection('echoes');
@@ -1208,16 +1251,15 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     if (myEchoes.docs.length >= 3 && mounted) {
       showDialog(
         context: context,
-        builder: (c) =>
-            AlertDialog(
-              title:Text(l10n.echo_energy_full_title),
-              content:Text(
-                  l10n.echo_energy_full_content),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(c),
-                    child: Text(l10n.common_got_it))
-              ],
-            ),
+        builder: (c) => AlertDialog(
+          title: Text(l10n.echo_energy_full_title),
+          content: Text(l10n.echo_energy_full_content),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(c),
+                child: Text(l10n.common_got_it))
+          ],
+        ),
       );
       return;
     }
@@ -1241,17 +1283,14 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               behavior: HitTestBehavior.opaque, // 確保透明處也能點擊
               child: Padding(
                 padding: EdgeInsets.only(
-                  bottom: MediaQuery
-                      .of(context)
-                      .viewInsets
-                      .bottom, // 避開鍵盤
+                  bottom: MediaQuery.of(context).viewInsets.bottom, // 避開鍵盤
                 ),
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
-                    borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(24)),
+                    borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(24)),
                   ),
                   // ✨ 關鍵 3：用 SingleChildScrollView 包起來，萬一螢幕太小還能捲動
                   child: SingleChildScrollView(
@@ -1259,53 +1298,68 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                       mainAxisSize: MainAxisSize.min, // 讓內容只佔用必要空間
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.echo_write_title, style: theme.textTheme
-                            .titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                        Text(l10n.echo_write_title,
+                            style: theme.textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
-                        Text(l10n.echo_write_subtitle, style: TextStyle(
-                            fontSize: 12, color: Colors.grey)),
+                        Text(l10n.echo_write_subtitle,
+                            style: TextStyle(fontSize: 12, color: Colors.grey)),
                         const SizedBox(height: 16),
                         TextField(
                           controller: textController,
                           maxLines: 3, // 稍微縮減一點行數，留給鍵盤空間
                           maxLength: 100,
-                          decoration:InputDecoration(hintText: l10n.echo_hint,
-                              border: OutlineInputBorder()
-                          ),
+                          decoration: InputDecoration(
+                              hintText: l10n.echo_hint,
+                              border: OutlineInputBorder()),
                         ),
 
                         const SizedBox(height: 16),
-                       Text(l10n.echo_theme_label, style: TextStyle(
-                            fontWeight: FontWeight.bold)),
+                        Text(l10n.echo_theme_label,
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 12),
 
                         // 主題選擇器
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _buildThemeSelector('butterfly',
+                            _buildThemeSelector(
+                                'butterfly',
                                 Text('🦋', style: TextStyle(fontSize: 24)),
-                                l10n.theme_butterfly, selectedTheme, () =>
-                                    setModalState(() =>
-                                    selectedTheme = 'butterfly')),
-                            _buildThemeSelector('sprout', Icon(Icons.eco,
-                                color: selectedTheme == 'sprout' ? theme
-                                    .colorScheme.primary : Colors.grey), l10n.theme_sprout,
-                                selectedTheme, () =>
-                                    setModalState(() =>
-                                    selectedTheme = 'sprout')),
-                            _buildThemeSelector('star', Icon(Icons.star_border,
-                                color: selectedTheme == 'star' ? theme
-                                    .colorScheme.primary : Colors.grey), l10n.theme_star,
-                                selectedTheme, () =>
-                                    setModalState(() =>
-                                    selectedTheme = 'star')),
-                            _buildThemeSelector('planet', Icon(Icons.public,
-                                color: selectedTheme == 'planet' ? theme
-                                    .colorScheme.primary : Colors.grey), l10n.theme_planet,
-                                selectedTheme, () =>
-                                    setModalState(() =>
-                                    selectedTheme = 'planet')),
+                                l10n.theme_butterfly,
+                                selectedTheme,
+                                    () => setModalState(
+                                        () => selectedTheme = 'butterfly')),
+                            _buildThemeSelector(
+                                'sprout',
+                                Icon(Icons.eco,
+                                    color: selectedTheme == 'sprout'
+                                        ? theme.colorScheme.primary
+                                        : Colors.grey),
+                                l10n.theme_sprout,
+                                selectedTheme,
+                                    () => setModalState(
+                                        () => selectedTheme = 'sprout')),
+                            _buildThemeSelector(
+                                'star',
+                                Icon(Icons.star_border,
+                                    color: selectedTheme == 'star'
+                                        ? theme.colorScheme.primary
+                                        : Colors.grey),
+                                l10n.theme_star,
+                                selectedTheme,
+                                    () => setModalState(
+                                        () => selectedTheme = 'star')),
+                            _buildThemeSelector(
+                                'planet',
+                                Icon(Icons.public,
+                                    color: selectedTheme == 'planet'
+                                        ? theme.colorScheme.primary
+                                        : Colors.grey),
+                                l10n.theme_planet,
+                                selectedTheme,
+                                    () => setModalState(
+                                        () => selectedTheme = 'planet')),
                           ],
                         ),
 
@@ -1314,12 +1368,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                           width: double.infinity,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 16)),
+                                padding:
+                                const EdgeInsets.symmetric(vertical: 16)),
                             onPressed: () async {
-                              if (textController.text
-                                  .trim()
-                                  .isEmpty) return;
+                              if (textController.text.trim().isEmpty) return;
                               Navigator.pop(context);
                               // 儲存到 Firestore
                               await echoesRef.add({
@@ -1333,18 +1385,16 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                               // 無感點讚機制
                               try {
                                 await FirebaseFirestore.instance
-                                    .collection(
-                                    'artifacts')
+                                    .collection('artifacts')
                                     .doc(AppConfig.appId)
-                                    .collection(
-                                    'public_characters')
-                                    .doc(
-                                    widget.character.id)
-                                    .update(
-                                    {'likesCount': FieldValue.increment(10)});
+                                    .collection('public_characters')
+                                    .doc(widget.character.id)
+                                    .update({
+                                  'likesCount': FieldValue.increment(10)
+                                });
                               } catch (_) {}
                             },
-                            child:Text(l10n.echo_publish_btn),
+                            child: Text(l10n.echo_publish_btn),
                           ),
                         ),
                         // ✨ 關鍵 4：底部稍微留一點 padding，避免按鈕貼齊鍵盤邊緣
@@ -1360,6 +1410,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       },
     );
   }
+
   Widget _buildThemeSelector(String themeKey, Widget iconWidget, String label,
       String currentTheme, VoidCallback onTap) {
     final isSelected = currentTheme == themeKey;
@@ -1371,22 +1422,23 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isSelected ? Theme
-                  .of(context)
-                  .colorScheme
-                  .primaryContainer : Colors.transparent,
-              border: Border.all(color: isSelected ? Theme
-                  .of(context)
-                  .colorScheme
-                  .primary : Colors.grey),
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Colors.transparent,
+              border: Border.all(
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey),
             ),
             child: iconWidget, // ✨ 直接塞入 Widget，讓它可以接收各種形式的圖示
           ),
           const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 12, color: isSelected ? Theme
-              .of(context)
-              .colorScheme
-              .primary : Colors.grey)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey)),
         ],
       ),
     );
@@ -1402,30 +1454,25 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       for (final photo in widget.character.gallery!) {
         final String url = photo.imageUrl.trim();
 
-        if (url.isNotEmpty &&
-            !photoUrls.contains(url)) {
+        if (url.isNotEmpty && !photoUrls.contains(url)) {
           photoUrls.add(url);
         }
       }
     }
 
     // gallery 沒資料時，用 galleryPaths 保底。
-    for (final path
-    in widget.character.galleryPaths) {
+    for (final path in widget.character.galleryPaths) {
       final String url = path.trim();
 
-      if (url.isNotEmpty &&
-          !photoUrls.contains(url)) {
+      if (url.isNotEmpty && !photoUrls.contains(url)) {
         photoUrls.add(url);
       }
     }
 
     // 最後才用 avatarPath 保底。
-    final String avatarUrl =
-    (widget.character.avatarPath ?? '').trim();
+    final String avatarUrl = (widget.character.avatarPath ?? '').trim();
 
-    if (avatarUrl.isNotEmpty &&
-        !photoUrls.contains(avatarUrl)) {
+    if (avatarUrl.isNotEmpty && !photoUrls.contains(avatarUrl)) {
       photoUrls.insert(0, avatarUrl);
     }
 
@@ -1454,8 +1501,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             });
           },
           itemBuilder: (context, index) {
-            final String imageUrl =
-            photoUrls[index];
+            final String imageUrl = photoUrls[index];
 
             // 第一張公開，第二張以後鎖定。
             final bool isLocked = index > 0;
@@ -1476,14 +1522,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             right: 0,
             bottom: 14,
             child: Row(
-              mainAxisAlignment:
-              MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 photoUrls.length,
                     (index) {
-                  final bool selected =
-                      index ==
-                          _currentHeaderPhotoIndex;
+                  final bool selected = index == _currentHeaderPhotoIndex;
 
                   return AnimatedContainer(
                     duration: const Duration(
@@ -1491,8 +1534,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                     ),
                     width: selected ? 18 : 7,
                     height: 7,
-                    margin:
-                    const EdgeInsets.symmetric(
+                    margin: const EdgeInsets.symmetric(
                       horizontal: 3,
                     ),
                     decoration: BoxDecoration(
@@ -1501,8 +1543,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                           : Colors.white.withValues(
                         alpha: 0.45,
                       ),
-                      borderRadius:
-                      BorderRadius.circular(99),
+                      borderRadius: BorderRadius.circular(99),
                     ),
                   );
                 },
@@ -1516,8 +1557,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             top: 16,
             left: 16,
             child: Container(
-              padding:
-              const EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 10,
                 vertical: 6,
               ),
@@ -1525,8 +1565,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                 color: Colors.black.withValues(
                   alpha: 0.42,
                 ),
-                borderRadius:
-                BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 '${_currentHeaderPhotoIndex + 1}'
@@ -1553,27 +1592,21 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     final Widget image = CachedNetworkImage(
       imageUrl: imageUrl,
       // 手機填滿整個畫面；網頁保留完整圖片比例。
-      fit: isDesktop
-          ? BoxFit.contain
-          : BoxFit.cover,
+      fit: isDesktop ? BoxFit.contain : BoxFit.cover,
 
       // 手機稍微偏上，優先保留人物臉部。
-      alignment: isDesktop
-          ? Alignment.center
-          : const Alignment(0, -0.18),
+      alignment: isDesktop ? Alignment.center : const Alignment(0, -0.18),
 
-      memCacheWidth:
-      isDesktop ? 1400 : 1080,
+      memCacheWidth: isDesktop ? 1400 : 1080,
 
-      placeholder: (context, url) =>
-          Container(
-            color: Colors.black,
-            alignment: Alignment.center,
-            child: const CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Colors.white70,
-            ),
-          ),
+      placeholder: (context, url) => Container(
+        color: Colors.black,
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2,
+          color: Colors.white70,
+        ),
+      ),
 
       errorWidget: (
           context,
@@ -1632,7 +1665,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
           ] else
           // 手機版直接滿版。
             image,
-
           if (isLocked) ...[
             // 鎖定照片模糊。
             Positioned.fill(
@@ -1654,7 +1686,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             // 中央鎖頭與提示。
             Center(
               child: Container(
-                padding:  EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: 22,
                   vertical: 18,
                 ),
@@ -1662,8 +1694,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   color: Colors.black.withValues(
                     alpha: 0.48,
                   ),
-                  borderRadius:
-                  BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: Colors.white.withValues(
                       alpha: 0.18,
@@ -1680,7 +1711,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                     ),
                     const SizedBox(height: 9),
                     Text(
-                     l10n.exclusive_photo_number(photoIndex + 1),
+                      l10n.exclusive_photo_number(photoIndex + 1),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 15,
@@ -1691,8 +1722,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                     Text(
                       l10n.unlock_after_affection_increase,
                       style: TextStyle(
-                        color: Colors.white
-                            .withValues(
+                        color: Colors.white.withValues(
                           alpha: 0.75,
                         ),
                         fontSize: 12,
@@ -1727,12 +1757,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               SliverAppBar(
                 expandedHeight: 400.0,
                 pinned: true,
-                backgroundColor: theme.scaffoldBackgroundColor.withValues(alpha:0.9),
+                backgroundColor:
+                theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
                 elevation: 0,
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CircleAvatar(
-                    backgroundColor: Colors.black.withValues(alpha:0.4),
+                    backgroundColor: Colors.black.withValues(alpha: 0.4),
                     child: IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () => Navigator.pop(context),
@@ -1743,18 +1774,16 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
-                      backgroundColor: Colors.black.withValues(alpha:0.4),
+                      backgroundColor: Colors.black.withValues(alpha: 0.4),
                       child: PopupMenuButton<String>(
                         icon: const Icon(
                           Icons.more_vert,
                           color: Colors.white,
                         ),
-
                         onSelected: (value) async {
                           switch (value) {
                             case 'report':
-                              await CharacterReportService
-                                  .showReportDialog(
+                              await CharacterReportService.showReportDialog(
                                 context: context,
                                 character: widget.character,
                                 source: 'character_profile',
@@ -1763,8 +1792,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
 
                             case 'block':
                               final bool blocked =
-                              await CharacterBlockService
-                                  .showBlockDialog(
+                              await CharacterBlockService.showBlockDialog(
                                 context: context,
                                 character: widget.character,
                               );
@@ -1781,7 +1809,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                               break;
                           }
                         },
-
                         itemBuilder: (context) => [
                           const PopupMenuItem<String>(
                             value: 'report',
@@ -1796,7 +1823,6 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                               ],
                             ),
                           ),
-
                           PopupMenuItem<String>(
                             value: 'block',
                             child: Row(
@@ -1837,8 +1863,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                     unselectedLabelColor: Colors.grey,
                     indicatorWeight: 3,
                     tabs: [
-                      Tab(icon: Icon(Icons.person_outline), text: l10n.tab_private_profile),
-                      Tab(icon: Icon(Icons.mail_outline), text: l10n.tab_memory_fragments),
+                      Tab(
+                          icon: Icon(Icons.person_outline),
+                          text: l10n.tab_private_profile),
+                      Tab(
+                          icon: Icon(Icons.mail_outline),
+                          text: l10n.tab_memory_fragments),
                       Tab(icon: Icon(Icons.public), text: l10n.tab_time_echoes),
                     ],
                   ),
@@ -1852,8 +1882,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             controller: _tabController,
             children: [
               _buildTabProfile(theme), // 頁籤 1
-              _buildTabLore(theme),    // 頁籤 2
-              _buildTabEchoes(theme),  // 頁籤 3
+              _buildTabLore(theme), // 頁籤 2
+              _buildTabEchoes(theme), // 頁籤 3
             ],
           ),
         ),
@@ -1869,9 +1899,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   end: Alignment.topCenter,
                   colors: [
                     theme.scaffoldBackgroundColor,
-                    theme.scaffoldBackgroundColor.withValues(alpha:0.0)
-                  ]
-              ),
+                    theme.scaffoldBackgroundColor.withValues(alpha: 0.0)
+                  ]),
             ),
             child: Row(
               children: [
@@ -1884,8 +1913,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12))
-                    ),
+                            borderRadius: BorderRadius.circular(12))),
                     onPressed: () async {
                       if (_isNavigating) return;
                       setState(() {
@@ -1897,27 +1925,27 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                               builder: (context) => ChatPage(
                                 character: widget.character,
                                 chatMode: "gemini", // 維持妳的 0元 模式
-                                selectedLanguage:l10n.ai_chat_language_code,
+                                selectedLanguage:
+                                l10n.ai_chat_language_code,
                                 forceNewRoom: true,
-                                initialText: widget.character.storyModeFirstLine ?? l10n.default_chat_initial, // ✨ 補上第一句話
+                                initialText: widget
+                                    .character.storyModeFirstLine ??
+                                    l10n.default_chat_initial, // ✨ 補上第一句話
                                 characterId: widget.character.id,
-                              )
-                          )
-                      );
+                              )));
                       if (mounted) {
                         setState(() {
                           _isNavigating = false;
                         });
                       }
                     },
-                    child:Row(
+                    child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.chat_bubble_outline, size: 20),
                           SizedBox(width: 8),
                           Text(l10n.chat_free_btn)
-                        ]
-                    ),
+                        ]),
                   ),
                 ),
 
@@ -1932,8 +1960,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         elevation: 4,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12))
-                    ),
+                            borderRadius: BorderRadius.circular(12))),
                     onPressed: () async {
                       if (_isNavigating) return;
                       setState(() {
@@ -1948,23 +1975,20 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                                 selectedLanguage: l10n.ai_chat_language,
                                 forceNewRoom: true,
                                 characterId: widget.character.id,
-                              )
-                          )
-                      );
+                              )));
                       if (mounted) {
                         setState(() {
                           _isNavigating = false;
                         });
                       }
                     },
-                    child:Row(
+                    child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.book_outlined, size: 20),
                           SizedBox(width: 8),
                           Text(l10n.start_story_btn)
-                        ]
-                    ),
+                        ]),
                   ),
                 ),
               ],
@@ -1988,37 +2012,40 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       ),
     );
   }
+
   // ==========================================
   // 🗂️ 頁籤 1：私密檔案
   // ==========================================
   Widget _buildTabProfile(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
-    final String currentLang = Localizations
-        .localeOf(context)
-        .languageCode;
+    final String currentLang = Localizations.localeOf(context).languageCode;
 
     // ✨ 方案 B：檢查雲端是否有共享翻譯
     final shared = widget.character.translations?[currentLang];
     // 優先序：本地翻譯 > 共享翻譯 > 原文
-    final displayBg = _translatedBackground ?? shared?['background'] ??
+    final displayBg = _translatedBackground ??
+        shared?['background'] ??
         widget.character.background;
     final displayLikes = shared?['likes'] ?? widget.character.likes;
     final displayDislikes = shared?['dislikes'] ?? widget.character.dislikes;
     final displayTags = _translatedTags ??
         (shared?['personalityTags'] as List?)?.cast<String>() ??
         widget.character.personalityTags;
-    final displayStory = widget.character.initialStory.trim();    // 判斷是否顯示按鈕：語言不同且雲端/本地都還沒翻過
-    final bool showTranslateBtn = (currentLang !=
-        (widget.character.contentLanguage ?? 'zh')) &&
-        (_translatedBackground == null && shared?['background'] == null);
+    final displayStory =
+    widget.character.initialStory.trim(); // 判斷是否顯示按鈕：語言不同且雲端/本地都還沒翻過
+    final bool showTranslateBtn =
+        (currentLang != (widget.character.contentLanguage ?? 'zh')) &&
+            (_translatedBackground == null && shared?['background'] == null);
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 150), // 底部留白避開按鈕
       children: [
         Text(widget.character.name,
-            style: theme.textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.bold)),
+            style: theme.textTheme.displaySmall
+                ?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        Text(l10n.char_age_occupation(widget.character.age.toString(), widget.character.occupation),
+        Text(
+            l10n.char_age_occupation(
+                widget.character.age.toString(), widget.character.occupation),
             style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
         const SizedBox(height: 16),
@@ -2030,22 +2057,26 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               onTap: _handleLike,
               borderRadius: BorderRadius.circular(20),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 8),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                    color: _hasLiked ? Colors.pink.withValues(alpha:0.1) : theme
-                        .colorScheme.surfaceVariant.withValues(alpha:0.5),
+                    color: _hasLiked
+                        ? Colors.pink.withValues(alpha: 0.1)
+                        : theme.colorScheme.surfaceVariant
+                        .withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                        color: _hasLiked ? Colors.pink.withValues(alpha:0.5) : Colors
-                            .transparent)),
+                        color: _hasLiked
+                            ? Colors.pink.withValues(alpha: 0.5)
+                            : Colors.transparent)),
                 child: Row(children: [
                   Icon(_hasLiked ? Icons.favorite : Icons.favorite_border,
                       size: 20, color: _hasLiked ? Colors.pink : Colors.grey),
                   SizedBox(width: 6),
-                  Text(l10n.like_label, style: TextStyle(
-                      color: _hasLiked ? Colors.pink : Colors.grey,
-                      fontWeight: FontWeight.bold))
+                  Text(l10n.like_label,
+                      style: TextStyle(
+                          color: _hasLiked ? Colors.pink : Colors.grey,
+                          fontWeight: FontWeight.bold))
                 ]),
               ),
             ),
@@ -2054,17 +2085,19 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               onTap: _showDislikeDialog,
               borderRadius: BorderRadius.circular(20),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 8),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceVariant.withValues(alpha:0.5),
+                    color:
+                    theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20)),
                 child: Row(children: [
-                  Icon(Icons.thumb_down_off_alt, size: 20,
-                      color: Colors.blueGrey),
+                  Icon(Icons.thumb_down_off_alt,
+                      size: 20, color: Colors.blueGrey),
                   SizedBox(width: 6),
-                  Text(l10n.dislike_label, style: TextStyle(
-                      color: Colors.blueGrey, fontWeight: FontWeight.bold))
+                  Text(l10n.dislike_label,
+                      style: TextStyle(
+                          color: Colors.blueGrey, fontWeight: FontWeight.bold))
                 ]),
               ),
             ),
@@ -2076,26 +2109,36 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               // ✨ 秘訣：數值調到 50，確保按鈕永遠是完美的橢圓膠囊形狀
               borderRadius: BorderRadius.circular(50),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: _isFriend ? theme.colorScheme.surfaceVariant.withValues(alpha:0.8) : theme.colorScheme.primaryContainer,
+                  color: _isFriend
+                      ? theme.colorScheme.surfaceVariant.withValues(alpha: 0.8)
+                      : theme.colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(50), // ✨ 這裡也要改成 50
                 ),
                 child: _isFriendLoading
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2))
                     : Row(
                   children: [
                     Icon(
                       // ✨ 替換圖示：已添加顯示「打勾」，未添加顯示「加號」
                       _isFriend ? Icons.check_rounded : Icons.add_rounded,
                       size: 20,
-                      color: _isFriend ? Colors.grey : theme.colorScheme.onPrimaryContainer,
+                      color: _isFriend
+                          ? Colors.grey
+                          : theme.colorScheme.onPrimaryContainer,
                     ),
                     const SizedBox(width: 4), // 稍微縮減間距，讓膠囊內的元素更緊湊好看
                     Text(
                       l10n.tab_friends, // ✨ 無論狀態為何，通通只顯示「好友」兩個字
                       style: TextStyle(
-                        color: _isFriend ? Colors.grey : theme.colorScheme.onPrimaryContainer,
+                        color: _isFriend
+                            ? Colors.grey
+                            : theme.colorScheme.onPrimaryContainer,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -2111,16 +2154,19 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
-              onPressed: _isTranslating ? null : () =>
-                  _translateProfile(currentLang),
+              onPressed:
+              _isTranslating ? null : () => _translateProfile(currentLang),
               icon: _isTranslating
-                  ? const SizedBox(width: 12,
+                  ? const SizedBox(
+                  width: 12,
                   height: 12,
                   child: CircularProgressIndicator(
                       strokeWidth: 2, color: Colors.grey))
                   : const Icon(Icons.translate, size: 16),
-              label: Text(_isTranslating ? l10n.translating_status : l10n
-                  .translate_profile_btn,
+              label: Text(
+                  _isTranslating
+                      ? l10n.translating_status
+                      : l10n.translate_profile_btn,
                   style: const TextStyle(fontSize: 12)),
             ),
           ),
@@ -2130,8 +2176,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         Row(
           children: [
             if (widget.character.birthday.isNotEmpty) ...[
-              Text('${l10n.charBirthdayLabel}：', style: TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.bold)),
+              Text('${l10n.charBirthdayLabel}：',
+                  style: TextStyle(
+                      color: Colors.grey, fontWeight: FontWeight.bold)),
               Text(widget.character.birthday,
                   style: const TextStyle(color: Colors.grey)),
               const SizedBox(width: 16)
@@ -2161,49 +2208,53 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
           Wrap(
               spacing: 8.0,
               runSpacing: 4.0,
-              children: displayTags.toSet().toList().map((t) =>
-                  Chip(
-                      label: Text(t, style: const TextStyle(fontSize: 12)),
-                      backgroundColor: theme.colorScheme.surfaceVariant
-                          .withValues(alpha:0.5),
-                      side: BorderSide.none,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)))
-              ).toList()
-          ),
+              children: displayTags
+                  .toSet()
+                  .toList()
+                  .map((t) => Chip(
+                  label: Text(t, style: const TextStyle(fontSize: 12)),
+                  backgroundColor: theme.colorScheme.surfaceVariant
+                      .withValues(alpha: 0.5),
+                  side: BorderSide.none,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20))))
+                  .toList()),
           const SizedBox(height: 24),
         ],
         // 喜好 (✨ 換成使用 displayLikes / displayDislikes)
         if (displayLikes.isNotEmpty || displayDislikes.isNotEmpty) ...[
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: theme.cardColor.withValues(alpha:0.5),
+            decoration: BoxDecoration(
+                color: theme.cardColor.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.dividerColor.withValues(alpha:0.5))),
+                border: Border.all(
+                    color: theme.dividerColor.withValues(alpha: 0.5))),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (displayLikes.isNotEmpty) Text(
-                    l10n.char_likes(displayLikes), style: theme.textTheme.bodyMedium),
-                if (displayLikes.isNotEmpty &&
-                    displayDislikes.isNotEmpty) const SizedBox(height: 8),
-                if (displayDislikes.isNotEmpty) Text(l10n.char_dislikes(displayDislikes),
-                    style: theme.textTheme.bodyMedium),
+                if (displayLikes.isNotEmpty)
+                  Text(l10n.char_likes(displayLikes),
+                      style: theme.textTheme.bodyMedium),
+                if (displayLikes.isNotEmpty && displayDislikes.isNotEmpty)
+                  const SizedBox(height: 8),
+                if (displayDislikes.isNotEmpty)
+                  Text(l10n.char_dislikes(displayDislikes),
+                      style: theme.textTheme.bodyMedium),
               ],
             ),
           ),
           const SizedBox(height: 24),
         ],
 
-        Text(l10n.background_story_title, style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold)),
+        Text(l10n.background_story_title,
+            style: theme.textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
 
         // 背景故事 (✨ 換成使用 displayBg)
         Text(
-          displayStory.isEmpty
-              ? l10n.first_meeting_empty
-              : displayStory,
+          displayStory.isEmpty ? l10n.first_meeting_empty : displayStory,
           style: theme.textTheme.bodyMedium?.copyWith(height: 1.7),
         ),
         const SizedBox(height: 32), // 留一點呼吸空間
@@ -2211,12 +2262,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         // 🌟 找到妳畫面上畫相簿/好感度的那個 StreamBuilder
         StreamBuilder<DocumentSnapshot>(
           // 1. ✨ 關鍵修正：路徑改指向這間聊天室 (sessionId)
-          stream: (FirebaseAuth.instance.currentUser != null && widget.sessionId != null)
+          stream: (FirebaseAuth.instance.currentUser != null &&
+              widget.sessionId != null)
               ? FirebaseFirestore.instance
               .collection('artifacts')
               .doc(AppConfig.appId)
               .collection('chat_sessions') // 👈 改成去聊天室集合抓
-              .doc(widget.sessionId)        // 👈 用這間房的 ID，它才有最新的分數
+              .doc(widget.sessionId) // 👈 用這間房的 ID，它才有最新的分數
               .snapshots()
               : const Stream.empty(),
 
@@ -2243,16 +2295,20 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       ],
     );
   }
-    // ==========================================
+  // ==========================================
 // ✉️ 頁籤 2：記憶碎片 (Lore)
 // ==========================================
 
   // ✨ 專屬的「編輯記憶碎片」彈窗
-  void _showEditLoreDialog(BuildContext context, String loreId, Map<String, dynamic> existingData, ThemeData theme) {
+  void _showEditLoreDialog(BuildContext context, String loreId,
+      Map<String, dynamic> existingData, ThemeData theme) {
     // 🌟 1. 回收再利用：把舊資料直接塞進 Controller 的肚子裡當預設值
-    final titleController = TextEditingController(text: existingData['title'] ?? '');
-    final teaserController = TextEditingController(text: existingData['teaser'] ?? '');
-    final contentController = TextEditingController(text: existingData['content'] ?? '');
+    final titleController =
+    TextEditingController(text: existingData['title'] ?? '');
+    final teaserController =
+    TextEditingController(text: existingData['teaser'] ?? '');
+    final contentController =
+    TextEditingController(text: existingData['content'] ?? '');
     final l10n = AppLocalizations.of(context)!;
     // 抓取舊的隱藏狀態
     bool isHidden = existingData['isHidden'] ?? false;
@@ -2264,32 +2320,38 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title:Text(l10n.lore_edit_title),
+              title: Text(l10n.lore_edit_title),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
                       controller: titleController,
-                      decoration:InputDecoration(labelText: l10n.lore_title_label, hintText: l10n.lore_title_hint),
+                      decoration: InputDecoration(
+                          labelText: l10n.lore_title_label,
+                          hintText: l10n.lore_title_hint),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: teaserController,
-                      decoration: InputDecoration(labelText: l10n.lore_teaser_label, hintText: l10n.lore_teaser_hint),
+                      decoration: InputDecoration(
+                          labelText: l10n.lore_teaser_label,
+                          hintText: l10n.lore_teaser_hint),
                       maxLines: 2,
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: contentController,
-                      decoration:InputDecoration(labelText: l10n.lore_content_label, hintText:l10n.lore_content_hint),
+                      decoration: InputDecoration(
+                          labelText: l10n.lore_content_label,
+                          hintText: l10n.lore_content_hint),
                       maxLines: 5,
                     ),
                     const SizedBox(height: 12),
                     // 鎖定設定
                     CheckboxListTile(
-                      title:  Text(l10n.lore_lock_label),
-                      subtitle:  Text(l10n.lore_lock_desc),
+                      title: Text(l10n.lore_lock_label),
+                      subtitle: Text(l10n.lore_lock_desc),
                       value: isHidden,
                       onChanged: (bool? value) {
                         setStateDialog(() {
@@ -2347,7 +2409,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         ToastUtils.showCenterToast(
                           context,
                           l10n.lore_edit_success,
-                          customIcon: Icons.task_alt_rounded, // 💡 總裁細節：用「打勾完成」或「儲存」的圖示，給予玩家確實保存的安心感
+                          customIcon: Icons
+                              .task_alt_rounded, // 💡 總裁細節：用「打勾完成」或「儲存」的圖示，給予玩家確實保存的安心感
                         );
                       }
                     } catch (e) {
@@ -2419,84 +2482,88 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   margin: const EdgeInsets.only(bottom: 12),
                   elevation: 1,
                   color: isHidden
-                      ? theme.disabledColor.withValues(alpha:0.05)
+                      ? theme.disabledColor.withValues(alpha: 0.05)
                       : null,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: theme.dividerColor.withValues(alpha:
-                        0.3)),
+                    side: BorderSide(
+                        color: theme.dividerColor.withValues(alpha: 0.3)),
                   ),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
-                    leading: Icon(
-                      isHidden ? Icons.lock_outline : Icons.mail_outline,
-                      color: isHidden ? Colors.grey : theme.colorScheme.primary,
-                      size: 30,
-                    ),
-                    title: Text(
-                      data['title'] ?? l10n.lore_unnamed,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: isHidden && !_isCreator ? Colors.grey : null,
+                      contentPadding: const EdgeInsets.all(16),
+                      leading: Icon(
+                        isHidden ? Icons.lock_outline : Icons.mail_outline,
+                        color:
+                        isHidden ? Colors.grey : theme.colorScheme.primary,
+                        size: 30,
                       ),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: canViewDetail
-                          ? Text(data['teaser'] ?? '', maxLines: 2,
-                          overflow: TextOverflow.ellipsis)
-                          :  Text(l10n.lore_sealed_msg,
-                          style: TextStyle(fontSize: 12)),
-                    ),
-                    trailing: _isCreator
-                        ? PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert), // 創作者會看到三個點點
-                      onSelected: (value) {
-                        if (value == 'edit') {
-                          // 呼叫編輯的 Dialog (記得要把舊資料 data 傳進去)
-                          _showEditLoreDialog(context, doc.id, data, theme);
-                        } else if (value == 'delete') {
-                          // 呼叫刪除功能
-                          _deleteLore(doc.id);
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit_outlined, size: 20),
-                              SizedBox(width: 8),
-                              Text(l10n.char_edit_fragment),
-                            ],
-                          ),
+                      title: Text(
+                        data['title'] ?? l10n.lore_unnamed,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isHidden && !_isCreator ? Colors.grey : null,
                         ),
-                         PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete_outline, size: 20, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text(l10n.delete_btn, style: TextStyle(color: Colors.red)),
-                            ],
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: canViewDetail
+                            ? Text(data['teaser'] ?? '',
+                            maxLines: 2, overflow: TextOverflow.ellipsis)
+                            : Text(l10n.lore_sealed_msg,
+                            style: TextStyle(fontSize: 12)),
+                      ),
+                      trailing: _isCreator
+                          ? PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert), // 創作者會看到三個點點
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            // 呼叫編輯的 Dialog (記得要把舊資料 data 傳進去)
+                            _showEditLoreDialog(
+                                context, doc.id, data, theme);
+                          } else if (value == 'delete') {
+                            // 呼叫刪除功能
+                            _deleteLore(doc.id);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit_outlined, size: 20),
+                                SizedBox(width: 8),
+                                Text(l10n.char_edit_fragment),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    )
-                    // 如果不是創作者，有權限就顯示箭頭，沒權限就空著
-                        : (canViewDetail ? const Icon(Icons.arrow_forward_ios, size: 14) : null),
-                    onTap: canViewDetail
-                        ? () =>
-                        _showLoreDetailDialog(doc.id, data,
-                            theme)
-                        : () =>
-                    // ✨ 總裁級：記憶尚未解鎖的溫柔提醒，用鎖頭圖示增加故事帶入感！
-                    ToastUtils.showCenterToast(
-                      context,
-                      l10n.lore_not_open_msg,
-                      customIcon: Icons.lock_outline_rounded, // 💡 總裁細節：用精緻的鎖頭圖示，明確暗示「內容尚未解鎖」，比純文字更有 Fu！
-                    )
-                  ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete_outline,
+                                    size: 20, color: Colors.red),
+                                SizedBox(width: 8),
+                                Text(l10n.delete_btn,
+                                    style: TextStyle(color: Colors.red)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                      // 如果不是創作者，有權限就顯示箭頭，沒權限就空著
+                          : (canViewDetail
+                          ? const Icon(Icons.arrow_forward_ios, size: 14)
+                          : null),
+                      onTap: canViewDetail
+                          ? () => _showLoreDetailDialog(doc.id, data, theme)
+                          : () =>
+                      // ✨ 總裁級：記憶尚未解鎖的溫柔提醒，用鎖頭圖示增加故事帶入感！
+                      ToastUtils.showCenterToast(
+                        context,
+                        l10n.lore_not_open_msg,
+                        customIcon: Icons
+                            .lock_outline_rounded, // 💡 總裁細節：用精緻的鎖頭圖示，明確暗示「內容尚未解鎖」，比純文字更有 Fu！
+                      )),
                 );
               }).toList(),
           ],
@@ -2504,9 +2571,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       },
     );
   }
+
 // --- 2. 合併後的詳細彈窗 (支援翻譯) ---
-  void _showLoreDetailDialog(String loreId, Map<String, dynamic> data,
-      ThemeData theme) {
+  void _showLoreDetailDialog(
+      String loreId, Map<String, dynamic> data, ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
     final LoreTranslateService _translateService = LoreTranslateService();
     showDialog(
@@ -2528,7 +2596,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   color: modalTheme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: modalTheme.dividerColor.withValues(alpha:0.5)),
+                      color: modalTheme.dividerColor.withValues(alpha: 0.5)),
                 ),
                 child: SingleChildScrollView(
                   child: Column(
@@ -2550,20 +2618,22 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                           ),
                           // 🦋 翻譯按鈕
                           isTranslating
-                              ? const SizedBox(width: 20,
+                              ? const SizedBox(
+                              width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2))
+                              child:
+                              CircularProgressIndicator(strokeWidth: 2))
                               : IconButton(
                             icon: const Icon(Icons.translate, size: 20),
                             onPressed: () async {
                               setModalState(() => isTranslating = true);
                               try {
                                 //執行 AI 翻譯
-                                final String currentLang = Localizations
-                                    .localeOf(context)
-                                    .languageCode;
-                                final translationResult = await _translateService
-                                    .translateLore(
+                                final String currentLang =
+                                    Localizations.localeOf(context)
+                                        .languageCode;
+                                final translationResult =
+                                await _translateService.translateLore(
                                   targetLang: currentLang,
                                   title: data['title'] ?? '',
                                   content: data['content'] ?? '',
@@ -2588,11 +2658,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                                   ToastUtils.showCenterToast(
                                     context,
                                     l10n.translate_failed(e.toString()),
-                                    isError: true, // 💡 總裁細節：自動帶上紅驚嘆號，清楚明瞭
+                                    isError:
+                                    true, // 💡 總裁細節：自動帶上紅驚嘆號，清楚明瞭
                                   );
                                 }
-                              }finally {
-                                setModalState(() => isTranslating = false);
+                              } finally {
+                                setModalState(
+                                        () => isTranslating = false);
                               }
                             },
                           ),
@@ -2601,17 +2673,18 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                       const Divider(height: 32),
                       Text(
                         displayedContent,
-                        style: modalTheme.textTheme.bodyLarge?.copyWith(
-                            height: 1.8, letterSpacing: 0.5),
+                        style: modalTheme.textTheme.bodyLarge
+                            ?.copyWith(height: 1.8, letterSpacing: 0.5),
                       ),
                       const SizedBox(height: 32),
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text(l10n.lore_collapse, style: TextStyle(
-                              color: modalTheme.colorScheme.primary,
-                              fontWeight: FontWeight.bold)),
+                          child: Text(l10n.lore_collapse,
+                              style: TextStyle(
+                                  color: modalTheme.colorScheme.primary,
+                                  fontWeight: FontWeight.bold)),
                         ),
                       ),
                     ],
@@ -2624,6 +2697,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       },
     );
   }
+
 // --- 3. 輔助小元件：空狀態 ---
   Widget _buildEmptyLoreState() {
     final l10n = AppLocalizations.of(context)!;
@@ -2632,12 +2706,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.mail_outline, size: 60,
-                color: Colors.grey.withValues(alpha:0.5)),
+            Icon(Icons.mail_outline,
+                size: 60, color: Colors.grey.withValues(alpha: 0.5)),
             SizedBox(height: 16),
-            Text(_isCreator
-                ? l10n.lore_write_first(_pronoun)
-                : l10n.char_story_expect(_pronoun),
+            Text(
+                _isCreator
+                    ? l10n.lore_write_first(_pronoun)
+                    : l10n.char_story_expect(_pronoun),
                 style: const TextStyle(color: Colors.grey)),
           ],
         ),
@@ -2676,7 +2751,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.cardColor.withValues(alpha:0.8),
+                color: theme.cardColor.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -2689,14 +2764,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                           .doc(creatorId)
                           .get(),
                       builder: (context, userSnapshot) {
-                        String displayCreatorName = widget.character
-                            .creatorName;
+                        String displayCreatorName =
+                            widget.character.creatorName;
                         String? photoUrl;
                         String? avatarPath;
                         if (userSnapshot.hasData && userSnapshot.data!.exists) {
-                          final userData = userSnapshot.data!.data() as Map<
-                              String,
-                              dynamic>;
+                          final userData =
+                          userSnapshot.data!.data() as Map<String, dynamic>;
                           displayCreatorName =
                               userData['nickname'] ?? displayCreatorName;
                           photoUrl = userData['photoURL'] as String?;
@@ -2720,8 +2794,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                                 backgroundColor: Colors.grey[200],
                                 backgroundImage: imageProvider,
                                 child: imageProvider == null
-                                    ? const Icon(
-                                    Icons.person, color: Colors.white)
+                                    ? const Icon(Icons.person,
+                                    color: Colors.white)
                                     : null,
                               ),
                             ),
@@ -2730,8 +2804,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                 Text(l10n.creator_label, style: TextStyle(
-                                      fontSize: 12, color: Colors.grey)),
+                                  Text(l10n.creator_label,
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.grey)),
                                   Text(
                                     displayCreatorName,
                                     style: const TextStyle(
@@ -2750,8 +2825,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       // 🌟根據 _isFollowing 狀態決定顏色！
-                      backgroundColor: _isFollowing ? Colors.grey.shade400 : theme.colorScheme.primaryContainer,
-                      foregroundColor: _isFollowing ? Colors.white : theme.colorScheme.onPrimaryContainer,
+                      backgroundColor: _isFollowing
+                          ? Colors.grey.shade400
+                          : theme.colorScheme.primaryContainer,
+                      foregroundColor: _isFollowing
+                          ? Colors.white
+                          : theme.colorScheme.onPrimaryContainer,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -2763,8 +2842,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                         creatorName: creatorName,
                       );
                     },
-                    icon: Icon(_isFollowing ? Icons.check : Icons.add, size: 18),
-                    label: Text(_isFollowing ? l10n.followed_btn : l10n.follow_btn, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    icon:
+                    Icon(_isFollowing ? Icons.check : Icons.add, size: 18),
+                    label: Text(
+                        _isFollowing ? l10n.followed_btn : l10n.follow_btn,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -2801,7 +2883,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
               Padding(
                 padding: EdgeInsets.all(32.0),
                 child: Center(
-                  child: Text(l10n.echo_empty_msg,
+                  child: Text(
+                    l10n.echo_empty_msg,
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey),
                   ),
@@ -2817,37 +2900,37 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                 final isAdmin = currentUserId == adminUid;
 
                 final bool isTranslating = _translatingEchoIds.contains(docId);
-                final bool hasTranslation = _translatedEchoes.containsKey(
-                    docId);
-                final String displayContent = _translatedEchoes[docId] ??
-                    originalContent;
+                final bool hasTranslation =
+                _translatedEchoes.containsKey(docId);
+                final String displayContent =
+                    _translatedEchoes[docId] ?? originalContent;
 
                 Color borderColor = Colors.grey;
-                Widget themeIconWidget = const Icon(
-                    Icons.sticky_note_2, size: 16, color: Colors.grey);
+                Widget themeIconWidget = const Icon(Icons.sticky_note_2,
+                    size: 16, color: Colors.grey);
                 Color bgColor = theme.cardColor;
 
                 // 便條貼主題判斷
                 if (themeType == 'butterfly') {
-                  borderColor = Colors.purpleAccent.withValues(alpha:0.5);
+                  borderColor = Colors.purpleAccent.withValues(alpha: 0.5);
                   themeIconWidget =
                   const Text('🦋', style: TextStyle(fontSize: 14));
-                  bgColor = Colors.purple.withValues(alpha:0.05);
+                  bgColor = Colors.purple.withValues(alpha: 0.05);
                 } else if (themeType == 'sprout') {
-                  borderColor = Colors.green.withValues(alpha:0.5);
-                  themeIconWidget = Icon(
-                      Icons.eco, size: 16, color: borderColor.withValues(alpha:0.8));
-                  bgColor = Colors.green.withValues(alpha:0.05);
+                  borderColor = Colors.green.withValues(alpha: 0.5);
+                  themeIconWidget = Icon(Icons.eco,
+                      size: 16, color: borderColor.withValues(alpha: 0.8));
+                  bgColor = Colors.green.withValues(alpha: 0.05);
                 } else if (themeType == 'star') {
-                  borderColor = Colors.blue.withValues(alpha:0.5);
-                  themeIconWidget = Icon(Icons.star_border, size: 16,
-                      color: borderColor.withValues(alpha:0.8));
-                  bgColor = Colors.blue.withValues(alpha:0.05);
+                  borderColor = Colors.blue.withValues(alpha: 0.5);
+                  themeIconWidget = Icon(Icons.star_border,
+                      size: 16, color: borderColor.withValues(alpha: 0.8));
+                  bgColor = Colors.blue.withValues(alpha: 0.05);
                 } else if (themeType == 'planet') {
-                  borderColor = Colors.orange.withValues(alpha:0.5);
-                  themeIconWidget = Icon(Icons.public, size: 16,
-                      color: borderColor.withValues(alpha:0.8));
-                  bgColor = Colors.orange.withValues(alpha:0.05);
+                  borderColor = Colors.orange.withValues(alpha: 0.5);
+                  themeIconWidget = Icon(Icons.public,
+                      size: 16, color: borderColor.withValues(alpha: 0.8));
+                  bgColor = Colors.orange.withValues(alpha: 0.05);
                 }
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
@@ -2871,22 +2954,21 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                                 InkWell(
                                   onTap: () => _reportEcho(docId),
                                   child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8.0),
-                                    child: Icon(
-                                        Icons.report_gmailerrorred, size: 16,
-                                        color: Colors.grey),
+                                    padding:
+                                    EdgeInsets.symmetric(horizontal: 8.0),
+                                    child: Icon(Icons.report_gmailerrorred,
+                                        size: 16, color: Colors.grey),
                                   ),
                                 ),
                               isTranslating
                                   ? const SizedBox(
-                                  width: 14, height: 14,
+                                  width: 14,
+                                  height: 14,
                                   child: CircularProgressIndicator(
                                       strokeWidth: 2, color: Colors.grey))
                                   : InkWell(
-                                onTap: () =>
-                                    _translateSingleEcho(
-                                        docId, originalContent),
+                                onTap: () => _translateSingleEcho(
+                                    docId, originalContent),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0),
@@ -2905,8 +2987,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                                   // 請確保妳有寫好 _deleteEcho 這個函式喔！
                                   child: const Padding(
                                     padding: EdgeInsets.only(left: 8.0),
-                                    child: Icon(Icons.delete_outline, size: 16,
-                                        color: Colors.redAccent),
+                                    child: Icon(Icons.delete_outline,
+                                        size: 16, color: Colors.redAccent),
                                   ),
                                 ),
                             ],
@@ -2922,9 +3004,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
                           fontStyle: hasTranslation
                               ? FontStyle.normal
                               : FontStyle.italic,
-                          color: hasTranslation
-                              ? theme.colorScheme.primary
-                              : null,
+                          color:
+                          hasTranslation ? theme.colorScheme.primary : null,
                         ),
                       ),
                     ],
@@ -2937,6 +3018,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage> with Single
     );
   }
 }
+
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar tabBar;
   final Color backgroundColor;
@@ -2946,7 +3028,8 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   double get maxExtent => tabBar.preferredSize.height;
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: backgroundColor, // 避免往上滑時背後的文字透出來
       child: tabBar,
@@ -2958,6 +3041,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     return false;
   }
 }
+
 class CharacterGalleryWidget extends StatefulWidget {
   final String characterId;
   final Character character;
@@ -2972,6 +3056,7 @@ class CharacterGalleryWidget extends StatefulWidget {
   @override
   State<CharacterGalleryWidget> createState() => _CharacterGalleryWidgetState();
 }
+
 class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
   String? _selectedBackground;
   // ☁️ 抓取雲端照片清單
@@ -2987,7 +3072,8 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
           .get();
 
       // ✨ 關鍵：將 Map 轉為 CharacterPhoto 物件，並同時轉換 gs:// 網址
-      List<CharacterPhoto> photoList = await Future.wait(snapshot.docs.map((doc) async {
+      List<CharacterPhoto> photoList =
+      await Future.wait(snapshot.docs.map((doc) async {
         final data = doc.data();
         // 1. 先把資料轉成初步的 CharacterPhoto 物件
         // 注意：這裡的 fromMap 要根據您的類別建構子調整
@@ -2995,7 +3081,9 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
         // 2. ⚡️ 執行變身術：把 gs:// 換成 https://
         if (photo.imageUrl.startsWith('gs://')) {
           try {
-            photo.imageUrl = await FirebaseStorage.instance.refFromURL(photo.imageUrl).getDownloadURL();
+            photo.imageUrl = await FirebaseStorage.instance
+                .refFromURL(photo.imageUrl)
+                .getDownloadURL();
           } catch (err) {
             print("相簿單張照片轉換失敗: $err");
           }
@@ -3009,6 +3097,7 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
       throw e;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -3047,9 +3136,14 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(l10n.gallery_title,
-                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                  Text(l10n.gallery_current_affection(widget.currentAffection.toString()),
-                      style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
+                      style: theme.textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                      l10n.gallery_current_affection(
+                          widget.currentAffection.toString()),
+                      style: TextStyle(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -3068,7 +3162,8 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
                   final String photoUrl = photo.imageUrl;
                   final String photoDesc = photo.description;
                   final int requiredAffection = photo.requiredAffection;
-                  final bool isUnlocked = widget.currentAffection >= requiredAffection;
+                  final bool isUnlocked =
+                      widget.currentAffection >= requiredAffection;
                   final bool isSelected = _selectedBackground == photoUrl;
                   // 🛡️ 加上這個防呆守衛！
                   // 如果這筆資料的網址是空的，我們就回傳一個空的隱藏元件，不要讓它去畫圖
@@ -3080,15 +3175,18 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
                       if (isUnlocked) {
                         if (isSelected) {
                           // ✨ 情況 A：玩家按了「已經被選中」的照片 ➡️ 執行取消！
-                          setState(() => _selectedBackground = ''); // 把選取狀態清空
-                          _updateCallBackgroundToCloud(''); // 傳空字串給 Firebase，代表恢復預設
+                          setState(
+                                  () => _selectedBackground = ''); // 把選取狀態清空
+                          _updateCallBackgroundToCloud(
+                              ''); // 傳空字串給 Firebase，代表恢復預設
 
                           // 這裡妳可以另外寫一個提示，或是直接共用
                           // ✨ 總裁級：背景已重置的優雅回饋，輕巧一閃，不干擾視覺
                           ToastUtils.showCenterToast(
                             context,
                             l10n.gallery_reset_bg,
-                            customIcon: Icons.refresh_rounded, // 💡 用「重置/刷新」圖示，與「重置背景」的語意完美對應
+                            customIcon: Icons
+                                .refresh_rounded, // 💡 用「重置/刷新」圖示，與「重置背景」的語意完美對應
                           );
                         } else {
                           // ✨ 情況 B：玩家按了「還沒選中」的照片 ➡️ 執行設定！
@@ -3101,14 +3199,8 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
                         _showLockSnackBar(context, requiredAffection);
                       }
                     },
-                    child: _buildPhotoCard(
-                        photoUrl,
-                        photoDesc,
-                        isUnlocked,
-                        isSelected,
-                        requiredAffection,
-                        theme
-                    ),
+                    child: _buildPhotoCard(photoUrl, photoDesc,
+                        isUnlocked, isSelected, requiredAffection, theme),
                   );
                 },
               ),
@@ -3120,7 +3212,8 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
   }
 
   // 🖼️ 漂亮的相片卡片組件（含模糊邏輯）
-  Widget _buildPhotoCard(String url, String desc, bool isUnlocked, bool isSelected, int req, ThemeData theme) {
+  Widget _buildPhotoCard(String url, String desc, bool isUnlocked,
+      bool isSelected, int req, ThemeData theme) {
     return Container(
       width: 110,
       margin: const EdgeInsets.only(right: 12),
@@ -3157,7 +3250,8 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
               // 圖片還在下載時顯示的佔位圖（轉圈圈或灰色塊）
               placeholder: (context, url) => Container(
                 color: Colors.grey.shade200,
-                child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                child: const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2)),
               ),
               // 萬一網址掛掉顯示的錯誤圖
               errorWidget: (context, url, error) => Container(
@@ -3169,18 +3263,29 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
             // --- 接下來是原本的鎖頭和打勾邏輯，維持不變 ---
             if (!isUnlocked)
               Container(
-                color: Colors.black.withValues(alpha:0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.lock_outline, color: Colors.white, size: 28),
-                    Text('$req 💕', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    const Icon(Icons.lock_outline,
+                        color: Colors.white, size: 28),
+                    Text('$req 💕',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
 
             if (isSelected)
-              const Positioned(top: 8, right: 8, child: CircleAvatar(radius: 10, backgroundColor: Colors.green, child: Icon(Icons.check, color: Colors.white, size: 14))),
+              const Positioned(
+                  top: 8,
+                  right: 8,
+                  child: CircleAvatar(
+                      radius: 10,
+                      backgroundColor: Colors.green,
+                      child: Icon(Icons.check, color: Colors.white, size: 14))),
           ],
         ),
       ),
@@ -3213,9 +3318,15 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
   Future<void> _updateCallBackgroundToCloud(String url) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-    await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('characters').doc(widget.character.id).set({
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('characters')
+        .doc(widget.character.id)
+        .set({
       'callBackgroundUrl': url,
       'lastUpdated': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
 }
+

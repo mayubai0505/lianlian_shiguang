@@ -992,62 +992,85 @@ class _MomentCardState extends State<MomentCard> {
   }
 
   // ✨ 總裁專屬：文字 Tag 智慧解析器
-  Widget _buildContentWithMentions(String text, ThemeData theme) {
-    // 1. 設定要尋找的目標：@加上非空白字元
+  // ✨ 總裁專屬：文字 Tag 智慧解析器
+  Widget _buildContentWithMentions(
+      String text,
+      ThemeData theme,
+      ) {
+    // 一般文章文字統一跟隨觀看者的主題色
+    final normalTextStyle = TextStyle(
+      color: theme.colorScheme.primary,
+      fontSize: 15,
+    );
+
+    // 尋找 @ 加上非空白字元
     final RegExp mentionRegex = RegExp(r'(@\S+)');
     final Iterable<RegExpMatch> matches = mentionRegex.allMatches(text);
 
-    // 如果沒有任何 @標記，就直接回傳原本單純的 Text，省效能！
+    // 沒有任何 Tag 時，整篇文章仍然跟隨觀看者的主題色
     if (matches.isEmpty) {
       return Text(
         text,
-        style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 15),
+        style: normalTextStyle,
       );
     }
 
     int currentIndex = 0;
-    List<TextSpan> spans = [];
+    final List<TextSpan> spans = [];
 
-    // 2. 把文字切塊，遇到 @ 就換顏色和加上點擊事件
-    for (RegExpMatch match in matches) {
-      // 處理 @ 前面的普通文字
+    // 把文字切塊，遇到 @ 就套用粉紅色與點擊事件
+    for (final RegExpMatch match in matches) {
+      // Tag 前面的普通文字
       if (match.start > currentIndex) {
-        spans.add(TextSpan(
-          text: text.substring(currentIndex, match.start),
-          style: TextStyle(color: theme.colorScheme.primary, fontSize: 15),
-        ));
+        spans.add(
+          TextSpan(
+            text: text.substring(
+              currentIndex,
+              match.start,
+            ),
+          ),
+        );
       }
 
-      // 處理 @ 標記本身
+      // Tag 本身
       final String mention = match.group(0)!;
-      final String characterName = mention.substring(1); // 把 @ 拿掉，剩下名字 (例如: 程宇)
-      spans.add(TextSpan(
-        text: mention,
-        style: const TextStyle(
-          color: Colors.pinkAccent, // ✨ 標記顏色：改成妳喜歡的顏色 (粉紅或藍色)
-          fontWeight: FontWeight.bold,
+      final String characterName = mention.substring(1);
+
+      spans.add(
+        TextSpan(
+          text: mention,
+          style: const TextStyle(
+            color: Colors.pinkAccent,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              _openMentionedCharacter(characterName);
+            },
         ),
-        recognizer: TapGestureRecognizer()
-          ..onTap = () {
-            _openMentionedCharacter(
-              characterName,
-            );
-          },
-      ));
+      );
 
       currentIndex = match.end;
     }
 
-    // 處理最後剩下的普通文字
+    // Tag 後面剩餘的普通文字
     if (currentIndex < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(currentIndex),
-        style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 15),
-      ));
+      spans.add(
+        TextSpan(
+          text: text.substring(currentIndex),
+        ),
+      );
     }
 
-    // 3. 把組裝好的文字碎片用 RichText 顯示出來
-    return RichText(text: TextSpan(children: spans));
+    // 最外層統一套用一般文章主題色
+    // 只有 Tag 會自行覆蓋成粉紅色
+    return RichText(
+      text: TextSpan(
+        style: normalTextStyle,
+        children: spans,
+      ),
+    );
   }
 
   @override

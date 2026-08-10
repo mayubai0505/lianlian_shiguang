@@ -102,6 +102,7 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
   bool _isPublishing = false;
   bool _isUploadingVoiceBank = false;
   bool _isSyncingCreatorNames = false;
+  bool _isBackfillingMomentSearch = false;
   final FirebaseFunctions _functions =
   FirebaseFunctions.instanceFor(
     region: 'asia-east1',
@@ -130,6 +131,124 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
     _titleController.dispose();
     _contentController.dispose();
     super.dispose();
+  }
+
+  Future<void> _backfillMomentSearchKeywords() async {
+    if (_isBackfillingMomentSearch) return;
+
+    final bool confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('補建拾光牆搜尋索引'),
+        content: const Text(
+          '系統會掃描所有舊公開貼文，並補上搜尋關鍵字。'
+              '處理期間請不要關閉後台頁面，也不要重複點擊。\n\n'
+              '確定要開始嗎？',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('取消'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            icon: const Icon(Icons.manage_search_rounded),
+            label: const Text('開始補建'),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+
+    if (!confirmed || !mounted) return;
+
+    setState(() {
+      _isBackfillingMomentSearch = true;
+    });
+
+    try {
+      final callable = _functions.httpsCallable(
+        'backfillMomentSearchKeywords',
+        options: HttpsCallableOptions(
+          timeout: const Duration(minutes: 9),
+        ),
+      );
+
+      final result = await callable.call();
+      final data = result.data is Map
+          ? Map<String, dynamic>.from(result.data as Map)
+          : <String, dynamic>{};
+
+      final int scannedCount =
+          (data['scannedCount'] as num?)?.toInt() ?? 0;
+      final int updatedCount =
+          (data['updatedCount'] as num?)?.toInt() ?? 0;
+      final int batchCount =
+          (data['batchCount'] as num?)?.toInt() ?? 0;
+
+      debugPrint(
+        '✅ 拾光牆搜尋索引補建完成：'
+            'scanned=$scannedCount, '
+            'updated=$updatedCount, '
+            'batches=$batchCount',
+      );
+
+      if (!mounted) return;
+
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.check_circle_rounded, color: Colors.green),
+              SizedBox(width: 10),
+              Text('補建完成'),
+            ],
+          ),
+          content: Text(
+            '掃描公開貼文：$scannedCount 篇\n'
+                '更新搜尋索引：$updatedCount 篇\n'
+                '完成批次：$batchCount 批',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('知道了'),
+            ),
+          ],
+        ),
+      );
+    } on FirebaseFunctionsException catch (error, stackTrace) {
+      debugPrint('❌ 拾光牆搜尋索引補建失敗：${error.code}');
+      debugPrint('message: ${error.message}');
+      debugPrint('details: ${error.details}');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        error.message ?? '搜尋索引補建失敗',
+        isError: true,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('❌ 拾光牆搜尋索引補建發生未知錯誤：$error');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '搜尋索引補建失敗：$error',
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isBackfillingMomentSearch = false;
+        });
+      }
+    }
   }
 
   Future<void> _syncCreatorNames() async {
@@ -354,39 +473,39 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
         customIcon: Icons.cloud_done_rounded,
       );
     } on FirebaseFunctionsException catch ( e, stackTrace ) {
-    debugPrint(
-    '========== uploadVoiceBank 失敗 ==========',
-    );
-    debugPrint('code: ${e.code}');
-    debugPrint('message: ${e.message}');
-    debugPrint('details: ${e.details}');
-    debugPrintStack(stackTrace: stackTrace,);
+      debugPrint(
+        '========== uploadVoiceBank 失敗 ==========',
+      );
+      debugPrint('code: ${e.code}');
+      debugPrint('message: ${e.message}');
+      debugPrint('details: ${e.details}');
+      debugPrintStack(stackTrace: stackTrace,);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    ToastUtils.showCenterToast(context, e.message ?? 'Voice Bank 同步失敗', isError: true,);
+      ToastUtils.showCenterToast(context, e.message ?? 'Voice Bank 同步失敗', isError: true,);
 
     } catch (e, stackTrace) {
-    debugPrint(
-    'Voice Bank 同步未知錯誤：$e',
-    );
-    debugPrintStack(
-    stackTrace: stackTrace,
-    );
+      debugPrint(
+        'Voice Bank 同步未知錯誤：$e',
+      );
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    ToastUtils.showCenterToast(
-    context,
-    'Voice Bank 同步失敗：$e',
-    isError: true,
-    );
+      ToastUtils.showCenterToast(
+        context,
+        'Voice Bank 同步失敗：$e',
+        isError: true,
+      );
     } finally {
-    if (mounted) {
-    setState(() {
-    _isUploadingVoiceBank = false;
-    });
-    }
+      if (mounted) {
+        setState(() {
+          _isUploadingVoiceBank = false;
+        });
+      }
     }
   }
 
@@ -3088,6 +3207,68 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage> with Sing
             // 🌍 遊玩指南翻譯同步
             _buildHelpTranslationAdminCard(
               context,
+            ),
+
+            const SizedBox(height: 20),
+
+            // 🔎 拾光牆搜尋索引管理
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.manage_search_rounded,
+                          color: Colors.blueAccent,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            '拾光牆搜尋索引',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      '掃描所有舊公開貼文，依貼文內容與作者名稱補上 '
+                          'searchKeywords，讓歷史貼文也能在拾光牆被搜尋。'
+                          '重複執行會重新整理索引，不會建立重複貼文。',
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        onPressed: _isBackfillingMomentSearch
+                            ? null
+                            : _backfillMomentSearchKeywords,
+                        icon: _isBackfillingMomentSearch
+                            ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                            : const Icon(Icons.saved_search_rounded),
+                        label: Text(
+                          _isBackfillingMomentSearch
+                              ? '正在補建搜尋索引...'
+                              : '補建舊公開貼文搜尋索引',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
 
             const SizedBox(height: 20),

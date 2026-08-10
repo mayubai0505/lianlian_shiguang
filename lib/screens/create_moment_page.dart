@@ -13,7 +13,7 @@ import 'package:flutter/foundation.dart';
 import '../services/toast_utils.dart';
 import 'character_model.dart';
 import '../utils/image_utils.dart';
-import 'character_model.dart';
+import '../utils/moment_search_utils.dart';
 //發文編輯器 / 創作中心(點擊+後才會出現的頁面)
 class CreateMomentPage extends StatefulWidget {
   // ✨ 門禁更新：不強制要求傳入 Character 物件，而是傳入具體的名稱和照片
@@ -123,6 +123,10 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
         'authorAvatar': widget.authorAvatar,
         'createdBy': _userId,
         'content': content,
+        'searchKeywords': buildMomentSearchKeywords(
+          content: content,
+          authorName: widget.authorName,
+        ),
         'mentions': _selectedMentions,
         'imageUrl': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
@@ -952,113 +956,113 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
           decoration: themeNotifier.currentBackground,
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            children: [
-              // 乾淨的 UI：只顯示傳進來的發文者頭像與名字
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundImage: _getAvatarProvider(widget.authorAvatar),
-                    backgroundColor: Colors.grey[200],
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    widget.authorName,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                ],
-              ),
+              children: [
+                // 乾淨的 UI：只顯示傳進來的發文者頭像與名字
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundImage: _getAvatarProvider(widget.authorAvatar),
+                      backgroundColor: Colors.grey[200],
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      widget.authorName,
+                      style: theme.textTheme.titleLarge,
+                    ),
+                  ],
+                ),
 
-              const SizedBox(height: 16),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _contentController,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                          hintText: l10n.moment_create_hint,
-                          border: InputBorder.none,
+                const SizedBox(height: 16),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _contentController,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          decoration: InputDecoration(
+                            hintText: l10n.moment_create_hint,
+                            border: InputBorder.none,
+                          ),
                         ),
-                      ),
 
 // 🏷️ 玩家輸入 @ 時出現
-                      _buildMentionSuggestions(theme),
+                        _buildMentionSuggestions(theme),
 
-                      const SizedBox(height: 16),
-                      // 顯示已選擇的圖片預覽
-                      if (_pickedImage != null)
-                        Stack(
-                          alignment: Alignment.topRight,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.file(File(_pickedImage!.path)),
-                            ),
-                            IconButton(
-                              icon: const CircleAvatar(
-                                backgroundColor: Colors.black54,
-                                child: Icon(Icons.close, color: Colors.white, size: 16),
+                        const SizedBox(height: 16),
+                        // 顯示已選擇的圖片預覽
+                        if (_pickedImage != null)
+                          Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.file(File(_pickedImage!.path)),
                               ),
-                              onPressed: () => setState(() => _pickedImage = null),
-                            )
-                          ],
-                        ),
-                    ],
+                              IconButton(
+                                icon: const CircleAvatar(
+                                  backgroundColor: Colors.black54,
+                                  child: Icon(Icons.close, color: Colors.white, size: 16),
+                                ),
+                                onPressed: () => setState(() => _pickedImage = null),
+                              )
+                            ],
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const Divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        _isPublic ? Icons.public : Icons.lock_outline,
-                        color: _isPublic ? Colors.lightBlueAccent : Colors.grey,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(_isPublic ? l10n.moment_create_visibility_public : l10n.moment_create_visibility_private,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: _isPublic ? Colors.lightBlueAccent : Colors.grey
+                const Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          _isPublic ? Icons.public : Icons.lock_outline,
+                          color: _isPublic ? Colors.lightBlueAccent : Colors.grey,
                         ),
+                        const SizedBox(width: 8),
+                        Text(_isPublic ? l10n.moment_create_visibility_public : l10n.moment_create_visibility_private,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: _isPublic ? Colors.lightBlueAccent : Colors.grey
+                          ),
+                        ),
+                      ],
+                    ),
+                    Switch(
+                      value: _isPublic,
+                      activeColor: Colors.lightBlueAccent,
+                      onChanged: (val) => setState(() => _isPublic = val),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                Row(
+                  children: [
+                    IconButton(
+                      tooltip: '新增圖片',
+                      icon: Icon(
+                        Icons.photo_library_outlined,
+                        color: theme.colorScheme.primary,
                       ),
-                    ],
-                  ),
-                  Switch(
-                    value: _isPublic,
-                    activeColor: Colors.lightBlueAccent,
-                    onChanged: (val) => setState(() => _isPublic = val),
-                  ),
-                ],
-              ),
-              const Divider(),
-              Row(
-                children: [
-                  IconButton(
-                    tooltip: '新增圖片',
-                    icon: Icon(
-                      Icons.photo_library_outlined,
-                      color: theme.colorScheme.primary,
+                      onPressed: _pickImage,
                     ),
-                    onPressed: _pickImage,
-                  ),
 
-                  IconButton(
-                    tooltip: '標記角色',
-                    icon: Icon(
-                      Icons.alternate_email_rounded,
-                      color: theme.colorScheme.primary,
+                    IconButton(
+                      tooltip: '標記角色',
+                      icon: Icon(
+                        Icons.alternate_email_rounded,
+                        color: theme.colorScheme.primary,
+                      ),
+                      onPressed: _showMentionCharacterSheet,
                     ),
-                    onPressed: _showMentionCharacterSheet,
-                  ),
-                ],
-              ),
-        ]
+                  ],
+                ),
+              ]
           ),
         ),
       ),

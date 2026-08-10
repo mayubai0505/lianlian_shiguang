@@ -21,6 +21,7 @@ class MomentDetailPage extends StatefulWidget {
 
 class _MomentDetailPageState extends State<MomentDetailPage> {
   Map<String, dynamic>? _replyTarget;
+  final Set<String> _expandedReplyThreads = <String>{};
   final TextEditingController _commentController = TextEditingController();
   final String _userId = FirebaseAuth.instance.currentUser?.uid ?? '';
   String? _myNickname;
@@ -35,8 +36,12 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
   }
 
   Future<void> _fetchMomentData() async {
-    final doc = await _db.collection('artifacts').doc(AppConfig.appId)
-        .collection('moments').doc(widget.postId).get();
+    final doc = await _db
+        .collection('artifacts')
+        .doc(AppConfig.appId)
+        .collection('moments')
+        .doc(widget.postId)
+        .get();
     if (doc.exists && mounted) {
       setState(() {
         _moment = Moment.fromFirestore(doc);
@@ -61,19 +66,30 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     try {
       bool confirm = await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(l10n.moment_delete_confirm_title),
-          content:Text(l10n.moment_delete_confirm_content),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancelButton)),
-            TextButton(onPressed: () => Navigator.pop(context, true), child:Text(l10n.action_confirm_delete, style: TextStyle(color: Colors.red))),
-          ],
-        ),
-      ) ?? false;
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(l10n.moment_delete_confirm_title),
+              content: Text(l10n.moment_delete_confirm_content),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: Text(l10n.cancelButton)),
+                TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: Text(l10n.action_confirm_delete,
+                        style: TextStyle(color: Colors.red))),
+              ],
+            ),
+          ) ??
+          false;
 
       if (confirm) {
-        await _db.collection('artifacts').doc(AppConfig.appId).collection('moments').doc(momentId).delete();
+        await _db
+            .collection('artifacts')
+            .doc(AppConfig.appId)
+            .collection('moments')
+            .doc(momentId)
+            .delete();
         return true;
       }
     } catch (e) {
@@ -158,7 +174,8 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         notificationId = 'moment_comment_${postId}_$commentId';
       } else {
         // 其他通知保底
-        notificationId = '${type}_${postId}_${_userId}_${DateTime.now().millisecondsSinceEpoch}';
+        notificationId =
+            '${type}_${postId}_${_userId}_${DateTime.now().millisecondsSinceEpoch}';
       }
 
       await FirebaseFirestore.instance
@@ -170,9 +187,7 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         'type': type,
         'fromId': _userId,
         'fromName': senderName,
-        'title': type == 'like'
-            ? l10n.moment_notification_new_like
-            : '新留言',
+        'title': type == 'like' ? l10n.moment_notification_new_like : '新留言',
         'body': body,
         'postId': postId,
         if (commentId != null) 'commentId': commentId,
@@ -187,6 +202,11 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
   // 3. ⚠️ 留言邏輯 (這段絕對不能刪掉喔！)
   Future<void> _saveCommentToDb(String content, Moment moment) async {
     if (content.trim().isEmpty) return;
+    final String? repliedRootCommentId =
+    (_replyTarget?['rootCommentId'] ??
+        _replyTarget?['commentId'])
+        ?.toString()
+        .trim();
 
     try {
       final String currentDisplayName = await _getMyPlayerIdDisplayName();
@@ -207,7 +227,8 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
         'authorName': currentDisplayName,
 
         'createdAt': FieldValue.serverTimestamp(),
-        'parentCommentId': _replyTarget?['commentId'],
+        'parentCommentId':
+            _replyTarget?['rootCommentId'] ?? _replyTarget?['commentId'],
         'replyToName': _replyTarget?['authorName'],
       });
 
@@ -226,6 +247,15 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       FocusScope.of(context).unfocus();
 
       setState(() {
+        if (repliedRootCommentId != null &&
+            repliedRootCommentId.isNotEmpty) {
+          // 發布新回覆後維持收合狀態。
+          // 最新回覆會直接顯示，舊回覆則放進「查看其他N則回覆」。
+          _expandedReplyThreads.remove(
+            repliedRootCommentId,
+          );
+        }
+
         _replyTarget = null;
       });
     } catch (e) {
@@ -259,9 +289,10 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
           // ✨ 關鍵修改：用 createdBy 來當作親媽 UID
           String motherUid = characterData['createdBy'] ?? '';
           // 3. 🎯 核心重點：判斷是否為親媽 Tag 自己的小孩
-           if (motherUid.isNotEmpty && motherUid != _userId) {
+          if (motherUid.isNotEmpty && motherUid != _userId) {
             // 不是親媽！代表是其他玩家或角色 Tag 的，可以發送通知信！
-             String mailBody = l10n.moment_mention_mail_body(currentDisplayName, name);
+            String mailBody =
+                l10n.moment_mention_mail_body(currentDisplayName, name);
             await _sendNotificationLetter(
               recipientId: motherUid, // 信件精準投遞給親媽的 UID
               postId: postId,
@@ -280,194 +311,499 @@ class _MomentDetailPageState extends State<MomentDetailPage> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title:Text(l10n.moment_detail_title)),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                    children: [
-                      // --- A. 動態主體卡片 ---
-                      MomentCard(
-                        moment: _moment!,
-                        currentUserId: _userId,
-                        onLikeTapped: () => _handleLikeTaskProgress(_moment!),
-                        onDeleteTapped: () {
-                          _deleteMoment(_moment!.id).then((success) {
-                            if (success && mounted) Navigator.pop(context);
-                          });
-                        },
-                      ),
+      appBar: AppBar(title: Text(l10n.moment_detail_title)),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // --- A. 動態主體卡片 ---
+                        MomentCard(
+                          moment: _moment!,
+                          currentUserId: _userId,
+                          onLikeTapped: () => _handleLikeTaskProgress(_moment!),
+                          onDeleteTapped: () {
+                            _deleteMoment(_moment!.id).then((success) {
+                              if (success && mounted) Navigator.pop(context);
+                            });
+                          },
+                        ),
 
-                      const Divider(thickness: 1, height: 1),
+                        const Divider(thickness: 1, height: 1),
 
-                      // --- B. 留言清單標題 ---
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-                        child: Text(l10n.moment_comment_title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                      ),
+                        // --- B. 留言清單標題 ---
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                          child: Text(l10n.moment_comment_title,
+                              style: theme.textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold)),
+                        ),
 
-                      // --- C. 即時留言列表 (StreamBuilder) ---
-                      StreamBuilder<QuerySnapshot>(
-                        stream: _db
-                            .collection('artifacts')
-                            .doc(AppConfig.appId)
-                            .collection('moments')
-                            .doc(widget.postId)
-                            .collection('comments')
-                            .orderBy('createdAt', descending: false) // 由舊到新排列
-                            .snapshots(),
-                        builder: (context, commentSnapshot) {
-                          if (!commentSnapshot.hasData) return const SizedBox();
-                          final docs = commentSnapshot.data!.docs;
+                        // --- C. 即時留言列表（主留言＋回覆分組）---
+                        StreamBuilder<QuerySnapshot>(
+                          stream: _db
+                              .collection('artifacts')
+                              .doc(AppConfig.appId)
+                              .collection('moments')
+                              .doc(widget.postId)
+                              .collection('comments')
+                              .orderBy(
+                                'createdAt',
+                                descending: false,
+                              )
+                              .snapshots(),
+                          builder: (context, commentSnapshot) {
+                            if (commentSnapshot.hasError) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 24),
+                                child: Center(
+                                  child: Text(
+                                    '留言載入失敗，請稍後再試',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                              );
+                            }
 
-                          if (docs.isEmpty) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 40),
-                              child: Center(child: Text(l10n.moment_comment_empty, style: TextStyle(color: Colors.grey))),
-                            );
-                          }
+                            if (!commentSnapshot.hasData) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 24),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
 
-                          return ListView.builder( // ✨ 改回 builder 以支援縮排排版
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(), // 讓外層 SingleChildScrollView 處理滾動
-                            itemCount: docs.length,
-                            itemBuilder: (context, index) {
-                              final data = docs[index].data() as Map<String, dynamic>;
-                              final commentId = docs[index].id;
+                            final docs = commentSnapshot.data!.docs;
 
-                              // 1. ✨ 回覆邏輯判斷
-                              bool isReply = data['parentCommentId'] != null;
+                            if (docs.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 40,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    l10n.moment_comment_empty,
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            // 建立留言ID對應表，用來處理舊資料中
+                            // 「回覆指向另一則回覆」的情況。
+                            final docsById = {
+                              for (final doc in docs) doc.id: doc,
+                            };
+
+                            String resolveRootCommentId(
+                              String initialParentId,
+                            ) {
+                              String currentId = initialParentId;
+                              final visitedIds = <String>{};
+
+                              while (currentId.isNotEmpty &&
+                                  !visitedIds.contains(currentId)) {
+                                visitedIds.add(currentId);
+
+                                final parentDoc = docsById[currentId];
+
+                                // 找不到父留言時，保留目前找到的ID。
+                                if (parentDoc == null) {
+                                  return currentId;
+                                }
+
+                                final parentData =
+                                    parentDoc.data() as Map<String, dynamic>;
+
+                                final String? nextParentId =
+                                    parentData['parentCommentId']
+                                        ?.toString()
+                                        .trim();
+
+                                // 目前這則已經是主留言。
+                                if (nextParentId == null ||
+                                    nextParentId.isEmpty) {
+                                  return currentId;
+                                }
+
+                                currentId = nextParentId;
+                              }
+
+                              return currentId;
+                            }
+
+                            final rootComments = <QueryDocumentSnapshot>[];
+
+                            final repliesByRoot =
+                                <String, List<QueryDocumentSnapshot>>{};
+
+                            // 將留言分成主留言與回覆。
+                            for (final doc in docs) {
+                              final data = doc.data() as Map<String, dynamic>;
+
+                              final String? parentCommentId =
+                                  data['parentCommentId']?.toString().trim();
+
+                              if (parentCommentId == null ||
+                                  parentCommentId.isEmpty) {
+                                rootComments.add(doc);
+                                continue;
+                              }
+
+                              final String rootCommentId = resolveRootCommentId(
+                                parentCommentId,
+                              );
+
+                              // 如果原本的父留言已被刪除，
+                              // 不讓這則留言整個消失，暫時當成主留言顯示。
+                              if (!docsById.containsKey(rootCommentId)) {
+                                rootComments.add(doc);
+                                continue;
+                              }
+
+                              repliesByRoot
+                                  .putIfAbsent(
+                                    rootCommentId,
+                                    () => <QueryDocumentSnapshot>[],
+                                  )
+                                  .add(doc);
+                            }
+
+                            Widget buildCommentTile(
+                              QueryDocumentSnapshot commentDoc, {
+                              required bool isReply,
+                            }) {
+                              final data =
+                                  commentDoc.data() as Map<String, dynamic>;
+
+                              final String commentId = commentDoc.id;
+
+                              final String authorName =
+                                  data['authorName']?.toString() ?? '某位朋友';
+
+                              final String replyToName =
+                                  data['replyToName']?.toString().trim() ?? '';
 
                               return Padding(
-                                // 🌟 如果是回覆，左邊縮排 40 像素
-                                padding: EdgeInsets.only(left: isReply ? 40.0 : 0.0),
+                                padding: EdgeInsets.only(
+                                  left: isReply ? 40 : 0,
+                                ),
                                 child: ListTile(
-                                  leading: const CircleAvatar(
-                                    radius: 18,
-                                    child: Icon(Icons.person_outline, size: 20),
+                                  leading: CircleAvatar(
+                                    radius: isReply ? 15 : 18,
+                                    child: Icon(
+                                      Icons.person_outline,
+                                      size: isReply ? 17 : 20,
+                                    ),
                                   ),
-                                  title: Row(
+                                  title: Wrap(
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    spacing: 4,
                                     children: [
                                       Text(
-                                        data['authorName'] ?? '某位朋友',
-                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                        authorName,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                      // 🌟 如果是回覆，加上一個小箭頭和 @被回覆的人
-                                      if (isReply) ...[
-                                        const Icon(Icons.arrow_right, size: 16, color: Colors.grey),
+                                      if (isReply &&
+                                          replyToName.isNotEmpty) ...[
+                                        const Icon(
+                                          Icons.arrow_right,
+                                          size: 16,
+                                          color: Colors.grey,
+                                        ),
                                         Text(
-                                          "@${data['replyToName']}",
-                                          style: const TextStyle(color: Colors.blueAccent, fontSize: 12),
+                                          '@$replyToName',
+                                          style: const TextStyle(
+                                            color: Colors.blueAccent,
+                                            fontSize: 12,
+                                          ),
                                         ),
                                       ],
                                     ],
                                   ),
                                   subtitle: Padding(
-                                    padding: const EdgeInsets.only(top: 4.0),
-                                    child: Text(data['content'] ?? '', style: const TextStyle(fontSize: 15, color: Colors.black87)),
+                                    padding: const EdgeInsets.only(
+                                      top: 4,
+                                    ),
+                                    child: Text(
+                                      data['content']?.toString() ?? '',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: theme.colorScheme.onSurface,
+                                      ),
+                                    ),
                                   ),
-                                  // 🌟 右側放一個「回覆」按鈕
                                   trailing: TextButton(
-                                    style: TextButton.styleFrom(minimumSize: Size.zero, padding: EdgeInsets.zero),
-                                    child:Text(l10n.comment_reply_btn, style: TextStyle(fontSize: 12, color: Colors.pinkAccent)),
+                                    style: TextButton.styleFrom(
+                                      minimumSize: Size.zero,
+                                      padding: EdgeInsets.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
                                     onPressed: () {
+                                      final String? existingParentId =
+                                          data['parentCommentId']
+                                              ?.toString()
+                                              .trim();
+
+                                      final String rootCommentId =
+                                          existingParentId != null &&
+                                                  existingParentId.isNotEmpty
+                                              ? resolveRootCommentId(
+                                                  existingParentId,
+                                                )
+                                              : commentId;
+
                                       setState(() {
-                                        // ✨ 點擊後，把這則留言的 ID 和名字存起來
                                         _replyTarget = {
                                           'commentId': commentId,
-                                          'authorName': data['authorName'] ?? '某位朋友',
+                                          'rootCommentId': rootCommentId,
+                                          'authorName': authorName,
                                         };
                                       });
                                     },
+                                    child: Text(
+                                      l10n.comment_reply_btn,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.pinkAccent,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               );
-                            },
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 50), // 給底部留點空間
-                    ],
+                            }
+
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics:
+                              const NeverScrollableScrollPhysics(),
+                              itemCount: rootComments.length,
+                              itemBuilder: (context, index) {
+                                final rootComment =
+                                rootComments[index];
+
+                                final replies =
+                                    repliesByRoot[rootComment.id] ??
+                                        <QueryDocumentSnapshot>[];
+
+                                final bool isExpanded =
+                                _expandedReplyThreads.contains(
+                                  rootComment.id,
+                                );
+
+                                // 預設顯示最新一則回覆。
+                                // 展開後才顯示全部回覆。
+                                final List<QueryDocumentSnapshot>
+                                visibleReplies = isExpanded
+                                    ? replies
+                                    : replies.isEmpty
+                                    ? <QueryDocumentSnapshot>[]
+                                    : <QueryDocumentSnapshot>[
+                                  replies.last,
+                                ];
+
+                                final int hiddenReplyCount =
+                                    replies.length - visibleReplies.length;
+
+                                return Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.stretch,
+                                  children: [
+                                    // 主留言
+                                    buildCommentTile(
+                                      rootComment,
+                                      isReply: false,
+                                    ),
+
+                                    // 預設顯示最新一則，或展開後顯示全部
+                                    for (final reply in visibleReplies)
+                                      buildCommentTile(
+                                        reply,
+                                        isReply: true,
+                                      ),
+
+                                    // 有兩則以上回覆時，顯示展開／收合按鈕
+                                    if (replies.length > 1)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 72,
+                                          right: 16,
+                                          bottom: 8,
+                                        ),
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: TextButton(
+                                            style: TextButton.styleFrom(
+                                              minimumSize: Size.zero,
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 0,
+                                                vertical: 6,
+                                              ),
+                                              tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                              foregroundColor:
+                                              theme.colorScheme.onSurfaceVariant,
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                if (isExpanded) {
+                                                  _expandedReplyThreads.remove(
+                                                    rootComment.id,
+                                                  );
+                                                } else {
+                                                  _expandedReplyThreads.add(
+                                                    rootComment.id,
+                                                  );
+                                                }
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  width: 28,
+                                                  height: 1,
+                                                  color: theme
+                                                      .colorScheme
+                                                      .onSurfaceVariant
+                                                      .withValues(alpha: 0.45),
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Text(
+                                                  isExpanded
+                                                      ? '收起回覆'
+                                                      : '查看其他 $hiddenReplyCount 則回覆',
+                                                  style: const TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Icon(
+                                                  isExpanded
+                                                      ? Icons.keyboard_arrow_up
+                                                      : Icons.keyboard_arrow_down,
+                                                  size: 17,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 50), // 給底部留點空間
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              // --- D. 底部留言輸入區 (包含總裁的回覆提示條) ---
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // ✨ 總裁指令：回覆提示條
-                  if (_replyTarget != null)
+                // --- D. 底部留言輸入區 (包含總裁的回覆提示條) ---
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // ✨ 總裁指令：回覆提示條
+                    if (_replyTarget != null)
+                      Container(
+                        width: double.infinity,
+                        color: Colors.grey[200],
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.reply,
+                                size: 16, color: Colors.grey),
+                            const SizedBox(width: 8),
+                            Text(
+                              l10n.moment_replying_to(
+                                  _replyTarget!['authorName']),
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.grey),
+                            ),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _replyTarget = null; // 點擊叉叉取消回覆
+                                });
+                              },
+                              child: const Icon(Icons.close,
+                                  size: 16, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // ⬇️ 原本的輸入框
                     Container(
-                      width: double.infinity,
-                      color: Colors.grey[200],
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.reply, size: 16, color: Colors.grey),
-                          const SizedBox(width: 8),
-                          Text(
-                            l10n.moment_replying_to(_replyTarget!['authorName']),
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _replyTarget = null; // 點擊叉叉取消回覆
-                              });
-                            },
-                            child: const Icon(Icons.close, size: 16, color: Colors.grey),
-                          ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: theme.cardColor,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, -5))
                         ],
                       ),
-                    ),
-
-                  // ⬇️ 原本的輸入框
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
-                    ),
-                    child: SafeArea(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _commentController,
-                              decoration: InputDecoration(
-                                hintText: _replyTarget != null
-                                    ? l10n.moment_reply_hint(_replyTarget!['authorName'])
-                                    : l10n.moment_leave_comment_hint,
-                                filled: true,
-                                fillColor: Colors.grey[100],
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                      child: SafeArea(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _commentController,
+                                decoration: InputDecoration(
+                                  hintText: _replyTarget != null
+                                      ? l10n.moment_reply_hint(
+                                          _replyTarget!['authorName'])
+                                      : l10n.moment_leave_comment_hint,
+                                  filled: true,
+                                  fillColor: Colors.grey[100],
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(24),
+                                      borderSide: BorderSide.none),
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.send_rounded, color: Colors.pinkAccent),
-                            onPressed: () => _saveCommentToDb(_commentController.text, _moment!),
-                          )
-                        ],
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(Icons.send_rounded,
+                                  color: Colors.pinkAccent),
+                              onPressed: () => _saveCommentToDb(
+                                  _commentController.text, _moment!),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-      ),
+                  ],
+                ),
+              ],
+            ),
     );
   }
 }

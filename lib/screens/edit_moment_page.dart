@@ -7,6 +7,7 @@ import '../models/moment_model.dart';
 import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
 import '../services/app_constants.dart';
+import '../utils/moment_search_utils.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 //編輯動態
@@ -109,6 +110,10 @@ class _EditMomentPageState extends State<EditMomentPage> {
           .doc(widget.momentToEdit.id)
           .update({
         'content': newContent,
+        'searchKeywords': buildMomentSearchKeywords(
+          content: newContent,
+          authorName: widget.momentToEdit.authorName,
+        ),
         'imageUrl': finalImageUrl,
         'lastEditedAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
