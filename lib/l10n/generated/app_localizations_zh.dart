@@ -4662,6 +4662,100 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get characterBannerTitle => '角色首頁橫幅';
+
+  @override
+  String get mailDeleteTitle => '刪除信件';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return '確定要刪除 $count 封信件嗎？\n刪除後無法復原。';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return '已刪除 $count 封信件';
+  }
+
+  @override
+  String get mailDeleteFailed => '刪除失敗，請稍後再試';
+
+  @override
+  String get mailCancelSelection => '取消選取';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '已選取 $count 封';
+  }
+
+  @override
+  String get moreOptions => '更多';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return '刪除 $count 封信件';
+  }
+
+  @override
+  String get officialManagementTeam => '戀戀拾光管理團隊';
+
+  @override
+  String get rewardCampaignTitle => '活動禮物';
+
+  @override
+  String get rewardCampaignMissingData => '這封禮物信缺少活動資料，請稍後再試';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return '已領取 $amount 朵花花';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => '這份禮物已經領取過囉';
+
+  @override
+  String get rewardCampaignClaimFailed => '領取失敗，請稍後再試';
+
+  @override
+  String get rewardCampaignContains => '這封信裡有';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount 朵花花';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return '領取期限：$date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => '領取中…';
+
+  @override
+  String get rewardCampaignClaimed => '已領取';
+
+  @override
+  String get rewardCampaignEnded => '活動已結束';
+
+  @override
+  String get rewardCampaignClaimButton => '領取禮物';
+
+  @override
+  String get mailDetailTitle => '信件';
+
+  @override
+  String mailSender(String name) {
+    return '寄件者：$name';
+  }
+
+  @override
+  String get mailCaseNumber => '案件編號';
+
+  @override
+  String get mailCopyCaseNumber => '複製案件編號';
+
+  @override
+  String get mailCaseNumberCopied => '已複製案件編號';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -9322,6 +9416,100 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get characterBannerTitle => '角色首页横幅';
+
+  @override
+  String get mailDeleteTitle => '删除邮件';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return '确定要删除 $count 封邮件吗？\n删除后无法恢复。';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return '已删除 $count 封邮件';
+  }
+
+  @override
+  String get mailDeleteFailed => '删除失败，请稍后再试';
+
+  @override
+  String get mailCancelSelection => '取消选择';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '已选择 $count 封';
+  }
+
+  @override
+  String get moreOptions => '更多';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return '删除 $count 封邮件';
+  }
+
+  @override
+  String get officialManagementTeam => '恋恋拾光管理团队';
+
+  @override
+  String get rewardCampaignTitle => '活动礼物';
+
+  @override
+  String get rewardCampaignMissingData => '这封礼物邮件缺少活动数据，请稍后再试';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return '已领取 $amount 朵花花';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => '这份礼物已经领取过了';
+
+  @override
+  String get rewardCampaignClaimFailed => '领取失败，请稍后再试';
+
+  @override
+  String get rewardCampaignContains => '这封邮件里有';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount 朵花花';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return '领取期限：$date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => '领取中…';
+
+  @override
+  String get rewardCampaignClaimed => '已领取';
+
+  @override
+  String get rewardCampaignEnded => '活动已结束';
+
+  @override
+  String get rewardCampaignClaimButton => '领取礼物';
+
+  @override
+  String get mailDetailTitle => '邮件';
+
+  @override
+  String mailSender(String name) {
+    return '发件人：$name';
+  }
+
+  @override
+  String get mailCaseNumber => '案件编号';
+
+  @override
+  String get mailCopyCaseNumber => '复制案件编号';
+
+  @override
+  String get mailCaseNumberCopied => '已复制案件编号';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -13982,4 +14170,98 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get characterBannerTitle => '角色首頁橫幅';
+
+  @override
+  String get mailDeleteTitle => '刪除信件';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return '確定要刪除 $count 封信件嗎？\n刪除後無法復原。';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return '已刪除 $count 封信件';
+  }
+
+  @override
+  String get mailDeleteFailed => '刪除失敗，請稍後再試';
+
+  @override
+  String get mailCancelSelection => '取消選取';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '已選取 $count 封';
+  }
+
+  @override
+  String get moreOptions => '更多';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return '刪除 $count 封信件';
+  }
+
+  @override
+  String get officialManagementTeam => '戀戀拾光管理團隊';
+
+  @override
+  String get rewardCampaignTitle => '活動禮物';
+
+  @override
+  String get rewardCampaignMissingData => '這封禮物信缺少活動資料，請稍後再試';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return '已領取 $amount 朵花花';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => '這份禮物已經領取過囉';
+
+  @override
+  String get rewardCampaignClaimFailed => '領取失敗，請稍後再試';
+
+  @override
+  String get rewardCampaignContains => '這封信裡有';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount 朵花花';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return '領取期限：$date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => '領取中…';
+
+  @override
+  String get rewardCampaignClaimed => '已領取';
+
+  @override
+  String get rewardCampaignEnded => '活動已結束';
+
+  @override
+  String get rewardCampaignClaimButton => '領取禮物';
+
+  @override
+  String get mailDetailTitle => '信件';
+
+  @override
+  String mailSender(String name) {
+    return '寄件者：$name';
+  }
+
+  @override
+  String get mailCaseNumber => '案件編號';
+
+  @override
+  String get mailCopyCaseNumber => '複製案件編號';
+
+  @override
+  String get mailCaseNumberCopied => '已複製案件編號';
 }

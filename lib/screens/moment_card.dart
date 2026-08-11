@@ -858,7 +858,7 @@ class _MomentCardState extends State<MomentCard> {
     } else if (Platform.isAndroid) {
       // ⚠️ 記得把下面這個 id= 後面的字，換成你 Android 的套件名稱 (applicationId)
       // 通常長得像 com.yourname.lianlianshiguang，你可以去 android/app/build.gradle 裡找
-      appLink = "https://play.google.com/store/apps/details?id=填入你的安卓套件名稱";
+      appLink =  'https://play.google.com/store/apps/details?id=com.yubaimo.lianlian_shiguang';
     }
     // 🌟 替換結束
 

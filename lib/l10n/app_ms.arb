@@ -2307,5 +2307,87 @@
     },
     "storyContentCannotBeEmpty": "Kandungan cerita tidak boleh kosong",
     "writeYourStoryHint": "Tuliskan kisah anda...",
-    "characterBannerTitle": "Sepanduk Halaman Utama Karakter"
+    "characterBannerTitle": "Sepanduk Halaman Utama Karakter",
+    "mailDeleteTitle": "Padam Mesej",
+    "mailDeleteConfirm": "Adakah anda pasti mahu memadamkan {count} mesej?\nMesej yang dipadamkan tidak boleh dipulihkan.",
+    "@mailDeleteConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mailDeleteSuccess": "{count} mesej telah dipadamkan",
+    "@mailDeleteSuccess": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mailDeleteFailed": "Gagal memadamkan. Sila cuba lagi kemudian.",
+    "mailCancelSelection": "Batalkan Pilihan",
+    "mailSelectedCount": "{count} dipilih",
+    "@mailSelectedCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "moreOptions": "Lagi",
+    "mailDeleteSelected": "Padam {count} mesej",
+    "@mailDeleteSelected": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "officialManagementTeam": "Pasukan Pengurusan LoveyDovey",
+    "rewardCampaignTitle": "Hadiah Acara",
+    "rewardCampaignMissingData": "Mesej hadiah ini tidak mempunyai data acara. Sila cuba lagi kemudian.",
+    "rewardCampaignClaimSuccess": "Berjaya menerima {amount} Bunga",
+    "@rewardCampaignClaimSuccess": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "rewardCampaignAlreadyClaimed": "Hadiah ini telah diterima",
+    "rewardCampaignClaimFailed": "Gagal menerima. Sila cuba lagi kemudian.",
+    "rewardCampaignContains": "Mesej ini mengandungi",
+    "rewardCampaignFlowerAmount": "{amount} Bunga",
+    "@rewardCampaignFlowerAmount": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "rewardCampaignDeadline": "Tarikh akhir penerimaan: {date}",
+    "@rewardCampaignDeadline": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "rewardCampaignClaiming": "Sedang menerima…",
+    "rewardCampaignClaimed": "Telah diterima",
+    "rewardCampaignEnded": "Acara telah tamat",
+    "rewardCampaignClaimButton": "Terima Hadiah",
+    "mailDetailTitle": "Mesej",
+    "mailSender": "Pengirim: {name}",
+    "@mailSender": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "mailCaseNumber": "Nombor Kes",
+    "mailCopyCaseNumber": "Salin Nombor Kes",
+    "mailCaseNumberCopied": "Nombor kes telah disalin"
 }

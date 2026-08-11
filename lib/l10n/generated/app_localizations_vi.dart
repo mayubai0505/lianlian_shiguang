@@ -4985,4 +4985,100 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get characterBannerTitle => 'Banner trang chủ nhân vật';
+
+  @override
+  String get mailDeleteTitle => 'Xóa thư';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return 'Bạn có chắc muốn xóa $count thư không?\nKhông thể khôi phục sau khi xóa.';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return 'Đã xóa $count thư';
+  }
+
+  @override
+  String get mailDeleteFailed => 'Xóa không thành công. Vui lòng thử lại sau.';
+
+  @override
+  String get mailCancelSelection => 'Hủy chọn';
+
+  @override
+  String mailSelectedCount(int count) {
+    return 'Đã chọn $count thư';
+  }
+
+  @override
+  String get moreOptions => 'Thêm';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return 'Xóa $count thư';
+  }
+
+  @override
+  String get officialManagementTeam => 'Đội ngũ quản lý LoveyDovey';
+
+  @override
+  String get rewardCampaignTitle => 'Quà sự kiện';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'Thư quà tặng này thiếu dữ liệu sự kiện. Vui lòng thử lại sau.';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return 'Đã nhận $amount Bông Hoa';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => 'Phần quà này đã được nhận';
+
+  @override
+  String get rewardCampaignClaimFailed =>
+      'Nhận không thành công. Vui lòng thử lại sau.';
+
+  @override
+  String get rewardCampaignContains => 'Trong thư này có';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount Bông Hoa';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return 'Hạn nhận: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => 'Đang nhận…';
+
+  @override
+  String get rewardCampaignClaimed => 'Đã nhận';
+
+  @override
+  String get rewardCampaignEnded => 'Sự kiện đã kết thúc';
+
+  @override
+  String get rewardCampaignClaimButton => 'Nhận quà';
+
+  @override
+  String get mailDetailTitle => 'Thư';
+
+  @override
+  String mailSender(String name) {
+    return 'Người gửi: $name';
+  }
+
+  @override
+  String get mailCaseNumber => 'Mã vụ việc';
+
+  @override
+  String get mailCopyCaseNumber => 'Sao chép mã vụ việc';
+
+  @override
+  String get mailCaseNumberCopied => 'Đã sao chép mã vụ việc';
 }

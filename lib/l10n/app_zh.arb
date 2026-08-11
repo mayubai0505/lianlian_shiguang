@@ -2450,5 +2450,103 @@
   },
   "storyContentCannotBeEmpty": "故事內容不能是空的",
   "writeYourStoryHint": "寫下你們的故事...",
-  "characterBannerTitle": "角色首頁橫幅"
+  "characterBannerTitle": "角色首頁橫幅",
+  "mailDeleteTitle": "刪除信件",
+
+  "mailDeleteConfirm": "確定要刪除 {count} 封信件嗎？\n刪除後無法復原。",
+  "@mailDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "mailDeleteSuccess": "已刪除 {count} 封信件",
+  "@mailDeleteSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "mailDeleteFailed": "刪除失敗，請稍後再試",
+  "mailCancelSelection": "取消選取",
+
+  "mailSelectedCount": "已選取 {count} 封",
+  "@mailSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "moreOptions": "更多",
+
+  "mailDeleteSelected": "刪除 {count} 封信件",
+  "@mailDeleteSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "officialManagementTeam": "戀戀拾光管理團隊",
+
+  "rewardCampaignTitle": "活動禮物",
+  "rewardCampaignMissingData": "這封禮物信缺少活動資料，請稍後再試",
+
+  "rewardCampaignClaimSuccess": "已領取 {amount} 朵花花",
+  "@rewardCampaignClaimSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+
+  "rewardCampaignAlreadyClaimed": "這份禮物已經領取過囉",
+  "rewardCampaignClaimFailed": "領取失敗，請稍後再試",
+  "rewardCampaignContains": "這封信裡有",
+
+  "rewardCampaignFlowerAmount": "{amount} 朵花花",
+  "@rewardCampaignFlowerAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+
+  "rewardCampaignDeadline": "領取期限：{date}",
+  "@rewardCampaignDeadline": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+
+  "rewardCampaignClaiming": "領取中…",
+  "rewardCampaignClaimed": "已領取",
+  "rewardCampaignEnded": "活動已結束",
+  "rewardCampaignClaimButton": "領取禮物",
+
+  "mailDetailTitle": "信件",
+
+  "mailSender": "寄件者：{name}",
+  "@mailSender": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+
+  "mailCaseNumber": "案件編號",
+  "mailCopyCaseNumber": "複製案件編號",
+  "mailCaseNumberCopied": "已複製案件編號"
 }

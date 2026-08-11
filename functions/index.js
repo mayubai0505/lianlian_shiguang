@@ -9575,3 +9575,1138 @@ exports.cancelAiResponse = onRequest(
     }
   }
 );
+
+// ==================================================
+// 🎁 官方活動禮物系統
+// ==================================================
+
+const REWARD_CAMPAIGN_ADMIN_UIDS = new Set([
+  "B71k2kyooubYsOtIO1nkiBwyBXt2",
+]);
+
+function requireRewardCampaignAdmin(request) {
+  const uid = request.auth?.uid;
+
+  if (!uid) {
+    throw new HttpsError(
+      "unauthenticated",
+      "請先登入管理員帳號"
+    );
+  }
+
+  if (!REWARD_CAMPAIGN_ADMIN_UIDS.has(uid)) {
+    throw new HttpsError(
+      "permission-denied",
+      "你沒有管理活動禮物的權限"
+    );
+  }
+
+  return uid;
+}
+
+function parseRewardCampaignDate(value, fieldName) {
+  if (!value) {
+    throw new HttpsError(
+      "invalid-argument",
+      `缺少${fieldName}`
+    );
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new HttpsError(
+      "invalid-argument",
+      `${fieldName}格式不正確`
+    );
+  }
+
+  return date;
+}
+
+// ==================================================
+// 🎁 管理員建立活動禮物
+// ==================================================
+
+exports.createRewardCampaign = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const adminUid =
+      requireRewardCampaignAdmin(request);
+
+    const data = request.data || {};
+
+    const title = String(
+      data.title || ""
+    ).trim();
+
+    const description = String(
+      data.description || ""
+    ).trim();
+
+    const rewardType = String(
+      data.rewardType || "flowerPoints"
+    ).trim();
+
+    const rewardAmount = Number(
+      data.rewardAmount || 0
+    );
+
+const rawAudience = String(
+  data.audience || "admin_only"
+).trim();
+
+const audienceType =
+  rawAudience === "all_users"
+    ? "all"
+    : "targeted";
+
+const targetUserIds =
+  audienceType === "all"
+    ? []
+    : [adminUid];
+
+    const startAt = parseRewardCampaignDate(
+      data.startAt,
+      "開始時間"
+    );
+
+    const endAt = parseRewardCampaignDate(
+      data.endAt,
+      "結束時間"
+    );
+
+    if (!title) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入活動標題"
+      );
+    }
+
+    if (!description) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入活動說明"
+      );
+    }
+
+    if (rewardType !== "flowerPoints") {
+      throw new HttpsError(
+        "invalid-argument",
+        "目前僅支援花花點數"
+      );
+    }
+
+    if (
+      !Number.isInteger(rewardAmount) ||
+      rewardAmount <= 0 ||
+      rewardAmount > 10000
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "花花數量必須是 1～10000 的整數"
+      );
+    }
+
+    if (endAt <= startAt) {
+      throw new HttpsError(
+        "invalid-argument",
+        "結束時間必須晚於開始時間"
+      );
+    }
+
+    const campaignRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .doc();
+
+    await campaignRef.set({
+      title,
+      description,
+      rewardType,
+      rewardAmount,
+
+      audienceType,
+      targetUserIds,
+
+      startAt,
+      endAt,
+      status: "active",
+
+      createdBy: adminUid,
+      createdAt:
+        FieldValue.serverTimestamp(),
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    console.log(
+      "🎁 已建立活動禮物",
+      {
+        campaignId: campaignRef.id,
+        title,
+        rewardAmount,
+        adminUid,
+      }
+    );
+
+    return {
+      success: true,
+      campaignId: campaignRef.id,
+    };
+  }
+);
+
+// ==================================================
+// 📬 玩家開啟信箱時同步可領取活動
+// 不一次寫入所有玩家，避免大量 Firestore 寫入
+// ==================================================
+
+exports.syncRewardCampaignsToMailbox = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const userId = request.auth?.uid;
+
+    if (!userId) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入"
+      );
+    }
+
+    const now = new Date();
+
+    const campaignsSnapshot = await db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .where("status", "==", "active")
+      .limit(100)
+      .get();
+
+    const availableCampaigns =
+      campaignsSnapshot.docs.filter(
+        (document) => {
+          const data = document.data();
+
+          const startAt =
+            data.startAt?.toDate?.();
+
+          const endAt =
+            data.endAt?.toDate?.();
+
+          if (!startAt || !endAt) {
+            return false;
+          }
+
+          if (now < startAt || now > endAt) {
+            return false;
+          }
+
+          const audienceType =
+            data.audienceType || "all";
+
+          if (audienceType === "all") {
+            return true;
+          }
+
+          const targetUserIds =
+            Array.isArray(
+              data.targetUserIds
+            )
+              ? data.targetUserIds
+              : [];
+
+          return targetUserIds.includes(
+            userId
+          );
+        }
+      );
+
+    if (availableCampaigns.length === 0) {
+      return {
+        success: true,
+        syncedCount: 0,
+      };
+    }
+
+    const userMailboxRef = db
+      .collection("users")
+      .doc(userId)
+      .collection("mailbox");
+
+    const mailboxChecks =
+      await Promise.all(
+        availableCampaigns.map(
+          async (campaignDocument) => {
+            const mailRef =
+              userMailboxRef.doc(
+                `reward_campaign_${campaignDocument.id}`
+              );
+
+            const mailSnapshot =
+              await mailRef.get();
+
+            return {
+              campaignDocument,
+              mailRef,
+              exists: mailSnapshot.exists,
+            };
+          }
+        )
+      );
+
+    const batch = db.batch();
+    let syncedCount = 0;
+
+    for (const result of mailboxChecks) {
+      if (result.exists) {
+        continue;
+      }
+
+      const campaign =
+        result.campaignDocument.data();
+
+      batch.set(result.mailRef, {
+        type: "reward_campaign",
+
+        title:
+          `🎁 ${campaign.title}`,
+
+        body: campaign.description,
+
+        rewardCampaignId:
+          result.campaignDocument.id,
+
+        rewardType:
+          campaign.rewardType,
+
+        rewardAmount:
+          campaign.rewardAmount,
+
+        endAt:
+          campaign.endAt,
+
+        expiresAt:
+          campaign.endAt,
+
+        claimed: false,
+        isRead: false,
+
+        createdAt:
+          FieldValue.serverTimestamp(),
+      });
+
+      syncedCount++;
+    }
+
+    if (syncedCount > 0) {
+      await batch.commit();
+    }
+
+    return {
+      success: true,
+      syncedCount,
+    };
+  }
+);
+
+// ==================================================
+// 🌸 玩家領取活動花花
+// Transaction 保證每位玩家只能領一次
+// ==================================================
+
+exports.claimRewardCampaign = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const userId = request.auth?.uid;
+
+    if (!userId) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入"
+      );
+    }
+
+    const campaignId = String(
+      request.data?.campaignId || ""
+    ).trim();
+
+    if (!campaignId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少活動編號"
+      );
+    }
+
+    const campaignRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .doc(campaignId);
+
+    const claimRef = campaignRef
+      .collection("claims")
+      .doc(userId);
+
+    const userRef = db
+      .collection("users")
+      .doc(userId);
+
+    const flowerLogRef = userRef
+      .collection("flower_logs")
+      .doc(
+        `reward_campaign_${campaignId}`
+      );
+
+    const mailboxRef = userRef
+      .collection("mailbox")
+      .doc(
+        `reward_campaign_${campaignId}`
+      );
+
+    const result = await db.runTransaction(
+      async (transaction) => {
+        // 所有讀取必須在所有寫入之前
+        const campaignSnapshot =
+          await transaction.get(
+            campaignRef
+          );
+
+        const claimSnapshot =
+          await transaction.get(
+            claimRef
+          );
+
+        const userSnapshot =
+          await transaction.get(
+            userRef
+          );
+
+        if (!campaignSnapshot.exists) {
+          throw new HttpsError(
+            "not-found",
+            "找不到這個活動"
+          );
+        }
+
+        if (claimSnapshot.exists) {
+          throw new HttpsError(
+            "already-exists",
+            "你已經領取過這份禮物"
+          );
+        }
+
+        if (!userSnapshot.exists) {
+          throw new HttpsError(
+            "not-found",
+            "找不到玩家資料"
+          );
+        }
+
+        const campaign =
+          campaignSnapshot.data() || {};
+
+        if (campaign.status !== "active") {
+          throw new HttpsError(
+            "failed-precondition",
+            "這個活動已經結束"
+          );
+        }
+
+        const startAt =
+          campaign.startAt?.toDate?.();
+
+        const endAt =
+          campaign.endAt?.toDate?.();
+
+        const now = new Date();
+
+        if (!startAt || !endAt) {
+          throw new HttpsError(
+            "failed-precondition",
+            "活動時間設定不完整"
+          );
+        }
+
+        if (now < startAt) {
+          throw new HttpsError(
+            "failed-precondition",
+            "活動尚未開始"
+          );
+        }
+
+        if (now > endAt) {
+          throw new HttpsError(
+            "deadline-exceeded",
+            "活動已經結束"
+          );
+        }
+
+        const audienceType =
+          campaign.audienceType || "all";
+
+        if (audienceType !== "all") {
+          const targetUserIds =
+            Array.isArray(
+              campaign.targetUserIds
+            )
+              ? campaign.targetUserIds
+              : [];
+
+          if (!targetUserIds.includes(userId)) {
+            throw new HttpsError(
+              "permission-denied",
+              "你不符合這次活動的領取資格"
+            );
+          }
+        }
+
+        if (
+          campaign.rewardType !==
+          "flowerPoints"
+        ) {
+          throw new HttpsError(
+            "failed-precondition",
+            "目前無法領取這種獎勵"
+          );
+        }
+
+        const rewardAmount = Number(
+          campaign.rewardAmount || 0
+        );
+
+        if (
+          !Number.isInteger(rewardAmount) ||
+          rewardAmount <= 0 ||
+          rewardAmount > 10000
+        ) {
+          throw new HttpsError(
+            "failed-precondition",
+            "活動獎勵設定異常"
+          );
+        }
+
+        const currentFlowerPoints =
+          Number(
+            userSnapshot.data()
+              ?.flowerPoints || 0
+          );
+
+        const newFlowerPoints =
+          currentFlowerPoints +
+          rewardAmount;
+
+        transaction.update(userRef, {
+          flowerPoints:
+            FieldValue.increment(
+              rewardAmount
+            ),
+        });
+
+        transaction.set(claimRef, {
+          userId,
+          campaignId,
+
+          rewardType:
+            campaign.rewardType,
+
+          rewardAmount,
+
+          campaignTitle:
+            campaign.title || "活動禮物",
+
+          claimedAt:
+            FieldValue.serverTimestamp(),
+        });
+
+        transaction.set(flowerLogRef, {
+          title:
+            campaign.title ||
+            "活動禮物",
+
+          amount: rewardAmount,
+
+          reason:
+            "官方活動獎勵",
+
+          campaignId,
+
+          type:
+            "reward_campaign",
+
+          createdAt:
+            FieldValue.serverTimestamp(),
+        });
+
+        transaction.set(
+          mailboxRef,
+          {
+            claimed: true,
+            claimedAt:
+              FieldValue.serverTimestamp(),
+            isRead: true,
+          },
+          {
+            merge: true,
+          }
+        );
+
+        return {
+          rewardAmount,
+          newFlowerPoints,
+          campaignTitle:
+            campaign.title ||
+            "活動禮物",
+        };
+      }
+    );
+
+    console.log(
+      "🎁 玩家已領取活動獎勵",
+      {
+        userId,
+        campaignId,
+        rewardAmount:
+          result.rewardAmount,
+      }
+    );
+
+    return {
+      success: true,
+      ...result,
+    };
+  }
+);
+
+// ==================================================
+// 🛑 管理員停止活動
+// ==================================================
+
+exports.disableRewardCampaign = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const adminUid =
+      requireRewardCampaignAdmin(request);
+
+    const campaignId = String(
+      request.data?.campaignId || ""
+    ).trim();
+
+    if (!campaignId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少活動編號"
+      );
+    }
+
+    const campaignRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .doc(campaignId);
+
+    const snapshot =
+      await campaignRef.get();
+
+    if (!snapshot.exists) {
+      throw new HttpsError(
+        "not-found",
+        "找不到這個活動"
+      );
+    }
+
+    await campaignRef.update({
+      status: "disabled",
+      disabledBy: adminUid,
+      disabledAt:
+        FieldValue.serverTimestamp(),
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    return {
+      success: true,
+      campaignId,
+    };
+  }
+);
+
+// ==================================================
+// 🎁 管理員讀取活動禮物列表
+// ==================================================
+
+exports.listRewardCampaigns = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(request);
+
+    const snapshot = await db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("reward_campaigns")
+      .orderBy("createdAt", "desc")
+      .limit(50)
+      .get();
+
+    const campaigns = snapshot.docs.map(
+      (document) => {
+        const data = document.data();
+
+        return {
+          id: document.id,
+
+          title:
+            String(data.title || ""),
+
+          description:
+            String(
+              data.description || ""
+            ),
+
+          rewardType:
+            String(
+              data.rewardType ||
+              "flowerPoints"
+            ),
+
+          rewardAmount:
+            Number(
+              data.rewardAmount || 0
+            ),
+
+          audienceType:
+            String(
+              data.audienceType || "all"
+            ),
+
+          status:
+            String(
+              data.status || "active"
+            ),
+
+          startAt:
+            data.startAt
+              ?.toDate?.()
+              ?.toISOString?.() || "",
+
+          endAt:
+            data.endAt
+              ?.toDate?.()
+              ?.toISOString?.() || "",
+
+          createdAt:
+            data.createdAt
+              ?.toDate?.()
+              ?.toISOString?.() || "",
+        };
+      }
+    );
+
+    return {
+      success: true,
+      campaigns,
+    };
+  }
+);
+
+// ==================================================
+// 📨 管理員寄送角色調整通知
+// ==================================================
+
+exports.sendCharacterAdjustmentNotice = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const adminUid =
+      requireRewardCampaignAdmin(request);
+
+    const data = request.data || {};
+
+    const characterId = String(
+      data.characterId || ""
+    ).trim();
+
+    const reason = String(
+      data.reason || ""
+    ).trim();
+
+    const requirePrivate =
+      data.requirePrivate === true;
+
+    if (!characterId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少角色編號"
+      );
+    }
+
+    if (!reason) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請填寫需要調整的內容"
+      );
+    }
+
+    if (reason.length > 1000) {
+      throw new HttpsError(
+        "invalid-argument",
+        "調整內容不能超過 1000 字"
+      );
+    }
+
+    // 必須由後端讀取真正的角色擁有者，
+    // 不接受前端自行指定收件人。
+    const characterRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("public_characters")
+      .doc(characterId);
+
+    const characterSnapshot =
+      await characterRef.get();
+
+    if (!characterSnapshot.exists) {
+      throw new HttpsError(
+        "not-found",
+        "找不到這個公開角色"
+      );
+    }
+
+    const characterData =
+      characterSnapshot.data() || {};
+
+    const creatorId = String(
+      characterData.createdBy || ""
+    ).trim();
+
+    const characterName = String(
+      characterData.name || "未命名角色"
+    ).trim();
+
+    if (!creatorId) {
+      throw new HttpsError(
+        "failed-precondition",
+        "此角色沒有創作者資料"
+      );
+    }
+
+    const mailboxRef = db
+      .collection("users")
+      .doc(creatorId)
+      .collection("mailbox")
+      .doc();
+
+    const noticeLogRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection(
+        "character_adjustment_notices"
+      )
+      .doc(mailboxRef.id);
+
+    const privateSuggestion =
+      requirePrivate
+        ? "\n\n為避免其他玩家在調整期間繼續看到相關內容，建議你先將此角色轉為私人，完成調整後再重新公開。"
+        : "";
+
+    const body =
+      `你好，我們在審查角色「${characterName}」時，`
+      + "發現部分內容可能需要調整。\n\n"
+      + `【需要調整的內容】\n${reason}`
+      + privateSuggestion
+      + "\n\n請完成調整後再次確認角色內容。"
+      + "若你對通知有疑問，可以透過客服與我們聯繫。";
+
+    const batch = db.batch();
+
+    batch.set(mailboxRef, {
+      type:
+        "character_adjustment_notice",
+
+      title:
+        `角色「${characterName}」需要調整`,
+
+      body,
+
+      characterId,
+      characterName,
+      creatorId,
+
+      adjustmentReason: reason,
+      requirePrivate,
+
+      adminUid,
+      isRead: false,
+
+      createdAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    // 保存管理員寄送紀錄
+    batch.set(noticeLogRef, {
+      mailId: mailboxRef.id,
+
+      characterId,
+      characterName,
+      creatorId,
+
+      reason,
+      requirePrivate,
+
+      status: "sent",
+      adminUid,
+
+      createdAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
+
+    console.log(
+      "📨 已寄送角色調整通知",
+      {
+        characterId,
+        characterName,
+        creatorId,
+        adminUid,
+        mailId: mailboxRef.id,
+      }
+    );
+
+    return {
+      success: true,
+      mailId: mailboxRef.id,
+      creatorId,
+      characterName,
+    };
+  }
+);
+// ==================================================
+// 🔎 管理員查詢信件收件人
+// ==================================================
+
+exports.lookupAdminMailboxRecipient = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 30,
+    memory: "256MiB",
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(request);
+
+    const recipientUid = String(
+      request.data?.recipientUid || ""
+    ).trim();
+
+    if (!recipientUid) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入玩家 UID"
+      );
+    }
+
+    const userSnapshot = await db
+      .collection("users")
+      .doc(recipientUid)
+      .get();
+
+    if (!userSnapshot.exists) {
+      return {
+        success: true,
+        exists: false,
+      };
+    }
+
+    const userData =
+      userSnapshot.data() || {};
+
+    const recipientName =
+      String(
+        userData.nickname ||
+        userData.displayName ||
+        userData.name ||
+        "未設定暱稱的玩家"
+      ).trim();
+
+    return {
+      success: true,
+      exists: true,
+      recipientUid,
+      recipientName,
+    };
+  }
+);
+// ==================================================
+// 📨 管理員寄送單一玩家信件
+// ==================================================
+
+exports.sendAdminMailboxMessage = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const adminUid =
+      requireRewardCampaignAdmin(request);
+
+    const recipientUid = String(
+      request.data?.recipientUid || ""
+    ).trim();
+
+    const title = String(
+      request.data?.title || ""
+    ).trim();
+
+    const body = String(
+      request.data?.body || ""
+    ).trim();
+
+    if (!recipientUid) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少收件人 UID"
+      );
+    }
+
+    if (!title) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入信件標題"
+      );
+    }
+
+    if (!body) {
+      throw new HttpsError(
+        "invalid-argument",
+        "請輸入信件內容"
+      );
+    }
+
+    if (title.length > 100) {
+      throw new HttpsError(
+        "invalid-argument",
+        "信件標題不能超過 100 字"
+      );
+    }
+
+    if (body.length > 3000) {
+      throw new HttpsError(
+        "invalid-argument",
+        "信件內容不能超過 3000 字"
+      );
+    }
+
+    const recipientRef = db
+      .collection("users")
+      .doc(recipientUid);
+
+    const recipientSnapshot =
+      await recipientRef.get();
+
+    if (!recipientSnapshot.exists) {
+      throw new HttpsError(
+        "not-found",
+        "找不到這位玩家"
+      );
+    }
+
+    const recipientData =
+      recipientSnapshot.data() || {};
+
+    const recipientName =
+      String(
+        recipientData.nickname ||
+        recipientData.displayName ||
+        recipientData.name ||
+        "未設定暱稱的玩家"
+      ).trim();
+
+    const mailboxRef = recipientRef
+      .collection("mailbox")
+      .doc();
+
+    const mailLogRef = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("admin_mail_logs")
+      .doc(mailboxRef.id);
+
+    const batch = db.batch();
+
+    batch.set(mailboxRef, {
+      type: "admin_mail",
+
+      title,
+      body,
+
+      fromId: adminUid,
+      fromName: "戀戀拾光管理團隊",
+
+      isRead: false,
+
+      createdAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    batch.set(mailLogRef, {
+      mailId: mailboxRef.id,
+
+      recipientUid,
+      recipientName,
+
+      title,
+      body,
+
+      adminUid,
+      status: "sent",
+
+      createdAt:
+        FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
+
+    console.log(
+      "📨 管理員玩家信件已寄出",
+      {
+        mailId: mailboxRef.id,
+        recipientUid,
+        recipientName,
+        adminUid,
+      }
+    );
+
+    return {
+      success: true,
+      mailId: mailboxRef.id,
+      recipientUid,
+      recipientName,
+    };
+  }
+);

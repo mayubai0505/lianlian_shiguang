@@ -4930,4 +4930,100 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get characterBannerTitle => 'แบนเนอร์หน้าหลักของตัวละคร';
+
+  @override
+  String get mailDeleteTitle => 'ลบข้อความ';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return 'คุณแน่ใจหรือไม่ว่าต้องการลบข้อความ $count รายการ?\nเมื่อลบแล้วจะไม่สามารถกู้คืนได้';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return 'ลบข้อความ $count รายการแล้ว';
+  }
+
+  @override
+  String get mailDeleteFailed => 'ลบไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง';
+
+  @override
+  String get mailCancelSelection => 'ยกเลิกการเลือก';
+
+  @override
+  String mailSelectedCount(int count) {
+    return 'เลือกแล้ว $count รายการ';
+  }
+
+  @override
+  String get moreOptions => 'เพิ่มเติม';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return 'ลบข้อความ $count รายการ';
+  }
+
+  @override
+  String get officialManagementTeam => 'ทีมผู้ดูแล LoveyDovey';
+
+  @override
+  String get rewardCampaignTitle => 'ของขวัญกิจกรรม';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'ข้อความของขวัญนี้ไม่มีข้อมูลกิจกรรม โปรดลองอีกครั้งในภายหลัง';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return 'รับดอกไม้ $amount ดอกแล้ว';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => 'รับของขวัญนี้ไปแล้ว';
+
+  @override
+  String get rewardCampaignClaimFailed =>
+      'รับไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง';
+
+  @override
+  String get rewardCampaignContains => 'ข้อความนี้มี';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return 'ดอกไม้ $amount ดอก';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return 'หมดเขตรับ: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => 'กำลังรับ…';
+
+  @override
+  String get rewardCampaignClaimed => 'รับแล้ว';
+
+  @override
+  String get rewardCampaignEnded => 'กิจกรรมสิ้นสุดแล้ว';
+
+  @override
+  String get rewardCampaignClaimButton => 'รับของขวัญ';
+
+  @override
+  String get mailDetailTitle => 'ข้อความ';
+
+  @override
+  String mailSender(String name) {
+    return 'ผู้ส่ง: $name';
+  }
+
+  @override
+  String get mailCaseNumber => 'หมายเลขกรณี';
+
+  @override
+  String get mailCopyCaseNumber => 'คัดลอกหมายเลขกรณี';
+
+  @override
+  String get mailCaseNumberCopied => 'คัดลอกหมายเลขกรณีแล้ว';
 }

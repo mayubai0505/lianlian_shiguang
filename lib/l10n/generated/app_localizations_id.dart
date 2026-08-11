@@ -4983,4 +4983,100 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get characterBannerTitle => 'Banner Halaman Utama Karakter';
+
+  @override
+  String get mailDeleteTitle => 'Hapus Pesan';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return 'Yakin ingin menghapus $count pesan?\nPesan yang dihapus tidak dapat dipulihkan.';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return '$count pesan telah dihapus';
+  }
+
+  @override
+  String get mailDeleteFailed => 'Gagal menghapus. Silakan coba lagi nanti.';
+
+  @override
+  String get mailCancelSelection => 'Batalkan Pilihan';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '$count dipilih';
+  }
+
+  @override
+  String get moreOptions => 'Lainnya';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return 'Hapus $count pesan';
+  }
+
+  @override
+  String get officialManagementTeam => 'Tim Manajemen LoveyDovey';
+
+  @override
+  String get rewardCampaignTitle => 'Hadiah Acara';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'Pesan hadiah ini tidak memiliki data acara. Silakan coba lagi nanti.';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return 'Berhasil menerima $amount Bunga';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => 'Hadiah ini sudah diterima';
+
+  @override
+  String get rewardCampaignClaimFailed =>
+      'Gagal menerima. Silakan coba lagi nanti.';
+
+  @override
+  String get rewardCampaignContains => 'Pesan ini berisi';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount Bunga';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return 'Batas waktu penerimaan: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => 'Sedang menerima…';
+
+  @override
+  String get rewardCampaignClaimed => 'Sudah diterima';
+
+  @override
+  String get rewardCampaignEnded => 'Acara telah berakhir';
+
+  @override
+  String get rewardCampaignClaimButton => 'Terima Hadiah';
+
+  @override
+  String get mailDetailTitle => 'Pesan';
+
+  @override
+  String mailSender(String name) {
+    return 'Pengirim: $name';
+  }
+
+  @override
+  String get mailCaseNumber => 'Nomor Kasus';
+
+  @override
+  String get mailCopyCaseNumber => 'Salin Nomor Kasus';
+
+  @override
+  String get mailCaseNumberCopied => 'Nomor kasus disalin';
 }

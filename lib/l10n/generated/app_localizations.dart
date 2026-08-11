@@ -8679,6 +8679,162 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'角色首頁橫幅'**
   String get characterBannerTitle;
+
+  /// No description provided for @mailDeleteTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除信件'**
+  String get mailDeleteTitle;
+
+  /// No description provided for @mailDeleteConfirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要刪除 {count} 封信件嗎？\n刪除後無法復原。'**
+  String mailDeleteConfirm(int count);
+
+  /// No description provided for @mailDeleteSuccess.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已刪除 {count} 封信件'**
+  String mailDeleteSuccess(int count);
+
+  /// No description provided for @mailDeleteFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗，請稍後再試'**
+  String get mailDeleteFailed;
+
+  /// No description provided for @mailCancelSelection.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消選取'**
+  String get mailCancelSelection;
+
+  /// No description provided for @mailSelectedCount.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已選取 {count} 封'**
+  String mailSelectedCount(int count);
+
+  /// No description provided for @moreOptions.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更多'**
+  String get moreOptions;
+
+  /// No description provided for @mailDeleteSelected.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除 {count} 封信件'**
+  String mailDeleteSelected(int count);
+
+  /// No description provided for @officialManagementTeam.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光管理團隊'**
+  String get officialManagementTeam;
+
+  /// No description provided for @rewardCampaignTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動禮物'**
+  String get rewardCampaignTitle;
+
+  /// No description provided for @rewardCampaignMissingData.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這封禮物信缺少活動資料，請稍後再試'**
+  String get rewardCampaignMissingData;
+
+  /// No description provided for @rewardCampaignClaimSuccess.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已領取 {amount} 朵花花'**
+  String rewardCampaignClaimSuccess(int amount);
+
+  /// No description provided for @rewardCampaignAlreadyClaimed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這份禮物已經領取過囉'**
+  String get rewardCampaignAlreadyClaimed;
+
+  /// No description provided for @rewardCampaignClaimFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'領取失敗，請稍後再試'**
+  String get rewardCampaignClaimFailed;
+
+  /// No description provided for @rewardCampaignContains.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這封信裡有'**
+  String get rewardCampaignContains;
+
+  /// No description provided for @rewardCampaignFlowerAmount.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{amount} 朵花花'**
+  String rewardCampaignFlowerAmount(int amount);
+
+  /// No description provided for @rewardCampaignDeadline.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'領取期限：{date}'**
+  String rewardCampaignDeadline(String date);
+
+  /// No description provided for @rewardCampaignClaiming.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'領取中…'**
+  String get rewardCampaignClaiming;
+
+  /// No description provided for @rewardCampaignClaimed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已領取'**
+  String get rewardCampaignClaimed;
+
+  /// No description provided for @rewardCampaignEnded.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動已結束'**
+  String get rewardCampaignEnded;
+
+  /// No description provided for @rewardCampaignClaimButton.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'領取禮物'**
+  String get rewardCampaignClaimButton;
+
+  /// No description provided for @mailDetailTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'信件'**
+  String get mailDetailTitle;
+
+  /// No description provided for @mailSender.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寄件者：{name}'**
+  String mailSender(String name);
+
+  /// No description provided for @mailCaseNumber.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'案件編號'**
+  String get mailCaseNumber;
+
+  /// No description provided for @mailCopyCaseNumber.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'複製案件編號'**
+  String get mailCopyCaseNumber;
+
+  /// No description provided for @mailCaseNumberCopied.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已複製案件編號'**
+  String get mailCaseNumberCopied;
 }
 
 class _AppLocalizationsDelegate

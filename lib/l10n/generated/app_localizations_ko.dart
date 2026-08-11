@@ -4736,4 +4736,99 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get characterBannerTitle => '캐릭터 홈 배너';
+
+  @override
+  String get mailDeleteTitle => '메일 삭제';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return '메일 $count개를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return '메일 $count개를 삭제했습니다';
+  }
+
+  @override
+  String get mailDeleteFailed => '삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get mailCancelSelection => '선택 취소';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '$count개 선택됨';
+  }
+
+  @override
+  String get moreOptions => '더보기';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return '메일 $count개 삭제';
+  }
+
+  @override
+  String get officialManagementTeam => 'LoveyDovey 운영팀';
+
+  @override
+  String get rewardCampaignTitle => '이벤트 선물';
+
+  @override
+  String get rewardCampaignMissingData =>
+      '이 선물 메일에 이벤트 데이터가 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return '꽃 $amount개를 받았습니다';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => '이미 받은 선물입니다';
+
+  @override
+  String get rewardCampaignClaimFailed => '받지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get rewardCampaignContains => '이 메일에는';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '꽃 $amount개';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return '수령 기한: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => '받는 중…';
+
+  @override
+  String get rewardCampaignClaimed => '수령 완료';
+
+  @override
+  String get rewardCampaignEnded => '이벤트가 종료되었습니다';
+
+  @override
+  String get rewardCampaignClaimButton => '선물 받기';
+
+  @override
+  String get mailDetailTitle => '메일';
+
+  @override
+  String mailSender(String name) {
+    return '보낸 사람: $name';
+  }
+
+  @override
+  String get mailCaseNumber => '문의 번호';
+
+  @override
+  String get mailCopyCaseNumber => '문의 번호 복사';
+
+  @override
+  String get mailCaseNumberCopied => '문의 번호가 복사되었습니다';
 }

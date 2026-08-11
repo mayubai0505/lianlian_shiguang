@@ -19,6 +19,13 @@ import 'package:showcaseview/showcaseview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/character_report_service.dart';
 import '../services/character_block_service.dart';
+import 'dart:io';
+import 'package:cross_file/cross_file.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:flutter/services.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 //角色卡片內容
 
 class CharacterProfilePage extends StatefulWidget {
@@ -54,10 +61,63 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   String? _translatedBackground;
   List<String>? _translatedLikes;
   List<String>? _translatedDislikes;
+  final GlobalKey _characterShareCardKey = GlobalKey();
   List<String>? _translatedTags;
   final LoreTranslateService _loreTranslateService = LoreTranslateService();
   String _playerNickname = '旅人';
   String _currentUserId = "";
+  String _getCharacterShareAppLink() {
+    return 'https://lianlianshiguang.web.app/download/';
+  }
+
+  String _buildCharacterShareText() {
+    final character = widget.character;
+
+    final String characterName = character.name.trim();
+
+    final String firstLine = character.firstLine.trim();
+
+    final String creatorName = character.creatorName.trim();
+
+    final bool hasCreatorName = creatorName.isNotEmpty &&
+        creatorName != '神祕創作者' &&
+        creatorName != '神秘創作者';
+
+    final String appLink = _getCharacterShareAppLink();
+
+    final buffer = StringBuffer()
+      ..writeln('🦋 一封來自《戀戀拾光》的相遇邀請')
+      ..writeln()
+      ..writeln('「$characterName」')
+      ..writeln();
+
+    if (firstLine.isNotEmpty) {
+      buffer
+        ..writeln(firstLine)
+        ..writeln();
+    }
+
+    if (hasCreatorName) {
+      buffer
+        ..writeln('✦ 創作者：$creatorName')
+        ..writeln();
+    }
+
+    buffer.write(
+      '在《戀戀拾光》搜尋「$characterName」，'
+      '開始這段只屬於你們的故事。',
+    );
+
+    if (appLink.isNotEmpty) {
+      buffer
+        ..writeln()
+        ..writeln()
+        ..write(appLink);
+    }
+
+    return buffer.toString();
+  }
+
   // 🌟 用來存每一則迴音的翻譯結果：key 是 docId，value 是翻譯後的文字
   Map<String, String> _translatedEchoes = {};
 // 🌟 用來存哪些迴音正在翻譯中，好顯示小蝴蝶
@@ -82,6 +142,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
   // 💡 2. 新增：紀錄迴音氣泡彈過了沒 (預設 true，等翻記事本)
   bool _hasEchoTipShown = true;
+
   @override
   void initState() {
     super.initState();
@@ -180,8 +241,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     // 角色舊資料中的 creatorName 可能仍是「神秘創作者」，
     // 因此每次追蹤都以創作者帳號目前的 nickname 為優先來源。
     try {
-      final creatorSnapshot =
-      await db.collection('users').doc(creatorId).get();
+      final creatorSnapshot = await db.collection('users').doc(creatorId).get();
       final creatorData = creatorSnapshot.data();
 
       final possibleNames = <String>[
@@ -191,7 +251,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ];
 
       final accountCreatorName = possibleNames.firstWhere(
-            (name) => name.isNotEmpty,
+        (name) => name.isNotEmpty,
         orElse: () => '',
       );
 
@@ -202,8 +262,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       debugPrint('⚠️ 讀取創作者名稱失敗，暫用角色資料名稱：$e');
     }
 
-    if (resolvedCreatorName.isEmpty ||
-        resolvedCreatorName.contains('神秘創作者')) {
+    if (resolvedCreatorName.isEmpty || resolvedCreatorName.contains('神秘創作者')) {
       resolvedCreatorName = '創作者';
     }
 
@@ -298,7 +357,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           'type': 'follow',
           'title': l10n.mailbox_follow_title,
           'body': l10n.mailbox_follow_body(
-            widget.character.name,
+            _playerNickname,
           ),
           'fromId': currentUser.uid,
           'fromName': _playerNickname,
@@ -423,6 +482,534 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       }
     } catch (e) {
       print("檢查按讚狀態失敗: $e");
+    }
+  }
+
+  Widget _buildCharacterShareCard() {
+    final character = widget.character;
+
+    final String characterName = character.name.trim();
+
+    final String firstLine = character.firstLine.trim();
+
+    final String creatorName = character.creatorName.trim();
+
+    final bool hasCreatorName = creatorName.isNotEmpty &&
+        creatorName != '神祕創作者' &&
+        creatorName != '神秘創作者';
+
+    final String imageUrl = character.bannerImagePath.trim().isNotEmpty
+        ? character.bannerImagePath.trim()
+        : character.avatarPath.trim();
+    final String appLink = _getCharacterShareAppLink();
+
+    return RepaintBoundary(
+      key: _characterShareCardKey,
+      child: SizedBox(
+        width: 360,
+        height: 450,
+        child: Material(
+          color: const Color(0xFF24162E),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // 角色圖片
+              if (imageUrl.isNotEmpty)
+                Image(
+                  image: CachedNetworkImageProvider(
+                    imageUrl,
+                  ),
+                  fit: BoxFit.cover,
+                  errorBuilder: (
+                    context,
+                    error,
+                    stackTrace,
+                  ) {
+                    return Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFFB99ACB),
+                            Color(0xFF725084),
+                            Color(0xFF2B1834),
+                          ],
+                        ),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.auto_awesome,
+                          size: 72,
+                          color: Colors.white54,
+                        ),
+                      ),
+                    );
+                  },
+                )
+              else
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFB99ACB),
+                        Color(0xFF725084),
+                        Color(0xFF2B1834),
+                      ],
+                    ),
+                  ),
+                ),
+
+              // 圖片整體柔和遮罩
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [
+                      0.0,
+                      0.48,
+                      0.72,
+                      1.0,
+                    ],
+                    colors: [
+                      Color(0x14000000),
+                      Color(0x10000000),
+                      Color(0xB020102A),
+                      Color(0xF21B1022),
+                    ],
+                  ),
+                ),
+              ),
+
+              // 上方品牌
+              const Positioned(
+                top: 24,
+                left: 24,
+                right: 24,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.auto_awesome,
+                      color: Color(0xFFE9CFF3),
+                      size: 18,
+                    ),
+                    SizedBox(width: 7),
+                    Text(
+                      '戀戀拾光',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 2,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black54,
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      'CHARACTER INVITATION',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 8,
+                        letterSpacing: 1.2,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black54,
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // 下方角色資訊＋下載 QR Code
+              Positioned(
+                left: 24,
+                right: 24,
+                bottom: 22,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    // 左側角色資訊
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 42,
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFDAB7E8),
+                              borderRadius: BorderRadius.circular(99),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            characterName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              height: 1.1,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 2,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black87,
+                                  offset: Offset(0, 2),
+                                  blurRadius: 10,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (firstLine.isNotEmpty) ...[
+                            const SizedBox(height: 9),
+                            Text(
+                              firstLine,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xFFF3E8F7),
+                                fontSize: 13,
+                                height: 1.5,
+                                letterSpacing: 0.3,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black87,
+                                    blurRadius: 8,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 12),
+                          if (hasCreatorName)
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.edit_outlined,
+                                  color: Colors.white70,
+                                  size: 13,
+                                ),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    '創作者  $creatorName',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 11,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 7),
+                          const Text(
+                            '搜尋角色，開始相遇  🦋',
+                            style: TextStyle(
+                              color: Color(0xFFE2BDEF),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // 右側 QR Code
+                    if (appLink.isNotEmpty) ...[
+                      const SizedBox(width: 14),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black38,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: QrImageView(
+                              data: appLink,
+                              version: QrVersions.auto,
+                              size: 64,
+                              padding: EdgeInsets.zero,
+                              backgroundColor: Colors.white,
+                              eyeStyle: const QrEyeStyle(
+                                eyeShape: QrEyeShape.square,
+                                color: Colors.black,
+                              ),
+                              dataModuleStyle: const QrDataModuleStyle(
+                                dataModuleShape: QrDataModuleShape.square,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          const Text(
+                            '掃描下載',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.6,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black87,
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+              // 精緻細框
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white24,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _captureAndShareCharacterCard(
+    BuildContext shareButtonContext,
+  ) async {
+    try {
+      // 等待邀請卡與網路圖片完成目前這一幀
+      await WidgetsBinding.instance.endOfFrame;
+
+      final RenderRepaintBoundary? boundary =
+          _characterShareCardKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
+
+      if (boundary == null) {
+        throw Exception('找不到角色邀請卡');
+      }
+
+      final image = await boundary.toImage(
+        pixelRatio: 3,
+      );
+
+      final byteData = await image.toByteData(
+        format: ImageByteFormat.png,
+      );
+
+      if (byteData == null) {
+        throw Exception('無法產生角色邀請卡');
+      }
+
+      final imageBytes = byteData.buffer.asUint8List();
+
+      final String safeCharacterName = widget.character.name
+          .replaceAll(
+            RegExp(r'[\\/:*?"<>|]'),
+            '_',
+          )
+          .trim();
+
+      final XFile shareFile = XFile.fromData(
+        imageBytes,
+        mimeType: 'image/png',
+      );
+
+      final RenderBox? box =
+          shareButtonContext.findRenderObject() as RenderBox?;
+
+      final Rect? sharePositionOrigin = box != null && box.hasSize
+          ? box.localToGlobal(
+                Offset.zero,
+              ) &
+              box.size
+          : null;
+
+      final String appLink = _getCharacterShareAppLink();
+
+      if (appLink.isNotEmpty) {
+        await Clipboard.setData(
+          ClipboardData(text: appLink),
+        );
+      }
+
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [shareFile],
+          fileNameOverrides: [
+            'lianlian_${widget.character.name}_invitation.png',
+          ],
+          text: _buildCharacterShareText(),
+          title: '分享角色「${widget.character.name}」',
+          subject: '來《戀戀拾光》認識 ${widget.character.name}',
+          sharePositionOrigin: sharePositionOrigin,
+        ),
+      );
+    } catch (error) {
+      debugPrint(
+        '❌ 角色邀請卡分享失敗：$error',
+      );
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '邀請卡產生失敗，請稍後再試',
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _showCharacterSharePreview(
+    BuildContext sourceButtonContext,
+  ) async {
+    if (!widget.character.isPublic) {
+      ToastUtils.showCenterToast(
+        context,
+        '私人角色目前無法分享',
+        isError: true,
+      );
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final screenWidth = MediaQuery.sizeOf(
+          dialogContext,
+        ).width;
+
+        final double previewWidth = screenWidth > 440 ? 360 : screenWidth - 48;
+
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 24,
+          ),
+          backgroundColor: Colors.transparent,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FittedBox(
+                  fit: BoxFit.contain,
+                  child: _buildCharacterShareCard(),
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: previewWidth,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pop(
+                              dialogContext,
+                            );
+                          },
+                          child: const Text(
+                            '取消',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: Builder(
+                          builder: (shareButtonContext) {
+                            return ElevatedButton.icon(
+                              onPressed: () {
+                                _captureAndShareCharacterCard(
+                                  shareButtonContext,
+                                );
+                              },
+                              icon: Transform.flip(
+                                flipX: true,
+                                child: const Icon(
+                                  Icons.reply_rounded,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                              ),
+                              label: const Text(
+                                '分享邀請卡',
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(
+                                  0xFF8E63A2,
+                                ),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _prepareCharacterShareImage() async {
+    final String imageUrl = widget.character.bannerImagePath.trim().isNotEmpty
+        ? widget.character.bannerImagePath.trim()
+        : widget.character.avatarPath.trim();
+
+    if (imageUrl.isEmpty || !mounted) return;
+
+    try {
+      await precacheImage(
+        CachedNetworkImageProvider(imageUrl),
+        context,
+      );
+    } catch (error) {
+      debugPrint('⚠️ 分享卡片圖片預載失敗：$error');
     }
   }
 
@@ -613,7 +1200,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       await Future.delayed(const Duration(milliseconds: 800)); // 模擬網路延遲
       // 假設這是 AI 回傳的感性譯文
       String translatedText =
-      l10n.chat_translation_prefix(content); // 3. 更新翻譯結果
+          l10n.chat_translation_prefix(content); // 3. 更新翻譯結果
       if (mounted) {
         setState(() {
           _translatedEchoes[docId] = translatedText;
@@ -798,7 +1385,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         context,
         l10n.followed_creator_msg(widget.character.creatorName),
         customIcon:
-        Icons.person_add_alt_1_rounded, // 💡 用帶有「+」號的人物圖示，完美傳達「加入追蹤」的意象！
+            Icons.person_add_alt_1_rounded, // 💡 用帶有「+」號的人物圖示，完美傳達「加入追蹤」的意象！
       );
     }
   }
@@ -812,7 +1399,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       builder: (context) {
         return AlertDialog(
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           // 💡 注意：這裡的 const 被我拆到裡面的 Icon 和 SizedBox 去了
           title: Row(children: [
             const Icon(Icons.sentiment_very_dissatisfied,
@@ -863,7 +1450,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   'type': 'character_dislike',
                   'characterId': widget.character.id,
                   'reporterId':
-                  FirebaseAuth.instance.currentUser?.uid ?? 'unknown',
+                      FirebaseAuth.instance.currentUser?.uid ?? 'unknown',
                   'reason': reason,
                   'timestamp': FieldValue.serverTimestamp(),
                 });
@@ -914,7 +1501,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     ...reportOptions.map((reason) {
                       return RadioListTile<String>(
                         title:
-                        Text(reason, style: const TextStyle(fontSize: 14)),
+                            Text(reason, style: const TextStyle(fontSize: 14)),
                         value: reason,
                         groupValue: tempReason,
                         contentPadding: EdgeInsets.zero,
@@ -998,27 +1585,27 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     // 🛡️ 總裁防呆機制：彈出警告視窗，防止手滑
     final l10n = AppLocalizations.of(context)!;
     final bool confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(l10n.lore_delete_title),
-          content: Text(l10n.lore_delete_content),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false), // 點取消回傳 false
-              child: Text(l10n.lore_delete_cancel),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent),
-              onPressed: () => Navigator.pop(context, true), // 點確定回傳 true
-              child: Text(l10n.lore_delete_confirm,
-                  style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    ) ??
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(l10n.lore_delete_title),
+              content: Text(l10n.lore_delete_content),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false), // 點取消回傳 false
+                  child: Text(l10n.lore_delete_cancel),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent),
+                  onPressed: () => Navigator.pop(context, true), // 點確定回傳 true
+                  child: Text(l10n.lore_delete_confirm,
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        ) ??
         false; // 如果點擊對話框外面關閉，預設也是 false
     // 如果玩家沒有點擊確定，就直接終止動作
     if (!confirm) return;
@@ -1039,7 +1626,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           context,
           l10n.lore_delete_success,
           customIcon:
-          Icons.auto_delete_outlined, // 💡 使用帶有科技感或魔法感的刪除圖示，非常符合「清除記憶」的意境！
+              Icons.auto_delete_outlined, // 💡 使用帶有科技感或魔法感的刪除圖示，非常符合「清除記憶」的意境！
         );
       }
     } catch (e) {
@@ -1290,7 +1877,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   decoration: BoxDecoration(
                     color: theme.scaffoldBackgroundColor,
                     borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(24)),
+                        const BorderRadius.vertical(top: Radius.circular(24)),
                   ),
                   // ✨ 關鍵 3：用 SingleChildScrollView 包起來，萬一螢幕太小還能捲動
                   child: SingleChildScrollView(
@@ -1328,8 +1915,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                 Text('🦋', style: TextStyle(fontSize: 24)),
                                 l10n.theme_butterfly,
                                 selectedTheme,
-                                    () => setModalState(
-                                        () => selectedTheme = 'butterfly')),
+                                () => setModalState(
+                                    () => selectedTheme = 'butterfly')),
                             _buildThemeSelector(
                                 'sprout',
                                 Icon(Icons.eco,
@@ -1338,8 +1925,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                         : Colors.grey),
                                 l10n.theme_sprout,
                                 selectedTheme,
-                                    () => setModalState(
-                                        () => selectedTheme = 'sprout')),
+                                () => setModalState(
+                                    () => selectedTheme = 'sprout')),
                             _buildThemeSelector(
                                 'star',
                                 Icon(Icons.star_border,
@@ -1348,8 +1935,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                         : Colors.grey),
                                 l10n.theme_star,
                                 selectedTheme,
-                                    () => setModalState(
-                                        () => selectedTheme = 'star')),
+                                () => setModalState(
+                                    () => selectedTheme = 'star')),
                             _buildThemeSelector(
                                 'planet',
                                 Icon(Icons.public,
@@ -1358,8 +1945,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                         : Colors.grey),
                                 l10n.theme_planet,
                                 selectedTheme,
-                                    () => setModalState(
-                                        () => selectedTheme = 'planet')),
+                                () => setModalState(
+                                    () => selectedTheme = 'planet')),
                           ],
                         ),
 
@@ -1369,7 +1956,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 padding:
-                                const EdgeInsets.symmetric(vertical: 16)),
+                                    const EdgeInsets.symmetric(vertical: 16)),
                             onPressed: () async {
                               if (textController.text.trim().isEmpty) return;
                               Navigator.pop(context);
@@ -1525,7 +2112,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 photoUrls.length,
-                    (index) {
+                (index) {
                   final bool selected = index == _currentHeaderPhotoIndex;
 
                   return AnimatedContainer(
@@ -1541,8 +2128,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                       color: selected
                           ? Colors.white
                           : Colors.white.withValues(
-                        alpha: 0.45,
-                      ),
+                              alpha: 0.45,
+                            ),
                       borderRadius: BorderRadius.circular(99),
                     ),
                   );
@@ -1569,7 +2156,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               ),
               child: Text(
                 '${_currentHeaderPhotoIndex + 1}'
-                    ' / ${photoUrls.length}',
+                ' / ${photoUrls.length}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
@@ -1609,10 +2196,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       ),
 
       errorWidget: (
-          context,
-          url,
-          error,
-          ) {
+        context,
+        url,
+        error,
+      ) {
         return const ColoredBox(
           color: Colors.black,
           child: Center(
@@ -1640,13 +2227,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               alignment: Alignment.center,
               memCacheWidth: 1600,
               errorWidget: (
-                  context,
-                  url,
-                  error,
-                  ) =>
+                context,
+                url,
+                error,
+              ) =>
                   Container(
-                    color: Colors.black,
-                  ),
+                color: Colors.black,
+              ),
             ),
 
             BackdropFilter(
@@ -1663,7 +2250,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
             Center(child: image),
           ] else
-          // 手機版直接滿版。
+            // 手機版直接滿版。
             image,
           if (isLocked) ...[
             // 鎖定照片模糊。
@@ -1758,7 +2345,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 expandedHeight: 400.0,
                 pinned: true,
                 backgroundColor:
-                theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
+                    theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
                 elevation: 0,
                 leading: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -1771,6 +2358,46 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   ),
                 ),
                 actions: [
+                  if (widget.character.isPublic)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        4,
+                        8,
+                        0,
+                        8,
+                      ),
+                      child: CircleAvatar(
+                        backgroundColor: Colors.black.withValues(
+                          alpha: 0.4,
+                        ),
+                        child: Builder(
+                          builder: (shareButtonContext) {
+                            return IconButton(
+                              tooltip: '分享角色',
+                              icon: Transform.flip(
+                                flipX: true,
+                                child: const Icon(
+                                  Icons.reply_rounded,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                              ),
+                              onPressed: () async {
+                                await _prepareCharacterShareImage();
+
+                                if (!mounted) return;
+
+                                await _showCharacterSharePreview(
+                                  shareButtonContext,
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                  // 原本的「⋮」選單
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
@@ -1792,7 +2419,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
                             case 'block':
                               final bool blocked =
-                              await CharacterBlockService.showBlockDialog(
+                                  await CharacterBlockService.showBlockDialog(
                                 context: context,
                                 character: widget.character,
                               );
@@ -1923,16 +2550,16 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           context,
                           MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                character: widget.character,
-                                chatMode: "gemini", // 維持妳的 0元 模式
-                                selectedLanguage:
-                                l10n.ai_chat_language_code,
-                                forceNewRoom: true,
-                                initialText: widget
-                                    .character.storyModeFirstLine ??
-                                    l10n.default_chat_initial, // ✨ 補上第一句話
-                                characterId: widget.character.id,
-                              )));
+                                    character: widget.character,
+                                    chatMode: "gemini", // 維持妳的 0元 模式
+                                    selectedLanguage:
+                                        l10n.ai_chat_language_code,
+                                    forceNewRoom: true,
+                                    initialText: widget
+                                            .character.storyModeFirstLine ??
+                                        l10n.default_chat_initial, // ✨ 補上第一句話
+                                    characterId: widget.character.id,
+                                  )));
                       if (mounted) {
                         setState(() {
                           _isNavigating = false;
@@ -1970,12 +2597,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           context,
                           MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                character: widget.character,
-                                chatMode: "daily",
-                                selectedLanguage: l10n.ai_chat_language,
-                                forceNewRoom: true,
-                                characterId: widget.character.id,
-                              )));
+                                    character: widget.character,
+                                    chatMode: "daily",
+                                    selectedLanguage: l10n.ai_chat_language,
+                                    forceNewRoom: true,
+                                    characterId: widget.character.id,
+                                  )));
                       if (mounted) {
                         setState(() {
                           _isNavigating = false;
@@ -2003,11 +2630,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         decoration: themeNotifier.currentBackground, // 保留您精美的全螢幕背景
         child: isDesktop
             ? Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 500),
-            child: mainContent,
-          ),
-        )
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: mainContent,
+                ),
+              )
             : mainContent,
       ),
     );
@@ -2032,7 +2659,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         (shared?['personalityTags'] as List?)?.cast<String>() ??
         widget.character.personalityTags;
     final displayStory =
-    widget.character.initialStory.trim(); // 判斷是否顯示按鈕：語言不同且雲端/本地都還沒翻過
+        widget.character.initialStory.trim(); // 判斷是否顯示按鈕：語言不同且雲端/本地都還沒翻過
     final bool showTranslateBtn =
         (currentLang != (widget.character.contentLanguage ?? 'zh')) &&
             (_translatedBackground == null && shared?['background'] == null);
@@ -2058,12 +2685,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               borderRadius: BorderRadius.circular(20),
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                     color: _hasLiked
                         ? Colors.pink.withValues(alpha: 0.1)
                         : theme.colorScheme.surfaceVariant
-                        .withValues(alpha: 0.5),
+                            .withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                         color: _hasLiked
@@ -2086,10 +2713,10 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               borderRadius: BorderRadius.circular(20),
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                     color:
-                    theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
+                        theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(20)),
                 child: Row(children: [
                   Icon(Icons.thumb_down_off_alt,
@@ -2110,7 +2737,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               borderRadius: BorderRadius.circular(50),
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: _isFriend
                       ? theme.colorScheme.surfaceVariant.withValues(alpha: 0.8)
@@ -2119,31 +2746,31 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 ),
                 child: _isFriendLoading
                     ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2))
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2))
                     : Row(
-                  children: [
-                    Icon(
-                      // ✨ 替換圖示：已添加顯示「打勾」，未添加顯示「加號」
-                      _isFriend ? Icons.check_rounded : Icons.add_rounded,
-                      size: 20,
-                      color: _isFriend
-                          ? Colors.grey
-                          : theme.colorScheme.onPrimaryContainer,
-                    ),
-                    const SizedBox(width: 4), // 稍微縮減間距，讓膠囊內的元素更緊湊好看
-                    Text(
-                      l10n.tab_friends, // ✨ 無論狀態為何，通通只顯示「好友」兩個字
-                      style: TextStyle(
-                        color: _isFriend
-                            ? Colors.grey
-                            : theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
+                        children: [
+                          Icon(
+                            // ✨ 替換圖示：已添加顯示「打勾」，未添加顯示「加號」
+                            _isFriend ? Icons.check_rounded : Icons.add_rounded,
+                            size: 20,
+                            color: _isFriend
+                                ? Colors.grey
+                                : theme.colorScheme.onPrimaryContainer,
+                          ),
+                          const SizedBox(width: 4), // 稍微縮減間距，讓膠囊內的元素更緊湊好看
+                          Text(
+                            l10n.tab_friends, // ✨ 無論狀態為何，通通只顯示「好友」兩個字
+                            style: TextStyle(
+                              color: _isFriend
+                                  ? Colors.grey
+                                  : theme.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ],
@@ -2155,13 +2782,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
               onPressed:
-              _isTranslating ? null : () => _translateProfile(currentLang),
+                  _isTranslating ? null : () => _translateProfile(currentLang),
               icon: _isTranslating
                   ? const SizedBox(
-                  width: 12,
-                  height: 12,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.grey))
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.grey))
                   : const Icon(Icons.translate, size: 16),
               label: Text(
                   _isTranslating
@@ -2212,12 +2839,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                   .toSet()
                   .toList()
                   .map((t) => Chip(
-                  label: Text(t, style: const TextStyle(fontSize: 12)),
-                  backgroundColor: theme.colorScheme.surfaceVariant
-                      .withValues(alpha: 0.5),
-                  side: BorderSide.none,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20))))
+                      label: Text(t, style: const TextStyle(fontSize: 12)),
+                      backgroundColor: theme.colorScheme.surfaceVariant
+                          .withValues(alpha: 0.5),
+                      side: BorderSide.none,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))))
                   .toList()),
           const SizedBox(height: 24),
         ],
@@ -2263,13 +2890,13 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
         StreamBuilder<DocumentSnapshot>(
           // 1. ✨ 關鍵修正：路徑改指向這間聊天室 (sessionId)
           stream: (FirebaseAuth.instance.currentUser != null &&
-              widget.sessionId != null)
+                  widget.sessionId != null)
               ? FirebaseFirestore.instance
-              .collection('artifacts')
-              .doc(AppConfig.appId)
-              .collection('chat_sessions') // 👈 改成去聊天室集合抓
-              .doc(widget.sessionId) // 👈 用這間房的 ID，它才有最新的分數
-              .snapshots()
+                  .collection('artifacts')
+                  .doc(AppConfig.appId)
+                  .collection('chat_sessions') // 👈 改成去聊天室集合抓
+                  .doc(widget.sessionId) // 👈 用這間房的 ID，它才有最新的分數
+                  .snapshots()
               : const Stream.empty(),
 
           builder: (context, snapshot) {
@@ -2304,11 +2931,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       Map<String, dynamic> existingData, ThemeData theme) {
     // 🌟 1. 回收再利用：把舊資料直接塞進 Controller 的肚子裡當預設值
     final titleController =
-    TextEditingController(text: existingData['title'] ?? '');
+        TextEditingController(text: existingData['title'] ?? '');
     final teaserController =
-    TextEditingController(text: existingData['teaser'] ?? '');
+        TextEditingController(text: existingData['teaser'] ?? '');
     final contentController =
-    TextEditingController(text: existingData['content'] ?? '');
+        TextEditingController(text: existingData['content'] ?? '');
     final l10n = AppLocalizations.of(context)!;
     // 抓取舊的隱藏狀態
     bool isHidden = existingData['isHidden'] ?? false;
@@ -2490,80 +3117,80 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         color: theme.dividerColor.withValues(alpha: 0.3)),
                   ),
                   child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      leading: Icon(
-                        isHidden ? Icons.lock_outline : Icons.mail_outline,
-                        color:
-                        isHidden ? Colors.grey : theme.colorScheme.primary,
-                        size: 30,
+                    contentPadding: const EdgeInsets.all(16),
+                    leading: Icon(
+                      isHidden ? Icons.lock_outline : Icons.mail_outline,
+                      color: isHidden ? Colors.grey : theme.colorScheme.primary,
+                      size: 30,
+                    ),
+                    title: Text(
+                      data['title'] ?? l10n.lore_unnamed,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isHidden && !_isCreator ? Colors.grey : null,
                       ),
-                      title: Text(
-                        data['title'] ?? l10n.lore_unnamed,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: isHidden && !_isCreator ? Colors.grey : null,
-                        ),
-                      ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: canViewDetail
-                            ? Text(data['teaser'] ?? '',
-                            maxLines: 2, overflow: TextOverflow.ellipsis)
-                            : Text(l10n.lore_sealed_msg,
-                            style: TextStyle(fontSize: 12)),
-                      ),
-                      trailing: _isCreator
-                          ? PopupMenuButton<String>(
-                        icon: const Icon(Icons.more_vert), // 創作者會看到三個點點
-                        onSelected: (value) {
-                          if (value == 'edit') {
-                            // 呼叫編輯的 Dialog (記得要把舊資料 data 傳進去)
-                            _showEditLoreDialog(
-                                context, doc.id, data, theme);
-                          } else if (value == 'delete') {
-                            // 呼叫刪除功能
-                            _deleteLore(doc.id);
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit_outlined, size: 20),
-                                SizedBox(width: 8),
-                                Text(l10n.char_edit_fragment),
-                              ],
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: canViewDetail
+                          ? Text(data['teaser'] ?? '',
+                              maxLines: 2, overflow: TextOverflow.ellipsis)
+                          : Text(l10n.lore_sealed_msg,
+                              style: TextStyle(fontSize: 12)),
+                    ),
+                    trailing: _isCreator
+                        ? PopupMenuButton<String>(
+                            icon: const Icon(Icons.more_vert), // 創作者會看到三個點點
+                            onSelected: (value) {
+                              if (value == 'edit') {
+                                // 呼叫編輯的 Dialog (記得要把舊資料 data 傳進去)
+                                _showEditLoreDialog(
+                                    context, doc.id, data, theme);
+                              } else if (value == 'delete') {
+                                // 呼叫刪除功能
+                                _deleteLore(doc.id);
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit_outlined, size: 20),
+                                    SizedBox(width: 8),
+                                    Text(l10n.char_edit_fragment),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete_outline,
+                                        size: 20, color: Colors.red),
+                                    SizedBox(width: 8),
+                                    Text(l10n.delete_btn,
+                                        style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        // 如果不是創作者，有權限就顯示箭頭，沒權限就空著
+                        : (canViewDetail
+                            ? const Icon(Icons.arrow_forward_ios, size: 14)
+                            : null),
+                    onTap: canViewDetail
+                        ? () => _openLoreDetailPage(
+                              loreId: doc.id,
+                              data: data,
+                            )
+                        : () => ToastUtils.showCenterToast(
+                              context,
+                              l10n.lore_not_open_msg,
+                              customIcon: Icons.lock_outline_rounded,
                             ),
-                          ),
-                          PopupMenuItem(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                Icon(Icons.delete_outline,
-                                    size: 20, color: Colors.red),
-                                SizedBox(width: 8),
-                                Text(l10n.delete_btn,
-                                    style: TextStyle(color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                      // 如果不是創作者，有權限就顯示箭頭，沒權限就空著
-                          : (canViewDetail
-                          ? const Icon(Icons.arrow_forward_ios, size: 14)
-                          : null),
-                      onTap: canViewDetail
-                          ? () => _showLoreDetailDialog(doc.id, data, theme)
-                          : () =>
-                      // ✨ 總裁級：記憶尚未解鎖的溫柔提醒，用鎖頭圖示增加故事帶入感！
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.lore_not_open_msg,
-                        customIcon: Icons
-                            .lock_outline_rounded, // 💡 總裁細節：用精緻的鎖頭圖示，明確暗示「內容尚未解鎖」，比純文字更有 Fu！
-                      )),
+                  ),
                 );
               }).toList(),
           ],
@@ -2573,128 +3200,200 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   }
 
 // --- 2. 合併後的詳細彈窗 (支援翻譯) ---
-  void _showLoreDetailDialog(
-      String loreId, Map<String, dynamic> data, ThemeData theme) {
+  Future<void> _openLoreDetailPage({
+    required String loreId,
+    required Map<String, dynamic> data,
+  }) async {
     final l10n = AppLocalizations.of(context)!;
-    final LoreTranslateService _translateService = LoreTranslateService();
-    showDialog(
-      context: context,
-      builder: (context) {
-        final modalTheme = Theme.of(context);
-        String displayedTitle = data['title'] ?? l10n.lore_unnamed;
-        String displayedContent = data['content'] ?? data['teaser'] ?? '';
-        bool isTranslating = false;
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Dialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              backgroundColor: modalTheme.scaffoldBackgroundColor,
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: modalTheme.cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                      color: modalTheme.dividerColor.withValues(alpha: 0.5)),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.mail_outline,
-                              color: modalTheme.colorScheme.primary, size: 28),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              displayedTitle,
-                              style: modalTheme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold, height: 1.3),
+    final translateService = LoreTranslateService();
+
+    final String originalTitle =
+        (data['title'] ?? l10n.lore_unnamed).toString();
+
+    final String originalContent =
+        (data['content'] ?? data['teaser'] ?? '').toString();
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (pageContext) {
+          String displayedTitle = originalTitle;
+          String displayedContent = originalContent;
+          bool isTranslating = false;
+
+          return StatefulBuilder(
+            builder: (context, setPageState) {
+              final pageTheme = Theme.of(context);
+
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                    displayedTitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  actions: [
+                    if (isTranslating)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 18,
+                        ),
+                        child: Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
                             ),
                           ),
-                          // 🦋 翻譯按鈕
-                          isTranslating
-                              ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child:
-                              CircularProgressIndicator(strokeWidth: 2))
-                              : IconButton(
-                            icon: const Icon(Icons.translate, size: 20),
-                            onPressed: () async {
-                              setModalState(() => isTranslating = true);
-                              try {
-                                //執行 AI 翻譯
-                                final String currentLang =
-                                    Localizations.localeOf(context)
-                                        .languageCode;
-                                final translationResult =
-                                await _translateService.translateLore(
-                                  targetLang: currentLang,
-                                  title: data['title'] ?? '',
-                                  content: data['content'] ?? '',
-                                );
-                                setModalState(() {
-                                  displayedTitle =
-                                  translationResult['title']!;
-                                  displayedContent =
-                                  translationResult['content']!;
-                                });
-                                await _translateService
-                                    .saveTranslationToFirebase(
-                                  appId: AppConfig.appId,
-                                  characterId: widget.character.id,
-                                  loreId: loreId,
-                                  lang: currentLang,
-                                  result: translationResult,
-                                );
-                              } catch (e) {
-                                if (mounted) {
-                                  // ✨ 總裁級：翻譯失敗的輕巧提示，用紅驚嘆號俐落接住 API 例外狀況！
-                                  ToastUtils.showCenterToast(
-                                    context,
-                                    l10n.translate_failed(e.toString()),
-                                    isError:
-                                    true, // 💡 總裁細節：自動帶上紅驚嘆號，清楚明瞭
-                                  );
-                                }
-                              } finally {
-                                setModalState(
-                                        () => isTranslating = false);
-                              }
-                            },
-                          ),
-                        ],
+                        ),
+                      )
+                    else
+                      IconButton(
+                        tooltip: '翻譯',
+                        icon: const Icon(
+                          Icons.translate_rounded,
+                        ),
+                        onPressed: () async {
+                          setPageState(() {
+                            isTranslating = true;
+                          });
+
+                          try {
+                            final String currentLang = Localizations.localeOf(
+                              context,
+                            ).languageCode;
+
+                            final translationResult =
+                                await translateService.translateLore(
+                              targetLang: currentLang,
+                              title: originalTitle,
+                              content: originalContent,
+                            );
+
+                            if (!context.mounted) return;
+
+                            setPageState(() {
+                              displayedTitle =
+                                  translationResult['title'] ?? originalTitle;
+
+                              displayedContent = translationResult['content'] ??
+                                  originalContent;
+                            });
+
+                            await translateService.saveTranslationToFirebase(
+                              appId: AppConfig.appId,
+                              characterId: widget.character.id,
+                              loreId: loreId,
+                              lang: currentLang,
+                              result: translationResult,
+                            );
+                          } catch (error) {
+                            if (!context.mounted) return;
+
+                            ToastUtils.showCenterToast(
+                              context,
+                              l10n.translate_failed(
+                                error.toString(),
+                              ),
+                              isError: true,
+                            );
+                          } finally {
+                            if (context.mounted) {
+                              setPageState(() {
+                                isTranslating = false;
+                              });
+                            }
+                          }
+                        },
                       ),
-                      const Divider(height: 32),
-                      Text(
-                        displayedContent,
-                        style: modalTheme.textTheme.bodyLarge
-                            ?.copyWith(height: 1.8, letterSpacing: 0.5),
-                      ),
-                      const SizedBox(height: 32),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(l10n.lore_collapse,
-                              style: TextStyle(
-                                  color: modalTheme.colorScheme.primary,
-                                  fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 8),
+                  ],
+                ),
+                body: SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(
+                      24,
+                      28,
+                      24,
+                      56,
+                    ),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 720,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        pageTheme.colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: Icon(
+                                    Icons.mail_outline_rounded,
+                                    color: pageTheme
+                                        .colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        displayedTitle,
+                                        style: pageTheme.textTheme.headlineSmall
+                                            ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 7),
+                                      Text(
+                                        widget.character.name,
+                                        style: pageTheme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: pageTheme.colorScheme.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            Divider(
+                              color:
+                                  pageTheme.dividerColor.withValues(alpha: 0.5),
+                            ),
+                            const SizedBox(height: 24),
+                            SelectableText(
+                              displayedContent,
+                              style: pageTheme.textTheme.bodyLarge?.copyWith(
+                                height: 1.8,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -2770,7 +3469,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         String? avatarPath;
                         if (userSnapshot.hasData && userSnapshot.data!.exists) {
                           final userData =
-                          userSnapshot.data!.data() as Map<String, dynamic>;
+                              userSnapshot.data!.data() as Map<String, dynamic>;
                           displayCreatorName =
                               userData['nickname'] ?? displayCreatorName;
                           photoUrl = userData['photoURL'] as String?;
@@ -2795,7 +3494,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                 backgroundImage: imageProvider,
                                 child: imageProvider == null
                                     ? const Icon(Icons.person,
-                                    color: Colors.white)
+                                        color: Colors.white)
                                     : null,
                               ),
                             ),
@@ -2843,7 +3542,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                       );
                     },
                     icon:
-                    Icon(_isFollowing ? Icons.check : Icons.add, size: 18),
+                        Icon(_isFollowing ? Icons.check : Icons.add, size: 18),
                     label: Text(
                         _isFollowing ? l10n.followed_btn : l10n.follow_btn,
                         style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -2901,7 +3600,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
                 final bool isTranslating = _translatingEchoIds.contains(docId);
                 final bool hasTranslation =
-                _translatedEchoes.containsKey(docId);
+                    _translatedEchoes.containsKey(docId);
                 final String displayContent =
                     _translatedEchoes[docId] ?? originalContent;
 
@@ -2914,7 +3613,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                 if (themeType == 'butterfly') {
                   borderColor = Colors.purpleAccent.withValues(alpha: 0.5);
                   themeIconWidget =
-                  const Text('🦋', style: TextStyle(fontSize: 14));
+                      const Text('🦋', style: TextStyle(fontSize: 14));
                   bgColor = Colors.purple.withValues(alpha: 0.05);
                 } else if (themeType == 'sprout') {
                   borderColor = Colors.green.withValues(alpha: 0.5);
@@ -2955,32 +3654,32 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                   onTap: () => _reportEcho(docId),
                                   child: const Padding(
                                     padding:
-                                    EdgeInsets.symmetric(horizontal: 8.0),
+                                        EdgeInsets.symmetric(horizontal: 8.0),
                                     child: Icon(Icons.report_gmailerrorred,
                                         size: 16, color: Colors.grey),
                                   ),
                                 ),
                               isTranslating
                                   ? const SizedBox(
-                                  width: 14,
-                                  height: 14,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Colors.grey))
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2, color: Colors.grey))
                                   : InkWell(
-                                onTap: () => _translateSingleEcho(
-                                    docId, originalContent),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: Icon(
-                                    Icons.translate,
-                                    size: 14,
-                                    color: hasTranslation
-                                        ? Colors.purpleAccent
-                                        : Colors.grey,
-                                  ),
-                                ),
-                              ),
+                                      onTap: () => _translateSingleEcho(
+                                          docId, originalContent),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Icon(
+                                          Icons.translate,
+                                          size: 14,
+                                          color: hasTranslation
+                                              ? Colors.purpleAccent
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                    ),
                               if (isMine || isAdmin)
                                 InkWell(
                                   onTap: () => _deleteEcho(doc),
@@ -3005,7 +3704,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                               ? FontStyle.normal
                               : FontStyle.italic,
                           color:
-                          hasTranslation ? theme.colorScheme.primary : null,
+                              hasTranslation ? theme.colorScheme.primary : null,
                         ),
                       ),
                     ],
@@ -3073,7 +3772,7 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
 
       // ✨ 關鍵：將 Map 轉為 CharacterPhoto 物件，並同時轉換 gs:// 網址
       List<CharacterPhoto> photoList =
-      await Future.wait(snapshot.docs.map((doc) async {
+          await Future.wait(snapshot.docs.map((doc) async {
         final data = doc.data();
         // 1. 先把資料轉成初步的 CharacterPhoto 物件
         // 注意：這裡的 fromMap 要根據您的類別建構子調整
@@ -3154,56 +3853,56 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
               child: gallery.isEmpty
                   ? Center(child: Text(l10n.gallery_empty))
                   : ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: gallery.length,
-                itemBuilder: (context, index) {
-                  final photo = gallery[index];
-                  final String photoUrl = photo.imageUrl;
-                  final String photoDesc = photo.description;
-                  final int requiredAffection = photo.requiredAffection;
-                  final bool isUnlocked =
-                      widget.currentAffection >= requiredAffection;
-                  final bool isSelected = _selectedBackground == photoUrl;
-                  // 🛡️ 加上這個防呆守衛！
-                  // 如果這筆資料的網址是空的，我們就回傳一個空的隱藏元件，不要讓它去畫圖
-                  if (photoUrl.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
-                  return GestureDetector(
-                    onTap: () async {
-                      if (isUnlocked) {
-                        if (isSelected) {
-                          // ✨ 情況 A：玩家按了「已經被選中」的照片 ➡️ 執行取消！
-                          setState(
-                                  () => _selectedBackground = ''); // 把選取狀態清空
-                          _updateCallBackgroundToCloud(
-                              ''); // 傳空字串給 Firebase，代表恢復預設
-
-                          // 這裡妳可以另外寫一個提示，或是直接共用
-                          // ✨ 總裁級：背景已重置的優雅回饋，輕巧一閃，不干擾視覺
-                          ToastUtils.showCenterToast(
-                            context,
-                            l10n.gallery_reset_bg,
-                            customIcon: Icons
-                                .refresh_rounded, // 💡 用「重置/刷新」圖示，與「重置背景」的語意完美對應
-                          );
-                        } else {
-                          // ✨ 情況 B：玩家按了「還沒選中」的照片 ➡️ 執行設定！
-                          setState(() => _selectedBackground = photoUrl);
-                          _updateCallBackgroundToCloud(photoUrl);
-                          _showSuccessSnackBar(context, photoDesc);
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: gallery.length,
+                      itemBuilder: (context, index) {
+                        final photo = gallery[index];
+                        final String photoUrl = photo.imageUrl;
+                        final String photoDesc = photo.description;
+                        final int requiredAffection = photo.requiredAffection;
+                        final bool isUnlocked =
+                            widget.currentAffection >= requiredAffection;
+                        final bool isSelected = _selectedBackground == photoUrl;
+                        // 🛡️ 加上這個防呆守衛！
+                        // 如果這筆資料的網址是空的，我們就回傳一個空的隱藏元件，不要讓它去畫圖
+                        if (photoUrl.isEmpty) {
+                          return const SizedBox.shrink();
                         }
-                      } else {
-                        // 鎖住的照片，維持跳警告
-                        _showLockSnackBar(context, requiredAffection);
-                      }
-                    },
-                    child: _buildPhotoCard(photoUrl, photoDesc,
-                        isUnlocked, isSelected, requiredAffection, theme),
-                  );
-                },
-              ),
+                        return GestureDetector(
+                          onTap: () async {
+                            if (isUnlocked) {
+                              if (isSelected) {
+                                // ✨ 情況 A：玩家按了「已經被選中」的照片 ➡️ 執行取消！
+                                setState(
+                                    () => _selectedBackground = ''); // 把選取狀態清空
+                                _updateCallBackgroundToCloud(
+                                    ''); // 傳空字串給 Firebase，代表恢復預設
+
+                                // 這裡妳可以另外寫一個提示，或是直接共用
+                                // ✨ 總裁級：背景已重置的優雅回饋，輕巧一閃，不干擾視覺
+                                ToastUtils.showCenterToast(
+                                  context,
+                                  l10n.gallery_reset_bg,
+                                  customIcon: Icons
+                                      .refresh_rounded, // 💡 用「重置/刷新」圖示，與「重置背景」的語意完美對應
+                                );
+                              } else {
+                                // ✨ 情況 B：玩家按了「還沒選中」的照片 ➡️ 執行設定！
+                                setState(() => _selectedBackground = photoUrl);
+                                _updateCallBackgroundToCloud(photoUrl);
+                                _showSuccessSnackBar(context, photoDesc);
+                              }
+                            } else {
+                              // 鎖住的照片，維持跳警告
+                              _showLockSnackBar(context, requiredAffection);
+                            }
+                          },
+                          child: _buildPhotoCard(photoUrl, photoDesc,
+                              isUnlocked, isSelected, requiredAffection, theme),
+                        );
+                      },
+                    ),
             ),
           ],
         );
@@ -3329,4 +4028,3 @@ class _CharacterGalleryWidgetState extends State<CharacterGalleryWidget> {
     }, SetOptions(merge: true));
   }
 }
-

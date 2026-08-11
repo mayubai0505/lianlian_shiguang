@@ -2,112 +2,178 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    />
 
     <title>下載戀戀拾光</title>
-    <meta name="description" content="下載或遊玩戀戀拾光，與你心中的角色展開專屬對話。" />
+
+    <meta
+            name="description"
+            content="下載戀戀拾光，與你心中的角色展開專屬故事。"
+    />
 
     <style>
-        body {
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-          background: linear-gradient(160deg, #fff1f6, #f7eaff, #eef6ff);
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #3a2a35;
-        }
-
-        .card {
-          width: min(92%, 430px);
-          background: rgba(255, 255, 255, 0.84);
-          border-radius: 28px;
-          padding: 30px 24px;
-          box-shadow: 0 18px 45px rgba(120, 70, 120, 0.18);
-          text-align: center;
-          backdrop-filter: blur(12px);
+        * {
           box-sizing: border-box;
         }
 
+        body {
+          margin: 0;
+          min-height: 100vh;
+          padding: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            "Noto Sans TC",
+            "Microsoft JhengHei",
+            sans-serif;
+          color: #3a2a35;
+          background:
+            radial-gradient(
+              circle at top left,
+              rgba(255, 186, 218, 0.45),
+              transparent 38%
+            ),
+            radial-gradient(
+              circle at bottom right,
+              rgba(187, 155, 226, 0.42),
+              transparent 38%
+            ),
+            linear-gradient(
+              150deg,
+              #fff6fa,
+              #f8edff,
+              #f3f6ff
+            );
+        }
+
+        .card {
+          width: min(100%, 430px);
+          padding: 34px 26px 28px;
+          text-align: center;
+          background: rgba(255, 255, 255, 0.88);
+          border: 1px solid rgba(255, 255, 255, 0.9);
+          border-radius: 30px;
+          box-shadow:
+            0 24px 60px rgba(107, 65, 117, 0.18);
+          backdrop-filter: blur(14px);
+        }
+
         .logo {
-          width: 92px;
-          height: 92px;
-          border-radius: 24px;
-          object-fit: cover;
+          width: 94px;
+          height: 94px;
           margin-bottom: 18px;
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-          background: #fff;
+          object-fit: cover;
+          background: #ffffff;
+          border-radius: 25px;
+          box-shadow:
+            0 10px 25px rgba(92, 56, 105, 0.18);
+        }
+
+        .eyebrow {
+          margin-bottom: 8px;
+          color: #9a6cab;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 2px;
         }
 
         h1 {
           margin: 0;
-          font-size: 28px;
-          letter-spacing: 1px;
+          color: #432f4a;
+          font-size: 30px;
+          letter-spacing: 2px;
         }
 
         .tagline {
-          margin: 12px 0 24px;
-          line-height: 1.7;
-          color: #6f5d68;
+          margin: 13px 0 22px;
+          color: #746370;
           font-size: 15px;
+          line-height: 1.75;
         }
 
-        .notice {
-          margin: 0 0 20px;
-          padding: 12px 14px;
-          border-radius: 18px;
-          background: rgba(255, 111, 174, 0.10);
-          color: #7a425d;
+        .redirect-message {
+          min-height: 22px;
+          margin-bottom: 16px;
+          color: #8b7083;
           font-size: 13px;
           line-height: 1.6;
         }
 
         .button {
-          display: block;
+          display: flex;
           width: 100%;
-          box-sizing: border-box;
-          padding: 14px 18px;
+          min-height: 54px;
           margin: 12px 0;
-          border-radius: 999px;
-          text-decoration: none;
-          font-weight: 700;
+          padding: 13px 18px;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          color: #ffffff;
           font-size: 16px;
-          transition: transform 0.15s ease, opacity 0.15s ease;
+          font-weight: 700;
+          text-decoration: none;
+          border-radius: 999px;
+          transition:
+            transform 0.15s ease,
+            opacity 0.15s ease;
+        }
+
+        .button:hover {
+          opacity: 0.92;
         }
 
         .button:active {
           transform: scale(0.98);
         }
 
-        .primary {
-          background: #ff6fae;
-          color: white;
-          box-shadow: 0 10px 20px rgba(255, 111, 174, 0.28);
+        .ios {
+          background:
+            linear-gradient(
+              135deg,
+              #9d72b0,
+              #725083
+            );
+          box-shadow:
+            0 10px 22px rgba(114, 80, 131, 0.24);
         }
 
-        .secondary {
-          background: white;
-          color: #ff5a9e;
-          border: 1px solid #ffd1e5;
+        .android {
+          background:
+            linear-gradient(
+              135deg,
+              #ff7bae,
+              #e95f9c
+            );
+          box-shadow:
+            0 10px 22px rgba(233, 95, 156, 0.24);
         }
 
-        .disabled {
-          background: #eeeeee;
-          color: #999999;
-          pointer-events: none;
-          cursor: default;
+        .hint {
+          margin-top: 18px;
+          padding: 12px 14px;
+          color: #806d79;
+          font-size: 12px;
+          line-height: 1.65;
+          background: rgba(158, 111, 176, 0.08);
+          border-radius: 16px;
         }
 
         .small {
           margin-top: 20px;
+          color: #a18f99;
           font-size: 12px;
-          line-height: 1.6;
-          color: #9a8993;
+          line-height: 1.7;
         }
 
         .footer-link {
-          color: #9a5d7a;
+          color: #916a9f;
           text-decoration: none;
         }
     </style>
@@ -115,8 +181,13 @@
 
 <body>
 <main class="card">
-    <!-- 如果妳 web/icons/Icon-192.png 存在，這行就能顯示 App icon -->
-    <img class="logo" src="/icons/Icon-192.png" alt="戀戀拾光 App Icon" />
+    <img
+            class="logo"
+            src="/icons/Icon-192.png"
+            alt="戀戀拾光 App Icon"
+    />
+
+    <div class="eyebrow">LIAN LIAN SHI GUANG</div>
 
     <h1>戀戀拾光</h1>
 
@@ -125,37 +196,93 @@
         在每一次訊息裡，收藏只屬於你的時光。
     </p>
 
-    <div class="notice">
-        iOS 版將優先開放。<br />
-        Android 版因 Google Play 測試規範，將稍後開放。
+    <div
+            id="redirectMessage"
+            class="redirect-message"
+    >
+        正在辨識你的裝置……
     </div>
 
-    <!--
-      ✅ 還沒有 TestFlight 連結時，先用 disabled。
-      等妳有 TestFlight Public Link 後，把下面這顆換成：
-
-      <a class="button primary" href="https://testflight.apple.com/join/妳的TestFlight代碼">
-        參加 iOS 測試版
-      </a>
-    -->
-    <a class="button primary" href="https://apps.apple.com/us/app/%E6%88%80%E6%88%80%E6%8B%BE%E5%85%89/id6773677178">
-        iOS 版開放下載中
+    <a
+            id="iosButton"
+            class="button ios"
+            href="https://apps.apple.com/tw/app/戀戀拾光/id6773677178"
+    >
+         前往 App Store
     </a>
 
-    <!-- 網頁版入口 -->
-    <a class="button secondary" href="/">
-        立即遊玩網頁版
+    <a
+            id="androidButton"
+            class="button android"
+            href="https://play.google.com/store/apps/details?id=com.yubaimo.lianlian_shiguang"
+    >
+        ▶ 前往 Google Play
     </a>
 
-    <!-- Android 暫時關閉 -->
-    <a class="button disabled" href="#">
-        Android 版準備中
-    </a>
+    <div class="hint">
+        若沒有自動開啟商店，請點選上方對應的下載按鈕。
+    </div>
 
     <div class="small">
         © 2026 默語白<br />
-        <a class="footer-link" href="/">返回戀戀拾光首頁</a>
+        <a class="footer-link" href="/">
+            返回戀戀拾光首頁
+        </a>
     </div>
 </main>
+
+<script>
+    (() => {
+      const appStoreUrl =
+        "https://apps.apple.com/tw/app/戀戀拾光/id6773677178";
+
+      const googlePlayUrl =
+        "https://play.google.com/store/apps/details?id=com.yubaimo.lianlian_shiguang";
+
+      const userAgent =
+        navigator.userAgent || navigator.vendor || "";
+
+      const platform =
+        navigator.platform || "";
+
+      const isAndroid =
+        /android/i.test(userAgent);
+
+      const isIOS =
+        /iPad|iPhone|iPod/i.test(userAgent) ||
+        (
+          platform === "MacIntel" &&
+          navigator.maxTouchPoints > 1
+        );
+
+      const message =
+        document.getElementById("redirectMessage");
+
+      if (isIOS) {
+        message.textContent =
+          "偵測到 iPhone／iPad，即將前往 App Store……";
+
+        window.setTimeout(() => {
+          window.location.replace(appStoreUrl);
+        }, 700);
+
+        return;
+      }
+
+      if (isAndroid) {
+        message.textContent =
+          "偵測到 Android 裝置，即將前往 Google Play……";
+
+        window.setTimeout(() => {
+          window.location.replace(googlePlayUrl);
+        }, 700);
+
+        return;
+      }
+
+      message.textContent =
+        "請選擇你使用的手機系統下載。";
+    })();
+</script>
 </body>
 </html>

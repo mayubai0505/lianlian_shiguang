@@ -2299,5 +2299,87 @@
     },
     "storyContentCannotBeEmpty": "เนื้อเรื่องต้องไม่ว่างเปล่า",
     "writeYourStoryHint": "เขียนเรื่องราวของคุณ...",
-    "characterBannerTitle": "แบนเนอร์หน้าหลักของตัวละคร"
+    "characterBannerTitle": "แบนเนอร์หน้าหลักของตัวละคร",
+    "mailDeleteTitle": "ลบข้อความ",
+    "mailDeleteConfirm": "คุณแน่ใจหรือไม่ว่าต้องการลบข้อความ {count} รายการ?\nเมื่อลบแล้วจะไม่สามารถกู้คืนได้",
+    "@mailDeleteConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mailDeleteSuccess": "ลบข้อความ {count} รายการแล้ว",
+    "@mailDeleteSuccess": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mailDeleteFailed": "ลบไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "mailCancelSelection": "ยกเลิกการเลือก",
+    "mailSelectedCount": "เลือกแล้ว {count} รายการ",
+    "@mailSelectedCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "moreOptions": "เพิ่มเติม",
+    "mailDeleteSelected": "ลบข้อความ {count} รายการ",
+    "@mailDeleteSelected": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "officialManagementTeam": "ทีมผู้ดูแล LoveyDovey",
+    "rewardCampaignTitle": "ของขวัญกิจกรรม",
+    "rewardCampaignMissingData": "ข้อความของขวัญนี้ไม่มีข้อมูลกิจกรรม โปรดลองอีกครั้งในภายหลัง",
+    "rewardCampaignClaimSuccess": "รับดอกไม้ {amount} ดอกแล้ว",
+    "@rewardCampaignClaimSuccess": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "rewardCampaignAlreadyClaimed": "รับของขวัญนี้ไปแล้ว",
+    "rewardCampaignClaimFailed": "รับไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "rewardCampaignContains": "ข้อความนี้มี",
+    "rewardCampaignFlowerAmount": "ดอกไม้ {amount} ดอก",
+    "@rewardCampaignFlowerAmount": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "rewardCampaignDeadline": "หมดเขตรับ: {date}",
+    "@rewardCampaignDeadline": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "rewardCampaignClaiming": "กำลังรับ…",
+    "rewardCampaignClaimed": "รับแล้ว",
+    "rewardCampaignEnded": "กิจกรรมสิ้นสุดแล้ว",
+    "rewardCampaignClaimButton": "รับของขวัญ",
+    "mailDetailTitle": "ข้อความ",
+    "mailSender": "ผู้ส่ง: {name}",
+    "@mailSender": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "mailCaseNumber": "หมายเลขกรณี",
+    "mailCopyCaseNumber": "คัดลอกหมายเลขกรณี",
+    "mailCaseNumberCopied": "คัดลอกหมายเลขกรณีแล้ว"
 }

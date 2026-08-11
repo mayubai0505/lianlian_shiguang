@@ -2298,5 +2298,87 @@
   },
   "storyContentCannotBeEmpty": "스토리 내용은 비워둘 수 없습니다",
   "writeYourStoryHint": "둘만의 이야기를 작성해 보세요...",
-  "characterBannerTitle": "캐릭터 홈 배너"
+  "characterBannerTitle": "캐릭터 홈 배너",
+  "mailDeleteTitle": "메일 삭제",
+  "mailDeleteConfirm": "메일 {count}개를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.",
+  "@mailDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteSuccess": "메일 {count}개를 삭제했습니다",
+  "@mailDeleteSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteFailed": "삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  "mailCancelSelection": "선택 취소",
+  "mailSelectedCount": "{count}개 선택됨",
+  "@mailSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreOptions": "더보기",
+  "mailDeleteSelected": "메일 {count}개 삭제",
+  "@mailDeleteSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "officialManagementTeam": "LoveyDovey 운영팀",
+  "rewardCampaignTitle": "이벤트 선물",
+  "rewardCampaignMissingData": "이 선물 메일에 이벤트 데이터가 없습니다. 잠시 후 다시 시도해 주세요.",
+  "rewardCampaignClaimSuccess": "꽃 {amount}개를 받았습니다",
+  "@rewardCampaignClaimSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignAlreadyClaimed": "이미 받은 선물입니다",
+  "rewardCampaignClaimFailed": "받지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  "rewardCampaignContains": "이 메일에는",
+  "rewardCampaignFlowerAmount": "꽃 {amount}개",
+  "@rewardCampaignFlowerAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignDeadline": "수령 기한: {date}",
+  "@rewardCampaignDeadline": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "rewardCampaignClaiming": "받는 중…",
+  "rewardCampaignClaimed": "수령 완료",
+  "rewardCampaignEnded": "이벤트가 종료되었습니다",
+  "rewardCampaignClaimButton": "선물 받기",
+  "mailDetailTitle": "메일",
+  "mailSender": "보낸 사람: {name}",
+  "@mailSender": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mailCaseNumber": "문의 번호",
+  "mailCopyCaseNumber": "문의 번호 복사",
+  "mailCaseNumberCopied": "문의 번호가 복사되었습니다"
 }

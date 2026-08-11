@@ -4942,4 +4942,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get characterBannerTitle => 'Character Homepage Banner';
+
+  @override
+  String get mailDeleteTitle => 'Delete Messages';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return 'Are you sure you want to delete $count messages?\nDeleted messages cannot be recovered.';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return 'Deleted $count messages';
+  }
+
+  @override
+  String get mailDeleteFailed => 'Deletion failed. Please try again later.';
+
+  @override
+  String get mailCancelSelection => 'Cancel Selection';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get moreOptions => 'More';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return 'Delete $count messages';
+  }
+
+  @override
+  String get officialManagementTeam => 'LoveyDovey Management Team';
+
+  @override
+  String get rewardCampaignTitle => 'Event Gift';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'This gift message is missing event data. Please try again later.';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return 'Claimed $amount Flowers';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed =>
+      'This gift has already been claimed';
+
+  @override
+  String get rewardCampaignClaimFailed =>
+      'Claim failed. Please try again later.';
+
+  @override
+  String get rewardCampaignContains => 'This message contains';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount Flowers';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return 'Claim deadline: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => 'Claiming…';
+
+  @override
+  String get rewardCampaignClaimed => 'Claimed';
+
+  @override
+  String get rewardCampaignEnded => 'Event Ended';
+
+  @override
+  String get rewardCampaignClaimButton => 'Claim Gift';
+
+  @override
+  String get mailDetailTitle => 'Message';
+
+  @override
+  String mailSender(String name) {
+    return 'Sender: $name';
+  }
+
+  @override
+  String get mailCaseNumber => 'Case Number';
+
+  @override
+  String get mailCopyCaseNumber => 'Copy Case Number';
+
+  @override
+  String get mailCaseNumberCopied => 'Case number copied';
 }

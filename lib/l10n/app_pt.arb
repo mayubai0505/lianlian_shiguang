@@ -2300,5 +2300,87 @@
    },
    "storyContentCannotBeEmpty": "O conteúdo da história não pode ficar em branco",
    "writeYourStoryHint": "Escreva a história de vocês...",
-   "characterBannerTitle": "Banner da página do personagem"
+   "characterBannerTitle": "Banner da página do personagem",
+   "mailDeleteTitle": "Excluir mensagens",
+   "mailDeleteConfirm": "Tem certeza de que deseja excluir {count} mensagens?\nAs mensagens excluídas não podem ser recuperadas.",
+   "@mailDeleteConfirm": {
+      "placeholders": {
+         "count": {
+            "type": "int"
+         }
+      }
+   },
+   "mailDeleteSuccess": "{count} mensagens excluídas",
+   "@mailDeleteSuccess": {
+      "placeholders": {
+         "count": {
+            "type": "int"
+         }
+      }
+   },
+   "mailDeleteFailed": "Falha ao excluir. Tente novamente mais tarde.",
+   "mailCancelSelection": "Cancelar seleção",
+   "mailSelectedCount": "{count} selecionadas",
+   "@mailSelectedCount": {
+      "placeholders": {
+         "count": {
+            "type": "int"
+         }
+      }
+   },
+   "moreOptions": "Mais",
+   "mailDeleteSelected": "Excluir {count} mensagens",
+   "@mailDeleteSelected": {
+      "placeholders": {
+         "count": {
+            "type": "int"
+         }
+      }
+   },
+   "officialManagementTeam": "Equipe de Administração do LoveyDovey",
+   "rewardCampaignTitle": "Presente do evento",
+   "rewardCampaignMissingData": "Este e-mail de presente não contém os dados do evento. Tente novamente mais tarde.",
+   "rewardCampaignClaimSuccess": "Você recebeu {amount} Flores",
+   "@rewardCampaignClaimSuccess": {
+      "placeholders": {
+         "amount": {
+            "type": "int"
+         }
+      }
+   },
+   "rewardCampaignAlreadyClaimed": "Este presente já foi recebido",
+   "rewardCampaignClaimFailed": "Falha ao receber. Tente novamente mais tarde.",
+   "rewardCampaignContains": "Este e-mail contém",
+   "rewardCampaignFlowerAmount": "{amount} Flores",
+   "@rewardCampaignFlowerAmount": {
+      "placeholders": {
+         "amount": {
+            "type": "int"
+         }
+      }
+   },
+   "rewardCampaignDeadline": "Prazo para receber: {date}",
+   "@rewardCampaignDeadline": {
+      "placeholders": {
+         "date": {
+            "type": "String"
+         }
+      }
+   },
+   "rewardCampaignClaiming": "Recebendo…",
+   "rewardCampaignClaimed": "Recebido",
+   "rewardCampaignEnded": "O evento terminou",
+   "rewardCampaignClaimButton": "Receber presente",
+   "mailDetailTitle": "Mensagem",
+   "mailSender": "Remetente: {name}",
+   "@mailSender": {
+      "placeholders": {
+         "name": {
+            "type": "String"
+         }
+      }
+   },
+   "mailCaseNumber": "Número do caso",
+   "mailCopyCaseNumber": "Copiar número do caso",
+   "mailCaseNumberCopied": "Número do caso copiado"
 }

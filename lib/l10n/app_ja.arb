@@ -2300,5 +2300,87 @@
   },
   "storyContentCannotBeEmpty": "ストーリーの内容を空にすることはできません",
   "writeYourStoryHint": "ふたりの物語を書き綴りましょう...",
-  "characterBannerTitle": "キャラクターホームバナー"
+  "characterBannerTitle": "キャラクターホームバナー",
+  "mailDeleteTitle": "メールを削除",
+  "mailDeleteConfirm": "{count} 件のメールを削除しますか？\n削除後は元に戻せません。",
+  "@mailDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteSuccess": "{count} 件のメールを削除しました",
+  "@mailDeleteSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteFailed": "削除に失敗しました。しばらくしてからもう一度お試しください",
+  "mailCancelSelection": "選択を解除",
+  "mailSelectedCount": "{count} 件選択中",
+  "@mailSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreOptions": "その他",
+  "mailDeleteSelected": "{count} 件のメールを削除",
+  "@mailDeleteSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "officialManagementTeam": "LoveyDovey運営チーム",
+  "rewardCampaignTitle": "イベントギフト",
+  "rewardCampaignMissingData": "このギフトメールにはイベントデータがありません。しばらくしてからもう一度お試しください",
+  "rewardCampaignClaimSuccess": "花を {amount} 個受け取りました",
+  "@rewardCampaignClaimSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignAlreadyClaimed": "このギフトはすでに受け取り済みです",
+  "rewardCampaignClaimFailed": "受け取りに失敗しました。しばらくしてからもう一度お試しください",
+  "rewardCampaignContains": "このメールには",
+  "rewardCampaignFlowerAmount": "花 {amount} 個",
+  "@rewardCampaignFlowerAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignDeadline": "受取期限：{date}",
+  "@rewardCampaignDeadline": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "rewardCampaignClaiming": "受け取り中…",
+  "rewardCampaignClaimed": "受け取り済み",
+  "rewardCampaignEnded": "イベントは終了しました",
+  "rewardCampaignClaimButton": "ギフトを受け取る",
+  "mailDetailTitle": "メール",
+  "mailSender": "差出人：{name}",
+  "@mailSender": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mailCaseNumber": "お問い合わせ番号",
+  "mailCopyCaseNumber": "お問い合わせ番号をコピー",
+  "mailCaseNumberCopied": "お問い合わせ番号をコピーしました"
 }

@@ -2299,5 +2299,87 @@
   },
   "storyContentCannotBeEmpty": "Nội dung câu chuyện không được để trống",
   "writeYourStoryHint": "Viết nên câu chuyện của hai bạn...",
-  "characterBannerTitle": "Banner trang chủ nhân vật"
+  "characterBannerTitle": "Banner trang chủ nhân vật",
+  "mailDeleteTitle": "Xóa thư",
+  "mailDeleteConfirm": "Bạn có chắc muốn xóa {count} thư không?\nKhông thể khôi phục sau khi xóa.",
+  "@mailDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteSuccess": "Đã xóa {count} thư",
+  "@mailDeleteSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteFailed": "Xóa không thành công. Vui lòng thử lại sau.",
+  "mailCancelSelection": "Hủy chọn",
+  "mailSelectedCount": "Đã chọn {count} thư",
+  "@mailSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreOptions": "Thêm",
+  "mailDeleteSelected": "Xóa {count} thư",
+  "@mailDeleteSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "officialManagementTeam": "Đội ngũ quản lý LoveyDovey",
+  "rewardCampaignTitle": "Quà sự kiện",
+  "rewardCampaignMissingData": "Thư quà tặng này thiếu dữ liệu sự kiện. Vui lòng thử lại sau.",
+  "rewardCampaignClaimSuccess": "Đã nhận {amount} Bông Hoa",
+  "@rewardCampaignClaimSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignAlreadyClaimed": "Phần quà này đã được nhận",
+  "rewardCampaignClaimFailed": "Nhận không thành công. Vui lòng thử lại sau.",
+  "rewardCampaignContains": "Trong thư này có",
+  "rewardCampaignFlowerAmount": "{amount} Bông Hoa",
+  "@rewardCampaignFlowerAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignDeadline": "Hạn nhận: {date}",
+  "@rewardCampaignDeadline": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "rewardCampaignClaiming": "Đang nhận…",
+  "rewardCampaignClaimed": "Đã nhận",
+  "rewardCampaignEnded": "Sự kiện đã kết thúc",
+  "rewardCampaignClaimButton": "Nhận quà",
+  "mailDetailTitle": "Thư",
+  "mailSender": "Người gửi: {name}",
+  "@mailSender": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mailCaseNumber": "Mã vụ việc",
+  "mailCopyCaseNumber": "Sao chép mã vụ việc",
+  "mailCaseNumberCopied": "Đã sao chép mã vụ việc"
 }

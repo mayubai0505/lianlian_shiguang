@@ -5020,4 +5020,101 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get characterBannerTitle =>
       'Banner de la página principal del personaje';
+
+  @override
+  String get mailDeleteTitle => 'Eliminar mensajes';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return '¿Seguro que quieres eliminar $count mensajes?\nNo se pueden recuperar después de eliminarlos.';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return 'Se eliminaron $count mensajes';
+  }
+
+  @override
+  String get mailDeleteFailed =>
+      'No se pudieron eliminar. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get mailCancelSelection => 'Cancelar selección';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '$count seleccionados';
+  }
+
+  @override
+  String get moreOptions => 'Más';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return 'Eliminar $count mensajes';
+  }
+
+  @override
+  String get officialManagementTeam => 'Equipo de administración de LoveyDovey';
+
+  @override
+  String get rewardCampaignTitle => 'Regalo del evento';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'A este mensaje de regalo le faltan datos del evento. Inténtalo de nuevo más tarde.';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return 'Has recibido $amount Flores';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => 'Este regalo ya se ha recibido';
+
+  @override
+  String get rewardCampaignClaimFailed =>
+      'No se pudo recibir. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get rewardCampaignContains => 'Este mensaje contiene';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount Flores';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return 'Fecha límite para recibirlo: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => 'Recibiendo…';
+
+  @override
+  String get rewardCampaignClaimed => 'Recibido';
+
+  @override
+  String get rewardCampaignEnded => 'El evento ha finalizado';
+
+  @override
+  String get rewardCampaignClaimButton => 'Recibir regalo';
+
+  @override
+  String get mailDetailTitle => 'Mensaje';
+
+  @override
+  String mailSender(String name) {
+    return 'Remitente: $name';
+  }
+
+  @override
+  String get mailCaseNumber => 'Número de caso';
+
+  @override
+  String get mailCopyCaseNumber => 'Copiar número de caso';
+
+  @override
+  String get mailCaseNumberCopied => 'Número de caso copiado';
 }

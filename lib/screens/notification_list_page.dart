@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:intl/intl.dart';
 
 import '../services/toast_utils.dart';
@@ -18,7 +19,46 @@ class NotificationListPage extends StatefulWidget {
 
 class _NotificationListPageState extends State<NotificationListPage> {
   bool _isSelectionMode = false;
+  bool _isSyncingRewardMail = false;
   final Set<String> _selectedMailIds = <String>{};
+  final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
+    region: 'asia-east1',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncRewardCampaignsToMailbox();
+    });
+  }
+
+  Future<void> _syncRewardCampaignsToMailbox() async {
+    if (_isSyncingRewardMail ||
+        FirebaseAuth.instance.currentUser == null) {
+      return;
+    }
+
+    _isSyncingRewardMail = true;
+
+    try {
+      await _functions
+          .httpsCallable('syncRewardCampaignsToMailbox')
+          .call();
+    } on FirebaseFunctionsException catch (error) {
+      // 同步活動信失敗不能妨礙玩家閱讀原有信件。
+      debugPrint(
+        '⚠️ 同步活動禮物信件失敗：'
+            '${error.code} ${error.message}',
+      );
+    } catch (error, stackTrace) {
+      debugPrint('⚠️ 同步活動禮物信件發生錯誤：$error');
+      debugPrintStack(stackTrace: stackTrace);
+    } finally {
+      _isSyncingRewardMail = false;
+    }
+  }
 
   // 點擊信件時，標記為已讀
   Future<void> _markAsRead(String userId, String docId) async {
@@ -60,7 +100,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
     if (_selectedMailIds.isEmpty) {
       return;
     }
-
+    final l10n = AppLocalizations.of(context)!;
     final int deleteCount =
         _selectedMailIds.length;
 
@@ -73,19 +113,17 @@ class _NotificationListPageState extends State<NotificationListPage> {
           barrierDismissible: false,
           builder: (dialogContext) {
             return AlertDialog(
-              title: const Row(
+              title:  Row(
                 children: [
                   Icon(
                     Icons.delete_outline_rounded,
                     color: Colors.redAccent,
                   ),
                   SizedBox(width: 8),
-                  Text('刪除信件'),
+                  Text(l10n.mailDeleteTitle),
                 ],
               ),
-              content: Text(
-                '確定要刪除 $deleteCount 封信件嗎？\n'
-                    '刪除後無法復原。',
+              content: Text(l10n.mailDeleteConfirm(_selectedMailIds.length),
               ),
               actions: [
                 TextButton(
@@ -95,7 +133,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                     ).pop(false);
                   },
                   child:
-                  const Text('取消'),
+                   Text(l10n.cancelButton),
                 ),
                 FilledButton(
                   style:
@@ -109,7 +147,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                     ).pop(true);
                   },
                   child:
-                  const Text('刪除'),
+                   Text(l10n.delete_btn),
                 ),
               ],
             );
@@ -155,7 +193,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
       // ==========================================
       ToastUtils.showCenterToast(
         context,
-        '已刪除 $deleteCount 封信件',
+        l10n.mailDeleteSuccess(_selectedMailIds.length),
         customIcon:
         Icons.delete_outline_rounded,
       );
@@ -172,7 +210,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
 
       ToastUtils.showCenterToast(
         context,
-        '刪除失敗，請稍後再試',
+        l10n.mailDeleteFailed,
         isError: true,
       );
     }
@@ -197,6 +235,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
     required String body,
     required String caseNumber,
     required String timeText,
+    String fromName = '',
   }) async {
     if (!isRead) {
       await _markAsRead(userId, docId);
@@ -212,9 +251,58 @@ class _NotificationListPageState extends State<NotificationListPage> {
           body: body,
           caseNumber: caseNumber,
           timeText: timeText,
+          fromName: fromName,
         ),
       ),
     );
+  }
+
+  Future<void> _openRewardCampaignDetail({
+    required String userId,
+    required String docId,
+    required bool isRead,
+    required Map<String, dynamic> data,
+    required String timeText,
+  }) async {
+    if (!isRead) {
+      await _markAsRead(userId, docId);
+    }
+
+    if (!mounted) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _RewardCampaignDetailPage(
+          campaignId: data['rewardCampaignId']?.toString() ??
+              data['campaignId']?.toString() ??
+              '',
+          title: data['title']?.toString() ?? '活動禮物',
+          body: data['body']?.toString() ?? '',
+          rewardAmount: (data['rewardAmount'] as num?)?.toInt() ??
+              int.tryParse(data['rewardAmount']?.toString() ?? '') ??
+              0,
+          timeText: timeText,
+          endAt: _readMailDateTime(
+            data['endAt'] ?? data['expiresAt'],
+          ),
+          initiallyClaimed:
+          data['claimed'] == true || data['isClaimed'] == true,
+        ),
+      ),
+    );
+  }
+
+  DateTime? _readMailDateTime(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    return DateTime.tryParse(value?.toString() ?? '')?.toLocal();
   }
 
   @override
@@ -227,35 +315,35 @@ class _NotificationListPageState extends State<NotificationListPage> {
       appBar: AppBar(
         leading: _isSelectionMode
             ? IconButton(
-          tooltip: '取消選取',
+          tooltip: l10n.mailCancelSelection,
           icon: const Icon(Icons.close_rounded),
           onPressed: _exitSelectionMode,
         )
             : null,
         title: Text(
           _isSelectionMode
-              ? '已選取 ${_selectedMailIds.length} 封'
+              ? l10n.mailSelectedCount(_selectedMailIds.length)
               : l10n.mailbox_title,
         ),
         elevation: 0,
         actions: [
           if (!_isSelectionMode)
             PopupMenuButton<String>(
-              tooltip: '更多',
+              tooltip: l10n.moreOptions,
               icon: const Icon(Icons.more_vert_rounded),
               onSelected: (value) {
                 if (value == 'delete') {
                   _enterSelectionMode();
                 }
               },
-              itemBuilder: (_) => const [
+              itemBuilder: (_) =>  [
                 PopupMenuItem<String>(
                   value: 'delete',
                   child: Row(
                     children: [
                       Icon(Icons.delete_outline_rounded),
                       SizedBox(width: 10),
-                      Text('刪除信件'),
+                      Text(l10n.mailDeleteTitle),
                     ],
                   ),
                 ),
@@ -276,7 +364,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
             ),
             onPressed: () => _deleteSelectedMails(userId),
             icon: const Icon(Icons.delete_outline_rounded),
-            label: Text('刪除 ${_selectedMailIds.length} 封信件'),
+            label: Text(l10n.mailDeleteSelected(_selectedMailIds.length)),
           ),
         ),
       )
@@ -335,11 +423,20 @@ class _NotificationListPageState extends State<NotificationListPage> {
               final String caseNumber =
                   data['caseNumber']?.toString().trim() ?? '';
 
+              final String storedFromName =
+                  data['fromName']?.toString().trim() ?? '';
+
+              final String fromName = storedFromName.isNotEmpty
+                  ? storedFromName
+                  : type == 'admin_mail'
+                  ? l10n.officialManagementTeam
+                  : '';
+
               if (type == 'follow') {
                 title = l10n.mailbox_follow_title;
-                final String fromName = data['fromName']?.toString() ??
+                final String followFromName = data['fromName']?.toString() ??
                     l10n.default_new_player;
-                body = l10n.mailbox_follow_body(fromName);
+                body = l10n.mailbox_follow_body(followFromName);
               }
 
               final Timestamp? createdAt = data['createdAt'] as Timestamp?;
@@ -390,6 +487,22 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   child: Icon(
                     Icons.inbox_rounded,
                     color: Colors.pinkAccent,
+                  ),
+                );
+              } else if (type == 'reward_campaign') {
+                leadingIcon = CircleAvatar(
+                  backgroundColor: Colors.pink.shade50,
+                  child: const Icon(
+                    Icons.redeem_rounded,
+                    color: Colors.pinkAccent,
+                  ),
+                );
+              } else if (type == 'admin_mail') {
+                leadingIcon = CircleAvatar(
+                  backgroundColor: Colors.blue.shade50,
+                  child: const Icon(
+                    Icons.mark_email_read_outlined,
+                    color: Colors.blueAccent,
                   ),
                 );
               } else {
@@ -602,6 +715,17 @@ class _NotificationListPageState extends State<NotificationListPage> {
                       return;
                     }
 
+                    if (type == 'reward_campaign') {
+                      await _openRewardCampaignDetail(
+                        userId: userId,
+                        docId: doc.id,
+                        isRead: isRead,
+                        data: data,
+                        timeText: timeText,
+                      );
+                      return;
+                    }
+
                     await _openMailDetail(
                       context: context,
                       userId: userId,
@@ -611,6 +735,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                       body: body,
                       caseNumber: caseNumber,
                       timeText: timeText,
+                      fromName: fromName,
                     );
                   },
                 ),
@@ -623,26 +748,314 @@ class _NotificationListPageState extends State<NotificationListPage> {
   }
 }
 
+class _RewardCampaignDetailPage extends StatefulWidget {
+  final String campaignId;
+  final String title;
+  final String body;
+  final int rewardAmount;
+  final String timeText;
+  final DateTime? endAt;
+  final bool initiallyClaimed;
+
+  const _RewardCampaignDetailPage({
+    required this.campaignId,
+    required this.title,
+    required this.body,
+    required this.rewardAmount,
+    required this.timeText,
+    required this.endAt,
+    required this.initiallyClaimed,
+  });
+
+  @override
+  State<_RewardCampaignDetailPage> createState() =>
+      _RewardCampaignDetailPageState();
+}
+
+class _RewardCampaignDetailPageState
+    extends State<_RewardCampaignDetailPage> {
+  final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
+    region: 'asia-east1',
+  );
+
+  bool _isClaiming = false;
+  late bool _isClaimed;
+
+  @override
+  void initState() {
+    super.initState();
+    _isClaimed = widget.initiallyClaimed;
+  }
+
+  bool get _isExpired {
+    final endAt = widget.endAt;
+    return endAt != null && DateTime.now().isAfter(endAt);
+  }
+
+  Future<void> _claimReward() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (_isClaiming || _isClaimed || _isExpired) return;
+
+    if (widget.campaignId.isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        l10n.rewardCampaignMissingData,
+        isError: true,
+      );
+      return;
+    }
+
+    setState(() {
+      _isClaiming = true;
+    });
+
+    try {
+      final result = await _functions
+          .httpsCallable('claimRewardCampaign')
+          .call({
+        'campaignId': widget.campaignId,
+      });
+
+      final data = result.data is Map
+          ? Map<String, dynamic>.from(result.data as Map)
+          : <String, dynamic>{};
+
+      if (!mounted) return;
+
+      setState(() {
+        _isClaimed = true;
+      });
+
+      final int receivedAmount =
+          (data['rewardAmount'] as num?)?.toInt() ?? widget.rewardAmount;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.rewardCampaignClaimSuccess(receivedAmount),
+        customIcon: Icons.local_florist_rounded,
+      );
+    } on FirebaseFunctionsException catch (error) {
+      debugPrint(
+        '❌ 領取活動禮物失敗：'
+            '${error.code} ${error.message}',
+      );
+
+      if (!mounted) return;
+
+      // 後端若告知已領過，當作已領取，不再讓玩家重複按。
+      if (error.code == 'already-exists') {
+        setState(() {
+          _isClaimed = true;
+        });
+
+        ToastUtils.showCenterToast(
+          context,
+          l10n.rewardCampaignAlreadyClaimed,
+          customIcon: Icons.check_circle_outline_rounded,
+        );
+        return;
+      }
+
+      ToastUtils.showCenterToast(
+        context,
+        error.message ?? l10n.rewardCampaignClaimFailed,
+        isError: true,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('❌ 領取活動禮物發生錯誤：$error');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.rewardCampaignClaimFailed,
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isClaiming = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final endAt = widget.endAt;
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.rewardCampaignTitle),
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 78,
+                  height: 78,
+                  decoration: BoxDecoration(
+                    color: Colors.pink.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.redeem_rounded,
+                    size: 42,
+                    color: Colors.pinkAccent,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 22),
+              Text(
+                widget.title,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (widget.timeText.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  widget.timeText,
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 26),
+              SelectableText(
+                widget.body,
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.75,
+                ),
+              ),
+              const SizedBox(height: 26),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.pink.shade50,
+                      Colors.purple.shade50,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: Colors.pinkAccent.withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                     Text(
+                      l10n.rewardCampaignContains,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.local_florist_rounded,
+                          color: Colors.pinkAccent,
+                        ),
+                        const SizedBox(width: 7),
+                        Text(
+                          l10n.rewardCampaignFlowerAmount(
+                            widget.rewardAmount,
+                          ),
+                          style: const TextStyle(
+                            color: Colors.pinkAccent,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (endAt != null) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        l10n.rewardCampaignDeadline(
+                          DateFormat('yyyy/MM/dd HH:mm').format(endAt),
+                        ),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _isClaiming || _isClaimed || _isExpired
+                      ? null
+                      : _claimReward,
+                  icon: _isClaiming
+                      ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                      : Icon(
+                    _isClaimed
+                        ? Icons.check_circle_rounded
+                        : _isExpired
+                        ? Icons.event_busy_rounded
+                        : Icons.redeem_rounded,
+                  ),
+                  label: Text(
+                    _isClaiming
+                        ? l10n.rewardCampaignClaiming
+                        : _isClaimed
+                        ? l10n.rewardCampaignClaimed
+                        : _isExpired
+                        ? l10n.rewardCampaignEnded
+                        : l10n.rewardCampaignClaimButton,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _MailDetailPage extends StatelessWidget {
   final String title;
   final String body;
   final String caseNumber;
   final String timeText;
+  final String fromName;
 
   const _MailDetailPage({
     required this.title,
     required this.body,
     required this.caseNumber,
     required this.timeText,
+    this.fromName = '',
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('信件'),
+        title: Text(l10n.mailDetailTitle),
         elevation: 0,
       ),
       body: SafeArea(
@@ -657,6 +1070,30 @@ class _MailDetailPage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              if (fromName.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.verified_rounded,
+                      size: 17,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                          l10n.mailSender(fromName),
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.65),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               if (timeText.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 Text(
@@ -687,7 +1124,7 @@ class _MailDetailPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '案件編號',
+                              l10n.mailCaseNumber,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: theme.colorScheme.onSurface
@@ -706,7 +1143,7 @@ class _MailDetailPage extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        tooltip: '複製案件編號',
+                        tooltip: l10n.mailCopyCaseNumber,
                         icon: const Icon(
                           Icons.copy_rounded,
                           size: 20,
@@ -719,8 +1156,8 @@ class _MailDetailPage extends StatelessWidget {
                           if (!context.mounted) return;
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('已複製案件編號'),
+                            SnackBar(
+                              content: Text(l10n.mailCaseNumberCopied),
                               duration: Duration(seconds: 1),
                             ),
                           );

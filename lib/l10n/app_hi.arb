@@ -2299,5 +2299,87 @@
     },
     "storyContentCannotBeEmpty": "कहानी की सामग्री खाली नहीं हो सकती",
     "writeYourStoryHint": "अपनी कहानी लिखें...",
-    "characterBannerTitle": "कैरेक्टर होमपेज बैनर"
+    "characterBannerTitle": "कैरेक्टर होमपेज बैनर",
+    "mailDeleteTitle": "संदेश हटाएँ",
+    "mailDeleteConfirm": "क्या आप वाकई {count} संदेश हटाना चाहते हैं?\nहटाने के बाद उन्हें वापस नहीं पाया जा सकता।",
+    "@mailDeleteConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mailDeleteSuccess": "{count} संदेश हटा दिए गए",
+    "@mailDeleteSuccess": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mailDeleteFailed": "हटाना विफल रहा। कृपया बाद में फिर प्रयास करें।",
+    "mailCancelSelection": "चयन रद्द करें",
+    "mailSelectedCount": "{count} चयनित",
+    "@mailSelectedCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "moreOptions": "अधिक",
+    "mailDeleteSelected": "{count} संदेश हटाएँ",
+    "@mailDeleteSelected": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "officialManagementTeam": "LoveyDovey प्रबंधन टीम",
+    "rewardCampaignTitle": "इवेंट उपहार",
+    "rewardCampaignMissingData": "इस उपहार संदेश में इवेंट का डेटा नहीं है। कृपया बाद में फिर प्रयास करें।",
+    "rewardCampaignClaimSuccess": "{amount} फूल प्राप्त हुए",
+    "@rewardCampaignClaimSuccess": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "rewardCampaignAlreadyClaimed": "यह उपहार पहले ही प्राप्त किया जा चुका है",
+    "rewardCampaignClaimFailed": "प्राप्त करना विफल रहा। कृपया बाद में फिर प्रयास करें।",
+    "rewardCampaignContains": "इस संदेश में है",
+    "rewardCampaignFlowerAmount": "{amount} फूल",
+    "@rewardCampaignFlowerAmount": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "rewardCampaignDeadline": "प्राप्त करने की अंतिम तिथि: {date}",
+    "@rewardCampaignDeadline": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "rewardCampaignClaiming": "प्राप्त किया जा रहा है…",
+    "rewardCampaignClaimed": "प्राप्त हुआ",
+    "rewardCampaignEnded": "इवेंट समाप्त हो गया",
+    "rewardCampaignClaimButton": "उपहार प्राप्त करें",
+    "mailDetailTitle": "संदेश",
+    "mailSender": "प्रेषक: {name}",
+    "@mailSender": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "mailCaseNumber": "मामला संख्या",
+    "mailCopyCaseNumber": "मामला संख्या कॉपी करें",
+    "mailCaseNumberCopied": "मामला संख्या कॉपी हो गई"
 }

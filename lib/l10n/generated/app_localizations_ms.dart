@@ -4988,4 +4988,100 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get characterBannerTitle => 'Sepanduk Halaman Utama Karakter';
+
+  @override
+  String get mailDeleteTitle => 'Padam Mesej';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return 'Adakah anda pasti mahu memadamkan $count mesej?\nMesej yang dipadamkan tidak boleh dipulihkan.';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return '$count mesej telah dipadamkan';
+  }
+
+  @override
+  String get mailDeleteFailed => 'Gagal memadamkan. Sila cuba lagi kemudian.';
+
+  @override
+  String get mailCancelSelection => 'Batalkan Pilihan';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '$count dipilih';
+  }
+
+  @override
+  String get moreOptions => 'Lagi';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return 'Padam $count mesej';
+  }
+
+  @override
+  String get officialManagementTeam => 'Pasukan Pengurusan LoveyDovey';
+
+  @override
+  String get rewardCampaignTitle => 'Hadiah Acara';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'Mesej hadiah ini tidak mempunyai data acara. Sila cuba lagi kemudian.';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return 'Berjaya menerima $amount Bunga';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => 'Hadiah ini telah diterima';
+
+  @override
+  String get rewardCampaignClaimFailed =>
+      'Gagal menerima. Sila cuba lagi kemudian.';
+
+  @override
+  String get rewardCampaignContains => 'Mesej ini mengandungi';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount Bunga';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return 'Tarikh akhir penerimaan: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => 'Sedang menerima…';
+
+  @override
+  String get rewardCampaignClaimed => 'Telah diterima';
+
+  @override
+  String get rewardCampaignEnded => 'Acara telah tamat';
+
+  @override
+  String get rewardCampaignClaimButton => 'Terima Hadiah';
+
+  @override
+  String get mailDetailTitle => 'Mesej';
+
+  @override
+  String mailSender(String name) {
+    return 'Pengirim: $name';
+  }
+
+  @override
+  String get mailCaseNumber => 'Nombor Kes';
+
+  @override
+  String get mailCopyCaseNumber => 'Salin Nombor Kes';
+
+  @override
+  String get mailCaseNumberCopied => 'Nombor kes telah disalin';
 }

@@ -2314,5 +2314,87 @@
   },
   "storyContentCannotBeEmpty": "故事内容不能是空的",
   "writeYourStoryHint": "写下你们的故事...",
-  "characterBannerTitle": "角色首页横幅"
+  "characterBannerTitle": "角色首页横幅",
+  "mailDeleteTitle": "删除邮件",
+  "mailDeleteConfirm": "确定要删除 {count} 封邮件吗？\n删除后无法恢复。",
+  "@mailDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteSuccess": "已删除 {count} 封邮件",
+  "@mailDeleteSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteFailed": "删除失败，请稍后再试",
+  "mailCancelSelection": "取消选择",
+  "mailSelectedCount": "已选择 {count} 封",
+  "@mailSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreOptions": "更多",
+  "mailDeleteSelected": "删除 {count} 封邮件",
+  "@mailDeleteSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "officialManagementTeam": "恋恋拾光管理团队",
+  "rewardCampaignTitle": "活动礼物",
+  "rewardCampaignMissingData": "这封礼物邮件缺少活动数据，请稍后再试",
+  "rewardCampaignClaimSuccess": "已领取 {amount} 朵花花",
+  "@rewardCampaignClaimSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignAlreadyClaimed": "这份礼物已经领取过了",
+  "rewardCampaignClaimFailed": "领取失败，请稍后再试",
+  "rewardCampaignContains": "这封邮件里有",
+  "rewardCampaignFlowerAmount": "{amount} 朵花花",
+  "@rewardCampaignFlowerAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignDeadline": "领取期限：{date}",
+  "@rewardCampaignDeadline": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "rewardCampaignClaiming": "领取中…",
+  "rewardCampaignClaimed": "已领取",
+  "rewardCampaignEnded": "活动已结束",
+  "rewardCampaignClaimButton": "领取礼物",
+  "mailDetailTitle": "邮件",
+  "mailSender": "发件人：{name}",
+  "@mailSender": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mailCaseNumber": "案件编号",
+  "mailCopyCaseNumber": "复制案件编号",
+  "mailCaseNumberCopied": "已复制案件编号"
 }

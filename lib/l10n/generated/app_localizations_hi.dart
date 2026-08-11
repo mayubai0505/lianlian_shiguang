@@ -4979,4 +4979,102 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get characterBannerTitle => 'कैरेक्टर होमपेज बैनर';
+
+  @override
+  String get mailDeleteTitle => 'संदेश हटाएँ';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return 'क्या आप वाकई $count संदेश हटाना चाहते हैं?\nहटाने के बाद उन्हें वापस नहीं पाया जा सकता।';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return '$count संदेश हटा दिए गए';
+  }
+
+  @override
+  String get mailDeleteFailed =>
+      'हटाना विफल रहा। कृपया बाद में फिर प्रयास करें।';
+
+  @override
+  String get mailCancelSelection => 'चयन रद्द करें';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '$count चयनित';
+  }
+
+  @override
+  String get moreOptions => 'अधिक';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return '$count संदेश हटाएँ';
+  }
+
+  @override
+  String get officialManagementTeam => 'LoveyDovey प्रबंधन टीम';
+
+  @override
+  String get rewardCampaignTitle => 'इवेंट उपहार';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'इस उपहार संदेश में इवेंट का डेटा नहीं है। कृपया बाद में फिर प्रयास करें।';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return '$amount फूल प्राप्त हुए';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed =>
+      'यह उपहार पहले ही प्राप्त किया जा चुका है';
+
+  @override
+  String get rewardCampaignClaimFailed =>
+      'प्राप्त करना विफल रहा। कृपया बाद में फिर प्रयास करें।';
+
+  @override
+  String get rewardCampaignContains => 'इस संदेश में है';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount फूल';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return 'प्राप्त करने की अंतिम तिथि: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => 'प्राप्त किया जा रहा है…';
+
+  @override
+  String get rewardCampaignClaimed => 'प्राप्त हुआ';
+
+  @override
+  String get rewardCampaignEnded => 'इवेंट समाप्त हो गया';
+
+  @override
+  String get rewardCampaignClaimButton => 'उपहार प्राप्त करें';
+
+  @override
+  String get mailDetailTitle => 'संदेश';
+
+  @override
+  String mailSender(String name) {
+    return 'प्रेषक: $name';
+  }
+
+  @override
+  String get mailCaseNumber => 'मामला संख्या';
+
+  @override
+  String get mailCopyCaseNumber => 'मामला संख्या कॉपी करें';
+
+  @override
+  String get mailCaseNumberCopied => 'मामला संख्या कॉपी हो गई';
 }

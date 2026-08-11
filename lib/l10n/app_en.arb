@@ -2514,5 +2514,87 @@
   },
   "storyContentCannotBeEmpty": "Story content cannot be empty",
   "writeYourStoryHint": "Write down your story...",
-  "characterBannerTitle": "Character Homepage Banner"
+  "characterBannerTitle": "Character Homepage Banner",
+  "mailDeleteTitle": "Delete Messages",
+  "mailDeleteConfirm": "Are you sure you want to delete {count} messages?\nDeleted messages cannot be recovered.",
+  "@mailDeleteConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteSuccess": "Deleted {count} messages",
+  "@mailDeleteSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mailDeleteFailed": "Deletion failed. Please try again later.",
+  "mailCancelSelection": "Cancel Selection",
+  "mailSelectedCount": "{count} selected",
+  "@mailSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moreOptions": "More",
+  "mailDeleteSelected": "Delete {count} messages",
+  "@mailDeleteSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "officialManagementTeam": "LoveyDovey Management Team",
+  "rewardCampaignTitle": "Event Gift",
+  "rewardCampaignMissingData": "This gift message is missing event data. Please try again later.",
+  "rewardCampaignClaimSuccess": "Claimed {amount} Flowers",
+  "@rewardCampaignClaimSuccess": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignAlreadyClaimed": "This gift has already been claimed",
+  "rewardCampaignClaimFailed": "Claim failed. Please try again later.",
+  "rewardCampaignContains": "This message contains",
+  "rewardCampaignFlowerAmount": "{amount} Flowers",
+  "@rewardCampaignFlowerAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+  "rewardCampaignDeadline": "Claim deadline: {date}",
+  "@rewardCampaignDeadline": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "rewardCampaignClaiming": "Claiming…",
+  "rewardCampaignClaimed": "Claimed",
+  "rewardCampaignEnded": "Event Ended",
+  "rewardCampaignClaimButton": "Claim Gift",
+  "mailDetailTitle": "Message",
+  "mailSender": "Sender: {name}",
+  "@mailSender": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mailCaseNumber": "Case Number",
+  "mailCopyCaseNumber": "Copy Case Number",
+  "mailCaseNumberCopied": "Case number copied"
 }

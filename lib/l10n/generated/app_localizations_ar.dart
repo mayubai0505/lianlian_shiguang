@@ -4916,4 +4916,100 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get characterBannerTitle => 'لافتة الصفحة الرئيسية للشخصية';
+
+  @override
+  String get mailDeleteTitle => 'حذف الرسائل';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return 'هل أنت متأكد من حذف $count رسالة؟\nلا يمكن التراجع عن الحذف。';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return 'تم حذف $count رسالة';
+  }
+
+  @override
+  String get mailDeleteFailed => 'فشل الحذف، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get mailCancelSelection => 'إلغاء التحديد';
+
+  @override
+  String mailSelectedCount(int count) {
+    return 'تم تحديد $count رسالة';
+  }
+
+  @override
+  String get moreOptions => 'المزيد';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return 'حذف $count رسالة';
+  }
+
+  @override
+  String get officialManagementTeam => 'فريق إدارة LoveyDovey';
+
+  @override
+  String get rewardCampaignTitle => 'هدية الفعالية';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'تفتقد رسالة الهدية هذه إلى بيانات الفعالية، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return 'تم استلام $amount زهرة';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => 'تم استلام هذه الهدية بالفعل';
+
+  @override
+  String get rewardCampaignClaimFailed =>
+      'فشل الاستلام، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get rewardCampaignContains => 'تحتوي هذه الرسالة على';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '$amount زهرة';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return 'الموعد النهائي للاستلام: $date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => 'جارٍ الاستلام…';
+
+  @override
+  String get rewardCampaignClaimed => 'تم الاستلام';
+
+  @override
+  String get rewardCampaignEnded => 'انتهت الفعالية';
+
+  @override
+  String get rewardCampaignClaimButton => 'استلام الهدية';
+
+  @override
+  String get mailDetailTitle => 'الرسالة';
+
+  @override
+  String mailSender(String name) {
+    return 'المرسل: $name';
+  }
+
+  @override
+  String get mailCaseNumber => 'رقم الحالة';
+
+  @override
+  String get mailCopyCaseNumber => 'نسخ رقم الحالة';
+
+  @override
+  String get mailCaseNumberCopied => 'تم نسخ رقم الحالة';
 }

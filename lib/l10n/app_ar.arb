@@ -2340,5 +2340,87 @@
     },
     "storyContentCannotBeEmpty": "محتوى القصة لا يمكن أن يكون فارغاً",
     "writeYourStoryHint": "اكتبي قصتكما...",
-    "characterBannerTitle": "لافتة الصفحة الرئيسية للشخصية"
+    "characterBannerTitle": "لافتة الصفحة الرئيسية للشخصية",
+    "mailDeleteTitle": "حذف الرسائل",
+    "mailDeleteConfirm": "هل أنت متأكد من حذف {count} رسالة؟\nلا يمكن التراجع عن الحذف。",
+    "@mailDeleteConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mailDeleteSuccess": "تم حذف {count} رسالة",
+    "@mailDeleteSuccess": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "mailDeleteFailed": "فشل الحذف، يرجى المحاولة مرة أخرى لاحقًا",
+    "mailCancelSelection": "إلغاء التحديد",
+    "mailSelectedCount": "تم تحديد {count} رسالة",
+    "@mailSelectedCount": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "moreOptions": "المزيد",
+    "mailDeleteSelected": "حذف {count} رسالة",
+    "@mailDeleteSelected": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "officialManagementTeam": "فريق إدارة LoveyDovey",
+    "rewardCampaignTitle": "هدية الفعالية",
+    "rewardCampaignMissingData": "تفتقد رسالة الهدية هذه إلى بيانات الفعالية، يرجى المحاولة مرة أخرى لاحقًا",
+    "rewardCampaignClaimSuccess": "تم استلام {amount} زهرة",
+    "@rewardCampaignClaimSuccess": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "rewardCampaignAlreadyClaimed": "تم استلام هذه الهدية بالفعل",
+    "rewardCampaignClaimFailed": "فشل الاستلام، يرجى المحاولة مرة أخرى لاحقًا",
+    "rewardCampaignContains": "تحتوي هذه الرسالة على",
+    "rewardCampaignFlowerAmount": "{amount} زهرة",
+    "@rewardCampaignFlowerAmount": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "rewardCampaignDeadline": "الموعد النهائي للاستلام: {date}",
+    "@rewardCampaignDeadline": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "rewardCampaignClaiming": "جارٍ الاستلام…",
+    "rewardCampaignClaimed": "تم الاستلام",
+    "rewardCampaignEnded": "انتهت الفعالية",
+    "rewardCampaignClaimButton": "استلام الهدية",
+    "mailDetailTitle": "الرسالة",
+    "mailSender": "المرسل: {name}",
+    "@mailSender": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "mailCaseNumber": "رقم الحالة",
+    "mailCopyCaseNumber": "نسخ رقم الحالة",
+    "mailCaseNumberCopied": "تم نسخ رقم الحالة"
 }

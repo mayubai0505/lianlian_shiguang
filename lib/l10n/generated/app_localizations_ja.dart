@@ -4720,4 +4720,99 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get characterBannerTitle => 'キャラクターホームバナー';
+
+  @override
+  String get mailDeleteTitle => 'メールを削除';
+
+  @override
+  String mailDeleteConfirm(int count) {
+    return '$count 件のメールを削除しますか？\n削除後は元に戻せません。';
+  }
+
+  @override
+  String mailDeleteSuccess(int count) {
+    return '$count 件のメールを削除しました';
+  }
+
+  @override
+  String get mailDeleteFailed => '削除に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get mailCancelSelection => '選択を解除';
+
+  @override
+  String mailSelectedCount(int count) {
+    return '$count 件選択中';
+  }
+
+  @override
+  String get moreOptions => 'その他';
+
+  @override
+  String mailDeleteSelected(int count) {
+    return '$count 件のメールを削除';
+  }
+
+  @override
+  String get officialManagementTeam => 'LoveyDovey運営チーム';
+
+  @override
+  String get rewardCampaignTitle => 'イベントギフト';
+
+  @override
+  String get rewardCampaignMissingData =>
+      'このギフトメールにはイベントデータがありません。しばらくしてからもう一度お試しください';
+
+  @override
+  String rewardCampaignClaimSuccess(int amount) {
+    return '花を $amount 個受け取りました';
+  }
+
+  @override
+  String get rewardCampaignAlreadyClaimed => 'このギフトはすでに受け取り済みです';
+
+  @override
+  String get rewardCampaignClaimFailed => '受け取りに失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get rewardCampaignContains => 'このメールには';
+
+  @override
+  String rewardCampaignFlowerAmount(int amount) {
+    return '花 $amount 個';
+  }
+
+  @override
+  String rewardCampaignDeadline(String date) {
+    return '受取期限：$date';
+  }
+
+  @override
+  String get rewardCampaignClaiming => '受け取り中…';
+
+  @override
+  String get rewardCampaignClaimed => '受け取り済み';
+
+  @override
+  String get rewardCampaignEnded => 'イベントは終了しました';
+
+  @override
+  String get rewardCampaignClaimButton => 'ギフトを受け取る';
+
+  @override
+  String get mailDetailTitle => 'メール';
+
+  @override
+  String mailSender(String name) {
+    return '差出人：$name';
+  }
+
+  @override
+  String get mailCaseNumber => 'お問い合わせ番号';
+
+  @override
+  String get mailCopyCaseNumber => 'お問い合わせ番号をコピー';
+
+  @override
+  String get mailCaseNumberCopied => 'お問い合わせ番号をコピーしました';
 }
