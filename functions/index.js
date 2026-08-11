@@ -752,7 +752,7 @@ exports.getAiResponse = onRequest({
                 sessionId,
                 chatHistory = [],
                 userMessage = "",
-
+                clientRequestId = "",
                 // 🖼️🎧 新增：玩家傳來的圖片 / 語音
                 imageUrl = "",
                 imagePath = "",
@@ -774,6 +774,22 @@ exports.getAiResponse = onRequest({
 
 console.log("👥 npcCharacters:");
 console.log(characterProfile.npcCharacters);
+
+const safeClientRequestId =
+    String(clientRequestId || "")
+        .trim()
+        .slice(0, 200);
+
+const cancellationRef =
+    safeClientRequestId
+        ? db
+            .collection("artifacts")
+            .doc(APP_ID)
+            .collection(
+                "ai_request_cancellations"
+            )
+            .doc(safeClientRequestId)
+        : null;
 
             // =====================================================
             // Creator V2 (2026/08)
@@ -872,8 +888,29 @@ console.log(characterProfile.npcCharacters);
 
             try {
                 await db.runTransaction(async (tx) => {
-                    const lockSnap = await tx.get(aiLockRef);
+                    // 所有讀取必須在寫入之前完成
+                    const cancellationSnapshot =
+                        cancellationRef
+                            ? await tx.get(cancellationRef)
+                            : null;
+
+                    const lockSnap =
+                        await tx.get(aiLockRef);
+
                     const now = Date.now();
+
+                    const cancellationData =
+                        cancellationSnapshot?.data();
+
+                    if (
+                        cancellationSnapshot?.exists &&
+                        cancellationData?.cancelled === true &&
+                        cancellationData?.userId === userId
+                    ) {
+                        throw new Error(
+                            "AI_REQUEST_CANCELLED"
+                        );
+                    }
 
                     if (lockSnap.exists) {
                         const lockData = lockSnap.data() || {};
@@ -895,11 +932,14 @@ console.log(characterProfile.npcCharacters);
 
                     tx.set(aiLockRef, {
                         lockId: aiLockId,
+                        clientRequestId:
+                            safeClientRequestId,
                         lockedAtMillis: now,
                         userId,
                         sessionId: rawSessionId,
                         chatMode,
-createdAt: FieldValue.serverTimestamp(),
+                        createdAt:
+                            FieldValue.serverTimestamp(),
                     });
                 });
 
@@ -911,10 +951,37 @@ createdAt: FieldValue.serverTimestamp(),
                     lockId: aiLockId,
                 });
             } catch (e) {
+                if (e.message === "AI_REQUEST_CANCELLED") {
+                    console.log(
+                        "🛑 AI 請求在取得 lock 前已被取消",
+                        {
+                            userId,
+                            sessionId: rawSessionId,
+                            clientRequestId:
+                                safeClientRequestId,
+                        }
+                    );
+
+                    if (cancellationRef) {
+                        await cancellationRef
+                            .delete()
+                            .catch(() => null);
+                    }
+
+                    return res.status(200).json({
+                        status: "cancelled",
+                        charged: false,
+                        cost: 0,
+                        clientRequestId:
+                            safeClientRequestId,
+                    });
+                }
+
                 if (e.message === "AI_REQUEST_IN_PROGRESS") {
                     return res.status(429).json({
                         error: "AI_REQUEST_IN_PROGRESS",
-                        message: "這個聊天室上一則回覆還在生成中，請稍等一下喔。",
+                        message:
+                            "這個聊天室上一則回覆還在生成中，請稍等一下喔。",
                     });
                 }
 
@@ -2805,6 +2872,50 @@ systemPrompt += `
 // 回覆、聊天室狀態、扣點與明細必須一起成功
 // ==========================================
 
+if (cancellationRef) {
+    const cancellationSnapshot =
+        await cancellationRef.get();
+
+    const cancellationData =
+        cancellationSnapshot.data();
+
+    if (
+        cancellationSnapshot.exists &&
+        cancellationData?.cancelled === true &&
+        cancellationData?.userId === userId
+    ) {
+        console.log(
+            "🛑 AI 回覆已生成，但玩家已主動取消；" +
+            "不寫入聊天室、不扣除花花。",
+            {
+                userId,
+                sessionId,
+                clientRequestId:
+                    safeClientRequestId,
+            }
+        );
+
+        await cancellationRef
+            .delete()
+            .catch(() => null);
+
+        if (
+            !res.writableEnded &&
+            !res.destroyed
+        ) {
+            return res.status(200).json({
+                status: "cancelled",
+                charged: false,
+                cost: 0,
+                clientRequestId:
+                    safeClientRequestId,
+            });
+        }
+
+        return;
+    }
+}
+
 if (playerConnectionClosed || res.writableEnded || res.destroyed) {
     console.log(
         "⚠️ 玩家 HTTP 連線已關閉，但 AI 已生成完成。" +
@@ -2869,6 +2980,176 @@ if (sessionId) {
                 .trim();
         }
     }
+
+        // ==================================================
+        // 防止模型在狀態欄前後重複輸出同一份正文
+        //
+        // 處理以下異常格式：
+        // 正文 → 第一份狀態欄 → 重複正文 → 最終狀態欄
+        // ==================================================
+        if (
+            chatMode === "story" ||
+            chatMode === "immersive"
+        ) {
+            try {
+                // 擷取具有辨識度的動作段落。
+                // 只有同一個較長段落真的再次出現時才進行處理，
+                // 避免誤刪正常使用的短句或常見台詞。
+                const narrativeParagraphs = [
+                    ...cleanDisplayText.matchAll(
+                        /（[^）]{40,700}）/g
+                    ),
+                ];
+
+                if (narrativeParagraphs.length >= 2) {
+                    const firstNarrative =
+                        narrativeParagraphs[0];
+
+                    const normalizedFirstNarrative =
+                        firstNarrative[0]
+                            .replace(/\s+/g, " ")
+                            .trim();
+
+                    const duplicatedNarrative =
+                        narrativeParagraphs
+                            .slice(1)
+                            .find((match) => {
+                                const normalized =
+                                    match[0]
+                                        .replace(/\s+/g, " ")
+                                        .trim();
+
+                                return (
+                                    normalized ===
+                                    normalizedFirstNarrative
+                                );
+                            });
+
+                    if (duplicatedNarrative) {
+                        const duplicateIndex =
+                            duplicatedNarrative.index ?? -1;
+
+                        // 優先使用 Markdown 分隔線定位兩份狀態欄。
+                        const separators = [
+                            ...cleanDisplayText.matchAll(
+                                /(?:^|\r?\n)\s*---+\s*(?=\r?\n|$)/g
+                            ),
+                        ];
+
+                        let cutStart = -1;
+                        let cutEnd = -1;
+
+                        for (const separator of separators) {
+                            const separatorIndex =
+                                separator.index ?? -1;
+
+                            if (
+                                separatorIndex >= 0 &&
+                                separatorIndex <
+                                    duplicateIndex
+                            ) {
+                                // 取重複正文前最後一條分隔線。
+                                cutStart =
+                                    separatorIndex;
+                            }
+
+                            if (
+                                separatorIndex >
+                                    duplicateIndex &&
+                                cutEnd === -1
+                            ) {
+                                // 取重複正文後第一條分隔線，
+                                // 也就是最終狀態欄的起點。
+                                cutEnd =
+                                    separatorIndex;
+                            }
+                        }
+
+                        // 若創作者沒有使用 ---，
+                        // 改用「📅 場景／日期」狀態欄標題定位。
+                        if (
+                            cutStart === -1 ||
+                            cutEnd === -1
+                        ) {
+                            const statusMarkers = [
+                                ...cleanDisplayText.matchAll(
+                                    /(?:^|\r?\n)\s*(?:📅\s*)?(?:場景|日期)\s*[：:]/g
+                                ),
+                            ];
+
+                            cutStart = -1;
+                            cutEnd = -1;
+
+                            for (
+                                const marker
+                                of statusMarkers
+                            ) {
+                                const markerIndex =
+                                    marker.index ?? -1;
+
+                                if (
+                                    markerIndex >= 0 &&
+                                    markerIndex <
+                                        duplicateIndex
+                                ) {
+                                    cutStart =
+                                        markerIndex;
+                                }
+
+                                if (
+                                    markerIndex >
+                                        duplicateIndex &&
+                                    cutEnd === -1
+                                ) {
+                                    cutEnd =
+                                        markerIndex;
+                                }
+                            }
+                        }
+
+                        if (
+                            cutStart >= 0 &&
+                            cutEnd > cutStart
+                        ) {
+                            const originalLength =
+                                cleanDisplayText.length;
+
+                            const retainedBody =
+                                cleanDisplayText
+                                    .slice(0, cutStart)
+                                    .trim();
+
+                            const retainedFinalStatus =
+                                cleanDisplayText
+                                    .slice(cutEnd)
+                                    .trim();
+
+                            cleanDisplayText =
+                                `${retainedBody}\n\n` +
+                                `${retainedFinalStatus}`;
+
+                            console.warn(
+                                "⚠️ 偵測到狀態欄中夾帶重複正文，" +
+                                "已保留第一份正文與最後一份狀態欄。",
+                                {
+                                    originalLength,
+                                    cleanedLength:
+                                        cleanDisplayText.length,
+                                    removedLength:
+                                        originalLength -
+                                        cleanDisplayText.length,
+                                }
+                            );
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(
+                    "⚠️ 重複正文清理失敗，維持原回覆：",
+                    error
+                );
+            }
+        }
 
 
 
@@ -2965,91 +3246,190 @@ if (sessionId) {
         .doc(sessionId);
 
     // ==========================================
-    // 4. 建立同一批次
-    // 回覆、聊天室、扣點、花花明細必須一起成功
+    // 4. 原子化安全收銀台
+    // 取消檢查、回覆、聊天室、扣點與明細
+    // 必須在同一個 Transaction 中完成
     // ==========================================
     try {
-        const writeBatch = db.batch();
-
         const aiMessageRef = sessionRef
             .collection("messages")
             .doc();
 
-        // A. 寫入 AI 回覆
-        writeBatch.set(aiMessageRef, {
-            sender: "ai",
-            text: cleanDisplayText,
-            voiceText: cleanVoiceText,
-            type: "text",
-            timestamp: FieldValue.serverTimestamp(),
+        const flowerLogRef =
+            cost > 0
+                ? userDocRef
+                    .collection("flower_logs")
+                    .doc()
+                : null;
 
-            characterId:
-                characterProfile.id || "",
+        const wasCancelled =
+            await db.runTransaction(
+                async (transaction) => {
+                    // Firestore Transaction 規定：
+                    // 所有讀取必須發生在任何寫入之前。
+                    if (cancellationRef) {
+                        const cancellationSnapshot =
+                            await transaction.get(
+                                cancellationRef
+                            );
 
-            characterName: name,
-            role: "assistant",
+                        const cancellationData =
+                            cancellationSnapshot.data();
 
-            // 保留原始完整回覆，供除錯或其他功能使用
-            content: finalResponseText,
-        });
+                        if (
+                            cancellationSnapshot.exists &&
+                            cancellationData?.cancelled === true &&
+                            cancellationData?.userId === userId
+                        ) {
+                            return true;
+                        }
+                    }
 
-        // B. 更新聊天室摘要
-        writeBatch.set(
-            sessionRef,
-            {
-                userId,
-                characterId:
-                    characterProfile.id || "",
+                    // A. 寫入 AI 回覆
+                    transaction.set(aiMessageRef, {
+                        sender: "ai",
+                        text: cleanDisplayText,
+                        voiceText: cleanVoiceText,
+                        type: "text",
 
-                characterName: name,
-                lastMessage: cleanDisplayText,
-                lastActivity:
-                    FieldValue.serverTimestamp(),
+                        timestamp:
+                            FieldValue.serverTimestamp(),
 
-                friendshipScore:
-                    FieldValue.increment(
-                        finalAffectionChange
-                    ),
+                        characterId:
+                            characterProfile.id || "",
 
-                unreadCount:
-                    FieldValue.increment(1),
-            },
-            {
-                merge: true,
+                        characterName: name,
+                        role: "assistant",
+
+                        // 保留原始完整回覆，
+                        // 供除錯或其他功能使用
+                        content: finalResponseText,
+                    });
+
+                    // B. 更新聊天室摘要
+                    transaction.set(
+                        sessionRef,
+                        {
+                            userId,
+
+                            characterId:
+                                characterProfile.id || "",
+
+                            characterName: name,
+                            lastMessage: cleanDisplayText,
+
+                            lastActivity:
+                                FieldValue.serverTimestamp(),
+
+                            friendshipScore:
+                                FieldValue.increment(
+                                    finalAffectionChange
+                                ),
+
+                            unreadCount:
+                                FieldValue.increment(1),
+                        },
+                        {
+                            merge: true,
+                        }
+                    );
+
+                    // C. 付費模式才扣點並寫入明細
+                    if (
+                        cost > 0 &&
+                        flowerLogRef
+                    ) {
+                        transaction.update(
+                            userDocRef,
+                            {
+                                flowerPoints:
+                                    FieldValue.increment(
+                                        -cost
+                                    ),
+                            }
+                        );
+
+                        transaction.set(
+                            flowerLogRef,
+                            {
+                                title:
+                                    `與 ${name} 聊天`,
+
+                                amount: -cost,
+
+                                characterId:
+                                    characterProfile.id || "",
+
+                                characterName: name,
+                                sessionId,
+                                messageId:
+                                    aiMessageRef.id,
+                                chatMode,
+
+                                createdAt:
+                                    FieldValue
+                                        .serverTimestamp(),
+                            }
+                        );
+                    }
+
+                    return false;
+                }
+            );
+
+        // ==========================================
+        // 玩家已取消：
+        // Transaction 沒有進行任何訊息與扣款寫入
+        // ==========================================
+        if (wasCancelled) {
+            console.log(
+                "🛑 [安全收銀台] 玩家已取消本次 AI 請求，" +
+                "未寫入回覆、未扣除花花、未建立消費明細。",
+                {
+                    userId,
+                    sessionId,
+                    clientRequestId:
+                        safeClientRequestId,
+                }
+            );
+
+            // 這筆 request ID 不會再次使用，
+            // 已攔截成功後可以清除取消文件。
+            if (cancellationRef) {
+                await cancellationRef
+                    .delete()
+                    .catch(() => null);
             }
-        );
 
-        // C. 付費模式才加入扣點與花花明細
-        if (cost > 0) {
-            writeBatch.update(userDocRef, {
-                flowerPoints:
-                    FieldValue.increment(-cost),
-            });
+            const cancelledPayload = {
+                status: "cancelled",
+                charged: false,
+                cost: 0,
 
-            const flowerLogRef = userDocRef
-                .collection("flower_logs")
-                .doc();
+                clientRequestId:
+                    safeClientRequestId,
+            };
 
-            writeBatch.set(flowerLogRef, {
-                title: `與 ${name} 聊天`,
-                amount: -cost,
+            if (
+                !res.writableEnded &&
+                !res.destroyed
+            ) {
+                return res
+                    .status(200)
+                    .json(cancelledPayload);
+            }
 
-                characterId:
-                    characterProfile.id || "",
+            console.log(
+                "📦 取消已成功攔截，" +
+                "但玩家 HTTP 連線已關閉，略過 res.json。"
+            );
 
-                characterName: name,
-                sessionId,
-                messageId: aiMessageRef.id,
-                chatMode,
-
-                createdAt:
-                    FieldValue.serverTimestamp(),
-            });
+            return;
         }
 
-        // D. 一次提交
-        await writeBatch.commit();
-
+        // 成功後不要再無條件刪除 cancellationRef。
+        // 若取消通知在交易提交後才抵達，
+        // 讓它依 expiresAt 自動清理即可。
         console.log(
             cost > 0
                 ? `✅ [安全收銀台] AI 回覆已寫入，` +
@@ -4246,99 +4626,6 @@ const unreadCount = unreadSnapshot.size;
     }
 
     return null;
-});
-
-// 🌟 總裁專屬：隱藏版記憶捕捉員
-exports.extractUserMemory = onRequest({
-    region: "asia-east1",
-    secrets: [openRouterApiKey],
-    memory: "256MiB", // 這個任務很輕，記憶體不用開太大
-    timeoutSeconds: 60,
-}, (req, res) => {
-    return cors(req, res, async () => {
-        try {
-            // 1. 驗證身分 (總裁的防護網)
-            const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: "未授權" });
-            const idToken = authHeader.split('Bearer ')[1];
-            const decodedToken = await getAuth().verifyIdToken(idToken);
-            const userId = decodedToken.uid;
-
-            const { characterId, userMessage, isContinue = false } = req.body;
-
-            if (!characterId || !userMessage) {
-                return res.status(400).json({ error: "缺少參數" });
-            }
-
-            if (isContinue === true) {
-                console.log("🔁 續寫指令不進入記憶捕捉");
-                return res.status(200).json({
-                    success: true,
-                    memory: null,
-                    skipped: "continue"
-                });
-            }
-
-            // 2. 🌟 核心記憶捕捉 Prompt
-            const systemPrompt = `
-            你是一個「隱藏版記憶捕捉員」。
-            請分析玩家剛剛說的話，判斷是否包含「關於玩家個人的具體情報」，例如：
-            - 喜歡/討厭的事物（例如：喜歡吃草莓、討厭下雨、對海鮮過敏）
-            - 個人背景/職業/習慣（例如：我是個學生、我每天早上喝咖啡）
-            - 重要的情感狀態或經歷
-
-            【嚴格規則】：
-            1. 如果有情報，請精煉成「簡短的一句話」。例如：「喜歡吃草莓」、「是一名設計師」。
-            2. 如果只是普通的閒聊、打招呼、或針對劇情的對話（例如：「早安」、「你在幹嘛」、「哈哈哈太好笑了」、「繼續」），請直接回覆一個字：NONE。
-            3. 絕對不要回覆多餘的說明或引號。
-            `;
-
-            // 3. 呼叫 AI 判斷 (用最便宜、最快的模型即可)
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${openRouterApiKey.value()}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: "google/gemini-2.5-flash-lite", // 便宜又快！
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: userMessage }
-                    ],
-                    temperature: 0.1, // 溫度調到極低，讓它精準判斷不廢話
-                    max_tokens: 50
-                })
-            });
-
-            const aiResult = await response.json();
-            const extractedText = aiResult.choices?.[0]?.message?.content?.trim() || "NONE";
-
-            // 4. 判斷並寫入資料庫
-            if (extractedText !== "NONE" && extractedText.length > 1) {
-                // 🌟 找到妳剛剛前端展示櫃的「那個抽屜」！
-                await db
-                    .collection('users').doc(userId)
-                    .collection('characters').doc(characterId)
-                    .collection('memories')
-                    .add({
-                        text: extractedText,
-                        timestamp: FieldValue.serverTimestamp(),
-                        isFavorite: false
-                    });
-
-                console.log(`🍓 成功捕捉記憶並存檔：${extractedText}`);
-                return res.status(200).json({ success: true, memory: extractedText });
-            } else {
-                console.log(`💨 沒有捕捉到記憶，放行。玩家說: ${userMessage}`);
-                return res.status(200).json({ success: true, memory: null });
-            }
-
-        } catch (error) {
-            console.error("記憶捕捉失敗:", error);
-            return res.status(500).json({ error: error.message });
-        }
-    });
 });
 
 // 🌟 總裁專屬：殿堂級劇情書記官 (對話摘要生成)
@@ -9122,6 +9409,169 @@ exports.backfillMomentSearchKeywords = onCall(
             error?.message || String(error),
         }
       );
+    }
+  }
+);
+
+exports.cancelAiResponse = onRequest(
+  {
+    region: REGION,
+    cors: true,
+  },
+  async (req, res) => {
+    try {
+      if (req.method !== "POST") {
+        return res.status(405).json({
+          status: "error",
+          message: "Method not allowed",
+        });
+      }
+
+      const authorization =
+          req.headers.authorization || "";
+
+      if (!authorization.startsWith("Bearer ")) {
+        return res.status(401).json({
+          status: "error",
+          message: "尚未登入",
+        });
+      }
+
+      const idToken =
+          authorization.substring(7).trim();
+
+      const decodedToken =
+          await auth.verifyIdToken(
+              idToken
+          );
+
+      const userId = decodedToken.uid;
+
+      const clientRequestId = String(
+        req.body?.clientRequestId || ""
+      )
+          .trim()
+          .slice(0, 200);
+
+      if (!clientRequestId) {
+        return res.status(400).json({
+          status: "error",
+          message: "缺少 clientRequestId",
+        });
+      }
+
+      // 取得聊天室 ID
+      const rawSessionId = String(
+        req.body?.sessionId || ""
+      ).trim();
+
+      if (!rawSessionId) {
+        return res.status(400).json({
+          status: "error",
+          message: "缺少 sessionId",
+        });
+      }
+
+      // 必須與 getAiResponse 建立 lock 時使用相同的清理規則
+      const safeSessionId = rawSessionId
+        .replace(/[\/\\#?\[\]\s]/g, "_")
+        .slice(0, 150);
+
+      const cancellationRef = db
+          .collection("artifacts")
+          .doc(APP_ID)
+          .collection(
+            "ai_request_cancellations"
+          )
+          .doc(clientRequestId);
+
+      const aiLockRef = db
+          .collection("users")
+          .doc(userId)
+          .collection("locks")
+          .doc(`aiResponse_${safeSessionId}`);
+
+      let lockReleased = false;
+
+      await db.runTransaction(
+          async (transaction) => {
+              // 先讀取鎖，再執行所有寫入
+              const lockSnapshot =
+                  await transaction.get(
+                      aiLockRef
+                  );
+
+              const lockData =
+                  lockSnapshot.data() || {};
+
+              // 建立取消紀錄
+              transaction.set(
+                  cancellationRef,
+                  {
+                      userId,
+                      clientRequestId,
+                      sessionId: rawSessionId,
+                      cancelled: true,
+
+                      cancelledAt:
+                          FieldValue
+                              .serverTimestamp(),
+
+                      expiresAt:
+                          new Date(
+                              Date.now() +
+                              24 * 60 * 60 * 1000
+                          ),
+                  },
+                  {
+                      merge: true,
+                  }
+              );
+
+              // 只能刪除完全屬於本次請求的鎖，
+              // 不得誤刪後來新請求建立的鎖。
+              if (
+                  lockSnapshot.exists &&
+                  lockData.userId === userId &&
+                  lockData.sessionId ===
+                      rawSessionId &&
+                  lockData.clientRequestId ===
+                      clientRequestId
+              ) {
+                  transaction.delete(
+                      aiLockRef
+                  );
+
+                  lockReleased = true;
+              }
+          }
+      );
+
+      console.log(
+          "🛑 收到玩家主動取消 AI 請求",
+          {
+              userId,
+              sessionId: rawSessionId,
+              clientRequestId,
+              lockReleased,
+          }
+      );
+
+      return res.status(200).json({
+          status: "cancelled",
+          clientRequestId,
+          lockReleased,
+      });
+    } catch (error) {
+      console.error(
+        "❌ 取消 AI 請求失敗：",
+        error
+      );
+
+      return res.status(500).json({
+        status: "error",
+        message: "取消請求失敗",
+      });
     }
   }
 );

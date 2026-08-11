@@ -39,7 +39,6 @@ import 'background_settings_page.dart';
 import '../widgets/dice_duel_overlay.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import 'character_profile_page.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'dart:typed_data';
@@ -130,6 +129,7 @@ class _ChatPageState extends State<ChatPage> {
   bool _isMonthlyPassActive = false;
   bool _isBirthdayFreeToday = false;
   final Map<String, String> _imageUrlCache = {};
+  bool _isInputFocused = false;
   bool _isLoadingRoom = true;
   final List<Map<String, dynamic>> _pendingMediaMessages = [];
   final Map<String, String> _audioDownloadUrlCache = {};
@@ -204,6 +204,12 @@ class _ChatPageState extends State<ChatPage> {
     FlowerStage(threshold: 2430, imagePath: 'assets/images/flower_stage_6.png'),
     FlowerStage(threshold: 5000, imagePath: 'assets/images/flower_stage_6.png'),
   ];
+  String? _activeAiRequestId;
+  String _createAiRequestId() {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+
+    return '${userId}_${DateTime.now().microsecondsSinceEpoch}';
+  }
 
   String? _sessionId;
   bool _isLoading = true;
@@ -261,12 +267,12 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
 
+    _focusNode.addListener(
+      _handleInputFocusChange,
+    );
     _isGenerating = generatingRooms.contains(_roomLockKey);
-
     _currentCharacter = widget.character;
-
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
@@ -349,6 +355,9 @@ class _ChatPageState extends State<ChatPage> {
     _recorder = null;
     _player = null;
     _textController.dispose();
+    _focusNode.removeListener(
+      _handleInputFocusChange,
+    );
     _focusNode.dispose();
     _pointsSubscription?.cancel();
     _audioPlayer.dispose();
@@ -367,6 +376,18 @@ class _ChatPageState extends State<ChatPage> {
       // 把存好的草稿塞回妳的輸入框控制器
       _textController.text = savedDraft;
     }
+  }
+
+  void _handleInputFocusChange() {
+    if (!mounted) return;
+
+    final bool isFocused = _focusNode.hasFocus;
+
+    if (_isInputFocused == isFocused) return;
+
+    setState(() {
+      _isInputFocused = isFocused;
+    });
   }
 
   Future<void> _loadRoomData() async {
@@ -1214,43 +1235,67 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _showCenterToast(String message,
-      {bool isError = false, IconData? customIcon}) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (context) {
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          if (mounted && Navigator.canPop(context)) Navigator.pop(context);
-        });
-        return Center(
-          child: Material(
-            color: Colors.black.withOpacity(0.8),
-            borderRadius: BorderRadius.circular(24),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 1. 如果是錯誤，顯示紅色驚嘆號
-                  if (isError)
-                    const Icon(Icons.error_outline,
-                        color: Colors.redAccent, size: 20),
+  void _showCenterToast(
+      String message, {
+        bool isError = false,
+        IconData? customIcon,
+      }) {
+    if (!mounted) return;
 
-                  // 2. 如果有傳入自訂圖示，就顯示自訂圖示
-                  if (!isError && customIcon != null)
-                    Icon(customIcon, color: Colors.amberAccent, size: 20),
-                  // 處理圖示跟文字的間距
-                  if (isError || customIcon != null) const SizedBox(width: 8),
-                  // ✨ 總裁級防護：加上 Flexible！讓超長文字自動換行，絕不衝破你的精美排版！
-                  Flexible(
-                    child: Text(
-                      message,
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                      softWrap: true, // 💡 總裁秘技：允許文字在遇到邊界時優雅地自動換行
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      useRootNavigator: true,
+      builder: (dialogContext) {
+        Future.delayed(
+          const Duration(milliseconds: 1500),
+              () {
+            if (!dialogContext.mounted) return;
+
+            Navigator.of(
+              dialogContext,
+              rootNavigator: true,
+            ).pop();
+          },
+        );
+
+        return PopScope(
+          canPop: false,
+          child: Center(
+            child: Material(
+              color: Colors.black.withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(24),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      customIcon ??
+                          (isError
+                              ? Icons.error_outline
+                              : Icons.check_circle_outline),
+                      color: isError
+                          ? Colors.redAccent
+                          : Colors.white,
+                      size: 20,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        message,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1355,6 +1400,10 @@ class _ChatPageState extends State<ChatPage> {
       return;
     }
 
+    final String clientRequestId = _createAiRequestId();
+
+    _activeAiRequestId = clientRequestId;
+
     String? pendingMediaId;
 
     if ((imagePath != null && imagePath.isNotEmpty) ||
@@ -1443,6 +1492,7 @@ class _ChatPageState extends State<ChatPage> {
           // 使用彩蛋：AI 讀彩蛋劇情
           await _executeMessageSending(
             userText: messageText,
+            clientRequestId: clientRequestId,
             imagePath: null,
             audioPath: null,
             overridePrompt: l10n.chat_hidden_event_trigger(
@@ -1458,6 +1508,7 @@ class _ChatPageState extends State<ChatPage> {
           // 不使用彩蛋：AI 照原本文字正常回覆
           await _executeMessageSending(
             userText: messageText,
+            clientRequestId: clientRequestId,
             imagePath: null,
             audioPath: null,
             secretPrompt: null,
@@ -1470,6 +1521,7 @@ class _ChatPageState extends State<ChatPage> {
       } else {
         await _executeMessageSending(
           userText: messageText,
+          clientRequestId: clientRequestId,
           imagePath: imagePath,
           audioPath: audioPath,
           secretPrompt: secretPrompt,
@@ -1671,6 +1723,10 @@ class _ChatPageState extends State<ChatPage> {
       return;
     }
 
+    final String clientRequestId = _createAiRequestId();
+
+    _activeAiRequestId = clientRequestId;
+
     final l10n = AppLocalizations.of(context)!;
     final userId = currentUser.uid;
     final characterId = _currentCharacter.id;
@@ -1813,6 +1869,7 @@ class _ChatPageState extends State<ChatPage> {
       print('👥 NPC 數量：${_currentCharacter.npcCharacters.length}');
       print('👥 NPC 完整資料：${_currentCharacter.npcCharacters}');
       final Map<String, dynamic> requestBody = {
+        "clientRequestId": clientRequestId,
         'audioUrl': '',
         'userMessage': lastUserText,
         'chatMode': _currentMode?.name ?? 'daily',
@@ -1930,6 +1987,12 @@ class _ChatPageState extends State<ChatPage> {
             const Duration(seconds: 45),
           );
 
+      // 玩家已停止，安靜結束，不顯示系統錯誤
+      if (_activeAiRequestId != clientRequestId) {
+        debugPrint('🛑 重新生成已停止，忽略 HTTP 結果');
+        return;
+      }
+
       if (response.statusCode != 200) {
         debugPrint(
           '⚠️ 重新生成 HTTP 錯誤碼：'
@@ -1950,6 +2013,11 @@ class _ChatPageState extends State<ChatPage> {
         throw const FormatException(
           '重新生成回傳格式不正確',
         );
+      }
+
+      if (decoded['status'] == 'cancelled') {
+        debugPrint('🛑 後端確認重新生成已取消');
+        return;
       }
 
       if (decoded['status'] != 'success') {
@@ -2015,6 +2083,10 @@ class _ChatPageState extends State<ChatPage> {
         '$aiMessageId',
       );
     } catch (e, stackTrace) {
+      if (_activeAiRequestId != clientRequestId) {
+        debugPrint('🛑 重新生成已停止，忽略連線中斷：$e');
+        return;
+      }
       debugPrint(
         '❌ 重新生成在前端發生錯誤：$e',
       );
@@ -2262,32 +2334,6 @@ class _ChatPageState extends State<ChatPage> {
           _isReferralTrackerActive = true;
         });
       }
-    }
-  }
-
-  Future<void> _increaseTaskProgress(String fieldName, int goal) async {
-    if (_userId == null) return;
-
-    final userDocRef =
-        FirebaseFirestore.instance.collection('users').doc(_userId);
-
-    try {
-      // 取得當前最新進度
-      final doc = await userDocRef.get();
-      final int currentProgress = doc.data()?[fieldName] ?? 0;
-
-      // 如果還沒達到目標，就幫他 +1
-      if (currentProgress < goal) {
-        await userDocRef.update({
-          fieldName: FieldValue.increment(1),
-        });
-        print('✅ 任務 $fieldName 進度已更新！');
-
-        // ✨ 順便刷新一下本地變數，這樣玩家開日記時才是準確的
-        _loadDailyTaskProgress();
-      }
-    } catch (e) {
-      print('❌ 更新任務進度失敗: $e');
     }
   }
 
@@ -2672,58 +2718,6 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  // ✨ 專屬文字掃描器：自動區分旁白（灰色）與對話（正常色）
-  Widget _buildStyledMessage(String message, BuildContext context) {
-    final theme = Theme.of(context);
-
-    // 🔍 鎖定目標：抓出所有被 「」 或 "" 或 “” 包住的句子
-    final RegExp quoteRegex = RegExp(r'(「.*?」|“.*?”|".*?")');
-    final Iterable<RegExpMatch> matches = quoteRegex.allMatches(message);
-
-    // 如果這句話裡面完全沒有引號（全是旁白），就整段變灰色
-    if (matches.isEmpty) {
-      return Text(
-        message,
-        style: const TextStyle(color: Colors.grey), // ✨ 已拔掉斜體
-      );
-    }
-
-    List<TextSpan> spans = [];
-    int currentIndex = 0;
-
-    for (final match in matches) {
-      // 1. 處理引號「前面」的文字（旁白 ➡️ 灰色）
-      if (match.start > currentIndex) {
-        spans.add(TextSpan(
-          text: message.substring(currentIndex, match.start),
-          style: const TextStyle(color: Colors.grey), // ✨ 已拔掉斜體
-        ));
-      }
-
-      // 2. 處理引號「裡面」的文字（對話 ➡️ 主題正常文字顏色）
-      spans.add(TextSpan(
-        text: match.group(0),
-        style: TextStyle(
-          color: theme.colorScheme.onSurface,
-          fontWeight: FontWeight.normal,
-        ),
-      ));
-
-      currentIndex = match.end;
-    }
-
-    // 3. 處理最後一個引號「後面」剩下的文字（旁白 ➡️ 灰色）
-    if (currentIndex < message.length) {
-      spans.add(TextSpan(
-        text: message.substring(currentIndex),
-        style: const TextStyle(color: Colors.grey), // ✨ 已拔掉斜體
-      ));
-    }
-
-    // 將切好的文字片段組合起來印在畫面上
-    return Text.rich(TextSpan(children: spans));
-  }
-
   Widget _buildDialogPage2(
       ThemeData theme,
       String currentLang,
@@ -2983,6 +2977,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _executeMessageSending({
     required String userText,
+    required String clientRequestId,
     String? imagePath,
     String? audioPath,
     String? overridePrompt,
@@ -3333,9 +3328,6 @@ class _ChatPageState extends State<ChatPage> {
         userId: userId,
         characterId: characterId,
       );
-      if (!isContinue) {
-        _triggerMemoryExtraction(userText);
-      }
       // --- 🚀 D. 呼叫雲端 AI 大腦 ---
       final idToken = await currentUser.getIdToken();
       int currentScore = _currentFriendship;
@@ -3354,6 +3346,7 @@ class _ChatPageState extends State<ChatPage> {
       print('👥 NPC 數量：${_currentCharacter.npcCharacters.length}');
       print('👥 NPC 完整資料：${_currentCharacter.npcCharacters}');
       final Map<String, dynamic> requestBody = {
+        "clientRequestId": clientRequestId,
         "imageUrl": hasImage ? (storagePath ?? "") : "",
         "audioUrl": hasAudio ? (storagePath ?? "") : "",
         "userMessage": effectiveUserMessage,
@@ -3433,6 +3426,14 @@ class _ChatPageState extends State<ChatPage> {
           },
         );
       } catch (e) {
+        // 玩家按下停止會關閉 HTTP Client，
+        // 這是正常取消，不可顯示系統繁忙。
+        if (_activeAiRequestId != clientRequestId) {
+          debugPrint(
+            '🛑 訊息生成已停止，忽略連線中斷：$e',
+          );
+          return;
+        }
         // 🛡️ 攔截超時或網路斷線
         if (mounted) {
           setState(() {
@@ -3446,9 +3447,20 @@ class _ChatPageState extends State<ChatPage> {
         return; // 提早結束，不要往下走
       }
 
+      if (_activeAiRequestId != clientRequestId) {
+        debugPrint(
+          '🛑 訊息生成已停止，忽略 HTTP 結果',
+        );
+        return;
+      }
+
       // --- 🎯 E. 接收 API 的直接回覆 (告別舊版監聽器！) ---
       if (response.statusCode == 200) {
         final responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        if (responseData['status'] == 'cancelled') {
+          debugPrint('🛑 後端確認訊息生成已取消');
+          return;
+        }
         if (responseData['status'] == 'success') {
           // 1. 取得 AI 算出的好感度變化
           int finalAffectionChange = responseData['affectionChange'] ?? 0;
@@ -3832,10 +3844,14 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // ✨ 進化版煞車系統
-  void _stopGenerating() {
+  Future<void> _stopGenerating() async {
     final l10n = AppLocalizations.of(context)!;
-    final roomLockKey =
-        (_sessionId ?? widget.sessionId ?? widget.character.id).trim();
+
+    final String? requestId = _activeAiRequestId;
+
+    // 先讓畫面立刻恢復，不必等待取消 API。
+    _activeAiRequestId = null;
+
     _httpClient?.close();
     _httpClient = null;
 
@@ -3845,9 +3861,56 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         _isGenerating = false;
         _isLoading = false;
+        _isRegenerating = false;
+        _waitingForNewAiReply = false;
       });
 
-      _showCenterToast(l10n.chat_stop_generating_msg);
+      _showCenterToast(
+        l10n.chat_stop_generating_msg,
+      );
+    }
+
+    if (requestId == null || requestId.isEmpty) {
+      return;
+    }
+
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+
+      if (currentUser == null) return;
+
+      final idToken = await currentUser.getIdToken();
+
+      final response = await http
+          .post(
+            Uri.parse(
+              'https://asia-east1-'
+              'lianlianshiguang.cloudfunctions.net/'
+              'cancelAiResponse',
+            ),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $idToken',
+            },
+            body: jsonEncode({
+              'clientRequestId': requestId,
+              'sessionId': _sessionId ?? widget.sessionId ?? '',
+            }),
+          )
+          .timeout(
+            const Duration(seconds: 10),
+          );
+
+      debugPrint(
+        '🛑 AI 取消通知結果：'
+        '${response.statusCode} '
+        '${response.body}',
+      );
+    } catch (e) {
+      // 取消通知失敗不重新開啟生成畫面。
+      debugPrint(
+        '⚠️ AI 取消通知失敗：$e',
+      );
     }
   }
 
@@ -5500,12 +5563,21 @@ class _ChatPageState extends State<ChatPage> {
                                                       eggData['setScene'];
                                                 });
                                             }
+                                            // 背包彩蛋屬於獨立的 AI 請求，
+// 必須建立自己的取消識別碼。
+                                            final String specialRequestId =
+                                                _createAiRequestId();
+
+                                            _activeAiRequestId =
+                                                specialRequestId;
+
                                             _executeMessageSending(
                                               userText: l10n
                                                   .chat_special_story_trigger(
-                                                      eggData['title']),
-                                              overridePrompt:
-                                                  eggData['prompt'], // 對齊了！
+                                                eggData['title'],
+                                              ),
+                                              clientRequestId: specialRequestId,
+                                              overridePrompt: eggData['prompt'],
                                             );
                                           },
                                         )));
@@ -7382,6 +7454,9 @@ class _ChatPageState extends State<ChatPage> {
 
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final theme = Theme.of(context);
+    final bool isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+
+    final bool showInputExtras = _isInputFocused && isKeyboardVisible;
     final int nextStageThreshold = _getNextStageThreshold(_currentFriendship);
     bool hasPhotoBackground = themeNotifier.activeCharacterBackground != null ||
         (themeNotifier.currentThemeEnum == AppTheme.custom &&
@@ -7889,47 +7964,67 @@ class _ChatPageState extends State<ChatPage> {
                     _buildScreenshotBottomBar()
                   else ...[
                     // ✨ 3. 底部（）快捷鍵區
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 4.0),
-                      color: theme.cardColor.withValues(alpha: 0.5),
-                      child: Row(
-                        children: [
-                          OutlinedButton(
-                            onPressed: (_isGenerating || _isLoading)
-                                ? null
-                                : () {
-                                    final text = _textController.text;
-                                    final selection = _textController.selection;
-                                    int cursorPosition = selection.baseOffset;
-
-                                    if (cursorPosition == -1) {
-                                      cursorPosition = text.length;
-                                    }
-
-                                    final newText =
-                                        text.substring(0, cursorPosition) +
-                                            '（）' +
-                                            text.substring(cursorPosition);
-
-                                    _textController.value = TextEditingValue(
-                                      text: newText,
-                                      selection: TextSelection.collapsed(
-                                        offset: cursorPosition + 1,
-                                      ),
-                                    );
-
-                                    _focusNode.requestFocus();
-                                  },
-                            style: OutlinedButton.styleFrom(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
+                    showInputExtras
+                        ? Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
                             ),
-                            child: const Text('（）'),
-                          ),
-                        ],
-                      ),
-                    ),
+                            color: theme.cardColor.withValues(alpha: 0.5),
+                            child: Row(
+                              children: [
+                                OutlinedButton(
+                                  onPressed: (_isGenerating || _isLoading)
+                                      ? null
+                                      : () {
+                                          final text = _textController.text;
+
+                                          final selection =
+                                              _textController.selection;
+
+                                          int cursorPosition =
+                                              selection.baseOffset;
+
+                                          if (cursorPosition < 0 ||
+                                              cursorPosition > text.length) {
+                                            cursorPosition = text.length;
+                                          }
+
+                                          final newText = text.substring(
+                                                0,
+                                                cursorPosition,
+                                              ) +
+                                              '（）' +
+                                              text.substring(
+                                                cursorPosition,
+                                              );
+
+                                          _textController.value =
+                                              TextEditingValue(
+                                            text: newText,
+                                            selection: TextSelection.collapsed(
+                                              offset: cursorPosition + 1,
+                                            ),
+                                          );
+
+                                          _focusNode.requestFocus();
+                                        },
+                                  style: OutlinedButton.styleFrom(
+                                    minimumSize: const Size(42, 30),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                    visualDensity: VisualDensity.compact,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  child: const Text('（）'),
+                                ),
+                              ],
+                            ),
+                          )
+                        : const SizedBox.shrink(),
 
                     // 🌟 多選模式 / 平常輸入框
                     if (_isMultiSelectMode)
@@ -7969,28 +8064,34 @@ class _ChatPageState extends State<ChatPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.end,
                                       children: [
-                                        ValueListenableBuilder<
-                                            TextEditingValue>(
-                                          valueListenable: _textController,
-                                          builder: (context, value, child) {
-                                            return Padding(
-                                              padding: const EdgeInsets.only(
-                                                right: 12.0,
-                                                top: 4.0,
-                                              ),
-                                              child: Text(
-                                                '${value.text.length}/900',
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  color:
-                                                      value.text.length >= 900
-                                                          ? Colors.red
-                                                          : Colors.grey,
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
+                                        showInputExtras
+                                            ? ValueListenableBuilder<
+                                                TextEditingValue>(
+                                                valueListenable:
+                                                    _textController,
+                                                builder:
+                                                    (context, value, child) {
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                      right: 12,
+                                                      top: 2,
+                                                    ),
+                                                    child: Text(
+                                                      '${value.text.length}/900',
+                                                      style: TextStyle(
+                                                        fontSize: 10,
+                                                        color:
+                                                            value.text.length >=
+                                                                    900
+                                                                ? Colors.red
+                                                                : Colors.grey,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              )
+                                            : const SizedBox.shrink(),
                                         TextField(
                                           controller: _textController,
                                           focusNode: _focusNode,
