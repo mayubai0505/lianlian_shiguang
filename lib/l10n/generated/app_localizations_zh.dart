@@ -3039,7 +3039,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tab_daily_chit_chat => '閒話家常';
 
   @override
-  String get task_desc_chat_3_times => '與角色進行 3 次日常聊天';
+  String get task_desc_chat_3_times => '與角色進行 3 次日常模式聊天';
 
   @override
   String get tab_story_progression => '劇情推進';
@@ -4756,6 +4756,854 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mailCaseNumberCopied => '已複製案件編號';
+
+  @override
+  String get profilePageAboutMe => '📝 關於我';
+
+  @override
+  String get profilePageTabBio => '自我介紹';
+
+  @override
+  String get profilePageTabCharacters => '角色';
+
+  @override
+  String get profilePageTabMoments => '動態';
+
+  @override
+  String get profilePageEditProfile => '編輯個人檔案';
+
+  @override
+  String get profilePageFriends => '朋友';
+
+  @override
+  String get profilePageWorks => '作品';
+
+  @override
+  String get profilePageFollowing => '追蹤';
+
+  @override
+  String get profilePageFollowers => '追蹤者';
+
+  @override
+  String get profilePageHeartbeatDiary => '心動日記';
+
+  @override
+  String get profilePageEditCharacter => '編輯角色';
+
+  @override
+  String get profilePagePreviewCharacter => '預覽角色檔案';
+
+  @override
+  String get profilePageNoBio => '還沒有自我介紹';
+
+  @override
+  String get profilePageNoBioHint => '點一下寫下關於你的介紹。';
+
+  @override
+  String get profilePageCreateCharacter => '建立新角色';
+
+  @override
+  String get profilePageNoCharacters => '還沒有創建角色';
+
+  @override
+  String get profilePageNoCharactersHint => '開始創建你的第一位角色吧。';
+
+  @override
+  String get profilePageCharacterActions => '角色操作';
+
+  @override
+  String get profilePagePublic => '公開';
+
+  @override
+  String get profilePagePrivate => '私人';
+
+  @override
+  String get profilePageCreator => '創作者';
+
+  @override
+  String get profilePageSelectPostingIdentity => '選擇發布身分';
+
+  @override
+  String get profilePagePostAsCreator => '以創作者本人發布';
+
+  @override
+  String get profilePagePublicCharacter => '公開角色';
+
+  @override
+  String get profilePagePrivateCharacter => '私人角色';
+
+  @override
+  String get profilePagePleaseSignIn => '請先登入';
+
+  @override
+  String get profilePagePublishMoment => '發布動態';
+
+  @override
+  String get profilePageFilterAll => '全部';
+
+  @override
+  String get profilePageFilterCreator => '本人';
+
+  @override
+  String get profilePageFilterCharacter => '角色';
+
+  @override
+  String get profilePageMomentsLoadFailed => '動態讀取失敗';
+
+  @override
+  String get profilePageTryAgainLater => '請稍後再試一次。';
+
+  @override
+  String get profilePageNoCreatorMoments => '本人還沒有發布動態';
+
+  @override
+  String get profilePageNoCreatorMomentsHint => '以創作者身分發布的內容會顯示在這裡。';
+
+  @override
+  String get profilePageNoCharacterMoments => '旗下角色還沒有發布動態';
+
+  @override
+  String get profilePageNoCharacterMomentsHint => '以角色身分發布的內容會顯示在這裡。';
+
+  @override
+  String get profilePageNoMoments => '還沒有動態';
+
+  @override
+  String get profilePageNoMomentsHint => '你與旗下角色發布的動態會顯示在這裡。';
+
+  @override
+  String get profilePageDeleteMomentTitle => '刪除動態';
+
+  @override
+  String get profilePageDeleteMomentConfirm => '確定要永久刪除這篇動態嗎？';
+
+  @override
+  String get profilePageCancel => '取消';
+
+  @override
+  String get profilePageDelete => '刪除';
+
+  @override
+  String get profilePageMomentDeleted => '動態已刪除';
+
+  @override
+  String get profilePageDeleteFailed => '刪除失敗，請稍後再試';
+
+  @override
+  String get profilePageReferralCompleted => '星之邀約已完成';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return '邀請人：$inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived => '雙方已獲得 50 花花';
+
+  @override
+  String get profilePageClaimed => '已領取';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return '已綁定邀請人：$inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint => '完成 15 句聊天後，雙方各獲得 50 花花';
+
+  @override
+  String get profilePageAlreadyCheckedIn => '今天已經簽到過囉';
+
+  @override
+  String get profilePageReferralBindFailed => '綁定失敗，請稍後再試';
+
+  @override
+  String get profilePageCharacterNotFound => '找不到這個角色的資料';
+
+  @override
+  String get periodGuideTitle => '生理期日記怎麼用？';
+
+  @override
+  String get periodGuideContent =>
+      '① 先點選月曆上的日期。\n② 選擇「今天來了」、「仍在生理期」或「今天結束」。\n③ 勾選當天心情與身體狀態，也可以自行補充。\n④ 按下儲存，角色就能在聊天時理解你今天的狀態。\n\n預測日期會依你的歷史紀錄調整，僅供生活紀錄參考。';
+
+  @override
+  String get periodGotIt => '我知道了';
+
+  @override
+  String get periodSelectAtLeastOne => '請至少選擇一項紀錄';
+
+  @override
+  String get periodFutureDateError => '未來日期不能標記生理期狀態。';
+
+  @override
+  String get periodAlreadyOngoingError => '已有一筆進行中的生理期，請先將它結束。';
+
+  @override
+  String get periodNoOngoingError => '目前沒有進行中的生理期，請先選擇「今天來了」。';
+
+  @override
+  String get periodBeforeStartError => '日期不能早於本次生理期開始日。';
+
+  @override
+  String get periodEndBeforeStartError => '結束日期不能早於開始日期。';
+
+  @override
+  String periodRecordSaved(String date) {
+    return '$date的紀錄已儲存';
+  }
+
+  @override
+  String get periodSaveFailed => '儲存失敗，請稍後再試';
+
+  @override
+  String get periodDeleteTitle => '刪除這次生理期紀錄？';
+
+  @override
+  String get periodDeleteContent => '刪除後，週期平均與下次預測也會重新計算。';
+
+  @override
+  String get periodCancel => '取消';
+
+  @override
+  String get periodDelete => '刪除';
+
+  @override
+  String get periodNoOngoing => '目前沒有進行中的生理期';
+
+  @override
+  String periodDayCount(int count) {
+    return '生理期第 $count 天';
+  }
+
+  @override
+  String get periodHelp => '使用說明';
+
+  @override
+  String get periodAverageCycle => '平均週期';
+
+  @override
+  String get periodAverageDuration => '平均經期';
+
+  @override
+  String periodDays(int count) {
+    return '$count 天';
+  }
+
+  @override
+  String get periodNextPrediction => '下次預測';
+
+  @override
+  String get periodCalculatedAfterRecording => '紀錄後推算';
+
+  @override
+  String get periodInsufficientData => '目前資料不足，暫以 28 天週期、5 天經期推估。';
+
+  @override
+  String get periodPredictionDisclaimer => '依現有紀錄推估，日期僅供生活紀錄參考。';
+
+  @override
+  String get periodStartedToday => '🩸 今天來了';
+
+  @override
+  String get periodStillOngoing => '仍在生理期';
+
+  @override
+  String get periodEndedToday => '今天結束';
+
+  @override
+  String get periodDateNotReached => '這天還沒到喔～';
+
+  @override
+  String get periodDateBeforeStart => '這一天早於目前生理期的開始日期。';
+
+  @override
+  String get periodMoodOkay => '還不錯';
+
+  @override
+  String get periodMoodHappy => '開心';
+
+  @override
+  String get periodMoodLow => '低落';
+
+  @override
+  String get periodMoodUnwell => '難受';
+
+  @override
+  String get periodMoodIrritable => '煩躁';
+
+  @override
+  String get periodMoodTired => '疲倦';
+
+  @override
+  String get periodMoodAnxious => '焦慮';
+
+  @override
+  String get periodSymptomAbdominalPain => '腹痛';
+
+  @override
+  String get periodSymptomLowerBackPain => '腰痠';
+
+  @override
+  String get periodSymptomHeadache => '頭痛';
+
+  @override
+  String get periodSymptomBreastTenderness => '胸脹';
+
+  @override
+  String get periodSymptomSwelling => '水腫';
+
+  @override
+  String get periodSymptomSleepy => '想睡';
+
+  @override
+  String get periodSymptomIncreasedAppetite => '食慾增加';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => '腸胃不適';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return '$characterName的貼心日記';
+  }
+
+  @override
+  String get periodLoadFailed => '讀取紀錄失敗，請稍後再試';
+
+  @override
+  String get periodWeekdaySun => '日';
+
+  @override
+  String get periodWeekdayMon => '一';
+
+  @override
+  String get periodWeekdayTue => '二';
+
+  @override
+  String get periodWeekdayWed => '三';
+
+  @override
+  String get periodWeekdayThu => '四';
+
+  @override
+  String get periodWeekdayFri => '五';
+
+  @override
+  String get periodWeekdaySat => '六';
+
+  @override
+  String get periodSaveInstruction => '選擇狀態後，請按最下方「儲存今日紀錄」才會正式保存。';
+
+  @override
+  String get periodTodayMood => '今天的心情（可複選）';
+
+  @override
+  String get periodMoodDescription => '這些是當天日記，不是貼到月曆上的圖示。';
+
+  @override
+  String get periodOtherMood => '其他心情';
+
+  @override
+  String get periodOtherMoodHint => '例如：委屈、沒安全感……';
+
+  @override
+  String get periodTodaySymptoms => '今天的身體狀態（可複選）';
+
+  @override
+  String get periodOtherSymptom => '其他身體狀態';
+
+  @override
+  String get periodOtherSymptomHint => '例如：怕冷、沒有胃口……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return '想讓 $characterName 知道的事（選填）';
+  }
+
+  @override
+  String get periodNoteHint => '例如：今天想安靜休息，不想被催……';
+
+  @override
+  String get periodSaving => '儲存中…';
+
+  @override
+  String get periodSaveToday => '儲存今日紀錄';
+
+  @override
+  String get periodHistory => '歷史生理期';
+
+  @override
+  String get periodOngoing => '進行中';
+
+  @override
+  String periodTotalDays(int count) {
+    return '共 $count 天';
+  }
+
+  @override
+  String get periodDeleteRecord => '刪除紀錄';
+
+  @override
+  String get privateProfilePleaseSignIn => '請先登入';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return '記憶碎片讀取失敗：$error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return '撰寫新的記憶碎片（$count / $limit）';
+  }
+
+  @override
+  String get privateProfileNoLore => '還沒有記憶碎片';
+
+  @override
+  String get privateProfileNoLoreHint => '可以在這裡整理測試設定、故事線索與角色的重要記憶。';
+
+  @override
+  String get privateProfileUntitledLore => '未命名碎片';
+
+  @override
+  String get privateProfileEdit => '編輯';
+
+  @override
+  String get privateProfileDelete => '刪除';
+
+  @override
+  String get privateProfileAddLore => '新增記憶碎片';
+
+  @override
+  String get privateProfileLoreTitle => '標題';
+
+  @override
+  String get privateProfileLoreTeaser => '簡短提示';
+
+  @override
+  String get privateProfileLoreContent => '完整內容';
+
+  @override
+  String get privateProfileLockLore => '鎖定碎片';
+
+  @override
+  String get privateProfileLockLoreHint => '私人角色目前只有創作者可見，此欄位仍會保留，方便角色公開後沿用。';
+
+  @override
+  String get privateProfileCancel => '取消';
+
+  @override
+  String get privateProfileTitleContentRequired => '請填寫標題與內容';
+
+  @override
+  String get privateProfileLoreAdded => '記憶碎片已新增';
+
+  @override
+  String get privateProfileAddFailed => '新增失敗，請稍後再試';
+
+  @override
+  String get privateProfilePublish => '發布';
+
+  @override
+  String get privateProfileDeleteLoreTitle => '刪除記憶碎片';
+
+  @override
+  String get privateProfileDeleteLoreConfirm => '確定要永久刪除這則記憶碎片嗎？';
+
+  @override
+  String get privateProfileLoreDeleted => '記憶碎片已刪除';
+
+  @override
+  String get privateProfileDeleteFailed => '刪除失敗，請稍後再試';
+
+  @override
+  String get privateProfileEditLore => '編輯記憶碎片';
+
+  @override
+  String get privateProfileSave => '儲存';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 小提醒';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      '生日將影響角色生日祝福、生日禮物及相關活動。\n\n建議確認生日後再完成設定，\n以免影響後續生日獎勵。';
+
+  @override
+  String get editProfileGotIt => '知道了';
+
+  @override
+  String get editProfileBirthdayConfirmTitle => '🎂 確認生日';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      '請確認生日是否正確。\n\n生日將用於生日祝福、生日禮物及相關活動。\n\n為避免生日獎勵遭到重複領取，生日完成設定後將無法再次修改。\n\n是否確定使用這個生日？';
+
+  @override
+  String get editProfileReturnToEdit => '返回修改';
+
+  @override
+  String get editProfileConfirmSetting => '確認設定';
+
+  @override
+  String get editProfileDefaultNickname => '初識的旅人';
+
+  @override
+  String get editProfileNoChanges => '沒有需要儲存的變更';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return '建立資料失敗：$error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return '頭像 $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed => '選擇圖片失敗，請重新選擇一張圖片';
+
+  @override
+  String get editProfileCancel => '取消';
+
+  @override
+  String get editProfileConfirm => '確定';
+
+  @override
+  String get editProfileImageProcessingFailed => '圖片處理失敗，請重新選擇一張圖片';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return '載入資料失敗：$error';
+  }
+
+  @override
+  String get editProfileBioLabel => '自我介紹';
+
+  @override
+  String get editProfileBioHelper => '簡單介紹自己或你的創作風格';
+
+  @override
+  String get editProfileBioHint => '例如：喜歡創作奇幻、病嬌與沉浸式戀愛角色。';
+
+  @override
+  String get editProfileUserNotFound => '找不到使用者';
+
+  @override
+  String get editProfileGenerateIdFailed => '產生玩家 ID 失敗，請再試一次';
+
+  @override
+  String get editProfileSignedInUserNotFound => '找不到目前登入的使用者';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return '讀取頭像失敗，狀態碼：$statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return '找不到選取的頭像檔案：$path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty => '頭像圖片資料是空的';
+
+  @override
+  String get chatPageSendFailed => '送出失敗，請稍後再試 😢';
+
+  @override
+  String get chatPageRegenerateFailed => '重新生成失敗，原本的訊息已保留，請再試一次。';
+
+  @override
+  String get chatPageRegenerating => '💭 正在重新思考...';
+
+  @override
+  String get chatPageThinkingTooLong => '他似乎在沉思，請稍後再試……';
+
+  @override
+  String get chatPageAlreadyReplying => '他正在回覆中，請稍候一下，不要重複送出';
+
+  @override
+  String get chatPageMediaUploadFailed => '媒體上傳失敗，請再試一次';
+
+  @override
+  String get chatPageReportReceived => '感謝你的回報，我們會盡快確認';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ 已成功刪除 $count 則訊息';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return '無法選擇照片：$error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound => '找不到錄音檔案';
+
+  @override
+  String get chatPageRecordingEmpty => '錄音檔案是空的';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return '播放音訊失敗：$error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired => '需要麥克風權限才能錄音';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return '無法開始錄音：$error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed => '錄音檔案建立失敗，請重新錄製';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return '錄音失敗：$error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry => '找不到錄音檔案，請重新錄製';
+
+  @override
+  String get chatPageRecordingEmptyRetry => '錄音檔案是空的，請重新錄製';
+
+  @override
+  String get chatPageNoRecordingToSend => '沒有可傳送的錄音';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count 點';
+  }
+
+  @override
+  String get chatPageVoiceUploading => '語音上傳中……';
+
+  @override
+  String get chatPageChangeWatermarkColor => '更換浮水印顏色';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes 分 $seconds 秒';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds 秒';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter => '請選擇配角。';
+
+  @override
+  String get characterEditSelectGender => '請選擇角色性別。';
+
+  @override
+  String get characterEditCharacterSettings => '角色設定';
+
+  @override
+  String get characterEditWorldview => '世界觀';
+
+  @override
+  String get characterEditSettingsMinLength => '角色設定至少需要填寫 10 字。';
+
+  @override
+  String get characterEditWorldviewMinLength => '世界觀至少需要填寫 20 字。';
+
+  @override
+  String get characterEditSupportingCharacters => '配角';
+
+  @override
+  String get characterEditCharacterImage => '角色圖片';
+
+  @override
+  String get characterEditWorldviewHint => '描述世界背景、歷史、時代、地區、勢力、制度、科技、魔法與世界規則。';
+
+  @override
+  String get characterEditSettingsHint =>
+      '描述角色個性、價值觀、思考方式、情緒反應、行為習慣、說話方式與核心信念。';
+
+  @override
+  String get characterEditUnknownCharacter => '未知角色';
+
+  @override
+  String get characterEditEditSupportingCharacter => '編輯配角';
+
+  @override
+  String get characterEditAddSupportingCharacter => '新增配角';
+
+  @override
+  String get characterEditSupportingCharacterName => '配角名稱';
+
+  @override
+  String get characterEditGender => '性別';
+
+  @override
+  String get characterEditMale => '男性';
+
+  @override
+  String get characterEditFemale => '女性';
+
+  @override
+  String get characterEditOther => '其他';
+
+  @override
+  String get characterEditAge => '年齡';
+
+  @override
+  String get characterEditIdentityOccupation => '身分／職業';
+
+  @override
+  String get characterEditRelationshipWithMain => '與主角色的關係';
+
+  @override
+  String get characterEditRelationshipHint => '描述與主角色的過往、立場、情感、秘密與目前關係。';
+
+  @override
+  String get characterEditCharacterProfile => '人物設定';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      '描述個性、外貌、習慣、價值觀、能力、喜好、地雷與重要經歷。';
+
+  @override
+  String get characterEditSpeakingStyle => '說話語氣';
+
+  @override
+  String get characterEditSpeakingStyleHint => '例如：語速快、愛吐槽、說話直接。';
+
+  @override
+  String get characterEditSupportingNameRequired => '請填寫配角名稱。';
+
+  @override
+  String get characterEditSupportingGenderRequired => '請選擇配角性別。';
+
+  @override
+  String get characterEditProfileRequired => '請填寫人物設定。';
+
+  @override
+  String get characterEditRelationshipTooLong => '與主角色的關係已超過 1,500 字。';
+
+  @override
+  String get characterEditProfileTooLong => '人物設定已超過 1,500 字。';
+
+  @override
+  String get characterEditSave => '儲存';
+
+  @override
+  String get characterEditAdd => '新增';
+
+  @override
+  String get creatorProfileNoBio => '尚未填寫自我介紹';
+
+  @override
+  String get creatorProfileNoBioHint => '這位創作者還沒有留下介紹。';
+
+  @override
+  String get creatorProfileNoCreatorMoments => '創作者還沒有發布動態';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint => '以創作者本人身分發布的公開內容會顯示在這裡。';
+
+  @override
+  String get creatorProfileNoCharacterMoments => '旗下角色還沒有發布動態';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint => '旗下公開角色發布的內容會顯示在這裡。';
+
+  @override
+  String get creatorProfileNoPublicMoments => '還沒有公開動態';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint => '創作者本人與旗下角色發布的公開動態會顯示在這裡。';
+
+  @override
+  String get creatorProfilePublicWorks => '公開作品';
+
+  @override
+  String get creatorProfileLikesReceived => '獲得喜歡';
+
+  @override
+  String get creatorProfileFollow => '追蹤';
+
+  @override
+  String get creatorProfileFollowing => '已追蹤';
+
+  @override
+  String get creatorProfileUnfollowed => '已取消追蹤';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return '已追蹤 $creatorName';
+  }
+
+  @override
+  String get creatorProfileOperationFailed => '操作失敗，請稍後再試';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return '讀取作品失敗：$error';
+  }
+
+  @override
+  String get characterProfileShareInvitation => '🦋 一封來自《戀戀拾光》的相遇邀請';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ 創作者：$creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return '在《戀戀拾光》搜尋「$characterName」，開始這段只屬於你們的故事。';
+  }
+
+  @override
+  String get characterProfileInvitationLabel => '角色邀請卡';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return '創作者  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint => '搜尋角色，開始相遇  🦋';
+
+  @override
+  String get characterProfileScanToDownload => '掃描下載';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return '分享角色「$characterName」';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return '來《戀戀拾光》認識 $characterName';
+  }
+
+  @override
+  String get characterProfileShareFailed => '邀請卡產生失敗，請稍後再試';
+
+  @override
+  String get characterProfilePrivateShareUnavailable => '私人角色目前無法分享';
+
+  @override
+  String get characterProfileShareCard => '分享邀請卡';
+
+  @override
+  String get characterProfileShareCharacter => '分享角色';
+
+  @override
+  String get characterProfileReportCharacter => '檢舉角色';
+
+  @override
+  String get characterProfileTranslate => '翻譯';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7793,7 +8641,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get tab_daily_chit_chat => '闲话家常';
 
   @override
-  String get task_desc_chat_3_times => '与角色进行 3 次日常聊天';
+  String get task_desc_chat_3_times => '与角色进行 3 次日常模式聊天';
 
   @override
   String get tab_story_progression => '剧情推进';
@@ -9510,6 +10358,854 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get mailCaseNumberCopied => '已复制案件编号';
+
+  @override
+  String get profilePageAboutMe => '📝 关于我';
+
+  @override
+  String get profilePageTabBio => '自我介绍';
+
+  @override
+  String get profilePageTabCharacters => '角色';
+
+  @override
+  String get profilePageTabMoments => '动态';
+
+  @override
+  String get profilePageEditProfile => '编辑个人资料';
+
+  @override
+  String get profilePageFriends => '朋友';
+
+  @override
+  String get profilePageWorks => '作品';
+
+  @override
+  String get profilePageFollowing => '关注';
+
+  @override
+  String get profilePageFollowers => '关注者';
+
+  @override
+  String get profilePageHeartbeatDiary => '心动日记';
+
+  @override
+  String get profilePageEditCharacter => '编辑角色';
+
+  @override
+  String get profilePagePreviewCharacter => '预览角色资料';
+
+  @override
+  String get profilePageNoBio => '还没有自我介绍';
+
+  @override
+  String get profilePageNoBioHint => '点一下写下关于你的介绍。';
+
+  @override
+  String get profilePageCreateCharacter => '创建新角色';
+
+  @override
+  String get profilePageNoCharacters => '还没有创建角色';
+
+  @override
+  String get profilePageNoCharactersHint => '开始创建你的第一位角色吧。';
+
+  @override
+  String get profilePageCharacterActions => '角色操作';
+
+  @override
+  String get profilePagePublic => '公开';
+
+  @override
+  String get profilePagePrivate => '私人';
+
+  @override
+  String get profilePageCreator => '创作者';
+
+  @override
+  String get profilePageSelectPostingIdentity => '选择发布身份';
+
+  @override
+  String get profilePagePostAsCreator => '以创作者本人发布';
+
+  @override
+  String get profilePagePublicCharacter => '公开角色';
+
+  @override
+  String get profilePagePrivateCharacter => '私人角色';
+
+  @override
+  String get profilePagePleaseSignIn => '请先登录';
+
+  @override
+  String get profilePagePublishMoment => '发布动态';
+
+  @override
+  String get profilePageFilterAll => '全部';
+
+  @override
+  String get profilePageFilterCreator => '本人';
+
+  @override
+  String get profilePageFilterCharacter => '角色';
+
+  @override
+  String get profilePageMomentsLoadFailed => '动态读取失败';
+
+  @override
+  String get profilePageTryAgainLater => '请稍后再试一次。';
+
+  @override
+  String get profilePageNoCreatorMoments => '本人还没有发布动态';
+
+  @override
+  String get profilePageNoCreatorMomentsHint => '以创作者身份发布的内容会显示在这里。';
+
+  @override
+  String get profilePageNoCharacterMoments => '旗下角色还没有发布动态';
+
+  @override
+  String get profilePageNoCharacterMomentsHint => '以角色身份发布的内容会显示在这里。';
+
+  @override
+  String get profilePageNoMoments => '还没有动态';
+
+  @override
+  String get profilePageNoMomentsHint => '你与旗下角色发布的动态会显示在这里。';
+
+  @override
+  String get profilePageDeleteMomentTitle => '删除动态';
+
+  @override
+  String get profilePageDeleteMomentConfirm => '确定要永久删除这篇动态吗？';
+
+  @override
+  String get profilePageCancel => '取消';
+
+  @override
+  String get profilePageDelete => '删除';
+
+  @override
+  String get profilePageMomentDeleted => '动态已删除';
+
+  @override
+  String get profilePageDeleteFailed => '删除失败，请稍后再试';
+
+  @override
+  String get profilePageReferralCompleted => '星之邀约已完成';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return '邀请人：$inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived => '双方已获得 50 花花';
+
+  @override
+  String get profilePageClaimed => '已领取';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return '已绑定邀请人：$inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint => '完成 15 句聊天后，双方各获得 50 花花';
+
+  @override
+  String get profilePageAlreadyCheckedIn => '今天已经签到过了';
+
+  @override
+  String get profilePageReferralBindFailed => '绑定失败，请稍后再试';
+
+  @override
+  String get profilePageCharacterNotFound => '找不到这个角色的数据';
+
+  @override
+  String get periodGuideTitle => '生理期日记怎么用？';
+
+  @override
+  String get periodGuideContent =>
+      '① 先点击日历上的日期。\n② 选择“今天来了”、“仍在生理期”或“今天结束”。\n③ 勾选当天心情与身体状态，也可以自行补充。\n④ 点击保存，角色就能在聊天时理解你今天的状态。\n\n预测日期会根据你的历史记录调整，仅供生活记录参考。';
+
+  @override
+  String get periodGotIt => '我知道了';
+
+  @override
+  String get periodSelectAtLeastOne => '请至少选择一项记录';
+
+  @override
+  String get periodFutureDateError => '未来日期不能标记生理期状态。';
+
+  @override
+  String get periodAlreadyOngoingError => '已有一条进行中的生理期记录，请先将其结束。';
+
+  @override
+  String get periodNoOngoingError => '目前没有进行中的生理期，请先选择“今天来了”。';
+
+  @override
+  String get periodBeforeStartError => '日期不能早于本次生理期开始日。';
+
+  @override
+  String get periodEndBeforeStartError => '结束日期不能早于开始日期。';
+
+  @override
+  String periodRecordSaved(String date) {
+    return '$date的记录已保存';
+  }
+
+  @override
+  String get periodSaveFailed => '保存失败，请稍后再试';
+
+  @override
+  String get periodDeleteTitle => '删除这次生理期记录？';
+
+  @override
+  String get periodDeleteContent => '删除后，周期平均值与下次预测也会重新计算。';
+
+  @override
+  String get periodCancel => '取消';
+
+  @override
+  String get periodDelete => '删除';
+
+  @override
+  String get periodNoOngoing => '目前没有进行中的生理期';
+
+  @override
+  String periodDayCount(int count) {
+    return '生理期第 $count 天';
+  }
+
+  @override
+  String get periodHelp => '使用说明';
+
+  @override
+  String get periodAverageCycle => '平均周期';
+
+  @override
+  String get periodAverageDuration => '平均经期';
+
+  @override
+  String periodDays(int count) {
+    return '$count 天';
+  }
+
+  @override
+  String get periodNextPrediction => '下次预测';
+
+  @override
+  String get periodCalculatedAfterRecording => '记录后推算';
+
+  @override
+  String get periodInsufficientData => '目前数据不足，暂时以 28 天周期、5 天经期进行估算。';
+
+  @override
+  String get periodPredictionDisclaimer => '根据现有记录估算，日期仅供生活记录参考。';
+
+  @override
+  String get periodStartedToday => '🩸 今天来了';
+
+  @override
+  String get periodStillOngoing => '仍在生理期';
+
+  @override
+  String get periodEndedToday => '今天结束';
+
+  @override
+  String get periodDateNotReached => '这一天还没到哦～';
+
+  @override
+  String get periodDateBeforeStart => '这一天早于目前生理期的开始日期。';
+
+  @override
+  String get periodMoodOkay => '还不错';
+
+  @override
+  String get periodMoodHappy => '开心';
+
+  @override
+  String get periodMoodLow => '低落';
+
+  @override
+  String get periodMoodUnwell => '难受';
+
+  @override
+  String get periodMoodIrritable => '烦躁';
+
+  @override
+  String get periodMoodTired => '疲倦';
+
+  @override
+  String get periodMoodAnxious => '焦虑';
+
+  @override
+  String get periodSymptomAbdominalPain => '腹痛';
+
+  @override
+  String get periodSymptomLowerBackPain => '腰酸';
+
+  @override
+  String get periodSymptomHeadache => '头痛';
+
+  @override
+  String get periodSymptomBreastTenderness => '胸胀';
+
+  @override
+  String get periodSymptomSwelling => '水肿';
+
+  @override
+  String get periodSymptomSleepy => '想睡';
+
+  @override
+  String get periodSymptomIncreasedAppetite => '食欲增加';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => '肠胃不适';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return '$characterName的贴心日记';
+  }
+
+  @override
+  String get periodLoadFailed => '读取记录失败，请稍后再试';
+
+  @override
+  String get periodWeekdaySun => '日';
+
+  @override
+  String get periodWeekdayMon => '一';
+
+  @override
+  String get periodWeekdayTue => '二';
+
+  @override
+  String get periodWeekdayWed => '三';
+
+  @override
+  String get periodWeekdayThu => '四';
+
+  @override
+  String get periodWeekdayFri => '五';
+
+  @override
+  String get periodWeekdaySat => '六';
+
+  @override
+  String get periodSaveInstruction => '选择状态后，请点击最下方的“保存今日记录”才会正式保存。';
+
+  @override
+  String get periodTodayMood => '今天的心情（可多选）';
+
+  @override
+  String get periodMoodDescription => '这些是当天日记，不是显示在日历上的图标。';
+
+  @override
+  String get periodOtherMood => '其他心情';
+
+  @override
+  String get periodOtherMoodHint => '例如：委屈、没有安全感……';
+
+  @override
+  String get periodTodaySymptoms => '今天的身体状态（可多选）';
+
+  @override
+  String get periodOtherSymptom => '其他身体状态';
+
+  @override
+  String get periodOtherSymptomHint => '例如：怕冷、没有胃口……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return '想让 $characterName 知道的事（选填）';
+  }
+
+  @override
+  String get periodNoteHint => '例如：今天想安静休息，不想被催……';
+
+  @override
+  String get periodSaving => '保存中…';
+
+  @override
+  String get periodSaveToday => '保存今日记录';
+
+  @override
+  String get periodHistory => '历史生理期';
+
+  @override
+  String get periodOngoing => '进行中';
+
+  @override
+  String periodTotalDays(int count) {
+    return '共 $count 天';
+  }
+
+  @override
+  String get periodDeleteRecord => '删除记录';
+
+  @override
+  String get privateProfilePleaseSignIn => '请先登录';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return '记忆碎片读取失败：$error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return '撰写新的记忆碎片（$count / $limit）';
+  }
+
+  @override
+  String get privateProfileNoLore => '还没有记忆碎片';
+
+  @override
+  String get privateProfileNoLoreHint => '可以在这里整理测试设置、故事线索与角色的重要记忆。';
+
+  @override
+  String get privateProfileUntitledLore => '未命名碎片';
+
+  @override
+  String get privateProfileEdit => '编辑';
+
+  @override
+  String get privateProfileDelete => '删除';
+
+  @override
+  String get privateProfileAddLore => '新增记忆碎片';
+
+  @override
+  String get privateProfileLoreTitle => '标题';
+
+  @override
+  String get privateProfileLoreTeaser => '简短提示';
+
+  @override
+  String get privateProfileLoreContent => '完整内容';
+
+  @override
+  String get privateProfileLockLore => '锁定碎片';
+
+  @override
+  String get privateProfileLockLoreHint => '私人角色目前只有创作者可见，此字段仍会保留，方便角色公开后继续使用。';
+
+  @override
+  String get privateProfileCancel => '取消';
+
+  @override
+  String get privateProfileTitleContentRequired => '请填写标题与内容';
+
+  @override
+  String get privateProfileLoreAdded => '记忆碎片已新增';
+
+  @override
+  String get privateProfileAddFailed => '新增失败，请稍后再试';
+
+  @override
+  String get privateProfilePublish => '发布';
+
+  @override
+  String get privateProfileDeleteLoreTitle => '删除记忆碎片';
+
+  @override
+  String get privateProfileDeleteLoreConfirm => '确定要永久删除这条记忆碎片吗？';
+
+  @override
+  String get privateProfileLoreDeleted => '记忆碎片已删除';
+
+  @override
+  String get privateProfileDeleteFailed => '删除失败，请稍后再试';
+
+  @override
+  String get privateProfileEditLore => '编辑记忆碎片';
+
+  @override
+  String get privateProfileSave => '保存';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 小提醒';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      '生日将影响角色的生日祝福、生日礼物及相关活动。\n\n建议确认生日后再完成设置，\n以免影响后续生日奖励。';
+
+  @override
+  String get editProfileGotIt => '知道了';
+
+  @override
+  String get editProfileBirthdayConfirmTitle => '🎂 确认生日';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      '请确认生日是否正确。\n\n生日将用于生日祝福、生日礼物及相关活动。\n\n为避免生日奖励被重复领取，生日完成设置后将无法再次修改。\n\n是否确定使用这个生日？';
+
+  @override
+  String get editProfileReturnToEdit => '返回修改';
+
+  @override
+  String get editProfileConfirmSetting => '确认设置';
+
+  @override
+  String get editProfileDefaultNickname => '初识的旅人';
+
+  @override
+  String get editProfileNoChanges => '没有需要保存的更改';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return '创建数据失败：$error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return '头像 $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed => '选择图片失败，请重新选择一张图片';
+
+  @override
+  String get editProfileCancel => '取消';
+
+  @override
+  String get editProfileConfirm => '确定';
+
+  @override
+  String get editProfileImageProcessingFailed => '图片处理失败，请重新选择一张图片';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return '加载数据失败：$error';
+  }
+
+  @override
+  String get editProfileBioLabel => '自我介绍';
+
+  @override
+  String get editProfileBioHelper => '简单介绍自己或你的创作风格';
+
+  @override
+  String get editProfileBioHint => '例如：喜欢创作奇幻、病娇与沉浸式恋爱角色。';
+
+  @override
+  String get editProfileUserNotFound => '找不到用户';
+
+  @override
+  String get editProfileGenerateIdFailed => '生成玩家 ID 失败，请再试一次';
+
+  @override
+  String get editProfileSignedInUserNotFound => '找不到当前登录的用户';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return '读取头像失败，状态码：$statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return '找不到所选的头像文件：$path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty => '头像图片数据为空';
+
+  @override
+  String get chatPageSendFailed => '发送失败，请稍后再试 😢';
+
+  @override
+  String get chatPageRegenerateFailed => '重新生成失败，原来的消息已保留，请再试一次。';
+
+  @override
+  String get chatPageRegenerating => '💭 正在重新思考...';
+
+  @override
+  String get chatPageThinkingTooLong => '他似乎在沉思，请稍后再试……';
+
+  @override
+  String get chatPageAlreadyReplying => '他正在回复中，请稍等一下，不要重复发送';
+
+  @override
+  String get chatPageMediaUploadFailed => '媒体上传失败，请再试一次';
+
+  @override
+  String get chatPageReportReceived => '感谢你的反馈，我们会尽快确认';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ 已成功删除 $count 条消息';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return '无法选择照片：$error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound => '找不到录音文件';
+
+  @override
+  String get chatPageRecordingEmpty => '录音文件是空的';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return '播放音频失败：$error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired => '需要麦克风权限才能录音';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return '无法开始录音：$error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed => '录音文件创建失败，请重新录制';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return '录音失败：$error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry => '找不到录音文件，请重新录制';
+
+  @override
+  String get chatPageRecordingEmptyRetry => '录音文件是空的，请重新录制';
+
+  @override
+  String get chatPageNoRecordingToSend => '没有可发送的录音';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count 点';
+  }
+
+  @override
+  String get chatPageVoiceUploading => '语音上传中……';
+
+  @override
+  String get chatPageChangeWatermarkColor => '更换水印颜色';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes 分 $seconds 秒';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds 秒';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter => '请选择配角。';
+
+  @override
+  String get characterEditSelectGender => '请选择角色性别。';
+
+  @override
+  String get characterEditCharacterSettings => '角色设置';
+
+  @override
+  String get characterEditWorldview => '世界观';
+
+  @override
+  String get characterEditSettingsMinLength => '角色设置至少需要填写 10 个字。';
+
+  @override
+  String get characterEditWorldviewMinLength => '世界观至少需要填写 20 个字。';
+
+  @override
+  String get characterEditSupportingCharacters => '配角';
+
+  @override
+  String get characterEditCharacterImage => '角色图片';
+
+  @override
+  String get characterEditWorldviewHint => '描述世界背景、历史、时代、地区、势力、制度、科技、魔法与世界规则。';
+
+  @override
+  String get characterEditSettingsHint =>
+      '描述角色个性、价值观、思考方式、情绪反应、行为习惯、说话方式与核心信念。';
+
+  @override
+  String get characterEditUnknownCharacter => '未知角色';
+
+  @override
+  String get characterEditEditSupportingCharacter => '编辑配角';
+
+  @override
+  String get characterEditAddSupportingCharacter => '新增配角';
+
+  @override
+  String get characterEditSupportingCharacterName => '配角名称';
+
+  @override
+  String get characterEditGender => '性别';
+
+  @override
+  String get characterEditMale => '男性';
+
+  @override
+  String get characterEditFemale => '女性';
+
+  @override
+  String get characterEditOther => '其他';
+
+  @override
+  String get characterEditAge => '年龄';
+
+  @override
+  String get characterEditIdentityOccupation => '身份／职业';
+
+  @override
+  String get characterEditRelationshipWithMain => '与主角色的关系';
+
+  @override
+  String get characterEditRelationshipHint => '描述与主角色的过往、立场、情感、秘密与目前关系。';
+
+  @override
+  String get characterEditCharacterProfile => '人物设置';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      '描述个性、外貌、习惯、价值观、能力、喜好、雷区与重要经历。';
+
+  @override
+  String get characterEditSpeakingStyle => '说话语气';
+
+  @override
+  String get characterEditSpeakingStyleHint => '例如：语速快、爱吐槽、说话直接。';
+
+  @override
+  String get characterEditSupportingNameRequired => '请填写配角名称。';
+
+  @override
+  String get characterEditSupportingGenderRequired => '请选择配角性别。';
+
+  @override
+  String get characterEditProfileRequired => '请填写人物设置。';
+
+  @override
+  String get characterEditRelationshipTooLong => '与主角色的关系已超过 1,500 个字。';
+
+  @override
+  String get characterEditProfileTooLong => '人物设置已超过 1,500 个字。';
+
+  @override
+  String get characterEditSave => '保存';
+
+  @override
+  String get characterEditAdd => '新增';
+
+  @override
+  String get creatorProfileNoBio => '尚未填写自我介绍';
+
+  @override
+  String get creatorProfileNoBioHint => '这位创作者还没有留下介绍。';
+
+  @override
+  String get creatorProfileNoCreatorMoments => '创作者还没有发布动态';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint => '以创作者本人身份发布的公开内容会显示在这里。';
+
+  @override
+  String get creatorProfileNoCharacterMoments => '旗下角色还没有发布动态';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint => '旗下公开角色发布的内容会显示在这里。';
+
+  @override
+  String get creatorProfileNoPublicMoments => '还没有公开动态';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint => '创作者本人和旗下角色发布的公开动态会显示在这里。';
+
+  @override
+  String get creatorProfilePublicWorks => '公开作品';
+
+  @override
+  String get creatorProfileLikesReceived => '获得喜欢';
+
+  @override
+  String get creatorProfileFollow => '关注';
+
+  @override
+  String get creatorProfileFollowing => '已关注';
+
+  @override
+  String get creatorProfileUnfollowed => '已取消关注';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return '已关注 $creatorName';
+  }
+
+  @override
+  String get creatorProfileOperationFailed => '操作失败，请稍后再试';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return '读取作品失败：$error';
+  }
+
+  @override
+  String get characterProfileShareInvitation => '🦋 一封来自《恋恋拾光》的相遇邀请';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ 创作者：$creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return '在《恋恋拾光》搜索“$characterName”，开始这段只属于你们的故事。';
+  }
+
+  @override
+  String get characterProfileInvitationLabel => '角色邀请卡';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return '创作者  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint => '搜索角色，开始相遇  🦋';
+
+  @override
+  String get characterProfileScanToDownload => '扫描下载';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return '分享角色“$characterName”';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return '来《恋恋拾光》认识 $characterName';
+  }
+
+  @override
+  String get characterProfileShareFailed => '邀请卡生成失败，请稍后再试';
+
+  @override
+  String get characterProfilePrivateShareUnavailable => '私人角色目前无法分享';
+
+  @override
+  String get characterProfileShareCard => '分享邀请卡';
+
+  @override
+  String get characterProfileShareCharacter => '分享角色';
+
+  @override
+  String get characterProfileReportCharacter => '举报角色';
+
+  @override
+  String get characterProfileTranslate => '翻译';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -12547,7 +14243,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get tab_daily_chit_chat => '閒話家常';
 
   @override
-  String get task_desc_chat_3_times => '與角色進行 3 次日常聊天';
+  String get task_desc_chat_3_times => '與角色進行 3 次日常模式聊天';
 
   @override
   String get tab_story_progression => '劇情推進';
@@ -14264,4 +15960,852 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get mailCaseNumberCopied => '已複製案件編號';
+
+  @override
+  String get profilePageAboutMe => '📝 關於我';
+
+  @override
+  String get profilePageTabBio => '自我介紹';
+
+  @override
+  String get profilePageTabCharacters => '角色';
+
+  @override
+  String get profilePageTabMoments => '動態';
+
+  @override
+  String get profilePageEditProfile => '編輯個人檔案';
+
+  @override
+  String get profilePageFriends => '朋友';
+
+  @override
+  String get profilePageWorks => '作品';
+
+  @override
+  String get profilePageFollowing => '追蹤';
+
+  @override
+  String get profilePageFollowers => '追蹤者';
+
+  @override
+  String get profilePageHeartbeatDiary => '心動日記';
+
+  @override
+  String get profilePageEditCharacter => '編輯角色';
+
+  @override
+  String get profilePagePreviewCharacter => '預覽角色檔案';
+
+  @override
+  String get profilePageNoBio => '還沒有自我介紹';
+
+  @override
+  String get profilePageNoBioHint => '點一下寫下關於你的介紹。';
+
+  @override
+  String get profilePageCreateCharacter => '建立新角色';
+
+  @override
+  String get profilePageNoCharacters => '還沒有創建角色';
+
+  @override
+  String get profilePageNoCharactersHint => '開始創建你的第一位角色吧。';
+
+  @override
+  String get profilePageCharacterActions => '角色操作';
+
+  @override
+  String get profilePagePublic => '公開';
+
+  @override
+  String get profilePagePrivate => '私人';
+
+  @override
+  String get profilePageCreator => '創作者';
+
+  @override
+  String get profilePageSelectPostingIdentity => '選擇發布身分';
+
+  @override
+  String get profilePagePostAsCreator => '以創作者本人發布';
+
+  @override
+  String get profilePagePublicCharacter => '公開角色';
+
+  @override
+  String get profilePagePrivateCharacter => '私人角色';
+
+  @override
+  String get profilePagePleaseSignIn => '請先登入';
+
+  @override
+  String get profilePagePublishMoment => '發布動態';
+
+  @override
+  String get profilePageFilterAll => '全部';
+
+  @override
+  String get profilePageFilterCreator => '本人';
+
+  @override
+  String get profilePageFilterCharacter => '角色';
+
+  @override
+  String get profilePageMomentsLoadFailed => '動態讀取失敗';
+
+  @override
+  String get profilePageTryAgainLater => '請稍後再試一次。';
+
+  @override
+  String get profilePageNoCreatorMoments => '本人還沒有發布動態';
+
+  @override
+  String get profilePageNoCreatorMomentsHint => '以創作者身分發布的內容會顯示在這裡。';
+
+  @override
+  String get profilePageNoCharacterMoments => '旗下角色還沒有發布動態';
+
+  @override
+  String get profilePageNoCharacterMomentsHint => '以角色身分發布的內容會顯示在這裡。';
+
+  @override
+  String get profilePageNoMoments => '還沒有動態';
+
+  @override
+  String get profilePageNoMomentsHint => '你與旗下角色發布的動態會顯示在這裡。';
+
+  @override
+  String get profilePageDeleteMomentTitle => '刪除動態';
+
+  @override
+  String get profilePageDeleteMomentConfirm => '確定要永久刪除這篇動態嗎？';
+
+  @override
+  String get profilePageCancel => '取消';
+
+  @override
+  String get profilePageDelete => '刪除';
+
+  @override
+  String get profilePageMomentDeleted => '動態已刪除';
+
+  @override
+  String get profilePageDeleteFailed => '刪除失敗，請稍後再試';
+
+  @override
+  String get profilePageReferralCompleted => '星之邀約已完成';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return '邀請人：$inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived => '雙方已獲得 50 花花';
+
+  @override
+  String get profilePageClaimed => '已領取';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return '已綁定邀請人：$inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint => '完成 15 句聊天後，雙方各獲得 50 花花';
+
+  @override
+  String get profilePageAlreadyCheckedIn => '今天已經簽到過囉';
+
+  @override
+  String get profilePageReferralBindFailed => '綁定失敗，請稍後再試';
+
+  @override
+  String get profilePageCharacterNotFound => '找不到這個角色的資料';
+
+  @override
+  String get periodGuideTitle => '生理期日記怎麼用？';
+
+  @override
+  String get periodGuideContent =>
+      '① 先點選月曆上的日期。\n② 選擇「今天來了」、「仍在生理期」或「今天結束」。\n③ 勾選當天心情與身體狀態，也可以自行補充。\n④ 按下儲存，角色就能在聊天時理解你今天的狀態。\n\n預測日期會依你的歷史紀錄調整，僅供生活紀錄參考。';
+
+  @override
+  String get periodGotIt => '我知道了';
+
+  @override
+  String get periodSelectAtLeastOne => '請至少選擇一項紀錄';
+
+  @override
+  String get periodFutureDateError => '未來日期不能標記生理期狀態。';
+
+  @override
+  String get periodAlreadyOngoingError => '已有一筆進行中的生理期，請先將它結束。';
+
+  @override
+  String get periodNoOngoingError => '目前沒有進行中的生理期，請先選擇「今天來了」。';
+
+  @override
+  String get periodBeforeStartError => '日期不能早於本次生理期開始日。';
+
+  @override
+  String get periodEndBeforeStartError => '結束日期不能早於開始日期。';
+
+  @override
+  String periodRecordSaved(String date) {
+    return '$date的紀錄已儲存';
+  }
+
+  @override
+  String get periodSaveFailed => '儲存失敗，請稍後再試';
+
+  @override
+  String get periodDeleteTitle => '刪除這次生理期紀錄？';
+
+  @override
+  String get periodDeleteContent => '刪除後，週期平均與下次預測也會重新計算。';
+
+  @override
+  String get periodCancel => '取消';
+
+  @override
+  String get periodDelete => '刪除';
+
+  @override
+  String get periodNoOngoing => '目前沒有進行中的生理期';
+
+  @override
+  String periodDayCount(int count) {
+    return '生理期第 $count 天';
+  }
+
+  @override
+  String get periodHelp => '使用說明';
+
+  @override
+  String get periodAverageCycle => '平均週期';
+
+  @override
+  String get periodAverageDuration => '平均經期';
+
+  @override
+  String periodDays(int count) {
+    return '$count 天';
+  }
+
+  @override
+  String get periodNextPrediction => '下次預測';
+
+  @override
+  String get periodCalculatedAfterRecording => '紀錄後推算';
+
+  @override
+  String get periodInsufficientData => '目前資料不足，暫以 28 天週期、5 天經期推估。';
+
+  @override
+  String get periodPredictionDisclaimer => '依現有紀錄推估，日期僅供生活紀錄參考。';
+
+  @override
+  String get periodStartedToday => '🩸 今天來了';
+
+  @override
+  String get periodStillOngoing => '仍在生理期';
+
+  @override
+  String get periodEndedToday => '今天結束';
+
+  @override
+  String get periodDateNotReached => '這天還沒到喔～';
+
+  @override
+  String get periodDateBeforeStart => '這一天早於目前生理期的開始日期。';
+
+  @override
+  String get periodMoodOkay => '還不錯';
+
+  @override
+  String get periodMoodHappy => '開心';
+
+  @override
+  String get periodMoodLow => '低落';
+
+  @override
+  String get periodMoodUnwell => '難受';
+
+  @override
+  String get periodMoodIrritable => '煩躁';
+
+  @override
+  String get periodMoodTired => '疲倦';
+
+  @override
+  String get periodMoodAnxious => '焦慮';
+
+  @override
+  String get periodSymptomAbdominalPain => '腹痛';
+
+  @override
+  String get periodSymptomLowerBackPain => '腰痠';
+
+  @override
+  String get periodSymptomHeadache => '頭痛';
+
+  @override
+  String get periodSymptomBreastTenderness => '胸脹';
+
+  @override
+  String get periodSymptomSwelling => '水腫';
+
+  @override
+  String get periodSymptomSleepy => '想睡';
+
+  @override
+  String get periodSymptomIncreasedAppetite => '食慾增加';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => '腸胃不適';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return '$characterName的貼心日記';
+  }
+
+  @override
+  String get periodLoadFailed => '讀取紀錄失敗，請稍後再試';
+
+  @override
+  String get periodWeekdaySun => '日';
+
+  @override
+  String get periodWeekdayMon => '一';
+
+  @override
+  String get periodWeekdayTue => '二';
+
+  @override
+  String get periodWeekdayWed => '三';
+
+  @override
+  String get periodWeekdayThu => '四';
+
+  @override
+  String get periodWeekdayFri => '五';
+
+  @override
+  String get periodWeekdaySat => '六';
+
+  @override
+  String get periodSaveInstruction => '選擇狀態後，請按最下方「儲存今日紀錄」才會正式保存。';
+
+  @override
+  String get periodTodayMood => '今天的心情（可複選）';
+
+  @override
+  String get periodMoodDescription => '這些是當天日記，不是貼到月曆上的圖示。';
+
+  @override
+  String get periodOtherMood => '其他心情';
+
+  @override
+  String get periodOtherMoodHint => '例如：委屈、沒安全感……';
+
+  @override
+  String get periodTodaySymptoms => '今天的身體狀態（可複選）';
+
+  @override
+  String get periodOtherSymptom => '其他身體狀態';
+
+  @override
+  String get periodOtherSymptomHint => '例如：怕冷、沒有胃口……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return '想讓 $characterName 知道的事（選填）';
+  }
+
+  @override
+  String get periodNoteHint => '例如：今天想安靜休息，不想被催……';
+
+  @override
+  String get periodSaving => '儲存中…';
+
+  @override
+  String get periodSaveToday => '儲存今日紀錄';
+
+  @override
+  String get periodHistory => '歷史生理期';
+
+  @override
+  String get periodOngoing => '進行中';
+
+  @override
+  String periodTotalDays(int count) {
+    return '共 $count 天';
+  }
+
+  @override
+  String get periodDeleteRecord => '刪除紀錄';
+
+  @override
+  String get privateProfilePleaseSignIn => '請先登入';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return '記憶碎片讀取失敗：$error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return '撰寫新的記憶碎片（$count / $limit）';
+  }
+
+  @override
+  String get privateProfileNoLore => '還沒有記憶碎片';
+
+  @override
+  String get privateProfileNoLoreHint => '可以在這裡整理測試設定、故事線索與角色的重要記憶。';
+
+  @override
+  String get privateProfileUntitledLore => '未命名碎片';
+
+  @override
+  String get privateProfileEdit => '編輯';
+
+  @override
+  String get privateProfileDelete => '刪除';
+
+  @override
+  String get privateProfileAddLore => '新增記憶碎片';
+
+  @override
+  String get privateProfileLoreTitle => '標題';
+
+  @override
+  String get privateProfileLoreTeaser => '簡短提示';
+
+  @override
+  String get privateProfileLoreContent => '完整內容';
+
+  @override
+  String get privateProfileLockLore => '鎖定碎片';
+
+  @override
+  String get privateProfileLockLoreHint => '私人角色目前只有創作者可見，此欄位仍會保留，方便角色公開後沿用。';
+
+  @override
+  String get privateProfileCancel => '取消';
+
+  @override
+  String get privateProfileTitleContentRequired => '請填寫標題與內容';
+
+  @override
+  String get privateProfileLoreAdded => '記憶碎片已新增';
+
+  @override
+  String get privateProfileAddFailed => '新增失敗，請稍後再試';
+
+  @override
+  String get privateProfilePublish => '發布';
+
+  @override
+  String get privateProfileDeleteLoreTitle => '刪除記憶碎片';
+
+  @override
+  String get privateProfileDeleteLoreConfirm => '確定要永久刪除這則記憶碎片嗎？';
+
+  @override
+  String get privateProfileLoreDeleted => '記憶碎片已刪除';
+
+  @override
+  String get privateProfileDeleteFailed => '刪除失敗，請稍後再試';
+
+  @override
+  String get privateProfileEditLore => '編輯記憶碎片';
+
+  @override
+  String get privateProfileSave => '儲存';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 小提醒';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      '生日將影響角色生日祝福、生日禮物及相關活動。\n\n建議確認生日後再完成設定，\n以免影響後續生日獎勵。';
+
+  @override
+  String get editProfileGotIt => '知道了';
+
+  @override
+  String get editProfileBirthdayConfirmTitle => '🎂 確認生日';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      '請確認生日是否正確。\n\n生日將用於生日祝福、生日禮物及相關活動。\n\n為避免生日獎勵遭到重複領取，生日完成設定後將無法再次修改。\n\n是否確定使用這個生日？';
+
+  @override
+  String get editProfileReturnToEdit => '返回修改';
+
+  @override
+  String get editProfileConfirmSetting => '確認設定';
+
+  @override
+  String get editProfileDefaultNickname => '初識的旅人';
+
+  @override
+  String get editProfileNoChanges => '沒有需要儲存的變更';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return '建立資料失敗：$error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return '頭像 $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed => '選擇圖片失敗，請重新選擇一張圖片';
+
+  @override
+  String get editProfileCancel => '取消';
+
+  @override
+  String get editProfileConfirm => '確定';
+
+  @override
+  String get editProfileImageProcessingFailed => '圖片處理失敗，請重新選擇一張圖片';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return '載入資料失敗：$error';
+  }
+
+  @override
+  String get editProfileBioLabel => '自我介紹';
+
+  @override
+  String get editProfileBioHelper => '簡單介紹自己或你的創作風格';
+
+  @override
+  String get editProfileBioHint => '例如：喜歡創作奇幻、病嬌與沉浸式戀愛角色。';
+
+  @override
+  String get editProfileUserNotFound => '找不到使用者';
+
+  @override
+  String get editProfileGenerateIdFailed => '產生玩家 ID 失敗，請再試一次';
+
+  @override
+  String get editProfileSignedInUserNotFound => '找不到目前登入的使用者';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return '讀取頭像失敗，狀態碼：$statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return '找不到選取的頭像檔案：$path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty => '頭像圖片資料是空的';
+
+  @override
+  String get chatPageSendFailed => '送出失敗，請稍後再試 😢';
+
+  @override
+  String get chatPageRegenerateFailed => '重新生成失敗，原本的訊息已保留，請再試一次。';
+
+  @override
+  String get chatPageRegenerating => '💭 正在重新思考...';
+
+  @override
+  String get chatPageThinkingTooLong => '他似乎在沉思，請稍後再試……';
+
+  @override
+  String get chatPageAlreadyReplying => '他正在回覆中，請稍候一下，不要重複送出';
+
+  @override
+  String get chatPageMediaUploadFailed => '媒體上傳失敗，請再試一次';
+
+  @override
+  String get chatPageReportReceived => '感謝你的回報，我們會盡快確認';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ 已成功刪除 $count 則訊息';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return '無法選擇照片：$error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound => '找不到錄音檔案';
+
+  @override
+  String get chatPageRecordingEmpty => '錄音檔案是空的';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return '播放音訊失敗：$error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired => '需要麥克風權限才能錄音';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return '無法開始錄音：$error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed => '錄音檔案建立失敗，請重新錄製';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return '錄音失敗：$error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry => '找不到錄音檔案，請重新錄製';
+
+  @override
+  String get chatPageRecordingEmptyRetry => '錄音檔案是空的，請重新錄製';
+
+  @override
+  String get chatPageNoRecordingToSend => '沒有可傳送的錄音';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count 點';
+  }
+
+  @override
+  String get chatPageVoiceUploading => '語音上傳中……';
+
+  @override
+  String get chatPageChangeWatermarkColor => '更換浮水印顏色';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes 分 $seconds 秒';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds 秒';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter => '請選擇配角。';
+
+  @override
+  String get characterEditSelectGender => '請選擇角色性別。';
+
+  @override
+  String get characterEditCharacterSettings => '角色設定';
+
+  @override
+  String get characterEditWorldview => '世界觀';
+
+  @override
+  String get characterEditSettingsMinLength => '角色設定至少需要填寫 10 字。';
+
+  @override
+  String get characterEditWorldviewMinLength => '世界觀至少需要填寫 20 字。';
+
+  @override
+  String get characterEditSupportingCharacters => '配角';
+
+  @override
+  String get characterEditCharacterImage => '角色圖片';
+
+  @override
+  String get characterEditWorldviewHint => '描述世界背景、歷史、時代、地區、勢力、制度、科技、魔法與世界規則。';
+
+  @override
+  String get characterEditSettingsHint =>
+      '描述角色個性、價值觀、思考方式、情緒反應、行為習慣、說話方式與核心信念。';
+
+  @override
+  String get characterEditUnknownCharacter => '未知角色';
+
+  @override
+  String get characterEditEditSupportingCharacter => '編輯配角';
+
+  @override
+  String get characterEditAddSupportingCharacter => '新增配角';
+
+  @override
+  String get characterEditSupportingCharacterName => '配角名稱';
+
+  @override
+  String get characterEditGender => '性別';
+
+  @override
+  String get characterEditMale => '男性';
+
+  @override
+  String get characterEditFemale => '女性';
+
+  @override
+  String get characterEditOther => '其他';
+
+  @override
+  String get characterEditAge => '年齡';
+
+  @override
+  String get characterEditIdentityOccupation => '身分／職業';
+
+  @override
+  String get characterEditRelationshipWithMain => '與主角色的關係';
+
+  @override
+  String get characterEditRelationshipHint => '描述與主角色的過往、立場、情感、秘密與目前關係。';
+
+  @override
+  String get characterEditCharacterProfile => '人物設定';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      '描述個性、外貌、習慣、價值觀、能力、喜好、地雷與重要經歷。';
+
+  @override
+  String get characterEditSpeakingStyle => '說話語氣';
+
+  @override
+  String get characterEditSpeakingStyleHint => '例如：語速快、愛吐槽、說話直接。';
+
+  @override
+  String get characterEditSupportingNameRequired => '請填寫配角名稱。';
+
+  @override
+  String get characterEditSupportingGenderRequired => '請選擇配角性別。';
+
+  @override
+  String get characterEditProfileRequired => '請填寫人物設定。';
+
+  @override
+  String get characterEditRelationshipTooLong => '與主角色的關係已超過 1,500 字。';
+
+  @override
+  String get characterEditProfileTooLong => '人物設定已超過 1,500 字。';
+
+  @override
+  String get characterEditSave => '儲存';
+
+  @override
+  String get characterEditAdd => '新增';
+
+  @override
+  String get creatorProfileNoBio => '尚未填寫自我介紹';
+
+  @override
+  String get creatorProfileNoBioHint => '這位創作者還沒有留下介紹。';
+
+  @override
+  String get creatorProfileNoCreatorMoments => '創作者還沒有發布動態';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint => '以創作者本人身分發布的公開內容會顯示在這裡。';
+
+  @override
+  String get creatorProfileNoCharacterMoments => '旗下角色還沒有發布動態';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint => '旗下公開角色發布的內容會顯示在這裡。';
+
+  @override
+  String get creatorProfileNoPublicMoments => '還沒有公開動態';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint => '創作者本人與旗下角色發布的公開動態會顯示在這裡。';
+
+  @override
+  String get creatorProfilePublicWorks => '公開作品';
+
+  @override
+  String get creatorProfileLikesReceived => '獲得喜歡';
+
+  @override
+  String get creatorProfileFollow => '追蹤';
+
+  @override
+  String get creatorProfileFollowing => '已追蹤';
+
+  @override
+  String get creatorProfileUnfollowed => '已取消追蹤';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return '已追蹤 $creatorName';
+  }
+
+  @override
+  String get creatorProfileOperationFailed => '操作失敗，請稍後再試';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return '讀取作品失敗：$error';
+  }
+
+  @override
+  String get characterProfileShareInvitation => '🦋 一封來自《戀戀拾光》的相遇邀請';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ 創作者：$creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return '在《戀戀拾光》搜尋「$characterName」，開始這段只屬於你們的故事。';
+  }
+
+  @override
+  String get characterProfileInvitationLabel => '角色邀請卡';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return '創作者  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint => '搜尋角色，開始相遇  🦋';
+
+  @override
+  String get characterProfileScanToDownload => '掃描下載';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return '分享角色「$characterName」';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return '來《戀戀拾光》認識 $characterName';
+  }
+
+  @override
+  String get characterProfileShareFailed => '邀請卡產生失敗，請稍後再試';
+
+  @override
+  String get characterProfilePrivateShareUnavailable => '私人角色目前無法分享';
+
+  @override
+  String get characterProfileShareCard => '分享邀請卡';
+
+  @override
+  String get characterProfileShareCharacter => '分享角色';
+
+  @override
+  String get characterProfileReportCharacter => '檢舉角色';
+
+  @override
+  String get characterProfileTranslate => '翻譯';
 }

@@ -9,6 +9,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../services/theme_notifier.dart';
 import '../services/toast_utils.dart';
 import 'character_model.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class PeriodRecord {
   final String id;
@@ -164,36 +165,31 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
   }
 
   Future<void> _showGuide() async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
             Icon(
               Icons.water_drop_outlined,
               color: Colors.redAccent,
               size: 24,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
-                '生理期日記怎麼用？',
-                style: TextStyle(fontSize: 19),
+                l10n.periodGuideTitle,
+                style: const TextStyle(fontSize: 19),
               ),
             ),
           ],
         ),
-        content: const Text(
-          '① 先點選月曆上的日期。\n'
-              '② 選擇「今天來了」、「仍在生理期」或「今天結束」。\n'
-              '③ 勾選當天心情與身體狀態，也可以自行補充。\n'
-              '④ 按下儲存，角色就能在聊天時理解你今天的狀態。\n\n'
-              '預測日期會依你的歷史紀錄調整，僅供生活紀錄參考。',
-        ),
+        content: Text(l10n.periodGuideContent),
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('我知道了'),
+            child: Text(l10n.periodGotIt),
           ),
         ],
       ),
@@ -313,6 +309,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
   Future<void> _saveDayLog() async {
     if (_userId == null || _isSaving) return;
+    final l10n = AppLocalizations.of(context)!;
 
     final hasContent = _selectedAction != _PeriodAction.none ||
         _selectedMoods.isNotEmpty ||
@@ -324,7 +321,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     if (!hasContent) {
       ToastUtils.showCenterToast(
         context,
-        '請至少選擇一項紀錄',
+        l10n.periodSelectAtLeastOne,
         isError: true,
       );
       return;
@@ -339,7 +336,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
       if (_selectedAction != _PeriodAction.none &&
           selectedDate.isAfter(today)) {
-        throw StateError('未來日期不能標記生理期狀態。');
+        throw StateError(l10n.periodFutureDateError);
       }
 
       switch (_selectedAction) {
@@ -347,7 +344,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
           break;
         case _PeriodAction.start:
           if (ongoing != null) {
-            throw StateError('已有一筆進行中的生理期，請先將它結束。');
+            throw StateError(l10n.periodAlreadyOngoingError);
           }
           final newPeriodRef = _rawRecordsCollection.doc();
           batch.set(newPeriodRef, {
@@ -361,10 +358,10 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
           break;
         case _PeriodAction.continuePeriod:
           if (ongoing == null) {
-            throw StateError('目前沒有進行中的生理期，請先選擇「今天來了」。');
+            throw StateError(l10n.periodNoOngoingError);
           }
           if (selectedDate.isBefore(_dateOnly(ongoing.startDate))) {
-            throw StateError('日期不能早於本次生理期開始日。');
+            throw StateError(l10n.periodBeforeStartError);
           }
           batch.update(_rawRecordsCollection.doc(ongoing.id), {
             'endDate': Timestamp.fromDate(selectedDate),
@@ -374,10 +371,10 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
           break;
         case _PeriodAction.end:
           if (ongoing == null) {
-            throw StateError('目前沒有進行中的生理期，請先選擇「今天來了」。');
+            throw StateError(l10n.periodNoOngoingError);
           }
           if (selectedDate.isBefore(_dateOnly(ongoing.startDate))) {
-            throw StateError('結束日期不能早於開始日期。');
+            throw StateError(l10n.periodEndBeforeStartError);
           }
           batch.update(_rawRecordsCollection.doc(ongoing.id), {
             'endDate': Timestamp.fromDate(selectedDate),
@@ -407,7 +404,10 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
       });
       ToastUtils.showCenterToast(
         context,
-        '${DateFormat('M 月 d 日').format(_selectedDay)}的紀錄已儲存',
+        l10n.periodRecordSaved(
+          DateFormat.yMMMd(Localizations.localeOf(context).toString())
+              .format(_selectedDay),
+        ),
         customIcon: Icons.favorite_rounded,
       );
     } on StateError catch (e) {
@@ -422,7 +422,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '儲存失敗，請稍後再試（請查看偵錯訊息）',
+        l10n.periodSaveFailed,
         isError: true,
       );
     } finally {
@@ -431,19 +431,20 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
   }
 
   Future<void> _deleteRecord(String recordId) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('刪除這次生理期紀錄？'),
-        content: const Text('刪除後，週期平均與下次預測也會重新計算。'),
+        title: Text(l10n.periodDeleteTitle),
+        content: Text(l10n.periodDeleteContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('取消'),
+            child: Text(l10n.periodCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('刪除', style: TextStyle(color: Colors.red)),
+            child: Text(l10n.periodDelete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -463,6 +464,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
       orElse: () => null,
     );
     final nextDate = _predictedDays.isEmpty ? null : _predictedDays.first;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -486,8 +488,10 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
               Expanded(
                 child: Text(
                   ongoing == null
-                      ? '目前沒有進行中的生理期'
-                      : '生理期第 ${DateTime.now().difference(_dateOnly(ongoing.startDate)).inDays + 1} 天',
+                      ? l10n.periodNoOngoing
+                      : l10n.periodDayCount(
+                    DateTime.now().difference(_dateOnly(ongoing.startDate)).inDays + 1,
+                  ),
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
@@ -495,7 +499,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                 ),
               ),
               IconButton(
-                tooltip: '使用說明',
+                tooltip: l10n.periodHelp,
                 onPressed: _showGuide,
                 icon: const Icon(Icons.help_outline_rounded),
               ),
@@ -506,19 +510,21 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
             spacing: 10,
             runSpacing: 8,
             children: [
-              _statChip('平均週期', '$_averageCycleDays 天'),
-              _statChip('平均經期', '$_averagePeriodDays 天'),
+              _statChip(l10n.periodAverageCycle, l10n.periodDays(_averageCycleDays)),
+              _statChip(l10n.periodAverageDuration, l10n.periodDays(_averagePeriodDays)),
               _statChip(
-                '下次預測',
-                nextDate == null ? '紀錄後推算' : DateFormat('M/d').format(nextDate),
+                l10n.periodNextPrediction,
+                nextDate == null
+                    ? l10n.periodCalculatedAfterRecording
+                    : DateFormat.yMd(Localizations.localeOf(context).toString()).format(nextDate),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Text(
             records.length < 2
-                ? '目前資料不足，暫以 28 天週期、5 天經期推估。'
-                : '依現有紀錄推估，日期僅供生活紀錄參考。',
+                ? l10n.periodInsufficientData
+                : l10n.periodPredictionDisclaimer,
             style: TextStyle(
               color: theme.colorScheme.onSurfaceVariant,
               fontSize: 12,
@@ -551,23 +557,24 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     final isFutureDate = selectedDate.isAfter(today);
     final isBeforeOngoingStart = ongoing != null &&
         selectedDate.isBefore(_dateOnly(ongoing.startDate));
+    final l10n = AppLocalizations.of(context)!;
 
     // 沒有進行中的週期時，只能開始一筆新紀錄。
     // 週期進行中時隱藏「今天來了」，避免每點一天就重新往後推七天。
     // 未來日期或早於本次開始日的日期，不允許標記仍在生理期或結束。
     final actions = <MapEntry<_PeriodAction, String>>[
       if (ongoing == null && !isFutureDate)
-        const MapEntry(_PeriodAction.start, '🩸 今天來了'),
+        MapEntry(_PeriodAction.start, l10n.periodStartedToday),
       if (ongoing != null && !isFutureDate && !isBeforeOngoingStart) ...[
-        const MapEntry(_PeriodAction.continuePeriod, '仍在生理期'),
-        const MapEntry(_PeriodAction.end, '今天結束'),
+        MapEntry(_PeriodAction.continuePeriod, l10n.periodStillOngoing),
+        MapEntry(_PeriodAction.end, l10n.periodEndedToday),
       ],
     ];
 
     if (actions.isEmpty) {
       final message = isFutureDate
-          ? '這天還沒到喔～'
-          : '這一天早於目前生理期的開始日期。';
+          ? l10n.periodDateNotReached
+          : l10n.periodDateBeforeStart;
       return Text(
         message,
         style: TextStyle(
@@ -606,12 +613,41 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     );
   }
 
+  String _localizedMood(String mood) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (mood) {
+      '還不錯' => l10n.periodMoodOkay,
+      '開心' => l10n.periodMoodHappy,
+      '低落' => l10n.periodMoodLow,
+      '難受' => l10n.periodMoodUnwell,
+      '煩躁' => l10n.periodMoodIrritable,
+      '疲倦' => l10n.periodMoodTired,
+      '焦慮' => l10n.periodMoodAnxious,
+      _ => mood,
+    };
+  }
+
+  String _localizedSymptom(String symptom) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (symptom) {
+      '腹痛' => l10n.periodSymptomAbdominalPain,
+      '腰痠' => l10n.periodSymptomLowerBackPain,
+      '頭痛' => l10n.periodSymptomHeadache,
+      '胸脹' => l10n.periodSymptomBreastTenderness,
+      '水腫' => l10n.periodSymptomSwelling,
+      '想睡' => l10n.periodSymptomSleepy,
+      '食慾增加' => l10n.periodSymptomIncreasedAppetite,
+      '腸胃不適' => l10n.periodSymptomDigestiveDiscomfort,
+      _ => symptom,
+    };
+  }
+
   Widget _buildMoodSelector() => Wrap(
     spacing: 8,
     runSpacing: 8,
     children: _moods.map((entry) {
       return FilterChip(
-        label: Text('${entry.key} ${entry.value}'),
+        label: Text('${entry.key} ${_localizedMood(entry.value)}'),
         selected: _selectedMoods.contains(entry.value),
         onSelected: (selected) {
           setState(() {
@@ -629,7 +665,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     runSpacing: 8,
     children: _symptoms.map((symptom) {
       return FilterChip(
-        label: Text(symptom),
+        label: Text(_localizedSymptom(symptom)),
         selected: _selectedSymptoms.contains(symptom),
         onSelected: (selected) {
           setState(() {
@@ -681,6 +717,8 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final localeName = Localizations.localeOf(context).toString();
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final primaryColor = theme.colorScheme.primary;
 
@@ -689,7 +727,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('${widget.character.name}的貼心日記'),
+          title: Text(l10n.periodDiaryTitle(widget.character.name)),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -699,7 +737,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return const Center(child: Text('讀取紀錄失敗，請稍後再試'));
+              return Center(child: Text(l10n.periodLoadFailed));
             }
 
             final records = snapshot.data?.docs
@@ -721,7 +759,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: TableCalendar(
-                      locale: 'zh_TW',
+                      locale: localeName,
                       firstDay: DateTime.utc(2020, 1, 1),
                       lastDay: DateTime.utc(2035, 12, 31),
                       focusedDay: _focusedDay,
@@ -754,14 +792,14 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                       ),
                       calendarBuilders: CalendarBuilders(
                         dowBuilder: (context, day) {
-                          const labels = <String>[
-                            '日',
-                            '一',
-                            '二',
-                            '三',
-                            '四',
-                            '五',
-                            '六',
+                          final labels = <String>[
+                            l10n.periodWeekdaySun,
+                            l10n.periodWeekdayMon,
+                            l10n.periodWeekdayTue,
+                            l10n.periodWeekdayWed,
+                            l10n.periodWeekdayThu,
+                            l10n.periodWeekdayFri,
+                            l10n.periodWeekdaySat,
                           ];
                           final isWeekend = day.weekday == DateTime.saturday ||
                               day.weekday == DateTime.sunday;
@@ -869,14 +907,14 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                   ),
                   _sectionCard(
                     theme: theme,
-                    title: DateFormat('yyyy 年 M 月 d 日').format(_selectedDay),
-                    subtitle: '選擇狀態後，請按最下方「儲存今日紀錄」才會正式保存。',
+                    title: DateFormat.yMMMMd(localeName).format(_selectedDay),
+                    subtitle: l10n.periodSaveInstruction,
                     child: _buildActionSelector(theme, records),
                   ),
                   _sectionCard(
                     theme: theme,
-                    title: '今天的心情（可複選）',
-                    subtitle: '這些是當天日記，不是貼到月曆上的圖示。',
+                    title: l10n.periodTodayMood,
+                    subtitle: l10n.periodMoodDescription,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -885,11 +923,11 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                         TextField(
                           controller: _customMoodController,
                           maxLength: 30,
-                          decoration: const InputDecoration(
-                            labelText: '其他心情',
-                            hintText: '例如：委屈、沒安全感……',
-                            prefixIcon: Icon(Icons.add_reaction_outlined),
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: l10n.periodOtherMood,
+                            hintText: l10n.periodOtherMoodHint,
+                            prefixIcon: const Icon(Icons.add_reaction_outlined),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                       ],
@@ -897,7 +935,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                   ),
                   _sectionCard(
                     theme: theme,
-                    title: '今天的身體狀態（可複選）',
+                    title: l10n.periodTodaySymptoms,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -906,11 +944,11 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                         TextField(
                           controller: _customSymptomController,
                           maxLength: 30,
-                          decoration: const InputDecoration(
-                            labelText: '其他身體狀態',
-                            hintText: '例如：怕冷、沒有胃口……',
-                            prefixIcon: Icon(Icons.edit_note_rounded),
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: l10n.periodOtherSymptom,
+                            hintText: l10n.periodOtherSymptomHint,
+                            prefixIcon: const Icon(Icons.edit_note_rounded),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                       ],
@@ -918,15 +956,15 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                   ),
                   _sectionCard(
                     theme: theme,
-                    title: '想讓 ${widget.character.name} 知道的事（選填）',
+                    title: l10n.periodNoteForCharacter(widget.character.name),
                     child: TextField(
                       controller: _noteController,
                       minLines: 2,
                       maxLines: 4,
                       maxLength: 120,
-                      decoration: const InputDecoration(
-                        hintText: '例如：今天想安靜休息，不想被催……',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: l10n.periodNoteHint,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                   ),
@@ -943,7 +981,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                           : const Icon(Icons.favorite_outline_rounded),
-                      label: Text(_isSaving ? '儲存中…' : '儲存今日紀錄'),
+                      label: Text(_isSaving ? l10n.periodSaving : l10n.periodSaveToday),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size(double.infinity, 54),
                       ),
@@ -956,7 +994,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '歷史生理期',
+                          l10n.periodHistory,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -979,11 +1017,13 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
                           ),
                           subtitle: Text(
                             record.isOngoing
-                                ? '進行中'
-                                : '共 ${record.endDate.difference(_dateOnly(record.startDate)).inDays + 1} 天',
+                                ? l10n.periodOngoing
+                                : l10n.periodTotalDays(
+                              record.endDate.difference(_dateOnly(record.startDate)).inDays + 1,
+                            ),
                           ),
                           trailing: IconButton(
-                            tooltip: '刪除紀錄',
+                            tooltip: l10n.periodDeleteRecord,
                             onPressed: () => _deleteRecord(record.id),
                             icon: const Icon(Icons.delete_outline_rounded),
                           ),
@@ -1000,4 +1040,3 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     );
   }
 }
-

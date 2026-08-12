@@ -5677,7 +5677,7 @@ abstract class AppLocalizations {
   /// No description provided for @task_desc_chat_3_times.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'與角色進行 3 次日常聊天'**
+  /// **'與角色進行 3 次日常模式聊天'**
   String get task_desc_chat_3_times;
 
   /// No description provided for @tab_story_progression.
@@ -8835,6 +8835,1572 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'已複製案件編號'**
   String get mailCaseNumberCopied;
+
+  /// No description provided for @profilePageAboutMe.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'📝 關於我'**
+  String get profilePageAboutMe;
+
+  /// No description provided for @profilePageTabBio.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自我介紹'**
+  String get profilePageTabBio;
+
+  /// No description provided for @profilePageTabCharacters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色'**
+  String get profilePageTabCharacters;
+
+  /// No description provided for @profilePageTabMoments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動態'**
+  String get profilePageTabMoments;
+
+  /// No description provided for @profilePageEditProfile.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯個人檔案'**
+  String get profilePageEditProfile;
+
+  /// No description provided for @profilePageFriends.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'朋友'**
+  String get profilePageFriends;
+
+  /// No description provided for @profilePageWorks.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'作品'**
+  String get profilePageWorks;
+
+  /// No description provided for @profilePageFollowing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'追蹤'**
+  String get profilePageFollowing;
+
+  /// No description provided for @profilePageFollowers.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'追蹤者'**
+  String get profilePageFollowers;
+
+  /// No description provided for @profilePageHeartbeatDiary.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'心動日記'**
+  String get profilePageHeartbeatDiary;
+
+  /// No description provided for @profilePageEditCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯角色'**
+  String get profilePageEditCharacter;
+
+  /// No description provided for @profilePagePreviewCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'預覽角色檔案'**
+  String get profilePagePreviewCharacter;
+
+  /// No description provided for @profilePageNoBio.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有自我介紹'**
+  String get profilePageNoBio;
+
+  /// No description provided for @profilePageNoBioHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點一下寫下關於你的介紹。'**
+  String get profilePageNoBioHint;
+
+  /// No description provided for @profilePageCreateCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建立新角色'**
+  String get profilePageCreateCharacter;
+
+  /// No description provided for @profilePageNoCharacters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有創建角色'**
+  String get profilePageNoCharacters;
+
+  /// No description provided for @profilePageNoCharactersHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開始創建你的第一位角色吧。'**
+  String get profilePageNoCharactersHint;
+
+  /// No description provided for @profilePageCharacterActions.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色操作'**
+  String get profilePageCharacterActions;
+
+  /// No description provided for @profilePagePublic.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'公開'**
+  String get profilePagePublic;
+
+  /// No description provided for @profilePagePrivate.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'私人'**
+  String get profilePagePrivate;
+
+  /// No description provided for @profilePageCreator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者'**
+  String get profilePageCreator;
+
+  /// No description provided for @profilePageSelectPostingIdentity.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇發布身分'**
+  String get profilePageSelectPostingIdentity;
+
+  /// No description provided for @profilePagePostAsCreator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'以創作者本人發布'**
+  String get profilePagePostAsCreator;
+
+  /// No description provided for @profilePagePublicCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'公開角色'**
+  String get profilePagePublicCharacter;
+
+  /// No description provided for @profilePagePrivateCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'私人角色'**
+  String get profilePagePrivateCharacter;
+
+  /// No description provided for @profilePagePleaseSignIn.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入'**
+  String get profilePagePleaseSignIn;
+
+  /// No description provided for @profilePagePublishMoment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發布動態'**
+  String get profilePagePublishMoment;
+
+  /// No description provided for @profilePageFilterAll.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'全部'**
+  String get profilePageFilterAll;
+
+  /// No description provided for @profilePageFilterCreator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'本人'**
+  String get profilePageFilterCreator;
+
+  /// No description provided for @profilePageFilterCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色'**
+  String get profilePageFilterCharacter;
+
+  /// No description provided for @profilePageMomentsLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動態讀取失敗'**
+  String get profilePageMomentsLoadFailed;
+
+  /// No description provided for @profilePageTryAgainLater.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請稍後再試一次。'**
+  String get profilePageTryAgainLater;
+
+  /// No description provided for @profilePageNoCreatorMoments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'本人還沒有發布動態'**
+  String get profilePageNoCreatorMoments;
+
+  /// No description provided for @profilePageNoCreatorMomentsHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'以創作者身分發布的內容會顯示在這裡。'**
+  String get profilePageNoCreatorMomentsHint;
+
+  /// No description provided for @profilePageNoCharacterMoments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'旗下角色還沒有發布動態'**
+  String get profilePageNoCharacterMoments;
+
+  /// No description provided for @profilePageNoCharacterMomentsHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'以角色身分發布的內容會顯示在這裡。'**
+  String get profilePageNoCharacterMomentsHint;
+
+  /// No description provided for @profilePageNoMoments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有動態'**
+  String get profilePageNoMoments;
+
+  /// No description provided for @profilePageNoMomentsHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'你與旗下角色發布的動態會顯示在這裡。'**
+  String get profilePageNoMomentsHint;
+
+  /// No description provided for @profilePageDeleteMomentTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除動態'**
+  String get profilePageDeleteMomentTitle;
+
+  /// No description provided for @profilePageDeleteMomentConfirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要永久刪除這篇動態嗎？'**
+  String get profilePageDeleteMomentConfirm;
+
+  /// No description provided for @profilePageCancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消'**
+  String get profilePageCancel;
+
+  /// No description provided for @profilePageDelete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除'**
+  String get profilePageDelete;
+
+  /// No description provided for @profilePageMomentDeleted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動態已刪除'**
+  String get profilePageMomentDeleted;
+
+  /// No description provided for @profilePageDeleteFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗，請稍後再試'**
+  String get profilePageDeleteFailed;
+
+  /// No description provided for @profilePageReferralCompleted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星之邀約已完成'**
+  String get profilePageReferralCompleted;
+
+  /// No description provided for @profilePageInviter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'邀請人：{inviterId}'**
+  String profilePageInviter(String inviterId);
+
+  /// No description provided for @profilePageReferralRewardReceived.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'雙方已獲得 50 花花'**
+  String get profilePageReferralRewardReceived;
+
+  /// No description provided for @profilePageClaimed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已領取'**
+  String get profilePageClaimed;
+
+  /// No description provided for @profilePageInviterBound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已綁定邀請人：{inviterId}'**
+  String profilePageInviterBound(String inviterId);
+
+  /// No description provided for @profilePageReferralProgressHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完成 15 句聊天後，雙方各獲得 50 花花'**
+  String get profilePageReferralProgressHint;
+
+  /// No description provided for @profilePageAlreadyCheckedIn.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天已經簽到過囉'**
+  String get profilePageAlreadyCheckedIn;
+
+  /// No description provided for @profilePageReferralBindFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'綁定失敗，請稍後再試'**
+  String get profilePageReferralBindFailed;
+
+  /// No description provided for @profilePageCharacterNotFound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到這個角色的資料'**
+  String get profilePageCharacterNotFound;
+
+  /// No description provided for @periodGuideTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生理期日記怎麼用？'**
+  String get periodGuideTitle;
+
+  /// No description provided for @periodGuideContent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'① 先點選月曆上的日期。\n② 選擇「今天來了」、「仍在生理期」或「今天結束」。\n③ 勾選當天心情與身體狀態，也可以自行補充。\n④ 按下儲存，角色就能在聊天時理解你今天的狀態。\n\n預測日期會依你的歷史紀錄調整，僅供生活紀錄參考。'**
+  String get periodGuideContent;
+
+  /// No description provided for @periodGotIt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我知道了'**
+  String get periodGotIt;
+
+  /// No description provided for @periodSelectAtLeastOne.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請至少選擇一項紀錄'**
+  String get periodSelectAtLeastOne;
+
+  /// No description provided for @periodFutureDateError.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未來日期不能標記生理期狀態。'**
+  String get periodFutureDateError;
+
+  /// No description provided for @periodAlreadyOngoingError.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已有一筆進行中的生理期，請先將它結束。'**
+  String get periodAlreadyOngoingError;
+
+  /// No description provided for @periodNoOngoingError.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有進行中的生理期，請先選擇「今天來了」。'**
+  String get periodNoOngoingError;
+
+  /// No description provided for @periodBeforeStartError.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'日期不能早於本次生理期開始日。'**
+  String get periodBeforeStartError;
+
+  /// No description provided for @periodEndBeforeStartError.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'結束日期不能早於開始日期。'**
+  String get periodEndBeforeStartError;
+
+  /// No description provided for @periodRecordSaved.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{date}的紀錄已儲存'**
+  String periodRecordSaved(String date);
+
+  /// No description provided for @periodSaveFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存失敗，請稍後再試'**
+  String get periodSaveFailed;
+
+  /// No description provided for @periodDeleteTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除這次生理期紀錄？'**
+  String get periodDeleteTitle;
+
+  /// No description provided for @periodDeleteContent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除後，週期平均與下次預測也會重新計算。'**
+  String get periodDeleteContent;
+
+  /// No description provided for @periodCancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消'**
+  String get periodCancel;
+
+  /// No description provided for @periodDelete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除'**
+  String get periodDelete;
+
+  /// No description provided for @periodNoOngoing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有進行中的生理期'**
+  String get periodNoOngoing;
+
+  /// No description provided for @periodDayCount.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生理期第 {count} 天'**
+  String periodDayCount(int count);
+
+  /// No description provided for @periodHelp.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'使用說明'**
+  String get periodHelp;
+
+  /// No description provided for @periodAverageCycle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'平均週期'**
+  String get periodAverageCycle;
+
+  /// No description provided for @periodAverageDuration.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'平均經期'**
+  String get periodAverageDuration;
+
+  /// No description provided for @periodDays.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{count} 天'**
+  String periodDays(int count);
+
+  /// No description provided for @periodNextPrediction.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'下次預測'**
+  String get periodNextPrediction;
+
+  /// No description provided for @periodCalculatedAfterRecording.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'紀錄後推算'**
+  String get periodCalculatedAfterRecording;
+
+  /// No description provided for @periodInsufficientData.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前資料不足，暫以 28 天週期、5 天經期推估。'**
+  String get periodInsufficientData;
+
+  /// No description provided for @periodPredictionDisclaimer.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'依現有紀錄推估，日期僅供生活紀錄參考。'**
+  String get periodPredictionDisclaimer;
+
+  /// No description provided for @periodStartedToday.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🩸 今天來了'**
+  String get periodStartedToday;
+
+  /// No description provided for @periodStillOngoing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'仍在生理期'**
+  String get periodStillOngoing;
+
+  /// No description provided for @periodEndedToday.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天結束'**
+  String get periodEndedToday;
+
+  /// No description provided for @periodDateNotReached.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這天還沒到喔～'**
+  String get periodDateNotReached;
+
+  /// No description provided for @periodDateBeforeStart.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這一天早於目前生理期的開始日期。'**
+  String get periodDateBeforeStart;
+
+  /// No description provided for @periodMoodOkay.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還不錯'**
+  String get periodMoodOkay;
+
+  /// No description provided for @periodMoodHappy.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開心'**
+  String get periodMoodHappy;
+
+  /// No description provided for @periodMoodLow.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'低落'**
+  String get periodMoodLow;
+
+  /// No description provided for @periodMoodUnwell.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'難受'**
+  String get periodMoodUnwell;
+
+  /// No description provided for @periodMoodIrritable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'煩躁'**
+  String get periodMoodIrritable;
+
+  /// No description provided for @periodMoodTired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'疲倦'**
+  String get periodMoodTired;
+
+  /// No description provided for @periodMoodAnxious.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'焦慮'**
+  String get periodMoodAnxious;
+
+  /// No description provided for @periodSymptomAbdominalPain.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'腹痛'**
+  String get periodSymptomAbdominalPain;
+
+  /// No description provided for @periodSymptomLowerBackPain.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'腰痠'**
+  String get periodSymptomLowerBackPain;
+
+  /// No description provided for @periodSymptomHeadache.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頭痛'**
+  String get periodSymptomHeadache;
+
+  /// No description provided for @periodSymptomBreastTenderness.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'胸脹'**
+  String get periodSymptomBreastTenderness;
+
+  /// No description provided for @periodSymptomSwelling.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'水腫'**
+  String get periodSymptomSwelling;
+
+  /// No description provided for @periodSymptomSleepy.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'想睡'**
+  String get periodSymptomSleepy;
+
+  /// No description provided for @periodSymptomIncreasedAppetite.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'食慾增加'**
+  String get periodSymptomIncreasedAppetite;
+
+  /// No description provided for @periodSymptomDigestiveDiscomfort.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'腸胃不適'**
+  String get periodSymptomDigestiveDiscomfort;
+
+  /// No description provided for @periodDiaryTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{characterName}的貼心日記'**
+  String periodDiaryTitle(String characterName);
+
+  /// No description provided for @periodLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取紀錄失敗，請稍後再試'**
+  String get periodLoadFailed;
+
+  /// No description provided for @periodWeekdaySun.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'日'**
+  String get periodWeekdaySun;
+
+  /// No description provided for @periodWeekdayMon.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'一'**
+  String get periodWeekdayMon;
+
+  /// No description provided for @periodWeekdayTue.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'二'**
+  String get periodWeekdayTue;
+
+  /// No description provided for @periodWeekdayWed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'三'**
+  String get periodWeekdayWed;
+
+  /// No description provided for @periodWeekdayThu.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'四'**
+  String get periodWeekdayThu;
+
+  /// No description provided for @periodWeekdayFri.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'五'**
+  String get periodWeekdayFri;
+
+  /// No description provided for @periodWeekdaySat.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'六'**
+  String get periodWeekdaySat;
+
+  /// No description provided for @periodSaveInstruction.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇狀態後，請按最下方「儲存今日紀錄」才會正式保存。'**
+  String get periodSaveInstruction;
+
+  /// No description provided for @periodTodayMood.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天的心情（可複選）'**
+  String get periodTodayMood;
+
+  /// No description provided for @periodMoodDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這些是當天日記，不是貼到月曆上的圖示。'**
+  String get periodMoodDescription;
+
+  /// No description provided for @periodOtherMood.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'其他心情'**
+  String get periodOtherMood;
+
+  /// No description provided for @periodOtherMoodHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：委屈、沒安全感……'**
+  String get periodOtherMoodHint;
+
+  /// No description provided for @periodTodaySymptoms.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天的身體狀態（可複選）'**
+  String get periodTodaySymptoms;
+
+  /// No description provided for @periodOtherSymptom.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'其他身體狀態'**
+  String get periodOtherSymptom;
+
+  /// No description provided for @periodOtherSymptomHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：怕冷、沒有胃口……'**
+  String get periodOtherSymptomHint;
+
+  /// No description provided for @periodNoteForCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'想讓 {characterName} 知道的事（選填）'**
+  String periodNoteForCharacter(String characterName);
+
+  /// No description provided for @periodNoteHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：今天想安靜休息，不想被催……'**
+  String get periodNoteHint;
+
+  /// No description provided for @periodSaving.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存中…'**
+  String get periodSaving;
+
+  /// No description provided for @periodSaveToday.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存今日紀錄'**
+  String get periodSaveToday;
+
+  /// No description provided for @periodHistory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'歷史生理期'**
+  String get periodHistory;
+
+  /// No description provided for @periodOngoing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'進行中'**
+  String get periodOngoing;
+
+  /// No description provided for @periodTotalDays.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'共 {count} 天'**
+  String periodTotalDays(int count);
+
+  /// No description provided for @periodDeleteRecord.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除紀錄'**
+  String get periodDeleteRecord;
+
+  /// No description provided for @privateProfilePleaseSignIn.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入'**
+  String get privateProfilePleaseSignIn;
+
+  /// No description provided for @privateProfileLoreLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記憶碎片讀取失敗：{error}'**
+  String privateProfileLoreLoadFailed(String error);
+
+  /// No description provided for @privateProfileWriteNewLore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'撰寫新的記憶碎片（{count} / {limit}）'**
+  String privateProfileWriteNewLore(int count, int limit);
+
+  /// No description provided for @privateProfileNoLore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有記憶碎片'**
+  String get privateProfileNoLore;
+
+  /// No description provided for @privateProfileNoLoreHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'可以在這裡整理測試設定、故事線索與角色的重要記憶。'**
+  String get privateProfileNoLoreHint;
+
+  /// No description provided for @privateProfileUntitledLore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未命名碎片'**
+  String get privateProfileUntitledLore;
+
+  /// No description provided for @privateProfileEdit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯'**
+  String get privateProfileEdit;
+
+  /// No description provided for @privateProfileDelete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除'**
+  String get privateProfileDelete;
+
+  /// No description provided for @privateProfileAddLore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增記憶碎片'**
+  String get privateProfileAddLore;
+
+  /// No description provided for @privateProfileLoreTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'標題'**
+  String get privateProfileLoreTitle;
+
+  /// No description provided for @privateProfileLoreTeaser.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'簡短提示'**
+  String get privateProfileLoreTeaser;
+
+  /// No description provided for @privateProfileLoreContent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完整內容'**
+  String get privateProfileLoreContent;
+
+  /// No description provided for @privateProfileLockLore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'鎖定碎片'**
+  String get privateProfileLockLore;
+
+  /// No description provided for @privateProfileLockLoreHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'私人角色目前只有創作者可見，此欄位仍會保留，方便角色公開後沿用。'**
+  String get privateProfileLockLoreHint;
+
+  /// No description provided for @privateProfileCancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消'**
+  String get privateProfileCancel;
+
+  /// No description provided for @privateProfileTitleContentRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請填寫標題與內容'**
+  String get privateProfileTitleContentRequired;
+
+  /// No description provided for @privateProfileLoreAdded.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記憶碎片已新增'**
+  String get privateProfileLoreAdded;
+
+  /// No description provided for @privateProfileAddFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增失敗，請稍後再試'**
+  String get privateProfileAddFailed;
+
+  /// No description provided for @privateProfilePublish.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發布'**
+  String get privateProfilePublish;
+
+  /// No description provided for @privateProfileDeleteLoreTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除記憶碎片'**
+  String get privateProfileDeleteLoreTitle;
+
+  /// No description provided for @privateProfileDeleteLoreConfirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要永久刪除這則記憶碎片嗎？'**
+  String get privateProfileDeleteLoreConfirm;
+
+  /// No description provided for @privateProfileLoreDeleted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記憶碎片已刪除'**
+  String get privateProfileLoreDeleted;
+
+  /// No description provided for @privateProfileDeleteFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗，請稍後再試'**
+  String get privateProfileDeleteFailed;
+
+  /// No description provided for @privateProfileEditLore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯記憶碎片'**
+  String get privateProfileEditLore;
+
+  /// No description provided for @privateProfileSave.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存'**
+  String get privateProfileSave;
+
+  /// No description provided for @editProfileBirthdayReminderTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🎂 小提醒'**
+  String get editProfileBirthdayReminderTitle;
+
+  /// No description provided for @editProfileBirthdayReminderContent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'生日將影響角色生日祝福、生日禮物及相關活動。\n\n建議確認生日後再完成設定，\n以免影響後續生日獎勵。'**
+  String get editProfileBirthdayReminderContent;
+
+  /// No description provided for @editProfileGotIt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'知道了'**
+  String get editProfileGotIt;
+
+  /// No description provided for @editProfileBirthdayConfirmTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🎂 確認生日'**
+  String get editProfileBirthdayConfirmTitle;
+
+  /// No description provided for @editProfileBirthdayConfirmContent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請確認生日是否正確。\n\n生日將用於生日祝福、生日禮物及相關活動。\n\n為避免生日獎勵遭到重複領取，生日完成設定後將無法再次修改。\n\n是否確定使用這個生日？'**
+  String get editProfileBirthdayConfirmContent;
+
+  /// No description provided for @editProfileReturnToEdit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'返回修改'**
+  String get editProfileReturnToEdit;
+
+  /// No description provided for @editProfileConfirmSetting.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認設定'**
+  String get editProfileConfirmSetting;
+
+  /// No description provided for @editProfileDefaultNickname.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'初識的旅人'**
+  String get editProfileDefaultNickname;
+
+  /// No description provided for @editProfileNoChanges.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'沒有需要儲存的變更'**
+  String get editProfileNoChanges;
+
+  /// No description provided for @editProfileCreateFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建立資料失敗：{error}'**
+  String editProfileCreateFailed(String error);
+
+  /// No description provided for @editProfileAvatarNumber.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頭像 {number}'**
+  String editProfileAvatarNumber(int number);
+
+  /// No description provided for @editProfileImageSelectionFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇圖片失敗，請重新選擇一張圖片'**
+  String get editProfileImageSelectionFailed;
+
+  /// No description provided for @editProfileCancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消'**
+  String get editProfileCancel;
+
+  /// No description provided for @editProfileConfirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定'**
+  String get editProfileConfirm;
+
+  /// No description provided for @editProfileImageProcessingFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'圖片處理失敗，請重新選擇一張圖片'**
+  String get editProfileImageProcessingFailed;
+
+  /// No description provided for @editProfileLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'載入資料失敗：{error}'**
+  String editProfileLoadFailed(String error);
+
+  /// No description provided for @editProfileBioLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自我介紹'**
+  String get editProfileBioLabel;
+
+  /// No description provided for @editProfileBioHelper.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'簡單介紹自己或你的創作風格'**
+  String get editProfileBioHelper;
+
+  /// No description provided for @editProfileBioHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：喜歡創作奇幻、病嬌與沉浸式戀愛角色。'**
+  String get editProfileBioHint;
+
+  /// No description provided for @editProfileUserNotFound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到使用者'**
+  String get editProfileUserNotFound;
+
+  /// No description provided for @editProfileGenerateIdFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'產生玩家 ID 失敗，請再試一次'**
+  String get editProfileGenerateIdFailed;
+
+  /// No description provided for @editProfileSignedInUserNotFound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到目前登入的使用者'**
+  String get editProfileSignedInUserNotFound;
+
+  /// No description provided for @editProfileAvatarReadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取頭像失敗，狀態碼：{statusCode}'**
+  String editProfileAvatarReadFailed(int statusCode);
+
+  /// No description provided for @editProfileAvatarFileNotFound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到選取的頭像檔案：{path}'**
+  String editProfileAvatarFileNotFound(String path);
+
+  /// No description provided for @editProfileAvatarEmpty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頭像圖片資料是空的'**
+  String get editProfileAvatarEmpty;
+
+  /// No description provided for @chatPageSendFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出失敗，請稍後再試 😢'**
+  String get chatPageSendFailed;
+
+  /// No description provided for @chatPageRegenerateFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新生成失敗，原本的訊息已保留，請再試一次。'**
+  String get chatPageRegenerateFailed;
+
+  /// No description provided for @chatPageRegenerating.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'💭 正在重新思考...'**
+  String get chatPageRegenerating;
+
+  /// No description provided for @chatPageThinkingTooLong.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'他似乎在沉思，請稍後再試……'**
+  String get chatPageThinkingTooLong;
+
+  /// No description provided for @chatPageAlreadyReplying.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'他正在回覆中，請稍候一下，不要重複送出'**
+  String get chatPageAlreadyReplying;
+
+  /// No description provided for @chatPageMediaUploadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'媒體上傳失敗，請再試一次'**
+  String get chatPageMediaUploadFailed;
+
+  /// No description provided for @chatPageReportReceived.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'感謝你的回報，我們會盡快確認'**
+  String get chatPageReportReceived;
+
+  /// No description provided for @chatPageMessagesDeleted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✅ 已成功刪除 {count} 則訊息'**
+  String chatPageMessagesDeleted(int count);
+
+  /// No description provided for @chatPageSelectPhotoFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法選擇照片：{error}'**
+  String chatPageSelectPhotoFailed(String error);
+
+  /// No description provided for @chatPageRecordingNotFound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到錄音檔案'**
+  String get chatPageRecordingNotFound;
+
+  /// No description provided for @chatPageRecordingEmpty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'錄音檔案是空的'**
+  String get chatPageRecordingEmpty;
+
+  /// No description provided for @chatPageAudioPlaybackFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'播放音訊失敗：{error}'**
+  String chatPageAudioPlaybackFailed(String error);
+
+  /// No description provided for @chatPageMicrophonePermissionRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'需要麥克風權限才能錄音'**
+  String get chatPageMicrophonePermissionRequired;
+
+  /// No description provided for @chatPageStartRecordingFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法開始錄音：{error}'**
+  String chatPageStartRecordingFailed(String error);
+
+  /// No description provided for @chatPageRecordingCreationFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'錄音檔案建立失敗，請重新錄製'**
+  String get chatPageRecordingCreationFailed;
+
+  /// No description provided for @chatPageRecordingFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'錄音失敗：{error}'**
+  String chatPageRecordingFailed(String error);
+
+  /// No description provided for @chatPageRecordingNotFoundRetry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到錄音檔案，請重新錄製'**
+  String get chatPageRecordingNotFoundRetry;
+
+  /// No description provided for @chatPageRecordingEmptyRetry.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'錄音檔案是空的，請重新錄製'**
+  String get chatPageRecordingEmptyRetry;
+
+  /// No description provided for @chatPageNoRecordingToSend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'沒有可傳送的錄音'**
+  String get chatPageNoRecordingToSend;
+
+  /// No description provided for @chatPagePointCost.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{count} 點'**
+  String chatPagePointCost(int count);
+
+  /// No description provided for @chatPageVoiceUploading.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'語音上傳中……'**
+  String get chatPageVoiceUploading;
+
+  /// No description provided for @chatPageChangeWatermarkColor.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更換浮水印顏色'**
+  String get chatPageChangeWatermarkColor;
+
+  /// No description provided for @chatPageMinutesSeconds.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{minutes} 分 {seconds} 秒'**
+  String chatPageMinutesSeconds(int minutes, int seconds);
+
+  /// No description provided for @chatPageSeconds.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{seconds} 秒'**
+  String chatPageSeconds(int seconds);
+
+  /// No description provided for @characterEditSelectSupportingCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請選擇配角。'**
+  String get characterEditSelectSupportingCharacter;
+
+  /// No description provided for @characterEditSelectGender.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請選擇角色性別。'**
+  String get characterEditSelectGender;
+
+  /// No description provided for @characterEditCharacterSettings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色設定'**
+  String get characterEditCharacterSettings;
+
+  /// No description provided for @characterEditWorldview.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'世界觀'**
+  String get characterEditWorldview;
+
+  /// No description provided for @characterEditSettingsMinLength.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色設定至少需要填寫 10 字。'**
+  String get characterEditSettingsMinLength;
+
+  /// No description provided for @characterEditWorldviewMinLength.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'世界觀至少需要填寫 20 字。'**
+  String get characterEditWorldviewMinLength;
+
+  /// No description provided for @characterEditSupportingCharacters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'配角'**
+  String get characterEditSupportingCharacters;
+
+  /// No description provided for @characterEditCharacterImage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色圖片'**
+  String get characterEditCharacterImage;
+
+  /// No description provided for @characterEditWorldviewHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述世界背景、歷史、時代、地區、勢力、制度、科技、魔法與世界規則。'**
+  String get characterEditWorldviewHint;
+
+  /// No description provided for @characterEditSettingsHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述角色個性、價值觀、思考方式、情緒反應、行為習慣、說話方式與核心信念。'**
+  String get characterEditSettingsHint;
+
+  /// No description provided for @characterEditUnknownCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未知角色'**
+  String get characterEditUnknownCharacter;
+
+  /// No description provided for @characterEditEditSupportingCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯配角'**
+  String get characterEditEditSupportingCharacter;
+
+  /// No description provided for @characterEditAddSupportingCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增配角'**
+  String get characterEditAddSupportingCharacter;
+
+  /// No description provided for @characterEditSupportingCharacterName.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'配角名稱'**
+  String get characterEditSupportingCharacterName;
+
+  /// No description provided for @characterEditGender.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'性別'**
+  String get characterEditGender;
+
+  /// No description provided for @characterEditMale.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'男性'**
+  String get characterEditMale;
+
+  /// No description provided for @characterEditFemale.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'女性'**
+  String get characterEditFemale;
+
+  /// No description provided for @characterEditOther.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'其他'**
+  String get characterEditOther;
+
+  /// No description provided for @characterEditAge.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'年齡'**
+  String get characterEditAge;
+
+  /// No description provided for @characterEditIdentityOccupation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'身分／職業'**
+  String get characterEditIdentityOccupation;
+
+  /// No description provided for @characterEditRelationshipWithMain.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與主角色的關係'**
+  String get characterEditRelationshipWithMain;
+
+  /// No description provided for @characterEditRelationshipHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述與主角色的過往、立場、情感、秘密與目前關係。'**
+  String get characterEditRelationshipHint;
+
+  /// No description provided for @characterEditCharacterProfile.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'人物設定'**
+  String get characterEditCharacterProfile;
+
+  /// No description provided for @characterEditCharacterProfileHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述個性、外貌、習慣、價值觀、能力、喜好、地雷與重要經歷。'**
+  String get characterEditCharacterProfileHint;
+
+  /// No description provided for @characterEditSpeakingStyle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'說話語氣'**
+  String get characterEditSpeakingStyle;
+
+  /// No description provided for @characterEditSpeakingStyleHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：語速快、愛吐槽、說話直接。'**
+  String get characterEditSpeakingStyleHint;
+
+  /// No description provided for @characterEditSupportingNameRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請填寫配角名稱。'**
+  String get characterEditSupportingNameRequired;
+
+  /// No description provided for @characterEditSupportingGenderRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請選擇配角性別。'**
+  String get characterEditSupportingGenderRequired;
+
+  /// No description provided for @characterEditProfileRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請填寫人物設定。'**
+  String get characterEditProfileRequired;
+
+  /// No description provided for @characterEditRelationshipTooLong.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與主角色的關係已超過 1,500 字。'**
+  String get characterEditRelationshipTooLong;
+
+  /// No description provided for @characterEditProfileTooLong.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'人物設定已超過 1,500 字。'**
+  String get characterEditProfileTooLong;
+
+  /// No description provided for @characterEditSave.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存'**
+  String get characterEditSave;
+
+  /// No description provided for @characterEditAdd.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增'**
+  String get characterEditAdd;
+
+  /// No description provided for @creatorProfileNoBio.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未填寫自我介紹'**
+  String get creatorProfileNoBio;
+
+  /// No description provided for @creatorProfileNoBioHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這位創作者還沒有留下介紹。'**
+  String get creatorProfileNoBioHint;
+
+  /// No description provided for @creatorProfileNoCreatorMoments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者還沒有發布動態'**
+  String get creatorProfileNoCreatorMoments;
+
+  /// No description provided for @creatorProfileNoCreatorMomentsHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'以創作者本人身分發布的公開內容會顯示在這裡。'**
+  String get creatorProfileNoCreatorMomentsHint;
+
+  /// No description provided for @creatorProfileNoCharacterMoments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'旗下角色還沒有發布動態'**
+  String get creatorProfileNoCharacterMoments;
+
+  /// No description provided for @creatorProfileNoCharacterMomentsHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'旗下公開角色發布的內容會顯示在這裡。'**
+  String get creatorProfileNoCharacterMomentsHint;
+
+  /// No description provided for @creatorProfileNoPublicMoments.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有公開動態'**
+  String get creatorProfileNoPublicMoments;
+
+  /// No description provided for @creatorProfileNoPublicMomentsHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者本人與旗下角色發布的公開動態會顯示在這裡。'**
+  String get creatorProfileNoPublicMomentsHint;
+
+  /// No description provided for @creatorProfilePublicWorks.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'公開作品'**
+  String get creatorProfilePublicWorks;
+
+  /// No description provided for @creatorProfileLikesReceived.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'獲得喜歡'**
+  String get creatorProfileLikesReceived;
+
+  /// No description provided for @creatorProfileFollow.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'追蹤'**
+  String get creatorProfileFollow;
+
+  /// No description provided for @creatorProfileFollowing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已追蹤'**
+  String get creatorProfileFollowing;
+
+  /// No description provided for @creatorProfileUnfollowed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已取消追蹤'**
+  String get creatorProfileUnfollowed;
+
+  /// No description provided for @creatorProfileFollowedCreator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已追蹤 {creatorName}'**
+  String creatorProfileFollowedCreator(String creatorName);
+
+  /// No description provided for @creatorProfileOperationFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'操作失敗，請稍後再試'**
+  String get creatorProfileOperationFailed;
+
+  /// No description provided for @creatorProfileWorksLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取作品失敗：{error}'**
+  String creatorProfileWorksLoadFailed(String error);
+
+  /// No description provided for @characterProfileShareInvitation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'🦋 一封來自《戀戀拾光》的相遇邀請'**
+  String get characterProfileShareInvitation;
+
+  /// No description provided for @characterProfileShareCreator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✦ 創作者：{creatorName}'**
+  String characterProfileShareCreator(String creatorName);
+
+  /// No description provided for @characterProfileShareMessage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'在《戀戀拾光》搜尋「{characterName}」，開始這段只屬於你們的故事。'**
+  String characterProfileShareMessage(String characterName);
+
+  /// No description provided for @characterProfileInvitationLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色邀請卡'**
+  String get characterProfileInvitationLabel;
+
+  /// No description provided for @characterProfileCardCreator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者  {creatorName}'**
+  String characterProfileCardCreator(String creatorName);
+
+  /// No description provided for @characterProfileCardSearchHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'搜尋角色，開始相遇  🦋'**
+  String get characterProfileCardSearchHint;
+
+  /// No description provided for @characterProfileScanToDownload.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'掃描下載'**
+  String get characterProfileScanToDownload;
+
+  /// No description provided for @characterProfileShareTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享角色「{characterName}」'**
+  String characterProfileShareTitle(String characterName);
+
+  /// No description provided for @characterProfileShareSubject.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'來《戀戀拾光》認識 {characterName}'**
+  String characterProfileShareSubject(String characterName);
+
+  /// No description provided for @characterProfileShareFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'邀請卡產生失敗，請稍後再試'**
+  String get characterProfileShareFailed;
+
+  /// No description provided for @characterProfilePrivateShareUnavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'私人角色目前無法分享'**
+  String get characterProfilePrivateShareUnavailable;
+
+  /// No description provided for @characterProfileShareCard.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享邀請卡'**
+  String get characterProfileShareCard;
+
+  /// No description provided for @characterProfileShareCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享角色'**
+  String get characterProfileShareCharacter;
+
+  /// No description provided for @characterProfileReportCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉角色'**
+  String get characterProfileReportCharacter;
+
+  /// No description provided for @characterProfileTranslate.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'翻譯'**
+  String get characterProfileTranslate;
 }
 
 class _AppLocalizationsDelegate

@@ -1301,7 +1301,7 @@
   },
   "tab_heartbeat_diary": "ときめき日記",
   "tab_daily_chit_chat": "日常の雑談",
-  "task_desc_chat_3_times": "キャラクターと日常チャットを3回行う",
+  "task_desc_chat_3_times": "日常モードでキャラクターと3回チャットする",
   "tab_story_progression": "ストーリー進行",
   "task_desc_story_1_time": "ストーリーモードでの交流を1回完了する",
   "tab_social_tour": "コミュニティ巡回",
@@ -2382,5 +2382,426 @@
   },
   "mailCaseNumber": "お問い合わせ番号",
   "mailCopyCaseNumber": "お問い合わせ番号をコピー",
-  "mailCaseNumberCopied": "お問い合わせ番号をコピーしました"
+  "mailCaseNumberCopied": "お問い合わせ番号をコピーしました",
+  "profilePageAboutMe": "📝 自己紹介",
+  "profilePageTabBio": "プロフィール",
+  "profilePageTabCharacters": "キャラクター",
+  "profilePageTabMoments": "投稿",
+  "profilePageEditProfile": "プロフィールを編集",
+  "profilePageFriends": "友達",
+  "profilePageWorks": "作品",
+  "profilePageFollowing": "フォロー中",
+  "profilePageFollowers": "フォロワー",
+  "profilePageHeartbeatDiary": "ときめき日記",
+  "profilePageEditCharacter": "キャラクターを編集",
+  "profilePagePreviewCharacter": "キャラクタープロフィールをプレビュー",
+  "profilePageNoBio": "自己紹介はまだありません",
+  "profilePageNoBioHint": "タップして自己紹介を書いてみましょう。",
+  "profilePageCreateCharacter": "新しいキャラクターを作成",
+  "profilePageNoCharacters": "作成したキャラクターはまだいません",
+  "profilePageNoCharactersHint": "最初のキャラクターを作成してみましょう。",
+  "profilePageCharacterActions": "キャラクター操作",
+  "profilePagePublic": "公開",
+  "profilePagePrivate": "非公開",
+  "profilePageCreator": "クリエイター",
+  "profilePageSelectPostingIdentity": "投稿者を選択",
+  "profilePagePostAsCreator": "クリエイター本人として投稿",
+  "profilePagePublicCharacter": "公開キャラクター",
+  "profilePagePrivateCharacter": "非公開キャラクター",
+  "profilePagePleaseSignIn": "先にログインしてください",
+  "profilePagePublishMoment": "投稿する",
+  "profilePageFilterAll": "すべて",
+  "profilePageFilterCreator": "本人",
+  "profilePageFilterCharacter": "キャラクター",
+  "profilePageMomentsLoadFailed": "投稿の読み込みに失敗しました",
+  "profilePageTryAgainLater": "しばらくしてからもう一度お試しください。",
+  "profilePageNoCreatorMoments": "本人による投稿はまだありません",
+  "profilePageNoCreatorMomentsHint": "クリエイターとして投稿した内容がここに表示されます。",
+  "profilePageNoCharacterMoments": "キャラクターによる投稿はまだありません",
+  "profilePageNoCharacterMomentsHint": "キャラクターとして投稿した内容がここに表示されます。",
+  "profilePageNoMoments": "投稿はまだありません",
+  "profilePageNoMomentsHint": "あなたとキャラクターが投稿した内容がここに表示されます。",
+  "profilePageDeleteMomentTitle": "投稿を削除",
+  "profilePageDeleteMomentConfirm": "この投稿を完全に削除しますか？",
+  "profilePageCancel": "キャンセル",
+  "profilePageDelete": "削除",
+  "profilePageMomentDeleted": "投稿を削除しました",
+  "profilePageDeleteFailed": "削除に失敗しました。しばらくしてからもう一度お試しください",
+  "profilePageReferralCompleted": "星の招待が完了しました",
+  "profilePageInviter": "招待者：{inviterId}",
+  "@profilePageInviter": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralRewardReceived": "双方に花を50個付与しました",
+  "profilePageClaimed": "受け取り済み",
+  "profilePageInviterBound": "招待者を登録しました：{inviterId}",
+  "@profilePageInviterBound": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralProgressHint": "チャットを15通完了すると、双方に花が50個ずつ付与されます",
+  "profilePageAlreadyCheckedIn": "今日はすでにチェックイン済みです",
+  "profilePageReferralBindFailed": "登録に失敗しました。しばらくしてからもう一度お試しください",
+  "profilePageCharacterNotFound": "このキャラクターのデータが見つかりません",
+  "periodGuideTitle": "生理日記の使い方",
+  "periodGuideContent": "① まずカレンダーの日付を選択します。\n②「今日始まった」「まだ生理中」または「今日終わった」を選択します。\n③ 今日の気分と体調を選択します。自由に補足することもできます。\n④ 保存を押すと、チャット中にキャラクターが今日のあなたの状態を理解できるようになります。\n\n予測日は過去の記録に基づいて調整されます。日々の記録の参考としてのみご利用ください。",
+  "periodGotIt": "わかりました",
+  "periodSelectAtLeastOne": "記録する項目を1つ以上選択してください",
+  "periodFutureDateError": "未来の日付に生理の状態を記録することはできません。",
+  "periodAlreadyOngoingError": "進行中の生理記録があります。先に終了してください。",
+  "periodNoOngoingError": "現在、進行中の生理記録はありません。先に「今日始まった」を選択してください。",
+  "periodBeforeStartError": "今回の生理開始日より前の日付は選択できません。",
+  "periodEndBeforeStartError": "終了日は開始日より前に設定できません。",
+  "periodRecordSaved": "{date}の記録を保存しました",
+  "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+  "periodSaveFailed": "保存に失敗しました。しばらくしてからもう一度お試しください",
+  "periodDeleteTitle": "今回の生理記録を削除しますか？",
+  "periodDeleteContent": "削除すると、平均周期と次回予測も再計算されます。",
+  "periodCancel": "キャンセル",
+  "periodDelete": "削除",
+  "periodNoOngoing": "現在、進行中の生理記録はありません",
+  "periodDayCount": "生理 {count} 日目",
+  "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+  "periodHelp": "使い方",
+  "periodAverageCycle": "平均周期",
+  "periodAverageDuration": "平均生理期間",
+  "periodDays": "{count} 日",
+  "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodNextPrediction": "次回予測",
+  "periodCalculatedAfterRecording": "記録後に計算",
+  "periodInsufficientData": "現在はデータが不足しているため、暫定的に28日周期、生理期間5日として予測します。",
+  "periodPredictionDisclaimer": "現在の記録に基づく予測です。日付は日々の記録の参考としてのみご利用ください。",
+  "periodStartedToday": "🩸 今日始まった",
+  "periodStillOngoing": "まだ生理中",
+  "periodEndedToday": "今日終わった",
+  "periodDateNotReached": "この日はまだ来ていません～",
+  "periodDateBeforeStart": "この日は現在の生理開始日より前です。",
+  "periodMoodOkay": "まあまあ",
+  "periodMoodHappy": "うれしい",
+  "periodMoodLow": "落ち込んでいる",
+  "periodMoodUnwell": "つらい",
+  "periodMoodIrritable": "イライラ",
+  "periodMoodTired": "疲れた",
+  "periodMoodAnxious": "不安",
+  "periodSymptomAbdominalPain": "腹痛",
+  "periodSymptomLowerBackPain": "腰痛",
+  "periodSymptomHeadache": "頭痛",
+  "periodSymptomBreastTenderness": "胸の張り",
+  "periodSymptomSwelling": "むくみ",
+  "periodSymptomSleepy": "眠い",
+  "periodSymptomIncreasedAppetite": "食欲増加",
+  "periodSymptomDigestiveDiscomfort": "胃腸の不調",
+  "periodDiaryTitle": "{characterName}の思いやり日記",
+  "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodLoadFailed": "記録の読み込みに失敗しました。しばらくしてからもう一度お試しください",
+  "periodWeekdaySun": "日",
+  "periodWeekdayMon": "月",
+  "periodWeekdayTue": "火",
+  "periodWeekdayWed": "水",
+  "periodWeekdayThu": "木",
+  "periodWeekdayFri": "金",
+  "periodWeekdaySat": "土",
+  "periodSaveInstruction": "状態を選択した後、一番下の「今日の記録を保存」を押すと正式に保存されます。",
+  "periodTodayMood": "今日の気分（複数選択可）",
+  "periodMoodDescription": "これはその日の日記であり、カレンダー上に表示されるアイコンではありません。",
+  "periodOtherMood": "その他の気分",
+  "periodOtherMoodHint": "例：傷ついた、不安を感じる……",
+  "periodTodaySymptoms": "今日の体調（複数選択可）",
+  "periodOtherSymptom": "その他の体調",
+  "periodOtherSymptomHint": "例：寒気がする、食欲がない……",
+  "periodNoteForCharacter": "{characterName}に伝えたいこと（任意）",
+  "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodNoteHint": "例：今日は静かに休みたいから、急かさないでほしい……",
+  "periodSaving": "保存中…",
+  "periodSaveToday": "今日の記録を保存",
+  "periodHistory": "生理履歴",
+  "periodOngoing": "進行中",
+  "periodTotalDays": "合計 {count} 日",
+  "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodDeleteRecord": "記録を削除",
+  "privateProfilePleaseSignIn": "先にログインしてください",
+  "privateProfileLoreLoadFailed": "記憶の欠片の読み込みに失敗しました：{error}",
+  "@privateProfileLoreLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "privateProfileWriteNewLore": "新しい記憶の欠片を書く（{count} / {limit}）",
+  "@privateProfileWriteNewLore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
+    }
+  },
+  "privateProfileNoLore": "記憶の欠片はまだありません",
+  "privateProfileNoLoreHint": "ここでは、テスト設定や物語の手がかり、キャラクターの大切な記憶を整理できます。",
+  "privateProfileUntitledLore": "無題の欠片",
+  "privateProfileEdit": "編集",
+  "privateProfileDelete": "削除",
+  "privateProfileAddLore": "記憶の欠片を追加",
+  "privateProfileLoreTitle": "タイトル",
+  "privateProfileLoreTeaser": "短いヒント",
+  "privateProfileLoreContent": "詳細内容",
+  "privateProfileLockLore": "欠片をロック",
+  "privateProfileLockLoreHint": "非公開キャラクターは現在クリエイターのみ閲覧できます。この項目は、キャラクターを公開した際に引き続き使用できるよう保持されます。",
+  "privateProfileCancel": "キャンセル",
+  "privateProfileTitleContentRequired": "タイトルと内容を入力してください",
+  "privateProfileLoreAdded": "記憶の欠片を追加しました",
+  "privateProfileAddFailed": "追加に失敗しました。しばらくしてからもう一度お試しください",
+  "privateProfilePublish": "公開",
+  "privateProfileDeleteLoreTitle": "記憶の欠片を削除",
+  "privateProfileDeleteLoreConfirm": "この記憶の欠片を完全に削除しますか？",
+  "privateProfileLoreDeleted": "記憶の欠片を削除しました",
+  "privateProfileDeleteFailed": "削除に失敗しました。しばらくしてからもう一度お試しください",
+  "privateProfileEditLore": "記憶の欠片を編集",
+  "privateProfileSave": "保存",
+  "editProfileBirthdayReminderTitle": "🎂 ちょっとしたお知らせ",
+  "editProfileBirthdayReminderContent": "誕生日は、キャラクターからの誕生日のお祝い、誕生日プレゼント、関連イベントに影響します。\n\n今後の誕生日報酬に影響しないよう、\n誕生日を確認してから設定を完了することをおすすめします。",
+  "editProfileGotIt": "わかりました",
+  "editProfileBirthdayConfirmTitle": "🎂 誕生日を確認",
+  "editProfileBirthdayConfirmContent": "誕生日が正しいことを確認してください。\n\n誕生日は、誕生日のお祝い、誕生日プレゼント、関連イベントに使用されます。\n\n誕生日報酬の重複受け取りを防ぐため、設定完了後は誕生日を変更できません。\n\nこの誕生日を使用しますか？",
+  "editProfileReturnToEdit": "編集に戻る",
+  "editProfileConfirmSetting": "設定を確定",
+  "editProfileDefaultNickname": "出会ったばかりの旅人",
+  "editProfileNoChanges": "保存する変更はありません",
+  "editProfileCreateFailed": "データの作成に失敗しました：{error}",
+  "@editProfileCreateFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileAvatarNumber": "アバター {number}",
+  "@editProfileAvatarNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "editProfileImageSelectionFailed": "画像の選択に失敗しました。別の画像を選択してください",
+  "editProfileCancel": "キャンセル",
+  "editProfileConfirm": "確定",
+  "editProfileImageProcessingFailed": "画像の処理に失敗しました。別の画像を選択してください",
+  "editProfileLoadFailed": "データの読み込みに失敗しました：{error}",
+  "@editProfileLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileBioLabel": "自己紹介",
+  "editProfileBioHelper": "自分自身や創作スタイルについて簡単に紹介してください",
+  "editProfileBioHint": "例：ファンタジー、ヤンデレ、没入型恋愛のキャラクターを作るのが好きです。",
+  "editProfileUserNotFound": "ユーザーが見つかりません",
+  "editProfileGenerateIdFailed": "プレイヤーIDの生成に失敗しました。もう一度お試しください",
+  "editProfileSignedInUserNotFound": "現在ログインしているユーザーが見つかりません",
+  "editProfileAvatarReadFailed": "アバターの読み込みに失敗しました。ステータスコード：{statusCode}",
+  "@editProfileAvatarReadFailed": {
+    "placeholders": {
+      "statusCode": { "type": "int" }
+    }
+  },
+  "editProfileAvatarFileNotFound": "選択したアバターファイルが見つかりません：{path}",
+  "@editProfileAvatarFileNotFound": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "editProfileAvatarEmpty": "アバター画像のデータが空です",
+  "chatPageSendFailed": "送信に失敗しました。しばらくしてからもう一度お試しください 😢",
+  "chatPageRegenerateFailed": "再生成に失敗しました。元のメッセージは保持されています。もう一度お試しください。",
+  "chatPageRegenerating": "💭 もう一度考えています...",
+  "chatPageThinkingTooLong": "考え込んでいるようです。しばらくしてからもう一度お試しください……",
+  "chatPageAlreadyReplying": "返信中です。少し待ってから、重複して送信しないでください",
+  "chatPageMediaUploadFailed": "メディアのアップロードに失敗しました。もう一度お試しください",
+  "chatPageReportReceived": "ご報告ありがとうございます。できるだけ早く確認いたします",
+  "chatPageMessagesDeleted": "✅ {count} 件のメッセージを削除しました",
+  "@chatPageMessagesDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSelectPhotoFailed": "写真を選択できませんでした：{error}",
+  "@chatPageSelectPhotoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFound": "録音ファイルが見つかりません",
+  "chatPageRecordingEmpty": "録音ファイルが空です",
+  "chatPageAudioPlaybackFailed": "音声の再生に失敗しました：{error}",
+  "@chatPageAudioPlaybackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageMicrophonePermissionRequired": "録音するにはマイクの使用許可が必要です",
+  "chatPageStartRecordingFailed": "録音を開始できませんでした：{error}",
+  "@chatPageStartRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingCreationFailed": "録音ファイルの作成に失敗しました。もう一度録音してください",
+  "chatPageRecordingFailed": "録音に失敗しました：{error}",
+  "@chatPageRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFoundRetry": "録音ファイルが見つかりません。もう一度録音してください",
+  "chatPageRecordingEmptyRetry": "録音ファイルが空です。もう一度録音してください",
+  "chatPageNoRecordingToSend": "送信できる録音がありません",
+  "chatPagePointCost": "{count} ポイント",
+  "@chatPagePointCost": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageVoiceUploading": "音声をアップロード中……",
+  "chatPageChangeWatermarkColor": "透かしの色を変更",
+  "chatPageMinutesSeconds": "{minutes} 分 {seconds} 秒",
+  "@chatPageMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSeconds": "{seconds} 秒",
+  "@chatPageSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "characterEditSelectSupportingCharacter": "サブキャラクターを選択してください。",
+  "characterEditSelectGender": "キャラクターの性別を選択してください。",
+  "characterEditCharacterSettings": "キャラクター設定",
+  "characterEditWorldview": "世界観",
+  "characterEditSettingsMinLength": "キャラクター設定は10文字以上入力してください。",
+  "characterEditWorldviewMinLength": "世界観は20文字以上入力してください。",
+  "characterEditSupportingCharacters": "サブキャラクター",
+  "characterEditCharacterImage": "キャラクター画像",
+  "characterEditWorldviewHint": "世界の背景、歴史、時代、地域、勢力、制度、技術、魔法、世界のルールについて説明してください。",
+  "characterEditSettingsHint": "キャラクターの性格、価値観、考え方、感情的な反応、行動習慣、話し方、核となる信念について説明してください。",
+  "characterEditUnknownCharacter": "不明なキャラクター",
+  "characterEditEditSupportingCharacter": "サブキャラクターを編集",
+  "characterEditAddSupportingCharacter": "サブキャラクターを追加",
+  "characterEditSupportingCharacterName": "サブキャラクター名",
+  "characterEditGender": "性別",
+  "characterEditMale": "男性",
+  "characterEditFemale": "女性",
+  "characterEditOther": "その他",
+  "characterEditAge": "年齢",
+  "characterEditIdentityOccupation": "身分／職業",
+  "characterEditRelationshipWithMain": "メインキャラクターとの関係",
+  "characterEditRelationshipHint": "メインキャラクターとの過去、立場、感情、秘密、現在の関係について説明してください。",
+  "characterEditCharacterProfile": "人物設定",
+  "characterEditCharacterProfileHint": "性格、外見、習慣、価値観、能力、好み、苦手なもの、重要な経験について説明してください。",
+  "characterEditSpeakingStyle": "話し方",
+  "characterEditSpeakingStyleHint": "例：早口で、ツッコミが多く、率直に話す。",
+  "characterEditSupportingNameRequired": "サブキャラクター名を入力してください。",
+  "characterEditSupportingGenderRequired": "サブキャラクターの性別を選択してください。",
+  "characterEditProfileRequired": "人物設定を入力してください。",
+  "characterEditRelationshipTooLong": "メインキャラクターとの関係が1,500文字を超えています。",
+  "characterEditProfileTooLong": "人物設定が1,500文字を超えています。",
+  "characterEditSave": "保存",
+  "characterEditAdd": "追加",
+  "creatorProfileNoBio": "自己紹介はまだありません",
+  "creatorProfileNoBioHint": "このクリエイターはまだ自己紹介を追加していません。",
+  "creatorProfileNoCreatorMoments": "クリエイターによる投稿はまだありません",
+  "creatorProfileNoCreatorMomentsHint": "クリエイター本人として公開したコンテンツがここに表示されます。",
+  "creatorProfileNoCharacterMoments": "所属キャラクターによる投稿はまだありません",
+  "creatorProfileNoCharacterMomentsHint": "公開キャラクターが投稿したコンテンツがここに表示されます。",
+  "creatorProfileNoPublicMoments": "公開投稿はまだありません",
+  "creatorProfileNoPublicMomentsHint": "クリエイター本人と所属キャラクターが公開した投稿がここに表示されます。",
+  "creatorProfilePublicWorks": "公開作品",
+  "creatorProfileLikesReceived": "獲得した「いいね」",
+  "creatorProfileFollow": "フォロー",
+  "creatorProfileFollowing": "フォロー中",
+  "creatorProfileUnfollowed": "フォローを解除しました",
+  "creatorProfileFollowedCreator": "{creatorName}をフォローしました",
+  "@creatorProfileFollowedCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "creatorProfileOperationFailed": "操作に失敗しました。しばらくしてからもう一度お試しください",
+  "creatorProfileWorksLoadFailed": "作品の読み込みに失敗しました：{error}",
+  "@creatorProfileWorksLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareInvitation": "🦋 LoveyDoveyから届いた出会いの招待状",
+  "characterProfileShareCreator": "✦ クリエイター：{creatorName}",
+  "@characterProfileShareCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareMessage": "LoveyDoveyで「{characterName}」を検索して、二人だけの物語を始めましょう。",
+  "@characterProfileShareMessage": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileInvitationLabel": "キャラクター招待カード",
+  "characterProfileCardCreator": "クリエイター  {creatorName}",
+  "@characterProfileCardCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileCardSearchHint": "キャラクターを検索して、出会いを始めよう  🦋",
+  "characterProfileScanToDownload": "スキャンしてダウンロード",
+  "characterProfileShareTitle": "キャラクター「{characterName}」をシェア",
+  "@characterProfileShareTitle": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareSubject": "LoveyDoveyで{characterName}に会おう",
+  "@characterProfileShareSubject": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareFailed": "招待カードの作成に失敗しました。しばらくしてからもう一度お試しください",
+  "characterProfilePrivateShareUnavailable": "非公開キャラクターは現在シェアできません",
+  "characterProfileShareCard": "招待カードをシェア",
+  "characterProfileShareCharacter": "キャラクターをシェア",
+  "characterProfileReportCharacter": "キャラクターを通報",
+  "characterProfileTranslate": "翻訳"
 }

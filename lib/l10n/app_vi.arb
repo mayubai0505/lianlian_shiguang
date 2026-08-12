@@ -1302,7 +1302,7 @@
   },
   "tab_heartbeat_diary": "Nhật ký rung động",
   "tab_daily_chit_chat": "Trò chuyện hàng ngày",
-  "task_desc_chat_3_times": "Thực hiện 3 cuộc trò chuyện hàng ngày với nhân vật",
+  "task_desc_chat_3_times": "Trò chuyện với nhân vật 3 lần trong Chế độ Hằng ngày",
   "tab_story_progression": "Tiến triển cốt truyện",
   "task_desc_story_1_time": "Hoàn thành 1 lần tương tác chế độ cốt truyện",
   "tab_social_tour": "Dạo quanh mạng xã hội",
@@ -2381,5 +2381,426 @@
   },
   "mailCaseNumber": "Mã vụ việc",
   "mailCopyCaseNumber": "Sao chép mã vụ việc",
-  "mailCaseNumberCopied": "Đã sao chép mã vụ việc"
+  "mailCaseNumberCopied": "Đã sao chép mã vụ việc",
+  "profilePageAboutMe": "📝 Giới thiệu về tôi",
+  "profilePageTabBio": "Giới thiệu",
+  "profilePageTabCharacters": "Nhân vật",
+  "profilePageTabMoments": "Bài đăng",
+  "profilePageEditProfile": "Chỉnh sửa hồ sơ",
+  "profilePageFriends": "Bạn bè",
+  "profilePageWorks": "Tác phẩm",
+  "profilePageFollowing": "Đang theo dõi",
+  "profilePageFollowers": "Người theo dõi",
+  "profilePageHeartbeatDiary": "Nhật ký rung động",
+  "profilePageEditCharacter": "Chỉnh sửa nhân vật",
+  "profilePagePreviewCharacter": "Xem trước hồ sơ nhân vật",
+  "profilePageNoBio": "Chưa có phần giới thiệu",
+  "profilePageNoBioHint": "Nhấn để viết đôi điều về bạn.",
+  "profilePageCreateCharacter": "Tạo nhân vật mới",
+  "profilePageNoCharacters": "Chưa tạo nhân vật nào",
+  "profilePageNoCharactersHint": "Hãy bắt đầu tạo nhân vật đầu tiên của bạn.",
+  "profilePageCharacterActions": "Thao tác với nhân vật",
+  "profilePagePublic": "Công khai",
+  "profilePagePrivate": "Riêng tư",
+  "profilePageCreator": "Nhà sáng tạo",
+  "profilePageSelectPostingIdentity": "Chọn danh tính đăng bài",
+  "profilePagePostAsCreator": "Đăng với tư cách nhà sáng tạo",
+  "profilePagePublicCharacter": "Nhân vật công khai",
+  "profilePagePrivateCharacter": "Nhân vật riêng tư",
+  "profilePagePleaseSignIn": "Vui lòng đăng nhập trước",
+  "profilePagePublishMoment": "Đăng bài",
+  "profilePageFilterAll": "Tất cả",
+  "profilePageFilterCreator": "Tôi",
+  "profilePageFilterCharacter": "Nhân vật",
+  "profilePageMomentsLoadFailed": "Không thể tải bài đăng",
+  "profilePageTryAgainLater": "Vui lòng thử lại sau.",
+  "profilePageNoCreatorMoments": "Bạn chưa đăng bài nào",
+  "profilePageNoCreatorMomentsHint": "Nội dung được đăng với tư cách nhà sáng tạo sẽ hiển thị tại đây.",
+  "profilePageNoCharacterMoments": "Các nhân vật của bạn chưa đăng bài nào",
+  "profilePageNoCharacterMomentsHint": "Nội dung được đăng với tư cách nhân vật sẽ hiển thị tại đây.",
+  "profilePageNoMoments": "Chưa có bài đăng",
+  "profilePageNoMomentsHint": "Bài đăng của bạn và các nhân vật sẽ hiển thị tại đây.",
+  "profilePageDeleteMomentTitle": "Xóa bài đăng",
+  "profilePageDeleteMomentConfirm": "Bạn có chắc muốn xóa vĩnh viễn bài đăng này không?",
+  "profilePageCancel": "Hủy",
+  "profilePageDelete": "Xóa",
+  "profilePageMomentDeleted": "Đã xóa bài đăng",
+  "profilePageDeleteFailed": "Xóa không thành công. Vui lòng thử lại sau.",
+  "profilePageReferralCompleted": "Đã hoàn thành Lời mời Ngôi sao",
+  "profilePageInviter": "Người mời: {inviterId}",
+  "@profilePageInviter": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralRewardReceived": "Cả hai bên đã nhận được 50 Bông Hoa",
+  "profilePageClaimed": "Đã nhận",
+  "profilePageInviterBound": "Đã liên kết người mời: {inviterId}",
+  "@profilePageInviterBound": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralProgressHint": "Sau khi hoàn thành 15 tin nhắn trò chuyện, mỗi bên sẽ nhận được 50 Bông Hoa",
+  "profilePageAlreadyCheckedIn": "Hôm nay bạn đã điểm danh rồi",
+  "profilePageReferralBindFailed": "Liên kết không thành công. Vui lòng thử lại sau.",
+  "profilePageCharacterNotFound": "Không tìm thấy dữ liệu của nhân vật này",
+  "periodGuideTitle": "Sử dụng Nhật ký Kinh nguyệt như thế nào?",
+  "periodGuideContent": "① Trước tiên, hãy chọn một ngày trên lịch.\n② Chọn “Bắt đầu hôm nay”, “Vẫn đang có kinh” hoặc “Kết thúc hôm nay”.\n③ Chọn tâm trạng và tình trạng cơ thể trong ngày. Bạn cũng có thể tự bổ sung thông tin.\n④ Nhấn Lưu để nhân vật có thể hiểu tình trạng của bạn hôm nay khi trò chuyện.\n\nNgày dự đoán sẽ được điều chỉnh dựa trên lịch sử ghi chép của bạn và chỉ dùng để tham khảo cho việc theo dõi cá nhân.",
+  "periodGotIt": "Tôi hiểu rồi",
+  "periodSelectAtLeastOne": "Vui lòng chọn ít nhất một mục để ghi lại",
+  "periodFutureDateError": "Không thể đánh dấu trạng thái kinh nguyệt cho ngày trong tương lai.",
+  "periodAlreadyOngoingError": "Đã có một kỳ kinh đang diễn ra. Vui lòng kết thúc kỳ kinh đó trước.",
+  "periodNoOngoingError": "Hiện không có kỳ kinh nào đang diễn ra. Vui lòng chọn “Bắt đầu hôm nay” trước.",
+  "periodBeforeStartError": "Ngày không được sớm hơn ngày bắt đầu của kỳ kinh hiện tại.",
+  "periodEndBeforeStartError": "Ngày kết thúc không được sớm hơn ngày bắt đầu.",
+  "periodRecordSaved": "Đã lưu ghi chép ngày {date}",
+  "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+  "periodSaveFailed": "Lưu không thành công. Vui lòng thử lại sau",
+  "periodDeleteTitle": "Xóa ghi chép kỳ kinh này?",
+  "periodDeleteContent": "Sau khi xóa, chu kỳ trung bình và lần dự đoán tiếp theo cũng sẽ được tính lại.",
+  "periodCancel": "Hủy",
+  "periodDelete": "Xóa",
+  "periodNoOngoing": "Hiện không có kỳ kinh nào đang diễn ra",
+  "periodDayCount": "Ngày thứ {count} của kỳ kinh",
+  "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+  "periodHelp": "Hướng dẫn sử dụng",
+  "periodAverageCycle": "Chu kỳ trung bình",
+  "periodAverageDuration": "Thời gian hành kinh trung bình",
+  "periodDays": "{count} ngày",
+  "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodNextPrediction": "Dự đoán tiếp theo",
+  "periodCalculatedAfterRecording": "Tính sau khi ghi chép",
+  "periodInsufficientData": "Hiện chưa có đủ dữ liệu. Tạm thời, dự đoán sẽ sử dụng chu kỳ 28 ngày và thời gian hành kinh 5 ngày.",
+  "periodPredictionDisclaimer": "Dự đoán dựa trên các ghi chép hiện có. Ngày chỉ dùng để tham khảo cho việc theo dõi cá nhân.",
+  "periodStartedToday": "🩸 Bắt đầu hôm nay",
+  "periodStillOngoing": "Vẫn đang có kinh",
+  "periodEndedToday": "Kết thúc hôm nay",
+  "periodDateNotReached": "Ngày này vẫn chưa đến～",
+  "periodDateBeforeStart": "Ngày này sớm hơn ngày bắt đầu của kỳ kinh hiện tại.",
+  "periodMoodOkay": "Khá ổn",
+  "periodMoodHappy": "Vui vẻ",
+  "periodMoodLow": "Buồn",
+  "periodMoodUnwell": "Khó chịu",
+  "periodMoodIrritable": "Cáu kỉnh",
+  "periodMoodTired": "Mệt mỏi",
+  "periodMoodAnxious": "Lo lắng",
+  "periodSymptomAbdominalPain": "Đau bụng",
+  "periodSymptomLowerBackPain": "Đau thắt lưng",
+  "periodSymptomHeadache": "Đau đầu",
+  "periodSymptomBreastTenderness": "Căng tức ngực",
+  "periodSymptomSwelling": "Phù nề",
+  "periodSymptomSleepy": "Buồn ngủ",
+  "periodSymptomIncreasedAppetite": "Tăng cảm giác thèm ăn",
+  "periodSymptomDigestiveDiscomfort": "Khó chịu đường tiêu hóa",
+  "periodDiaryTitle": "Nhật ký quan tâm của {characterName}",
+  "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodLoadFailed": "Không thể tải ghi chép. Vui lòng thử lại sau",
+  "periodWeekdaySun": "CN",
+  "periodWeekdayMon": "T2",
+  "periodWeekdayTue": "T3",
+  "periodWeekdayWed": "T4",
+  "periodWeekdayThu": "T5",
+  "periodWeekdayFri": "T6",
+  "periodWeekdaySat": "T7",
+  "periodSaveInstruction": "Sau khi chọn trạng thái, hãy nhấn “Lưu ghi chép hôm nay” ở phía dưới để lưu chính thức.",
+  "periodTodayMood": "Tâm trạng hôm nay (Có thể chọn nhiều mục)",
+  "periodMoodDescription": "Đây là những ghi chép nhật ký trong ngày, không phải biểu tượng hiển thị trên lịch.",
+  "periodOtherMood": "Tâm trạng khác",
+  "periodOtherMoodHint": "Ví dụ: tủi thân, cảm thấy bất an……",
+  "periodTodaySymptoms": "Tình trạng cơ thể hôm nay (Có thể chọn nhiều mục)",
+  "periodOtherSymptom": "Tình trạng cơ thể khác",
+  "periodOtherSymptomHint": "Ví dụ: cảm thấy lạnh, không muốn ăn……",
+  "periodNoteForCharacter": "Điều bạn muốn {characterName} biết (Không bắt buộc)",
+  "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodNoteHint": "Ví dụ: hôm nay tôi muốn nghỉ ngơi yên tĩnh và không muốn bị thúc giục……",
+  "periodSaving": "Đang lưu…",
+  "periodSaveToday": "Lưu ghi chép hôm nay",
+  "periodHistory": "Lịch sử kinh nguyệt",
+  "periodOngoing": "Đang diễn ra",
+  "periodTotalDays": "Tổng cộng {count} ngày",
+  "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodDeleteRecord": "Xóa ghi chép",
+  "privateProfilePleaseSignIn": "Vui lòng đăng nhập trước",
+  "privateProfileLoreLoadFailed": "Không thể tải Mảnh Ký Ức: {error}",
+  "@privateProfileLoreLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "privateProfileWriteNewLore": "Viết Mảnh Ký Ức mới ({count} / {limit})",
+  "@privateProfileWriteNewLore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
+    }
+  },
+  "privateProfileNoLore": "Chưa có Mảnh Ký Ức",
+  "privateProfileNoLoreHint": "Bạn có thể sắp xếp các thiết lập thử nghiệm, manh mối câu chuyện và ký ức quan trọng của nhân vật tại đây.",
+  "privateProfileUntitledLore": "Mảnh chưa đặt tên",
+  "privateProfileEdit": "Chỉnh sửa",
+  "privateProfileDelete": "Xóa",
+  "privateProfileAddLore": "Thêm Mảnh Ký Ức",
+  "privateProfileLoreTitle": "Tiêu đề",
+  "privateProfileLoreTeaser": "Gợi ý ngắn",
+  "privateProfileLoreContent": "Nội dung đầy đủ",
+  "privateProfileLockLore": "Khóa mảnh ký ức",
+  "privateProfileLockLoreHint": "Hiện tại, nhân vật riêng tư chỉ hiển thị với nhà sáng tạo. Trường này sẽ được giữ lại để tiếp tục sử dụng khi nhân vật được đặt thành công khai.",
+  "privateProfileCancel": "Hủy",
+  "privateProfileTitleContentRequired": "Vui lòng nhập tiêu đề và nội dung",
+  "privateProfileLoreAdded": "Đã thêm Mảnh Ký Ức",
+  "privateProfileAddFailed": "Thêm không thành công. Vui lòng thử lại sau",
+  "privateProfilePublish": "Đăng",
+  "privateProfileDeleteLoreTitle": "Xóa Mảnh Ký Ức",
+  "privateProfileDeleteLoreConfirm": "Bạn có chắc muốn xóa vĩnh viễn Mảnh Ký Ức này không?",
+  "privateProfileLoreDeleted": "Đã xóa Mảnh Ký Ức",
+  "privateProfileDeleteFailed": "Xóa không thành công. Vui lòng thử lại sau",
+  "privateProfileEditLore": "Chỉnh sửa Mảnh Ký Ức",
+  "privateProfileSave": "Lưu",
+  "editProfileBirthdayReminderTitle": "🎂 Lời nhắc nhỏ",
+  "editProfileBirthdayReminderContent": "Ngày sinh của bạn sẽ ảnh hưởng đến lời chúc mừng sinh nhật từ nhân vật, quà sinh nhật và các sự kiện liên quan.\n\nBạn nên xác nhận ngày sinh trước khi hoàn tất thiết lập\nđể tránh ảnh hưởng đến phần thưởng sinh nhật sau này.",
+  "editProfileGotIt": "Tôi hiểu rồi",
+  "editProfileBirthdayConfirmTitle": "🎂 Xác nhận ngày sinh",
+  "editProfileBirthdayConfirmContent": "Vui lòng kiểm tra xem ngày sinh có chính xác không.\n\nNgày sinh sẽ được sử dụng cho lời chúc mừng sinh nhật, quà sinh nhật và các sự kiện liên quan.\n\nĐể tránh nhận phần thưởng sinh nhật nhiều lần, bạn sẽ không thể thay đổi ngày sinh sau khi hoàn tất thiết lập.\n\nBạn có chắc muốn sử dụng ngày sinh này không?",
+  "editProfileReturnToEdit": "Quay lại chỉnh sửa",
+  "editProfileConfirmSetting": "Xác nhận thiết lập",
+  "editProfileDefaultNickname": "Lữ khách mới quen",
+  "editProfileNoChanges": "Không có thay đổi nào cần lưu",
+  "editProfileCreateFailed": "Không thể tạo dữ liệu: {error}",
+  "@editProfileCreateFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileAvatarNumber": "Ảnh đại diện {number}",
+  "@editProfileAvatarNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "editProfileImageSelectionFailed": "Không thể chọn hình ảnh. Vui lòng chọn hình ảnh khác",
+  "editProfileCancel": "Hủy",
+  "editProfileConfirm": "Xác nhận",
+  "editProfileImageProcessingFailed": "Không thể xử lý hình ảnh. Vui lòng chọn hình ảnh khác",
+  "editProfileLoadFailed": "Không thể tải dữ liệu: {error}",
+  "@editProfileLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileBioLabel": "Giới thiệu",
+  "editProfileBioHelper": "Giới thiệu ngắn gọn về bản thân hoặc phong cách sáng tạo của bạn",
+  "editProfileBioHint": "Ví dụ: Tôi thích sáng tạo các nhân vật lãng mạn giả tưởng, ám ảnh và nhập vai.",
+  "editProfileUserNotFound": "Không tìm thấy người dùng",
+  "editProfileGenerateIdFailed": "Không thể tạo ID Người chơi. Vui lòng thử lại",
+  "editProfileSignedInUserNotFound": "Không tìm thấy người dùng hiện đang đăng nhập",
+  "editProfileAvatarReadFailed": "Không thể tải ảnh đại diện. Mã trạng thái: {statusCode}",
+  "@editProfileAvatarReadFailed": {
+    "placeholders": {
+      "statusCode": { "type": "int" }
+    }
+  },
+  "editProfileAvatarFileNotFound": "Không tìm thấy tệp ảnh đại diện đã chọn: {path}",
+  "@editProfileAvatarFileNotFound": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "editProfileAvatarEmpty": "Dữ liệu ảnh đại diện trống",
+  "chatPageSendFailed": "Gửi không thành công. Vui lòng thử lại sau 😢",
+  "chatPageRegenerateFailed": "Tạo lại không thành công. Tin nhắn ban đầu đã được giữ lại. Vui lòng thử lại.",
+  "chatPageRegenerating": "💭 Đang suy nghĩ lại...",
+  "chatPageThinkingTooLong": "Có vẻ anh ấy đang trầm ngâm. Vui lòng thử lại sau……",
+  "chatPageAlreadyReplying": "Anh ấy đang trả lời. Vui lòng chờ một lát và đừng gửi lại",
+  "chatPageMediaUploadFailed": "Tải nội dung đa phương tiện lên không thành công. Vui lòng thử lại",
+  "chatPageReportReceived": "Cảm ơn bạn đã báo cáo. Chúng tôi sẽ kiểm tra sớm nhất có thể",
+  "chatPageMessagesDeleted": "✅ Đã xóa thành công {count} tin nhắn",
+  "@chatPageMessagesDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSelectPhotoFailed": "Không thể chọn ảnh: {error}",
+  "@chatPageSelectPhotoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFound": "Không tìm thấy tệp ghi âm",
+  "chatPageRecordingEmpty": "Tệp ghi âm trống",
+  "chatPageAudioPlaybackFailed": "Không thể phát âm thanh: {error}",
+  "@chatPageAudioPlaybackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageMicrophonePermissionRequired": "Cần cấp quyền sử dụng micrô để ghi âm",
+  "chatPageStartRecordingFailed": "Không thể bắt đầu ghi âm: {error}",
+  "@chatPageStartRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingCreationFailed": "Không thể tạo tệp ghi âm. Vui lòng ghi âm lại",
+  "chatPageRecordingFailed": "Ghi âm không thành công: {error}",
+  "@chatPageRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFoundRetry": "Không tìm thấy tệp ghi âm. Vui lòng ghi âm lại",
+  "chatPageRecordingEmptyRetry": "Tệp ghi âm trống. Vui lòng ghi âm lại",
+  "chatPageNoRecordingToSend": "Không có bản ghi âm nào để gửi",
+  "chatPagePointCost": "{count} điểm",
+  "@chatPagePointCost": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageVoiceUploading": "Đang tải bản ghi âm lên……",
+  "chatPageChangeWatermarkColor": "Đổi màu hình mờ",
+  "chatPageMinutesSeconds": "{minutes} phút {seconds} giây",
+  "@chatPageMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSeconds": "{seconds} giây",
+  "@chatPageSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "characterEditSelectSupportingCharacter": "Vui lòng chọn nhân vật phụ.",
+  "characterEditSelectGender": "Vui lòng chọn giới tính của nhân vật.",
+  "characterEditCharacterSettings": "Thiết lập Nhân vật",
+  "characterEditWorldview": "Bối cảnh Thế giới",
+  "characterEditSettingsMinLength": "Thiết lập nhân vật phải có ít nhất 10 ký tự.",
+  "characterEditWorldviewMinLength": "Bối cảnh thế giới phải có ít nhất 20 ký tự.",
+  "characterEditSupportingCharacters": "Nhân vật Phụ",
+  "characterEditCharacterImage": "Hình ảnh Nhân vật",
+  "characterEditWorldviewHint": "Mô tả bối cảnh, lịch sử, thời đại, khu vực, thế lực, chế độ, công nghệ, phép thuật và quy tắc của thế giới.",
+  "characterEditSettingsHint": "Mô tả tính cách, giá trị, cách suy nghĩ, phản ứng cảm xúc, thói quen hành vi, cách nói chuyện và niềm tin cốt lõi của nhân vật.",
+  "characterEditUnknownCharacter": "Nhân vật Không xác định",
+  "characterEditEditSupportingCharacter": "Chỉnh sửa Nhân vật Phụ",
+  "characterEditAddSupportingCharacter": "Thêm Nhân vật Phụ",
+  "characterEditSupportingCharacterName": "Tên Nhân vật Phụ",
+  "characterEditGender": "Giới tính",
+  "characterEditMale": "Nam",
+  "characterEditFemale": "Nữ",
+  "characterEditOther": "Khác",
+  "characterEditAge": "Tuổi",
+  "characterEditIdentityOccupation": "Thân phận／Nghề nghiệp",
+  "characterEditRelationshipWithMain": "Mối quan hệ với Nhân vật Chính",
+  "characterEditRelationshipHint": "Mô tả quá khứ, lập trường, tình cảm, bí mật và mối quan hệ hiện tại với nhân vật chính.",
+  "characterEditCharacterProfile": "Thiết lập Nhân vật",
+  "characterEditCharacterProfileHint": "Mô tả tính cách, ngoại hình, thói quen, giá trị, khả năng, sở thích, điều không thích và những trải nghiệm quan trọng của nhân vật.",
+  "characterEditSpeakingStyle": "Cách nói chuyện",
+  "characterEditSpeakingStyleHint": "Ví dụ: nói nhanh, thích châm chọc và nói chuyện thẳng thắn.",
+  "characterEditSupportingNameRequired": "Vui lòng nhập tên nhân vật phụ.",
+  "characterEditSupportingGenderRequired": "Vui lòng chọn giới tính của nhân vật phụ.",
+  "characterEditProfileRequired": "Vui lòng nhập thiết lập nhân vật.",
+  "characterEditRelationshipTooLong": "Mối quan hệ với nhân vật chính đã vượt quá 1.500 ký tự.",
+  "characterEditProfileTooLong": "Thiết lập nhân vật đã vượt quá 1.500 ký tự.",
+  "characterEditSave": "Lưu",
+  "characterEditAdd": "Thêm",
+  "creatorProfileNoBio": "Chưa có phần giới thiệu",
+  "creatorProfileNoBioHint": "Nhà sáng tạo này chưa thêm phần giới thiệu.",
+  "creatorProfileNoCreatorMoments": "Nhà sáng tạo chưa đăng bài nào",
+  "creatorProfileNoCreatorMomentsHint": "Nội dung công khai được đăng với tư cách nhà sáng tạo sẽ hiển thị tại đây.",
+  "creatorProfileNoCharacterMoments": "Các nhân vật của nhà sáng tạo chưa đăng bài nào",
+  "creatorProfileNoCharacterMomentsHint": "Nội dung do các nhân vật công khai của nhà sáng tạo đăng sẽ hiển thị tại đây.",
+  "creatorProfileNoPublicMoments": "Chưa có bài đăng công khai",
+  "creatorProfileNoPublicMomentsHint": "Các bài đăng công khai của nhà sáng tạo và nhân vật sẽ hiển thị tại đây.",
+  "creatorProfilePublicWorks": "Tác phẩm Công khai",
+  "creatorProfileLikesReceived": "Lượt thích đã nhận",
+  "creatorProfileFollow": "Theo dõi",
+  "creatorProfileFollowing": "Đang theo dõi",
+  "creatorProfileUnfollowed": "Đã bỏ theo dõi",
+  "creatorProfileFollowedCreator": "Đã theo dõi {creatorName}",
+  "@creatorProfileFollowedCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "creatorProfileOperationFailed": "Thao tác không thành công. Vui lòng thử lại sau",
+  "creatorProfileWorksLoadFailed": "Không thể tải tác phẩm: {error}",
+  "@creatorProfileWorksLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareInvitation": "🦋 Lời mời gặp gỡ từ LoveyDovey",
+  "characterProfileShareCreator": "✦ Nhà sáng tạo: {creatorName}",
+  "@characterProfileShareCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareMessage": "Tìm kiếm “{characterName}” trong LoveyDovey và bắt đầu câu chuyện chỉ thuộc về hai bạn.",
+  "@characterProfileShareMessage": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileInvitationLabel": "Thiệp mời Nhân vật",
+  "characterProfileCardCreator": "Nhà sáng tạo  {creatorName}",
+  "@characterProfileCardCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileCardSearchHint": "Tìm kiếm nhân vật và bắt đầu cuộc gặp gỡ  🦋",
+  "characterProfileScanToDownload": "Quét để Tải xuống",
+  "characterProfileShareTitle": "Chia sẻ nhân vật “{characterName}”",
+  "@characterProfileShareTitle": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareSubject": "Gặp gỡ {characterName} tại LoveyDovey",
+  "@characterProfileShareSubject": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareFailed": "Không thể tạo thiệp mời. Vui lòng thử lại sau",
+  "characterProfilePrivateShareUnavailable": "Hiện không thể chia sẻ nhân vật riêng tư",
+  "characterProfileShareCard": "Chia sẻ Thiệp mời",
+  "characterProfileShareCharacter": "Chia sẻ Nhân vật",
+  "characterProfileReportCharacter": "Báo cáo Nhân vật",
+  "characterProfileTranslate": "Dịch"
 }

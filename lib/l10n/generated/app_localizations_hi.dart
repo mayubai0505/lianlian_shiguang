@@ -3228,7 +3228,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get tab_daily_chit_chat => 'दैनिक बातचीत';
 
   @override
-  String get task_desc_chat_3_times => 'किसी पात्र के साथ 3 बार दैनिक चैट करें';
+  String get task_desc_chat_3_times =>
+      'दैनिक मोड में किसी पात्र से 3 बार चैट करें';
 
   @override
   String get tab_story_progression => 'कहानी की प्रगति';
@@ -5077,4 +5078,921 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get mailCaseNumberCopied => 'मामला संख्या कॉपी हो गई';
+
+  @override
+  String get profilePageAboutMe => '📝 मेरे बारे में';
+
+  @override
+  String get profilePageTabBio => 'परिचय';
+
+  @override
+  String get profilePageTabCharacters => 'पात्र';
+
+  @override
+  String get profilePageTabMoments => 'पोस्ट';
+
+  @override
+  String get profilePageEditProfile => 'प्रोफ़ाइल संपादित करें';
+
+  @override
+  String get profilePageFriends => 'दोस्त';
+
+  @override
+  String get profilePageWorks => 'रचनाएँ';
+
+  @override
+  String get profilePageFollowing => 'फ़ॉलो किए गए';
+
+  @override
+  String get profilePageFollowers => 'फ़ॉलोअर्स';
+
+  @override
+  String get profilePageHeartbeatDiary => 'दिल की धड़कनों की डायरी';
+
+  @override
+  String get profilePageEditCharacter => 'पात्र संपादित करें';
+
+  @override
+  String get profilePagePreviewCharacter =>
+      'पात्र की प्रोफ़ाइल का पूर्वावलोकन करें';
+
+  @override
+  String get profilePageNoBio => 'अभी तक कोई परिचय नहीं है';
+
+  @override
+  String get profilePageNoBioHint => 'अपने बारे में लिखने के लिए टैप करें।';
+
+  @override
+  String get profilePageCreateCharacter => 'नया पात्र बनाएँ';
+
+  @override
+  String get profilePageNoCharacters => 'अभी तक कोई पात्र नहीं बनाया गया है';
+
+  @override
+  String get profilePageNoCharactersHint => 'अपना पहला पात्र बनाना शुरू करें।';
+
+  @override
+  String get profilePageCharacterActions => 'पात्र की कार्रवाइयाँ';
+
+  @override
+  String get profilePagePublic => 'सार्वजनिक';
+
+  @override
+  String get profilePagePrivate => 'निजी';
+
+  @override
+  String get profilePageCreator => 'निर्माता';
+
+  @override
+  String get profilePageSelectPostingIdentity => 'पोस्ट करने की पहचान चुनें';
+
+  @override
+  String get profilePagePostAsCreator => 'निर्माता के रूप में पोस्ट करें';
+
+  @override
+  String get profilePagePublicCharacter => 'सार्वजनिक पात्र';
+
+  @override
+  String get profilePagePrivateCharacter => 'निजी पात्र';
+
+  @override
+  String get profilePagePleaseSignIn => 'कृपया पहले साइन इन करें';
+
+  @override
+  String get profilePagePublishMoment => 'पोस्ट प्रकाशित करें';
+
+  @override
+  String get profilePageFilterAll => 'सभी';
+
+  @override
+  String get profilePageFilterCreator => 'मैं';
+
+  @override
+  String get profilePageFilterCharacter => 'पात्र';
+
+  @override
+  String get profilePageMomentsLoadFailed => 'पोस्ट लोड नहीं हो सकीं';
+
+  @override
+  String get profilePageTryAgainLater => 'कृपया बाद में फिर प्रयास करें।';
+
+  @override
+  String get profilePageNoCreatorMoments =>
+      'आपने अभी तक कोई पोस्ट प्रकाशित नहीं की है';
+
+  @override
+  String get profilePageNoCreatorMomentsHint =>
+      'निर्माता के रूप में प्रकाशित सामग्री यहाँ दिखाई देगी।';
+
+  @override
+  String get profilePageNoCharacterMoments =>
+      'आपके पात्रों ने अभी तक कोई पोस्ट प्रकाशित नहीं की है';
+
+  @override
+  String get profilePageNoCharacterMomentsHint =>
+      'पात्र के रूप में प्रकाशित सामग्री यहाँ दिखाई देगी।';
+
+  @override
+  String get profilePageNoMoments => 'अभी तक कोई पोस्ट नहीं है';
+
+  @override
+  String get profilePageNoMomentsHint =>
+      'आपके और आपके पात्रों द्वारा प्रकाशित पोस्ट यहाँ दिखाई देंगी।';
+
+  @override
+  String get profilePageDeleteMomentTitle => 'पोस्ट हटाएँ';
+
+  @override
+  String get profilePageDeleteMomentConfirm =>
+      'क्या आप वाकई इस पोस्ट को स्थायी रूप से हटाना चाहते हैं?';
+
+  @override
+  String get profilePageCancel => 'रद्द करें';
+
+  @override
+  String get profilePageDelete => 'हटाएँ';
+
+  @override
+  String get profilePageMomentDeleted => 'पोस्ट हटा दी गई';
+
+  @override
+  String get profilePageDeleteFailed =>
+      'हटाना विफल रहा। कृपया बाद में फिर प्रयास करें।';
+
+  @override
+  String get profilePageReferralCompleted => 'सितारा आमंत्रण पूरा हुआ';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return 'आमंत्रित करने वाला: $inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived => 'दोनों को 50 फूल मिल गए हैं';
+
+  @override
+  String get profilePageClaimed => 'प्राप्त किया गया';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return 'आमंत्रित करने वाला लिंक हो गया: $inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint =>
+      'चैट के 15 संदेश पूरे करने के बाद दोनों को 50 फूल मिलेंगे';
+
+  @override
+  String get profilePageAlreadyCheckedIn => 'आप आज पहले ही चेक-इन कर चुके हैं';
+
+  @override
+  String get profilePageReferralBindFailed =>
+      'लिंक करना विफल रहा। कृपया बाद में फिर प्रयास करें।';
+
+  @override
+  String get profilePageCharacterNotFound => 'इस पात्र का डेटा नहीं मिला';
+
+  @override
+  String get periodGuideTitle => 'मासिक धर्म डायरी का उपयोग कैसे करें?';
+
+  @override
+  String get periodGuideContent =>
+      '① सबसे पहले कैलेंडर पर कोई तारीख चुनें।\n② “आज शुरू हुआ”, “मासिक धर्म अभी जारी है” या “आज समाप्त हुआ” चुनें।\n③ आज की मनोदशा और शारीरिक स्थिति चुनें। आप अपनी ओर से अतिरिक्त जानकारी भी लिख सकती हैं।\n④ सेव दबाएँ, ताकि चैट के दौरान पात्र आपकी आज की स्थिति समझ सके।\n\nअनुमानित तारीखें आपके पिछले रिकॉर्ड के आधार पर समायोजित होंगी और केवल व्यक्तिगत रिकॉर्ड के संदर्भ के लिए हैं।';
+
+  @override
+  String get periodGotIt => 'समझ गई';
+
+  @override
+  String get periodSelectAtLeastOne =>
+      'कृपया रिकॉर्ड करने के लिए कम से कम एक विकल्प चुनें';
+
+  @override
+  String get periodFutureDateError =>
+      'भविष्य की तारीख पर मासिक धर्म की स्थिति दर्ज नहीं की जा सकती।';
+
+  @override
+  String get periodAlreadyOngoingError =>
+      'मासिक धर्म का एक रिकॉर्ड पहले से जारी है। कृपया पहले उसे समाप्त करें।';
+
+  @override
+  String get periodNoOngoingError =>
+      'अभी कोई मासिक धर्म जारी नहीं है। कृपया पहले “आज शुरू हुआ” चुनें।';
+
+  @override
+  String get periodBeforeStartError =>
+      'तारीख वर्तमान मासिक धर्म की शुरुआत की तारीख से पहले की नहीं हो सकती।';
+
+  @override
+  String get periodEndBeforeStartError =>
+      'समाप्ति की तारीख शुरुआत की तारीख से पहले की नहीं हो सकती।';
+
+  @override
+  String periodRecordSaved(String date) {
+    return '$date का रिकॉर्ड सेव हो गया';
+  }
+
+  @override
+  String get periodSaveFailed =>
+      'सेव करना विफल रहा। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get periodDeleteTitle => 'मासिक धर्म का यह रिकॉर्ड हटाएँ?';
+
+  @override
+  String get periodDeleteContent =>
+      'हटाने के बाद औसत चक्र और अगले अनुमान की दोबारा गणना की जाएगी।';
+
+  @override
+  String get periodCancel => 'रद्द करें';
+
+  @override
+  String get periodDelete => 'हटाएँ';
+
+  @override
+  String get periodNoOngoing => 'अभी कोई मासिक धर्म जारी नहीं है';
+
+  @override
+  String periodDayCount(int count) {
+    return 'मासिक धर्म का $countवाँ दिन';
+  }
+
+  @override
+  String get periodHelp => 'उपयोग निर्देश';
+
+  @override
+  String get periodAverageCycle => 'औसत चक्र';
+
+  @override
+  String get periodAverageDuration => 'मासिक धर्म की औसत अवधि';
+
+  @override
+  String periodDays(int count) {
+    return '$count दिन';
+  }
+
+  @override
+  String get periodNextPrediction => 'अगला अनुमान';
+
+  @override
+  String get periodCalculatedAfterRecording => 'रिकॉर्ड करने के बाद गणना होगी';
+
+  @override
+  String get periodInsufficientData =>
+      'अभी पर्याप्त डेटा उपलब्ध नहीं है। फिलहाल 28 दिनों के चक्र और 5 दिनों के मासिक धर्म के आधार पर अनुमान लगाया जाएगा।';
+
+  @override
+  String get periodPredictionDisclaimer =>
+      'यह अनुमान मौजूदा रिकॉर्ड पर आधारित है। तारीखें केवल व्यक्तिगत रिकॉर्ड के संदर्भ के लिए हैं।';
+
+  @override
+  String get periodStartedToday => '🩸 आज शुरू हुआ';
+
+  @override
+  String get periodStillOngoing => 'मासिक धर्म अभी जारी है';
+
+  @override
+  String get periodEndedToday => 'आज समाप्त हुआ';
+
+  @override
+  String get periodDateNotReached => 'यह दिन अभी आया नहीं है～';
+
+  @override
+  String get periodDateBeforeStart =>
+      'यह तारीख वर्तमान मासिक धर्म की शुरुआत की तारीख से पहले की है।';
+
+  @override
+  String get periodMoodOkay => 'काफ़ी अच्छा';
+
+  @override
+  String get periodMoodHappy => 'खुश';
+
+  @override
+  String get periodMoodLow => 'उदास';
+
+  @override
+  String get periodMoodUnwell => 'अस्वस्थ';
+
+  @override
+  String get periodMoodIrritable => 'चिड़चिड़ी';
+
+  @override
+  String get periodMoodTired => 'थकी हुई';
+
+  @override
+  String get periodMoodAnxious => 'चिंतित';
+
+  @override
+  String get periodSymptomAbdominalPain => 'पेट दर्द';
+
+  @override
+  String get periodSymptomLowerBackPain => 'कमर दर्द';
+
+  @override
+  String get periodSymptomHeadache => 'सिरदर्द';
+
+  @override
+  String get periodSymptomBreastTenderness => 'स्तनों में दर्द';
+
+  @override
+  String get periodSymptomSwelling => 'सूजन';
+
+  @override
+  String get periodSymptomSleepy => 'नींद आना';
+
+  @override
+  String get periodSymptomIncreasedAppetite => 'भूख बढ़ना';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => 'पाचन संबंधी परेशानी';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return '$characterName की देखभाल भरी डायरी';
+  }
+
+  @override
+  String get periodLoadFailed =>
+      'रिकॉर्ड लोड नहीं हो सके। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get periodWeekdaySun => 'रवि';
+
+  @override
+  String get periodWeekdayMon => 'सोम';
+
+  @override
+  String get periodWeekdayTue => 'मंगल';
+
+  @override
+  String get periodWeekdayWed => 'बुध';
+
+  @override
+  String get periodWeekdayThu => 'गुरु';
+
+  @override
+  String get periodWeekdayFri => 'शुक्र';
+
+  @override
+  String get periodWeekdaySat => 'शनि';
+
+  @override
+  String get periodSaveInstruction =>
+      'स्थिति चुनने के बाद उसे सुरक्षित करने के लिए सबसे नीचे “आज का रिकॉर्ड सेव करें” दबाएँ।';
+
+  @override
+  String get periodTodayMood => 'आज की मनोदशा (एक से अधिक चुन सकती हैं)';
+
+  @override
+  String get periodMoodDescription =>
+      'ये उस दिन की डायरी प्रविष्टियाँ हैं, कैलेंडर पर दिखने वाले चिह्न नहीं।';
+
+  @override
+  String get periodOtherMood => 'अन्य मनोदशा';
+
+  @override
+  String get periodOtherMoodHint => 'उदाहरण: आहत, असुरक्षित महसूस करना……';
+
+  @override
+  String get periodTodaySymptoms =>
+      'आज की शारीरिक स्थिति (एक से अधिक चुन सकती हैं)';
+
+  @override
+  String get periodOtherSymptom => 'अन्य शारीरिक स्थिति';
+
+  @override
+  String get periodOtherSymptomHint => 'उदाहरण: ठंड लगना, भूख न लगना……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return 'आप $characterName को क्या बताना चाहती हैं? (वैकल्पिक)';
+  }
+
+  @override
+  String get periodNoteHint =>
+      'उदाहरण: आज मैं शांति से आराम करना चाहती हूँ और किसी का दबाव नहीं चाहती……';
+
+  @override
+  String get periodSaving => 'सेव हो रहा है…';
+
+  @override
+  String get periodSaveToday => 'आज का रिकॉर्ड सेव करें';
+
+  @override
+  String get periodHistory => 'मासिक धर्म का इतिहास';
+
+  @override
+  String get periodOngoing => 'जारी है';
+
+  @override
+  String periodTotalDays(int count) {
+    return 'कुल $count दिन';
+  }
+
+  @override
+  String get periodDeleteRecord => 'रिकॉर्ड हटाएँ';
+
+  @override
+  String get privateProfilePleaseSignIn => 'कृपया पहले साइन इन करें';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return 'स्मृति अंश लोड नहीं हो सके: $error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return 'नया स्मृति अंश लिखें ($count / $limit)';
+  }
+
+  @override
+  String get privateProfileNoLore => 'अभी तक कोई स्मृति अंश नहीं है';
+
+  @override
+  String get privateProfileNoLoreHint =>
+      'आप यहाँ परीक्षण सेटिंग्स, कहानी के संकेत और पात्र की महत्वपूर्ण यादों को व्यवस्थित कर सकते हैं।';
+
+  @override
+  String get privateProfileUntitledLore => 'शीर्षकहीन अंश';
+
+  @override
+  String get privateProfileEdit => 'संपादित करें';
+
+  @override
+  String get privateProfileDelete => 'हटाएँ';
+
+  @override
+  String get privateProfileAddLore => 'स्मृति अंश जोड़ें';
+
+  @override
+  String get privateProfileLoreTitle => 'शीर्षक';
+
+  @override
+  String get privateProfileLoreTeaser => 'संक्षिप्त संकेत';
+
+  @override
+  String get privateProfileLoreContent => 'पूरा विवरण';
+
+  @override
+  String get privateProfileLockLore => 'अंश लॉक करें';
+
+  @override
+  String get privateProfileLockLoreHint =>
+      'निजी पात्र अभी केवल निर्माता को दिखाई देता है। पात्र को सार्वजनिक किए जाने पर उपयोग के लिए यह फ़ील्ड सुरक्षित रहेगा।';
+
+  @override
+  String get privateProfileCancel => 'रद्द करें';
+
+  @override
+  String get privateProfileTitleContentRequired => 'कृपया शीर्षक और विवरण भरें';
+
+  @override
+  String get privateProfileLoreAdded => 'स्मृति अंश जोड़ दिया गया';
+
+  @override
+  String get privateProfileAddFailed =>
+      'जोड़ना विफल रहा। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get privateProfilePublish => 'प्रकाशित करें';
+
+  @override
+  String get privateProfileDeleteLoreTitle => 'स्मृति अंश हटाएँ';
+
+  @override
+  String get privateProfileDeleteLoreConfirm =>
+      'क्या आप वाकई इस स्मृति अंश को स्थायी रूप से हटाना चाहते हैं?';
+
+  @override
+  String get privateProfileLoreDeleted => 'स्मृति अंश हटा दिया गया';
+
+  @override
+  String get privateProfileDeleteFailed =>
+      'हटाना विफल रहा। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get privateProfileEditLore => 'स्मृति अंश संपादित करें';
+
+  @override
+  String get privateProfileSave => 'सेव करें';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 छोटा-सा अनुस्मारक';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      'आपकी जन्मतिथि पात्रों की ओर से मिलने वाली जन्मदिन की शुभकामनाओं, उपहारों और संबंधित कार्यक्रमों को प्रभावित करेगी।\n\nहम सुझाव देते हैं कि सेटिंग पूरी करने से पहले अपनी जन्मतिथि की पुष्टि कर लें,\nताकि भविष्य में मिलने वाले जन्मदिन के पुरस्कार प्रभावित न हों।';
+
+  @override
+  String get editProfileGotIt => 'समझ गई';
+
+  @override
+  String get editProfileBirthdayConfirmTitle => '🎂 जन्मतिथि की पुष्टि करें';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      'कृपया पुष्टि करें कि आपकी जन्मतिथि सही है।\n\nआपकी जन्मतिथि का उपयोग जन्मदिन की शुभकामनाओं, उपहारों और संबंधित कार्यक्रमों के लिए किया जाएगा।\n\nजन्मदिन के पुरस्कार को एक से अधिक बार प्राप्त करने से रोकने के लिए, सेटिंग पूरी होने के बाद जन्मतिथि दोबारा नहीं बदली जा सकेगी।\n\nक्या आप निश्चित रूप से इस जन्मतिथि का उपयोग करना चाहती हैं?';
+
+  @override
+  String get editProfileReturnToEdit => 'वापस जाकर बदलें';
+
+  @override
+  String get editProfileConfirmSetting => 'सेटिंग की पुष्टि करें';
+
+  @override
+  String get editProfileDefaultNickname => 'नई मुलाकात का यात्री';
+
+  @override
+  String get editProfileNoChanges => 'सेव करने के लिए कोई बदलाव नहीं है';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return 'डेटा बनाने में विफल: $error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return 'प्रोफ़ाइल चित्र $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed =>
+      'चित्र चुनना विफल रहा। कृपया दूसरा चित्र चुनें';
+
+  @override
+  String get editProfileCancel => 'रद्द करें';
+
+  @override
+  String get editProfileConfirm => 'पुष्टि करें';
+
+  @override
+  String get editProfileImageProcessingFailed =>
+      'चित्र संसाधित करना विफल रहा। कृपया दूसरा चित्र चुनें';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return 'डेटा लोड करना विफल रहा: $error';
+  }
+
+  @override
+  String get editProfileBioLabel => 'परिचय';
+
+  @override
+  String get editProfileBioHelper =>
+      'अपने बारे में या अपनी रचनात्मक शैली के बारे में संक्षेप में बताएँ';
+
+  @override
+  String get editProfileBioHint =>
+      'उदाहरण: मुझे काल्पनिक, जुनूनी और रोमांचक प्रेम पात्र बनाना पसंद है।';
+
+  @override
+  String get editProfileUserNotFound => 'उपयोगकर्ता नहीं मिला';
+
+  @override
+  String get editProfileGenerateIdFailed =>
+      'खिलाड़ी ID बनाना विफल रहा। कृपया फिर प्रयास करें';
+
+  @override
+  String get editProfileSignedInUserNotFound =>
+      'वर्तमान में साइन इन किया हुआ उपयोगकर्ता नहीं मिला';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return 'प्रोफ़ाइल चित्र लोड करना विफल रहा, स्थिति कोड: $statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return 'चुनी गई प्रोफ़ाइल चित्र फ़ाइल नहीं मिली: $path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty => 'प्रोफ़ाइल चित्र का डेटा खाली है';
+
+  @override
+  String get chatPageSendFailed =>
+      'भेजना विफल रहा। कृपया बाद में फिर प्रयास करें 😢';
+
+  @override
+  String get chatPageRegenerateFailed =>
+      'दोबारा बनाना विफल रहा। मूल संदेश सुरक्षित रखा गया है। कृपया फिर प्रयास करें।';
+
+  @override
+  String get chatPageRegenerating => '💭 फिर से सोच रहा है...';
+
+  @override
+  String get chatPageThinkingTooLong =>
+      'ऐसा लगता है कि वह गहरी सोच में है। कृपया बाद में फिर प्रयास करें……';
+
+  @override
+  String get chatPageAlreadyReplying =>
+      'वह जवाब दे रहा है। कृपया थोड़ी देर प्रतीक्षा करें और दोबारा न भेजें';
+
+  @override
+  String get chatPageMediaUploadFailed =>
+      'मीडिया अपलोड करना विफल रहा। कृपया फिर प्रयास करें';
+
+  @override
+  String get chatPageReportReceived =>
+      'आपकी रिपोर्ट के लिए धन्यवाद। हम जल्द से जल्द इसकी जाँच करेंगे';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ $count संदेश सफलतापूर्वक हटा दिए गए';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return 'फ़ोटो नहीं चुनी जा सकी: $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound => 'रिकॉर्डिंग फ़ाइल नहीं मिली';
+
+  @override
+  String get chatPageRecordingEmpty => 'रिकॉर्डिंग फ़ाइल खाली है';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return 'ऑडियो चलाना विफल रहा: $error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired =>
+      'रिकॉर्ड करने के लिए माइक्रोफ़ोन की अनुमति आवश्यक है';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return 'रिकॉर्डिंग शुरू नहीं की जा सकी: $error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed =>
+      'रिकॉर्डिंग फ़ाइल बनाना विफल रहा। कृपया दोबारा रिकॉर्ड करें';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return 'रिकॉर्डिंग विफल रही: $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry =>
+      'रिकॉर्डिंग फ़ाइल नहीं मिली। कृपया दोबारा रिकॉर्ड करें';
+
+  @override
+  String get chatPageRecordingEmptyRetry =>
+      'रिकॉर्डिंग फ़ाइल खाली है। कृपया दोबारा रिकॉर्ड करें';
+
+  @override
+  String get chatPageNoRecordingToSend => 'भेजने के लिए कोई रिकॉर्डिंग नहीं है';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count अंक';
+  }
+
+  @override
+  String get chatPageVoiceUploading => 'वॉइस रिकॉर्डिंग अपलोड हो रही है……';
+
+  @override
+  String get chatPageChangeWatermarkColor => 'वॉटरमार्क का रंग बदलें';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes मिनट $seconds सेकंड';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds सेकंड';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter =>
+      'कृपया एक सहायक पात्र चुनें।';
+
+  @override
+  String get characterEditSelectGender => 'कृपया पात्र का लिंग चुनें।';
+
+  @override
+  String get characterEditCharacterSettings => 'पात्र की सेटिंग';
+
+  @override
+  String get characterEditWorldview => 'विश्व की रूपरेखा';
+
+  @override
+  String get characterEditSettingsMinLength =>
+      'पात्र की सेटिंग में कम से कम 10 अक्षर होने चाहिए।';
+
+  @override
+  String get characterEditWorldviewMinLength =>
+      'विश्व की रूपरेखा में कम से कम 20 अक्षर होने चाहिए।';
+
+  @override
+  String get characterEditSupportingCharacters => 'सहायक पात्र';
+
+  @override
+  String get characterEditCharacterImage => 'पात्र की तस्वीर';
+
+  @override
+  String get characterEditWorldviewHint =>
+      'विश्व की पृष्ठभूमि, इतिहास, युग, क्षेत्र, शक्तियाँ, व्यवस्थाएँ, तकनीक, जादू और नियमों का वर्णन करें।';
+
+  @override
+  String get characterEditSettingsHint =>
+      'पात्र के व्यक्तित्व, मूल्यों, सोचने के तरीके, भावनात्मक प्रतिक्रियाओं, व्यवहार संबंधी आदतों, बोलने के तरीके और मूल विश्वासों का वर्णन करें।';
+
+  @override
+  String get characterEditUnknownCharacter => 'अज्ञात पात्र';
+
+  @override
+  String get characterEditEditSupportingCharacter => 'सहायक पात्र संपादित करें';
+
+  @override
+  String get characterEditAddSupportingCharacter => 'सहायक पात्र जोड़ें';
+
+  @override
+  String get characterEditSupportingCharacterName => 'सहायक पात्र का नाम';
+
+  @override
+  String get characterEditGender => 'लिंग';
+
+  @override
+  String get characterEditMale => 'पुरुष';
+
+  @override
+  String get characterEditFemale => 'महिला';
+
+  @override
+  String get characterEditOther => 'अन्य';
+
+  @override
+  String get characterEditAge => 'आयु';
+
+  @override
+  String get characterEditIdentityOccupation => 'पहचान／व्यवसाय';
+
+  @override
+  String get characterEditRelationshipWithMain => 'मुख्य पात्र के साथ संबंध';
+
+  @override
+  String get characterEditRelationshipHint =>
+      'मुख्य पात्र के साथ अतीत, दृष्टिकोण, भावनाओं, रहस्यों और वर्तमान संबंध का वर्णन करें।';
+
+  @override
+  String get characterEditCharacterProfile => 'पात्र का परिचय';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      'पात्र के व्यक्तित्व, रूप-रंग, आदतों, मूल्यों, क्षमताओं, पसंद, नापसंद और महत्वपूर्ण अनुभवों का वर्णन करें।';
+
+  @override
+  String get characterEditSpeakingStyle => 'बोलने का अंदाज़';
+
+  @override
+  String get characterEditSpeakingStyleHint =>
+      'उदाहरण: तेज़ बोलता है, व्यंग्यात्मक टिप्पणियाँ करता है और सीधे बात करता है।';
+
+  @override
+  String get characterEditSupportingNameRequired =>
+      'कृपया सहायक पात्र का नाम दर्ज करें।';
+
+  @override
+  String get characterEditSupportingGenderRequired =>
+      'कृपया सहायक पात्र का लिंग चुनें।';
+
+  @override
+  String get characterEditProfileRequired => 'कृपया पात्र का परिचय भरें।';
+
+  @override
+  String get characterEditRelationshipTooLong =>
+      'मुख्य पात्र के साथ संबंध का विवरण 1,500 अक्षरों से अधिक हो गया है।';
+
+  @override
+  String get characterEditProfileTooLong =>
+      'पात्र का परिचय 1,500 अक्षरों से अधिक हो गया है।';
+
+  @override
+  String get characterEditSave => 'सेव करें';
+
+  @override
+  String get characterEditAdd => 'जोड़ें';
+
+  @override
+  String get creatorProfileNoBio => 'अभी तक कोई परिचय नहीं दिया गया है';
+
+  @override
+  String get creatorProfileNoBioHint =>
+      'इस निर्माता ने अभी तक अपना परिचय नहीं दिया है।';
+
+  @override
+  String get creatorProfileNoCreatorMoments =>
+      'निर्माता ने अभी तक कोई पोस्ट प्रकाशित नहीं की है';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint =>
+      'निर्माता के रूप में प्रकाशित सार्वजनिक सामग्री यहाँ दिखाई देगी।';
+
+  @override
+  String get creatorProfileNoCharacterMoments =>
+      'निर्माता के पात्रों ने अभी तक कोई पोस्ट प्रकाशित नहीं की है';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint =>
+      'निर्माता के सार्वजनिक पात्रों द्वारा प्रकाशित सामग्री यहाँ दिखाई देगी।';
+
+  @override
+  String get creatorProfileNoPublicMoments =>
+      'अभी तक कोई सार्वजनिक पोस्ट नहीं है';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint =>
+      'निर्माता और उनके पात्रों द्वारा प्रकाशित सार्वजनिक पोस्ट यहाँ दिखाई देंगी।';
+
+  @override
+  String get creatorProfilePublicWorks => 'सार्वजनिक रचनाएँ';
+
+  @override
+  String get creatorProfileLikesReceived => 'प्राप्त लाइक';
+
+  @override
+  String get creatorProfileFollow => 'फ़ॉलो करें';
+
+  @override
+  String get creatorProfileFollowing => 'फ़ॉलो किया गया';
+
+  @override
+  String get creatorProfileUnfollowed => 'फ़ॉलो करना बंद कर दिया गया';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return '$creatorName को फ़ॉलो किया गया';
+  }
+
+  @override
+  String get creatorProfileOperationFailed =>
+      'कार्रवाई विफल रही। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return 'रचनाएँ लोड नहीं हो सकीं: $error';
+  }
+
+  @override
+  String get characterProfileShareInvitation =>
+      '🦋 LoveyDovey की ओर से मुलाकात का निमंत्रण';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ निर्माता: $creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return 'LoveyDovey में “$characterName” खोजें और एक ऐसी कहानी शुरू करें जो केवल आप दोनों की हो।';
+  }
+
+  @override
+  String get characterProfileInvitationLabel => 'पात्र निमंत्रण कार्ड';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return 'निर्माता  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint =>
+      'पात्र खोजें और अपनी मुलाकात शुरू करें  🦋';
+
+  @override
+  String get characterProfileScanToDownload => 'डाउनलोड करने के लिए स्कैन करें';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return 'पात्र “$characterName” साझा करें';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return 'LoveyDovey पर $characterName से मिलें';
+  }
+
+  @override
+  String get characterProfileShareFailed =>
+      'निमंत्रण कार्ड बनाना विफल रहा। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get characterProfilePrivateShareUnavailable =>
+      'निजी पात्रों को अभी साझा नहीं किया जा सकता';
+
+  @override
+  String get characterProfileShareCard => 'निमंत्रण कार्ड साझा करें';
+
+  @override
+  String get characterProfileShareCharacter => 'पात्र साझा करें';
+
+  @override
+  String get characterProfileReportCharacter => 'पात्र की रिपोर्ट करें';
+
+  @override
+  String get characterProfileTranslate => 'अनुवाद करें';
 }

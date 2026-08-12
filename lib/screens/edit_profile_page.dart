@@ -190,7 +190,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      throw Exception("找不到使用者");
+      throw Exception(l10n.editProfileUserNotFound);
     }
 
     String currentID = _playerIDController.text.trim();
@@ -219,7 +219,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         }
       }
 
-      throw Exception("產生玩家 ID 失敗，請再試一次");
+      throw Exception(l10n.editProfileGenerateIdFailed);
     }
 
     // 如果玩家有填 ID，就檢查這個 ID 有沒有被別人用走
@@ -276,22 +276,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // --- 生日提醒：首次建立資料時按下「稍後編輯」 ---
   Future<void> _showBirthdayReminderDialog() async {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
 
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('🎂 小提醒'),
-          content: const Text(
-            '生日將影響角色生日祝福、生日禮物及相關活動。\n\n'
-                '建議確認生日後再完成設定，\n'
-                '以免影響後續生日獎勵。',
-          ),
+          title: Text(l10n.editProfileBirthdayReminderTitle),
+          content: Text(l10n.editProfileBirthdayReminderContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('知道了'),
+              child: Text(l10n.editProfileGotIt),
             ),
           ],
         );
@@ -302,28 +299,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // --- 生日確認：首次建立資料且已選擇生日時 ---
   Future<bool> _showBirthdayConfirmDialog() async {
     if (!mounted) return false;
+    final l10n = AppLocalizations.of(context)!;
 
     final bool? confirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('🎂 確認生日'),
-          content: const Text(
-            '請確認生日是否正確。\n\n'
-                '生日將用於生日祝福、生日禮物及相關活動。\n\n'
-                '為避免生日獎勵遭到重複領取，'
-                '生日完成設定後將無法再次修改。\n\n'
-                '是否確定使用這個生日？',
-          ),
+          title: Text(l10n.editProfileBirthdayConfirmTitle),
+          content: Text(l10n.editProfileBirthdayConfirmContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('返回修改'),
+              child: Text(l10n.editProfileReturnToEdit),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('確認設定'),
+              child: Text(l10n.editProfileConfirmSetting),
             ),
           ],
         );
@@ -350,7 +342,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         String nickname = _nicknameController.text.trim();
 
         if (nickname.isEmpty) {
-          nickname = '初識的旅人';
+          nickname = l10n.editProfileDefaultNickname;
           _nicknameController.text = nickname;
         }
 
@@ -399,7 +391,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (!_hasAnyProfileChanged()) {
       ToastUtils.showCenterToast(
         context,
-        '沒有需要儲存的變更',
+        l10n.editProfileNoChanges,
         customIcon: Icons.info_outline_rounded,
       );
       return;
@@ -466,7 +458,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // 代表它是手機本地裁切圖或 Web blob 圖片。
       if (!isAssetAvatar && !isNetworkAvatar) {
         if (user == null) {
-          throw Exception('找不到目前登入的使用者');
+          throw Exception(l10n.editProfileSignedInUserNotFound);
         }
 
         final String fileName =
@@ -488,7 +480,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
           if (response.statusCode != 200) {
             throw Exception(
-              '讀取頭像失敗，狀態碼：${response.statusCode}',
+              l10n.editProfileAvatarReadFailed(response.statusCode),
             );
           }
 
@@ -498,7 +490,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
           if (!await file.exists()) {
             throw Exception(
-              '找不到選取的頭像檔案：$finalAvatarPath',
+              l10n.editProfileAvatarFileNotFound(finalAvatarPath),
             );
           }
 
@@ -506,7 +498,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         }
 
         if (bytes.isEmpty) {
-          throw Exception('頭像圖片資料是空的');
+          throw Exception(l10n.editProfileAvatarEmpty);
         }
 
         await storageRef.putData(
@@ -760,7 +752,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // ✨ 修改 2：只有當「有填寫新 ID」且「跟原本不同」且「還沒被鎖定」時，才執行 Firebase 搬家檢查
       if (newID.isNotEmpty && newID != _originalID && !_hasChangedID) {
         final User? currentUser = FirebaseAuth.instance.currentUser;
-        if (currentUser == null) throw Exception("找不到使用者");
+        if (currentUser == null) throw Exception(l10n.editProfileUserNotFound);
 
         // A. 檢查新 ID 是否被別人搶走了
         final idDoc = await _db.collection('playerIDs').doc(newID).get();
@@ -807,6 +799,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   // --- ✨ 新增：稍後編輯按鈕的邏輯 ---
   Future<void> _skipEditing() async {
+    final l10n = AppLocalizations.of(context)!;
     // 一般編輯模式：直接返回原本的個人主頁
     if (!widget.isCreating) {
       Navigator.of(context).pop(false);
@@ -842,7 +835,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _nicknameController.text.trim();
 
       if (nickname.isEmpty) {
-        nickname = '初識的旅人';
+        nickname = l10n.editProfileDefaultNickname;
         _nicknameController.text = nickname;
       }
 
@@ -860,8 +853,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       ToastUtils.showCenterToast(
         context,
-        '建立資料失敗: '
-            '${e.toString().replaceFirst("Exception: ", "")}',
+        l10n.editProfileCreateFailed(
+          e.toString().replaceFirst("Exception: ", ""),
+        ),
         isError: true,
       );
     }
@@ -885,7 +879,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       initialDate: _birthDate ?? DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
-      locale: const Locale('zh', 'TW'),
+      locale: Localizations.localeOf(context),
     );
     if (picked != null && picked != _birthDate && mounted) {
       setState(() {
@@ -911,7 +905,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     return ListTile(
                       leading: CircleAvatar(
                           backgroundImage: AssetImage(path)),
-                      title: Text('頭像 $index'),
+                      title: Text(l10n.editProfileAvatarNumber(index)),
                       onTap: () {
                         setState(() {
                           // ⚡ 存入妳在 Class 頂部定義的那個變數，警告就會消失！
@@ -945,7 +939,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                         ToastUtils.showCenterToast(
                           context,
-                          '選擇圖片失敗，請重新選擇一張圖片',
+                          l10n.editProfileImageSelectionFailed,
                           isError: true,
                         );
                       }
@@ -962,7 +956,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (!mounted) return;
 
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     try {
       // ✅ 手機版先確認檔案真的存在
@@ -981,7 +975,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         compressQuality: 85,
         uiSettings: [
           AndroidUiSettings(
-            toolbarTitle: l10n?.title_adjust_avatar ?? '調整您的時光頭像',
+            toolbarTitle: l10n.title_adjust_avatar,
             toolbarColor: theme.colorScheme.primary,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.square,
@@ -989,9 +983,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
             hideBottomControls: false,
           ),
           IOSUiSettings(
-            title: l10n?.title_adjust_avatar ?? '調整您的時光頭像',
-            cancelButtonTitle: '取消',
-            doneButtonTitle: '確定',
+            title: l10n.title_adjust_avatar,
+            cancelButtonTitle: l10n.editProfileCancel,
+            doneButtonTitle: l10n.editProfileConfirm,
             aspectRatioLockEnabled: true,
             resetAspectRatioEnabled: false,
           ),
@@ -1016,7 +1010,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       ToastUtils.showCenterToast(
         context,
-        l10n?.avatar_updated_success ?? '已為您換上頭像 🍃',
+        l10n.avatar_updated_success,
         customIcon: Icons.face_retouching_natural_rounded,
       );
     } catch (e) {
@@ -1027,7 +1021,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // ✅ 不要用原圖保底，避免超大圖造成閃退
       ToastUtils.showCenterToast(
         context,
-        '圖片處理失敗，請重新選擇一張圖片',
+        l10n.editProfileImageProcessingFailed,
         isError: true,
       );
     }
@@ -1073,6 +1067,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       decoration: themeNotifier.currentBackground,
@@ -1085,7 +1080,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('載入資料失敗: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                l10n.editProfileLoadFailed(snapshot.error.toString()),
+              ),
+            );
           }
           return _buildPageContent();
         },
@@ -1185,10 +1184,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
               maxLength: 120,
               textInputAction: TextInputAction.newline,
               decoration: customInputDecoration(
-                '自我介紹',
-                helper: '簡單介紹自己或你的創作風格',
+                l10n.editProfileBioLabel,
+                helper: l10n.editProfileBioHelper,
               ).copyWith(
-                hintText: '例如：喜歡創作奇幻、病嬌與沉浸式戀愛角色。',
+                hintText: l10n.editProfileBioHint,
                 alignLabelWithHint: true,
                 counterText: '',
               ),

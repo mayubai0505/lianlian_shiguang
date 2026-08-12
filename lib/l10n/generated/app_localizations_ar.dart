@@ -3182,7 +3182,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tab_daily_chit_chat => 'دردشة يومية';
 
   @override
-  String get task_desc_chat_3_times => 'قم بإجراء 3 محادثات يومية مع الشخصية';
+  String get task_desc_chat_3_times =>
+      'الدردشة مع الشخصية 3 مرات في الوضع اليومي';
 
   @override
   String get tab_story_progression => 'تقدم القصة';
@@ -5012,4 +5013,912 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mailCaseNumberCopied => 'تم نسخ رقم الحالة';
+
+  @override
+  String get profilePageAboutMe => '📝 نبذة عني';
+
+  @override
+  String get profilePageTabBio => 'النبذة الشخصية';
+
+  @override
+  String get profilePageTabCharacters => 'الشخصيات';
+
+  @override
+  String get profilePageTabMoments => 'المنشورات';
+
+  @override
+  String get profilePageEditProfile => 'تعديل الملف الشخصي';
+
+  @override
+  String get profilePageFriends => 'الأصدقاء';
+
+  @override
+  String get profilePageWorks => 'الأعمال';
+
+  @override
+  String get profilePageFollowing => 'المتابَعون';
+
+  @override
+  String get profilePageFollowers => 'المتابِعون';
+
+  @override
+  String get profilePageHeartbeatDiary => 'يوميات نبضات القلب';
+
+  @override
+  String get profilePageEditCharacter => 'تعديل الشخصية';
+
+  @override
+  String get profilePagePreviewCharacter => 'معاينة ملف الشخصية';
+
+  @override
+  String get profilePageNoBio => 'لا توجد نبذة شخصية بعد';
+
+  @override
+  String get profilePageNoBioHint => 'اضغط لكتابة نبذة عنك.';
+
+  @override
+  String get profilePageCreateCharacter => 'إنشاء شخصية جديدة';
+
+  @override
+  String get profilePageNoCharacters => 'لم يتم إنشاء أي شخصية بعد';
+
+  @override
+  String get profilePageNoCharactersHint => 'ابدأ بإنشاء شخصيتك الأولى.';
+
+  @override
+  String get profilePageCharacterActions => 'إجراءات الشخصية';
+
+  @override
+  String get profilePagePublic => 'عام';
+
+  @override
+  String get profilePagePrivate => 'خاص';
+
+  @override
+  String get profilePageCreator => 'المبدع';
+
+  @override
+  String get profilePageSelectPostingIdentity => 'اختر هوية النشر';
+
+  @override
+  String get profilePagePostAsCreator => 'النشر بهوية المبدع';
+
+  @override
+  String get profilePagePublicCharacter => 'شخصية عامة';
+
+  @override
+  String get profilePagePrivateCharacter => 'شخصية خاصة';
+
+  @override
+  String get profilePagePleaseSignIn => 'يرجى تسجيل الدخول أولًا';
+
+  @override
+  String get profilePagePublishMoment => 'نشر منشور';
+
+  @override
+  String get profilePageFilterAll => 'الكل';
+
+  @override
+  String get profilePageFilterCreator => 'أنا';
+
+  @override
+  String get profilePageFilterCharacter => 'الشخصيات';
+
+  @override
+  String get profilePageMomentsLoadFailed => 'فشل تحميل المنشورات';
+
+  @override
+  String get profilePageTryAgainLater => 'يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get profilePageNoCreatorMoments => 'لم تنشر أي منشورات بعد';
+
+  @override
+  String get profilePageNoCreatorMomentsHint =>
+      'سيظهر هنا المحتوى المنشور بهوية المبدع.';
+
+  @override
+  String get profilePageNoCharacterMoments => 'لم تنشر شخصياتك أي منشورات بعد';
+
+  @override
+  String get profilePageNoCharacterMomentsHint =>
+      'سيظهر هنا المحتوى المنشور بهوية الشخصية.';
+
+  @override
+  String get profilePageNoMoments => 'لا توجد منشورات بعد';
+
+  @override
+  String get profilePageNoMomentsHint =>
+      'ستظهر هنا المنشورات التي تنشرها أنت وشخصياتك.';
+
+  @override
+  String get profilePageDeleteMomentTitle => 'حذف المنشور';
+
+  @override
+  String get profilePageDeleteMomentConfirm =>
+      'هل أنت متأكد من حذف هذا المنشور نهائيًا؟';
+
+  @override
+  String get profilePageCancel => 'إلغاء';
+
+  @override
+  String get profilePageDelete => 'حذف';
+
+  @override
+  String get profilePageMomentDeleted => 'تم حذف المنشور';
+
+  @override
+  String get profilePageDeleteFailed =>
+      'فشل الحذف، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get profilePageReferralCompleted => 'اكتملت دعوة النجوم';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return 'الداعي: $inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived => 'حصل الطرفان على 50 زهرة';
+
+  @override
+  String get profilePageClaimed => 'تم الاستلام';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return 'تم ربط الداعي: $inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint =>
+      'بعد إكمال 15 رسالة دردشة، سيحصل كل طرف على 50 زهرة';
+
+  @override
+  String get profilePageAlreadyCheckedIn => 'لقد سجلت حضورك اليوم بالفعل';
+
+  @override
+  String get profilePageReferralBindFailed =>
+      'فشل الربط، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get profilePageCharacterNotFound =>
+      'تعذر العثور على بيانات هذه الشخصية';
+
+  @override
+  String get periodGuideTitle => 'كيف تستخدمين يوميات الدورة الشهرية؟';
+
+  @override
+  String get periodGuideContent =>
+      '① اختاري أولًا تاريخًا من التقويم.\n② اختاري «بدأت اليوم» أو «ما زالت مستمرة» أو «انتهت اليوم».\n③ حددي حالتك المزاجية والجسدية لهذا اليوم، ويمكنك أيضًا إضافة ملاحظاتك الخاصة.\n④ اضغطي على حفظ، وبذلك ستتمكن الشخصية من فهم حالتك اليوم أثناء الدردشة.\n\nسيتم تعديل التواريخ المتوقعة بناءً على سجلاتك السابقة، وهي مخصصة كمرجع لتدوين تفاصيل حياتك اليومية فقط.';
+
+  @override
+  String get periodGotIt => 'فهمت';
+
+  @override
+  String get periodSelectAtLeastOne => 'يرجى اختيار سجل واحد على الأقل';
+
+  @override
+  String get periodFutureDateError =>
+      'لا يمكن تسجيل حالة الدورة الشهرية لتاريخ مستقبلي.';
+
+  @override
+  String get periodAlreadyOngoingError =>
+      'توجد دورة شهرية جارية بالفعل، يرجى إنهاؤها أولًا.';
+
+  @override
+  String get periodNoOngoingError =>
+      'لا توجد دورة شهرية جارية حاليًا، يرجى اختيار «بدأت اليوم» أولًا.';
+
+  @override
+  String get periodBeforeStartError =>
+      'لا يمكن أن يسبق التاريخ تاريخ بدء الدورة الشهرية الحالية.';
+
+  @override
+  String get periodEndBeforeStartError =>
+      'لا يمكن أن يسبق تاريخ الانتهاء تاريخ البدء.';
+
+  @override
+  String periodRecordSaved(String date) {
+    return 'تم حفظ سجل $date';
+  }
+
+  @override
+  String get periodSaveFailed => 'فشل الحفظ، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get periodDeleteTitle => 'هل تريدين حذف سجل هذه الدورة الشهرية؟';
+
+  @override
+  String get periodDeleteContent =>
+      'بعد الحذف، سيُعاد حساب متوسط الدورة والتاريخ المتوقع للدورة القادمة.';
+
+  @override
+  String get periodCancel => 'إلغاء';
+
+  @override
+  String get periodDelete => 'حذف';
+
+  @override
+  String get periodNoOngoing => 'لا توجد دورة شهرية جارية حاليًا';
+
+  @override
+  String periodDayCount(int count) {
+    return 'اليوم $count من الدورة الشهرية';
+  }
+
+  @override
+  String get periodHelp => 'دليل الاستخدام';
+
+  @override
+  String get periodAverageCycle => 'متوسط مدة الدورة';
+
+  @override
+  String get periodAverageDuration => 'متوسط مدة الحيض';
+
+  @override
+  String periodDays(int count) {
+    return '$count أيام';
+  }
+
+  @override
+  String get periodNextPrediction => 'التوقع القادم';
+
+  @override
+  String get periodCalculatedAfterRecording => 'يُحسب بعد التسجيل';
+
+  @override
+  String get periodInsufficientData =>
+      'لا توجد بيانات كافية حاليًا، لذا سيُقدّر مؤقتًا طول الدورة بـ 28 يومًا ومدة الحيض بـ 5 أيام.';
+
+  @override
+  String get periodPredictionDisclaimer =>
+      'هذا تقدير يستند إلى السجلات الحالية، والتواريخ مخصصة كمرجع لتدوين تفاصيل حياتك اليومية فقط.';
+
+  @override
+  String get periodStartedToday => '🩸 بدأت اليوم';
+
+  @override
+  String get periodStillOngoing => 'ما زالت الدورة مستمرة';
+
+  @override
+  String get periodEndedToday => 'انتهت اليوم';
+
+  @override
+  String get periodDateNotReached => 'هذا اليوم لم يأتِ بعد～';
+
+  @override
+  String get periodDateBeforeStart =>
+      'هذا التاريخ يسبق تاريخ بدء الدورة الشهرية الحالية.';
+
+  @override
+  String get periodMoodOkay => 'بخير';
+
+  @override
+  String get periodMoodHappy => 'سعيدة';
+
+  @override
+  String get periodMoodLow => 'محبطة';
+
+  @override
+  String get periodMoodUnwell => 'متعبة';
+
+  @override
+  String get periodMoodIrritable => 'منزعجة';
+
+  @override
+  String get periodMoodTired => 'مرهقة';
+
+  @override
+  String get periodMoodAnxious => 'قلقة';
+
+  @override
+  String get periodSymptomAbdominalPain => 'ألم في البطن';
+
+  @override
+  String get periodSymptomLowerBackPain => 'ألم أسفل الظهر';
+
+  @override
+  String get periodSymptomHeadache => 'صداع';
+
+  @override
+  String get periodSymptomBreastTenderness => 'ألم وتورم الثديين';
+
+  @override
+  String get periodSymptomSwelling => 'احتباس السوائل';
+
+  @override
+  String get periodSymptomSleepy => 'نعاس';
+
+  @override
+  String get periodSymptomIncreasedAppetite => 'زيادة الشهية';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => 'اضطرابات هضمية';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return 'يوميات $characterName الحنونة';
+  }
+
+  @override
+  String get periodLoadFailed =>
+      'فشل تحميل السجلات، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get periodWeekdaySun => 'الأحد';
+
+  @override
+  String get periodWeekdayMon => 'الاثنين';
+
+  @override
+  String get periodWeekdayTue => 'الثلاثاء';
+
+  @override
+  String get periodWeekdayWed => 'الأربعاء';
+
+  @override
+  String get periodWeekdayThu => 'الخميس';
+
+  @override
+  String get periodWeekdayFri => 'الجمعة';
+
+  @override
+  String get periodWeekdaySat => 'السبت';
+
+  @override
+  String get periodSaveInstruction =>
+      'بعد اختيار الحالة، يرجى الضغط على «حفظ سجل اليوم» في الأسفل لحفظها نهائيًا.';
+
+  @override
+  String get periodTodayMood => 'مزاجك اليوم (يمكن اختيار أكثر من خيار)';
+
+  @override
+  String get periodMoodDescription =>
+      'هذه ملاحظات يومية لهذا اليوم وليست رموزًا تُعرض على التقويم.';
+
+  @override
+  String get periodOtherMood => 'مزاج آخر';
+
+  @override
+  String get periodOtherMoodHint => 'مثال: أشعر بالظلم، أفتقد الشعور بالأمان……';
+
+  @override
+  String get periodTodaySymptoms =>
+      'حالتك الجسدية اليوم (يمكن اختيار أكثر من خيار)';
+
+  @override
+  String get periodOtherSymptom => 'حالة جسدية أخرى';
+
+  @override
+  String get periodOtherSymptomHint => 'مثال: أشعر بالبرد، ليست لدي شهية……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return 'ما تريدين أن يعرفه $characterName (اختياري)';
+  }
+
+  @override
+  String get periodNoteHint =>
+      'مثال: أريد أن أرتاح بهدوء اليوم ولا أريد أن يضغط عليّ أحد……';
+
+  @override
+  String get periodSaving => 'جارٍ الحفظ…';
+
+  @override
+  String get periodSaveToday => 'حفظ سجل اليوم';
+
+  @override
+  String get periodHistory => 'سجل الدورات السابقة';
+
+  @override
+  String get periodOngoing => 'جارية';
+
+  @override
+  String periodTotalDays(int count) {
+    return 'إجمالي $count أيام';
+  }
+
+  @override
+  String get periodDeleteRecord => 'حذف السجل';
+
+  @override
+  String get privateProfilePleaseSignIn => 'يرجى تسجيل الدخول أولًا';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return 'فشل تحميل شظايا الذاكرة: $error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return 'كتابة شظية ذاكرة جديدة ($count / $limit)';
+  }
+
+  @override
+  String get privateProfileNoLore => 'لا توجد شظايا ذاكرة بعد';
+
+  @override
+  String get privateProfileNoLoreHint =>
+      'يمكنك هنا تنظيم إعدادات الاختبار وخيوط القصة والذكريات المهمة للشخصية.';
+
+  @override
+  String get privateProfileUntitledLore => 'شظية بلا عنوان';
+
+  @override
+  String get privateProfileEdit => 'تعديل';
+
+  @override
+  String get privateProfileDelete => 'حذف';
+
+  @override
+  String get privateProfileAddLore => 'إضافة شظية ذاكرة';
+
+  @override
+  String get privateProfileLoreTitle => 'العنوان';
+
+  @override
+  String get privateProfileLoreTeaser => 'تلميح مختصر';
+
+  @override
+  String get privateProfileLoreContent => 'المحتوى الكامل';
+
+  @override
+  String get privateProfileLockLore => 'قفل الشظية';
+
+  @override
+  String get privateProfileLockLoreHint =>
+      'الشخصية الخاصة مرئية حاليًا للمبدع فقط. سيبقى هذا الحقل محفوظًا لاستخدامه عند جعل الشخصية عامة.';
+
+  @override
+  String get privateProfileCancel => 'إلغاء';
+
+  @override
+  String get privateProfileTitleContentRequired =>
+      'يرجى إدخال العنوان والمحتوى';
+
+  @override
+  String get privateProfileLoreAdded => 'تمت إضافة شظية الذاكرة';
+
+  @override
+  String get privateProfileAddFailed =>
+      'فشلت الإضافة، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get privateProfilePublish => 'نشر';
+
+  @override
+  String get privateProfileDeleteLoreTitle => 'حذف شظية الذاكرة';
+
+  @override
+  String get privateProfileDeleteLoreConfirm =>
+      'هل أنت متأكد من حذف شظية الذاكرة هذه نهائيًا؟';
+
+  @override
+  String get privateProfileLoreDeleted => 'تم حذف شظية الذاكرة';
+
+  @override
+  String get privateProfileDeleteFailed =>
+      'فشل الحذف، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get privateProfileEditLore => 'تعديل شظية الذاكرة';
+
+  @override
+  String get privateProfileSave => 'حفظ';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 تذكير صغير';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      'سيؤثر تاريخ الميلاد في تهاني الشخصية بعيد ميلادك وهدايا عيد الميلاد والفعاليات ذات الصلة.\n\nننصحك بالتأكد من تاريخ ميلادك قبل إكمال الإعداد،\nحتى لا تتأثر مكافآت عيد الميلاد المستقبلية.';
+
+  @override
+  String get editProfileGotIt => 'فهمت';
+
+  @override
+  String get editProfileBirthdayConfirmTitle => '🎂 تأكيد تاريخ الميلاد';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      'يرجى التأكد من صحة تاريخ الميلاد.\n\nسيُستخدم تاريخ الميلاد لتهاني عيد الميلاد وهداياه والفعاليات ذات الصلة.\n\nلمنع استلام مكافأة عيد الميلاد أكثر من مرة، لن تتمكن من تعديل تاريخ الميلاد مجددًا بعد إكمال الإعداد.\n\nهل أنت متأكد من استخدام تاريخ الميلاد هذا؟';
+
+  @override
+  String get editProfileReturnToEdit => 'العودة إلى التعديل';
+
+  @override
+  String get editProfileConfirmSetting => 'تأكيد الإعداد';
+
+  @override
+  String get editProfileDefaultNickname => 'المسافر الذي التقيناه للتو';
+
+  @override
+  String get editProfileNoChanges => 'لا توجد تغييرات تحتاج إلى الحفظ';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return 'فشل إنشاء البيانات: $error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return 'الصورة الرمزية $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed =>
+      'فشل اختيار الصورة، يرجى اختيار صورة أخرى';
+
+  @override
+  String get editProfileCancel => 'إلغاء';
+
+  @override
+  String get editProfileConfirm => 'تأكيد';
+
+  @override
+  String get editProfileImageProcessingFailed =>
+      'فشلت معالجة الصورة، يرجى اختيار صورة أخرى';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return 'فشل تحميل البيانات: $error';
+  }
+
+  @override
+  String get editProfileBioLabel => 'النبذة الشخصية';
+
+  @override
+  String get editProfileBioHelper => 'عرّف بنفسك أو بأسلوبك الإبداعي باختصار';
+
+  @override
+  String get editProfileBioHint =>
+      'مثال: أحب ابتكار شخصيات رومانسية خيالية ومتملكة وغامرة.';
+
+  @override
+  String get editProfileUserNotFound => 'تعذر العثور على المستخدم';
+
+  @override
+  String get editProfileGenerateIdFailed =>
+      'فشل إنشاء معرّف اللاعب، يرجى المحاولة مرة أخرى';
+
+  @override
+  String get editProfileSignedInUserNotFound =>
+      'تعذر العثور على المستخدم المسجل دخوله حاليًا';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return 'فشل تحميل الصورة الرمزية، رمز الحالة: $statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return 'تعذر العثور على ملف الصورة الرمزية المحدد: $path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty => 'بيانات الصورة الرمزية فارغة';
+
+  @override
+  String get chatPageSendFailed =>
+      'فشل الإرسال، يرجى المحاولة مرة أخرى لاحقًا 😢';
+
+  @override
+  String get chatPageRegenerateFailed =>
+      'فشلت إعادة الإنشاء، وتم الاحتفاظ بالرسالة الأصلية. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get chatPageRegenerating => '💭 يعيد التفكير الآن...';
+
+  @override
+  String get chatPageThinkingTooLong =>
+      'يبدو أنه غارق في التفكير، يرجى المحاولة مرة أخرى لاحقًا……';
+
+  @override
+  String get chatPageAlreadyReplying =>
+      'إنه يرد الآن، يرجى الانتظار قليلًا وعدم الإرسال مرة أخرى';
+
+  @override
+  String get chatPageMediaUploadFailed =>
+      'فشل رفع الوسائط، يرجى المحاولة مرة أخرى';
+
+  @override
+  String get chatPageReportReceived =>
+      'شكرًا على بلاغك، سنتحقق منه في أقرب وقت ممكن';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ تم حذف $count رسالة بنجاح';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return 'تعذر اختيار الصورة: $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound => 'تعذر العثور على ملف التسجيل';
+
+  @override
+  String get chatPageRecordingEmpty => 'ملف التسجيل فارغ';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return 'فشل تشغيل الصوت: $error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired =>
+      'يلزم السماح باستخدام الميكروفون لتسجيل الصوت';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return 'تعذر بدء التسجيل: $error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed =>
+      'فشل إنشاء ملف التسجيل، يرجى التسجيل مرة أخرى';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return 'فشل التسجيل: $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry =>
+      'تعذر العثور على ملف التسجيل، يرجى التسجيل مرة أخرى';
+
+  @override
+  String get chatPageRecordingEmptyRetry =>
+      'ملف التسجيل فارغ، يرجى التسجيل مرة أخرى';
+
+  @override
+  String get chatPageNoRecordingToSend => 'لا يوجد تسجيل يمكن إرساله';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count نقطة';
+  }
+
+  @override
+  String get chatPageVoiceUploading => 'جارٍ رفع التسجيل الصوتي……';
+
+  @override
+  String get chatPageChangeWatermarkColor => 'تغيير لون العلامة المائية';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes دقيقة و$seconds ثانية';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds ثانية';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter =>
+      'يرجى اختيار شخصية مساندة.';
+
+  @override
+  String get characterEditSelectGender => 'يرجى اختيار جنس الشخصية.';
+
+  @override
+  String get characterEditCharacterSettings => 'إعدادات الشخصية';
+
+  @override
+  String get characterEditWorldview => 'بناء العالم';
+
+  @override
+  String get characterEditSettingsMinLength =>
+      'يجب ألا تقل إعدادات الشخصية عن 10 أحرف.';
+
+  @override
+  String get characterEditWorldviewMinLength =>
+      'يجب ألا يقل بناء العالم عن 20 حرفًا.';
+
+  @override
+  String get characterEditSupportingCharacters => 'الشخصيات المساندة';
+
+  @override
+  String get characterEditCharacterImage => 'صورة الشخصية';
+
+  @override
+  String get characterEditWorldviewHint =>
+      'صِف خلفية العالم وتاريخه وعصره ومناطقه وقواه وأنظمته وتقنياته وسحره وقواعده.';
+
+  @override
+  String get characterEditSettingsHint =>
+      'صِف شخصية الدور وقيمه وطريقة تفكيره واستجاباته العاطفية وعاداته السلوكية وأسلوب حديثه ومعتقداته الأساسية.';
+
+  @override
+  String get characterEditUnknownCharacter => 'شخصية مجهولة';
+
+  @override
+  String get characterEditEditSupportingCharacter => 'تعديل الشخصية المساندة';
+
+  @override
+  String get characterEditAddSupportingCharacter => 'إضافة شخصية مساندة';
+
+  @override
+  String get characterEditSupportingCharacterName => 'اسم الشخصية المساندة';
+
+  @override
+  String get characterEditGender => 'الجنس';
+
+  @override
+  String get characterEditMale => 'ذكر';
+
+  @override
+  String get characterEditFemale => 'أنثى';
+
+  @override
+  String get characterEditOther => 'آخر';
+
+  @override
+  String get characterEditAge => 'العمر';
+
+  @override
+  String get characterEditIdentityOccupation => 'الهوية／المهنة';
+
+  @override
+  String get characterEditRelationshipWithMain => 'العلاقة بالشخصية الرئيسية';
+
+  @override
+  String get characterEditRelationshipHint =>
+      'صِف الماضي والمواقف والمشاعر والأسرار والعلاقة الحالية مع الشخصية الرئيسية.';
+
+  @override
+  String get characterEditCharacterProfile => 'ملف الشخصية';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      'صِف الشخصية والمظهر والعادات والقيم والقدرات والتفضيلات والأمور الحساسة والتجارب المهمة.';
+
+  @override
+  String get characterEditSpeakingStyle => 'أسلوب الحديث';
+
+  @override
+  String get characterEditSpeakingStyleHint =>
+      'مثال: يتحدث بسرعة، ويكثر من التعليقات الساخرة، ويتكلم بصراحة.';
+
+  @override
+  String get characterEditSupportingNameRequired =>
+      'يرجى إدخال اسم الشخصية المساندة.';
+
+  @override
+  String get characterEditSupportingGenderRequired =>
+      'يرجى اختيار جنس الشخصية المساندة.';
+
+  @override
+  String get characterEditProfileRequired => 'يرجى إدخال إعدادات الشخصية.';
+
+  @override
+  String get characterEditRelationshipTooLong =>
+      'تجاوز وصف العلاقة بالشخصية الرئيسية 1,500 حرف.';
+
+  @override
+  String get characterEditProfileTooLong => 'تجاوزت إعدادات الشخصية 1,500 حرف.';
+
+  @override
+  String get characterEditSave => 'حفظ';
+
+  @override
+  String get characterEditAdd => 'إضافة';
+
+  @override
+  String get creatorProfileNoBio => 'لم تتم إضافة نبذة شخصية بعد';
+
+  @override
+  String get creatorProfileNoBioHint => 'لم يضف هذا المبدع نبذة عنه بعد.';
+
+  @override
+  String get creatorProfileNoCreatorMoments => 'لم ينشر المبدع أي منشورات بعد';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint =>
+      'سيظهر هنا المحتوى العام المنشور بهوية المبدع.';
+
+  @override
+  String get creatorProfileNoCharacterMoments =>
+      'لم تنشر شخصيات المبدع أي منشورات بعد';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint =>
+      'سيظهر هنا المحتوى الذي تنشره الشخصيات العامة التابعة للمبدع.';
+
+  @override
+  String get creatorProfileNoPublicMoments => 'لا توجد منشورات عامة بعد';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint =>
+      'ستظهر هنا المنشورات العامة التي ينشرها المبدع وشخصياته.';
+
+  @override
+  String get creatorProfilePublicWorks => 'الأعمال العامة';
+
+  @override
+  String get creatorProfileLikesReceived => 'الإعجابات المستلمة';
+
+  @override
+  String get creatorProfileFollow => 'متابعة';
+
+  @override
+  String get creatorProfileFollowing => 'تتم المتابعة';
+
+  @override
+  String get creatorProfileUnfollowed => 'تم إلغاء المتابعة';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return 'تمت متابعة $creatorName';
+  }
+
+  @override
+  String get creatorProfileOperationFailed =>
+      'فشلت العملية، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return 'فشل تحميل الأعمال: $error';
+  }
+
+  @override
+  String get characterProfileShareInvitation => '🦋 دعوة للقاء من LoveyDovey';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ المبدع: $creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return 'ابحث عن «$characterName» في LoveyDovey وابدأ قصة تخصكما وحدكما.';
+  }
+
+  @override
+  String get characterProfileInvitationLabel => 'بطاقة دعوة الشخصية';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return 'المبدع  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint =>
+      'ابحث عن الشخصية وابدأ اللقاء  🦋';
+
+  @override
+  String get characterProfileScanToDownload => 'امسح للتنزيل';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return 'مشاركة الشخصية «$characterName»';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return 'تعرّف على $characterName في LoveyDovey';
+  }
+
+  @override
+  String get characterProfileShareFailed =>
+      'فشل إنشاء بطاقة الدعوة، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get characterProfilePrivateShareUnavailable =>
+      'لا يمكن مشاركة الشخصيات الخاصة حاليًا';
+
+  @override
+  String get characterProfileShareCard => 'مشاركة بطاقة الدعوة';
+
+  @override
+  String get characterProfileShareCharacter => 'مشاركة الشخصية';
+
+  @override
+  String get characterProfileReportCharacter => 'الإبلاغ عن الشخصية';
+
+  @override
+  String get characterProfileTranslate => 'ترجمة';
 }

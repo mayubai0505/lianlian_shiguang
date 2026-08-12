@@ -1343,7 +1343,7 @@
     },
     "tab_heartbeat_diary": "مذكرات نبض القلب",
     "tab_daily_chit_chat": "دردشة يومية",
-    "task_desc_chat_3_times": "قم بإجراء 3 محادثات يومية مع الشخصية",
+    "task_desc_chat_3_times": "الدردشة مع الشخصية 3 مرات في الوضع اليومي",
     "tab_story_progression": "تقدم القصة",
     "task_desc_story_1_time": "أكمل تفاعل واحد في وضع القصة",
     "tab_social_tour": "جولة اجتماعية",
@@ -2422,5 +2422,426 @@
     },
     "mailCaseNumber": "رقم الحالة",
     "mailCopyCaseNumber": "نسخ رقم الحالة",
-    "mailCaseNumberCopied": "تم نسخ رقم الحالة"
+    "mailCaseNumberCopied": "تم نسخ رقم الحالة",
+    "profilePageAboutMe": "📝 نبذة عني",
+    "profilePageTabBio": "النبذة الشخصية",
+    "profilePageTabCharacters": "الشخصيات",
+    "profilePageTabMoments": "المنشورات",
+    "profilePageEditProfile": "تعديل الملف الشخصي",
+    "profilePageFriends": "الأصدقاء",
+    "profilePageWorks": "الأعمال",
+    "profilePageFollowing": "المتابَعون",
+    "profilePageFollowers": "المتابِعون",
+    "profilePageHeartbeatDiary": "يوميات نبضات القلب",
+    "profilePageEditCharacter": "تعديل الشخصية",
+    "profilePagePreviewCharacter": "معاينة ملف الشخصية",
+    "profilePageNoBio": "لا توجد نبذة شخصية بعد",
+    "profilePageNoBioHint": "اضغط لكتابة نبذة عنك.",
+    "profilePageCreateCharacter": "إنشاء شخصية جديدة",
+    "profilePageNoCharacters": "لم يتم إنشاء أي شخصية بعد",
+    "profilePageNoCharactersHint": "ابدأ بإنشاء شخصيتك الأولى.",
+    "profilePageCharacterActions": "إجراءات الشخصية",
+    "profilePagePublic": "عام",
+    "profilePagePrivate": "خاص",
+    "profilePageCreator": "المبدع",
+    "profilePageSelectPostingIdentity": "اختر هوية النشر",
+    "profilePagePostAsCreator": "النشر بهوية المبدع",
+    "profilePagePublicCharacter": "شخصية عامة",
+    "profilePagePrivateCharacter": "شخصية خاصة",
+    "profilePagePleaseSignIn": "يرجى تسجيل الدخول أولًا",
+    "profilePagePublishMoment": "نشر منشور",
+    "profilePageFilterAll": "الكل",
+    "profilePageFilterCreator": "أنا",
+    "profilePageFilterCharacter": "الشخصيات",
+    "profilePageMomentsLoadFailed": "فشل تحميل المنشورات",
+    "profilePageTryAgainLater": "يرجى المحاولة مرة أخرى لاحقًا.",
+    "profilePageNoCreatorMoments": "لم تنشر أي منشورات بعد",
+    "profilePageNoCreatorMomentsHint": "سيظهر هنا المحتوى المنشور بهوية المبدع.",
+    "profilePageNoCharacterMoments": "لم تنشر شخصياتك أي منشورات بعد",
+    "profilePageNoCharacterMomentsHint": "سيظهر هنا المحتوى المنشور بهوية الشخصية.",
+    "profilePageNoMoments": "لا توجد منشورات بعد",
+    "profilePageNoMomentsHint": "ستظهر هنا المنشورات التي تنشرها أنت وشخصياتك.",
+    "profilePageDeleteMomentTitle": "حذف المنشور",
+    "profilePageDeleteMomentConfirm": "هل أنت متأكد من حذف هذا المنشور نهائيًا؟",
+    "profilePageCancel": "إلغاء",
+    "profilePageDelete": "حذف",
+    "profilePageMomentDeleted": "تم حذف المنشور",
+    "profilePageDeleteFailed": "فشل الحذف، يرجى المحاولة مرة أخرى لاحقًا",
+    "profilePageReferralCompleted": "اكتملت دعوة النجوم",
+    "profilePageInviter": "الداعي: {inviterId}",
+    "@profilePageInviter": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralRewardReceived": "حصل الطرفان على 50 زهرة",
+    "profilePageClaimed": "تم الاستلام",
+    "profilePageInviterBound": "تم ربط الداعي: {inviterId}",
+    "@profilePageInviterBound": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralProgressHint": "بعد إكمال 15 رسالة دردشة، سيحصل كل طرف على 50 زهرة",
+    "profilePageAlreadyCheckedIn": "لقد سجلت حضورك اليوم بالفعل",
+    "profilePageReferralBindFailed": "فشل الربط، يرجى المحاولة مرة أخرى لاحقًا",
+    "profilePageCharacterNotFound": "تعذر العثور على بيانات هذه الشخصية",
+    "periodGuideTitle": "كيف تستخدمين يوميات الدورة الشهرية؟",
+    "periodGuideContent": "① اختاري أولًا تاريخًا من التقويم.\n② اختاري «بدأت اليوم» أو «ما زالت مستمرة» أو «انتهت اليوم».\n③ حددي حالتك المزاجية والجسدية لهذا اليوم، ويمكنك أيضًا إضافة ملاحظاتك الخاصة.\n④ اضغطي على حفظ، وبذلك ستتمكن الشخصية من فهم حالتك اليوم أثناء الدردشة.\n\nسيتم تعديل التواريخ المتوقعة بناءً على سجلاتك السابقة، وهي مخصصة كمرجع لتدوين تفاصيل حياتك اليومية فقط.",
+    "periodGotIt": "فهمت",
+    "periodSelectAtLeastOne": "يرجى اختيار سجل واحد على الأقل",
+    "periodFutureDateError": "لا يمكن تسجيل حالة الدورة الشهرية لتاريخ مستقبلي.",
+    "periodAlreadyOngoingError": "توجد دورة شهرية جارية بالفعل، يرجى إنهاؤها أولًا.",
+    "periodNoOngoingError": "لا توجد دورة شهرية جارية حاليًا، يرجى اختيار «بدأت اليوم» أولًا.",
+    "periodBeforeStartError": "لا يمكن أن يسبق التاريخ تاريخ بدء الدورة الشهرية الحالية.",
+    "periodEndBeforeStartError": "لا يمكن أن يسبق تاريخ الانتهاء تاريخ البدء.",
+    "periodRecordSaved": "تم حفظ سجل {date}",
+    "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+    "periodSaveFailed": "فشل الحفظ، يرجى المحاولة مرة أخرى لاحقًا",
+    "periodDeleteTitle": "هل تريدين حذف سجل هذه الدورة الشهرية؟",
+    "periodDeleteContent": "بعد الحذف، سيُعاد حساب متوسط الدورة والتاريخ المتوقع للدورة القادمة.",
+    "periodCancel": "إلغاء",
+    "periodDelete": "حذف",
+    "periodNoOngoing": "لا توجد دورة شهرية جارية حاليًا",
+    "periodDayCount": "اليوم {count} من الدورة الشهرية",
+    "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+    "periodHelp": "دليل الاستخدام",
+    "periodAverageCycle": "متوسط مدة الدورة",
+    "periodAverageDuration": "متوسط مدة الحيض",
+    "periodDays": "{count} أيام",
+    "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodNextPrediction": "التوقع القادم",
+    "periodCalculatedAfterRecording": "يُحسب بعد التسجيل",
+    "periodInsufficientData": "لا توجد بيانات كافية حاليًا، لذا سيُقدّر مؤقتًا طول الدورة بـ 28 يومًا ومدة الحيض بـ 5 أيام.",
+    "periodPredictionDisclaimer": "هذا تقدير يستند إلى السجلات الحالية، والتواريخ مخصصة كمرجع لتدوين تفاصيل حياتك اليومية فقط.",
+    "periodStartedToday": "🩸 بدأت اليوم",
+    "periodStillOngoing": "ما زالت الدورة مستمرة",
+    "periodEndedToday": "انتهت اليوم",
+    "periodDateNotReached": "هذا اليوم لم يأتِ بعد～",
+    "periodDateBeforeStart": "هذا التاريخ يسبق تاريخ بدء الدورة الشهرية الحالية.",
+    "periodMoodOkay": "بخير",
+    "periodMoodHappy": "سعيدة",
+    "periodMoodLow": "محبطة",
+    "periodMoodUnwell": "متعبة",
+    "periodMoodIrritable": "منزعجة",
+    "periodMoodTired": "مرهقة",
+    "periodMoodAnxious": "قلقة",
+    "periodSymptomAbdominalPain": "ألم في البطن",
+    "periodSymptomLowerBackPain": "ألم أسفل الظهر",
+    "periodSymptomHeadache": "صداع",
+    "periodSymptomBreastTenderness": "ألم وتورم الثديين",
+    "periodSymptomSwelling": "احتباس السوائل",
+    "periodSymptomSleepy": "نعاس",
+    "periodSymptomIncreasedAppetite": "زيادة الشهية",
+    "periodSymptomDigestiveDiscomfort": "اضطرابات هضمية",
+    "periodDiaryTitle": "يوميات {characterName} الحنونة",
+    "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodLoadFailed": "فشل تحميل السجلات، يرجى المحاولة مرة أخرى لاحقًا",
+    "periodWeekdaySun": "الأحد",
+    "periodWeekdayMon": "الاثنين",
+    "periodWeekdayTue": "الثلاثاء",
+    "periodWeekdayWed": "الأربعاء",
+    "periodWeekdayThu": "الخميس",
+    "periodWeekdayFri": "الجمعة",
+    "periodWeekdaySat": "السبت",
+    "periodSaveInstruction": "بعد اختيار الحالة، يرجى الضغط على «حفظ سجل اليوم» في الأسفل لحفظها نهائيًا.",
+    "periodTodayMood": "مزاجك اليوم (يمكن اختيار أكثر من خيار)",
+    "periodMoodDescription": "هذه ملاحظات يومية لهذا اليوم وليست رموزًا تُعرض على التقويم.",
+    "periodOtherMood": "مزاج آخر",
+    "periodOtherMoodHint": "مثال: أشعر بالظلم، أفتقد الشعور بالأمان……",
+    "periodTodaySymptoms": "حالتك الجسدية اليوم (يمكن اختيار أكثر من خيار)",
+    "periodOtherSymptom": "حالة جسدية أخرى",
+    "periodOtherSymptomHint": "مثال: أشعر بالبرد، ليست لدي شهية……",
+    "periodNoteForCharacter": "ما تريدين أن يعرفه {characterName} (اختياري)",
+    "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodNoteHint": "مثال: أريد أن أرتاح بهدوء اليوم ولا أريد أن يضغط عليّ أحد……",
+    "periodSaving": "جارٍ الحفظ…",
+    "periodSaveToday": "حفظ سجل اليوم",
+    "periodHistory": "سجل الدورات السابقة",
+    "periodOngoing": "جارية",
+    "periodTotalDays": "إجمالي {count} أيام",
+    "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodDeleteRecord": "حذف السجل",
+    "privateProfilePleaseSignIn": "يرجى تسجيل الدخول أولًا",
+    "privateProfileLoreLoadFailed": "فشل تحميل شظايا الذاكرة: {error}",
+    "@privateProfileLoreLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "privateProfileWriteNewLore": "كتابة شظية ذاكرة جديدة ({count} / {limit})",
+    "@privateProfileWriteNewLore": {
+        "placeholders": {
+            "count": { "type": "int" },
+            "limit": { "type": "int" }
+        }
+    },
+    "privateProfileNoLore": "لا توجد شظايا ذاكرة بعد",
+    "privateProfileNoLoreHint": "يمكنك هنا تنظيم إعدادات الاختبار وخيوط القصة والذكريات المهمة للشخصية.",
+    "privateProfileUntitledLore": "شظية بلا عنوان",
+    "privateProfileEdit": "تعديل",
+    "privateProfileDelete": "حذف",
+    "privateProfileAddLore": "إضافة شظية ذاكرة",
+    "privateProfileLoreTitle": "العنوان",
+    "privateProfileLoreTeaser": "تلميح مختصر",
+    "privateProfileLoreContent": "المحتوى الكامل",
+    "privateProfileLockLore": "قفل الشظية",
+    "privateProfileLockLoreHint": "الشخصية الخاصة مرئية حاليًا للمبدع فقط. سيبقى هذا الحقل محفوظًا لاستخدامه عند جعل الشخصية عامة.",
+    "privateProfileCancel": "إلغاء",
+    "privateProfileTitleContentRequired": "يرجى إدخال العنوان والمحتوى",
+    "privateProfileLoreAdded": "تمت إضافة شظية الذاكرة",
+    "privateProfileAddFailed": "فشلت الإضافة، يرجى المحاولة مرة أخرى لاحقًا",
+    "privateProfilePublish": "نشر",
+    "privateProfileDeleteLoreTitle": "حذف شظية الذاكرة",
+    "privateProfileDeleteLoreConfirm": "هل أنت متأكد من حذف شظية الذاكرة هذه نهائيًا؟",
+    "privateProfileLoreDeleted": "تم حذف شظية الذاكرة",
+    "privateProfileDeleteFailed": "فشل الحذف، يرجى المحاولة مرة أخرى لاحقًا",
+    "privateProfileEditLore": "تعديل شظية الذاكرة",
+    "privateProfileSave": "حفظ",
+    "editProfileBirthdayReminderTitle": "🎂 تذكير صغير",
+    "editProfileBirthdayReminderContent": "سيؤثر تاريخ الميلاد في تهاني الشخصية بعيد ميلادك وهدايا عيد الميلاد والفعاليات ذات الصلة.\n\nننصحك بالتأكد من تاريخ ميلادك قبل إكمال الإعداد،\nحتى لا تتأثر مكافآت عيد الميلاد المستقبلية.",
+    "editProfileGotIt": "فهمت",
+    "editProfileBirthdayConfirmTitle": "🎂 تأكيد تاريخ الميلاد",
+    "editProfileBirthdayConfirmContent": "يرجى التأكد من صحة تاريخ الميلاد.\n\nسيُستخدم تاريخ الميلاد لتهاني عيد الميلاد وهداياه والفعاليات ذات الصلة.\n\nلمنع استلام مكافأة عيد الميلاد أكثر من مرة، لن تتمكن من تعديل تاريخ الميلاد مجددًا بعد إكمال الإعداد.\n\nهل أنت متأكد من استخدام تاريخ الميلاد هذا؟",
+    "editProfileReturnToEdit": "العودة إلى التعديل",
+    "editProfileConfirmSetting": "تأكيد الإعداد",
+    "editProfileDefaultNickname": "المسافر الذي التقيناه للتو",
+    "editProfileNoChanges": "لا توجد تغييرات تحتاج إلى الحفظ",
+    "editProfileCreateFailed": "فشل إنشاء البيانات: {error}",
+    "@editProfileCreateFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileAvatarNumber": "الصورة الرمزية {number}",
+    "@editProfileAvatarNumber": {
+        "placeholders": {
+            "number": { "type": "int" }
+        }
+    },
+    "editProfileImageSelectionFailed": "فشل اختيار الصورة، يرجى اختيار صورة أخرى",
+    "editProfileCancel": "إلغاء",
+    "editProfileConfirm": "تأكيد",
+    "editProfileImageProcessingFailed": "فشلت معالجة الصورة، يرجى اختيار صورة أخرى",
+    "editProfileLoadFailed": "فشل تحميل البيانات: {error}",
+    "@editProfileLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileBioLabel": "النبذة الشخصية",
+    "editProfileBioHelper": "عرّف بنفسك أو بأسلوبك الإبداعي باختصار",
+    "editProfileBioHint": "مثال: أحب ابتكار شخصيات رومانسية خيالية ومتملكة وغامرة.",
+    "editProfileUserNotFound": "تعذر العثور على المستخدم",
+    "editProfileGenerateIdFailed": "فشل إنشاء معرّف اللاعب، يرجى المحاولة مرة أخرى",
+    "editProfileSignedInUserNotFound": "تعذر العثور على المستخدم المسجل دخوله حاليًا",
+    "editProfileAvatarReadFailed": "فشل تحميل الصورة الرمزية، رمز الحالة: {statusCode}",
+    "@editProfileAvatarReadFailed": {
+        "placeholders": {
+            "statusCode": { "type": "int" }
+        }
+    },
+    "editProfileAvatarFileNotFound": "تعذر العثور على ملف الصورة الرمزية المحدد: {path}",
+    "@editProfileAvatarFileNotFound": {
+        "placeholders": {
+            "path": { "type": "String" }
+        }
+    },
+    "editProfileAvatarEmpty": "بيانات الصورة الرمزية فارغة",
+    "chatPageSendFailed": "فشل الإرسال، يرجى المحاولة مرة أخرى لاحقًا 😢",
+    "chatPageRegenerateFailed": "فشلت إعادة الإنشاء، وتم الاحتفاظ بالرسالة الأصلية. يرجى المحاولة مرة أخرى.",
+    "chatPageRegenerating": "💭 يعيد التفكير الآن...",
+    "chatPageThinkingTooLong": "يبدو أنه غارق في التفكير، يرجى المحاولة مرة أخرى لاحقًا……",
+    "chatPageAlreadyReplying": "إنه يرد الآن، يرجى الانتظار قليلًا وعدم الإرسال مرة أخرى",
+    "chatPageMediaUploadFailed": "فشل رفع الوسائط، يرجى المحاولة مرة أخرى",
+    "chatPageReportReceived": "شكرًا على بلاغك، سنتحقق منه في أقرب وقت ممكن",
+    "chatPageMessagesDeleted": "✅ تم حذف {count} رسالة بنجاح",
+    "@chatPageMessagesDeleted": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSelectPhotoFailed": "تعذر اختيار الصورة: {error}",
+    "@chatPageSelectPhotoFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFound": "تعذر العثور على ملف التسجيل",
+    "chatPageRecordingEmpty": "ملف التسجيل فارغ",
+    "chatPageAudioPlaybackFailed": "فشل تشغيل الصوت: {error}",
+    "@chatPageAudioPlaybackFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageMicrophonePermissionRequired": "يلزم السماح باستخدام الميكروفون لتسجيل الصوت",
+    "chatPageStartRecordingFailed": "تعذر بدء التسجيل: {error}",
+    "@chatPageStartRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingCreationFailed": "فشل إنشاء ملف التسجيل، يرجى التسجيل مرة أخرى",
+    "chatPageRecordingFailed": "فشل التسجيل: {error}",
+    "@chatPageRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFoundRetry": "تعذر العثور على ملف التسجيل، يرجى التسجيل مرة أخرى",
+    "chatPageRecordingEmptyRetry": "ملف التسجيل فارغ، يرجى التسجيل مرة أخرى",
+    "chatPageNoRecordingToSend": "لا يوجد تسجيل يمكن إرساله",
+    "chatPagePointCost": "{count} نقطة",
+    "@chatPagePointCost": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageVoiceUploading": "جارٍ رفع التسجيل الصوتي……",
+    "chatPageChangeWatermarkColor": "تغيير لون العلامة المائية",
+    "chatPageMinutesSeconds": "{minutes} دقيقة و{seconds} ثانية",
+    "@chatPageMinutesSeconds": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSeconds": "{seconds} ثانية",
+    "@chatPageSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "characterEditSelectSupportingCharacter": "يرجى اختيار شخصية مساندة.",
+    "characterEditSelectGender": "يرجى اختيار جنس الشخصية.",
+    "characterEditCharacterSettings": "إعدادات الشخصية",
+    "characterEditWorldview": "بناء العالم",
+    "characterEditSettingsMinLength": "يجب ألا تقل إعدادات الشخصية عن 10 أحرف.",
+    "characterEditWorldviewMinLength": "يجب ألا يقل بناء العالم عن 20 حرفًا.",
+    "characterEditSupportingCharacters": "الشخصيات المساندة",
+    "characterEditCharacterImage": "صورة الشخصية",
+    "characterEditWorldviewHint": "صِف خلفية العالم وتاريخه وعصره ومناطقه وقواه وأنظمته وتقنياته وسحره وقواعده.",
+    "characterEditSettingsHint": "صِف شخصية الدور وقيمه وطريقة تفكيره واستجاباته العاطفية وعاداته السلوكية وأسلوب حديثه ومعتقداته الأساسية.",
+    "characterEditUnknownCharacter": "شخصية مجهولة",
+    "characterEditEditSupportingCharacter": "تعديل الشخصية المساندة",
+    "characterEditAddSupportingCharacter": "إضافة شخصية مساندة",
+    "characterEditSupportingCharacterName": "اسم الشخصية المساندة",
+    "characterEditGender": "الجنس",
+    "characterEditMale": "ذكر",
+    "characterEditFemale": "أنثى",
+    "characterEditOther": "آخر",
+    "characterEditAge": "العمر",
+    "characterEditIdentityOccupation": "الهوية／المهنة",
+    "characterEditRelationshipWithMain": "العلاقة بالشخصية الرئيسية",
+    "characterEditRelationshipHint": "صِف الماضي والمواقف والمشاعر والأسرار والعلاقة الحالية مع الشخصية الرئيسية.",
+    "characterEditCharacterProfile": "ملف الشخصية",
+    "characterEditCharacterProfileHint": "صِف الشخصية والمظهر والعادات والقيم والقدرات والتفضيلات والأمور الحساسة والتجارب المهمة.",
+    "characterEditSpeakingStyle": "أسلوب الحديث",
+    "characterEditSpeakingStyleHint": "مثال: يتحدث بسرعة، ويكثر من التعليقات الساخرة، ويتكلم بصراحة.",
+    "characterEditSupportingNameRequired": "يرجى إدخال اسم الشخصية المساندة.",
+    "characterEditSupportingGenderRequired": "يرجى اختيار جنس الشخصية المساندة.",
+    "characterEditProfileRequired": "يرجى إدخال إعدادات الشخصية.",
+    "characterEditRelationshipTooLong": "تجاوز وصف العلاقة بالشخصية الرئيسية 1,500 حرف.",
+    "characterEditProfileTooLong": "تجاوزت إعدادات الشخصية 1,500 حرف.",
+    "characterEditSave": "حفظ",
+    "characterEditAdd": "إضافة",
+    "creatorProfileNoBio": "لم تتم إضافة نبذة شخصية بعد",
+    "creatorProfileNoBioHint": "لم يضف هذا المبدع نبذة عنه بعد.",
+    "creatorProfileNoCreatorMoments": "لم ينشر المبدع أي منشورات بعد",
+    "creatorProfileNoCreatorMomentsHint": "سيظهر هنا المحتوى العام المنشور بهوية المبدع.",
+    "creatorProfileNoCharacterMoments": "لم تنشر شخصيات المبدع أي منشورات بعد",
+    "creatorProfileNoCharacterMomentsHint": "سيظهر هنا المحتوى الذي تنشره الشخصيات العامة التابعة للمبدع.",
+    "creatorProfileNoPublicMoments": "لا توجد منشورات عامة بعد",
+    "creatorProfileNoPublicMomentsHint": "ستظهر هنا المنشورات العامة التي ينشرها المبدع وشخصياته.",
+    "creatorProfilePublicWorks": "الأعمال العامة",
+    "creatorProfileLikesReceived": "الإعجابات المستلمة",
+    "creatorProfileFollow": "متابعة",
+    "creatorProfileFollowing": "تتم المتابعة",
+    "creatorProfileUnfollowed": "تم إلغاء المتابعة",
+    "creatorProfileFollowedCreator": "تمت متابعة {creatorName}",
+    "@creatorProfileFollowedCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "creatorProfileOperationFailed": "فشلت العملية، يرجى المحاولة مرة أخرى لاحقًا",
+    "creatorProfileWorksLoadFailed": "فشل تحميل الأعمال: {error}",
+    "@creatorProfileWorksLoadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareInvitation": "🦋 دعوة للقاء من LoveyDovey",
+    "characterProfileShareCreator": "✦ المبدع: {creatorName}",
+    "@characterProfileShareCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareMessage": "ابحث عن «{characterName}» في LoveyDovey وابدأ قصة تخصكما وحدكما.",
+    "@characterProfileShareMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileInvitationLabel": "بطاقة دعوة الشخصية",
+    "characterProfileCardCreator": "المبدع  {creatorName}",
+    "@characterProfileCardCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileCardSearchHint": "ابحث عن الشخصية وابدأ اللقاء  🦋",
+    "characterProfileScanToDownload": "امسح للتنزيل",
+    "characterProfileShareTitle": "مشاركة الشخصية «{characterName}»",
+    "@characterProfileShareTitle": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareSubject": "تعرّف على {characterName} في LoveyDovey",
+    "@characterProfileShareSubject": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareFailed": "فشل إنشاء بطاقة الدعوة، يرجى المحاولة مرة أخرى لاحقًا",
+    "characterProfilePrivateShareUnavailable": "لا يمكن مشاركة الشخصيات الخاصة حاليًا",
+    "characterProfileShareCard": "مشاركة بطاقة الدعوة",
+    "characterProfileShareCharacter": "مشاركة الشخصية",
+    "characterProfileReportCharacter": "الإبلاغ عن الشخصية",
+    "characterProfileTranslate": "ترجمة"
 }

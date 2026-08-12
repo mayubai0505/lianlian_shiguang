@@ -3069,7 +3069,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tab_daily_chit_chat => '日常の雑談';
 
   @override
-  String get task_desc_chat_3_times => 'キャラクターと日常チャットを3回行う';
+  String get task_desc_chat_3_times => '日常モードでキャラクターと3回チャットする';
 
   @override
   String get tab_story_progression => 'ストーリー進行';
@@ -4815,4 +4815,865 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get mailCaseNumberCopied => 'お問い合わせ番号をコピーしました';
+
+  @override
+  String get profilePageAboutMe => '📝 自己紹介';
+
+  @override
+  String get profilePageTabBio => 'プロフィール';
+
+  @override
+  String get profilePageTabCharacters => 'キャラクター';
+
+  @override
+  String get profilePageTabMoments => '投稿';
+
+  @override
+  String get profilePageEditProfile => 'プロフィールを編集';
+
+  @override
+  String get profilePageFriends => '友達';
+
+  @override
+  String get profilePageWorks => '作品';
+
+  @override
+  String get profilePageFollowing => 'フォロー中';
+
+  @override
+  String get profilePageFollowers => 'フォロワー';
+
+  @override
+  String get profilePageHeartbeatDiary => 'ときめき日記';
+
+  @override
+  String get profilePageEditCharacter => 'キャラクターを編集';
+
+  @override
+  String get profilePagePreviewCharacter => 'キャラクタープロフィールをプレビュー';
+
+  @override
+  String get profilePageNoBio => '自己紹介はまだありません';
+
+  @override
+  String get profilePageNoBioHint => 'タップして自己紹介を書いてみましょう。';
+
+  @override
+  String get profilePageCreateCharacter => '新しいキャラクターを作成';
+
+  @override
+  String get profilePageNoCharacters => '作成したキャラクターはまだいません';
+
+  @override
+  String get profilePageNoCharactersHint => '最初のキャラクターを作成してみましょう。';
+
+  @override
+  String get profilePageCharacterActions => 'キャラクター操作';
+
+  @override
+  String get profilePagePublic => '公開';
+
+  @override
+  String get profilePagePrivate => '非公開';
+
+  @override
+  String get profilePageCreator => 'クリエイター';
+
+  @override
+  String get profilePageSelectPostingIdentity => '投稿者を選択';
+
+  @override
+  String get profilePagePostAsCreator => 'クリエイター本人として投稿';
+
+  @override
+  String get profilePagePublicCharacter => '公開キャラクター';
+
+  @override
+  String get profilePagePrivateCharacter => '非公開キャラクター';
+
+  @override
+  String get profilePagePleaseSignIn => '先にログインしてください';
+
+  @override
+  String get profilePagePublishMoment => '投稿する';
+
+  @override
+  String get profilePageFilterAll => 'すべて';
+
+  @override
+  String get profilePageFilterCreator => '本人';
+
+  @override
+  String get profilePageFilterCharacter => 'キャラクター';
+
+  @override
+  String get profilePageMomentsLoadFailed => '投稿の読み込みに失敗しました';
+
+  @override
+  String get profilePageTryAgainLater => 'しばらくしてからもう一度お試しください。';
+
+  @override
+  String get profilePageNoCreatorMoments => '本人による投稿はまだありません';
+
+  @override
+  String get profilePageNoCreatorMomentsHint => 'クリエイターとして投稿した内容がここに表示されます。';
+
+  @override
+  String get profilePageNoCharacterMoments => 'キャラクターによる投稿はまだありません';
+
+  @override
+  String get profilePageNoCharacterMomentsHint => 'キャラクターとして投稿した内容がここに表示されます。';
+
+  @override
+  String get profilePageNoMoments => '投稿はまだありません';
+
+  @override
+  String get profilePageNoMomentsHint => 'あなたとキャラクターが投稿した内容がここに表示されます。';
+
+  @override
+  String get profilePageDeleteMomentTitle => '投稿を削除';
+
+  @override
+  String get profilePageDeleteMomentConfirm => 'この投稿を完全に削除しますか？';
+
+  @override
+  String get profilePageCancel => 'キャンセル';
+
+  @override
+  String get profilePageDelete => '削除';
+
+  @override
+  String get profilePageMomentDeleted => '投稿を削除しました';
+
+  @override
+  String get profilePageDeleteFailed => '削除に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get profilePageReferralCompleted => '星の招待が完了しました';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return '招待者：$inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived => '双方に花を50個付与しました';
+
+  @override
+  String get profilePageClaimed => '受け取り済み';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return '招待者を登録しました：$inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint =>
+      'チャットを15通完了すると、双方に花が50個ずつ付与されます';
+
+  @override
+  String get profilePageAlreadyCheckedIn => '今日はすでにチェックイン済みです';
+
+  @override
+  String get profilePageReferralBindFailed => '登録に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get profilePageCharacterNotFound => 'このキャラクターのデータが見つかりません';
+
+  @override
+  String get periodGuideTitle => '生理日記の使い方';
+
+  @override
+  String get periodGuideContent =>
+      '① まずカレンダーの日付を選択します。\n②「今日始まった」「まだ生理中」または「今日終わった」を選択します。\n③ 今日の気分と体調を選択します。自由に補足することもできます。\n④ 保存を押すと、チャット中にキャラクターが今日のあなたの状態を理解できるようになります。\n\n予測日は過去の記録に基づいて調整されます。日々の記録の参考としてのみご利用ください。';
+
+  @override
+  String get periodGotIt => 'わかりました';
+
+  @override
+  String get periodSelectAtLeastOne => '記録する項目を1つ以上選択してください';
+
+  @override
+  String get periodFutureDateError => '未来の日付に生理の状態を記録することはできません。';
+
+  @override
+  String get periodAlreadyOngoingError => '進行中の生理記録があります。先に終了してください。';
+
+  @override
+  String get periodNoOngoingError => '現在、進行中の生理記録はありません。先に「今日始まった」を選択してください。';
+
+  @override
+  String get periodBeforeStartError => '今回の生理開始日より前の日付は選択できません。';
+
+  @override
+  String get periodEndBeforeStartError => '終了日は開始日より前に設定できません。';
+
+  @override
+  String periodRecordSaved(String date) {
+    return '$dateの記録を保存しました';
+  }
+
+  @override
+  String get periodSaveFailed => '保存に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get periodDeleteTitle => '今回の生理記録を削除しますか？';
+
+  @override
+  String get periodDeleteContent => '削除すると、平均周期と次回予測も再計算されます。';
+
+  @override
+  String get periodCancel => 'キャンセル';
+
+  @override
+  String get periodDelete => '削除';
+
+  @override
+  String get periodNoOngoing => '現在、進行中の生理記録はありません';
+
+  @override
+  String periodDayCount(int count) {
+    return '生理 $count 日目';
+  }
+
+  @override
+  String get periodHelp => '使い方';
+
+  @override
+  String get periodAverageCycle => '平均周期';
+
+  @override
+  String get periodAverageDuration => '平均生理期間';
+
+  @override
+  String periodDays(int count) {
+    return '$count 日';
+  }
+
+  @override
+  String get periodNextPrediction => '次回予測';
+
+  @override
+  String get periodCalculatedAfterRecording => '記録後に計算';
+
+  @override
+  String get periodInsufficientData =>
+      '現在はデータが不足しているため、暫定的に28日周期、生理期間5日として予測します。';
+
+  @override
+  String get periodPredictionDisclaimer =>
+      '現在の記録に基づく予測です。日付は日々の記録の参考としてのみご利用ください。';
+
+  @override
+  String get periodStartedToday => '🩸 今日始まった';
+
+  @override
+  String get periodStillOngoing => 'まだ生理中';
+
+  @override
+  String get periodEndedToday => '今日終わった';
+
+  @override
+  String get periodDateNotReached => 'この日はまだ来ていません～';
+
+  @override
+  String get periodDateBeforeStart => 'この日は現在の生理開始日より前です。';
+
+  @override
+  String get periodMoodOkay => 'まあまあ';
+
+  @override
+  String get periodMoodHappy => 'うれしい';
+
+  @override
+  String get periodMoodLow => '落ち込んでいる';
+
+  @override
+  String get periodMoodUnwell => 'つらい';
+
+  @override
+  String get periodMoodIrritable => 'イライラ';
+
+  @override
+  String get periodMoodTired => '疲れた';
+
+  @override
+  String get periodMoodAnxious => '不安';
+
+  @override
+  String get periodSymptomAbdominalPain => '腹痛';
+
+  @override
+  String get periodSymptomLowerBackPain => '腰痛';
+
+  @override
+  String get periodSymptomHeadache => '頭痛';
+
+  @override
+  String get periodSymptomBreastTenderness => '胸の張り';
+
+  @override
+  String get periodSymptomSwelling => 'むくみ';
+
+  @override
+  String get periodSymptomSleepy => '眠い';
+
+  @override
+  String get periodSymptomIncreasedAppetite => '食欲増加';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => '胃腸の不調';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return '$characterNameの思いやり日記';
+  }
+
+  @override
+  String get periodLoadFailed => '記録の読み込みに失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get periodWeekdaySun => '日';
+
+  @override
+  String get periodWeekdayMon => '月';
+
+  @override
+  String get periodWeekdayTue => '火';
+
+  @override
+  String get periodWeekdayWed => '水';
+
+  @override
+  String get periodWeekdayThu => '木';
+
+  @override
+  String get periodWeekdayFri => '金';
+
+  @override
+  String get periodWeekdaySat => '土';
+
+  @override
+  String get periodSaveInstruction => '状態を選択した後、一番下の「今日の記録を保存」を押すと正式に保存されます。';
+
+  @override
+  String get periodTodayMood => '今日の気分（複数選択可）';
+
+  @override
+  String get periodMoodDescription => 'これはその日の日記であり、カレンダー上に表示されるアイコンではありません。';
+
+  @override
+  String get periodOtherMood => 'その他の気分';
+
+  @override
+  String get periodOtherMoodHint => '例：傷ついた、不安を感じる……';
+
+  @override
+  String get periodTodaySymptoms => '今日の体調（複数選択可）';
+
+  @override
+  String get periodOtherSymptom => 'その他の体調';
+
+  @override
+  String get periodOtherSymptomHint => '例：寒気がする、食欲がない……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return '$characterNameに伝えたいこと（任意）';
+  }
+
+  @override
+  String get periodNoteHint => '例：今日は静かに休みたいから、急かさないでほしい……';
+
+  @override
+  String get periodSaving => '保存中…';
+
+  @override
+  String get periodSaveToday => '今日の記録を保存';
+
+  @override
+  String get periodHistory => '生理履歴';
+
+  @override
+  String get periodOngoing => '進行中';
+
+  @override
+  String periodTotalDays(int count) {
+    return '合計 $count 日';
+  }
+
+  @override
+  String get periodDeleteRecord => '記録を削除';
+
+  @override
+  String get privateProfilePleaseSignIn => '先にログインしてください';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return '記憶の欠片の読み込みに失敗しました：$error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return '新しい記憶の欠片を書く（$count / $limit）';
+  }
+
+  @override
+  String get privateProfileNoLore => '記憶の欠片はまだありません';
+
+  @override
+  String get privateProfileNoLoreHint =>
+      'ここでは、テスト設定や物語の手がかり、キャラクターの大切な記憶を整理できます。';
+
+  @override
+  String get privateProfileUntitledLore => '無題の欠片';
+
+  @override
+  String get privateProfileEdit => '編集';
+
+  @override
+  String get privateProfileDelete => '削除';
+
+  @override
+  String get privateProfileAddLore => '記憶の欠片を追加';
+
+  @override
+  String get privateProfileLoreTitle => 'タイトル';
+
+  @override
+  String get privateProfileLoreTeaser => '短いヒント';
+
+  @override
+  String get privateProfileLoreContent => '詳細内容';
+
+  @override
+  String get privateProfileLockLore => '欠片をロック';
+
+  @override
+  String get privateProfileLockLoreHint =>
+      '非公開キャラクターは現在クリエイターのみ閲覧できます。この項目は、キャラクターを公開した際に引き続き使用できるよう保持されます。';
+
+  @override
+  String get privateProfileCancel => 'キャンセル';
+
+  @override
+  String get privateProfileTitleContentRequired => 'タイトルと内容を入力してください';
+
+  @override
+  String get privateProfileLoreAdded => '記憶の欠片を追加しました';
+
+  @override
+  String get privateProfileAddFailed => '追加に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get privateProfilePublish => '公開';
+
+  @override
+  String get privateProfileDeleteLoreTitle => '記憶の欠片を削除';
+
+  @override
+  String get privateProfileDeleteLoreConfirm => 'この記憶の欠片を完全に削除しますか？';
+
+  @override
+  String get privateProfileLoreDeleted => '記憶の欠片を削除しました';
+
+  @override
+  String get privateProfileDeleteFailed => '削除に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get privateProfileEditLore => '記憶の欠片を編集';
+
+  @override
+  String get privateProfileSave => '保存';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 ちょっとしたお知らせ';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      '誕生日は、キャラクターからの誕生日のお祝い、誕生日プレゼント、関連イベントに影響します。\n\n今後の誕生日報酬に影響しないよう、\n誕生日を確認してから設定を完了することをおすすめします。';
+
+  @override
+  String get editProfileGotIt => 'わかりました';
+
+  @override
+  String get editProfileBirthdayConfirmTitle => '🎂 誕生日を確認';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      '誕生日が正しいことを確認してください。\n\n誕生日は、誕生日のお祝い、誕生日プレゼント、関連イベントに使用されます。\n\n誕生日報酬の重複受け取りを防ぐため、設定完了後は誕生日を変更できません。\n\nこの誕生日を使用しますか？';
+
+  @override
+  String get editProfileReturnToEdit => '編集に戻る';
+
+  @override
+  String get editProfileConfirmSetting => '設定を確定';
+
+  @override
+  String get editProfileDefaultNickname => '出会ったばかりの旅人';
+
+  @override
+  String get editProfileNoChanges => '保存する変更はありません';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return 'データの作成に失敗しました：$error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return 'アバター $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed => '画像の選択に失敗しました。別の画像を選択してください';
+
+  @override
+  String get editProfileCancel => 'キャンセル';
+
+  @override
+  String get editProfileConfirm => '確定';
+
+  @override
+  String get editProfileImageProcessingFailed => '画像の処理に失敗しました。別の画像を選択してください';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return 'データの読み込みに失敗しました：$error';
+  }
+
+  @override
+  String get editProfileBioLabel => '自己紹介';
+
+  @override
+  String get editProfileBioHelper => '自分自身や創作スタイルについて簡単に紹介してください';
+
+  @override
+  String get editProfileBioHint => '例：ファンタジー、ヤンデレ、没入型恋愛のキャラクターを作るのが好きです。';
+
+  @override
+  String get editProfileUserNotFound => 'ユーザーが見つかりません';
+
+  @override
+  String get editProfileGenerateIdFailed => 'プレイヤーIDの生成に失敗しました。もう一度お試しください';
+
+  @override
+  String get editProfileSignedInUserNotFound => '現在ログインしているユーザーが見つかりません';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return 'アバターの読み込みに失敗しました。ステータスコード：$statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return '選択したアバターファイルが見つかりません：$path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty => 'アバター画像のデータが空です';
+
+  @override
+  String get chatPageSendFailed => '送信に失敗しました。しばらくしてからもう一度お試しください 😢';
+
+  @override
+  String get chatPageRegenerateFailed =>
+      '再生成に失敗しました。元のメッセージは保持されています。もう一度お試しください。';
+
+  @override
+  String get chatPageRegenerating => '💭 もう一度考えています...';
+
+  @override
+  String get chatPageThinkingTooLong => '考え込んでいるようです。しばらくしてからもう一度お試しください……';
+
+  @override
+  String get chatPageAlreadyReplying => '返信中です。少し待ってから、重複して送信しないでください';
+
+  @override
+  String get chatPageMediaUploadFailed => 'メディアのアップロードに失敗しました。もう一度お試しください';
+
+  @override
+  String get chatPageReportReceived => 'ご報告ありがとうございます。できるだけ早く確認いたします';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ $count 件のメッセージを削除しました';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return '写真を選択できませんでした：$error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound => '録音ファイルが見つかりません';
+
+  @override
+  String get chatPageRecordingEmpty => '録音ファイルが空です';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return '音声の再生に失敗しました：$error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired => '録音するにはマイクの使用許可が必要です';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return '録音を開始できませんでした：$error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed => '録音ファイルの作成に失敗しました。もう一度録音してください';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return '録音に失敗しました：$error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry => '録音ファイルが見つかりません。もう一度録音してください';
+
+  @override
+  String get chatPageRecordingEmptyRetry => '録音ファイルが空です。もう一度録音してください';
+
+  @override
+  String get chatPageNoRecordingToSend => '送信できる録音がありません';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count ポイント';
+  }
+
+  @override
+  String get chatPageVoiceUploading => '音声をアップロード中……';
+
+  @override
+  String get chatPageChangeWatermarkColor => '透かしの色を変更';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes 分 $seconds 秒';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds 秒';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter => 'サブキャラクターを選択してください。';
+
+  @override
+  String get characterEditSelectGender => 'キャラクターの性別を選択してください。';
+
+  @override
+  String get characterEditCharacterSettings => 'キャラクター設定';
+
+  @override
+  String get characterEditWorldview => '世界観';
+
+  @override
+  String get characterEditSettingsMinLength => 'キャラクター設定は10文字以上入力してください。';
+
+  @override
+  String get characterEditWorldviewMinLength => '世界観は20文字以上入力してください。';
+
+  @override
+  String get characterEditSupportingCharacters => 'サブキャラクター';
+
+  @override
+  String get characterEditCharacterImage => 'キャラクター画像';
+
+  @override
+  String get characterEditWorldviewHint =>
+      '世界の背景、歴史、時代、地域、勢力、制度、技術、魔法、世界のルールについて説明してください。';
+
+  @override
+  String get characterEditSettingsHint =>
+      'キャラクターの性格、価値観、考え方、感情的な反応、行動習慣、話し方、核となる信念について説明してください。';
+
+  @override
+  String get characterEditUnknownCharacter => '不明なキャラクター';
+
+  @override
+  String get characterEditEditSupportingCharacter => 'サブキャラクターを編集';
+
+  @override
+  String get characterEditAddSupportingCharacter => 'サブキャラクターを追加';
+
+  @override
+  String get characterEditSupportingCharacterName => 'サブキャラクター名';
+
+  @override
+  String get characterEditGender => '性別';
+
+  @override
+  String get characterEditMale => '男性';
+
+  @override
+  String get characterEditFemale => '女性';
+
+  @override
+  String get characterEditOther => 'その他';
+
+  @override
+  String get characterEditAge => '年齢';
+
+  @override
+  String get characterEditIdentityOccupation => '身分／職業';
+
+  @override
+  String get characterEditRelationshipWithMain => 'メインキャラクターとの関係';
+
+  @override
+  String get characterEditRelationshipHint =>
+      'メインキャラクターとの過去、立場、感情、秘密、現在の関係について説明してください。';
+
+  @override
+  String get characterEditCharacterProfile => '人物設定';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      '性格、外見、習慣、価値観、能力、好み、苦手なもの、重要な経験について説明してください。';
+
+  @override
+  String get characterEditSpeakingStyle => '話し方';
+
+  @override
+  String get characterEditSpeakingStyleHint => '例：早口で、ツッコミが多く、率直に話す。';
+
+  @override
+  String get characterEditSupportingNameRequired => 'サブキャラクター名を入力してください。';
+
+  @override
+  String get characterEditSupportingGenderRequired => 'サブキャラクターの性別を選択してください。';
+
+  @override
+  String get characterEditProfileRequired => '人物設定を入力してください。';
+
+  @override
+  String get characterEditRelationshipTooLong =>
+      'メインキャラクターとの関係が1,500文字を超えています。';
+
+  @override
+  String get characterEditProfileTooLong => '人物設定が1,500文字を超えています。';
+
+  @override
+  String get characterEditSave => '保存';
+
+  @override
+  String get characterEditAdd => '追加';
+
+  @override
+  String get creatorProfileNoBio => '自己紹介はまだありません';
+
+  @override
+  String get creatorProfileNoBioHint => 'このクリエイターはまだ自己紹介を追加していません。';
+
+  @override
+  String get creatorProfileNoCreatorMoments => 'クリエイターによる投稿はまだありません';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint =>
+      'クリエイター本人として公開したコンテンツがここに表示されます。';
+
+  @override
+  String get creatorProfileNoCharacterMoments => '所属キャラクターによる投稿はまだありません';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint =>
+      '公開キャラクターが投稿したコンテンツがここに表示されます。';
+
+  @override
+  String get creatorProfileNoPublicMoments => '公開投稿はまだありません';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint =>
+      'クリエイター本人と所属キャラクターが公開した投稿がここに表示されます。';
+
+  @override
+  String get creatorProfilePublicWorks => '公開作品';
+
+  @override
+  String get creatorProfileLikesReceived => '獲得した「いいね」';
+
+  @override
+  String get creatorProfileFollow => 'フォロー';
+
+  @override
+  String get creatorProfileFollowing => 'フォロー中';
+
+  @override
+  String get creatorProfileUnfollowed => 'フォローを解除しました';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return '$creatorNameをフォローしました';
+  }
+
+  @override
+  String get creatorProfileOperationFailed => '操作に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return '作品の読み込みに失敗しました：$error';
+  }
+
+  @override
+  String get characterProfileShareInvitation => '🦋 LoveyDoveyから届いた出会いの招待状';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ クリエイター：$creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return 'LoveyDoveyで「$characterName」を検索して、二人だけの物語を始めましょう。';
+  }
+
+  @override
+  String get characterProfileInvitationLabel => 'キャラクター招待カード';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return 'クリエイター  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint => 'キャラクターを検索して、出会いを始めよう  🦋';
+
+  @override
+  String get characterProfileScanToDownload => 'スキャンしてダウンロード';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return 'キャラクター「$characterName」をシェア';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return 'LoveyDoveyで$characterNameに会おう';
+  }
+
+  @override
+  String get characterProfileShareFailed =>
+      '招待カードの作成に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get characterProfilePrivateShareUnavailable => '非公開キャラクターは現在シェアできません';
+
+  @override
+  String get characterProfileShareCard => '招待カードをシェア';
+
+  @override
+  String get characterProfileShareCharacter => 'キャラクターをシェア';
+
+  @override
+  String get characterProfileReportCharacter => 'キャラクターを通報';
+
+  @override
+  String get characterProfileTranslate => '翻訳';
 }

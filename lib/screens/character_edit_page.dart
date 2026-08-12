@@ -1057,7 +1057,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     if (_gender.trim().isEmpty) {
       _showErrorDialog(
         l10n.content_missing,
-        '請選擇角色性別。',
+        l10n.characterEditSelectGender,
       );
       return;
     }
@@ -1066,12 +1066,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 // 🌟 1. 配置清單：直接把「標籤、控制器、上限」綁在一起
     final List<Map<String, dynamic>> checkList = [
       {
-        'label': '角色設定',
+        'label': l10n.characterEditCharacterSettings,
         'controller': _detailedPersonalityController,
         'limit': 5000,
       },
       {
-        'label': '世界觀',
+        'label': l10n.characterEditWorldview,
         'controller': _worldSettingController,
         'limit': 10000,
       },
@@ -1105,7 +1105,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     if (_detailedPersonalityController.text.trim().length < 10) {
       _showErrorDialog(
         l10n.content_missing,
-        '角色設定至少需要填寫 10 字。',
+        l10n.characterEditSettingsMinLength,
       );
       return;
     }
@@ -1113,7 +1113,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     if (_worldSettingController.text.trim().length < 20) {
       _showErrorDialog(
         l10n.content_missing,
-        '世界觀至少需要填寫 20 字。',
+        l10n.characterEditWorldviewMinLength,
       );
       return;
     }
@@ -2723,9 +2723,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     icon: const Icon(Icons.hub),
                     text: l10n.tab_relationship,
                   ),
-                  const Tab(
+                  Tab(
                     icon: Icon(Icons.groups_2_outlined),
-                    text: '配角',
+                    text: l10n.characterEditSupportingCharacters,
                   ),
                 ],
               ),
@@ -2838,7 +2838,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         Row(
           children: [
             Text(
-              '角色圖片',
+              l10n.characterEditCharacterImage,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -3005,9 +3005,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
                 _buildBoxedTextField(
                   _worldSettingController,
-                  '世界觀',
+                  l10n.characterEditWorldview,
                   maxLength: 10000,
-                  hintText: '描述世界背景、歷史、時代、地區、勢力、制度、科技、魔法與世界規則。',
+                  hintText: l10n.characterEditWorldviewHint,
                   isRequired: true,
                 ),
                 const SizedBox(height: 16),
@@ -3054,9 +3054,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 const SizedBox(height: 16),
                 _buildBoxedTextField(
                   _detailedPersonalityController,
-                  '角色設定',
+                  l10n.characterEditCharacterSettings,
                   maxLength: 5000,
-                  hintText: '描述角色個性、價值觀、思考方式、情緒反應、行為習慣、說話方式與核心信念。',
+                  hintText: l10n.characterEditSettingsHint,
                   isRequired: true,
                 ),
                 const SizedBox(height: 16),
@@ -3664,7 +3664,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     final String displayName =
                     targetCharacter?.name.trim().isNotEmpty == true
                         ? targetCharacter!.name.trim()
-                        : '未知角色';
+                        : l10n.characterEditUnknownCharacter;
 
                     final String avatarUrl =
                         targetCharacter?.avatarPath.trim() ?? '';
@@ -3783,6 +3783,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     Map<String, dynamic>? npc,
     int? index,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController(
       text: npc?['name']?.toString() ?? '',
     );
@@ -3821,7 +3822,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           builder: (context, setDialogState) {
             return AlertDialog(
               title: Text(
-                isEditingNpc ? '編輯配角' : '新增配角',
+                isEditingNpc
+                    ? l10n.characterEditEditSupportingCharacter
+                    : l10n.characterEditAddSupportingCharacter,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -3836,11 +3839,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     children: [
                       TextField(
                         controller: nameController,
-                        decoration: const InputDecoration(
+                        decoration:  InputDecoration(
                           label: Text.rich(
                             TextSpan(
                               children: [
-                                TextSpan(text: '配角名稱'),
+                                TextSpan(text: l10n.characterEditSupportingCharacterName),
                                 TextSpan(
                                   text: ' *',
                                   style: TextStyle(
@@ -3861,11 +3864,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         selectedGender.isEmpty
                             ? null
                             : selectedGender,
-                        decoration: const InputDecoration(
+                        decoration:  InputDecoration(
                           label: Text.rich(
                             TextSpan(
                               children: [
-                                TextSpan(text: '性別'),
+                                TextSpan(text: l10n.characterEditGender),
                                 TextSpan(
                                   text: ' *',
                                   style: TextStyle(
@@ -3878,18 +3881,18 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                           ),
                           border: OutlineInputBorder(),
                         ),
-                        items: const [
+                        items:  [
                           DropdownMenuItem(
                             value: 'male',
-                            child: Text('男性'),
+                            child: Text(l10n.characterEditMale),
                           ),
                           DropdownMenuItem(
                             value: 'female',
-                            child: Text('女性'),
+                            child: Text(l10n.characterEditFemale),
                           ),
                           DropdownMenuItem(
                             value: 'other',
-                            child: Text('其他'),
+                            child: Text(l10n.characterEditOther),
                           ),
                         ],
                         onChanged: (value) {
@@ -3902,8 +3905,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
                       TextField(
                         controller: ageController,
-                        decoration: const InputDecoration(
-                          labelText: '年齡',
+                        decoration: InputDecoration(
+                          labelText: l10n.characterEditAge,
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -3911,8 +3914,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
                       TextField(
                         controller: occupationController,
-                        decoration: const InputDecoration(
-                          labelText: '身分／職業',
+                        decoration:  InputDecoration(
+                          labelText: l10n.characterEditIdentityOccupation,
                           border: OutlineInputBorder(),
                         ),
                       ),
@@ -3922,10 +3925,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         controller: relationshipController,
                         maxLines: 6,
                         maxLength: 1500,
-                        decoration: const InputDecoration(
-                          labelText: '與主角色的關係',
+                        decoration:  InputDecoration(
+                          labelText: l10n.characterEditRelationshipWithMain,
                           hintText:
-                          '描述與主角色的過往、立場、情感、秘密與目前關係。',
+                          l10n.characterEditRelationshipHint,
                           border: OutlineInputBorder(),
                           alignLabelWithHint: true,
                         ),
@@ -3936,11 +3939,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         controller: descriptionController,
                         maxLines: 6,
                         maxLength: 1500,
-                        decoration: const InputDecoration(
+                        decoration:  InputDecoration(
                           label: Text.rich(
                             TextSpan(
                               children: [
-                                TextSpan(text: '人物設定'),
+                                TextSpan(text: l10n.characterEditCharacterProfile),
                                 TextSpan(
                                   text: ' *',
                                   style: TextStyle(
@@ -3952,7 +3955,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                             ),
                           ),
                           hintText:
-                          '描述個性、外貌、習慣、價值觀、能力、喜好、地雷與重要經歷。',
+                         l10n.characterEditCharacterProfileHint,
                           border: OutlineInputBorder(),
                           alignLabelWithHint: true,
                         ),
@@ -3962,10 +3965,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                       TextField(
                         controller: toneController,
                         maxLines: 3,
-                        decoration: const InputDecoration(
-                          labelText: '說話語氣',
+                        decoration: InputDecoration(
+                          labelText:l10n.characterEditSpeakingStyle,
                           hintText:
-                          '例如：語速快、愛吐槽、說話直接。',
+                          l10n.characterEditSpeakingStyleHint,
                           border: OutlineInputBorder(),
                           alignLabelWithHint: true,
                         ),
@@ -3979,7 +3982,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
                   },
-                  child: const Text('取消'),
+                  child:  Text(l10n.cancelButton),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -3995,7 +3998,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     if (name.isEmpty) {
                       ToastUtils.showCenterToast(
                         context,
-                        '請填寫配角名稱。',
+                        l10n.characterEditSupportingNameRequired,
                         isError: true,
                       );
                       return;
@@ -4004,7 +4007,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     if (selectedGender.isEmpty) {
                       ToastUtils.showCenterToast(
                         context,
-                        '請選擇配角性別。',
+                        l10n.characterEditSelectSupportingCharacter,
                         isError: true,
                       );
                       return;
@@ -4013,7 +4016,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     if (description.isEmpty) {
                       ToastUtils.showCenterToast(
                         context,
-                        '請填寫人物設定。',
+                        l10n.characterEditProfileRequired,
                         isError: true,
                       );
                       return;
@@ -4022,7 +4025,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     if (relationship.length > 1500) {
                       ToastUtils.showCenterToast(
                         context,
-                        '與主角色的關係已超過 1,500 字。',
+                        l10n.characterEditRelationshipTooLong,
                         isError: true,
                       );
                       return;
@@ -4031,7 +4034,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     if (description.length > 1500) {
                       ToastUtils.showCenterToast(
                         context,
-                        '人物設定已超過 1,500 字。',
+                        l10n.characterEditProfileTooLong,
                         isError: true,
                       );
                       return;
@@ -4067,7 +4070,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                     Navigator.of(dialogContext).pop();
                   },
                   child: Text(
-                    isEditingNpc ? '儲存' : '新增',
+                    isEditingNpc ? l10n.characterEditSave : l10n.characterEditAdd,
                   ),
                 ),
               ],

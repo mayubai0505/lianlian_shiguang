@@ -3229,7 +3229,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get task_desc_chat_3_times =>
-      'Lakukan 3 obrolan harian dengan karakter';
+      'Mengobrol dengan karakter 3 kali dalam Mode Harian';
 
   @override
   String get tab_story_progression => 'Kemajuan Cerita';
@@ -5079,4 +5079,929 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get mailCaseNumberCopied => 'Nomor kasus disalin';
+
+  @override
+  String get profilePageAboutMe => '📝 Tentang Saya';
+
+  @override
+  String get profilePageTabBio => 'Bio';
+
+  @override
+  String get profilePageTabCharacters => 'Karakter';
+
+  @override
+  String get profilePageTabMoments => 'Momen';
+
+  @override
+  String get profilePageEditProfile => 'Edit Profil';
+
+  @override
+  String get profilePageFriends => 'Teman';
+
+  @override
+  String get profilePageWorks => 'Karya';
+
+  @override
+  String get profilePageFollowing => 'Mengikuti';
+
+  @override
+  String get profilePageFollowers => 'Pengikut';
+
+  @override
+  String get profilePageHeartbeatDiary => 'Catatan Detak Hati';
+
+  @override
+  String get profilePageEditCharacter => 'Edit Karakter';
+
+  @override
+  String get profilePagePreviewCharacter => 'Pratinjau Profil Karakter';
+
+  @override
+  String get profilePageNoBio => 'Belum ada bio';
+
+  @override
+  String get profilePageNoBioHint =>
+      'Ketuk untuk menulis sesuatu tentang dirimu.';
+
+  @override
+  String get profilePageCreateCharacter => 'Buat Karakter Baru';
+
+  @override
+  String get profilePageNoCharacters => 'Belum ada karakter yang dibuat';
+
+  @override
+  String get profilePageNoCharactersHint =>
+      'Mulailah membuat karakter pertamamu.';
+
+  @override
+  String get profilePageCharacterActions => 'Tindakan Karakter';
+
+  @override
+  String get profilePagePublic => 'Publik';
+
+  @override
+  String get profilePagePrivate => 'Pribadi';
+
+  @override
+  String get profilePageCreator => 'Kreator';
+
+  @override
+  String get profilePageSelectPostingIdentity =>
+      'Pilih Identitas untuk Memposting';
+
+  @override
+  String get profilePagePostAsCreator => 'Posting sebagai Kreator';
+
+  @override
+  String get profilePagePublicCharacter => 'Karakter Publik';
+
+  @override
+  String get profilePagePrivateCharacter => 'Karakter Pribadi';
+
+  @override
+  String get profilePagePleaseSignIn => 'Silakan masuk terlebih dahulu';
+
+  @override
+  String get profilePagePublishMoment => 'Publikasikan Momen';
+
+  @override
+  String get profilePageFilterAll => 'Semua';
+
+  @override
+  String get profilePageFilterCreator => 'Saya';
+
+  @override
+  String get profilePageFilterCharacter => 'Karakter';
+
+  @override
+  String get profilePageMomentsLoadFailed => 'Gagal memuat momen';
+
+  @override
+  String get profilePageTryAgainLater => 'Silakan coba lagi nanti.';
+
+  @override
+  String get profilePageNoCreatorMoments => 'Kamu belum memublikasikan momen';
+
+  @override
+  String get profilePageNoCreatorMomentsHint =>
+      'Konten yang dipublikasikan sebagai kreator akan muncul di sini.';
+
+  @override
+  String get profilePageNoCharacterMoments =>
+      'Karaktermu belum memublikasikan momen';
+
+  @override
+  String get profilePageNoCharacterMomentsHint =>
+      'Konten yang dipublikasikan sebagai karakter akan muncul di sini.';
+
+  @override
+  String get profilePageNoMoments => 'Belum ada momen';
+
+  @override
+  String get profilePageNoMomentsHint =>
+      'Momen yang dipublikasikan olehmu dan karaktermu akan muncul di sini.';
+
+  @override
+  String get profilePageDeleteMomentTitle => 'Hapus Momen';
+
+  @override
+  String get profilePageDeleteMomentConfirm =>
+      'Yakin ingin menghapus momen ini secara permanen?';
+
+  @override
+  String get profilePageCancel => 'Batal';
+
+  @override
+  String get profilePageDelete => 'Hapus';
+
+  @override
+  String get profilePageMomentDeleted => 'Momen telah dihapus';
+
+  @override
+  String get profilePageDeleteFailed =>
+      'Gagal menghapus. Silakan coba lagi nanti.';
+
+  @override
+  String get profilePageReferralCompleted => 'Undangan Bintang Selesai';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return 'Pengundang: $inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived =>
+      'Kedua pihak telah menerima 50 Bunga';
+
+  @override
+  String get profilePageClaimed => 'Sudah diterima';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return 'Pengundang berhasil ditautkan: $inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint =>
+      'Setelah menyelesaikan 15 pesan obrolan, kedua pihak masing-masing akan menerima 50 Bunga';
+
+  @override
+  String get profilePageAlreadyCheckedIn =>
+      'Kamu sudah melakukan check-in hari ini';
+
+  @override
+  String get profilePageReferralBindFailed =>
+      'Gagal menautkan. Silakan coba lagi nanti.';
+
+  @override
+  String get profilePageCharacterNotFound =>
+      'Data karakter ini tidak ditemukan';
+
+  @override
+  String get periodGuideTitle =>
+      'Bagaimana cara menggunakan Catatan Menstruasi?';
+
+  @override
+  String get periodGuideContent =>
+      '① Pilih tanggal pada kalender terlebih dahulu.\n② Pilih “Mulai Hari Ini”, “Masih Menstruasi”, atau “Berakhir Hari Ini”.\n③ Pilih suasana hati dan kondisi fisikmu hari ini. Kamu juga dapat menambahkan catatan sendiri.\n④ Tekan Simpan agar karakter dapat memahami kondisimu hari ini saat mengobrol.\n\nTanggal prediksi akan disesuaikan berdasarkan riwayat catatanmu dan hanya digunakan sebagai referensi untuk pencatatan pribadi.';
+
+  @override
+  String get periodGotIt => 'Saya Mengerti';
+
+  @override
+  String get periodSelectAtLeastOne =>
+      'Pilih setidaknya satu item untuk dicatat';
+
+  @override
+  String get periodFutureDateError =>
+      'Status menstruasi tidak dapat ditandai pada tanggal mendatang.';
+
+  @override
+  String get periodAlreadyOngoingError =>
+      'Sudah ada periode menstruasi yang berlangsung. Selesaikan periode tersebut terlebih dahulu.';
+
+  @override
+  String get periodNoOngoingError =>
+      'Saat ini tidak ada periode menstruasi yang berlangsung. Pilih “Mulai Hari Ini” terlebih dahulu.';
+
+  @override
+  String get periodBeforeStartError =>
+      'Tanggal tidak boleh lebih awal dari tanggal dimulainya periode menstruasi saat ini.';
+
+  @override
+  String get periodEndBeforeStartError =>
+      'Tanggal berakhir tidak boleh lebih awal dari tanggal mulai.';
+
+  @override
+  String periodRecordSaved(String date) {
+    return 'Catatan untuk $date telah disimpan';
+  }
+
+  @override
+  String get periodSaveFailed => 'Gagal menyimpan. Silakan coba lagi nanti';
+
+  @override
+  String get periodDeleteTitle => 'Hapus catatan menstruasi ini?';
+
+  @override
+  String get periodDeleteContent =>
+      'Setelah dihapus, rata-rata siklus dan prediksi berikutnya akan dihitung ulang.';
+
+  @override
+  String get periodCancel => 'Batal';
+
+  @override
+  String get periodDelete => 'Hapus';
+
+  @override
+  String get periodNoOngoing =>
+      'Saat ini tidak ada periode menstruasi yang berlangsung';
+
+  @override
+  String periodDayCount(int count) {
+    return 'Hari ke-$count menstruasi';
+  }
+
+  @override
+  String get periodHelp => 'Petunjuk Penggunaan';
+
+  @override
+  String get periodAverageCycle => 'Rata-rata Siklus';
+
+  @override
+  String get periodAverageDuration => 'Rata-rata Durasi Menstruasi';
+
+  @override
+  String periodDays(int count) {
+    return '$count hari';
+  }
+
+  @override
+  String get periodNextPrediction => 'Prediksi Berikutnya';
+
+  @override
+  String get periodCalculatedAfterRecording => 'Dihitung setelah pencatatan';
+
+  @override
+  String get periodInsufficientData =>
+      'Data saat ini belum mencukupi. Untuk sementara, prediksi akan menggunakan siklus 28 hari dan durasi menstruasi 5 hari.';
+
+  @override
+  String get periodPredictionDisclaimer =>
+      'Prediksi dibuat berdasarkan catatan yang tersedia. Tanggal hanya digunakan sebagai referensi untuk pencatatan pribadi.';
+
+  @override
+  String get periodStartedToday => '🩸 Mulai Hari Ini';
+
+  @override
+  String get periodStillOngoing => 'Masih Menstruasi';
+
+  @override
+  String get periodEndedToday => 'Berakhir Hari Ini';
+
+  @override
+  String get periodDateNotReached => 'Hari ini belum tiba～';
+
+  @override
+  String get periodDateBeforeStart =>
+      'Tanggal ini lebih awal dari tanggal dimulainya periode menstruasi saat ini.';
+
+  @override
+  String get periodMoodOkay => 'Cukup Baik';
+
+  @override
+  String get periodMoodHappy => 'Senang';
+
+  @override
+  String get periodMoodLow => 'Sedih';
+
+  @override
+  String get periodMoodUnwell => 'Tidak Enak Badan';
+
+  @override
+  String get periodMoodIrritable => 'Mudah Kesal';
+
+  @override
+  String get periodMoodTired => 'Lelah';
+
+  @override
+  String get periodMoodAnxious => 'Cemas';
+
+  @override
+  String get periodSymptomAbdominalPain => 'Sakit Perut';
+
+  @override
+  String get periodSymptomLowerBackPain => 'Nyeri Pinggang';
+
+  @override
+  String get periodSymptomHeadache => 'Sakit Kepala';
+
+  @override
+  String get periodSymptomBreastTenderness => 'Nyeri Payudara';
+
+  @override
+  String get periodSymptomSwelling => 'Bengkak';
+
+  @override
+  String get periodSymptomSleepy => 'Mengantuk';
+
+  @override
+  String get periodSymptomIncreasedAppetite => 'Nafsu Makan Meningkat';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => 'Gangguan Pencernaan';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return 'Catatan Perhatian dari $characterName';
+  }
+
+  @override
+  String get periodLoadFailed =>
+      'Gagal memuat catatan. Silakan coba lagi nanti';
+
+  @override
+  String get periodWeekdaySun => 'Min';
+
+  @override
+  String get periodWeekdayMon => 'Sen';
+
+  @override
+  String get periodWeekdayTue => 'Sel';
+
+  @override
+  String get periodWeekdayWed => 'Rab';
+
+  @override
+  String get periodWeekdayThu => 'Kam';
+
+  @override
+  String get periodWeekdayFri => 'Jum';
+
+  @override
+  String get periodWeekdaySat => 'Sab';
+
+  @override
+  String get periodSaveInstruction =>
+      'Setelah memilih status, tekan “Simpan Catatan Hari Ini” di bagian bawah untuk menyimpannya.';
+
+  @override
+  String get periodTodayMood =>
+      'Suasana Hati Hari Ini (Boleh pilih lebih dari satu)';
+
+  @override
+  String get periodMoodDescription =>
+      'Ini adalah catatan harian untuk hari tersebut, bukan ikon yang ditampilkan pada kalender.';
+
+  @override
+  String get periodOtherMood => 'Suasana Hati Lainnya';
+
+  @override
+  String get periodOtherMoodHint => 'Contoh: merasa tersakiti, tidak aman……';
+
+  @override
+  String get periodTodaySymptoms =>
+      'Kondisi Fisik Hari Ini (Boleh pilih lebih dari satu)';
+
+  @override
+  String get periodOtherSymptom => 'Kondisi Fisik Lainnya';
+
+  @override
+  String get periodOtherSymptomHint =>
+      'Contoh: merasa kedinginan, tidak nafsu makan……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return 'Hal yang ingin kamu sampaikan kepada $characterName (Opsional)';
+  }
+
+  @override
+  String get periodNoteHint =>
+      'Contoh: hari ini aku ingin beristirahat dengan tenang dan tidak ingin didesak……';
+
+  @override
+  String get periodSaving => 'Menyimpan…';
+
+  @override
+  String get periodSaveToday => 'Simpan Catatan Hari Ini';
+
+  @override
+  String get periodHistory => 'Riwayat Menstruasi';
+
+  @override
+  String get periodOngoing => 'Sedang Berlangsung';
+
+  @override
+  String periodTotalDays(int count) {
+    return 'Total $count hari';
+  }
+
+  @override
+  String get periodDeleteRecord => 'Hapus Catatan';
+
+  @override
+  String get privateProfilePleaseSignIn => 'Silakan masuk terlebih dahulu';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return 'Gagal memuat Fragmen Memori: $error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return 'Tulis Fragmen Memori Baru ($count / $limit)';
+  }
+
+  @override
+  String get privateProfileNoLore => 'Belum ada Fragmen Memori';
+
+  @override
+  String get privateProfileNoLoreHint =>
+      'Kamu dapat mengatur pengaturan uji coba, petunjuk cerita, dan kenangan penting karakter di sini.';
+
+  @override
+  String get privateProfileUntitledLore => 'Fragmen Tanpa Judul';
+
+  @override
+  String get privateProfileEdit => 'Edit';
+
+  @override
+  String get privateProfileDelete => 'Hapus';
+
+  @override
+  String get privateProfileAddLore => 'Tambahkan Fragmen Memori';
+
+  @override
+  String get privateProfileLoreTitle => 'Judul';
+
+  @override
+  String get privateProfileLoreTeaser => 'Petunjuk Singkat';
+
+  @override
+  String get privateProfileLoreContent => 'Isi Lengkap';
+
+  @override
+  String get privateProfileLockLore => 'Kunci Fragmen';
+
+  @override
+  String get privateProfileLockLoreHint =>
+      'Karakter pribadi saat ini hanya dapat dilihat oleh kreator. Kolom ini akan tetap disimpan agar dapat digunakan saat karakter dijadikan publik.';
+
+  @override
+  String get privateProfileCancel => 'Batal';
+
+  @override
+  String get privateProfileTitleContentRequired =>
+      'Silakan masukkan judul dan isi';
+
+  @override
+  String get privateProfileLoreAdded => 'Fragmen Memori telah ditambahkan';
+
+  @override
+  String get privateProfileAddFailed =>
+      'Gagal menambahkan. Silakan coba lagi nanti';
+
+  @override
+  String get privateProfilePublish => 'Publikasikan';
+
+  @override
+  String get privateProfileDeleteLoreTitle => 'Hapus Fragmen Memori';
+
+  @override
+  String get privateProfileDeleteLoreConfirm =>
+      'Yakin ingin menghapus Fragmen Memori ini secara permanen?';
+
+  @override
+  String get privateProfileLoreDeleted => 'Fragmen Memori telah dihapus';
+
+  @override
+  String get privateProfileDeleteFailed =>
+      'Gagal menghapus. Silakan coba lagi nanti';
+
+  @override
+  String get privateProfileEditLore => 'Edit Fragmen Memori';
+
+  @override
+  String get privateProfileSave => 'Simpan';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 Pengingat Kecil';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      'Tanggal lahirmu akan memengaruhi ucapan ulang tahun dari karakter, hadiah ulang tahun, dan acara terkait.\n\nSebaiknya pastikan tanggal lahirmu sudah benar sebelum menyelesaikan pengaturan\nagar hadiah ulang tahun berikutnya tidak terpengaruh.';
+
+  @override
+  String get editProfileGotIt => 'Saya Mengerti';
+
+  @override
+  String get editProfileBirthdayConfirmTitle => '🎂 Konfirmasi Tanggal Lahir';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      'Pastikan tanggal lahirmu sudah benar.\n\nTanggal lahir akan digunakan untuk ucapan ulang tahun, hadiah ulang tahun, dan acara terkait.\n\nUntuk mencegah hadiah ulang tahun diterima lebih dari satu kali, tanggal lahir tidak dapat diubah lagi setelah pengaturan selesai.\n\nYakin ingin menggunakan tanggal lahir ini?';
+
+  @override
+  String get editProfileReturnToEdit => 'Kembali untuk Mengedit';
+
+  @override
+  String get editProfileConfirmSetting => 'Konfirmasi Pengaturan';
+
+  @override
+  String get editProfileDefaultNickname => 'Pengembara yang Baru Dikenal';
+
+  @override
+  String get editProfileNoChanges => 'Tidak ada perubahan yang perlu disimpan';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return 'Gagal membuat data: $error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return 'Avatar $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed =>
+      'Gagal memilih gambar. Silakan pilih gambar lain';
+
+  @override
+  String get editProfileCancel => 'Batal';
+
+  @override
+  String get editProfileConfirm => 'Konfirmasi';
+
+  @override
+  String get editProfileImageProcessingFailed =>
+      'Gagal memproses gambar. Silakan pilih gambar lain';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return 'Gagal memuat data: $error';
+  }
+
+  @override
+  String get editProfileBioLabel => 'Bio';
+
+  @override
+  String get editProfileBioHelper =>
+      'Perkenalkan dirimu atau gaya kreatifmu secara singkat';
+
+  @override
+  String get editProfileBioHint =>
+      'Contoh: Saya suka menciptakan karakter romansa fantasi, obsesif, dan imersif.';
+
+  @override
+  String get editProfileUserNotFound => 'Pengguna tidak ditemukan';
+
+  @override
+  String get editProfileGenerateIdFailed =>
+      'Gagal membuat ID Pemain. Silakan coba lagi';
+
+  @override
+  String get editProfileSignedInUserNotFound =>
+      'Pengguna yang sedang masuk tidak ditemukan';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return 'Gagal memuat avatar. Kode status: $statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return 'File avatar yang dipilih tidak ditemukan: $path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty => 'Data gambar avatar kosong';
+
+  @override
+  String get chatPageSendFailed => 'Gagal mengirim. Silakan coba lagi nanti 😢';
+
+  @override
+  String get chatPageRegenerateFailed =>
+      'Gagal membuat ulang. Pesan asli tetap disimpan. Silakan coba lagi.';
+
+  @override
+  String get chatPageRegenerating => '💭 Sedang berpikir ulang...';
+
+  @override
+  String get chatPageThinkingTooLong =>
+      'Sepertinya dia sedang berpikir keras. Silakan coba lagi nanti……';
+
+  @override
+  String get chatPageAlreadyReplying =>
+      'Dia sedang membalas. Tunggu sebentar dan jangan mengirim ulang.';
+
+  @override
+  String get chatPageMediaUploadFailed =>
+      'Gagal mengunggah media. Silakan coba lagi.';
+
+  @override
+  String get chatPageReportReceived =>
+      'Terima kasih atas laporanmu. Kami akan memeriksanya sesegera mungkin.';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ Berhasil menghapus $count pesan';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return 'Tidak dapat memilih foto: $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound => 'File rekaman tidak ditemukan';
+
+  @override
+  String get chatPageRecordingEmpty => 'File rekaman kosong';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return 'Gagal memutar audio: $error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired =>
+      'Izin mikrofon diperlukan untuk merekam audio';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return 'Tidak dapat memulai perekaman: $error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed =>
+      'Gagal membuat file rekaman. Silakan rekam ulang.';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return 'Perekaman gagal: $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry =>
+      'File rekaman tidak ditemukan. Silakan rekam ulang.';
+
+  @override
+  String get chatPageRecordingEmptyRetry =>
+      'File rekaman kosong. Silakan rekam ulang.';
+
+  @override
+  String get chatPageNoRecordingToSend =>
+      'Tidak ada rekaman yang dapat dikirim';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count poin';
+  }
+
+  @override
+  String get chatPageVoiceUploading => 'Mengunggah rekaman suara……';
+
+  @override
+  String get chatPageChangeWatermarkColor => 'Ubah Warna Tanda Air';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes menit $seconds detik';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds detik';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter =>
+      'Silakan pilih karakter pendukung.';
+
+  @override
+  String get characterEditSelectGender => 'Silakan pilih gender karakter.';
+
+  @override
+  String get characterEditCharacterSettings => 'Pengaturan Karakter';
+
+  @override
+  String get characterEditWorldview => 'Latar Dunia';
+
+  @override
+  String get characterEditSettingsMinLength =>
+      'Pengaturan karakter harus berisi setidaknya 10 karakter.';
+
+  @override
+  String get characterEditWorldviewMinLength =>
+      'Latar dunia harus berisi setidaknya 20 karakter.';
+
+  @override
+  String get characterEditSupportingCharacters => 'Karakter Pendukung';
+
+  @override
+  String get characterEditCharacterImage => 'Gambar Karakter';
+
+  @override
+  String get characterEditWorldviewHint =>
+      'Jelaskan latar belakang, sejarah, zaman, wilayah, faksi, sistem, teknologi, sihir, dan aturan dunia.';
+
+  @override
+  String get characterEditSettingsHint =>
+      'Jelaskan kepribadian, nilai-nilai, cara berpikir, reaksi emosional, kebiasaan perilaku, cara berbicara, dan keyakinan utama karakter.';
+
+  @override
+  String get characterEditUnknownCharacter => 'Karakter Tidak Dikenal';
+
+  @override
+  String get characterEditEditSupportingCharacter => 'Edit Karakter Pendukung';
+
+  @override
+  String get characterEditAddSupportingCharacter =>
+      'Tambahkan Karakter Pendukung';
+
+  @override
+  String get characterEditSupportingCharacterName => 'Nama Karakter Pendukung';
+
+  @override
+  String get characterEditGender => 'Gender';
+
+  @override
+  String get characterEditMale => 'Laki-laki';
+
+  @override
+  String get characterEditFemale => 'Perempuan';
+
+  @override
+  String get characterEditOther => 'Lainnya';
+
+  @override
+  String get characterEditAge => 'Usia';
+
+  @override
+  String get characterEditIdentityOccupation => 'Identitas／Pekerjaan';
+
+  @override
+  String get characterEditRelationshipWithMain =>
+      'Hubungan dengan Karakter Utama';
+
+  @override
+  String get characterEditRelationshipHint =>
+      'Jelaskan masa lalu, posisi, perasaan, rahasia, dan hubungan saat ini dengan karakter utama.';
+
+  @override
+  String get characterEditCharacterProfile => 'Profil Karakter';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      'Jelaskan kepribadian, penampilan, kebiasaan, nilai-nilai, kemampuan, kesukaan, hal yang tidak disukai, dan pengalaman penting karakter.';
+
+  @override
+  String get characterEditSpeakingStyle => 'Gaya Bicara';
+
+  @override
+  String get characterEditSpeakingStyleHint =>
+      'Contoh: berbicara cepat, suka melontarkan komentar sarkastis, dan berbicara terus terang.';
+
+  @override
+  String get characterEditSupportingNameRequired =>
+      'Silakan masukkan nama karakter pendukung.';
+
+  @override
+  String get characterEditSupportingGenderRequired =>
+      'Silakan pilih gender karakter pendukung.';
+
+  @override
+  String get characterEditProfileRequired => 'Silakan isi profil karakter.';
+
+  @override
+  String get characterEditRelationshipTooLong =>
+      'Deskripsi hubungan dengan karakter utama telah melebihi 1.500 karakter.';
+
+  @override
+  String get characterEditProfileTooLong =>
+      'Profil karakter telah melebihi 1.500 karakter.';
+
+  @override
+  String get characterEditSave => 'Simpan';
+
+  @override
+  String get characterEditAdd => 'Tambahkan';
+
+  @override
+  String get creatorProfileNoBio => 'Belum ada bio';
+
+  @override
+  String get creatorProfileNoBioHint => 'Kreator ini belum menambahkan bio.';
+
+  @override
+  String get creatorProfileNoCreatorMoments =>
+      'Kreator belum memublikasikan momen';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint =>
+      'Konten publik yang dipublikasikan sebagai kreator akan muncul di sini.';
+
+  @override
+  String get creatorProfileNoCharacterMoments =>
+      'Karakter milik kreator belum memublikasikan momen';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint =>
+      'Konten yang dipublikasikan oleh karakter publik milik kreator akan muncul di sini.';
+
+  @override
+  String get creatorProfileNoPublicMoments => 'Belum ada momen publik';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint =>
+      'Momen publik yang dipublikasikan oleh kreator dan karakternya akan muncul di sini.';
+
+  @override
+  String get creatorProfilePublicWorks => 'Karya Publik';
+
+  @override
+  String get creatorProfileLikesReceived => 'Suka yang Diterima';
+
+  @override
+  String get creatorProfileFollow => 'Ikuti';
+
+  @override
+  String get creatorProfileFollowing => 'Mengikuti';
+
+  @override
+  String get creatorProfileUnfollowed => 'Berhenti mengikuti';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return 'Mengikuti $creatorName';
+  }
+
+  @override
+  String get creatorProfileOperationFailed =>
+      'Operasi gagal. Silakan coba lagi nanti';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return 'Gagal memuat karya: $error';
+  }
+
+  @override
+  String get characterProfileShareInvitation =>
+      '🦋 Undangan pertemuan dari LoveyDovey';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ Kreator: $creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return 'Cari “$characterName” di LoveyDovey dan mulailah kisah yang hanya menjadi milik kalian berdua.';
+  }
+
+  @override
+  String get characterProfileInvitationLabel => 'Kartu Undangan Karakter';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return 'Kreator  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint =>
+      'Cari karakter dan mulailah pertemuan  🦋';
+
+  @override
+  String get characterProfileScanToDownload => 'Pindai untuk Mengunduh';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return 'Bagikan karakter “$characterName”';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return 'Temui $characterName di LoveyDovey';
+  }
+
+  @override
+  String get characterProfileShareFailed =>
+      'Gagal membuat kartu undangan. Silakan coba lagi nanti';
+
+  @override
+  String get characterProfilePrivateShareUnavailable =>
+      'Karakter pribadi saat ini tidak dapat dibagikan';
+
+  @override
+  String get characterProfileShareCard => 'Bagikan Kartu Undangan';
+
+  @override
+  String get characterProfileShareCharacter => 'Bagikan Karakter';
+
+  @override
+  String get characterProfileReportCharacter => 'Laporkan Karakter';
+
+  @override
+  String get characterProfileTranslate => 'Terjemahkan';
 }

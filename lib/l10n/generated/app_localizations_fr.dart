@@ -3266,7 +3266,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tab_daily_chit_chat => 'Bavardage quotidien';
 
   @override
-  String get task_desc_chat_3_times => 'Discutez 3 fois avec un personnage';
+  String get task_desc_chat_3_times =>
+      'Discutez 3 fois avec un personnage en mode quotidien';
 
   @override
   String get tab_story_progression => 'Progression de l\'histoire';
@@ -5144,4 +5145,943 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mailCaseNumberCopied => 'Numéro de dossier copié';
+
+  @override
+  String get profilePageAboutMe => '📝 À propos de moi';
+
+  @override
+  String get profilePageTabBio => 'Présentation';
+
+  @override
+  String get profilePageTabCharacters => 'Personnages';
+
+  @override
+  String get profilePageTabMoments => 'Publications';
+
+  @override
+  String get profilePageEditProfile => 'Modifier le profil';
+
+  @override
+  String get profilePageFriends => 'Amis';
+
+  @override
+  String get profilePageWorks => 'Œuvres';
+
+  @override
+  String get profilePageFollowing => 'Abonnements';
+
+  @override
+  String get profilePageFollowers => 'Abonnés';
+
+  @override
+  String get profilePageHeartbeatDiary => 'Journal des battements de cœur';
+
+  @override
+  String get profilePageEditCharacter => 'Modifier le personnage';
+
+  @override
+  String get profilePagePreviewCharacter => 'Aperçu du profil du personnage';
+
+  @override
+  String get profilePageNoBio => 'Aucune présentation pour le moment';
+
+  @override
+  String get profilePageNoBioHint =>
+      'Appuyez pour écrire quelques mots à votre sujet.';
+
+  @override
+  String get profilePageCreateCharacter => 'Créer un nouveau personnage';
+
+  @override
+  String get profilePageNoCharacters => 'Aucun personnage créé pour le moment';
+
+  @override
+  String get profilePageNoCharactersHint =>
+      'Commencez à créer votre premier personnage.';
+
+  @override
+  String get profilePageCharacterActions => 'Actions du personnage';
+
+  @override
+  String get profilePagePublic => 'Public';
+
+  @override
+  String get profilePagePrivate => 'Privé';
+
+  @override
+  String get profilePageCreator => 'Créateur';
+
+  @override
+  String get profilePageSelectPostingIdentity =>
+      'Sélectionner l’identité de publication';
+
+  @override
+  String get profilePagePostAsCreator => 'Publier en tant que créateur';
+
+  @override
+  String get profilePagePublicCharacter => 'Personnage public';
+
+  @override
+  String get profilePagePrivateCharacter => 'Personnage privé';
+
+  @override
+  String get profilePagePleaseSignIn => 'Veuillez d’abord vous connecter';
+
+  @override
+  String get profilePagePublishMoment => 'Publier';
+
+  @override
+  String get profilePageFilterAll => 'Tout';
+
+  @override
+  String get profilePageFilterCreator => 'Moi';
+
+  @override
+  String get profilePageFilterCharacter => 'Personnages';
+
+  @override
+  String get profilePageMomentsLoadFailed =>
+      'Échec du chargement des publications';
+
+  @override
+  String get profilePageTryAgainLater => 'Veuillez réessayer plus tard.';
+
+  @override
+  String get profilePageNoCreatorMoments => 'Vous n’avez encore rien publié';
+
+  @override
+  String get profilePageNoCreatorMomentsHint =>
+      'Le contenu publié en tant que créateur apparaîtra ici.';
+
+  @override
+  String get profilePageNoCharacterMoments =>
+      'Vos personnages n’ont encore rien publié';
+
+  @override
+  String get profilePageNoCharacterMomentsHint =>
+      'Le contenu publié en tant que personnage apparaîtra ici.';
+
+  @override
+  String get profilePageNoMoments => 'Aucune publication pour le moment';
+
+  @override
+  String get profilePageNoMomentsHint =>
+      'Les publications de vos personnages et les vôtres apparaîtront ici.';
+
+  @override
+  String get profilePageDeleteMomentTitle => 'Supprimer la publication';
+
+  @override
+  String get profilePageDeleteMomentConfirm =>
+      'Voulez-vous vraiment supprimer définitivement cette publication ?';
+
+  @override
+  String get profilePageCancel => 'Annuler';
+
+  @override
+  String get profilePageDelete => 'Supprimer';
+
+  @override
+  String get profilePageMomentDeleted => 'Publication supprimée';
+
+  @override
+  String get profilePageDeleteFailed =>
+      'Échec de la suppression. Veuillez réessayer plus tard.';
+
+  @override
+  String get profilePageReferralCompleted => 'Invitation étoilée terminée';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return 'Invité par : $inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived =>
+      'Les deux parties ont reçu 50 Fleurs';
+
+  @override
+  String get profilePageClaimed => 'Récupéré';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return 'Parrain associé : $inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint =>
+      'Après 15 messages de discussion, les deux parties recevront chacune 50 Fleurs';
+
+  @override
+  String get profilePageAlreadyCheckedIn =>
+      'Vous avez déjà effectué votre pointage aujourd’hui';
+
+  @override
+  String get profilePageReferralBindFailed =>
+      'Échec de l’association. Veuillez réessayer plus tard.';
+
+  @override
+  String get profilePageCharacterNotFound =>
+      'Les données de ce personnage sont introuvables';
+
+  @override
+  String get periodGuideTitle => 'Comment utiliser le journal des règles ?';
+
+  @override
+  String get periodGuideContent =>
+      '① Sélectionnez d’abord une date dans le calendrier.\n② Sélectionnez « Elles ont commencé aujourd’hui », « J’ai toujours mes règles » ou « Elles se sont terminées aujourd’hui ».\n③ Sélectionnez votre humeur et votre état physique du jour. Vous pouvez également ajouter vos propres notes.\n④ Appuyez sur Enregistrer afin que le personnage puisse comprendre comment vous vous sentez aujourd’hui pendant vos discussions.\n\nLes dates prévisionnelles seront ajustées en fonction de votre historique et sont fournies uniquement à titre indicatif pour votre suivi personnel.';
+
+  @override
+  String get periodGotIt => 'J’ai compris';
+
+  @override
+  String get periodSelectAtLeastOne =>
+      'Veuillez sélectionner au moins un élément à enregistrer';
+
+  @override
+  String get periodFutureDateError =>
+      'Vous ne pouvez pas indiquer l’état de vos règles pour une date future.';
+
+  @override
+  String get periodAlreadyOngoingError =>
+      'Des règles sont déjà en cours. Veuillez d’abord indiquer qu’elles sont terminées.';
+
+  @override
+  String get periodNoOngoingError =>
+      'Aucune période de règles n’est actuellement en cours. Veuillez d’abord sélectionner « Elles ont commencé aujourd’hui ».';
+
+  @override
+  String get periodBeforeStartError =>
+      'La date ne peut pas être antérieure à la date de début des règles actuelles.';
+
+  @override
+  String get periodEndBeforeStartError =>
+      'La date de fin ne peut pas être antérieure à la date de début.';
+
+  @override
+  String periodRecordSaved(String date) {
+    return 'L’entrée du $date a été enregistrée';
+  }
+
+  @override
+  String get periodSaveFailed =>
+      'Échec de l’enregistrement. Veuillez réessayer plus tard.';
+
+  @override
+  String get periodDeleteTitle => 'Supprimer ce suivi des règles ?';
+
+  @override
+  String get periodDeleteContent =>
+      'Après la suppression, la durée moyenne du cycle et la prochaine prévision seront recalculées.';
+
+  @override
+  String get periodCancel => 'Annuler';
+
+  @override
+  String get periodDelete => 'Supprimer';
+
+  @override
+  String get periodNoOngoing =>
+      'Aucune période de règles n’est actuellement en cours';
+
+  @override
+  String periodDayCount(int count) {
+    return 'Jour $count des règles';
+  }
+
+  @override
+  String get periodHelp => 'Mode d’emploi';
+
+  @override
+  String get periodAverageCycle => 'Cycle moyen';
+
+  @override
+  String get periodAverageDuration => 'Durée moyenne des règles';
+
+  @override
+  String periodDays(int count) {
+    return '$count jours';
+  }
+
+  @override
+  String get periodNextPrediction => 'Prochaine prévision';
+
+  @override
+  String get periodCalculatedAfterRecording =>
+      'Calculée après l’enregistrement';
+
+  @override
+  String get periodInsufficientData =>
+      'Les données sont actuellement insuffisantes. L’estimation utilisera provisoirement un cycle de 28 jours et des règles de 5 jours.';
+
+  @override
+  String get periodPredictionDisclaimer =>
+      'Cette estimation repose sur les données existantes. Les dates sont fournies uniquement à titre indicatif pour votre suivi personnel.';
+
+  @override
+  String get periodStartedToday => '🩸 Elles ont commencé aujourd’hui';
+
+  @override
+  String get periodStillOngoing => 'J’ai toujours mes règles';
+
+  @override
+  String get periodEndedToday => 'Elles se sont terminées aujourd’hui';
+
+  @override
+  String get periodDateNotReached => 'Ce jour n’est pas encore arrivé～';
+
+  @override
+  String get periodDateBeforeStart =>
+      'Cette date est antérieure à la date de début des règles actuelles.';
+
+  @override
+  String get periodMoodOkay => 'Plutôt bien';
+
+  @override
+  String get periodMoodHappy => 'Heureuse';
+
+  @override
+  String get periodMoodLow => 'Déprimée';
+
+  @override
+  String get periodMoodUnwell => 'Mal en point';
+
+  @override
+  String get periodMoodIrritable => 'Irritable';
+
+  @override
+  String get periodMoodTired => 'Fatiguée';
+
+  @override
+  String get periodMoodAnxious => 'Anxieuse';
+
+  @override
+  String get periodSymptomAbdominalPain => 'Douleurs abdominales';
+
+  @override
+  String get periodSymptomLowerBackPain => 'Douleurs lombaires';
+
+  @override
+  String get periodSymptomHeadache => 'Mal de tête';
+
+  @override
+  String get periodSymptomBreastTenderness => 'Sensibilité des seins';
+
+  @override
+  String get periodSymptomSwelling => 'Gonflement';
+
+  @override
+  String get periodSymptomSleepy => 'Somnolence';
+
+  @override
+  String get periodSymptomIncreasedAppetite => 'Appétit accru';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => 'Inconfort digestif';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return 'Le journal attentionné de $characterName';
+  }
+
+  @override
+  String get periodLoadFailed =>
+      'Échec du chargement des entrées. Veuillez réessayer plus tard.';
+
+  @override
+  String get periodWeekdaySun => 'Dim';
+
+  @override
+  String get periodWeekdayMon => 'Lun';
+
+  @override
+  String get periodWeekdayTue => 'Mar';
+
+  @override
+  String get periodWeekdayWed => 'Mer';
+
+  @override
+  String get periodWeekdayThu => 'Jeu';
+
+  @override
+  String get periodWeekdayFri => 'Ven';
+
+  @override
+  String get periodWeekdaySat => 'Sam';
+
+  @override
+  String get periodSaveInstruction =>
+      'Après avoir sélectionné un état, appuyez sur « Enregistrer l’entrée du jour » en bas pour confirmer l’enregistrement.';
+
+  @override
+  String get periodTodayMood => 'Humeur du jour (plusieurs choix possibles)';
+
+  @override
+  String get periodMoodDescription =>
+      'Il s’agit des notes du journal de cette journée, et non d’icônes affichées dans le calendrier.';
+
+  @override
+  String get periodOtherMood => 'Autre humeur';
+
+  @override
+  String get periodOtherMoodHint =>
+      'Par exemple : blessée, en manque de sécurité……';
+
+  @override
+  String get periodTodaySymptoms =>
+      'État physique du jour (plusieurs choix possibles)';
+
+  @override
+  String get periodOtherSymptom => 'Autre état physique';
+
+  @override
+  String get periodOtherSymptomHint =>
+      'Par exemple : frissons, manque d’appétit……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return 'Ce que vous souhaitez faire savoir à $characterName (facultatif)';
+  }
+
+  @override
+  String get periodNoteHint =>
+      'Par exemple : aujourd’hui, je veux me reposer tranquillement sans subir de pression……';
+
+  @override
+  String get periodSaving => 'Enregistrement…';
+
+  @override
+  String get periodSaveToday => 'Enregistrer l’entrée du jour';
+
+  @override
+  String get periodHistory => 'Historique des règles';
+
+  @override
+  String get periodOngoing => 'En cours';
+
+  @override
+  String periodTotalDays(int count) {
+    return '$count jours au total';
+  }
+
+  @override
+  String get periodDeleteRecord => 'Supprimer l’entrée';
+
+  @override
+  String get privateProfilePleaseSignIn => 'Veuillez d’abord vous connecter';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return 'Échec du chargement des Fragments de Mémoire : $error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return 'Écrire un nouveau Fragment de Mémoire ($count / $limit)';
+  }
+
+  @override
+  String get privateProfileNoLore => 'Aucun Fragment de Mémoire pour le moment';
+
+  @override
+  String get privateProfileNoLoreHint =>
+      'Vous pouvez organiser ici les paramètres de test, les indices de l’histoire et les souvenirs importants du personnage.';
+
+  @override
+  String get privateProfileUntitledLore => 'Fragment sans titre';
+
+  @override
+  String get privateProfileEdit => 'Modifier';
+
+  @override
+  String get privateProfileDelete => 'Supprimer';
+
+  @override
+  String get privateProfileAddLore => 'Ajouter un Fragment de Mémoire';
+
+  @override
+  String get privateProfileLoreTitle => 'Titre';
+
+  @override
+  String get privateProfileLoreTeaser => 'Brève indication';
+
+  @override
+  String get privateProfileLoreContent => 'Contenu complet';
+
+  @override
+  String get privateProfileLockLore => 'Verrouiller le fragment';
+
+  @override
+  String get privateProfileLockLoreHint =>
+      'Les personnages privés ne sont actuellement visibles que par leurs créateurs. Ce champ sera conservé afin de pouvoir être réutilisé si le personnage devient public.';
+
+  @override
+  String get privateProfileCancel => 'Annuler';
+
+  @override
+  String get privateProfileTitleContentRequired =>
+      'Veuillez saisir le titre et le contenu';
+
+  @override
+  String get privateProfileLoreAdded => 'Fragment de Mémoire ajouté';
+
+  @override
+  String get privateProfileAddFailed =>
+      'Échec de l’ajout. Veuillez réessayer plus tard.';
+
+  @override
+  String get privateProfilePublish => 'Publier';
+
+  @override
+  String get privateProfileDeleteLoreTitle =>
+      'Supprimer le Fragment de Mémoire';
+
+  @override
+  String get privateProfileDeleteLoreConfirm =>
+      'Voulez-vous vraiment supprimer définitivement ce Fragment de Mémoire ?';
+
+  @override
+  String get privateProfileLoreDeleted => 'Fragment de Mémoire supprimé';
+
+  @override
+  String get privateProfileDeleteFailed =>
+      'Échec de la suppression. Veuillez réessayer plus tard.';
+
+  @override
+  String get privateProfileEditLore => 'Modifier le Fragment de Mémoire';
+
+  @override
+  String get privateProfileSave => 'Enregistrer';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 Petit rappel';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      'Votre date de naissance aura une incidence sur les vœux des personnages, les cadeaux d’anniversaire et les événements associés.\n\nNous vous recommandons de vérifier votre date de naissance avant de terminer la configuration\npour éviter toute incidence sur vos futures récompenses d’anniversaire.';
+
+  @override
+  String get editProfileGotIt => 'J’ai compris';
+
+  @override
+  String get editProfileBirthdayConfirmTitle =>
+      '🎂 Confirmer la date de naissance';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      'Veuillez vérifier que votre date de naissance est correcte.\n\nVotre date de naissance sera utilisée pour les vœux, les cadeaux d’anniversaire et les événements associés.\n\nAfin d’éviter que les récompenses d’anniversaire soient récupérées plusieurs fois, votre date de naissance ne pourra plus être modifiée une fois la configuration terminée.\n\nVoulez-vous vraiment utiliser cette date de naissance ?';
+
+  @override
+  String get editProfileReturnToEdit => 'Retourner à la modification';
+
+  @override
+  String get editProfileConfirmSetting => 'Confirmer';
+
+  @override
+  String get editProfileDefaultNickname => 'Voyageur récemment rencontré';
+
+  @override
+  String get editProfileNoChanges => 'Aucune modification à enregistrer';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return 'Échec de la création des données : $error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return 'Avatar $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed =>
+      'Échec de la sélection de l’image. Veuillez en sélectionner une autre.';
+
+  @override
+  String get editProfileCancel => 'Annuler';
+
+  @override
+  String get editProfileConfirm => 'Confirmer';
+
+  @override
+  String get editProfileImageProcessingFailed =>
+      'Échec du traitement de l’image. Veuillez en sélectionner une autre.';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return 'Échec du chargement des données : $error';
+  }
+
+  @override
+  String get editProfileBioLabel => 'Présentation';
+
+  @override
+  String get editProfileBioHelper =>
+      'Présentez-vous brièvement ou décrivez votre style créatif';
+
+  @override
+  String get editProfileBioHint =>
+      'Par exemple : j’aime créer des personnages romantiques fantastiques, obsessionnels et immersifs.';
+
+  @override
+  String get editProfileUserNotFound => 'Utilisateur introuvable';
+
+  @override
+  String get editProfileGenerateIdFailed =>
+      'Échec de la création de l’identifiant du joueur. Veuillez réessayer.';
+
+  @override
+  String get editProfileSignedInUserNotFound =>
+      'L’utilisateur actuellement connecté est introuvable';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return 'Échec du chargement de l’avatar. Code d’état : $statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return 'Le fichier d’avatar sélectionné est introuvable : $path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty =>
+      'Les données de l’image de l’avatar sont vides';
+
+  @override
+  String get chatPageSendFailed =>
+      'Échec de l’envoi. Veuillez réessayer plus tard 😢';
+
+  @override
+  String get chatPageRegenerateFailed =>
+      'Échec de la régénération. Le message d’origine a été conservé. Veuillez réessayer.';
+
+  @override
+  String get chatPageRegenerating => '💭 Nouvelle réflexion en cours...';
+
+  @override
+  String get chatPageThinkingTooLong =>
+      'Il semble plongé dans ses pensées. Veuillez réessayer plus tard……';
+
+  @override
+  String get chatPageAlreadyReplying =>
+      'Il est en train de répondre. Veuillez patienter et ne pas envoyer le message à nouveau.';
+
+  @override
+  String get chatPageMediaUploadFailed =>
+      'Échec de l’importation du média. Veuillez réessayer.';
+
+  @override
+  String get chatPageReportReceived =>
+      'Merci pour votre signalement. Nous l’examinerons dès que possible.';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ $count messages supprimés avec succès';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return 'Impossible de sélectionner la photo : $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound =>
+      'Fichier d’enregistrement introuvable';
+
+  @override
+  String get chatPageRecordingEmpty => 'Le fichier d’enregistrement est vide';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return 'Échec de la lecture audio : $error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired =>
+      'L’autorisation d’utiliser le microphone est nécessaire pour enregistrer';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return 'Impossible de démarrer l’enregistrement : $error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed =>
+      'Échec de la création du fichier d’enregistrement. Veuillez enregistrer à nouveau.';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return 'Échec de l’enregistrement : $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry =>
+      'Fichier d’enregistrement introuvable. Veuillez enregistrer à nouveau.';
+
+  @override
+  String get chatPageRecordingEmptyRetry =>
+      'Le fichier d’enregistrement est vide. Veuillez enregistrer à nouveau.';
+
+  @override
+  String get chatPageNoRecordingToSend => 'Aucun enregistrement à envoyer';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count points';
+  }
+
+  @override
+  String get chatPageVoiceUploading =>
+      'Importation de l’enregistrement vocal……';
+
+  @override
+  String get chatPageChangeWatermarkColor => 'Modifier la couleur du filigrane';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes min $seconds s';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter =>
+      'Veuillez sélectionner un personnage secondaire.';
+
+  @override
+  String get characterEditSelectGender =>
+      'Veuillez sélectionner le genre du personnage.';
+
+  @override
+  String get characterEditCharacterSettings => 'Paramètres du personnage';
+
+  @override
+  String get characterEditWorldview => 'Univers';
+
+  @override
+  String get characterEditSettingsMinLength =>
+      'Les paramètres du personnage doivent contenir au moins 10 caractères.';
+
+  @override
+  String get characterEditWorldviewMinLength =>
+      'La description de l’univers doit contenir au moins 20 caractères.';
+
+  @override
+  String get characterEditSupportingCharacters => 'Personnages secondaires';
+
+  @override
+  String get characterEditCharacterImage => 'Image du personnage';
+
+  @override
+  String get characterEditWorldviewHint =>
+      'Décrivez le contexte, l’histoire, l’époque, les régions, les factions, les systèmes, la technologie, la magie et les règles de l’univers.';
+
+  @override
+  String get characterEditSettingsHint =>
+      'Décrivez la personnalité, les valeurs, le mode de pensée, les réactions émotionnelles, les habitudes, la façon de parler et les convictions fondamentales du personnage.';
+
+  @override
+  String get characterEditUnknownCharacter => 'Personnage inconnu';
+
+  @override
+  String get characterEditEditSupportingCharacter =>
+      'Modifier le personnage secondaire';
+
+  @override
+  String get characterEditAddSupportingCharacter =>
+      'Ajouter un personnage secondaire';
+
+  @override
+  String get characterEditSupportingCharacterName =>
+      'Nom du personnage secondaire';
+
+  @override
+  String get characterEditGender => 'Genre';
+
+  @override
+  String get characterEditMale => 'Masculin';
+
+  @override
+  String get characterEditFemale => 'Féminin';
+
+  @override
+  String get characterEditOther => 'Autre';
+
+  @override
+  String get characterEditAge => 'Âge';
+
+  @override
+  String get characterEditIdentityOccupation => 'Identité／Profession';
+
+  @override
+  String get characterEditRelationshipWithMain =>
+      'Relation avec le personnage principal';
+
+  @override
+  String get characterEditRelationshipHint =>
+      'Décrivez son passé, sa position, ses sentiments, ses secrets et sa relation actuelle avec le personnage principal.';
+
+  @override
+  String get characterEditCharacterProfile => 'Profil du personnage';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      'Décrivez la personnalité, l’apparence, les habitudes, les valeurs, les capacités, les préférences, les aversions et les expériences importantes du personnage.';
+
+  @override
+  String get characterEditSpeakingStyle => 'Façon de parler';
+
+  @override
+  String get characterEditSpeakingStyleHint =>
+      'Par exemple : parle rapidement, fait souvent des remarques sarcastiques et s’exprime directement.';
+
+  @override
+  String get characterEditSupportingNameRequired =>
+      'Veuillez saisir le nom du personnage secondaire.';
+
+  @override
+  String get characterEditSupportingGenderRequired =>
+      'Veuillez sélectionner le genre du personnage secondaire.';
+
+  @override
+  String get characterEditProfileRequired =>
+      'Veuillez remplir le profil du personnage.';
+
+  @override
+  String get characterEditRelationshipTooLong =>
+      'La relation avec le personnage principal dépasse 1 500 caractères.';
+
+  @override
+  String get characterEditProfileTooLong =>
+      'Le profil du personnage dépasse 1 500 caractères.';
+
+  @override
+  String get characterEditSave => 'Enregistrer';
+
+  @override
+  String get characterEditAdd => 'Ajouter';
+
+  @override
+  String get creatorProfileNoBio => 'Aucune présentation pour le moment';
+
+  @override
+  String get creatorProfileNoBioHint =>
+      'Ce créateur n’a pas encore ajouté de présentation.';
+
+  @override
+  String get creatorProfileNoCreatorMoments =>
+      'Le créateur n’a encore rien publié';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint =>
+      'Le contenu public publié en tant que créateur apparaîtra ici.';
+
+  @override
+  String get creatorProfileNoCharacterMoments =>
+      'Les personnages du créateur n’ont encore rien publié';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint =>
+      'Le contenu publié par les personnages publics du créateur apparaîtra ici.';
+
+  @override
+  String get creatorProfileNoPublicMoments =>
+      'Aucune publication publique pour le moment';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint =>
+      'Les publications publiques du créateur et de ses personnages apparaîtront ici.';
+
+  @override
+  String get creatorProfilePublicWorks => 'Œuvres publiques';
+
+  @override
+  String get creatorProfileLikesReceived => 'Mentions J’aime reçues';
+
+  @override
+  String get creatorProfileFollow => 'Suivre';
+
+  @override
+  String get creatorProfileFollowing => 'Abonné';
+
+  @override
+  String get creatorProfileUnfollowed => 'Abonnement annulé';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return 'Vous suivez désormais $creatorName';
+  }
+
+  @override
+  String get creatorProfileOperationFailed =>
+      'Échec de l’opération. Veuillez réessayer plus tard.';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return 'Échec du chargement des œuvres : $error';
+  }
+
+  @override
+  String get characterProfileShareInvitation =>
+      '🦋 Une invitation à faire connaissance de LoveyDovey';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ Créateur : $creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return 'Recherchez « $characterName » dans LoveyDovey et commencez une histoire qui n’appartient qu’à vous deux.';
+  }
+
+  @override
+  String get characterProfileInvitationLabel =>
+      'Carte d’invitation du personnage';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return 'Créateur  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint =>
+      'Recherchez le personnage et commencez votre rencontre  🦋';
+
+  @override
+  String get characterProfileScanToDownload => 'Scanner pour télécharger';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return 'Partager le personnage « $characterName »';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return 'Venez rencontrer $characterName sur LoveyDovey';
+  }
+
+  @override
+  String get characterProfileShareFailed =>
+      'Échec de la création de la carte d’invitation. Veuillez réessayer plus tard.';
+
+  @override
+  String get characterProfilePrivateShareUnavailable =>
+      'Les personnages privés ne peuvent pas être partagés pour le moment';
+
+  @override
+  String get characterProfileShareCard => 'Partager la carte d’invitation';
+
+  @override
+  String get characterProfileShareCharacter => 'Partager le personnage';
+
+  @override
+  String get characterProfileReportCharacter => 'Signaler le personnage';
+
+  @override
+  String get characterProfileTranslate => 'Traduire';
 }

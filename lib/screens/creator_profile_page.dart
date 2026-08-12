@@ -28,7 +28,6 @@ class CreatorProfilePage extends StatelessWidget {
   });
 
   @override
-  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -55,7 +54,7 @@ class CreatorProfilePage extends StatelessWidget {
         String displayNickname =
         creatorName.trim().isNotEmpty
             ? creatorName.trim()
-            : '創作者';
+            : l10n.profilePageCreator;
 
         String displayPlayerID =
         creatorId.length >= 8
@@ -283,18 +282,18 @@ class CreatorProfilePage extends StatelessWidget {
                               .primary,
                           indicatorWeight:
                           3,
-                          tabs: const [
+                          tabs:  [
                             Tab(
                               text:
-                              '自我介紹',
+                              l10n.profilePageTabBio,
                             ),
                             Tab(
                               text:
-                              '角色',
+                              l10n.profilePageTabCharacters,
                             ),
                             Tab(
                               text:
-                              '動態',
+                              l10n.profilePageTabMoments,
                             ),
                           ],
                         ),
@@ -343,6 +342,7 @@ class CreatorProfilePage extends StatelessWidget {
       ThemeData theme,
       String creatorBio,
       ) {
+    final l10n = AppLocalizations.of(context)!;
     if (creatorBio.trim().isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -357,7 +357,7 @@ class CreatorProfilePage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            '尚未填寫自我介紹',
+            l10n.creatorProfileNoBio,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 17,
@@ -367,7 +367,7 @@ class CreatorProfilePage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '這位創作者還沒有留下介紹。',
+            l10n.creatorProfileNoBioHint,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 13,
@@ -385,7 +385,7 @@ class CreatorProfilePage extends StatelessWidget {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(
+          padding:  EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 14,
           ),
@@ -402,7 +402,7 @@ class CreatorProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '📝 關於我',
+                l10n.profilePageAboutMe,
                 style: TextStyle(
                   color: theme.colorScheme.primary,
                   fontSize: 14,
@@ -433,7 +433,7 @@ class CreatorProfilePage extends StatelessWidget {
       ) {
     final String currentUserId =
         FirebaseAuth.instance.currentUser?.uid ?? '';
-
+    final l10n = AppLocalizations.of(context)!;
     String selectedFilter = 'all';
 
     return StatefulBuilder(
@@ -455,7 +455,7 @@ class CreatorProfilePage extends StatelessWidget {
                   Expanded(
                     child: _buildCreatorMomentFilter(
                       context: context,
-                      label: '全部',
+                      label: l10n.profilePageFilterAll,
                       value: 'all',
                       selectedValue: selectedFilter,
                       onSelected: (value) {
@@ -469,7 +469,7 @@ class CreatorProfilePage extends StatelessWidget {
                   Expanded(
                     child: _buildCreatorMomentFilter(
                       context: context,
-                      label: '本人',
+                      label: l10n.profilePageFilterCreator,
                       value: 'creator',
                       selectedValue: selectedFilter,
                       onSelected: (value) {
@@ -479,11 +479,11 @@ class CreatorProfilePage extends StatelessWidget {
                       },
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: _buildCreatorMomentFilter(
                       context: context,
-                      label: '角色',
+                      label: l10n.profilePageTabCharacters,
                       value: 'character',
                       selectedValue: selectedFilter,
                       onSelected: (value) {
@@ -529,8 +529,8 @@ class CreatorProfilePage extends StatelessWidget {
                     return _buildCreatorMomentEmptyState(
                       theme: theme,
                       icon: Icons.error_outline_rounded,
-                      title: '動態讀取失敗',
-                      description: '請稍後再試一次。',
+                      title: l10n.profilePageMomentsLoadFailed,
+                      description: l10n.profilePageTryAgainLater,
                       isError: true,
                     );
                   }
@@ -590,22 +590,22 @@ class CreatorProfilePage extends StatelessWidget {
 
                     switch (selectedFilter) {
                       case 'creator':
-                        title = '創作者還沒有發布動態';
+                        title = l10n.creatorProfileNoCreatorMoments;
                         description =
-                        '以創作者本人身分發布的公開內容會顯示在這裡。';
+                        l10n.creatorProfileNoCreatorMomentsHint;
                         break;
 
                       case 'character':
-                        title = '旗下角色還沒有發布動態';
+                        title = l10n.creatorProfileNoCharacterMoments;
                         description =
-                        '旗下公開角色發布的內容會顯示在這裡。';
+                        l10n.creatorProfileNoCharacterMomentsHint;
                         break;
 
                       case 'all':
                       default:
-                        title = '還沒有公開動態';
+                        title = l10n.creatorProfileNoPublicMoments;
                         description =
-                        '創作者本人與旗下角色發布的公開動態會顯示在這裡。';
+                        l10n.creatorProfileNoPublicMomentsHint;
                     }
 
                     return _buildCreatorMomentEmptyState(
@@ -835,6 +835,7 @@ class CreatorProfilePage extends StatelessWidget {
       String creatorId,
       String momentId,
       ) async {
+    final l10n = AppLocalizations.of(context)!;
     final currentUser =
         FirebaseAuth.instance.currentUser;
 
@@ -848,9 +849,9 @@ class CreatorProfilePage extends StatelessWidget {
           context: context,
           builder: (dialogContext) {
             return AlertDialog(
-              title: const Text('刪除動態'),
-              content: const Text(
-                '確定要永久刪除這篇動態嗎？',
+              title:  Text(l10n.profilePageDeleteMomentTitle),
+              content:  Text(
+                l10n.profilePageDeleteMomentConfirm,
               ),
               actions: [
                 TextButton(
@@ -860,7 +861,7 @@ class CreatorProfilePage extends StatelessWidget {
                       false,
                     );
                   },
-                  child: const Text('取消'),
+                  child:  Text(l10n.cancelButton),
                 ),
                 TextButton(
                   onPressed: () {
@@ -869,8 +870,8 @@ class CreatorProfilePage extends StatelessWidget {
                       true,
                     );
                   },
-                  child: const Text(
-                    '刪除',
+                  child:  Text(
+                    l10n.profilePageDelete,
                     style: TextStyle(
                       color: Colors.redAccent,
                     ),
@@ -896,7 +897,7 @@ class CreatorProfilePage extends StatelessWidget {
 
       ToastUtils.showCenterToast(
         context,
-        '動態已刪除',
+        l10n.profilePageMomentDeleted,
         customIcon:
         Icons.delete_outline_rounded,
       );
@@ -907,7 +908,7 @@ class CreatorProfilePage extends StatelessWidget {
 
       ToastUtils.showCenterToast(
         context,
-        '刪除失敗，請稍後再試',
+        l10n.profilePageDeleteFailed,
         isError: true,
       );
     }
@@ -1009,7 +1010,7 @@ class CreatorProfilePage extends StatelessWidget {
                     Text(
                       creatorBio.isNotEmpty
                           ? creatorBio
-                          : '這位創作者還沒有留下介紹。',
+                          : l10n.creatorProfileNoBioHint,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -1074,7 +1075,7 @@ class CreatorProfilePage extends StatelessWidget {
                 child: _buildCreatorStat(
                   theme,
                   value: '$workCount',
-                  label: '公開作品',
+                  label: l10n.creatorProfilePublicWorks,
                 ),
               ),
 
@@ -1086,7 +1087,7 @@ class CreatorProfilePage extends StatelessWidget {
                 child: _buildCreatorStat(
                   theme,
                   value: '$totalLikes',
-                  label: '獲得喜歡',
+                  label: l10n.creatorProfileLikesReceived,
                 ),
               ),
 
@@ -1110,7 +1111,7 @@ class CreatorProfilePage extends StatelessWidget {
                       value: _formatCreatorCount(
                         followerCount,
                       ),
-                      label: '追蹤者',
+                      label: l10n.profilePageFollowers,
                     );
                   },
                 ),
@@ -1149,6 +1150,7 @@ class CreatorProfilePage extends StatelessWidget {
     required String creatorId,
     required String creatorName,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final currentUser =
         FirebaseAuth.instance.currentUser;
 
@@ -1159,7 +1161,7 @@ class CreatorProfilePage extends StatelessWidget {
           Icons.person_add_alt_1_rounded,
           size: 16,
         ),
-        label: const Text('追蹤'),
+        label:  Text(l10n.creatorProfileFollow),
       );
     }
 
@@ -1196,7 +1198,7 @@ class CreatorProfilePage extends StatelessWidget {
             size: 16,
           ),
           label: Text(
-            isFollowing ? '已追蹤' : '追蹤',
+            isFollowing ? l10n.creatorProfileFollowing : l10n.creatorProfileFollow,
           ),
           style: OutlinedButton.styleFrom(
             visualDensity:
@@ -1236,13 +1238,14 @@ class CreatorProfilePage extends StatelessWidget {
     required String creatorName,
     required bool currentlyFollowing,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final currentUser =
         FirebaseAuth.instance.currentUser;
 
     if (currentUser == null) {
       ToastUtils.showCenterToast(
         context,
-        '請先登入',
+        l10n.profilePagePleaseSignIn,
         isError: true,
       );
       return;
@@ -1295,8 +1298,8 @@ class CreatorProfilePage extends StatelessWidget {
       ToastUtils.showCenterToast(
         context,
         currentlyFollowing
-            ? '已取消追蹤'
-            : '已追蹤 $creatorName',
+            ? l10n.creatorProfileUnfollowed
+            : l10n.creatorProfileFollowedCreator(creatorName),
         customIcon: currentlyFollowing
             ? Icons.person_remove_outlined
             : Icons.person_add_alt_1_rounded,
@@ -1310,7 +1313,7 @@ class CreatorProfilePage extends StatelessWidget {
 
       ToastUtils.showCenterToast(
         context,
-        '操作失敗，請稍後再試',
+       l10n.creatorProfileOperationFailed,
         isError: true,
       );
     }
@@ -1365,8 +1368,9 @@ class CreatorProfilePage extends StatelessWidget {
     if (characterSnapshot.hasError) {
       return Center(
         child: Text(
-          '讀取作品失敗：'
-              '${characterSnapshot.error}',
+          l10n.creatorProfileWorksLoadFailed(
+            characterSnapshot.error.toString(),
+          ),
         ),
       );
     }
@@ -1504,8 +1508,10 @@ class CreatorProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${characterObj.age}歲 | '
-                            '${characterObj.occupation}',
+                        l10n.ageAndOccupation(
+                          characterObj.age.toString(),
+                          characterObj.occupation,
+                        ),
                         maxLines: 1,
                         overflow:
                         TextOverflow.ellipsis,

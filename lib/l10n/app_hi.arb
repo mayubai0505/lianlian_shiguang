@@ -1301,7 +1301,7 @@
     },
     "tab_heartbeat_diary": "हार्टबीट डायरी",
     "tab_daily_chit_chat": "दैनिक बातचीत",
-    "task_desc_chat_3_times": "किसी पात्र के साथ 3 बार दैनिक चैट करें",
+    "task_desc_chat_3_times": "दैनिक मोड में किसी पात्र से 3 बार चैट करें",
     "tab_story_progression": "कहानी की प्रगति",
     "task_desc_story_1_time": "1 कहानी मोड इंटरेक्शन पूरा करें",
     "tab_social_tour": "सोशल टूर",
@@ -2381,5 +2381,426 @@
     },
     "mailCaseNumber": "मामला संख्या",
     "mailCopyCaseNumber": "मामला संख्या कॉपी करें",
-    "mailCaseNumberCopied": "मामला संख्या कॉपी हो गई"
+    "mailCaseNumberCopied": "मामला संख्या कॉपी हो गई",
+    "profilePageAboutMe": "📝 मेरे बारे में",
+    "profilePageTabBio": "परिचय",
+    "profilePageTabCharacters": "पात्र",
+    "profilePageTabMoments": "पोस्ट",
+    "profilePageEditProfile": "प्रोफ़ाइल संपादित करें",
+    "profilePageFriends": "दोस्त",
+    "profilePageWorks": "रचनाएँ",
+    "profilePageFollowing": "फ़ॉलो किए गए",
+    "profilePageFollowers": "फ़ॉलोअर्स",
+    "profilePageHeartbeatDiary": "दिल की धड़कनों की डायरी",
+    "profilePageEditCharacter": "पात्र संपादित करें",
+    "profilePagePreviewCharacter": "पात्र की प्रोफ़ाइल का पूर्वावलोकन करें",
+    "profilePageNoBio": "अभी तक कोई परिचय नहीं है",
+    "profilePageNoBioHint": "अपने बारे में लिखने के लिए टैप करें।",
+    "profilePageCreateCharacter": "नया पात्र बनाएँ",
+    "profilePageNoCharacters": "अभी तक कोई पात्र नहीं बनाया गया है",
+    "profilePageNoCharactersHint": "अपना पहला पात्र बनाना शुरू करें।",
+    "profilePageCharacterActions": "पात्र की कार्रवाइयाँ",
+    "profilePagePublic": "सार्वजनिक",
+    "profilePagePrivate": "निजी",
+    "profilePageCreator": "निर्माता",
+    "profilePageSelectPostingIdentity": "पोस्ट करने की पहचान चुनें",
+    "profilePagePostAsCreator": "निर्माता के रूप में पोस्ट करें",
+    "profilePagePublicCharacter": "सार्वजनिक पात्र",
+    "profilePagePrivateCharacter": "निजी पात्र",
+    "profilePagePleaseSignIn": "कृपया पहले साइन इन करें",
+    "profilePagePublishMoment": "पोस्ट प्रकाशित करें",
+    "profilePageFilterAll": "सभी",
+    "profilePageFilterCreator": "मैं",
+    "profilePageFilterCharacter": "पात्र",
+    "profilePageMomentsLoadFailed": "पोस्ट लोड नहीं हो सकीं",
+    "profilePageTryAgainLater": "कृपया बाद में फिर प्रयास करें।",
+    "profilePageNoCreatorMoments": "आपने अभी तक कोई पोस्ट प्रकाशित नहीं की है",
+    "profilePageNoCreatorMomentsHint": "निर्माता के रूप में प्रकाशित सामग्री यहाँ दिखाई देगी।",
+    "profilePageNoCharacterMoments": "आपके पात्रों ने अभी तक कोई पोस्ट प्रकाशित नहीं की है",
+    "profilePageNoCharacterMomentsHint": "पात्र के रूप में प्रकाशित सामग्री यहाँ दिखाई देगी।",
+    "profilePageNoMoments": "अभी तक कोई पोस्ट नहीं है",
+    "profilePageNoMomentsHint": "आपके और आपके पात्रों द्वारा प्रकाशित पोस्ट यहाँ दिखाई देंगी।",
+    "profilePageDeleteMomentTitle": "पोस्ट हटाएँ",
+    "profilePageDeleteMomentConfirm": "क्या आप वाकई इस पोस्ट को स्थायी रूप से हटाना चाहते हैं?",
+    "profilePageCancel": "रद्द करें",
+    "profilePageDelete": "हटाएँ",
+    "profilePageMomentDeleted": "पोस्ट हटा दी गई",
+    "profilePageDeleteFailed": "हटाना विफल रहा। कृपया बाद में फिर प्रयास करें।",
+    "profilePageReferralCompleted": "सितारा आमंत्रण पूरा हुआ",
+    "profilePageInviter": "आमंत्रित करने वाला: {inviterId}",
+    "@profilePageInviter": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralRewardReceived": "दोनों को 50 फूल मिल गए हैं",
+    "profilePageClaimed": "प्राप्त किया गया",
+    "profilePageInviterBound": "आमंत्रित करने वाला लिंक हो गया: {inviterId}",
+    "@profilePageInviterBound": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralProgressHint": "चैट के 15 संदेश पूरे करने के बाद दोनों को 50 फूल मिलेंगे",
+    "profilePageAlreadyCheckedIn": "आप आज पहले ही चेक-इन कर चुके हैं",
+    "profilePageReferralBindFailed": "लिंक करना विफल रहा। कृपया बाद में फिर प्रयास करें।",
+    "profilePageCharacterNotFound": "इस पात्र का डेटा नहीं मिला",
+    "periodGuideTitle": "मासिक धर्म डायरी का उपयोग कैसे करें?",
+    "periodGuideContent": "① सबसे पहले कैलेंडर पर कोई तारीख चुनें।\n② “आज शुरू हुआ”, “मासिक धर्म अभी जारी है” या “आज समाप्त हुआ” चुनें।\n③ आज की मनोदशा और शारीरिक स्थिति चुनें। आप अपनी ओर से अतिरिक्त जानकारी भी लिख सकती हैं।\n④ सेव दबाएँ, ताकि चैट के दौरान पात्र आपकी आज की स्थिति समझ सके।\n\nअनुमानित तारीखें आपके पिछले रिकॉर्ड के आधार पर समायोजित होंगी और केवल व्यक्तिगत रिकॉर्ड के संदर्भ के लिए हैं।",
+    "periodGotIt": "समझ गई",
+    "periodSelectAtLeastOne": "कृपया रिकॉर्ड करने के लिए कम से कम एक विकल्प चुनें",
+    "periodFutureDateError": "भविष्य की तारीख पर मासिक धर्म की स्थिति दर्ज नहीं की जा सकती।",
+    "periodAlreadyOngoingError": "मासिक धर्म का एक रिकॉर्ड पहले से जारी है। कृपया पहले उसे समाप्त करें।",
+    "periodNoOngoingError": "अभी कोई मासिक धर्म जारी नहीं है। कृपया पहले “आज शुरू हुआ” चुनें।",
+    "periodBeforeStartError": "तारीख वर्तमान मासिक धर्म की शुरुआत की तारीख से पहले की नहीं हो सकती।",
+    "periodEndBeforeStartError": "समाप्ति की तारीख शुरुआत की तारीख से पहले की नहीं हो सकती।",
+    "periodRecordSaved": "{date} का रिकॉर्ड सेव हो गया",
+    "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+    "periodSaveFailed": "सेव करना विफल रहा। कृपया बाद में फिर प्रयास करें",
+    "periodDeleteTitle": "मासिक धर्म का यह रिकॉर्ड हटाएँ?",
+    "periodDeleteContent": "हटाने के बाद औसत चक्र और अगले अनुमान की दोबारा गणना की जाएगी।",
+    "periodCancel": "रद्द करें",
+    "periodDelete": "हटाएँ",
+    "periodNoOngoing": "अभी कोई मासिक धर्म जारी नहीं है",
+    "periodDayCount": "मासिक धर्म का {count}वाँ दिन",
+    "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+    "periodHelp": "उपयोग निर्देश",
+    "periodAverageCycle": "औसत चक्र",
+    "periodAverageDuration": "मासिक धर्म की औसत अवधि",
+    "periodDays": "{count} दिन",
+    "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodNextPrediction": "अगला अनुमान",
+    "periodCalculatedAfterRecording": "रिकॉर्ड करने के बाद गणना होगी",
+    "periodInsufficientData": "अभी पर्याप्त डेटा उपलब्ध नहीं है। फिलहाल 28 दिनों के चक्र और 5 दिनों के मासिक धर्म के आधार पर अनुमान लगाया जाएगा।",
+    "periodPredictionDisclaimer": "यह अनुमान मौजूदा रिकॉर्ड पर आधारित है। तारीखें केवल व्यक्तिगत रिकॉर्ड के संदर्भ के लिए हैं।",
+    "periodStartedToday": "🩸 आज शुरू हुआ",
+    "periodStillOngoing": "मासिक धर्म अभी जारी है",
+    "periodEndedToday": "आज समाप्त हुआ",
+    "periodDateNotReached": "यह दिन अभी आया नहीं है～",
+    "periodDateBeforeStart": "यह तारीख वर्तमान मासिक धर्म की शुरुआत की तारीख से पहले की है।",
+    "periodMoodOkay": "काफ़ी अच्छा",
+    "periodMoodHappy": "खुश",
+    "periodMoodLow": "उदास",
+    "periodMoodUnwell": "अस्वस्थ",
+    "periodMoodIrritable": "चिड़चिड़ी",
+    "periodMoodTired": "थकी हुई",
+    "periodMoodAnxious": "चिंतित",
+    "periodSymptomAbdominalPain": "पेट दर्द",
+    "periodSymptomLowerBackPain": "कमर दर्द",
+    "periodSymptomHeadache": "सिरदर्द",
+    "periodSymptomBreastTenderness": "स्तनों में दर्द",
+    "periodSymptomSwelling": "सूजन",
+    "periodSymptomSleepy": "नींद आना",
+    "periodSymptomIncreasedAppetite": "भूख बढ़ना",
+    "periodSymptomDigestiveDiscomfort": "पाचन संबंधी परेशानी",
+    "periodDiaryTitle": "{characterName} की देखभाल भरी डायरी",
+    "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodLoadFailed": "रिकॉर्ड लोड नहीं हो सके। कृपया बाद में फिर प्रयास करें",
+    "periodWeekdaySun": "रवि",
+    "periodWeekdayMon": "सोम",
+    "periodWeekdayTue": "मंगल",
+    "periodWeekdayWed": "बुध",
+    "periodWeekdayThu": "गुरु",
+    "periodWeekdayFri": "शुक्र",
+    "periodWeekdaySat": "शनि",
+    "periodSaveInstruction": "स्थिति चुनने के बाद उसे सुरक्षित करने के लिए सबसे नीचे “आज का रिकॉर्ड सेव करें” दबाएँ।",
+    "periodTodayMood": "आज की मनोदशा (एक से अधिक चुन सकती हैं)",
+    "periodMoodDescription": "ये उस दिन की डायरी प्रविष्टियाँ हैं, कैलेंडर पर दिखने वाले चिह्न नहीं।",
+    "periodOtherMood": "अन्य मनोदशा",
+    "periodOtherMoodHint": "उदाहरण: आहत, असुरक्षित महसूस करना……",
+    "periodTodaySymptoms": "आज की शारीरिक स्थिति (एक से अधिक चुन सकती हैं)",
+    "periodOtherSymptom": "अन्य शारीरिक स्थिति",
+    "periodOtherSymptomHint": "उदाहरण: ठंड लगना, भूख न लगना……",
+    "periodNoteForCharacter": "आप {characterName} को क्या बताना चाहती हैं? (वैकल्पिक)",
+    "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodNoteHint": "उदाहरण: आज मैं शांति से आराम करना चाहती हूँ और किसी का दबाव नहीं चाहती……",
+    "periodSaving": "सेव हो रहा है…",
+    "periodSaveToday": "आज का रिकॉर्ड सेव करें",
+    "periodHistory": "मासिक धर्म का इतिहास",
+    "periodOngoing": "जारी है",
+    "periodTotalDays": "कुल {count} दिन",
+    "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodDeleteRecord": "रिकॉर्ड हटाएँ",
+    "privateProfilePleaseSignIn": "कृपया पहले साइन इन करें",
+    "privateProfileLoreLoadFailed": "स्मृति अंश लोड नहीं हो सके: {error}",
+    "@privateProfileLoreLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "privateProfileWriteNewLore": "नया स्मृति अंश लिखें ({count} / {limit})",
+    "@privateProfileWriteNewLore": {
+        "placeholders": {
+            "count": { "type": "int" },
+            "limit": { "type": "int" }
+        }
+    },
+    "privateProfileNoLore": "अभी तक कोई स्मृति अंश नहीं है",
+    "privateProfileNoLoreHint": "आप यहाँ परीक्षण सेटिंग्स, कहानी के संकेत और पात्र की महत्वपूर्ण यादों को व्यवस्थित कर सकते हैं।",
+    "privateProfileUntitledLore": "शीर्षकहीन अंश",
+    "privateProfileEdit": "संपादित करें",
+    "privateProfileDelete": "हटाएँ",
+    "privateProfileAddLore": "स्मृति अंश जोड़ें",
+    "privateProfileLoreTitle": "शीर्षक",
+    "privateProfileLoreTeaser": "संक्षिप्त संकेत",
+    "privateProfileLoreContent": "पूरा विवरण",
+    "privateProfileLockLore": "अंश लॉक करें",
+    "privateProfileLockLoreHint": "निजी पात्र अभी केवल निर्माता को दिखाई देता है। पात्र को सार्वजनिक किए जाने पर उपयोग के लिए यह फ़ील्ड सुरक्षित रहेगा।",
+    "privateProfileCancel": "रद्द करें",
+    "privateProfileTitleContentRequired": "कृपया शीर्षक और विवरण भरें",
+    "privateProfileLoreAdded": "स्मृति अंश जोड़ दिया गया",
+    "privateProfileAddFailed": "जोड़ना विफल रहा। कृपया बाद में फिर प्रयास करें",
+    "privateProfilePublish": "प्रकाशित करें",
+    "privateProfileDeleteLoreTitle": "स्मृति अंश हटाएँ",
+    "privateProfileDeleteLoreConfirm": "क्या आप वाकई इस स्मृति अंश को स्थायी रूप से हटाना चाहते हैं?",
+    "privateProfileLoreDeleted": "स्मृति अंश हटा दिया गया",
+    "privateProfileDeleteFailed": "हटाना विफल रहा। कृपया बाद में फिर प्रयास करें",
+    "privateProfileEditLore": "स्मृति अंश संपादित करें",
+    "privateProfileSave": "सेव करें",
+    "editProfileBirthdayReminderTitle": "🎂 छोटा-सा अनुस्मारक",
+    "editProfileBirthdayReminderContent": "आपकी जन्मतिथि पात्रों की ओर से मिलने वाली जन्मदिन की शुभकामनाओं, उपहारों और संबंधित कार्यक्रमों को प्रभावित करेगी।\n\nहम सुझाव देते हैं कि सेटिंग पूरी करने से पहले अपनी जन्मतिथि की पुष्टि कर लें,\nताकि भविष्य में मिलने वाले जन्मदिन के पुरस्कार प्रभावित न हों।",
+    "editProfileGotIt": "समझ गई",
+    "editProfileBirthdayConfirmTitle": "🎂 जन्मतिथि की पुष्टि करें",
+    "editProfileBirthdayConfirmContent": "कृपया पुष्टि करें कि आपकी जन्मतिथि सही है।\n\nआपकी जन्मतिथि का उपयोग जन्मदिन की शुभकामनाओं, उपहारों और संबंधित कार्यक्रमों के लिए किया जाएगा।\n\nजन्मदिन के पुरस्कार को एक से अधिक बार प्राप्त करने से रोकने के लिए, सेटिंग पूरी होने के बाद जन्मतिथि दोबारा नहीं बदली जा सकेगी।\n\nक्या आप निश्चित रूप से इस जन्मतिथि का उपयोग करना चाहती हैं?",
+    "editProfileReturnToEdit": "वापस जाकर बदलें",
+    "editProfileConfirmSetting": "सेटिंग की पुष्टि करें",
+    "editProfileDefaultNickname": "नई मुलाकात का यात्री",
+    "editProfileNoChanges": "सेव करने के लिए कोई बदलाव नहीं है",
+    "editProfileCreateFailed": "डेटा बनाने में विफल: {error}",
+    "@editProfileCreateFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileAvatarNumber": "प्रोफ़ाइल चित्र {number}",
+    "@editProfileAvatarNumber": {
+        "placeholders": {
+            "number": { "type": "int" }
+        }
+    },
+    "editProfileImageSelectionFailed": "चित्र चुनना विफल रहा। कृपया दूसरा चित्र चुनें",
+    "editProfileCancel": "रद्द करें",
+    "editProfileConfirm": "पुष्टि करें",
+    "editProfileImageProcessingFailed": "चित्र संसाधित करना विफल रहा। कृपया दूसरा चित्र चुनें",
+    "editProfileLoadFailed": "डेटा लोड करना विफल रहा: {error}",
+    "@editProfileLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileBioLabel": "परिचय",
+    "editProfileBioHelper": "अपने बारे में या अपनी रचनात्मक शैली के बारे में संक्षेप में बताएँ",
+    "editProfileBioHint": "उदाहरण: मुझे काल्पनिक, जुनूनी और रोमांचक प्रेम पात्र बनाना पसंद है।",
+    "editProfileUserNotFound": "उपयोगकर्ता नहीं मिला",
+    "editProfileGenerateIdFailed": "खिलाड़ी ID बनाना विफल रहा। कृपया फिर प्रयास करें",
+    "editProfileSignedInUserNotFound": "वर्तमान में साइन इन किया हुआ उपयोगकर्ता नहीं मिला",
+    "editProfileAvatarReadFailed": "प्रोफ़ाइल चित्र लोड करना विफल रहा, स्थिति कोड: {statusCode}",
+    "@editProfileAvatarReadFailed": {
+        "placeholders": {
+            "statusCode": { "type": "int" }
+        }
+    },
+    "editProfileAvatarFileNotFound": "चुनी गई प्रोफ़ाइल चित्र फ़ाइल नहीं मिली: {path}",
+    "@editProfileAvatarFileNotFound": {
+        "placeholders": {
+            "path": { "type": "String" }
+        }
+    },
+    "editProfileAvatarEmpty": "प्रोफ़ाइल चित्र का डेटा खाली है",
+    "chatPageSendFailed": "भेजना विफल रहा। कृपया बाद में फिर प्रयास करें 😢",
+    "chatPageRegenerateFailed": "दोबारा बनाना विफल रहा। मूल संदेश सुरक्षित रखा गया है। कृपया फिर प्रयास करें।",
+    "chatPageRegenerating": "💭 फिर से सोच रहा है...",
+    "chatPageThinkingTooLong": "ऐसा लगता है कि वह गहरी सोच में है। कृपया बाद में फिर प्रयास करें……",
+    "chatPageAlreadyReplying": "वह जवाब दे रहा है। कृपया थोड़ी देर प्रतीक्षा करें और दोबारा न भेजें",
+    "chatPageMediaUploadFailed": "मीडिया अपलोड करना विफल रहा। कृपया फिर प्रयास करें",
+    "chatPageReportReceived": "आपकी रिपोर्ट के लिए धन्यवाद। हम जल्द से जल्द इसकी जाँच करेंगे",
+    "chatPageMessagesDeleted": "✅ {count} संदेश सफलतापूर्वक हटा दिए गए",
+    "@chatPageMessagesDeleted": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSelectPhotoFailed": "फ़ोटो नहीं चुनी जा सकी: {error}",
+    "@chatPageSelectPhotoFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFound": "रिकॉर्डिंग फ़ाइल नहीं मिली",
+    "chatPageRecordingEmpty": "रिकॉर्डिंग फ़ाइल खाली है",
+    "chatPageAudioPlaybackFailed": "ऑडियो चलाना विफल रहा: {error}",
+    "@chatPageAudioPlaybackFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageMicrophonePermissionRequired": "रिकॉर्ड करने के लिए माइक्रोफ़ोन की अनुमति आवश्यक है",
+    "chatPageStartRecordingFailed": "रिकॉर्डिंग शुरू नहीं की जा सकी: {error}",
+    "@chatPageStartRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingCreationFailed": "रिकॉर्डिंग फ़ाइल बनाना विफल रहा। कृपया दोबारा रिकॉर्ड करें",
+    "chatPageRecordingFailed": "रिकॉर्डिंग विफल रही: {error}",
+    "@chatPageRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFoundRetry": "रिकॉर्डिंग फ़ाइल नहीं मिली। कृपया दोबारा रिकॉर्ड करें",
+    "chatPageRecordingEmptyRetry": "रिकॉर्डिंग फ़ाइल खाली है। कृपया दोबारा रिकॉर्ड करें",
+    "chatPageNoRecordingToSend": "भेजने के लिए कोई रिकॉर्डिंग नहीं है",
+    "chatPagePointCost": "{count} अंक",
+    "@chatPagePointCost": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageVoiceUploading": "वॉइस रिकॉर्डिंग अपलोड हो रही है……",
+    "chatPageChangeWatermarkColor": "वॉटरमार्क का रंग बदलें",
+    "chatPageMinutesSeconds": "{minutes} मिनट {seconds} सेकंड",
+    "@chatPageMinutesSeconds": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSeconds": "{seconds} सेकंड",
+    "@chatPageSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "characterEditSelectSupportingCharacter": "कृपया एक सहायक पात्र चुनें।",
+    "characterEditSelectGender": "कृपया पात्र का लिंग चुनें।",
+    "characterEditCharacterSettings": "पात्र की सेटिंग",
+    "characterEditWorldview": "विश्व की रूपरेखा",
+    "characterEditSettingsMinLength": "पात्र की सेटिंग में कम से कम 10 अक्षर होने चाहिए।",
+    "characterEditWorldviewMinLength": "विश्व की रूपरेखा में कम से कम 20 अक्षर होने चाहिए।",
+    "characterEditSupportingCharacters": "सहायक पात्र",
+    "characterEditCharacterImage": "पात्र की तस्वीर",
+    "characterEditWorldviewHint": "विश्व की पृष्ठभूमि, इतिहास, युग, क्षेत्र, शक्तियाँ, व्यवस्थाएँ, तकनीक, जादू और नियमों का वर्णन करें।",
+    "characterEditSettingsHint": "पात्र के व्यक्तित्व, मूल्यों, सोचने के तरीके, भावनात्मक प्रतिक्रियाओं, व्यवहार संबंधी आदतों, बोलने के तरीके और मूल विश्वासों का वर्णन करें।",
+    "characterEditUnknownCharacter": "अज्ञात पात्र",
+    "characterEditEditSupportingCharacter": "सहायक पात्र संपादित करें",
+    "characterEditAddSupportingCharacter": "सहायक पात्र जोड़ें",
+    "characterEditSupportingCharacterName": "सहायक पात्र का नाम",
+    "characterEditGender": "लिंग",
+    "characterEditMale": "पुरुष",
+    "characterEditFemale": "महिला",
+    "characterEditOther": "अन्य",
+    "characterEditAge": "आयु",
+    "characterEditIdentityOccupation": "पहचान／व्यवसाय",
+    "characterEditRelationshipWithMain": "मुख्य पात्र के साथ संबंध",
+    "characterEditRelationshipHint": "मुख्य पात्र के साथ अतीत, दृष्टिकोण, भावनाओं, रहस्यों और वर्तमान संबंध का वर्णन करें।",
+    "characterEditCharacterProfile": "पात्र का परिचय",
+    "characterEditCharacterProfileHint": "पात्र के व्यक्तित्व, रूप-रंग, आदतों, मूल्यों, क्षमताओं, पसंद, नापसंद और महत्वपूर्ण अनुभवों का वर्णन करें।",
+    "characterEditSpeakingStyle": "बोलने का अंदाज़",
+    "characterEditSpeakingStyleHint": "उदाहरण: तेज़ बोलता है, व्यंग्यात्मक टिप्पणियाँ करता है और सीधे बात करता है।",
+    "characterEditSupportingNameRequired": "कृपया सहायक पात्र का नाम दर्ज करें।",
+    "characterEditSupportingGenderRequired": "कृपया सहायक पात्र का लिंग चुनें।",
+    "characterEditProfileRequired": "कृपया पात्र का परिचय भरें।",
+    "characterEditRelationshipTooLong": "मुख्य पात्र के साथ संबंध का विवरण 1,500 अक्षरों से अधिक हो गया है।",
+    "characterEditProfileTooLong": "पात्र का परिचय 1,500 अक्षरों से अधिक हो गया है।",
+    "characterEditSave": "सेव करें",
+    "characterEditAdd": "जोड़ें",
+    "creatorProfileNoBio": "अभी तक कोई परिचय नहीं दिया गया है",
+    "creatorProfileNoBioHint": "इस निर्माता ने अभी तक अपना परिचय नहीं दिया है।",
+    "creatorProfileNoCreatorMoments": "निर्माता ने अभी तक कोई पोस्ट प्रकाशित नहीं की है",
+    "creatorProfileNoCreatorMomentsHint": "निर्माता के रूप में प्रकाशित सार्वजनिक सामग्री यहाँ दिखाई देगी।",
+    "creatorProfileNoCharacterMoments": "निर्माता के पात्रों ने अभी तक कोई पोस्ट प्रकाशित नहीं की है",
+    "creatorProfileNoCharacterMomentsHint": "निर्माता के सार्वजनिक पात्रों द्वारा प्रकाशित सामग्री यहाँ दिखाई देगी।",
+    "creatorProfileNoPublicMoments": "अभी तक कोई सार्वजनिक पोस्ट नहीं है",
+    "creatorProfileNoPublicMomentsHint": "निर्माता और उनके पात्रों द्वारा प्रकाशित सार्वजनिक पोस्ट यहाँ दिखाई देंगी।",
+    "creatorProfilePublicWorks": "सार्वजनिक रचनाएँ",
+    "creatorProfileLikesReceived": "प्राप्त लाइक",
+    "creatorProfileFollow": "फ़ॉलो करें",
+    "creatorProfileFollowing": "फ़ॉलो किया गया",
+    "creatorProfileUnfollowed": "फ़ॉलो करना बंद कर दिया गया",
+    "creatorProfileFollowedCreator": "{creatorName} को फ़ॉलो किया गया",
+    "@creatorProfileFollowedCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "creatorProfileOperationFailed": "कार्रवाई विफल रही। कृपया बाद में फिर प्रयास करें",
+    "creatorProfileWorksLoadFailed": "रचनाएँ लोड नहीं हो सकीं: {error}",
+    "@creatorProfileWorksLoadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareInvitation": "🦋 LoveyDovey की ओर से मुलाकात का निमंत्रण",
+    "characterProfileShareCreator": "✦ निर्माता: {creatorName}",
+    "@characterProfileShareCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareMessage": "LoveyDovey में “{characterName}” खोजें और एक ऐसी कहानी शुरू करें जो केवल आप दोनों की हो।",
+    "@characterProfileShareMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileInvitationLabel": "पात्र निमंत्रण कार्ड",
+    "characterProfileCardCreator": "निर्माता  {creatorName}",
+    "@characterProfileCardCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileCardSearchHint": "पात्र खोजें और अपनी मुलाकात शुरू करें  🦋",
+    "characterProfileScanToDownload": "डाउनलोड करने के लिए स्कैन करें",
+    "characterProfileShareTitle": "पात्र “{characterName}” साझा करें",
+    "@characterProfileShareTitle": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareSubject": "LoveyDovey पर {characterName} से मिलें",
+    "@characterProfileShareSubject": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareFailed": "निमंत्रण कार्ड बनाना विफल रहा। कृपया बाद में फिर प्रयास करें",
+    "characterProfilePrivateShareUnavailable": "निजी पात्रों को अभी साझा नहीं किया जा सकता",
+    "characterProfileShareCard": "निमंत्रण कार्ड साझा करें",
+    "characterProfileShareCharacter": "पात्र साझा करें",
+    "characterProfileReportCharacter": "पात्र की रिपोर्ट करें",
+    "characterProfileTranslate": "अनुवाद करें"
 }

@@ -1301,7 +1301,7 @@
     },
     "tab_heartbeat_diary": "Diari Debaran Hati",
     "tab_daily_chit_chat": "Sembang Harian",
-    "task_desc_chat_3_times": "Lakukan 3 sembang harian dengan watak",
+    "task_desc_chat_3_times": "Berbual dengan watak sebanyak 3 kali dalam Mod Harian",
     "tab_story_progression": "Kemajuan Cerita",
     "task_desc_story_1_time": "Selesaikan 1 interaksi mod cerita",
     "tab_social_tour": "Jelajah Sosial",
@@ -2389,5 +2389,426 @@
     },
     "mailCaseNumber": "Nombor Kes",
     "mailCopyCaseNumber": "Salin Nombor Kes",
-    "mailCaseNumberCopied": "Nombor kes telah disalin"
+    "mailCaseNumberCopied": "Nombor kes telah disalin",
+    "profilePageAboutMe": "📝 Tentang Saya",
+    "profilePageTabBio": "Pengenalan Diri",
+    "profilePageTabCharacters": "Watak",
+    "profilePageTabMoments": "Siaran",
+    "profilePageEditProfile": "Edit Profil",
+    "profilePageFriends": "Rakan",
+    "profilePageWorks": "Karya",
+    "profilePageFollowing": "Mengikuti",
+    "profilePageFollowers": "Pengikut",
+    "profilePageHeartbeatDiary": "Diari Debaran Hati",
+    "profilePageEditCharacter": "Edit Watak",
+    "profilePagePreviewCharacter": "Pratonton Profil Watak",
+    "profilePageNoBio": "Belum ada pengenalan diri",
+    "profilePageNoBioHint": "Ketik untuk menulis sesuatu tentang diri anda.",
+    "profilePageCreateCharacter": "Cipta Watak Baharu",
+    "profilePageNoCharacters": "Belum ada watak yang dicipta",
+    "profilePageNoCharactersHint": "Mulakan dengan mencipta watak pertama anda.",
+    "profilePageCharacterActions": "Tindakan Watak",
+    "profilePagePublic": "Awam",
+    "profilePagePrivate": "Peribadi",
+    "profilePageCreator": "Pencipta",
+    "profilePageSelectPostingIdentity": "Pilih Identiti Siaran",
+    "profilePagePostAsCreator": "Siarkan sebagai Pencipta",
+    "profilePagePublicCharacter": "Watak Awam",
+    "profilePagePrivateCharacter": "Watak Peribadi",
+    "profilePagePleaseSignIn": "Sila log masuk terlebih dahulu",
+    "profilePagePublishMoment": "Terbitkan Siaran",
+    "profilePageFilterAll": "Semua",
+    "profilePageFilterCreator": "Saya",
+    "profilePageFilterCharacter": "Watak",
+    "profilePageMomentsLoadFailed": "Gagal memuatkan siaran",
+    "profilePageTryAgainLater": "Sila cuba lagi kemudian.",
+    "profilePageNoCreatorMoments": "Anda belum menerbitkan sebarang siaran",
+    "profilePageNoCreatorMomentsHint": "Kandungan yang diterbitkan sebagai pencipta akan dipaparkan di sini.",
+    "profilePageNoCharacterMoments": "Watak anda belum menerbitkan sebarang siaran",
+    "profilePageNoCharacterMomentsHint": "Kandungan yang diterbitkan sebagai watak akan dipaparkan di sini.",
+    "profilePageNoMoments": "Belum ada siaran",
+    "profilePageNoMomentsHint": "Siaran yang diterbitkan oleh anda dan watak anda akan dipaparkan di sini.",
+    "profilePageDeleteMomentTitle": "Padam Siaran",
+    "profilePageDeleteMomentConfirm": "Adakah anda pasti mahu memadamkan siaran ini secara kekal?",
+    "profilePageCancel": "Batal",
+    "profilePageDelete": "Padam",
+    "profilePageMomentDeleted": "Siaran telah dipadamkan",
+    "profilePageDeleteFailed": "Gagal memadamkan. Sila cuba lagi kemudian.",
+    "profilePageReferralCompleted": "Jemputan Bintang Selesai",
+    "profilePageInviter": "Pengundang: {inviterId}",
+    "@profilePageInviter": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralRewardReceived": "Kedua-dua pihak telah menerima 50 Bunga",
+    "profilePageClaimed": "Telah diterima",
+    "profilePageInviterBound": "Pengundang telah dipautkan: {inviterId}",
+    "@profilePageInviterBound": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralProgressHint": "Selepas melengkapkan 15 mesej sembang, kedua-dua pihak akan menerima 50 Bunga setiap seorang",
+    "profilePageAlreadyCheckedIn": "Anda telah mendaftar masuk hari ini",
+    "profilePageReferralBindFailed": "Gagal memautkan. Sila cuba lagi kemudian.",
+    "profilePageCharacterNotFound": "Data watak ini tidak ditemukan",
+    "periodGuideTitle": "Bagaimana cara menggunakan Diari Haid?",
+    "periodGuideContent": "① Pilih tarikh pada kalendar terlebih dahulu.\n② Pilih “Bermula Hari Ini”, “Masih Datang Haid” atau “Berakhir Hari Ini”.\n③ Pilih perasaan dan keadaan fizikal anda pada hari tersebut. Anda juga boleh menambah catatan sendiri.\n④ Tekan Simpan supaya watak dapat memahami keadaan anda hari ini semasa berbual.\n\nTarikh ramalan akan diselaraskan berdasarkan sejarah rekod anda dan hanya untuk rujukan catatan peribadi.",
+    "periodGotIt": "Saya Faham",
+    "periodSelectAtLeastOne": "Sila pilih sekurang-kurangnya satu perkara untuk direkodkan",
+    "periodFutureDateError": "Status haid tidak boleh ditandakan pada tarikh akan datang.",
+    "periodAlreadyOngoingError": "Terdapat rekod haid yang masih berlangsung. Sila tamatkan rekod tersebut terlebih dahulu.",
+    "periodNoOngoingError": "Tiada rekod haid yang sedang berlangsung. Sila pilih “Bermula Hari Ini” terlebih dahulu.",
+    "periodBeforeStartError": "Tarikh tidak boleh lebih awal daripada tarikh mula haid semasa.",
+    "periodEndBeforeStartError": "Tarikh tamat tidak boleh lebih awal daripada tarikh mula.",
+    "periodRecordSaved": "Rekod untuk {date} telah disimpan",
+    "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+    "periodSaveFailed": "Gagal menyimpan. Sila cuba lagi kemudian",
+    "periodDeleteTitle": "Padam rekod haid ini?",
+    "periodDeleteContent": "Selepas dipadamkan, purata kitaran dan ramalan seterusnya akan dikira semula.",
+    "periodCancel": "Batal",
+    "periodDelete": "Padam",
+    "periodNoOngoing": "Tiada rekod haid yang sedang berlangsung",
+    "periodDayCount": "Hari ke-{count} haid",
+    "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+    "periodHelp": "Panduan Penggunaan",
+    "periodAverageCycle": "Purata Kitaran",
+    "periodAverageDuration": "Purata Tempoh Haid",
+    "periodDays": "{count} hari",
+    "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodNextPrediction": "Ramalan Seterusnya",
+    "periodCalculatedAfterRecording": "Dikira selepas direkodkan",
+    "periodInsufficientData": "Data semasa tidak mencukupi. Buat sementara waktu, ramalan akan menggunakan kitaran 28 hari dan tempoh haid selama 5 hari.",
+    "periodPredictionDisclaimer": "Ramalan dibuat berdasarkan rekod sedia ada. Tarikh hanya untuk rujukan catatan peribadi.",
+    "periodStartedToday": "🩸 Bermula Hari Ini",
+    "periodStillOngoing": "Masih Datang Haid",
+    "periodEndedToday": "Berakhir Hari Ini",
+    "periodDateNotReached": "Hari ini masih belum tiba～",
+    "periodDateBeforeStart": "Tarikh ini lebih awal daripada tarikh mula haid semasa.",
+    "periodMoodOkay": "Agak Baik",
+    "periodMoodHappy": "Gembira",
+    "periodMoodLow": "Sedih",
+    "periodMoodUnwell": "Tidak Sihat",
+    "periodMoodIrritable": "Mudah Marah",
+    "periodMoodTired": "Letih",
+    "periodMoodAnxious": "Cemas",
+    "periodSymptomAbdominalPain": "Sakit Perut",
+    "periodSymptomLowerBackPain": "Sakit Pinggang",
+    "periodSymptomHeadache": "Sakit Kepala",
+    "periodSymptomBreastTenderness": "Payudara Terasa Sakit",
+    "periodSymptomSwelling": "Bengkak",
+    "periodSymptomSleepy": "Mengantuk",
+    "periodSymptomIncreasedAppetite": "Selera Makan Bertambah",
+    "periodSymptomDigestiveDiscomfort": "Ketidakselesaan Penghadaman",
+    "periodDiaryTitle": "Diari Prihatin {characterName}",
+    "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodLoadFailed": "Gagal memuatkan rekod. Sila cuba lagi kemudian",
+    "periodWeekdaySun": "Ahd",
+    "periodWeekdayMon": "Isn",
+    "periodWeekdayTue": "Sel",
+    "periodWeekdayWed": "Rab",
+    "periodWeekdayThu": "Kha",
+    "periodWeekdayFri": "Jum",
+    "periodWeekdaySat": "Sab",
+    "periodSaveInstruction": "Selepas memilih status, tekan “Simpan Rekod Hari Ini” di bahagian bawah untuk menyimpannya.",
+    "periodTodayMood": "Perasaan Hari Ini (Boleh pilih lebih daripada satu)",
+    "periodMoodDescription": "Ini ialah catatan diari untuk hari tersebut, bukan ikon yang dipaparkan pada kalendar.",
+    "periodOtherMood": "Perasaan Lain",
+    "periodOtherMoodHint": "Contoh: terasa hati, berasa tidak selamat……",
+    "periodTodaySymptoms": "Keadaan Fizikal Hari Ini (Boleh pilih lebih daripada satu)",
+    "periodOtherSymptom": "Keadaan Fizikal Lain",
+    "periodOtherSymptomHint": "Contoh: berasa sejuk, tiada selera makan……",
+    "periodNoteForCharacter": "Perkara yang anda mahu {characterName} ketahui (Pilihan)",
+    "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodNoteHint": "Contoh: hari ini saya mahu berehat dengan tenang dan tidak mahu didesak……",
+    "periodSaving": "Sedang menyimpan…",
+    "periodSaveToday": "Simpan Rekod Hari Ini",
+    "periodHistory": "Sejarah Haid",
+    "periodOngoing": "Sedang Berlangsung",
+    "periodTotalDays": "Jumlah {count} hari",
+    "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodDeleteRecord": "Padam Rekod",
+    "privateProfilePleaseSignIn": "Sila log masuk terlebih dahulu",
+    "privateProfileLoreLoadFailed": "Gagal memuatkan Fragmen Memori: {error}",
+    "@privateProfileLoreLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "privateProfileWriteNewLore": "Tulis Fragmen Memori Baharu ({count} / {limit})",
+    "@privateProfileWriteNewLore": {
+        "placeholders": {
+            "count": { "type": "int" },
+            "limit": { "type": "int" }
+        }
+    },
+    "privateProfileNoLore": "Belum ada Fragmen Memori",
+    "privateProfileNoLoreHint": "Anda boleh menyusun tetapan ujian, petunjuk cerita dan kenangan penting watak di sini.",
+    "privateProfileUntitledLore": "Fragmen Tanpa Tajuk",
+    "privateProfileEdit": "Edit",
+    "privateProfileDelete": "Padam",
+    "privateProfileAddLore": "Tambah Fragmen Memori",
+    "privateProfileLoreTitle": "Tajuk",
+    "privateProfileLoreTeaser": "Petunjuk Ringkas",
+    "privateProfileLoreContent": "Kandungan Penuh",
+    "privateProfileLockLore": "Kunci Fragmen",
+    "privateProfileLockLoreHint": "Watak peribadi kini hanya boleh dilihat oleh pencipta. Medan ini akan dikekalkan untuk digunakan apabila watak dijadikan awam.",
+    "privateProfileCancel": "Batal",
+    "privateProfileTitleContentRequired": "Sila masukkan tajuk dan kandungan",
+    "privateProfileLoreAdded": "Fragmen Memori telah ditambahkan",
+    "privateProfileAddFailed": "Gagal menambahkan. Sila cuba lagi kemudian",
+    "privateProfilePublish": "Terbitkan",
+    "privateProfileDeleteLoreTitle": "Padam Fragmen Memori",
+    "privateProfileDeleteLoreConfirm": "Adakah anda pasti mahu memadamkan Fragmen Memori ini secara kekal?",
+    "privateProfileLoreDeleted": "Fragmen Memori telah dipadamkan",
+    "privateProfileDeleteFailed": "Gagal memadamkan. Sila cuba lagi kemudian",
+    "privateProfileEditLore": "Edit Fragmen Memori",
+    "privateProfileSave": "Simpan",
+    "editProfileBirthdayReminderTitle": "🎂 Peringatan Ringkas",
+    "editProfileBirthdayReminderContent": "Tarikh lahir anda akan mempengaruhi ucapan hari lahir daripada watak, hadiah hari lahir dan acara berkaitan.\n\nAnda disarankan supaya mengesahkan tarikh lahir sebelum melengkapkan tetapan\nagar ganjaran hari lahir pada masa hadapan tidak terjejas.",
+    "editProfileGotIt": "Saya Faham",
+    "editProfileBirthdayConfirmTitle": "🎂 Sahkan Tarikh Lahir",
+    "editProfileBirthdayConfirmContent": "Sila pastikan tarikh lahir anda betul.\n\nTarikh lahir akan digunakan untuk ucapan hari lahir, hadiah hari lahir dan acara berkaitan.\n\nUntuk mengelelakkan ganjaran hari lahir daripada dituntut berulang kali, tarikh lahir tidak boleh diubah lagi selepas tetapan selesai.\n\nAdakah anda pasti mahu menggunakan tarikh lahir ini?",
+    "editProfileReturnToEdit": "Kembali untuk Mengedit",
+    "editProfileConfirmSetting": "Sahkan Tetapan",
+    "editProfileDefaultNickname": "Pengembara yang Baru Dikenali",
+    "editProfileNoChanges": "Tiada perubahan yang perlu disimpan",
+    "editProfileCreateFailed": "Gagal mencipta data: {error}",
+    "@editProfileCreateFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileAvatarNumber": "Avatar {number}",
+    "@editProfileAvatarNumber": {
+        "placeholders": {
+            "number": { "type": "int" }
+        }
+    },
+    "editProfileImageSelectionFailed": "Gagal memilih imej. Sila pilih imej lain",
+    "editProfileCancel": "Batal",
+    "editProfileConfirm": "Sahkan",
+    "editProfileImageProcessingFailed": "Gagal memproses imej. Sila pilih imej lain",
+    "editProfileLoadFailed": "Gagal memuatkan data: {error}",
+    "@editProfileLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileBioLabel": "Pengenalan Diri",
+    "editProfileBioHelper": "Perkenalkan diri atau gaya kreatif anda secara ringkas",
+    "editProfileBioHint": "Contoh: Saya suka mencipta watak romantik fantasi, obsesif dan imersif.",
+    "editProfileUserNotFound": "Pengguna tidak ditemukan",
+    "editProfileGenerateIdFailed": "Gagal menjana ID Pemain. Sila cuba lagi",
+    "editProfileSignedInUserNotFound": "Pengguna yang sedang log masuk tidak ditemukan",
+    "editProfileAvatarReadFailed": "Gagal memuatkan avatar. Kod status: {statusCode}",
+    "@editProfileAvatarReadFailed": {
+        "placeholders": {
+            "statusCode": { "type": "int" }
+        }
+    },
+    "editProfileAvatarFileNotFound": "Fail avatar yang dipilih tidak ditemukan: {path}",
+    "@editProfileAvatarFileNotFound": {
+        "placeholders": {
+            "path": { "type": "String" }
+        }
+    },
+    "editProfileAvatarEmpty": "Data imej avatar kosong",
+    "chatPageSendFailed": "Gagal menghantar. Sila cuba lagi kemudian 😢",
+    "chatPageRegenerateFailed": "Gagal menjana semula. Mesej asal telah dikekalkan. Sila cuba lagi.",
+    "chatPageRegenerating": "💭 Sedang berfikir semula...",
+    "chatPageThinkingTooLong": "Dia kelihatan sedang berfikir dengan mendalam. Sila cuba lagi kemudian……",
+    "chatPageAlreadyReplying": "Dia sedang membalas. Sila tunggu sebentar dan jangan hantar berulang kali",
+    "chatPageMediaUploadFailed": "Gagal memuat naik media. Sila cuba lagi",
+    "chatPageReportReceived": "Terima kasih atas laporan anda. Kami akan menyemaknya secepat mungkin",
+    "chatPageMessagesDeleted": "✅ Berjaya memadamkan {count} mesej",
+    "@chatPageMessagesDeleted": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSelectPhotoFailed": "Tidak dapat memilih foto: {error}",
+    "@chatPageSelectPhotoFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFound": "Fail rakaman tidak ditemukan",
+    "chatPageRecordingEmpty": "Fail rakaman kosong",
+    "chatPageAudioPlaybackFailed": "Gagal memainkan audio: {error}",
+    "@chatPageAudioPlaybackFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageMicrophonePermissionRequired": "Kebenaran mikrofon diperlukan untuk merakam audio",
+    "chatPageStartRecordingFailed": "Tidak dapat memulakan rakaman: {error}",
+    "@chatPageStartRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingCreationFailed": "Gagal mencipta fail rakaman. Sila rakam semula",
+    "chatPageRecordingFailed": "Rakaman gagal: {error}",
+    "@chatPageRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFoundRetry": "Fail rakaman tidak ditemukan. Sila rakam semula",
+    "chatPageRecordingEmptyRetry": "Fail rakaman kosong. Sila rakam semula",
+    "chatPageNoRecordingToSend": "Tiada rakaman untuk dihantar",
+    "chatPagePointCost": "{count} mata",
+    "@chatPagePointCost": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageVoiceUploading": "Sedang memuat naik rakaman suara……",
+    "chatPageChangeWatermarkColor": "Tukar Warna Tera Air",
+    "chatPageMinutesSeconds": "{minutes} minit {seconds} saat",
+    "@chatPageMinutesSeconds": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSeconds": "{seconds} saat",
+    "@chatPageSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "characterEditSelectSupportingCharacter": "Sila pilih watak sampingan.",
+    "characterEditSelectGender": "Sila pilih jantina watak.",
+    "characterEditCharacterSettings": "Tetapan Watak",
+    "characterEditWorldview": "Latar Dunia",
+    "characterEditSettingsMinLength": "Tetapan watak mesti mengandungi sekurang-kurangnya 10 aksara.",
+    "characterEditWorldviewMinLength": "Latar dunia mesti mengandungi sekurang-kurangnya 20 aksara.",
+    "characterEditSupportingCharacters": "Watak Sampingan",
+    "characterEditCharacterImage": "Imej Watak",
+    "characterEditWorldviewHint": "Huraikan latar belakang, sejarah, zaman, wilayah, kuasa, sistem, teknologi, sihir dan peraturan dunia.",
+    "characterEditSettingsHint": "Huraikan personaliti, nilai, cara berfikir, reaksi emosi, tabiat, cara bercakap dan kepercayaan utama watak.",
+    "characterEditUnknownCharacter": "Watak Tidak Diketahui",
+    "characterEditEditSupportingCharacter": "Edit Watak Sampingan",
+    "characterEditAddSupportingCharacter": "Tambah Watak Sampingan",
+    "characterEditSupportingCharacterName": "Nama Watak Sampingan",
+    "characterEditGender": "Jantina",
+    "characterEditMale": "Lelaki",
+    "characterEditFemale": "Perempuan",
+    "characterEditOther": "Lain-lain",
+    "characterEditAge": "Umur",
+    "characterEditIdentityOccupation": "Identiti／Pekerjaan",
+    "characterEditRelationshipWithMain": "Hubungan dengan Watak Utama",
+    "characterEditRelationshipHint": "Huraikan sejarah, pendirian, perasaan, rahsia dan hubungan semasa dengan watak utama.",
+    "characterEditCharacterProfile": "Profil Watak",
+    "characterEditCharacterProfileHint": "Huraikan personaliti, penampilan, tabiat, nilai, kebolehan, kegemaran, perkara yang tidak disukai dan pengalaman penting watak.",
+    "characterEditSpeakingStyle": "Gaya Percakapan",
+    "characterEditSpeakingStyleHint": "Contoh: bercakap dengan pantas, suka membuat komen sinis dan bercakap secara terus terang.",
+    "characterEditSupportingNameRequired": "Sila masukkan nama watak sampingan.",
+    "characterEditSupportingGenderRequired": "Sila pilih jantina watak sampingan.",
+    "characterEditProfileRequired": "Sila isi profil watak.",
+    "characterEditRelationshipTooLong": "Hubungan dengan watak utama telah melebihi 1,500 aksara.",
+    "characterEditProfileTooLong": "Profil watak telah melebihi 1,500 aksara.",
+    "characterEditSave": "Simpan",
+    "characterEditAdd": "Tambah",
+    "creatorProfileNoBio": "Belum ada pengenalan diri",
+    "creatorProfileNoBioHint": "Pencipta ini belum menambahkan pengenalan diri.",
+    "creatorProfileNoCreatorMoments": "Pencipta belum menerbitkan sebarang siaran",
+    "creatorProfileNoCreatorMomentsHint": "Kandungan awam yang diterbitkan sebagai pencipta akan dipaparkan di sini.",
+    "creatorProfileNoCharacterMoments": "Watak milik pencipta belum menerbitkan sebarang siaran",
+    "creatorProfileNoCharacterMomentsHint": "Kandungan yang diterbitkan oleh watak awam milik pencipta akan dipaparkan di sini.",
+    "creatorProfileNoPublicMoments": "Belum ada siaran awam",
+    "creatorProfileNoPublicMomentsHint": "Siaran awam yang diterbitkan oleh pencipta dan wataknya akan dipaparkan di sini.",
+    "creatorProfilePublicWorks": "Karya Awam",
+    "creatorProfileLikesReceived": "Suka Diterima",
+    "creatorProfileFollow": "Ikuti",
+    "creatorProfileFollowing": "Mengikuti",
+    "creatorProfileUnfollowed": "Berhenti mengikuti",
+    "creatorProfileFollowedCreator": "Mengikuti {creatorName}",
+    "@creatorProfileFollowedCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "creatorProfileOperationFailed": "Operasi gagal. Sila cuba lagi kemudian",
+    "creatorProfileWorksLoadFailed": "Gagal memuatkan karya: {error}",
+    "@creatorProfileWorksLoadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareInvitation": "🦋 Jemputan pertemuan daripada LoveyDovey",
+    "characterProfileShareCreator": "✦ Pencipta: {creatorName}",
+    "@characterProfileShareCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareMessage": "Cari “{characterName}” dalam LoveyDovey dan mulakan kisah yang hanya dimiliki oleh anda berdua.",
+    "@characterProfileShareMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileInvitationLabel": "Kad Jemputan Watak",
+    "characterProfileCardCreator": "Pencipta  {creatorName}",
+    "@characterProfileCardCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileCardSearchHint": "Cari watak dan mulakan pertemuan  🦋",
+    "characterProfileScanToDownload": "Imbas untuk Muat Turun",
+    "characterProfileShareTitle": "Kongsi watak “{characterName}”",
+    "@characterProfileShareTitle": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareSubject": "Temui {characterName} di LoveyDovey",
+    "@characterProfileShareSubject": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareFailed": "Gagal menghasilkan kad jemputan. Sila cuba lagi kemudian",
+    "characterProfilePrivateShareUnavailable": "Watak peribadi tidak boleh dikongsi buat masa ini",
+    "characterProfileShareCard": "Kongsi Kad Jemputan",
+    "characterProfileShareCharacter": "Kongsi Watak",
+    "characterProfileReportCharacter": "Laporkan Watak",
+    "characterProfileTranslate": "Terjemah"
 }

@@ -1300,7 +1300,7 @@
   },
   "tab_heartbeat_diary": "설렘 일기",
   "tab_daily_chit_chat": "소소한 일상 대화",
-  "task_desc_chat_3_times": "캐릭터와 3번의 일상 대화 나누기",
+  "task_desc_chat_3_times": "일상 모드에서 캐릭터와 3회 대화하기",
   "tab_story_progression": "스토리 진행",
   "task_desc_story_1_time": "스토리 모드 상호작용 1회 완료",
   "tab_social_tour": "소셜 투어",
@@ -2380,5 +2380,426 @@
   },
   "mailCaseNumber": "문의 번호",
   "mailCopyCaseNumber": "문의 번호 복사",
-  "mailCaseNumberCopied": "문의 번호가 복사되었습니다"
+  "mailCaseNumberCopied": "문의 번호가 복사되었습니다",
+  "profilePageAboutMe": "📝 내 소개",
+  "profilePageTabBio": "자기소개",
+  "profilePageTabCharacters": "캐릭터",
+  "profilePageTabMoments": "게시물",
+  "profilePageEditProfile": "프로필 편집",
+  "profilePageFriends": "친구",
+  "profilePageWorks": "작품",
+  "profilePageFollowing": "팔로잉",
+  "profilePageFollowers": "팔로워",
+  "profilePageHeartbeatDiary": "두근두근 일기",
+  "profilePageEditCharacter": "캐릭터 편집",
+  "profilePagePreviewCharacter": "캐릭터 프로필 미리 보기",
+  "profilePageNoBio": "아직 자기소개가 없습니다",
+  "profilePageNoBioHint": "눌러서 자기소개를 작성해 보세요.",
+  "profilePageCreateCharacter": "새 캐릭터 만들기",
+  "profilePageNoCharacters": "아직 만든 캐릭터가 없습니다",
+  "profilePageNoCharactersHint": "첫 번째 캐릭터를 만들어 보세요.",
+  "profilePageCharacterActions": "캐릭터 작업",
+  "profilePagePublic": "공개",
+  "profilePagePrivate": "비공개",
+  "profilePageCreator": "크리에이터",
+  "profilePageSelectPostingIdentity": "게시할 신분 선택",
+  "profilePagePostAsCreator": "크리에이터 본인으로 게시",
+  "profilePagePublicCharacter": "공개 캐릭터",
+  "profilePagePrivateCharacter": "비공개 캐릭터",
+  "profilePagePleaseSignIn": "먼저 로그인해 주세요",
+  "profilePagePublishMoment": "게시물 등록",
+  "profilePageFilterAll": "전체",
+  "profilePageFilterCreator": "본인",
+  "profilePageFilterCharacter": "캐릭터",
+  "profilePageMomentsLoadFailed": "게시물을 불러오지 못했습니다",
+  "profilePageTryAgainLater": "잠시 후 다시 시도해 주세요.",
+  "profilePageNoCreatorMoments": "아직 본인이 게시한 게시물이 없습니다",
+  "profilePageNoCreatorMomentsHint": "크리에이터 신분으로 게시한 콘텐츠가 여기에 표시됩니다.",
+  "profilePageNoCharacterMoments": "아직 캐릭터가 게시한 게시물이 없습니다",
+  "profilePageNoCharacterMomentsHint": "캐릭터 신분으로 게시한 콘텐츠가 여기에 표시됩니다.",
+  "profilePageNoMoments": "아직 게시물이 없습니다",
+  "profilePageNoMomentsHint": "본인과 캐릭터가 게시한 콘텐츠가 여기에 표시됩니다.",
+  "profilePageDeleteMomentTitle": "게시물 삭제",
+  "profilePageDeleteMomentConfirm": "이 게시물을 영구적으로 삭제하시겠습니까?",
+  "profilePageCancel": "취소",
+  "profilePageDelete": "삭제",
+  "profilePageMomentDeleted": "게시물이 삭제되었습니다",
+  "profilePageDeleteFailed": "삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  "profilePageReferralCompleted": "별의 초대가 완료되었습니다",
+  "profilePageInviter": "초대한 사람: {inviterId}",
+  "@profilePageInviter": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralRewardReceived": "양쪽 모두 꽃 50개를 받았습니다",
+  "profilePageClaimed": "수령 완료",
+  "profilePageInviterBound": "초대한 사람이 등록되었습니다: {inviterId}",
+  "@profilePageInviterBound": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralProgressHint": "채팅 메시지 15개를 완료하면 양쪽 모두 꽃 50개씩 받습니다",
+  "profilePageAlreadyCheckedIn": "오늘은 이미 출석 체크를 했습니다",
+  "profilePageReferralBindFailed": "등록하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  "profilePageCharacterNotFound": "이 캐릭터의 데이터를 찾을 수 없습니다",
+  "periodGuideTitle": "생리 일기는 어떻게 사용하나요?",
+  "periodGuideContent": "① 먼저 달력에서 날짜를 선택하세요.\n② ‘오늘 시작했어요’, ‘아직 생리 중이에요’ 또는 ‘오늘 끝났어요’를 선택하세요.\n③ 오늘의 기분과 몸 상태를 선택하세요. 직접 내용을 추가할 수도 있습니다.\n④ 저장을 누르면 채팅할 때 캐릭터가 오늘의 상태를 이해할 수 있습니다.\n\n예상 날짜는 이전 기록에 따라 조정되며, 일상 기록을 위한 참고용으로만 제공됩니다.",
+  "periodGotIt": "알겠어요",
+  "periodSelectAtLeastOne": "기록할 항목을 하나 이상 선택해 주세요",
+  "periodFutureDateError": "미래 날짜에는 생리 상태를 표시할 수 없습니다.",
+  "periodAlreadyOngoingError": "이미 진행 중인 생리 기록이 있습니다. 먼저 해당 기록을 종료해 주세요.",
+  "periodNoOngoingError": "현재 진행 중인 생리 기록이 없습니다. 먼저 ‘오늘 시작했어요’를 선택해 주세요.",
+  "periodBeforeStartError": "이번 생리 시작일보다 이전 날짜를 선택할 수 없습니다.",
+  "periodEndBeforeStartError": "종료일은 시작일보다 빠를 수 없습니다.",
+  "periodRecordSaved": "{date}의 기록을 저장했습니다",
+  "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+  "periodSaveFailed": "저장하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "periodDeleteTitle": "이번 생리 기록을 삭제할까요?",
+  "periodDeleteContent": "삭제하면 평균 주기와 다음 예상일도 다시 계산됩니다.",
+  "periodCancel": "취소",
+  "periodDelete": "삭제",
+  "periodNoOngoing": "현재 진행 중인 생리 기록이 없습니다",
+  "periodDayCount": "생리 {count}일째",
+  "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+  "periodHelp": "사용 방법",
+  "periodAverageCycle": "평균 주기",
+  "periodAverageDuration": "평균 생리 기간",
+  "periodDays": "{count}일",
+  "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodNextPrediction": "다음 예상일",
+  "periodCalculatedAfterRecording": "기록 후 계산",
+  "periodInsufficientData": "현재 데이터가 부족하여 임시로 28일 주기와 5일의 생리 기간을 기준으로 예상합니다.",
+  "periodPredictionDisclaimer": "현재 기록을 기반으로 예상한 날짜이며, 일상 기록을 위한 참고용으로만 제공됩니다.",
+  "periodStartedToday": "🩸 오늘 시작했어요",
+  "periodStillOngoing": "아직 생리 중이에요",
+  "periodEndedToday": "오늘 끝났어요",
+  "periodDateNotReached": "아직 오지 않은 날이에요～",
+  "periodDateBeforeStart": "이 날짜는 현재 생리 시작일보다 이전입니다.",
+  "periodMoodOkay": "괜찮아요",
+  "periodMoodHappy": "행복해요",
+  "periodMoodLow": "우울해요",
+  "periodMoodUnwell": "힘들어요",
+  "periodMoodIrritable": "짜증 나요",
+  "periodMoodTired": "피곤해요",
+  "periodMoodAnxious": "불안해요",
+  "periodSymptomAbdominalPain": "복통",
+  "periodSymptomLowerBackPain": "허리 통증",
+  "periodSymptomHeadache": "두통",
+  "periodSymptomBreastTenderness": "가슴 통증",
+  "periodSymptomSwelling": "부종",
+  "periodSymptomSleepy": "졸림",
+  "periodSymptomIncreasedAppetite": "식욕 증가",
+  "periodSymptomDigestiveDiscomfort": "소화 불편",
+  "periodDiaryTitle": "{characterName}의 다정한 일기",
+  "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodLoadFailed": "기록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "periodWeekdaySun": "일",
+  "periodWeekdayMon": "월",
+  "periodWeekdayTue": "화",
+  "periodWeekdayWed": "수",
+  "periodWeekdayThu": "목",
+  "periodWeekdayFri": "금",
+  "periodWeekdaySat": "토",
+  "periodSaveInstruction": "상태를 선택한 후 맨 아래의 ‘오늘의 기록 저장’을 눌러야 정상적으로 저장됩니다.",
+  "periodTodayMood": "오늘의 기분(복수 선택 가능)",
+  "periodMoodDescription": "해당 날짜의 일기 항목이며 달력에 표시되는 아이콘이 아닙니다.",
+  "periodOtherMood": "다른 기분",
+  "periodOtherMoodHint": "예: 서운함, 불안함……",
+  "periodTodaySymptoms": "오늘의 몸 상태(복수 선택 가능)",
+  "periodOtherSymptom": "다른 몸 상태",
+  "periodOtherSymptomHint": "예: 추위를 느낌, 입맛이 없음……",
+  "periodNoteForCharacter": "{characterName}에게 알려주고 싶은 내용(선택 사항)",
+  "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodNoteHint": "예: 오늘은 조용히 쉬고 싶으니 재촉하지 않았으면 좋겠어……",
+  "periodSaving": "저장 중…",
+  "periodSaveToday": "오늘의 기록 저장",
+  "periodHistory": "생리 기록",
+  "periodOngoing": "진행 중",
+  "periodTotalDays": "총 {count}일",
+  "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodDeleteRecord": "기록 삭제",
+  "privateProfilePleaseSignIn": "먼저 로그인해 주세요",
+  "privateProfileLoreLoadFailed": "기억 조각을 불러오지 못했습니다: {error}",
+  "@privateProfileLoreLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "privateProfileWriteNewLore": "새 기억 조각 작성 ({count} / {limit})",
+  "@privateProfileWriteNewLore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
+    }
+  },
+  "privateProfileNoLore": "아직 기억 조각이 없습니다",
+  "privateProfileNoLoreHint": "여기에서 테스트 설정, 이야기의 단서와 캐릭터의 중요한 기억을 정리할 수 있습니다.",
+  "privateProfileUntitledLore": "제목 없는 조각",
+  "privateProfileEdit": "편집",
+  "privateProfileDelete": "삭제",
+  "privateProfileAddLore": "기억 조각 추가",
+  "privateProfileLoreTitle": "제목",
+  "privateProfileLoreTeaser": "간단한 힌트",
+  "privateProfileLoreContent": "전체 내용",
+  "privateProfileLockLore": "조각 잠금",
+  "privateProfileLockLoreHint": "비공개 캐릭터는 현재 크리에이터만 볼 수 있습니다. 캐릭터를 공개한 후에도 사용할 수 있도록 이 항목은 유지됩니다.",
+  "privateProfileCancel": "취소",
+  "privateProfileTitleContentRequired": "제목과 내용을 입력해 주세요",
+  "privateProfileLoreAdded": "기억 조각이 추가되었습니다",
+  "privateProfileAddFailed": "추가하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "privateProfilePublish": "공개",
+  "privateProfileDeleteLoreTitle": "기억 조각 삭제",
+  "privateProfileDeleteLoreConfirm": "이 기억 조각을 영구적으로 삭제하시겠습니까?",
+  "privateProfileLoreDeleted": "기억 조각이 삭제되었습니다",
+  "privateProfileDeleteFailed": "삭제하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "privateProfileEditLore": "기억 조각 편집",
+  "privateProfileSave": "저장",
+  "editProfileBirthdayReminderTitle": "🎂 잠깐 알려드려요",
+  "editProfileBirthdayReminderContent": "생일은 캐릭터의 생일 축하, 생일 선물 및 관련 이벤트에 영향을 줍니다.\n\n향후 생일 보상에 영향을 주지 않도록\n생일을 확인한 후 설정을 완료하는 것을 권장합니다.",
+  "editProfileGotIt": "알겠어요",
+  "editProfileBirthdayConfirmTitle": "🎂 생일 확인",
+  "editProfileBirthdayConfirmContent": "생일이 정확한지 확인해 주세요.\n\n생일은 생일 축하, 생일 선물 및 관련 이벤트에 사용됩니다.\n\n생일 보상의 중복 수령을 방지하기 위해 설정을 완료한 후에는 생일을 다시 변경할 수 없습니다.\n\n이 생일을 사용하시겠습니까?",
+  "editProfileReturnToEdit": "수정으로 돌아가기",
+  "editProfileConfirmSetting": "설정 확인",
+  "editProfileDefaultNickname": "처음 만난 여행자",
+  "editProfileNoChanges": "저장할 변경 사항이 없습니다",
+  "editProfileCreateFailed": "데이터를 생성하지 못했습니다: {error}",
+  "@editProfileCreateFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileAvatarNumber": "프로필 이미지 {number}",
+  "@editProfileAvatarNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "editProfileImageSelectionFailed": "이미지를 선택하지 못했습니다. 다른 이미지를 선택해 주세요",
+  "editProfileCancel": "취소",
+  "editProfileConfirm": "확인",
+  "editProfileImageProcessingFailed": "이미지를 처리하지 못했습니다. 다른 이미지를 선택해 주세요",
+  "editProfileLoadFailed": "데이터를 불러오지 못했습니다: {error}",
+  "@editProfileLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileBioLabel": "자기소개",
+  "editProfileBioHelper": "본인이나 창작 스타일을 간단히 소개해 주세요",
+  "editProfileBioHint": "예: 판타지, 집착형, 몰입형 연애 캐릭터를 만드는 것을 좋아합니다.",
+  "editProfileUserNotFound": "사용자를 찾을 수 없습니다",
+  "editProfileGenerateIdFailed": "플레이어 ID를 생성하지 못했습니다. 다시 시도해 주세요",
+  "editProfileSignedInUserNotFound": "현재 로그인한 사용자를 찾을 수 없습니다",
+  "editProfileAvatarReadFailed": "프로필 이미지를 불러오지 못했습니다. 상태 코드: {statusCode}",
+  "@editProfileAvatarReadFailed": {
+    "placeholders": {
+      "statusCode": { "type": "int" }
+    }
+  },
+  "editProfileAvatarFileNotFound": "선택한 프로필 이미지 파일을 찾을 수 없습니다: {path}",
+  "@editProfileAvatarFileNotFound": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "editProfileAvatarEmpty": "프로필 이미지 데이터가 비어 있습니다",
+  "chatPageSendFailed": "전송하지 못했습니다. 잠시 후 다시 시도해 주세요 😢",
+  "chatPageRegenerateFailed": "다시 생성하지 못했습니다. 기존 메시지는 유지되었습니다. 다시 시도해 주세요.",
+  "chatPageRegenerating": "💭 다시 생각하는 중...",
+  "chatPageThinkingTooLong": "생각에 잠긴 것 같아요. 잠시 후 다시 시도해 주세요……",
+  "chatPageAlreadyReplying": "답변 중입니다. 잠시 기다려 주시고 중복으로 전송하지 마세요",
+  "chatPageMediaUploadFailed": "미디어를 업로드하지 못했습니다. 다시 시도해 주세요",
+  "chatPageReportReceived": "신고해 주셔서 감사합니다. 최대한 빨리 확인하겠습니다",
+  "chatPageMessagesDeleted": "✅ 메시지 {count}개를 삭제했습니다",
+  "@chatPageMessagesDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSelectPhotoFailed": "사진을 선택할 수 없습니다: {error}",
+  "@chatPageSelectPhotoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFound": "녹음 파일을 찾을 수 없습니다",
+  "chatPageRecordingEmpty": "녹음 파일이 비어 있습니다",
+  "chatPageAudioPlaybackFailed": "오디오를 재생하지 못했습니다: {error}",
+  "@chatPageAudioPlaybackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageMicrophonePermissionRequired": "녹음하려면 마이크 권한이 필요합니다",
+  "chatPageStartRecordingFailed": "녹음을 시작할 수 없습니다: {error}",
+  "@chatPageStartRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingCreationFailed": "녹음 파일을 생성하지 못했습니다. 다시 녹음해 주세요",
+  "chatPageRecordingFailed": "녹음하지 못했습니다: {error}",
+  "@chatPageRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFoundRetry": "녹음 파일을 찾을 수 없습니다. 다시 녹음해 주세요",
+  "chatPageRecordingEmptyRetry": "녹음 파일이 비어 있습니다. 다시 녹음해 주세요",
+  "chatPageNoRecordingToSend": "전송할 수 있는 녹음이 없습니다",
+  "chatPagePointCost": "{count}포인트",
+  "@chatPagePointCost": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageVoiceUploading": "음성을 업로드하는 중……",
+  "chatPageChangeWatermarkColor": "워터마크 색상 변경",
+  "chatPageMinutesSeconds": "{minutes}분 {seconds}초",
+  "@chatPageMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSeconds": "{seconds}초",
+  "@chatPageSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "characterEditSelectSupportingCharacter": "조연 캐릭터를 선택해 주세요.",
+  "characterEditSelectGender": "캐릭터의 성별을 선택해 주세요.",
+  "characterEditCharacterSettings": "캐릭터 설정",
+  "characterEditWorldview": "세계관",
+  "characterEditSettingsMinLength": "캐릭터 설정을 10자 이상 입력해 주세요.",
+  "characterEditWorldviewMinLength": "세계관을 20자 이상 입력해 주세요.",
+  "characterEditSupportingCharacters": "조연 캐릭터",
+  "characterEditCharacterImage": "캐릭터 이미지",
+  "characterEditWorldviewHint": "세계의 배경, 역사, 시대, 지역, 세력, 제도, 기술, 마법과 규칙을 설명해 주세요.",
+  "characterEditSettingsHint": "캐릭터의 성격, 가치관, 사고방식, 감정적 반응, 행동 습관, 말투와 핵심 신념을 설명해 주세요.",
+  "characterEditUnknownCharacter": "알 수 없는 캐릭터",
+  "characterEditEditSupportingCharacter": "조연 캐릭터 편집",
+  "characterEditAddSupportingCharacter": "조연 캐릭터 추가",
+  "characterEditSupportingCharacterName": "조연 캐릭터 이름",
+  "characterEditGender": "성별",
+  "characterEditMale": "남성",
+  "characterEditFemale": "여성",
+  "characterEditOther": "기타",
+  "characterEditAge": "나이",
+  "characterEditIdentityOccupation": "신분／직업",
+  "characterEditRelationshipWithMain": "주요 캐릭터와의 관계",
+  "characterEditRelationshipHint": "주요 캐릭터와의 과거, 입장, 감정, 비밀과 현재 관계를 설명해 주세요.",
+  "characterEditCharacterProfile": "인물 설정",
+  "characterEditCharacterProfileHint": "성격, 외모, 습관, 가치관, 능력, 선호하는 것, 싫어하는 것과 중요한 경험을 설명해 주세요.",
+  "characterEditSpeakingStyle": "말투",
+  "characterEditSpeakingStyleHint": "예: 말이 빠르고, 자주 태클을 걸며, 직설적으로 말함.",
+  "characterEditSupportingNameRequired": "조연 캐릭터의 이름을 입력해 주세요.",
+  "characterEditSupportingGenderRequired": "조연 캐릭터의 성별을 선택해 주세요.",
+  "characterEditProfileRequired": "인물 설정을 입력해 주세요.",
+  "characterEditRelationshipTooLong": "주요 캐릭터와의 관계가 1,500자를 초과했습니다.",
+  "characterEditProfileTooLong": "인물 설정이 1,500자를 초과했습니다.",
+  "characterEditSave": "저장",
+  "characterEditAdd": "추가",
+  "creatorProfileNoBio": "아직 자기소개가 없습니다",
+  "creatorProfileNoBioHint": "이 크리에이터는 아직 자기소개를 작성하지 않았습니다.",
+  "creatorProfileNoCreatorMoments": "크리에이터가 아직 게시물을 올리지 않았습니다",
+  "creatorProfileNoCreatorMomentsHint": "크리에이터 본인으로 공개한 콘텐츠가 여기에 표시됩니다.",
+  "creatorProfileNoCharacterMoments": "소속 캐릭터가 아직 게시물을 올리지 않았습니다",
+  "creatorProfileNoCharacterMomentsHint": "소속 공개 캐릭터가 게시한 콘텐츠가 여기에 표시됩니다.",
+  "creatorProfileNoPublicMoments": "아직 공개 게시물이 없습니다",
+  "creatorProfileNoPublicMomentsHint": "크리에이터 본인과 소속 캐릭터가 게시한 공개 콘텐츠가 여기에 표시됩니다.",
+  "creatorProfilePublicWorks": "공개 작품",
+  "creatorProfileLikesReceived": "받은 좋아요",
+  "creatorProfileFollow": "팔로우",
+  "creatorProfileFollowing": "팔로잉",
+  "creatorProfileUnfollowed": "팔로우를 취소했습니다",
+  "creatorProfileFollowedCreator": "{creatorName} 님을 팔로우했습니다",
+  "@creatorProfileFollowedCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "creatorProfileOperationFailed": "작업하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "creatorProfileWorksLoadFailed": "작품을 불러오지 못했습니다: {error}",
+  "@creatorProfileWorksLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareInvitation": "🦋 LoveyDovey에서 온 만남의 초대장",
+  "characterProfileShareCreator": "✦ 크리에이터: {creatorName}",
+  "@characterProfileShareCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareMessage": "LoveyDovey에서 ‘{characterName}’을 검색하고 두 사람만의 이야기를 시작해 보세요.",
+  "@characterProfileShareMessage": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileInvitationLabel": "캐릭터 초대 카드",
+  "characterProfileCardCreator": "크리에이터  {creatorName}",
+  "@characterProfileCardCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileCardSearchHint": "캐릭터를 검색하고 만남을 시작하세요  🦋",
+  "characterProfileScanToDownload": "스캔하여 다운로드",
+  "characterProfileShareTitle": "캐릭터 ‘{characterName}’ 공유",
+  "@characterProfileShareTitle": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareSubject": "LoveyDovey에서 {characterName}을 만나 보세요",
+  "@characterProfileShareSubject": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareFailed": "초대 카드를 생성하지 못했습니다. 잠시 후 다시 시도해 주세요",
+  "characterProfilePrivateShareUnavailable": "비공개 캐릭터는 현재 공유할 수 없습니다",
+  "characterProfileShareCard": "초대 카드 공유",
+  "characterProfileShareCharacter": "캐릭터 공유",
+  "characterProfileReportCharacter": "캐릭터 신고",
+  "characterProfileTranslate": "번역"
 }

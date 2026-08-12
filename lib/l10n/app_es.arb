@@ -1301,7 +1301,7 @@
     },
     "tab_heartbeat_diary": "Diario de latidos",
     "tab_daily_chit_chat": "Charla diaria",
-    "task_desc_chat_3_times": "Chatea 3 veces con un personaje",
+    "task_desc_chat_3_times": "Chatea 3 veces con un personaje en el modo cotidiano",
     "tab_story_progression": "Progreso de la historia",
     "task_desc_story_1_time": "Completa 1 interacción en el modo historia",
     "tab_social_tour": "Tour social",
@@ -2380,5 +2380,426 @@
     },
     "mailCaseNumber": "Número de caso",
     "mailCopyCaseNumber": "Copiar número de caso",
-    "mailCaseNumberCopied": "Número de caso copiado"
+    "mailCaseNumberCopied": "Número de caso copiado",
+    "profilePageAboutMe": "📝 Sobre mí",
+    "profilePageTabBio": "Biografía",
+    "profilePageTabCharacters": "Personajes",
+    "profilePageTabMoments": "Publicaciones",
+    "profilePageEditProfile": "Editar perfil",
+    "profilePageFriends": "Amigos",
+    "profilePageWorks": "Obras",
+    "profilePageFollowing": "Siguiendo",
+    "profilePageFollowers": "Seguidores",
+    "profilePageHeartbeatDiary": "Diario del corazón",
+    "profilePageEditCharacter": "Editar personaje",
+    "profilePagePreviewCharacter": "Vista previa del perfil del personaje",
+    "profilePageNoBio": "Aún no hay biografía",
+    "profilePageNoBioHint": "Toca para escribir algo sobre ti.",
+    "profilePageCreateCharacter": "Crear un personaje nuevo",
+    "profilePageNoCharacters": "Aún no has creado personajes",
+    "profilePageNoCharactersHint": "Empieza a crear tu primer personaje.",
+    "profilePageCharacterActions": "Acciones del personaje",
+    "profilePagePublic": "Público",
+    "profilePagePrivate": "Privado",
+    "profilePageCreator": "Creador",
+    "profilePageSelectPostingIdentity": "Seleccionar identidad de publicación",
+    "profilePagePostAsCreator": "Publicar como creador",
+    "profilePagePublicCharacter": "Personaje público",
+    "profilePagePrivateCharacter": "Personaje privado",
+    "profilePagePleaseSignIn": "Inicia sesión primero",
+    "profilePagePublishMoment": "Publicar",
+    "profilePageFilterAll": "Todo",
+    "profilePageFilterCreator": "Yo",
+    "profilePageFilterCharacter": "Personajes",
+    "profilePageMomentsLoadFailed": "No se pudieron cargar las publicaciones",
+    "profilePageTryAgainLater": "Inténtalo de nuevo más tarde.",
+    "profilePageNoCreatorMoments": "Aún no has publicado nada",
+    "profilePageNoCreatorMomentsHint": "El contenido publicado como creador aparecerá aquí.",
+    "profilePageNoCharacterMoments": "Tus personajes aún no han publicado nada",
+    "profilePageNoCharacterMomentsHint": "El contenido publicado como personaje aparecerá aquí.",
+    "profilePageNoMoments": "Aún no hay publicaciones",
+    "profilePageNoMomentsHint": "Las publicaciones tuyas y de tus personajes aparecerán aquí.",
+    "profilePageDeleteMomentTitle": "Eliminar publicación",
+    "profilePageDeleteMomentConfirm": "¿Seguro que quieres eliminar permanentemente esta publicación?",
+    "profilePageCancel": "Cancelar",
+    "profilePageDelete": "Eliminar",
+    "profilePageMomentDeleted": "Publicación eliminada",
+    "profilePageDeleteFailed": "No se pudo eliminar. Inténtalo de nuevo más tarde.",
+    "profilePageReferralCompleted": "Invitación estelar completada",
+    "profilePageInviter": "Invitador: {inviterId}",
+    "@profilePageInviter": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralRewardReceived": "Ambas partes han recibido 50 Flores",
+    "profilePageClaimed": "Recibido",
+    "profilePageInviterBound": "Invitador vinculado: {inviterId}",
+    "@profilePageInviterBound": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralProgressHint": "Después de completar 15 mensajes de chat, ambas partes recibirán 50 Flores cada una",
+    "profilePageAlreadyCheckedIn": "Ya has registrado tu asistencia hoy",
+    "profilePageReferralBindFailed": "No se pudo realizar la vinculación. Inténtalo de nuevo más tarde.",
+    "profilePageCharacterNotFound": "No se encontraron los datos de este personaje",
+    "periodGuideTitle": "¿Cómo se usa el diario menstrual?",
+    "periodGuideContent": "① Primero, selecciona una fecha en el calendario.\n② Selecciona «Empezó hoy», «Aún tengo el periodo» o «Terminó hoy».\n③ Selecciona tu estado de ánimo y condición física del día. También puedes añadir tus propias notas.\n④ Pulsa Guardar para que el personaje pueda comprender cómo te sientes hoy mientras habla contigo.\n\nLas fechas previstas se ajustarán según tu historial y solo sirven como referencia para tu registro personal.",
+    "periodGotIt": "Entendido",
+    "periodSelectAtLeastOne": "Selecciona al menos un elemento para registrar",
+    "periodFutureDateError": "No se puede marcar el estado del periodo en una fecha futura.",
+    "periodAlreadyOngoingError": "Ya hay un periodo en curso. Finalízalo primero.",
+    "periodNoOngoingError": "Actualmente no hay ningún periodo en curso. Selecciona primero «Empezó hoy».",
+    "periodBeforeStartError": "La fecha no puede ser anterior al inicio del periodo actual.",
+    "periodEndBeforeStartError": "La fecha de finalización no puede ser anterior a la fecha de inicio.",
+    "periodRecordSaved": "Se guardó el registro del {date}",
+    "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+    "periodSaveFailed": "No se pudo guardar. Inténtalo de nuevo más tarde.",
+    "periodDeleteTitle": "¿Eliminar este registro menstrual?",
+    "periodDeleteContent": "Después de eliminarlo, se volverán a calcular el promedio del ciclo y la próxima predicción.",
+    "periodCancel": "Cancelar",
+    "periodDelete": "Eliminar",
+    "periodNoOngoing": "Actualmente no hay ningún periodo en curso",
+    "periodDayCount": "Día {count} del periodo",
+    "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+    "periodHelp": "Cómo usarlo",
+    "periodAverageCycle": "Ciclo promedio",
+    "periodAverageDuration": "Duración promedio",
+    "periodDays": "{count} días",
+    "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodNextPrediction": "Próxima predicción",
+    "periodCalculatedAfterRecording": "Se calculará después del registro",
+    "periodInsufficientData": "Actualmente no hay suficientes datos. Por ahora, se calculará usando un ciclo de 28 días y un periodo de 5 días.",
+    "periodPredictionDisclaimer": "La predicción se basa en los registros existentes. Las fechas solo sirven como referencia para tu registro personal.",
+    "periodStartedToday": "🩸 Empezó hoy",
+    "periodStillOngoing": "Aún tengo el periodo",
+    "periodEndedToday": "Terminó hoy",
+    "periodDateNotReached": "Ese día todavía no ha llegado～",
+    "periodDateBeforeStart": "Esta fecha es anterior al inicio del periodo actual.",
+    "periodMoodOkay": "Bastante bien",
+    "periodMoodHappy": "Feliz",
+    "periodMoodLow": "Desanimada",
+    "periodMoodUnwell": "Malestar",
+    "periodMoodIrritable": "Irritable",
+    "periodMoodTired": "Cansada",
+    "periodMoodAnxious": "Ansiosa",
+    "periodSymptomAbdominalPain": "Dolor abdominal",
+    "periodSymptomLowerBackPain": "Dolor lumbar",
+    "periodSymptomHeadache": "Dolor de cabeza",
+    "periodSymptomBreastTenderness": "Sensibilidad en los senos",
+    "periodSymptomSwelling": "Hinchazón",
+    "periodSymptomSleepy": "Somnolencia",
+    "periodSymptomIncreasedAppetite": "Aumento del apetito",
+    "periodSymptomDigestiveDiscomfort": "Malestar digestivo",
+    "periodDiaryTitle": "El diario atento de {characterName}",
+    "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodLoadFailed": "No se pudieron cargar los registros. Inténtalo de nuevo más tarde.",
+    "periodWeekdaySun": "Dom",
+    "periodWeekdayMon": "Lun",
+    "periodWeekdayTue": "Mar",
+    "periodWeekdayWed": "Mié",
+    "periodWeekdayThu": "Jue",
+    "periodWeekdayFri": "Vie",
+    "periodWeekdaySat": "Sáb",
+    "periodSaveInstruction": "Después de seleccionar un estado, pulsa «Guardar el registro de hoy» en la parte inferior para guardarlo.",
+    "periodTodayMood": "Estado de ánimo de hoy (puedes seleccionar varios)",
+    "periodMoodDescription": "Estas son anotaciones del diario de ese día, no iconos que se muestran en el calendario.",
+    "periodOtherMood": "Otro estado de ánimo",
+    "periodOtherMoodHint": "Por ejemplo: herida, insegura……",
+    "periodTodaySymptoms": "Estado físico de hoy (puedes seleccionar varios)",
+    "periodOtherSymptom": "Otro estado físico",
+    "periodOtherSymptomHint": "Por ejemplo: sensación de frío, falta de apetito……",
+    "periodNoteForCharacter": "Lo que quieres que sepa {characterName} (opcional)",
+    "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodNoteHint": "Por ejemplo: hoy quiero descansar tranquilamente y no quiero que me presionen……",
+    "periodSaving": "Guardando…",
+    "periodSaveToday": "Guardar el registro de hoy",
+    "periodHistory": "Historial menstrual",
+    "periodOngoing": "En curso",
+    "periodTotalDays": "{count} días en total",
+    "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodDeleteRecord": "Eliminar registro",
+    "privateProfilePleaseSignIn": "Inicia sesión primero",
+    "privateProfileLoreLoadFailed": "No se pudieron cargar los Fragmentos de Memoria: {error}",
+    "@privateProfileLoreLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "privateProfileWriteNewLore": "Escribir un nuevo Fragmento de Memoria ({count} / {limit})",
+    "@privateProfileWriteNewLore": {
+        "placeholders": {
+            "count": { "type": "int" },
+            "limit": { "type": "int" }
+        }
+    },
+    "privateProfileNoLore": "Aún no hay Fragmentos de Memoria",
+    "privateProfileNoLoreHint": "Aquí puedes organizar configuraciones de prueba, pistas de la historia y recuerdos importantes del personaje.",
+    "privateProfileUntitledLore": "Fragmento sin título",
+    "privateProfileEdit": "Editar",
+    "privateProfileDelete": "Eliminar",
+    "privateProfileAddLore": "Añadir Fragmento de Memoria",
+    "privateProfileLoreTitle": "Título",
+    "privateProfileLoreTeaser": "Pista breve",
+    "privateProfileLoreContent": "Contenido completo",
+    "privateProfileLockLore": "Bloquear fragmento",
+    "privateProfileLockLoreHint": "Actualmente, los personajes privados solo son visibles para sus creadores. Este campo se conservará para utilizarlo si el personaje se hace público.",
+    "privateProfileCancel": "Cancelar",
+    "privateProfileTitleContentRequired": "Introduce el título y el contenido",
+    "privateProfileLoreAdded": "Fragmento de Memoria añadido",
+    "privateProfileAddFailed": "No se pudo añadir. Inténtalo de nuevo más tarde.",
+    "privateProfilePublish": "Publicar",
+    "privateProfileDeleteLoreTitle": "Eliminar Fragmento de Memoria",
+    "privateProfileDeleteLoreConfirm": "¿Seguro que quieres eliminar permanentemente este Fragmento de Memoria?",
+    "privateProfileLoreDeleted": "Fragmento de Memoria eliminado",
+    "privateProfileDeleteFailed": "No se pudo eliminar. Inténtalo de nuevo más tarde.",
+    "privateProfileEditLore": "Editar Fragmento de Memoria",
+    "privateProfileSave": "Guardar",
+    "editProfileBirthdayReminderTitle": "🎂 Un pequeño recordatorio",
+    "editProfileBirthdayReminderContent": "Tu cumpleaños influirá en las felicitaciones de los personajes, los regalos de cumpleaños y los eventos relacionados.\n\nTe recomendamos confirmar tu cumpleaños antes de completar la configuración\npara evitar que se vean afectadas las futuras recompensas de cumpleaños.",
+    "editProfileGotIt": "Entendido",
+    "editProfileBirthdayConfirmTitle": "🎂 Confirmar cumpleaños",
+    "editProfileBirthdayConfirmContent": "Comprueba que tu cumpleaños sea correcto.\n\nTu cumpleaños se utilizará para las felicitaciones, los regalos de cumpleaños y los eventos relacionados.\n\nPara evitar que las recompensas de cumpleaños se reciban más de una vez, no podrás volver a modificar tu cumpleaños después de completar la configuración.\n\n¿Seguro que quieres usar este cumpleaños?",
+    "editProfileReturnToEdit": "Volver a editar",
+    "editProfileConfirmSetting": "Confirmar",
+    "editProfileDefaultNickname": "Viajero recién llegado",
+    "editProfileNoChanges": "No hay cambios que guardar",
+    "editProfileCreateFailed": "No se pudieron crear los datos: {error}",
+    "@editProfileCreateFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileAvatarNumber": "Avatar {number}",
+    "@editProfileAvatarNumber": {
+        "placeholders": {
+            "number": { "type": "int" }
+        }
+    },
+    "editProfileImageSelectionFailed": "No se pudo seleccionar la imagen. Selecciona otra.",
+    "editProfileCancel": "Cancelar",
+    "editProfileConfirm": "Confirmar",
+    "editProfileImageProcessingFailed": "No se pudo procesar la imagen. Selecciona otra.",
+    "editProfileLoadFailed": "No se pudieron cargar los datos: {error}",
+    "@editProfileLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileBioLabel": "Biografía",
+    "editProfileBioHelper": "Preséntate brevemente o describe tu estilo creativo",
+    "editProfileBioHint": "Por ejemplo: me gusta crear personajes románticos de fantasía, obsesivos e inmersivos.",
+    "editProfileUserNotFound": "No se encontró al usuario",
+    "editProfileGenerateIdFailed": "No se pudo generar el ID de jugador. Inténtalo de nuevo.",
+    "editProfileSignedInUserNotFound": "No se encontró al usuario que ha iniciado sesión",
+    "editProfileAvatarReadFailed": "No se pudo cargar el avatar. Código de estado: {statusCode}",
+    "@editProfileAvatarReadFailed": {
+        "placeholders": {
+            "statusCode": { "type": "int" }
+        }
+    },
+    "editProfileAvatarFileNotFound": "No se encontró el archivo de avatar seleccionado: {path}",
+    "@editProfileAvatarFileNotFound": {
+        "placeholders": {
+            "path": { "type": "String" }
+        }
+    },
+    "editProfileAvatarEmpty": "Los datos de la imagen del avatar están vacíos",
+    "chatPageSendFailed": "No se pudo enviar. Inténtalo de nuevo más tarde 😢",
+    "chatPageRegenerateFailed": "No se pudo volver a generar. El mensaje original se ha conservado. Inténtalo de nuevo.",
+    "chatPageRegenerating": "💭 Pensando de nuevo...",
+    "chatPageThinkingTooLong": "Parece estar absorto en sus pensamientos. Inténtalo de nuevo más tarde……",
+    "chatPageAlreadyReplying": "Está respondiendo. Espera un momento y no vuelvas a enviar el mensaje.",
+    "chatPageMediaUploadFailed": "No se pudieron subir los archivos multimedia. Inténtalo de nuevo.",
+    "chatPageReportReceived": "Gracias por tu reporte. Lo revisaremos lo antes posible.",
+    "chatPageMessagesDeleted": "✅ Se eliminaron correctamente {count} mensajes",
+    "@chatPageMessagesDeleted": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSelectPhotoFailed": "No se pudo seleccionar la foto: {error}",
+    "@chatPageSelectPhotoFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFound": "No se encontró el archivo de grabación",
+    "chatPageRecordingEmpty": "El archivo de grabación está vacío",
+    "chatPageAudioPlaybackFailed": "No se pudo reproducir el audio: {error}",
+    "@chatPageAudioPlaybackFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageMicrophonePermissionRequired": "Se necesita permiso para usar el micrófono y grabar audio",
+    "chatPageStartRecordingFailed": "No se pudo iniciar la grabación: {error}",
+    "@chatPageStartRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingCreationFailed": "No se pudo crear el archivo de grabación. Vuelve a grabarlo.",
+    "chatPageRecordingFailed": "No se pudo grabar: {error}",
+    "@chatPageRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFoundRetry": "No se encontró el archivo de grabación. Vuelve a grabarlo.",
+    "chatPageRecordingEmptyRetry": "El archivo de grabación está vacío. Vuelve a grabarlo.",
+    "chatPageNoRecordingToSend": "No hay ninguna grabación para enviar",
+    "chatPagePointCost": "{count} puntos",
+    "@chatPagePointCost": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageVoiceUploading": "Subiendo grabación de voz……",
+    "chatPageChangeWatermarkColor": "Cambiar el color de la marca de agua",
+    "chatPageMinutesSeconds": "{minutes} min {seconds} s",
+    "@chatPageMinutesSeconds": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSeconds": "{seconds} s",
+    "@chatPageSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "characterEditSelectSupportingCharacter": "Selecciona un personaje secundario.",
+    "characterEditSelectGender": "Selecciona el género del personaje.",
+    "characterEditCharacterSettings": "Configuración del personaje",
+    "characterEditWorldview": "Ambientación del mundo",
+    "characterEditSettingsMinLength": "La configuración del personaje debe contener al menos 10 caracteres.",
+    "characterEditWorldviewMinLength": "La ambientación del mundo debe contener al menos 20 caracteres.",
+    "characterEditSupportingCharacters": "Personajes secundarios",
+    "characterEditCharacterImage": "Imagen del personaje",
+    "characterEditWorldviewHint": "Describe el trasfondo, la historia, la época, las regiones, las facciones, los sistemas, la tecnología, la magia y las reglas del mundo.",
+    "characterEditSettingsHint": "Describe la personalidad, los valores, la forma de pensar, las reacciones emocionales, los hábitos, la forma de hablar y las creencias fundamentales del personaje.",
+    "characterEditUnknownCharacter": "Personaje desconocido",
+    "characterEditEditSupportingCharacter": "Editar personaje secundario",
+    "characterEditAddSupportingCharacter": "Añadir personaje secundario",
+    "characterEditSupportingCharacterName": "Nombre del personaje secundario",
+    "characterEditGender": "Género",
+    "characterEditMale": "Masculino",
+    "characterEditFemale": "Femenino",
+    "characterEditOther": "Otro",
+    "characterEditAge": "Edad",
+    "characterEditIdentityOccupation": "Identidad／Profesión",
+    "characterEditRelationshipWithMain": "Relación con el personaje principal",
+    "characterEditRelationshipHint": "Describe su pasado, postura, sentimientos, secretos y relación actual con el personaje principal.",
+    "characterEditCharacterProfile": "Perfil del personaje",
+    "characterEditCharacterProfileHint": "Describe la personalidad, el aspecto, los hábitos, los valores, las habilidades, las preferencias, las aversiones y las experiencias importantes del personaje.",
+    "characterEditSpeakingStyle": "Forma de hablar",
+    "characterEditSpeakingStyleHint": "Por ejemplo: habla rápido, hace comentarios sarcásticos y habla directamente.",
+    "characterEditSupportingNameRequired": "Introduce el nombre del personaje secundario.",
+    "characterEditSupportingGenderRequired": "Selecciona el género del personaje secundario.",
+    "characterEditProfileRequired": "Introduce el perfil del personaje.",
+    "characterEditRelationshipTooLong": "La relación con el personaje principal supera los 1,500 caracteres.",
+    "characterEditProfileTooLong": "El perfil del personaje supera los 1,500 caracteres.",
+    "characterEditSave": "Guardar",
+    "characterEditAdd": "Añadir",
+    "creatorProfileNoBio": "Aún no hay biografía",
+    "creatorProfileNoBioHint": "Este creador aún no ha añadido una presentación.",
+    "creatorProfileNoCreatorMoments": "El creador aún no ha publicado nada",
+    "creatorProfileNoCreatorMomentsHint": "El contenido público publicado como creador aparecerá aquí.",
+    "creatorProfileNoCharacterMoments": "Los personajes del creador aún no han publicado nada",
+    "creatorProfileNoCharacterMomentsHint": "El contenido publicado por los personajes públicos del creador aparecerá aquí.",
+    "creatorProfileNoPublicMoments": "Aún no hay publicaciones públicas",
+    "creatorProfileNoPublicMomentsHint": "Las publicaciones públicas del creador y sus personajes aparecerán aquí.",
+    "creatorProfilePublicWorks": "Obras públicas",
+    "creatorProfileLikesReceived": "Me gusta recibidos",
+    "creatorProfileFollow": "Seguir",
+    "creatorProfileFollowing": "Siguiendo",
+    "creatorProfileUnfollowed": "Has dejado de seguir",
+    "creatorProfileFollowedCreator": "Ahora sigues a {creatorName}",
+    "@creatorProfileFollowedCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "creatorProfileOperationFailed": "La operación no se pudo completar. Inténtalo de nuevo más tarde.",
+    "creatorProfileWorksLoadFailed": "No se pudieron cargar las obras: {error}",
+    "@creatorProfileWorksLoadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareInvitation": "🦋 Una invitación para conocerse de LoveyDovey",
+    "characterProfileShareCreator": "✦ Creador: {creatorName}",
+    "@characterProfileShareCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareMessage": "Busca «{characterName}» en LoveyDovey y comienza una historia que solo les pertenece a ustedes.",
+    "@characterProfileShareMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileInvitationLabel": "Tarjeta de invitación del personaje",
+    "characterProfileCardCreator": "Creador  {creatorName}",
+    "@characterProfileCardCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileCardSearchHint": "Busca al personaje y comienza el encuentro  🦋",
+    "characterProfileScanToDownload": "Escanea para descargar",
+    "characterProfileShareTitle": "Compartir el personaje «{characterName}»",
+    "@characterProfileShareTitle": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareSubject": "Conoce a {characterName} en LoveyDovey",
+    "@characterProfileShareSubject": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareFailed": "No se pudo crear la tarjeta de invitación. Inténtalo de nuevo más tarde.",
+    "characterProfilePrivateShareUnavailable": "Actualmente no se pueden compartir personajes privados",
+    "characterProfileShareCard": "Compartir tarjeta de invitación",
+    "characterProfileShareCharacter": "Compartir personaje",
+    "characterProfileReportCharacter": "Denunciar personaje",
+    "characterProfileTranslate": "Traducir"
 }

@@ -71,6 +71,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   }
 
   String _buildCharacterShareText() {
+    final l10n = AppLocalizations.of(context)!;
     final character = widget.character;
 
     final String characterName = character.name.trim();
@@ -86,7 +87,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
     final String appLink = _getCharacterShareAppLink();
 
     final buffer = StringBuffer()
-      ..writeln('🦋 一封來自《戀戀拾光》的相遇邀請')
+      ..writeln(l10n.characterProfileShareInvitation)
       ..writeln()
       ..writeln('「$characterName」')
       ..writeln();
@@ -99,13 +100,14 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
     if (hasCreatorName) {
       buffer
-        ..writeln('✦ 創作者：$creatorName')
+        ..writeln(
+          l10n.characterProfileShareCreator(creatorName),
+        )
         ..writeln();
     }
 
     buffer.write(
-      '在《戀戀拾光》搜尋「$characterName」，'
-      '開始這段只屬於你們的故事。',
+      l10n.characterProfileShareMessage(characterName),
     );
 
     if (appLink.isNotEmpty) {
@@ -262,14 +264,16 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       debugPrint('⚠️ 讀取創作者名稱失敗，暫用角色資料名稱：$e');
     }
 
-    if (resolvedCreatorName.isEmpty || resolvedCreatorName.contains('神秘創作者')) {
-      resolvedCreatorName = '創作者';
+    if (resolvedCreatorName.isEmpty ||
+        resolvedCreatorName.contains('神秘創作者') ||
+        resolvedCreatorName.contains('神祕創作者')) {
+      resolvedCreatorName = l10n.profilePageCreator;
     }
 
     if (currentUser == null) {
       ToastUtils.showCenterToast(
         context,
-        '請先登入',
+        l10n.profilePagePleaseSignIn,
         isError: true,
       );
       return;
@@ -334,7 +338,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
       ToastUtils.showCenterToast(
         context,
-        '追蹤操作失敗，請稍後再試',
+        l10n.creatorProfileOperationFailed,
         isError: true,
       );
       return;
@@ -344,7 +348,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
     ToastUtils.showCenterToast(
       context,
-      wasFollowing ? '已取消追蹤' : '已追蹤 $resolvedCreatorName',
+      wasFollowing ? l10n.creatorProfileUnfollowed : l10n.creatorProfileFollowedCreator(resolvedCreatorName),
       customIcon: wasFollowing
           ? Icons.person_remove_outlined
           : Icons.person_add_alt_1_rounded,
@@ -486,6 +490,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   }
 
   Widget _buildCharacterShareCard() {
+    final l10n = AppLocalizations.of(context)!;
     final character = widget.character;
 
     final String characterName = character.name.trim();
@@ -585,7 +590,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
               ),
 
               // 上方品牌
-              const Positioned(
+              Positioned(
                 top: 24,
                 left: 24,
                 right: 24,
@@ -598,7 +603,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     ),
                     SizedBox(width: 7),
                     Text(
-                      '戀戀拾光',
+                      l10n.app_name,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
@@ -614,7 +619,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     ),
                     Spacer(),
                     Text(
-                      'CHARACTER INVITATION',
+                      l10n.characterProfileInvitationLabel,
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 8,
@@ -704,7 +709,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    '創作者  $creatorName',
+                                    l10n.characterProfileCardCreator(creatorName),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -717,8 +722,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                               ],
                             ),
                           const SizedBox(height: 7),
-                          const Text(
-                            '搜尋角色，開始相遇  🦋',
+                           Text(
+                            l10n.characterProfileCardSearchHint,
                             style: TextStyle(
                               color: Color(0xFFE2BDEF),
                               fontSize: 10,
@@ -765,8 +770,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                             ),
                           ),
                           const SizedBox(height: 6),
-                          const Text(
-                            '掃描下載',
+                          Text(
+                            l10n.characterProfileScanToDownload,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 9,
@@ -812,6 +817,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   Future<void> _captureAndShareCharacterCard(
     BuildContext shareButtonContext,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       // 等待邀請卡與網路圖片完成目前這一幀
       await WidgetsBinding.instance.endOfFrame;
@@ -875,8 +881,12 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             'lianlian_${widget.character.name}_invitation.png',
           ],
           text: _buildCharacterShareText(),
-          title: '分享角色「${widget.character.name}」',
-          subject: '來《戀戀拾光》認識 ${widget.character.name}',
+          title: l10n.characterProfileShareTitle(
+            widget.character.name,
+          ),
+          subject: l10n.characterProfileShareSubject(
+            widget.character.name,
+          ),
           sharePositionOrigin: sharePositionOrigin,
         ),
       );
@@ -889,7 +899,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
 
       ToastUtils.showCenterToast(
         context,
-        '邀請卡產生失敗，請稍後再試',
+        l10n.characterProfileShareFailed,
         isError: true,
       );
     }
@@ -898,10 +908,11 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   Future<void> _showCharacterSharePreview(
     BuildContext sourceButtonContext,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     if (!widget.character.isPublic) {
       ToastUtils.showCenterToast(
         context,
-        '私人角色目前無法分享',
+        l10n.characterProfilePrivateShareUnavailable,
         isError: true,
       );
       return;
@@ -942,8 +953,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                               dialogContext,
                             );
                           },
-                          child: const Text(
-                            '取消',
+                          child: Text(
+                            l10n.editProfileCancel,
                             style: TextStyle(
                               color: Colors.white,
                             ),
@@ -969,8 +980,8 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                   size: 25,
                                 ),
                               ),
-                              label: const Text(
-                                '分享邀請卡',
+                              label:  Text(
+                                l10n.characterProfileShareCard,
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(
@@ -2373,7 +2384,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         child: Builder(
                           builder: (shareButtonContext) {
                             return IconButton(
-                              tooltip: '分享角色',
+                              tooltip: l10n.characterProfileShareCharacter,
                               icon: Transform.flip(
                                 flipX: true,
                                 child: const Icon(
@@ -2437,7 +2448,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           }
                         },
                         itemBuilder: (context) => [
-                          const PopupMenuItem<String>(
+                          PopupMenuItem<String>(
                             value: 'report',
                             child: Row(
                               children: [
@@ -2446,7 +2457,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                                   color: Colors.orange,
                                 ),
                                 SizedBox(width: 8),
-                                Text('檢舉角色'),
+                                Text(l10n.characterProfileReportCharacter),
                               ],
                             ),
                           ),
@@ -3249,7 +3260,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                       )
                     else
                       IconButton(
-                        tooltip: '翻譯',
+                        tooltip: l10n.characterProfileTranslate,
                         icon: const Icon(
                           Icons.translate_rounded,
                         ),

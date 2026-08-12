@@ -3227,7 +3227,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get task_desc_chat_3_times =>
-      'Thực hiện 3 cuộc trò chuyện hàng ngày với nhân vật';
+      'Trò chuyện với nhân vật 3 lần trong Chế độ Hằng ngày';
 
   @override
   String get tab_story_progression => 'Tiến triển cốt truyện';
@@ -5081,4 +5081,922 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mailCaseNumberCopied => 'Đã sao chép mã vụ việc';
+
+  @override
+  String get profilePageAboutMe => '📝 Giới thiệu về tôi';
+
+  @override
+  String get profilePageTabBio => 'Giới thiệu';
+
+  @override
+  String get profilePageTabCharacters => 'Nhân vật';
+
+  @override
+  String get profilePageTabMoments => 'Bài đăng';
+
+  @override
+  String get profilePageEditProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get profilePageFriends => 'Bạn bè';
+
+  @override
+  String get profilePageWorks => 'Tác phẩm';
+
+  @override
+  String get profilePageFollowing => 'Đang theo dõi';
+
+  @override
+  String get profilePageFollowers => 'Người theo dõi';
+
+  @override
+  String get profilePageHeartbeatDiary => 'Nhật ký rung động';
+
+  @override
+  String get profilePageEditCharacter => 'Chỉnh sửa nhân vật';
+
+  @override
+  String get profilePagePreviewCharacter => 'Xem trước hồ sơ nhân vật';
+
+  @override
+  String get profilePageNoBio => 'Chưa có phần giới thiệu';
+
+  @override
+  String get profilePageNoBioHint => 'Nhấn để viết đôi điều về bạn.';
+
+  @override
+  String get profilePageCreateCharacter => 'Tạo nhân vật mới';
+
+  @override
+  String get profilePageNoCharacters => 'Chưa tạo nhân vật nào';
+
+  @override
+  String get profilePageNoCharactersHint =>
+      'Hãy bắt đầu tạo nhân vật đầu tiên của bạn.';
+
+  @override
+  String get profilePageCharacterActions => 'Thao tác với nhân vật';
+
+  @override
+  String get profilePagePublic => 'Công khai';
+
+  @override
+  String get profilePagePrivate => 'Riêng tư';
+
+  @override
+  String get profilePageCreator => 'Nhà sáng tạo';
+
+  @override
+  String get profilePageSelectPostingIdentity => 'Chọn danh tính đăng bài';
+
+  @override
+  String get profilePagePostAsCreator => 'Đăng với tư cách nhà sáng tạo';
+
+  @override
+  String get profilePagePublicCharacter => 'Nhân vật công khai';
+
+  @override
+  String get profilePagePrivateCharacter => 'Nhân vật riêng tư';
+
+  @override
+  String get profilePagePleaseSignIn => 'Vui lòng đăng nhập trước';
+
+  @override
+  String get profilePagePublishMoment => 'Đăng bài';
+
+  @override
+  String get profilePageFilterAll => 'Tất cả';
+
+  @override
+  String get profilePageFilterCreator => 'Tôi';
+
+  @override
+  String get profilePageFilterCharacter => 'Nhân vật';
+
+  @override
+  String get profilePageMomentsLoadFailed => 'Không thể tải bài đăng';
+
+  @override
+  String get profilePageTryAgainLater => 'Vui lòng thử lại sau.';
+
+  @override
+  String get profilePageNoCreatorMoments => 'Bạn chưa đăng bài nào';
+
+  @override
+  String get profilePageNoCreatorMomentsHint =>
+      'Nội dung được đăng với tư cách nhà sáng tạo sẽ hiển thị tại đây.';
+
+  @override
+  String get profilePageNoCharacterMoments =>
+      'Các nhân vật của bạn chưa đăng bài nào';
+
+  @override
+  String get profilePageNoCharacterMomentsHint =>
+      'Nội dung được đăng với tư cách nhân vật sẽ hiển thị tại đây.';
+
+  @override
+  String get profilePageNoMoments => 'Chưa có bài đăng';
+
+  @override
+  String get profilePageNoMomentsHint =>
+      'Bài đăng của bạn và các nhân vật sẽ hiển thị tại đây.';
+
+  @override
+  String get profilePageDeleteMomentTitle => 'Xóa bài đăng';
+
+  @override
+  String get profilePageDeleteMomentConfirm =>
+      'Bạn có chắc muốn xóa vĩnh viễn bài đăng này không?';
+
+  @override
+  String get profilePageCancel => 'Hủy';
+
+  @override
+  String get profilePageDelete => 'Xóa';
+
+  @override
+  String get profilePageMomentDeleted => 'Đã xóa bài đăng';
+
+  @override
+  String get profilePageDeleteFailed =>
+      'Xóa không thành công. Vui lòng thử lại sau.';
+
+  @override
+  String get profilePageReferralCompleted => 'Đã hoàn thành Lời mời Ngôi sao';
+
+  @override
+  String profilePageInviter(String inviterId) {
+    return 'Người mời: $inviterId';
+  }
+
+  @override
+  String get profilePageReferralRewardReceived =>
+      'Cả hai bên đã nhận được 50 Bông Hoa';
+
+  @override
+  String get profilePageClaimed => 'Đã nhận';
+
+  @override
+  String profilePageInviterBound(String inviterId) {
+    return 'Đã liên kết người mời: $inviterId';
+  }
+
+  @override
+  String get profilePageReferralProgressHint =>
+      'Sau khi hoàn thành 15 tin nhắn trò chuyện, mỗi bên sẽ nhận được 50 Bông Hoa';
+
+  @override
+  String get profilePageAlreadyCheckedIn => 'Hôm nay bạn đã điểm danh rồi';
+
+  @override
+  String get profilePageReferralBindFailed =>
+      'Liên kết không thành công. Vui lòng thử lại sau.';
+
+  @override
+  String get profilePageCharacterNotFound =>
+      'Không tìm thấy dữ liệu của nhân vật này';
+
+  @override
+  String get periodGuideTitle => 'Sử dụng Nhật ký Kinh nguyệt như thế nào?';
+
+  @override
+  String get periodGuideContent =>
+      '① Trước tiên, hãy chọn một ngày trên lịch.\n② Chọn “Bắt đầu hôm nay”, “Vẫn đang có kinh” hoặc “Kết thúc hôm nay”.\n③ Chọn tâm trạng và tình trạng cơ thể trong ngày. Bạn cũng có thể tự bổ sung thông tin.\n④ Nhấn Lưu để nhân vật có thể hiểu tình trạng của bạn hôm nay khi trò chuyện.\n\nNgày dự đoán sẽ được điều chỉnh dựa trên lịch sử ghi chép của bạn và chỉ dùng để tham khảo cho việc theo dõi cá nhân.';
+
+  @override
+  String get periodGotIt => 'Tôi hiểu rồi';
+
+  @override
+  String get periodSelectAtLeastOne =>
+      'Vui lòng chọn ít nhất một mục để ghi lại';
+
+  @override
+  String get periodFutureDateError =>
+      'Không thể đánh dấu trạng thái kinh nguyệt cho ngày trong tương lai.';
+
+  @override
+  String get periodAlreadyOngoingError =>
+      'Đã có một kỳ kinh đang diễn ra. Vui lòng kết thúc kỳ kinh đó trước.';
+
+  @override
+  String get periodNoOngoingError =>
+      'Hiện không có kỳ kinh nào đang diễn ra. Vui lòng chọn “Bắt đầu hôm nay” trước.';
+
+  @override
+  String get periodBeforeStartError =>
+      'Ngày không được sớm hơn ngày bắt đầu của kỳ kinh hiện tại.';
+
+  @override
+  String get periodEndBeforeStartError =>
+      'Ngày kết thúc không được sớm hơn ngày bắt đầu.';
+
+  @override
+  String periodRecordSaved(String date) {
+    return 'Đã lưu ghi chép ngày $date';
+  }
+
+  @override
+  String get periodSaveFailed => 'Lưu không thành công. Vui lòng thử lại sau';
+
+  @override
+  String get periodDeleteTitle => 'Xóa ghi chép kỳ kinh này?';
+
+  @override
+  String get periodDeleteContent =>
+      'Sau khi xóa, chu kỳ trung bình và lần dự đoán tiếp theo cũng sẽ được tính lại.';
+
+  @override
+  String get periodCancel => 'Hủy';
+
+  @override
+  String get periodDelete => 'Xóa';
+
+  @override
+  String get periodNoOngoing => 'Hiện không có kỳ kinh nào đang diễn ra';
+
+  @override
+  String periodDayCount(int count) {
+    return 'Ngày thứ $count của kỳ kinh';
+  }
+
+  @override
+  String get periodHelp => 'Hướng dẫn sử dụng';
+
+  @override
+  String get periodAverageCycle => 'Chu kỳ trung bình';
+
+  @override
+  String get periodAverageDuration => 'Thời gian hành kinh trung bình';
+
+  @override
+  String periodDays(int count) {
+    return '$count ngày';
+  }
+
+  @override
+  String get periodNextPrediction => 'Dự đoán tiếp theo';
+
+  @override
+  String get periodCalculatedAfterRecording => 'Tính sau khi ghi chép';
+
+  @override
+  String get periodInsufficientData =>
+      'Hiện chưa có đủ dữ liệu. Tạm thời, dự đoán sẽ sử dụng chu kỳ 28 ngày và thời gian hành kinh 5 ngày.';
+
+  @override
+  String get periodPredictionDisclaimer =>
+      'Dự đoán dựa trên các ghi chép hiện có. Ngày chỉ dùng để tham khảo cho việc theo dõi cá nhân.';
+
+  @override
+  String get periodStartedToday => '🩸 Bắt đầu hôm nay';
+
+  @override
+  String get periodStillOngoing => 'Vẫn đang có kinh';
+
+  @override
+  String get periodEndedToday => 'Kết thúc hôm nay';
+
+  @override
+  String get periodDateNotReached => 'Ngày này vẫn chưa đến～';
+
+  @override
+  String get periodDateBeforeStart =>
+      'Ngày này sớm hơn ngày bắt đầu của kỳ kinh hiện tại.';
+
+  @override
+  String get periodMoodOkay => 'Khá ổn';
+
+  @override
+  String get periodMoodHappy => 'Vui vẻ';
+
+  @override
+  String get periodMoodLow => 'Buồn';
+
+  @override
+  String get periodMoodUnwell => 'Khó chịu';
+
+  @override
+  String get periodMoodIrritable => 'Cáu kỉnh';
+
+  @override
+  String get periodMoodTired => 'Mệt mỏi';
+
+  @override
+  String get periodMoodAnxious => 'Lo lắng';
+
+  @override
+  String get periodSymptomAbdominalPain => 'Đau bụng';
+
+  @override
+  String get periodSymptomLowerBackPain => 'Đau thắt lưng';
+
+  @override
+  String get periodSymptomHeadache => 'Đau đầu';
+
+  @override
+  String get periodSymptomBreastTenderness => 'Căng tức ngực';
+
+  @override
+  String get periodSymptomSwelling => 'Phù nề';
+
+  @override
+  String get periodSymptomSleepy => 'Buồn ngủ';
+
+  @override
+  String get periodSymptomIncreasedAppetite => 'Tăng cảm giác thèm ăn';
+
+  @override
+  String get periodSymptomDigestiveDiscomfort => 'Khó chịu đường tiêu hóa';
+
+  @override
+  String periodDiaryTitle(String characterName) {
+    return 'Nhật ký quan tâm của $characterName';
+  }
+
+  @override
+  String get periodLoadFailed => 'Không thể tải ghi chép. Vui lòng thử lại sau';
+
+  @override
+  String get periodWeekdaySun => 'CN';
+
+  @override
+  String get periodWeekdayMon => 'T2';
+
+  @override
+  String get periodWeekdayTue => 'T3';
+
+  @override
+  String get periodWeekdayWed => 'T4';
+
+  @override
+  String get periodWeekdayThu => 'T5';
+
+  @override
+  String get periodWeekdayFri => 'T6';
+
+  @override
+  String get periodWeekdaySat => 'T7';
+
+  @override
+  String get periodSaveInstruction =>
+      'Sau khi chọn trạng thái, hãy nhấn “Lưu ghi chép hôm nay” ở phía dưới để lưu chính thức.';
+
+  @override
+  String get periodTodayMood => 'Tâm trạng hôm nay (Có thể chọn nhiều mục)';
+
+  @override
+  String get periodMoodDescription =>
+      'Đây là những ghi chép nhật ký trong ngày, không phải biểu tượng hiển thị trên lịch.';
+
+  @override
+  String get periodOtherMood => 'Tâm trạng khác';
+
+  @override
+  String get periodOtherMoodHint => 'Ví dụ: tủi thân, cảm thấy bất an……';
+
+  @override
+  String get periodTodaySymptoms =>
+      'Tình trạng cơ thể hôm nay (Có thể chọn nhiều mục)';
+
+  @override
+  String get periodOtherSymptom => 'Tình trạng cơ thể khác';
+
+  @override
+  String get periodOtherSymptomHint => 'Ví dụ: cảm thấy lạnh, không muốn ăn……';
+
+  @override
+  String periodNoteForCharacter(String characterName) {
+    return 'Điều bạn muốn $characterName biết (Không bắt buộc)';
+  }
+
+  @override
+  String get periodNoteHint =>
+      'Ví dụ: hôm nay tôi muốn nghỉ ngơi yên tĩnh và không muốn bị thúc giục……';
+
+  @override
+  String get periodSaving => 'Đang lưu…';
+
+  @override
+  String get periodSaveToday => 'Lưu ghi chép hôm nay';
+
+  @override
+  String get periodHistory => 'Lịch sử kinh nguyệt';
+
+  @override
+  String get periodOngoing => 'Đang diễn ra';
+
+  @override
+  String periodTotalDays(int count) {
+    return 'Tổng cộng $count ngày';
+  }
+
+  @override
+  String get periodDeleteRecord => 'Xóa ghi chép';
+
+  @override
+  String get privateProfilePleaseSignIn => 'Vui lòng đăng nhập trước';
+
+  @override
+  String privateProfileLoreLoadFailed(String error) {
+    return 'Không thể tải Mảnh Ký Ức: $error';
+  }
+
+  @override
+  String privateProfileWriteNewLore(int count, int limit) {
+    return 'Viết Mảnh Ký Ức mới ($count / $limit)';
+  }
+
+  @override
+  String get privateProfileNoLore => 'Chưa có Mảnh Ký Ức';
+
+  @override
+  String get privateProfileNoLoreHint =>
+      'Bạn có thể sắp xếp các thiết lập thử nghiệm, manh mối câu chuyện và ký ức quan trọng của nhân vật tại đây.';
+
+  @override
+  String get privateProfileUntitledLore => 'Mảnh chưa đặt tên';
+
+  @override
+  String get privateProfileEdit => 'Chỉnh sửa';
+
+  @override
+  String get privateProfileDelete => 'Xóa';
+
+  @override
+  String get privateProfileAddLore => 'Thêm Mảnh Ký Ức';
+
+  @override
+  String get privateProfileLoreTitle => 'Tiêu đề';
+
+  @override
+  String get privateProfileLoreTeaser => 'Gợi ý ngắn';
+
+  @override
+  String get privateProfileLoreContent => 'Nội dung đầy đủ';
+
+  @override
+  String get privateProfileLockLore => 'Khóa mảnh ký ức';
+
+  @override
+  String get privateProfileLockLoreHint =>
+      'Hiện tại, nhân vật riêng tư chỉ hiển thị với nhà sáng tạo. Trường này sẽ được giữ lại để tiếp tục sử dụng khi nhân vật được đặt thành công khai.';
+
+  @override
+  String get privateProfileCancel => 'Hủy';
+
+  @override
+  String get privateProfileTitleContentRequired =>
+      'Vui lòng nhập tiêu đề và nội dung';
+
+  @override
+  String get privateProfileLoreAdded => 'Đã thêm Mảnh Ký Ức';
+
+  @override
+  String get privateProfileAddFailed =>
+      'Thêm không thành công. Vui lòng thử lại sau';
+
+  @override
+  String get privateProfilePublish => 'Đăng';
+
+  @override
+  String get privateProfileDeleteLoreTitle => 'Xóa Mảnh Ký Ức';
+
+  @override
+  String get privateProfileDeleteLoreConfirm =>
+      'Bạn có chắc muốn xóa vĩnh viễn Mảnh Ký Ức này không?';
+
+  @override
+  String get privateProfileLoreDeleted => 'Đã xóa Mảnh Ký Ức';
+
+  @override
+  String get privateProfileDeleteFailed =>
+      'Xóa không thành công. Vui lòng thử lại sau';
+
+  @override
+  String get privateProfileEditLore => 'Chỉnh sửa Mảnh Ký Ức';
+
+  @override
+  String get privateProfileSave => 'Lưu';
+
+  @override
+  String get editProfileBirthdayReminderTitle => '🎂 Lời nhắc nhỏ';
+
+  @override
+  String get editProfileBirthdayReminderContent =>
+      'Ngày sinh của bạn sẽ ảnh hưởng đến lời chúc mừng sinh nhật từ nhân vật, quà sinh nhật và các sự kiện liên quan.\n\nBạn nên xác nhận ngày sinh trước khi hoàn tất thiết lập\nđể tránh ảnh hưởng đến phần thưởng sinh nhật sau này.';
+
+  @override
+  String get editProfileGotIt => 'Tôi hiểu rồi';
+
+  @override
+  String get editProfileBirthdayConfirmTitle => '🎂 Xác nhận ngày sinh';
+
+  @override
+  String get editProfileBirthdayConfirmContent =>
+      'Vui lòng kiểm tra xem ngày sinh có chính xác không.\n\nNgày sinh sẽ được sử dụng cho lời chúc mừng sinh nhật, quà sinh nhật và các sự kiện liên quan.\n\nĐể tránh nhận phần thưởng sinh nhật nhiều lần, bạn sẽ không thể thay đổi ngày sinh sau khi hoàn tất thiết lập.\n\nBạn có chắc muốn sử dụng ngày sinh này không?';
+
+  @override
+  String get editProfileReturnToEdit => 'Quay lại chỉnh sửa';
+
+  @override
+  String get editProfileConfirmSetting => 'Xác nhận thiết lập';
+
+  @override
+  String get editProfileDefaultNickname => 'Lữ khách mới quen';
+
+  @override
+  String get editProfileNoChanges => 'Không có thay đổi nào cần lưu';
+
+  @override
+  String editProfileCreateFailed(String error) {
+    return 'Không thể tạo dữ liệu: $error';
+  }
+
+  @override
+  String editProfileAvatarNumber(int number) {
+    return 'Ảnh đại diện $number';
+  }
+
+  @override
+  String get editProfileImageSelectionFailed =>
+      'Không thể chọn hình ảnh. Vui lòng chọn hình ảnh khác';
+
+  @override
+  String get editProfileCancel => 'Hủy';
+
+  @override
+  String get editProfileConfirm => 'Xác nhận';
+
+  @override
+  String get editProfileImageProcessingFailed =>
+      'Không thể xử lý hình ảnh. Vui lòng chọn hình ảnh khác';
+
+  @override
+  String editProfileLoadFailed(String error) {
+    return 'Không thể tải dữ liệu: $error';
+  }
+
+  @override
+  String get editProfileBioLabel => 'Giới thiệu';
+
+  @override
+  String get editProfileBioHelper =>
+      'Giới thiệu ngắn gọn về bản thân hoặc phong cách sáng tạo của bạn';
+
+  @override
+  String get editProfileBioHint =>
+      'Ví dụ: Tôi thích sáng tạo các nhân vật lãng mạn giả tưởng, ám ảnh và nhập vai.';
+
+  @override
+  String get editProfileUserNotFound => 'Không tìm thấy người dùng';
+
+  @override
+  String get editProfileGenerateIdFailed =>
+      'Không thể tạo ID Người chơi. Vui lòng thử lại';
+
+  @override
+  String get editProfileSignedInUserNotFound =>
+      'Không tìm thấy người dùng hiện đang đăng nhập';
+
+  @override
+  String editProfileAvatarReadFailed(int statusCode) {
+    return 'Không thể tải ảnh đại diện. Mã trạng thái: $statusCode';
+  }
+
+  @override
+  String editProfileAvatarFileNotFound(String path) {
+    return 'Không tìm thấy tệp ảnh đại diện đã chọn: $path';
+  }
+
+  @override
+  String get editProfileAvatarEmpty => 'Dữ liệu ảnh đại diện trống';
+
+  @override
+  String get chatPageSendFailed =>
+      'Gửi không thành công. Vui lòng thử lại sau 😢';
+
+  @override
+  String get chatPageRegenerateFailed =>
+      'Tạo lại không thành công. Tin nhắn ban đầu đã được giữ lại. Vui lòng thử lại.';
+
+  @override
+  String get chatPageRegenerating => '💭 Đang suy nghĩ lại...';
+
+  @override
+  String get chatPageThinkingTooLong =>
+      'Có vẻ anh ấy đang trầm ngâm. Vui lòng thử lại sau……';
+
+  @override
+  String get chatPageAlreadyReplying =>
+      'Anh ấy đang trả lời. Vui lòng chờ một lát và đừng gửi lại';
+
+  @override
+  String get chatPageMediaUploadFailed =>
+      'Tải nội dung đa phương tiện lên không thành công. Vui lòng thử lại';
+
+  @override
+  String get chatPageReportReceived =>
+      'Cảm ơn bạn đã báo cáo. Chúng tôi sẽ kiểm tra sớm nhất có thể';
+
+  @override
+  String chatPageMessagesDeleted(int count) {
+    return '✅ Đã xóa thành công $count tin nhắn';
+  }
+
+  @override
+  String chatPageSelectPhotoFailed(String error) {
+    return 'Không thể chọn ảnh: $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFound => 'Không tìm thấy tệp ghi âm';
+
+  @override
+  String get chatPageRecordingEmpty => 'Tệp ghi âm trống';
+
+  @override
+  String chatPageAudioPlaybackFailed(String error) {
+    return 'Không thể phát âm thanh: $error';
+  }
+
+  @override
+  String get chatPageMicrophonePermissionRequired =>
+      'Cần cấp quyền sử dụng micrô để ghi âm';
+
+  @override
+  String chatPageStartRecordingFailed(String error) {
+    return 'Không thể bắt đầu ghi âm: $error';
+  }
+
+  @override
+  String get chatPageRecordingCreationFailed =>
+      'Không thể tạo tệp ghi âm. Vui lòng ghi âm lại';
+
+  @override
+  String chatPageRecordingFailed(String error) {
+    return 'Ghi âm không thành công: $error';
+  }
+
+  @override
+  String get chatPageRecordingNotFoundRetry =>
+      'Không tìm thấy tệp ghi âm. Vui lòng ghi âm lại';
+
+  @override
+  String get chatPageRecordingEmptyRetry =>
+      'Tệp ghi âm trống. Vui lòng ghi âm lại';
+
+  @override
+  String get chatPageNoRecordingToSend => 'Không có bản ghi âm nào để gửi';
+
+  @override
+  String chatPagePointCost(int count) {
+    return '$count điểm';
+  }
+
+  @override
+  String get chatPageVoiceUploading => 'Đang tải bản ghi âm lên……';
+
+  @override
+  String get chatPageChangeWatermarkColor => 'Đổi màu hình mờ';
+
+  @override
+  String chatPageMinutesSeconds(int minutes, int seconds) {
+    return '$minutes phút $seconds giây';
+  }
+
+  @override
+  String chatPageSeconds(int seconds) {
+    return '$seconds giây';
+  }
+
+  @override
+  String get characterEditSelectSupportingCharacter =>
+      'Vui lòng chọn nhân vật phụ.';
+
+  @override
+  String get characterEditSelectGender =>
+      'Vui lòng chọn giới tính của nhân vật.';
+
+  @override
+  String get characterEditCharacterSettings => 'Thiết lập Nhân vật';
+
+  @override
+  String get characterEditWorldview => 'Bối cảnh Thế giới';
+
+  @override
+  String get characterEditSettingsMinLength =>
+      'Thiết lập nhân vật phải có ít nhất 10 ký tự.';
+
+  @override
+  String get characterEditWorldviewMinLength =>
+      'Bối cảnh thế giới phải có ít nhất 20 ký tự.';
+
+  @override
+  String get characterEditSupportingCharacters => 'Nhân vật Phụ';
+
+  @override
+  String get characterEditCharacterImage => 'Hình ảnh Nhân vật';
+
+  @override
+  String get characterEditWorldviewHint =>
+      'Mô tả bối cảnh, lịch sử, thời đại, khu vực, thế lực, chế độ, công nghệ, phép thuật và quy tắc của thế giới.';
+
+  @override
+  String get characterEditSettingsHint =>
+      'Mô tả tính cách, giá trị, cách suy nghĩ, phản ứng cảm xúc, thói quen hành vi, cách nói chuyện và niềm tin cốt lõi của nhân vật.';
+
+  @override
+  String get characterEditUnknownCharacter => 'Nhân vật Không xác định';
+
+  @override
+  String get characterEditEditSupportingCharacter => 'Chỉnh sửa Nhân vật Phụ';
+
+  @override
+  String get characterEditAddSupportingCharacter => 'Thêm Nhân vật Phụ';
+
+  @override
+  String get characterEditSupportingCharacterName => 'Tên Nhân vật Phụ';
+
+  @override
+  String get characterEditGender => 'Giới tính';
+
+  @override
+  String get characterEditMale => 'Nam';
+
+  @override
+  String get characterEditFemale => 'Nữ';
+
+  @override
+  String get characterEditOther => 'Khác';
+
+  @override
+  String get characterEditAge => 'Tuổi';
+
+  @override
+  String get characterEditIdentityOccupation => 'Thân phận／Nghề nghiệp';
+
+  @override
+  String get characterEditRelationshipWithMain =>
+      'Mối quan hệ với Nhân vật Chính';
+
+  @override
+  String get characterEditRelationshipHint =>
+      'Mô tả quá khứ, lập trường, tình cảm, bí mật và mối quan hệ hiện tại với nhân vật chính.';
+
+  @override
+  String get characterEditCharacterProfile => 'Thiết lập Nhân vật';
+
+  @override
+  String get characterEditCharacterProfileHint =>
+      'Mô tả tính cách, ngoại hình, thói quen, giá trị, khả năng, sở thích, điều không thích và những trải nghiệm quan trọng của nhân vật.';
+
+  @override
+  String get characterEditSpeakingStyle => 'Cách nói chuyện';
+
+  @override
+  String get characterEditSpeakingStyleHint =>
+      'Ví dụ: nói nhanh, thích châm chọc và nói chuyện thẳng thắn.';
+
+  @override
+  String get characterEditSupportingNameRequired =>
+      'Vui lòng nhập tên nhân vật phụ.';
+
+  @override
+  String get characterEditSupportingGenderRequired =>
+      'Vui lòng chọn giới tính của nhân vật phụ.';
+
+  @override
+  String get characterEditProfileRequired =>
+      'Vui lòng nhập thiết lập nhân vật.';
+
+  @override
+  String get characterEditRelationshipTooLong =>
+      'Mối quan hệ với nhân vật chính đã vượt quá 1.500 ký tự.';
+
+  @override
+  String get characterEditProfileTooLong =>
+      'Thiết lập nhân vật đã vượt quá 1.500 ký tự.';
+
+  @override
+  String get characterEditSave => 'Lưu';
+
+  @override
+  String get characterEditAdd => 'Thêm';
+
+  @override
+  String get creatorProfileNoBio => 'Chưa có phần giới thiệu';
+
+  @override
+  String get creatorProfileNoBioHint =>
+      'Nhà sáng tạo này chưa thêm phần giới thiệu.';
+
+  @override
+  String get creatorProfileNoCreatorMoments => 'Nhà sáng tạo chưa đăng bài nào';
+
+  @override
+  String get creatorProfileNoCreatorMomentsHint =>
+      'Nội dung công khai được đăng với tư cách nhà sáng tạo sẽ hiển thị tại đây.';
+
+  @override
+  String get creatorProfileNoCharacterMoments =>
+      'Các nhân vật của nhà sáng tạo chưa đăng bài nào';
+
+  @override
+  String get creatorProfileNoCharacterMomentsHint =>
+      'Nội dung do các nhân vật công khai của nhà sáng tạo đăng sẽ hiển thị tại đây.';
+
+  @override
+  String get creatorProfileNoPublicMoments => 'Chưa có bài đăng công khai';
+
+  @override
+  String get creatorProfileNoPublicMomentsHint =>
+      'Các bài đăng công khai của nhà sáng tạo và nhân vật sẽ hiển thị tại đây.';
+
+  @override
+  String get creatorProfilePublicWorks => 'Tác phẩm Công khai';
+
+  @override
+  String get creatorProfileLikesReceived => 'Lượt thích đã nhận';
+
+  @override
+  String get creatorProfileFollow => 'Theo dõi';
+
+  @override
+  String get creatorProfileFollowing => 'Đang theo dõi';
+
+  @override
+  String get creatorProfileUnfollowed => 'Đã bỏ theo dõi';
+
+  @override
+  String creatorProfileFollowedCreator(String creatorName) {
+    return 'Đã theo dõi $creatorName';
+  }
+
+  @override
+  String get creatorProfileOperationFailed =>
+      'Thao tác không thành công. Vui lòng thử lại sau';
+
+  @override
+  String creatorProfileWorksLoadFailed(String error) {
+    return 'Không thể tải tác phẩm: $error';
+  }
+
+  @override
+  String get characterProfileShareInvitation =>
+      '🦋 Lời mời gặp gỡ từ LoveyDovey';
+
+  @override
+  String characterProfileShareCreator(String creatorName) {
+    return '✦ Nhà sáng tạo: $creatorName';
+  }
+
+  @override
+  String characterProfileShareMessage(String characterName) {
+    return 'Tìm kiếm “$characterName” trong LoveyDovey và bắt đầu câu chuyện chỉ thuộc về hai bạn.';
+  }
+
+  @override
+  String get characterProfileInvitationLabel => 'Thiệp mời Nhân vật';
+
+  @override
+  String characterProfileCardCreator(String creatorName) {
+    return 'Nhà sáng tạo  $creatorName';
+  }
+
+  @override
+  String get characterProfileCardSearchHint =>
+      'Tìm kiếm nhân vật và bắt đầu cuộc gặp gỡ  🦋';
+
+  @override
+  String get characterProfileScanToDownload => 'Quét để Tải xuống';
+
+  @override
+  String characterProfileShareTitle(String characterName) {
+    return 'Chia sẻ nhân vật “$characterName”';
+  }
+
+  @override
+  String characterProfileShareSubject(String characterName) {
+    return 'Gặp gỡ $characterName tại LoveyDovey';
+  }
+
+  @override
+  String get characterProfileShareFailed =>
+      'Không thể tạo thiệp mời. Vui lòng thử lại sau';
+
+  @override
+  String get characterProfilePrivateShareUnavailable =>
+      'Hiện không thể chia sẻ nhân vật riêng tư';
+
+  @override
+  String get characterProfileShareCard => 'Chia sẻ Thiệp mời';
+
+  @override
+  String get characterProfileShareCharacter => 'Chia sẻ Nhân vật';
+
+  @override
+  String get characterProfileReportCharacter => 'Báo cáo Nhân vật';
+
+  @override
+  String get characterProfileTranslate => 'Dịch';
 }

@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/app_constants.dart';
 import '../services/toast_utils.dart';
-// ⚠️ 記得 import 妳的 Character 模型檔案
 
 class PrivateCharacterProfilePage extends StatefulWidget {
   final Character character;
@@ -512,8 +511,8 @@ class _PrivateCharacterProfilePageState
     final characterRef = _privateCharacterRef;
 
     if (characterRef == null) {
-      return const Center(
-        child: Text('請先登入'),
+      return Center(
+        child: Text(l10n.privateProfilePleaseSignIn),
       );
     }
 
@@ -536,7 +535,7 @@ class _PrivateCharacterProfilePageState
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              '記憶碎片讀取失敗：${snapshot.error}',
+              l10n.privateProfileLoreLoadFailed(snapshot.error.toString()),
             ),
           );
         }
@@ -568,7 +567,7 @@ class _PrivateCharacterProfilePageState
                   Icons.add_rounded,
                 ),
                 label: Text(
-                  '撰寫新的記憶碎片（${docs.length} / 10）',
+                  l10n.privateProfileWriteNewLore(docs.length, 10),
                 ),
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
@@ -611,16 +610,16 @@ class _PrivateCharacterProfilePageState
                           .withValues(alpha: 0.42),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
-                      '還沒有記憶碎片',
-                      style: TextStyle(
+                    Text(
+                      l10n.privateProfileNoLore,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '可以在這裡整理測試設定、故事線索與角色的重要記憶。',
+                      l10n.privateProfileNoLoreHint,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
@@ -637,7 +636,7 @@ class _PrivateCharacterProfilePageState
                 final data = doc.data();
 
                 final title =
-                (data['title'] ?? '未命名碎片')
+                (data['title'] ?? l10n.privateProfileUntitledLore)
                     .toString();
 
                 final teaser =
@@ -716,16 +715,16 @@ class _PrivateCharacterProfilePageState
                                   );
                                 }
                               },
-                              itemBuilder: (_) => const [
+                              itemBuilder: (_) => [
                                 PopupMenuItem(
                                   value: 'edit',
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.edit_outlined,
                                       ),
-                                      SizedBox(width: 8),
-                                      Text('編輯'),
+                                      const SizedBox(width: 8),
+                                      Text(l10n.privateProfileEdit),
                                     ],
                                   ),
                                 ),
@@ -733,15 +732,15 @@ class _PrivateCharacterProfilePageState
                                   value: 'delete',
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.delete_outline,
                                         color:
                                         Colors.redAccent,
                                       ),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       Text(
-                                        '刪除',
-                                        style: TextStyle(
+                                        l10n.privateProfileDelete,
+                                        style: const TextStyle(
                                           color:
                                           Colors.redAccent,
                                         ),
@@ -795,6 +794,7 @@ class _PrivateCharacterProfilePageState
       BuildContext context,
       ThemeData theme,
       ) {
+    final l10n = AppLocalizations.of(context)!;
     final titleController =
     TextEditingController();
 
@@ -815,8 +815,7 @@ class _PrivateCharacterProfilePageState
               setDialogState,
               ) {
             return AlertDialog(
-              title:
-              const Text('新增記憶碎片'),
+              title: Text(l10n.privateProfileAddLore),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize:
@@ -825,9 +824,8 @@ class _PrivateCharacterProfilePageState
                     TextField(
                       controller:
                       titleController,
-                      decoration:
-                      const InputDecoration(
-                        labelText: '標題',
+                      decoration: InputDecoration(
+                        labelText: l10n.privateProfileLoreTitle,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -835,9 +833,8 @@ class _PrivateCharacterProfilePageState
                       controller:
                       teaserController,
                       maxLines: 2,
-                      decoration:
-                      const InputDecoration(
-                        labelText: '簡短提示',
+                      decoration: InputDecoration(
+                        labelText: l10n.privateProfileLoreTeaser,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -845,20 +842,16 @@ class _PrivateCharacterProfilePageState
                       controller:
                       contentController,
                       maxLines: 5,
-                      decoration:
-                      const InputDecoration(
-                        labelText: '完整內容',
+                      decoration: InputDecoration(
+                        labelText: l10n.privateProfileLoreContent,
                       ),
                     ),
                     const SizedBox(height: 12),
                     CheckboxListTile(
                       contentPadding:
                       EdgeInsets.zero,
-                      title:
-                      const Text('鎖定碎片'),
-                      subtitle: const Text(
-                        '私人角色目前只有創作者可見，此欄位仍會保留，方便角色公開後沿用。',
-                      ),
+                      title: Text(l10n.privateProfileLockLore),
+                      subtitle: Text(l10n.privateProfileLockLoreHint),
                       value: isHidden,
                       onChanged: (value) {
                         setDialogState(() {
@@ -877,7 +870,7 @@ class _PrivateCharacterProfilePageState
                       dialogContext,
                     );
                   },
-                  child: const Text('取消'),
+                  child: Text(l10n.privateProfileCancel),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -893,7 +886,7 @@ class _PrivateCharacterProfilePageState
                         content.isEmpty) {
                       ToastUtils.showCenterToast(
                         context,
-                        '請填寫標題與內容',
+                        l10n.privateProfileTitleContentRequired,
                         isError: true,
                       );
                       return;
@@ -928,7 +921,7 @@ class _PrivateCharacterProfilePageState
 
                       ToastUtils.showCenterToast(
                         context,
-                        '記憶碎片已新增',
+                        l10n.privateProfileLoreAdded,
                         customIcon: Icons
                             .library_add_check_rounded,
                       );
@@ -937,12 +930,12 @@ class _PrivateCharacterProfilePageState
 
                       ToastUtils.showCenterToast(
                         context,
-                        '新增失敗，請稍後再試',
+                        l10n.privateProfileAddFailed,
                         isError: true,
                       );
                     }
                   },
-                  child: const Text('發布'),
+                  child: Text(l10n.privateProfilePublish),
                 ),
               ],
             );
@@ -955,16 +948,14 @@ class _PrivateCharacterProfilePageState
   Future<void> _deletePrivateLore(
       String loreId,
       ) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm =
         await showDialog<bool>(
           context: context,
           builder: (dialogContext) {
             return AlertDialog(
-              title:
-              const Text('刪除記憶碎片'),
-              content: const Text(
-                '確定要永久刪除這則記憶碎片嗎？',
-              ),
+              title: Text(l10n.privateProfileDeleteLoreTitle),
+              content: Text(l10n.privateProfileDeleteLoreConfirm),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -973,7 +964,7 @@ class _PrivateCharacterProfilePageState
                       false,
                     );
                   },
-                  child: const Text('取消'),
+                  child: Text(l10n.privateProfileCancel),
                 ),
                 TextButton(
                   onPressed: () {
@@ -982,9 +973,9 @@ class _PrivateCharacterProfilePageState
                       true,
                     );
                   },
-                  child: const Text(
-                    '刪除',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.privateProfileDelete,
+                    style: const TextStyle(
                       color:
                       Colors.redAccent,
                     ),
@@ -1013,7 +1004,7 @@ class _PrivateCharacterProfilePageState
 
       ToastUtils.showCenterToast(
         context,
-        '記憶碎片已刪除',
+        l10n.privateProfileLoreDeleted,
         customIcon:
         Icons.auto_delete_outlined,
       );
@@ -1022,7 +1013,7 @@ class _PrivateCharacterProfilePageState
 
       ToastUtils.showCenterToast(
         context,
-        '刪除失敗，請稍後再試',
+        l10n.privateProfileDeleteFailed,
         isError: true,
       );
     }
@@ -1034,6 +1025,7 @@ class _PrivateCharacterProfilePageState
       Map<String, dynamic> existingData,
       ThemeData theme,
       ) {
+    final l10n = AppLocalizations.of(context)!;
     final titleController =
     TextEditingController(
       text: existingData['title'] ?? '',
@@ -1061,8 +1053,7 @@ class _PrivateCharacterProfilePageState
               setDialogState,
               ) {
             return AlertDialog(
-              title:
-              const Text('編輯記憶碎片'),
+              title: Text(l10n.privateProfileEditLore),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize:
@@ -1071,9 +1062,8 @@ class _PrivateCharacterProfilePageState
                     TextField(
                       controller:
                       titleController,
-                      decoration:
-                      const InputDecoration(
-                        labelText: '標題',
+                      decoration: InputDecoration(
+                        labelText: l10n.privateProfileLoreTitle,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -1081,9 +1071,8 @@ class _PrivateCharacterProfilePageState
                       controller:
                       teaserController,
                       maxLines: 2,
-                      decoration:
-                      const InputDecoration(
-                        labelText: '簡短提示',
+                      decoration: InputDecoration(
+                        labelText: l10n.privateProfileLoreTeaser,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -1091,16 +1080,14 @@ class _PrivateCharacterProfilePageState
                       controller:
                       contentController,
                       maxLines: 5,
-                      decoration:
-                      const InputDecoration(
-                        labelText: '完整內容',
+                      decoration: InputDecoration(
+                        labelText: l10n.privateProfileLoreContent,
                       ),
                     ),
                     CheckboxListTile(
                       contentPadding:
                       EdgeInsets.zero,
-                      title:
-                      const Text('鎖定碎片'),
+                      title: Text(l10n.privateProfileLockLore),
                       value: isHidden,
                       onChanged: (value) {
                         setDialogState(() {
@@ -1119,7 +1106,7 @@ class _PrivateCharacterProfilePageState
                       dialogContext,
                     );
                   },
-                  child: const Text('取消'),
+                  child: Text(l10n.privateProfileCancel),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -1142,7 +1129,7 @@ class _PrivateCharacterProfilePageState
                         content.isEmpty) {
                       ToastUtils.showCenterToast(
                         context,
-                        '請填寫標題與內容',
+                        l10n.privateProfileTitleContentRequired,
                         isError: true,
                       );
                       return;
@@ -1166,7 +1153,7 @@ class _PrivateCharacterProfilePageState
                           .serverTimestamp(),
                     });
                   },
-                  child: const Text('儲存'),
+                  child: Text(l10n.privateProfileSave),
                 ),
               ],
             );

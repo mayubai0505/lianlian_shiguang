@@ -1315,7 +1315,7 @@
   },
   "tab_heartbeat_diary": "心动日记",
   "tab_daily_chit_chat": "闲话家常",
-  "task_desc_chat_3_times": "与角色进行 3 次日常聊天",
+  "task_desc_chat_3_times": "与角色进行 3 次日常模式聊天",
   "tab_story_progression": "剧情推进",
   "task_desc_story_1_time": "完成 1 次剧情模式互动",
   "tab_social_tour": "社群巡礼",
@@ -2396,5 +2396,425 @@
   },
   "mailCaseNumber": "案件编号",
   "mailCopyCaseNumber": "复制案件编号",
-  "mailCaseNumberCopied": "已复制案件编号"
+  "mailCaseNumberCopied": "已复制案件编号","profilePageAboutMe": "📝 关于我",
+  "profilePageTabBio": "自我介绍",
+  "profilePageTabCharacters": "角色",
+  "profilePageTabMoments": "动态",
+  "profilePageEditProfile": "编辑个人资料",
+  "profilePageFriends": "朋友",
+  "profilePageWorks": "作品",
+  "profilePageFollowing": "关注",
+  "profilePageFollowers": "关注者",
+  "profilePageHeartbeatDiary": "心动日记",
+  "profilePageEditCharacter": "编辑角色",
+  "profilePagePreviewCharacter": "预览角色资料",
+  "profilePageNoBio": "还没有自我介绍",
+  "profilePageNoBioHint": "点一下写下关于你的介绍。",
+  "profilePageCreateCharacter": "创建新角色",
+  "profilePageNoCharacters": "还没有创建角色",
+  "profilePageNoCharactersHint": "开始创建你的第一位角色吧。",
+  "profilePageCharacterActions": "角色操作",
+  "profilePagePublic": "公开",
+  "profilePagePrivate": "私人",
+  "profilePageCreator": "创作者",
+  "profilePageSelectPostingIdentity": "选择发布身份",
+  "profilePagePostAsCreator": "以创作者本人发布",
+  "profilePagePublicCharacter": "公开角色",
+  "profilePagePrivateCharacter": "私人角色",
+  "profilePagePleaseSignIn": "请先登录",
+  "profilePagePublishMoment": "发布动态",
+  "profilePageFilterAll": "全部",
+  "profilePageFilterCreator": "本人",
+  "profilePageFilterCharacter": "角色",
+  "profilePageMomentsLoadFailed": "动态读取失败",
+  "profilePageTryAgainLater": "请稍后再试一次。",
+  "profilePageNoCreatorMoments": "本人还没有发布动态",
+  "profilePageNoCreatorMomentsHint": "以创作者身份发布的内容会显示在这里。",
+  "profilePageNoCharacterMoments": "旗下角色还没有发布动态",
+  "profilePageNoCharacterMomentsHint": "以角色身份发布的内容会显示在这里。",
+  "profilePageNoMoments": "还没有动态",
+  "profilePageNoMomentsHint": "你与旗下角色发布的动态会显示在这里。",
+  "profilePageDeleteMomentTitle": "删除动态",
+  "profilePageDeleteMomentConfirm": "确定要永久删除这篇动态吗？",
+  "profilePageCancel": "取消",
+  "profilePageDelete": "删除",
+  "profilePageMomentDeleted": "动态已删除",
+  "profilePageDeleteFailed": "删除失败，请稍后再试",
+  "profilePageReferralCompleted": "星之邀约已完成",
+  "profilePageInviter": "邀请人：{inviterId}",
+  "@profilePageInviter": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralRewardReceived": "双方已获得 50 花花",
+  "profilePageClaimed": "已领取",
+  "profilePageInviterBound": "已绑定邀请人：{inviterId}",
+  "@profilePageInviterBound": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralProgressHint": "完成 15 句聊天后，双方各获得 50 花花",
+  "profilePageAlreadyCheckedIn": "今天已经签到过了",
+  "profilePageReferralBindFailed": "绑定失败，请稍后再试",
+  "profilePageCharacterNotFound": "找不到这个角色的数据",
+  "periodGuideTitle": "生理期日记怎么用？",
+  "periodGuideContent": "① 先点击日历上的日期。\n② 选择“今天来了”、“仍在生理期”或“今天结束”。\n③ 勾选当天心情与身体状态，也可以自行补充。\n④ 点击保存，角色就能在聊天时理解你今天的状态。\n\n预测日期会根据你的历史记录调整，仅供生活记录参考。",
+  "periodGotIt": "我知道了",
+  "periodSelectAtLeastOne": "请至少选择一项记录",
+  "periodFutureDateError": "未来日期不能标记生理期状态。",
+  "periodAlreadyOngoingError": "已有一条进行中的生理期记录，请先将其结束。",
+  "periodNoOngoingError": "目前没有进行中的生理期，请先选择“今天来了”。",
+  "periodBeforeStartError": "日期不能早于本次生理期开始日。",
+  "periodEndBeforeStartError": "结束日期不能早于开始日期。",
+  "periodRecordSaved": "{date}的记录已保存",
+  "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+  "periodSaveFailed": "保存失败，请稍后再试",
+  "periodDeleteTitle": "删除这次生理期记录？",
+  "periodDeleteContent": "删除后，周期平均值与下次预测也会重新计算。",
+  "periodCancel": "取消",
+  "periodDelete": "删除",
+  "periodNoOngoing": "目前没有进行中的生理期",
+  "periodDayCount": "生理期第 {count} 天",
+  "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+  "periodHelp": "使用说明",
+  "periodAverageCycle": "平均周期",
+  "periodAverageDuration": "平均经期",
+  "periodDays": "{count} 天",
+  "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodNextPrediction": "下次预测",
+  "periodCalculatedAfterRecording": "记录后推算",
+  "periodInsufficientData": "目前数据不足，暂时以 28 天周期、5 天经期进行估算。",
+  "periodPredictionDisclaimer": "根据现有记录估算，日期仅供生活记录参考。",
+  "periodStartedToday": "🩸 今天来了",
+  "periodStillOngoing": "仍在生理期",
+  "periodEndedToday": "今天结束",
+  "periodDateNotReached": "这一天还没到哦～",
+  "periodDateBeforeStart": "这一天早于目前生理期的开始日期。",
+  "periodMoodOkay": "还不错",
+  "periodMoodHappy": "开心",
+  "periodMoodLow": "低落",
+  "periodMoodUnwell": "难受",
+  "periodMoodIrritable": "烦躁",
+  "periodMoodTired": "疲倦",
+  "periodMoodAnxious": "焦虑",
+  "periodSymptomAbdominalPain": "腹痛",
+  "periodSymptomLowerBackPain": "腰酸",
+  "periodSymptomHeadache": "头痛",
+  "periodSymptomBreastTenderness": "胸胀",
+  "periodSymptomSwelling": "水肿",
+  "periodSymptomSleepy": "想睡",
+  "periodSymptomIncreasedAppetite": "食欲增加",
+  "periodSymptomDigestiveDiscomfort": "肠胃不适",
+  "periodDiaryTitle": "{characterName}的贴心日记",
+  "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodLoadFailed": "读取记录失败，请稍后再试",
+  "periodWeekdaySun": "日",
+  "periodWeekdayMon": "一",
+  "periodWeekdayTue": "二",
+  "periodWeekdayWed": "三",
+  "periodWeekdayThu": "四",
+  "periodWeekdayFri": "五",
+  "periodWeekdaySat": "六",
+  "periodSaveInstruction": "选择状态后，请点击最下方的“保存今日记录”才会正式保存。",
+  "periodTodayMood": "今天的心情（可多选）",
+  "periodMoodDescription": "这些是当天日记，不是显示在日历上的图标。",
+  "periodOtherMood": "其他心情",
+  "periodOtherMoodHint": "例如：委屈、没有安全感……",
+  "periodTodaySymptoms": "今天的身体状态（可多选）",
+  "periodOtherSymptom": "其他身体状态",
+  "periodOtherSymptomHint": "例如：怕冷、没有胃口……",
+  "periodNoteForCharacter": "想让 {characterName} 知道的事（选填）",
+  "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodNoteHint": "例如：今天想安静休息，不想被催……",
+  "periodSaving": "保存中…",
+  "periodSaveToday": "保存今日记录",
+  "periodHistory": "历史生理期",
+  "periodOngoing": "进行中",
+  "periodTotalDays": "共 {count} 天",
+  "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodDeleteRecord": "删除记录",
+  "privateProfilePleaseSignIn": "请先登录",
+  "privateProfileLoreLoadFailed": "记忆碎片读取失败：{error}",
+  "@privateProfileLoreLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "privateProfileWriteNewLore": "撰写新的记忆碎片（{count} / {limit}）",
+  "@privateProfileWriteNewLore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
+    }
+  },
+  "privateProfileNoLore": "还没有记忆碎片",
+  "privateProfileNoLoreHint": "可以在这里整理测试设置、故事线索与角色的重要记忆。",
+  "privateProfileUntitledLore": "未命名碎片",
+  "privateProfileEdit": "编辑",
+  "privateProfileDelete": "删除",
+  "privateProfileAddLore": "新增记忆碎片",
+  "privateProfileLoreTitle": "标题",
+  "privateProfileLoreTeaser": "简短提示",
+  "privateProfileLoreContent": "完整内容",
+  "privateProfileLockLore": "锁定碎片",
+  "privateProfileLockLoreHint": "私人角色目前只有创作者可见，此字段仍会保留，方便角色公开后继续使用。",
+  "privateProfileCancel": "取消",
+  "privateProfileTitleContentRequired": "请填写标题与内容",
+  "privateProfileLoreAdded": "记忆碎片已新增",
+  "privateProfileAddFailed": "新增失败，请稍后再试",
+  "privateProfilePublish": "发布",
+  "privateProfileDeleteLoreTitle": "删除记忆碎片",
+  "privateProfileDeleteLoreConfirm": "确定要永久删除这条记忆碎片吗？",
+  "privateProfileLoreDeleted": "记忆碎片已删除",
+  "privateProfileDeleteFailed": "删除失败，请稍后再试",
+  "privateProfileEditLore": "编辑记忆碎片",
+  "privateProfileSave": "保存",
+  "editProfileBirthdayReminderTitle": "🎂 小提醒",
+  "editProfileBirthdayReminderContent": "生日将影响角色的生日祝福、生日礼物及相关活动。\n\n建议确认生日后再完成设置，\n以免影响后续生日奖励。",
+  "editProfileGotIt": "知道了",
+  "editProfileBirthdayConfirmTitle": "🎂 确认生日",
+  "editProfileBirthdayConfirmContent": "请确认生日是否正确。\n\n生日将用于生日祝福、生日礼物及相关活动。\n\n为避免生日奖励被重复领取，生日完成设置后将无法再次修改。\n\n是否确定使用这个生日？",
+  "editProfileReturnToEdit": "返回修改",
+  "editProfileConfirmSetting": "确认设置",
+  "editProfileDefaultNickname": "初识的旅人",
+  "editProfileNoChanges": "没有需要保存的更改",
+  "editProfileCreateFailed": "创建数据失败：{error}",
+  "@editProfileCreateFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileAvatarNumber": "头像 {number}",
+  "@editProfileAvatarNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "editProfileImageSelectionFailed": "选择图片失败，请重新选择一张图片",
+  "editProfileCancel": "取消",
+  "editProfileConfirm": "确定",
+  "editProfileImageProcessingFailed": "图片处理失败，请重新选择一张图片",
+  "editProfileLoadFailed": "加载数据失败：{error}",
+  "@editProfileLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileBioLabel": "自我介绍",
+  "editProfileBioHelper": "简单介绍自己或你的创作风格",
+  "editProfileBioHint": "例如：喜欢创作奇幻、病娇与沉浸式恋爱角色。",
+  "editProfileUserNotFound": "找不到用户",
+  "editProfileGenerateIdFailed": "生成玩家 ID 失败，请再试一次",
+  "editProfileSignedInUserNotFound": "找不到当前登录的用户",
+  "editProfileAvatarReadFailed": "读取头像失败，状态码：{statusCode}",
+  "@editProfileAvatarReadFailed": {
+    "placeholders": {
+      "statusCode": { "type": "int" }
+    }
+  },
+  "editProfileAvatarFileNotFound": "找不到所选的头像文件：{path}",
+  "@editProfileAvatarFileNotFound": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "editProfileAvatarEmpty": "头像图片数据为空",
+  "chatPageSendFailed": "发送失败，请稍后再试 😢",
+  "chatPageRegenerateFailed": "重新生成失败，原来的消息已保留，请再试一次。",
+  "chatPageRegenerating": "💭 正在重新思考...",
+  "chatPageThinkingTooLong": "他似乎在沉思，请稍后再试……",
+  "chatPageAlreadyReplying": "他正在回复中，请稍等一下，不要重复发送",
+  "chatPageMediaUploadFailed": "媒体上传失败，请再试一次",
+  "chatPageReportReceived": "感谢你的反馈，我们会尽快确认",
+  "chatPageMessagesDeleted": "✅ 已成功删除 {count} 条消息",
+  "@chatPageMessagesDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSelectPhotoFailed": "无法选择照片：{error}",
+  "@chatPageSelectPhotoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFound": "找不到录音文件",
+  "chatPageRecordingEmpty": "录音文件是空的",
+  "chatPageAudioPlaybackFailed": "播放音频失败：{error}",
+  "@chatPageAudioPlaybackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageMicrophonePermissionRequired": "需要麦克风权限才能录音",
+  "chatPageStartRecordingFailed": "无法开始录音：{error}",
+  "@chatPageStartRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingCreationFailed": "录音文件创建失败，请重新录制",
+  "chatPageRecordingFailed": "录音失败：{error}",
+  "@chatPageRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFoundRetry": "找不到录音文件，请重新录制",
+  "chatPageRecordingEmptyRetry": "录音文件是空的，请重新录制",
+  "chatPageNoRecordingToSend": "没有可发送的录音",
+  "chatPagePointCost": "{count} 点",
+  "@chatPagePointCost": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageVoiceUploading": "语音上传中……",
+  "chatPageChangeWatermarkColor": "更换水印颜色",
+  "chatPageMinutesSeconds": "{minutes} 分 {seconds} 秒",
+  "@chatPageMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSeconds": "{seconds} 秒",
+  "@chatPageSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "characterEditSelectSupportingCharacter": "请选择配角。",
+  "characterEditSelectGender": "请选择角色性别。",
+  "characterEditCharacterSettings": "角色设置",
+  "characterEditWorldview": "世界观",
+  "characterEditSettingsMinLength": "角色设置至少需要填写 10 个字。",
+  "characterEditWorldviewMinLength": "世界观至少需要填写 20 个字。",
+  "characterEditSupportingCharacters": "配角",
+  "characterEditCharacterImage": "角色图片",
+  "characterEditWorldviewHint": "描述世界背景、历史、时代、地区、势力、制度、科技、魔法与世界规则。",
+  "characterEditSettingsHint": "描述角色个性、价值观、思考方式、情绪反应、行为习惯、说话方式与核心信念。",
+  "characterEditUnknownCharacter": "未知角色",
+  "characterEditEditSupportingCharacter": "编辑配角",
+  "characterEditAddSupportingCharacter": "新增配角",
+  "characterEditSupportingCharacterName": "配角名称",
+  "characterEditGender": "性别",
+  "characterEditMale": "男性",
+  "characterEditFemale": "女性",
+  "characterEditOther": "其他",
+  "characterEditAge": "年龄",
+  "characterEditIdentityOccupation": "身份／职业",
+  "characterEditRelationshipWithMain": "与主角色的关系",
+  "characterEditRelationshipHint": "描述与主角色的过往、立场、情感、秘密与目前关系。",
+  "characterEditCharacterProfile": "人物设置",
+  "characterEditCharacterProfileHint": "描述个性、外貌、习惯、价值观、能力、喜好、雷区与重要经历。",
+  "characterEditSpeakingStyle": "说话语气",
+  "characterEditSpeakingStyleHint": "例如：语速快、爱吐槽、说话直接。",
+  "characterEditSupportingNameRequired": "请填写配角名称。",
+  "characterEditSupportingGenderRequired": "请选择配角性别。",
+  "characterEditProfileRequired": "请填写人物设置。",
+  "characterEditRelationshipTooLong": "与主角色的关系已超过 1,500 个字。",
+  "characterEditProfileTooLong": "人物设置已超过 1,500 个字。",
+  "characterEditSave": "保存",
+  "characterEditAdd": "新增",
+  "creatorProfileNoBio": "尚未填写自我介绍",
+  "creatorProfileNoBioHint": "这位创作者还没有留下介绍。",
+  "creatorProfileNoCreatorMoments": "创作者还没有发布动态",
+  "creatorProfileNoCreatorMomentsHint": "以创作者本人身份发布的公开内容会显示在这里。",
+  "creatorProfileNoCharacterMoments": "旗下角色还没有发布动态",
+  "creatorProfileNoCharacterMomentsHint": "旗下公开角色发布的内容会显示在这里。",
+  "creatorProfileNoPublicMoments": "还没有公开动态",
+  "creatorProfileNoPublicMomentsHint": "创作者本人和旗下角色发布的公开动态会显示在这里。",
+  "creatorProfilePublicWorks": "公开作品",
+  "creatorProfileLikesReceived": "获得喜欢",
+  "creatorProfileFollow": "关注",
+  "creatorProfileFollowing": "已关注",
+  "creatorProfileUnfollowed": "已取消关注",
+  "creatorProfileFollowedCreator": "已关注 {creatorName}",
+  "@creatorProfileFollowedCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "creatorProfileOperationFailed": "操作失败，请稍后再试",
+  "creatorProfileWorksLoadFailed": "读取作品失败：{error}",
+  "@creatorProfileWorksLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareInvitation": "🦋 一封来自《恋恋拾光》的相遇邀请",
+  "characterProfileShareCreator": "✦ 创作者：{creatorName}",
+  "@characterProfileShareCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareMessage": "在《恋恋拾光》搜索“{characterName}”，开始这段只属于你们的故事。",
+  "@characterProfileShareMessage": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileInvitationLabel": "角色邀请卡",
+  "characterProfileCardCreator": "创作者  {creatorName}",
+  "@characterProfileCardCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileCardSearchHint": "搜索角色，开始相遇  🦋",
+  "characterProfileScanToDownload": "扫描下载",
+  "characterProfileShareTitle": "分享角色“{characterName}”",
+  "@characterProfileShareTitle": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareSubject": "来《恋恋拾光》认识 {characterName}",
+  "@characterProfileShareSubject": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareFailed": "邀请卡生成失败，请稍后再试",
+  "characterProfilePrivateShareUnavailable": "私人角色目前无法分享",
+  "characterProfileShareCard": "分享邀请卡",
+  "characterProfileShareCharacter": "分享角色",
+  "characterProfileReportCharacter": "举报角色",
+  "characterProfileTranslate": "翻译"
 }

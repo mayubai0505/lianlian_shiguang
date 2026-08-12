@@ -1301,7 +1301,7 @@
     },
     "tab_heartbeat_diary": "ไดอารี่ใจเต้น",
     "tab_daily_chit_chat": "คุยเล่นทั่วไป",
-    "task_desc_chat_3_times": "แชทคุยเล่นกับตัวละคร 3 ครั้ง",
+    "task_desc_chat_3_times": "แชตกับตัวละคร 3 ครั้งในโหมดประจำวัน",
     "tab_story_progression": "การดำเนินเนื้อเรื่อง",
     "task_desc_story_1_time": "โต้ตอบในโหมดเนื้อเรื่อง 1 ครั้ง",
     "tab_social_tour": "ทัวร์โซเชียล",
@@ -2381,5 +2381,426 @@
     },
     "mailCaseNumber": "หมายเลขกรณี",
     "mailCopyCaseNumber": "คัดลอกหมายเลขกรณี",
-    "mailCaseNumberCopied": "คัดลอกหมายเลขกรณีแล้ว"
+    "mailCaseNumberCopied": "คัดลอกหมายเลขกรณีแล้ว",
+    "profilePageAboutMe": "📝 เกี่ยวกับฉัน",
+    "profilePageTabBio": "แนะนำตัว",
+    "profilePageTabCharacters": "ตัวละคร",
+    "profilePageTabMoments": "โพสต์",
+    "profilePageEditProfile": "แก้ไขโปรไฟล์",
+    "profilePageFriends": "เพื่อน",
+    "profilePageWorks": "ผลงาน",
+    "profilePageFollowing": "กำลังติดตาม",
+    "profilePageFollowers": "ผู้ติดตาม",
+    "profilePageHeartbeatDiary": "ไดอารีหัวใจเต้น",
+    "profilePageEditCharacter": "แก้ไขตัวละคร",
+    "profilePagePreviewCharacter": "ดูตัวอย่างโปรไฟล์ตัวละคร",
+    "profilePageNoBio": "ยังไม่มีคำแนะนำตัว",
+    "profilePageNoBioHint": "แตะเพื่อเขียนเรื่องราวเกี่ยวกับตัวคุณ",
+    "profilePageCreateCharacter": "สร้างตัวละครใหม่",
+    "profilePageNoCharacters": "ยังไม่ได้สร้างตัวละคร",
+    "profilePageNoCharactersHint": "เริ่มสร้างตัวละครแรกของคุณกันเลย",
+    "profilePageCharacterActions": "การดำเนินการกับตัวละคร",
+    "profilePagePublic": "สาธารณะ",
+    "profilePagePrivate": "ส่วนตัว",
+    "profilePageCreator": "ครีเอเตอร์",
+    "profilePageSelectPostingIdentity": "เลือกตัวตนสำหรับโพสต์",
+    "profilePagePostAsCreator": "โพสต์ในฐานะครีเอเตอร์",
+    "profilePagePublicCharacter": "ตัวละครสาธารณะ",
+    "profilePagePrivateCharacter": "ตัวละครส่วนตัว",
+    "profilePagePleaseSignIn": "โปรดเข้าสู่ระบบก่อน",
+    "profilePagePublishMoment": "เผยแพร่โพสต์",
+    "profilePageFilterAll": "ทั้งหมด",
+    "profilePageFilterCreator": "ฉัน",
+    "profilePageFilterCharacter": "ตัวละคร",
+    "profilePageMomentsLoadFailed": "โหลดโพสต์ไม่สำเร็จ",
+    "profilePageTryAgainLater": "โปรดลองอีกครั้งในภายหลัง",
+    "profilePageNoCreatorMoments": "คุณยังไม่ได้เผยแพร่โพสต์",
+    "profilePageNoCreatorMomentsHint": "เนื้อหาที่เผยแพร่ในฐานะครีเอเตอร์จะแสดงที่นี่",
+    "profilePageNoCharacterMoments": "ตัวละครของคุณยังไม่ได้เผยแพร่โพสต์",
+    "profilePageNoCharacterMomentsHint": "เนื้อหาที่เผยแพร่ในฐานะตัวละครจะแสดงที่นี่",
+    "profilePageNoMoments": "ยังไม่มีโพสต์",
+    "profilePageNoMomentsHint": "โพสต์ที่เผยแพร่โดยคุณและตัวละครของคุณจะแสดงที่นี่",
+    "profilePageDeleteMomentTitle": "ลบโพสต์",
+    "profilePageDeleteMomentConfirm": "คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้อย่างถาวร?",
+    "profilePageCancel": "ยกเลิก",
+    "profilePageDelete": "ลบ",
+    "profilePageMomentDeleted": "ลบโพสต์แล้ว",
+    "profilePageDeleteFailed": "ลบไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "profilePageReferralCompleted": "คำเชิญแห่งดวงดาวเสร็จสมบูรณ์",
+    "profilePageInviter": "ผู้เชิญ: {inviterId}",
+    "@profilePageInviter": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralRewardReceived": "ทั้งสองฝ่ายได้รับดอกไม้ 50 ดอกแล้ว",
+    "profilePageClaimed": "รับแล้ว",
+    "profilePageInviterBound": "เชื่อมโยงผู้เชิญแล้ว: {inviterId}",
+    "@profilePageInviterBound": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralProgressHint": "หลังจากส่งข้อความแชตครบ 15 ข้อความ ทั้งสองฝ่ายจะได้รับดอกไม้คนละ 50 ดอก",
+    "profilePageAlreadyCheckedIn": "วันนี้คุณเช็กอินแล้ว",
+    "profilePageReferralBindFailed": "เชื่อมโยงไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "profilePageCharacterNotFound": "ไม่พบข้อมูลของตัวละครนี้",
+    "periodGuideTitle": "ใช้ไดอารีประจำเดือนอย่างไร?",
+    "periodGuideContent": "① ขั้นแรก ให้เลือกวันที่บนปฏิทิน\n② เลือก “เริ่มวันนี้” “ยังมีประจำเดือนอยู่” หรือ “สิ้นสุดวันนี้”\n③ เลือกอารมณ์และสภาพร่างกายของวันนี้ และสามารถเพิ่มรายละเอียดเพิ่มเติมได้\n④ กดบันทึก แล้วตัวละครจะสามารถเข้าใจสภาพของคุณในวันนี้ขณะสนทนาได้\n\nวันที่คาดการณ์จะปรับตามประวัติการบันทึกของคุณ และมีไว้เพื่อใช้อ้างอิงสำหรับการบันทึกส่วนตัวเท่านั้น",
+    "periodGotIt": "เข้าใจแล้ว",
+    "periodSelectAtLeastOne": "โปรดเลือกอย่างน้อยหนึ่งรายการเพื่อบันทึก",
+    "periodFutureDateError": "ไม่สามารถระบุสถานะประจำเดือนในวันที่ในอนาคตได้",
+    "periodAlreadyOngoingError": "มีประจำเดือนรอบหนึ่งที่กำลังดำเนินอยู่ โปรดระบุว่าสิ้นสุดแล้วก่อน",
+    "periodNoOngoingError": "ขณะนี้ไม่มีประจำเดือนที่กำลังดำเนินอยู่ โปรดเลือก “เริ่มวันนี้” ก่อน",
+    "periodBeforeStartError": "วันที่ต้องไม่อยู่ก่อนวันที่เริ่มต้นของประจำเดือนรอบนี้",
+    "periodEndBeforeStartError": "วันที่สิ้นสุดต้องไม่อยู่ก่อนวันที่เริ่มต้น",
+    "periodRecordSaved": "บันทึกข้อมูลของวันที่ {date} แล้ว",
+    "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+    "periodSaveFailed": "บันทึกไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "periodDeleteTitle": "ลบบันทึกประจำเดือนรอบนี้หรือไม่?",
+    "periodDeleteContent": "หลังจากลบแล้ว ค่าเฉลี่ยรอบเดือนและการคาดการณ์ครั้งถัดไปจะถูกคำนวณใหม่",
+    "periodCancel": "ยกเลิก",
+    "periodDelete": "ลบ",
+    "periodNoOngoing": "ขณะนี้ไม่มีประจำเดือนที่กำลังดำเนินอยู่",
+    "periodDayCount": "วันที่ {count} ของประจำเดือน",
+    "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+    "periodHelp": "วิธีใช้งาน",
+    "periodAverageCycle": "รอบเดือนเฉลี่ย",
+    "periodAverageDuration": "ระยะเวลาประจำเดือนเฉลี่ย",
+    "periodDays": "{count} วัน",
+    "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodNextPrediction": "การคาดการณ์ครั้งถัดไป",
+    "periodCalculatedAfterRecording": "คำนวณหลังจากบันทึก",
+    "periodInsufficientData": "ขณะนี้มีข้อมูลไม่เพียงพอ จึงคาดการณ์ชั่วคราวโดยใช้รอบเดือน 28 วันและระยะเวลาประจำเดือน 5 วัน",
+    "periodPredictionDisclaimer": "การคาดการณ์อิงตามข้อมูลที่บันทึกไว้ วันที่มีไว้เพื่อใช้อ้างอิงสำหรับการบันทึกส่วนตัวเท่านั้น",
+    "periodStartedToday": "🩸 เริ่มวันนี้",
+    "periodStillOngoing": "ยังมีประจำเดือนอยู่",
+    "periodEndedToday": "สิ้นสุดวันนี้",
+    "periodDateNotReached": "ยังไม่ถึงวันนี้นะ～",
+    "periodDateBeforeStart": "วันนี้อยู่ก่อนวันที่เริ่มต้นของประจำเดือนรอบปัจจุบัน",
+    "periodMoodOkay": "ค่อนข้างดี",
+    "periodMoodHappy": "มีความสุข",
+    "periodMoodLow": "รู้สึกเศร้า",
+    "periodMoodUnwell": "ไม่สบาย",
+    "periodMoodIrritable": "หงุดหงิด",
+    "periodMoodTired": "เหนื่อย",
+    "periodMoodAnxious": "กังวล",
+    "periodSymptomAbdominalPain": "ปวดท้อง",
+    "periodSymptomLowerBackPain": "ปวดหลังส่วนล่าง",
+    "periodSymptomHeadache": "ปวดศีรษะ",
+    "periodSymptomBreastTenderness": "คัดตึงเต้านม",
+    "periodSymptomSwelling": "บวมน้ำ",
+    "periodSymptomSleepy": "ง่วงนอน",
+    "periodSymptomIncreasedAppetite": "อยากอาหารมากขึ้น",
+    "periodSymptomDigestiveDiscomfort": "ไม่สบายท้อง",
+    "periodDiaryTitle": "ไดอารีแสนใส่ใจของ {characterName}",
+    "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodLoadFailed": "โหลดบันทึกไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "periodWeekdaySun": "อา.",
+    "periodWeekdayMon": "จ.",
+    "periodWeekdayTue": "อ.",
+    "periodWeekdayWed": "พ.",
+    "periodWeekdayThu": "พฤ.",
+    "periodWeekdayFri": "ศ.",
+    "periodWeekdaySat": "ส.",
+    "periodSaveInstruction": "หลังจากเลือกสถานะแล้ว โปรดกด “บันทึกข้อมูลวันนี้” ที่ด้านล่างเพื่อบันทึกข้อมูล",
+    "periodTodayMood": "อารมณ์วันนี้ (เลือกได้หลายรายการ)",
+    "periodMoodDescription": "รายการเหล่านี้เป็นบันทึกประจำวัน ไม่ใช่ไอคอนที่จะแสดงบนปฏิทิน",
+    "periodOtherMood": "อารมณ์อื่น ๆ",
+    "periodOtherMoodHint": "ตัวอย่าง: รู้สึกน้อยใจ ไม่รู้สึกปลอดภัย……",
+    "periodTodaySymptoms": "สภาพร่างกายวันนี้ (เลือกได้หลายรายการ)",
+    "periodOtherSymptom": "สภาพร่างกายอื่น ๆ",
+    "periodOtherSymptomHint": "ตัวอย่าง: รู้สึกหนาว ไม่อยากอาหาร……",
+    "periodNoteForCharacter": "สิ่งที่อยากให้ {characterName} รู้ (ไม่บังคับ)",
+    "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodNoteHint": "ตัวอย่าง: วันนี้อยากพักผ่อนเงียบ ๆ และไม่อยากถูกเร่ง……",
+    "periodSaving": "กำลังบันทึก…",
+    "periodSaveToday": "บันทึกข้อมูลวันนี้",
+    "periodHistory": "ประวัติประจำเดือน",
+    "periodOngoing": "กำลังดำเนินอยู่",
+    "periodTotalDays": "รวม {count} วัน",
+    "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodDeleteRecord": "ลบบันทึก",
+    "privateProfilePleaseSignIn": "โปรดเข้าสู่ระบบก่อน",
+    "privateProfileLoreLoadFailed": "โหลดเศษเสี้ยวความทรงจำไม่สำเร็จ: {error}",
+    "@privateProfileLoreLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "privateProfileWriteNewLore": "เขียนเศษเสี้ยวความทรงจำใหม่ ({count} / {limit})",
+    "@privateProfileWriteNewLore": {
+        "placeholders": {
+            "count": { "type": "int" },
+            "limit": { "type": "int" }
+        }
+    },
+    "privateProfileNoLore": "ยังไม่มีเศษเสี้ยวความทรงจำ",
+    "privateProfileNoLoreHint": "คุณสามารถจัดระเบียบการตั้งค่าทดสอบ เบาะแสของเรื่องราว และความทรงจำสำคัญของตัวละครได้ที่นี่",
+    "privateProfileUntitledLore": "เศษเสี้ยวที่ไม่มีชื่อ",
+    "privateProfileEdit": "แก้ไข",
+    "privateProfileDelete": "ลบ",
+    "privateProfileAddLore": "เพิ่มเศษเสี้ยวความทรงจำ",
+    "privateProfileLoreTitle": "ชื่อเรื่อง",
+    "privateProfileLoreTeaser": "คำใบ้สั้น ๆ",
+    "privateProfileLoreContent": "เนื้อหาทั้งหมด",
+    "privateProfileLockLore": "ล็อกเศษเสี้ยว",
+    "privateProfileLockLoreHint": "ขณะนี้ตัวละครส่วนตัวสามารถมองเห็นได้โดยครีเอเตอร์เท่านั้น ช่องนี้จะยังคงถูกเก็บไว้เพื่อใช้งานต่อเมื่อตัวละครถูกตั้งเป็นสาธารณะ",
+    "privateProfileCancel": "ยกเลิก",
+    "privateProfileTitleContentRequired": "โปรดกรอกชื่อเรื่องและเนื้อหา",
+    "privateProfileLoreAdded": "เพิ่มเศษเสี้ยวความทรงจำแล้ว",
+    "privateProfileAddFailed": "เพิ่มไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "privateProfilePublish": "เผยแพร่",
+    "privateProfileDeleteLoreTitle": "ลบเศษเสี้ยวความทรงจำ",
+    "privateProfileDeleteLoreConfirm": "คุณแน่ใจหรือไม่ว่าต้องการลบเศษเสี้ยวความทรงจำนี้อย่างถาวร?",
+    "privateProfileLoreDeleted": "ลบเศษเสี้ยวความทรงจำแล้ว",
+    "privateProfileDeleteFailed": "ลบไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "privateProfileEditLore": "แก้ไขเศษเสี้ยวความทรงจำ",
+    "privateProfileSave": "บันทึก",
+    "editProfileBirthdayReminderTitle": "🎂 แจ้งเตือนเล็กน้อย",
+    "editProfileBirthdayReminderContent": "วันเกิดของคุณจะส่งผลต่อคำอวยพรวันเกิดจากตัวละคร ของขวัญวันเกิด และกิจกรรมที่เกี่ยวข้อง\n\nขอแนะนำให้ตรวจสอบวันเกิดให้ถูกต้องก่อนตั้งค่าให้เสร็จสิ้น\nเพื่อไม่ให้ส่งผลต่อรางวัลวันเกิดในอนาคต",
+    "editProfileGotIt": "เข้าใจแล้ว",
+    "editProfileBirthdayConfirmTitle": "🎂 ยืนยันวันเกิด",
+    "editProfileBirthdayConfirmContent": "โปรดตรวจสอบว่าวันเกิดถูกต้องหรือไม่\n\nวันเกิดจะถูกใช้สำหรับคำอวยพรวันเกิด ของขวัญวันเกิด และกิจกรรมที่เกี่ยวข้อง\n\nเพื่อป้องกันการรับรางวัลวันเกิดซ้ำ จะไม่สามารถแก้ไขวันเกิดได้อีกหลังจากตั้งค่าเสร็จสิ้น\n\nยืนยันว่าจะใช้วันเกิดนี้หรือไม่?",
+    "editProfileReturnToEdit": "กลับไปแก้ไข",
+    "editProfileConfirmSetting": "ยืนยันการตั้งค่า",
+    "editProfileDefaultNickname": "นักเดินทางที่เพิ่งรู้จัก",
+    "editProfileNoChanges": "ไม่มีการเปลี่ยนแปลงที่ต้องบันทึก",
+    "editProfileCreateFailed": "สร้างข้อมูลไม่สำเร็จ: {error}",
+    "@editProfileCreateFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileAvatarNumber": "รูปโปรไฟล์ {number}",
+    "@editProfileAvatarNumber": {
+        "placeholders": {
+            "number": { "type": "int" }
+        }
+    },
+    "editProfileImageSelectionFailed": "เลือกรูปภาพไม่สำเร็จ โปรดเลือกรูปภาพอื่น",
+    "editProfileCancel": "ยกเลิก",
+    "editProfileConfirm": "ยืนยัน",
+    "editProfileImageProcessingFailed": "ประมวลผลรูปภาพไม่สำเร็จ โปรดเลือกรูปภาพอื่น",
+    "editProfileLoadFailed": "โหลดข้อมูลไม่สำเร็จ: {error}",
+    "@editProfileLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileBioLabel": "แนะนำตัว",
+    "editProfileBioHelper": "แนะนำตัวคุณหรือสไตล์การสร้างสรรค์ของคุณแบบสั้น ๆ",
+    "editProfileBioHint": "ตัวอย่าง: ชอบสร้างตัวละครแนวโรแมนติกแฟนตาซี คลั่งรัก และชวนดื่มด่ำ",
+    "editProfileUserNotFound": "ไม่พบผู้ใช้",
+    "editProfileGenerateIdFailed": "สร้าง ID ผู้เล่นไม่สำเร็จ โปรดลองอีกครั้ง",
+    "editProfileSignedInUserNotFound": "ไม่พบผู้ใช้ที่เข้าสู่ระบบอยู่ในขณะนี้",
+    "editProfileAvatarReadFailed": "โหลดรูปโปรไฟล์ไม่สำเร็จ รหัสสถานะ: {statusCode}",
+    "@editProfileAvatarReadFailed": {
+        "placeholders": {
+            "statusCode": { "type": "int" }
+        }
+    },
+    "editProfileAvatarFileNotFound": "ไม่พบไฟล์รูปโปรไฟล์ที่เลือก: {path}",
+    "@editProfileAvatarFileNotFound": {
+        "placeholders": {
+            "path": { "type": "String" }
+        }
+    },
+    "editProfileAvatarEmpty": "ข้อมูลรูปโปรไฟล์ว่างเปล่า",
+    "chatPageSendFailed": "ส่งไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง 😢",
+    "chatPageRegenerateFailed": "สร้างใหม่ไม่สำเร็จ ข้อความเดิมยังถูกเก็บไว้ โปรดลองอีกครั้ง",
+    "chatPageRegenerating": "💭 กำลังคิดใหม่...",
+    "chatPageThinkingTooLong": "ดูเหมือนว่าเขากำลังครุ่นคิด โปรดลองอีกครั้งในภายหลัง……",
+    "chatPageAlreadyReplying": "เขากำลังตอบอยู่ โปรดรอสักครู่และอย่าส่งซ้ำ",
+    "chatPageMediaUploadFailed": "อัปโหลดสื่อไม่สำเร็จ โปรดลองอีกครั้ง",
+    "chatPageReportReceived": "ขอบคุณสำหรับการรายงาน เราจะตรวจสอบโดยเร็วที่สุด",
+    "chatPageMessagesDeleted": "✅ ลบข้อความ {count} รายการสำเร็จแล้ว",
+    "@chatPageMessagesDeleted": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSelectPhotoFailed": "ไม่สามารถเลือกรูปภาพได้: {error}",
+    "@chatPageSelectPhotoFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFound": "ไม่พบไฟล์บันทึกเสียง",
+    "chatPageRecordingEmpty": "ไฟล์บันทึกเสียงว่างเปล่า",
+    "chatPageAudioPlaybackFailed": "เล่นเสียงไม่สำเร็จ: {error}",
+    "@chatPageAudioPlaybackFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageMicrophonePermissionRequired": "จำเป็นต้องอนุญาตการใช้ไมโครโฟนเพื่อบันทึกเสียง",
+    "chatPageStartRecordingFailed": "ไม่สามารถเริ่มบันทึกเสียงได้: {error}",
+    "@chatPageStartRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingCreationFailed": "สร้างไฟล์บันทึกเสียงไม่สำเร็จ โปรดบันทึกใหม่",
+    "chatPageRecordingFailed": "บันทึกเสียงไม่สำเร็จ: {error}",
+    "@chatPageRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFoundRetry": "ไม่พบไฟล์บันทึกเสียง โปรดบันทึกใหม่",
+    "chatPageRecordingEmptyRetry": "ไฟล์บันทึกเสียงว่างเปล่า โปรดบันทึกใหม่",
+    "chatPageNoRecordingToSend": "ไม่มีไฟล์บันทึกเสียงที่สามารถส่งได้",
+    "chatPagePointCost": "{count} คะแนน",
+    "@chatPagePointCost": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageVoiceUploading": "กำลังอัปโหลดเสียง……",
+    "chatPageChangeWatermarkColor": "เปลี่ยนสีลายน้ำ",
+    "chatPageMinutesSeconds": "{minutes} นาที {seconds} วินาที",
+    "@chatPageMinutesSeconds": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSeconds": "{seconds} วินาที",
+    "@chatPageSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "characterEditSelectSupportingCharacter": "โปรดเลือกตัวละครสมทบ",
+    "characterEditSelectGender": "โปรดเลือกเพศของตัวละคร",
+    "characterEditCharacterSettings": "การตั้งค่าตัวละคร",
+    "characterEditWorldview": "โลกทัศน์",
+    "characterEditSettingsMinLength": "การตั้งค่าตัวละครต้องมีอย่างน้อย 10 ตัวอักษร",
+    "characterEditWorldviewMinLength": "โลกทัศน์ต้องมีอย่างน้อย 20 ตัวอักษร",
+    "characterEditSupportingCharacters": "ตัวละครสมทบ",
+    "characterEditCharacterImage": "รูปภาพตัวละคร",
+    "characterEditWorldviewHint": "อธิบายภูมิหลัง ประวัติศาสตร์ ยุคสมัย ภูมิภาค กลุ่มอำนาจ ระบบ เทคโนโลยี เวทมนตร์ และกฎของโลก",
+    "characterEditSettingsHint": "อธิบายบุคลิก ค่านิยม วิธีคิด การตอบสนองทางอารมณ์ พฤติกรรมที่เคยชิน วิธีพูด และความเชื่อหลักของตัวละคร",
+    "characterEditUnknownCharacter": "ตัวละครที่ไม่รู้จัก",
+    "characterEditEditSupportingCharacter": "แก้ไขตัวละครสมทบ",
+    "characterEditAddSupportingCharacter": "เพิ่มตัวละครสมทบ",
+    "characterEditSupportingCharacterName": "ชื่อตัวละครสมทบ",
+    "characterEditGender": "เพศ",
+    "characterEditMale": "ชาย",
+    "characterEditFemale": "หญิง",
+    "characterEditOther": "อื่น ๆ",
+    "characterEditAge": "อายุ",
+    "characterEditIdentityOccupation": "สถานะ／อาชีพ",
+    "characterEditRelationshipWithMain": "ความสัมพันธ์กับตัวละครหลัก",
+    "characterEditRelationshipHint": "อธิบายอดีต จุดยืน ความรู้สึก ความลับ และความสัมพันธ์ปัจจุบันกับตัวละครหลัก",
+    "characterEditCharacterProfile": "ข้อมูลตัวละคร",
+    "characterEditCharacterProfileHint": "อธิบายบุคลิก รูปลักษณ์ นิสัย ค่านิยม ความสามารถ ความชอบ สิ่งที่ไม่ชอบ และประสบการณ์สำคัญของตัวละคร",
+    "characterEditSpeakingStyle": "รูปแบบการพูด",
+    "characterEditSpeakingStyleHint": "ตัวอย่าง: พูดเร็ว ชอบพูดเหน็บแนม และพูดตรงไปตรงมา",
+    "characterEditSupportingNameRequired": "โปรดกรอกชื่อตัวละครสมทบ",
+    "characterEditSupportingGenderRequired": "โปรดเลือกเพศของตัวละครสมทบ",
+    "characterEditProfileRequired": "โปรดกรอกข้อมูลตัวละคร",
+    "characterEditRelationshipTooLong": "ความสัมพันธ์กับตัวละครหลักมีความยาวเกิน 1,500 ตัวอักษร",
+    "characterEditProfileTooLong": "ข้อมูลตัวละครมีความยาวเกิน 1,500 ตัวอักษร",
+    "characterEditSave": "บันทึก",
+    "characterEditAdd": "เพิ่ม",
+    "creatorProfileNoBio": "ยังไม่มีคำแนะนำตัว",
+    "creatorProfileNoBioHint": "ครีเอเตอร์คนนี้ยังไม่ได้เพิ่มคำแนะนำตัว",
+    "creatorProfileNoCreatorMoments": "ครีเอเตอร์ยังไม่ได้เผยแพร่โพสต์",
+    "creatorProfileNoCreatorMomentsHint": "เนื้อหาสาธารณะที่เผยแพร่ในฐานะครีเอเตอร์จะแสดงที่นี่",
+    "creatorProfileNoCharacterMoments": "ตัวละครของครีเอเตอร์ยังไม่ได้เผยแพร่โพสต์",
+    "creatorProfileNoCharacterMomentsHint": "เนื้อหาที่เผยแพร่โดยตัวละครสาธารณะของครีเอเตอร์จะแสดงที่นี่",
+    "creatorProfileNoPublicMoments": "ยังไม่มีโพสต์สาธารณะ",
+    "creatorProfileNoPublicMomentsHint": "โพสต์สาธารณะที่เผยแพร่โดยครีเอเตอร์และตัวละครจะแสดงที่นี่",
+    "creatorProfilePublicWorks": "ผลงานสาธารณะ",
+    "creatorProfileLikesReceived": "จำนวนถูกใจที่ได้รับ",
+    "creatorProfileFollow": "ติดตาม",
+    "creatorProfileFollowing": "กำลังติดตาม",
+    "creatorProfileUnfollowed": "เลิกติดตามแล้ว",
+    "creatorProfileFollowedCreator": "ติดตาม {creatorName} แล้ว",
+    "@creatorProfileFollowedCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "creatorProfileOperationFailed": "ดำเนินการไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "creatorProfileWorksLoadFailed": "โหลดผลงานไม่สำเร็จ: {error}",
+    "@creatorProfileWorksLoadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareInvitation": "🦋 คำเชิญแห่งการพบเจอจาก LoveyDovey",
+    "characterProfileShareCreator": "✦ ครีเอเตอร์: {creatorName}",
+    "@characterProfileShareCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareMessage": "ค้นหา “{characterName}” ใน LoveyDovey แล้วเริ่มต้นเรื่องราวที่เป็นของคุณสองคนเท่านั้น",
+    "@characterProfileShareMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileInvitationLabel": "การ์ดเชิญตัวละคร",
+    "characterProfileCardCreator": "ครีเอเตอร์  {creatorName}",
+    "@characterProfileCardCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileCardSearchHint": "ค้นหาตัวละคร แล้วเริ่มต้นการพบเจอ  🦋",
+    "characterProfileScanToDownload": "สแกนเพื่อดาวน์โหลด",
+    "characterProfileShareTitle": "แชร์ตัวละคร “{characterName}”",
+    "@characterProfileShareTitle": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareSubject": "มารู้จัก {characterName} ที่ LoveyDovey",
+    "@characterProfileShareSubject": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareFailed": "สร้างการ์ดเชิญไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง",
+    "characterProfilePrivateShareUnavailable": "ขณะนี้ยังไม่สามารถแชร์ตัวละครส่วนตัวได้",
+    "characterProfileShareCard": "แชร์การ์ดเชิญ",
+    "characterProfileShareCharacter": "แชร์ตัวละคร",
+    "characterProfileReportCharacter": "รายงานตัวละคร",
+    "characterProfileTranslate": "แปล"
 }

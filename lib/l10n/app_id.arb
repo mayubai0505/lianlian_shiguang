@@ -1301,7 +1301,7 @@
     },
     "tab_heartbeat_diary": "Buku Harian Debaran Hati",
     "tab_daily_chit_chat": "Obrolan Santai Harian",
-    "task_desc_chat_3_times": "Lakukan 3 obrolan harian dengan karakter",
+    "task_desc_chat_3_times": "Mengobrol dengan karakter 3 kali dalam Mode Harian",
     "tab_story_progression": "Kemajuan Cerita",
     "task_desc_story_1_time": "Selesaikan 1 interaksi mode cerita",
     "tab_social_tour": "Tur Sosial",
@@ -2380,5 +2380,426 @@
     },
     "mailCaseNumber": "Nomor Kasus",
     "mailCopyCaseNumber": "Salin Nomor Kasus",
-    "mailCaseNumberCopied": "Nomor kasus disalin"
+    "mailCaseNumberCopied": "Nomor kasus disalin",
+    "profilePageAboutMe": "📝 Tentang Saya",
+    "profilePageTabBio": "Bio",
+    "profilePageTabCharacters": "Karakter",
+    "profilePageTabMoments": "Momen",
+    "profilePageEditProfile": "Edit Profil",
+    "profilePageFriends": "Teman",
+    "profilePageWorks": "Karya",
+    "profilePageFollowing": "Mengikuti",
+    "profilePageFollowers": "Pengikut",
+    "profilePageHeartbeatDiary": "Catatan Detak Hati",
+    "profilePageEditCharacter": "Edit Karakter",
+    "profilePagePreviewCharacter": "Pratinjau Profil Karakter",
+    "profilePageNoBio": "Belum ada bio",
+    "profilePageNoBioHint": "Ketuk untuk menulis sesuatu tentang dirimu.",
+    "profilePageCreateCharacter": "Buat Karakter Baru",
+    "profilePageNoCharacters": "Belum ada karakter yang dibuat",
+    "profilePageNoCharactersHint": "Mulailah membuat karakter pertamamu.",
+    "profilePageCharacterActions": "Tindakan Karakter",
+    "profilePagePublic": "Publik",
+    "profilePagePrivate": "Pribadi",
+    "profilePageCreator": "Kreator",
+    "profilePageSelectPostingIdentity": "Pilih Identitas untuk Memposting",
+    "profilePagePostAsCreator": "Posting sebagai Kreator",
+    "profilePagePublicCharacter": "Karakter Publik",
+    "profilePagePrivateCharacter": "Karakter Pribadi",
+    "profilePagePleaseSignIn": "Silakan masuk terlebih dahulu",
+    "profilePagePublishMoment": "Publikasikan Momen",
+    "profilePageFilterAll": "Semua",
+    "profilePageFilterCreator": "Saya",
+    "profilePageFilterCharacter": "Karakter",
+    "profilePageMomentsLoadFailed": "Gagal memuat momen",
+    "profilePageTryAgainLater": "Silakan coba lagi nanti.",
+    "profilePageNoCreatorMoments": "Kamu belum memublikasikan momen",
+    "profilePageNoCreatorMomentsHint": "Konten yang dipublikasikan sebagai kreator akan muncul di sini.",
+    "profilePageNoCharacterMoments": "Karaktermu belum memublikasikan momen",
+    "profilePageNoCharacterMomentsHint": "Konten yang dipublikasikan sebagai karakter akan muncul di sini.",
+    "profilePageNoMoments": "Belum ada momen",
+    "profilePageNoMomentsHint": "Momen yang dipublikasikan olehmu dan karaktermu akan muncul di sini.",
+    "profilePageDeleteMomentTitle": "Hapus Momen",
+    "profilePageDeleteMomentConfirm": "Yakin ingin menghapus momen ini secara permanen?",
+    "profilePageCancel": "Batal",
+    "profilePageDelete": "Hapus",
+    "profilePageMomentDeleted": "Momen telah dihapus",
+    "profilePageDeleteFailed": "Gagal menghapus. Silakan coba lagi nanti.",
+    "profilePageReferralCompleted": "Undangan Bintang Selesai",
+    "profilePageInviter": "Pengundang: {inviterId}",
+    "@profilePageInviter": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralRewardReceived": "Kedua pihak telah menerima 50 Bunga",
+    "profilePageClaimed": "Sudah diterima",
+    "profilePageInviterBound": "Pengundang berhasil ditautkan: {inviterId}",
+    "@profilePageInviterBound": {
+        "placeholders": {
+            "inviterId": { "type": "String" }
+        }
+    },
+    "profilePageReferralProgressHint": "Setelah menyelesaikan 15 pesan obrolan, kedua pihak masing-masing akan menerima 50 Bunga",
+    "profilePageAlreadyCheckedIn": "Kamu sudah melakukan check-in hari ini",
+    "profilePageReferralBindFailed": "Gagal menautkan. Silakan coba lagi nanti.",
+    "profilePageCharacterNotFound": "Data karakter ini tidak ditemukan",
+    "periodGuideTitle": "Bagaimana cara menggunakan Catatan Menstruasi?",
+    "periodGuideContent": "① Pilih tanggal pada kalender terlebih dahulu.\n② Pilih “Mulai Hari Ini”, “Masih Menstruasi”, atau “Berakhir Hari Ini”.\n③ Pilih suasana hati dan kondisi fisikmu hari ini. Kamu juga dapat menambahkan catatan sendiri.\n④ Tekan Simpan agar karakter dapat memahami kondisimu hari ini saat mengobrol.\n\nTanggal prediksi akan disesuaikan berdasarkan riwayat catatanmu dan hanya digunakan sebagai referensi untuk pencatatan pribadi.",
+    "periodGotIt": "Saya Mengerti",
+    "periodSelectAtLeastOne": "Pilih setidaknya satu item untuk dicatat",
+    "periodFutureDateError": "Status menstruasi tidak dapat ditandai pada tanggal mendatang.",
+    "periodAlreadyOngoingError": "Sudah ada periode menstruasi yang berlangsung. Selesaikan periode tersebut terlebih dahulu.",
+    "periodNoOngoingError": "Saat ini tidak ada periode menstruasi yang berlangsung. Pilih “Mulai Hari Ini” terlebih dahulu.",
+    "periodBeforeStartError": "Tanggal tidak boleh lebih awal dari tanggal dimulainya periode menstruasi saat ini.",
+    "periodEndBeforeStartError": "Tanggal berakhir tidak boleh lebih awal dari tanggal mulai.",
+    "periodRecordSaved": "Catatan untuk {date} telah disimpan",
+    "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+    "periodSaveFailed": "Gagal menyimpan. Silakan coba lagi nanti",
+    "periodDeleteTitle": "Hapus catatan menstruasi ini?",
+    "periodDeleteContent": "Setelah dihapus, rata-rata siklus dan prediksi berikutnya akan dihitung ulang.",
+    "periodCancel": "Batal",
+    "periodDelete": "Hapus",
+    "periodNoOngoing": "Saat ini tidak ada periode menstruasi yang berlangsung",
+    "periodDayCount": "Hari ke-{count} menstruasi",
+    "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+    "periodHelp": "Petunjuk Penggunaan",
+    "periodAverageCycle": "Rata-rata Siklus",
+    "periodAverageDuration": "Rata-rata Durasi Menstruasi",
+    "periodDays": "{count} hari",
+    "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodNextPrediction": "Prediksi Berikutnya",
+    "periodCalculatedAfterRecording": "Dihitung setelah pencatatan",
+    "periodInsufficientData": "Data saat ini belum mencukupi. Untuk sementara, prediksi akan menggunakan siklus 28 hari dan durasi menstruasi 5 hari.",
+    "periodPredictionDisclaimer": "Prediksi dibuat berdasarkan catatan yang tersedia. Tanggal hanya digunakan sebagai referensi untuk pencatatan pribadi.",
+    "periodStartedToday": "🩸 Mulai Hari Ini",
+    "periodStillOngoing": "Masih Menstruasi",
+    "periodEndedToday": "Berakhir Hari Ini",
+    "periodDateNotReached": "Hari ini belum tiba～",
+    "periodDateBeforeStart": "Tanggal ini lebih awal dari tanggal dimulainya periode menstruasi saat ini.",
+    "periodMoodOkay": "Cukup Baik",
+    "periodMoodHappy": "Senang",
+    "periodMoodLow": "Sedih",
+    "periodMoodUnwell": "Tidak Enak Badan",
+    "periodMoodIrritable": "Mudah Kesal",
+    "periodMoodTired": "Lelah",
+    "periodMoodAnxious": "Cemas",
+    "periodSymptomAbdominalPain": "Sakit Perut",
+    "periodSymptomLowerBackPain": "Nyeri Pinggang",
+    "periodSymptomHeadache": "Sakit Kepala",
+    "periodSymptomBreastTenderness": "Nyeri Payudara",
+    "periodSymptomSwelling": "Bengkak",
+    "periodSymptomSleepy": "Mengantuk",
+    "periodSymptomIncreasedAppetite": "Nafsu Makan Meningkat",
+    "periodSymptomDigestiveDiscomfort": "Gangguan Pencernaan",
+    "periodDiaryTitle": "Catatan Perhatian dari {characterName}",
+    "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodLoadFailed": "Gagal memuat catatan. Silakan coba lagi nanti",
+    "periodWeekdaySun": "Min",
+    "periodWeekdayMon": "Sen",
+    "periodWeekdayTue": "Sel",
+    "periodWeekdayWed": "Rab",
+    "periodWeekdayThu": "Kam",
+    "periodWeekdayFri": "Jum",
+    "periodWeekdaySat": "Sab",
+    "periodSaveInstruction": "Setelah memilih status, tekan “Simpan Catatan Hari Ini” di bagian bawah untuk menyimpannya.",
+    "periodTodayMood": "Suasana Hati Hari Ini (Boleh pilih lebih dari satu)",
+    "periodMoodDescription": "Ini adalah catatan harian untuk hari tersebut, bukan ikon yang ditampilkan pada kalender.",
+    "periodOtherMood": "Suasana Hati Lainnya",
+    "periodOtherMoodHint": "Contoh: merasa tersakiti, tidak aman……",
+    "periodTodaySymptoms": "Kondisi Fisik Hari Ini (Boleh pilih lebih dari satu)",
+    "periodOtherSymptom": "Kondisi Fisik Lainnya",
+    "periodOtherSymptomHint": "Contoh: merasa kedinginan, tidak nafsu makan……",
+    "periodNoteForCharacter": "Hal yang ingin kamu sampaikan kepada {characterName} (Opsional)",
+    "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+    "periodNoteHint": "Contoh: hari ini aku ingin beristirahat dengan tenang dan tidak ingin didesak……",
+    "periodSaving": "Menyimpan…",
+    "periodSaveToday": "Simpan Catatan Hari Ini",
+    "periodHistory": "Riwayat Menstruasi",
+    "periodOngoing": "Sedang Berlangsung",
+    "periodTotalDays": "Total {count} hari",
+    "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+    "periodDeleteRecord": "Hapus Catatan",
+    "privateProfilePleaseSignIn": "Silakan masuk terlebih dahulu",
+    "privateProfileLoreLoadFailed": "Gagal memuat Fragmen Memori: {error}",
+    "@privateProfileLoreLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "privateProfileWriteNewLore": "Tulis Fragmen Memori Baru ({count} / {limit})",
+    "@privateProfileWriteNewLore": {
+        "placeholders": {
+            "count": { "type": "int" },
+            "limit": { "type": "int" }
+        }
+    },
+    "privateProfileNoLore": "Belum ada Fragmen Memori",
+    "privateProfileNoLoreHint": "Kamu dapat mengatur pengaturan uji coba, petunjuk cerita, dan kenangan penting karakter di sini.",
+    "privateProfileUntitledLore": "Fragmen Tanpa Judul",
+    "privateProfileEdit": "Edit",
+    "privateProfileDelete": "Hapus",
+    "privateProfileAddLore": "Tambahkan Fragmen Memori",
+    "privateProfileLoreTitle": "Judul",
+    "privateProfileLoreTeaser": "Petunjuk Singkat",
+    "privateProfileLoreContent": "Isi Lengkap",
+    "privateProfileLockLore": "Kunci Fragmen",
+    "privateProfileLockLoreHint": "Karakter pribadi saat ini hanya dapat dilihat oleh kreator. Kolom ini akan tetap disimpan agar dapat digunakan saat karakter dijadikan publik.",
+    "privateProfileCancel": "Batal",
+    "privateProfileTitleContentRequired": "Silakan masukkan judul dan isi",
+    "privateProfileLoreAdded": "Fragmen Memori telah ditambahkan",
+    "privateProfileAddFailed": "Gagal menambahkan. Silakan coba lagi nanti",
+    "privateProfilePublish": "Publikasikan",
+    "privateProfileDeleteLoreTitle": "Hapus Fragmen Memori",
+    "privateProfileDeleteLoreConfirm": "Yakin ingin menghapus Fragmen Memori ini secara permanen?",
+    "privateProfileLoreDeleted": "Fragmen Memori telah dihapus",
+    "privateProfileDeleteFailed": "Gagal menghapus. Silakan coba lagi nanti",
+    "privateProfileEditLore": "Edit Fragmen Memori",
+    "privateProfileSave": "Simpan",
+    "editProfileBirthdayReminderTitle": "🎂 Pengingat Kecil",
+    "editProfileBirthdayReminderContent": "Tanggal lahirmu akan memengaruhi ucapan ulang tahun dari karakter, hadiah ulang tahun, dan acara terkait.\n\nSebaiknya pastikan tanggal lahirmu sudah benar sebelum menyelesaikan pengaturan\nagar hadiah ulang tahun berikutnya tidak terpengaruh.",
+    "editProfileGotIt": "Saya Mengerti",
+    "editProfileBirthdayConfirmTitle": "🎂 Konfirmasi Tanggal Lahir",
+    "editProfileBirthdayConfirmContent": "Pastikan tanggal lahirmu sudah benar.\n\nTanggal lahir akan digunakan untuk ucapan ulang tahun, hadiah ulang tahun, dan acara terkait.\n\nUntuk mencegah hadiah ulang tahun diterima lebih dari satu kali, tanggal lahir tidak dapat diubah lagi setelah pengaturan selesai.\n\nYakin ingin menggunakan tanggal lahir ini?",
+    "editProfileReturnToEdit": "Kembali untuk Mengedit",
+    "editProfileConfirmSetting": "Konfirmasi Pengaturan",
+    "editProfileDefaultNickname": "Pengembara yang Baru Dikenal",
+    "editProfileNoChanges": "Tidak ada perubahan yang perlu disimpan",
+    "editProfileCreateFailed": "Gagal membuat data: {error}",
+    "@editProfileCreateFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileAvatarNumber": "Avatar {number}",
+    "@editProfileAvatarNumber": {
+        "placeholders": {
+            "number": { "type": "int" }
+        }
+    },
+    "editProfileImageSelectionFailed": "Gagal memilih gambar. Silakan pilih gambar lain",
+    "editProfileCancel": "Batal",
+    "editProfileConfirm": "Konfirmasi",
+    "editProfileImageProcessingFailed": "Gagal memproses gambar. Silakan pilih gambar lain",
+    "editProfileLoadFailed": "Gagal memuat data: {error}",
+    "@editProfileLoadFailed": {
+        "placeholders": {
+            "error": { "type": "String" }
+        }
+    },
+    "editProfileBioLabel": "Bio",
+    "editProfileBioHelper": "Perkenalkan dirimu atau gaya kreatifmu secara singkat",
+    "editProfileBioHint": "Contoh: Saya suka menciptakan karakter romansa fantasi, obsesif, dan imersif.",
+    "editProfileUserNotFound": "Pengguna tidak ditemukan",
+    "editProfileGenerateIdFailed": "Gagal membuat ID Pemain. Silakan coba lagi",
+    "editProfileSignedInUserNotFound": "Pengguna yang sedang masuk tidak ditemukan",
+    "editProfileAvatarReadFailed": "Gagal memuat avatar. Kode status: {statusCode}",
+    "@editProfileAvatarReadFailed": {
+        "placeholders": {
+            "statusCode": { "type": "int" }
+        }
+    },
+    "editProfileAvatarFileNotFound": "File avatar yang dipilih tidak ditemukan: {path}",
+    "@editProfileAvatarFileNotFound": {
+        "placeholders": {
+            "path": { "type": "String" }
+        }
+    },
+    "editProfileAvatarEmpty": "Data gambar avatar kosong",
+    "chatPageSendFailed": "Gagal mengirim. Silakan coba lagi nanti 😢",
+    "chatPageRegenerateFailed": "Gagal membuat ulang. Pesan asli tetap disimpan. Silakan coba lagi.",
+    "chatPageRegenerating": "💭 Sedang berpikir ulang...",
+    "chatPageThinkingTooLong": "Sepertinya dia sedang berpikir keras. Silakan coba lagi nanti……",
+    "chatPageAlreadyReplying": "Dia sedang membalas. Tunggu sebentar dan jangan mengirim ulang.",
+    "chatPageMediaUploadFailed": "Gagal mengunggah media. Silakan coba lagi.",
+    "chatPageReportReceived": "Terima kasih atas laporanmu. Kami akan memeriksanya sesegera mungkin.",
+    "chatPageMessagesDeleted": "✅ Berhasil menghapus {count} pesan",
+    "@chatPageMessagesDeleted": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSelectPhotoFailed": "Tidak dapat memilih foto: {error}",
+    "@chatPageSelectPhotoFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFound": "File rekaman tidak ditemukan",
+    "chatPageRecordingEmpty": "File rekaman kosong",
+    "chatPageAudioPlaybackFailed": "Gagal memutar audio: {error}",
+    "@chatPageAudioPlaybackFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageMicrophonePermissionRequired": "Izin mikrofon diperlukan untuk merekam audio",
+    "chatPageStartRecordingFailed": "Tidak dapat memulai perekaman: {error}",
+    "@chatPageStartRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingCreationFailed": "Gagal membuat file rekaman. Silakan rekam ulang.",
+    "chatPageRecordingFailed": "Perekaman gagal: {error}",
+    "@chatPageRecordingFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "chatPageRecordingNotFoundRetry": "File rekaman tidak ditemukan. Silakan rekam ulang.",
+    "chatPageRecordingEmptyRetry": "File rekaman kosong. Silakan rekam ulang.",
+    "chatPageNoRecordingToSend": "Tidak ada rekaman yang dapat dikirim",
+    "chatPagePointCost": "{count} poin",
+    "@chatPagePointCost": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageVoiceUploading": "Mengunggah rekaman suara……",
+    "chatPageChangeWatermarkColor": "Ubah Warna Tanda Air",
+    "chatPageMinutesSeconds": "{minutes} menit {seconds} detik",
+    "@chatPageMinutesSeconds": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            },
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "chatPageSeconds": "{seconds} detik",
+    "@chatPageSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "characterEditSelectSupportingCharacter": "Silakan pilih karakter pendukung.",
+    "characterEditSelectGender": "Silakan pilih gender karakter.",
+    "characterEditCharacterSettings": "Pengaturan Karakter",
+    "characterEditWorldview": "Latar Dunia",
+    "characterEditSettingsMinLength": "Pengaturan karakter harus berisi setidaknya 10 karakter.",
+    "characterEditWorldviewMinLength": "Latar dunia harus berisi setidaknya 20 karakter.",
+    "characterEditSupportingCharacters": "Karakter Pendukung",
+    "characterEditCharacterImage": "Gambar Karakter",
+    "characterEditWorldviewHint": "Jelaskan latar belakang, sejarah, zaman, wilayah, faksi, sistem, teknologi, sihir, dan aturan dunia.",
+    "characterEditSettingsHint": "Jelaskan kepribadian, nilai-nilai, cara berpikir, reaksi emosional, kebiasaan perilaku, cara berbicara, dan keyakinan utama karakter.",
+    "characterEditUnknownCharacter": "Karakter Tidak Dikenal",
+    "characterEditEditSupportingCharacter": "Edit Karakter Pendukung",
+    "characterEditAddSupportingCharacter": "Tambahkan Karakter Pendukung",
+    "characterEditSupportingCharacterName": "Nama Karakter Pendukung",
+    "characterEditGender": "Gender",
+    "characterEditMale": "Laki-laki",
+    "characterEditFemale": "Perempuan",
+    "characterEditOther": "Lainnya",
+    "characterEditAge": "Usia",
+    "characterEditIdentityOccupation": "Identitas／Pekerjaan",
+    "characterEditRelationshipWithMain": "Hubungan dengan Karakter Utama",
+    "characterEditRelationshipHint": "Jelaskan masa lalu, posisi, perasaan, rahasia, dan hubungan saat ini dengan karakter utama.",
+    "characterEditCharacterProfile": "Profil Karakter",
+    "characterEditCharacterProfileHint": "Jelaskan kepribadian, penampilan, kebiasaan, nilai-nilai, kemampuan, kesukaan, hal yang tidak disukai, dan pengalaman penting karakter.",
+    "characterEditSpeakingStyle": "Gaya Bicara",
+    "characterEditSpeakingStyleHint": "Contoh: berbicara cepat, suka melontarkan komentar sarkastis, dan berbicara terus terang.",
+    "characterEditSupportingNameRequired": "Silakan masukkan nama karakter pendukung.",
+    "characterEditSupportingGenderRequired": "Silakan pilih gender karakter pendukung.",
+    "characterEditProfileRequired": "Silakan isi profil karakter.",
+    "characterEditRelationshipTooLong": "Deskripsi hubungan dengan karakter utama telah melebihi 1.500 karakter.",
+    "characterEditProfileTooLong": "Profil karakter telah melebihi 1.500 karakter.",
+    "characterEditSave": "Simpan",
+    "characterEditAdd": "Tambahkan",
+    "creatorProfileNoBio": "Belum ada bio",
+    "creatorProfileNoBioHint": "Kreator ini belum menambahkan bio.",
+    "creatorProfileNoCreatorMoments": "Kreator belum memublikasikan momen",
+    "creatorProfileNoCreatorMomentsHint": "Konten publik yang dipublikasikan sebagai kreator akan muncul di sini.",
+    "creatorProfileNoCharacterMoments": "Karakter milik kreator belum memublikasikan momen",
+    "creatorProfileNoCharacterMomentsHint": "Konten yang dipublikasikan oleh karakter publik milik kreator akan muncul di sini.",
+    "creatorProfileNoPublicMoments": "Belum ada momen publik",
+    "creatorProfileNoPublicMomentsHint": "Momen publik yang dipublikasikan oleh kreator dan karakternya akan muncul di sini.",
+    "creatorProfilePublicWorks": "Karya Publik",
+    "creatorProfileLikesReceived": "Suka yang Diterima",
+    "creatorProfileFollow": "Ikuti",
+    "creatorProfileFollowing": "Mengikuti",
+    "creatorProfileUnfollowed": "Berhenti mengikuti",
+    "creatorProfileFollowedCreator": "Mengikuti {creatorName}",
+    "@creatorProfileFollowedCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "creatorProfileOperationFailed": "Operasi gagal. Silakan coba lagi nanti",
+    "creatorProfileWorksLoadFailed": "Gagal memuat karya: {error}",
+    "@creatorProfileWorksLoadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareInvitation": "🦋 Undangan pertemuan dari LoveyDovey",
+    "characterProfileShareCreator": "✦ Kreator: {creatorName}",
+    "@characterProfileShareCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareMessage": "Cari “{characterName}” di LoveyDovey dan mulailah kisah yang hanya menjadi milik kalian berdua.",
+    "@characterProfileShareMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileInvitationLabel": "Kartu Undangan Karakter",
+    "characterProfileCardCreator": "Kreator  {creatorName}",
+    "@characterProfileCardCreator": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileCardSearchHint": "Cari karakter dan mulailah pertemuan  🦋",
+    "characterProfileScanToDownload": "Pindai untuk Mengunduh",
+    "characterProfileShareTitle": "Bagikan karakter “{characterName}”",
+    "@characterProfileShareTitle": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareSubject": "Temui {characterName} di LoveyDovey",
+    "@characterProfileShareSubject": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "characterProfileShareFailed": "Gagal membuat kartu undangan. Silakan coba lagi nanti",
+    "characterProfilePrivateShareUnavailable": "Karakter pribadi saat ini tidak dapat dibagikan",
+    "characterProfileShareCard": "Bagikan Kartu Undangan",
+    "characterProfileShareCharacter": "Bagikan Karakter",
+    "characterProfileReportCharacter": "Laporkan Karakter",
+    "characterProfileTranslate": "Terjemahkan"
 }

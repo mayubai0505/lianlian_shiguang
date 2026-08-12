@@ -1534,7 +1534,10 @@ class _ChatPageState extends State<ChatPage> {
       debugPrint('❌ _sendMessage 發生錯誤: $e');
 
       if (mounted) {
-        _showCenterToast('送出失敗，請稍後再試 😢', isError: true);
+        _showCenterToast(
+          l10n.chatPageSendFailed,
+          isError: true,
+        );
       }
     } finally {
       generatingRooms.remove(_roomLockKey);
@@ -1713,29 +1716,31 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // ✨ VIP 無痕重新生成通道
-  Future<void> _regenerateAIResponse(
-    String aiMessageId,
-    String lastUserText,
-  ) async {
+  Future<bool> _regenerateAIResponse(
+      String aiMessageId,
+      String lastUserText,
+      ) async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser == null || _isGenerating || _sessionId == null) {
-      return;
+      return false;
     }
 
     final String clientRequestId = _createAiRequestId();
-
     _activeAiRequestId = clientRequestId;
 
     final l10n = AppLocalizations.of(context)!;
     final userId = currentUser.uid;
     final characterId = _currentCharacter.id;
 
-    // 只鎖定畫面，不要先刪除舊訊息。
-    setState(() {
-      _isGenerating = true;
-      _isRegenerating = true;
-    });
+    // 只鎖定畫面，不要先刪除舊訊息
+    if (mounted) {
+      setState(() {
+        _isGenerating = true;
+        _isRegenerating = true;
+      });
+    }
+
     try {
       // 讀取歷史紀錄
       final List<Map<String, String>> actualChatHistory = [];
@@ -1743,9 +1748,9 @@ class _ChatPageState extends State<ChatPage> {
       if (_messagesCollection != null) {
         final historySnapshot = await _messagesCollection!
             .orderBy(
-              'timestamp',
-              descending: true,
-            )
+          'timestamp',
+          descending: true,
+        )
             .limit(16)
             .get()
             .timeout(
@@ -1758,16 +1763,13 @@ class _ChatPageState extends State<ChatPage> {
         final docsList = historySnapshot.docs.reversed.toList();
 
         for (final doc in docsList) {
-          // 不要把準備被重新生成的舊 AI 回覆
-          // 再送進聊天歷史。
+          // 不要把準備重新生成的舊 AI 回覆再次送進歷史紀錄
           if (doc.id == aiMessageId) {
             continue;
           }
 
           final data = doc.data() as Map<String, dynamic>;
-
           final sender = data['sender']?.toString();
-
           final text = data['text']?.toString().trim() ?? '';
 
           if (text.isEmpty) {
@@ -1785,7 +1787,7 @@ class _ChatPageState extends State<ChatPage> {
         final recentTests = _testMessages
             .where(
               (message) => message.id != aiMessageId,
-            )
+        )
             .take(8)
             .toList()
             .reversed
@@ -1819,16 +1821,17 @@ class _ChatPageState extends State<ChatPage> {
       final aboutMeNotes = aboutMeSnapshot.docs
           .map(
             (doc) => doc.data()['text']?.toString() ?? '',
-          )
+      )
           .where(
             (text) => text.trim().isNotEmpty,
-          )
+      )
           .toList();
 
       // 讀取備忘錄
       List<String> memos = [];
 
-      if (_currentMode == ChatMode.daily || _currentMode == ChatMode.gemini) {
+      if (_currentMode == ChatMode.daily ||
+          _currentMode == ChatMode.gemini) {
         final memosSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -1840,10 +1843,10 @@ class _ChatPageState extends State<ChatPage> {
         memos = memosSnapshot.docs
             .map(
               (doc) => doc.data()['content']?.toString() ?? '',
-            )
+        )
             .where(
               (text) => text.trim().isNotEmpty,
-            )
+        )
             .toList();
       }
 
@@ -1854,7 +1857,8 @@ class _ChatPageState extends State<ChatPage> {
 
       final idToken = await currentUser.getIdToken();
 
-      final dynamicRelationship = _currentFriendship.relationshipTitle(l10n);
+      final dynamicRelationship =
+      _currentFriendship.relationshipTitle(l10n);
 
       final dynamicProfile = _buildDynamicUserProfileString();
 
@@ -1865,11 +1869,13 @@ class _ChatPageState extends State<ChatPage> {
       final playerPronounGuide = _buildPlayerPronounGuide(
         playerGenderForAi,
       );
+
       print('🔥🔥🔥 已進入真正的 requestBody 區塊');
       print('👥 NPC 數量：${_currentCharacter.npcCharacters.length}');
       print('👥 NPC 完整資料：${_currentCharacter.npcCharacters}');
+
       final Map<String, dynamic> requestBody = {
-        "clientRequestId": clientRequestId,
+        'clientRequestId': clientRequestId,
         'audioUrl': '',
         'userMessage': lastUserText,
         'chatMode': _currentMode?.name ?? 'daily',
@@ -1886,7 +1892,7 @@ class _ChatPageState extends State<ChatPage> {
             '現在起，與你對話的主角稱呼強制更新為'
             '「$_playerNickname」，絕對不能叫錯！'
             '請視為全新的互動自然地接續。'
-            '以下是她當前的專屬時空設定：\n'
+            '以下是對方當前的專屬時空設定：\n'
             '$dynamicProfile\n\n'
             '你必須嚴格根據這些設定與她互動，'
             '並以 JSON 格式回覆，格式為：'
@@ -1901,70 +1907,70 @@ class _ChatPageState extends State<ChatPage> {
           'id': _currentCharacter.id,
           'name': _currentCharacter.name,
           'toneAndStyle': _currentCharacter.toneAndStyle
-                  ?.replaceAll(
-                    '{{玩家名字}}',
-                    _playerNickname,
-                  )
-                  .replaceAll(
-                    '(玩家名字)',
-                    _playerNickname,
-                  ) ??
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
               '',
           'background': _currentCharacter.background
-                  ?.replaceAll(
-                    '{{玩家名字}}',
-                    _playerNickname,
-                  )
-                  .replaceAll(
-                    '(玩家名字)',
-                    _playerNickname,
-                  ) ??
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
               '',
           'detailedPersonality': _currentCharacter.detailedPersonality
-                  ?.replaceAll(
-                    '{{玩家名字}}',
-                    _playerNickname,
-                  )
-                  .replaceAll(
-                    '(玩家名字)',
-                    _playerNickname,
-                  ) ??
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
               '',
           'likes': _currentCharacter.likes
-                  ?.replaceAll(
-                    '{{玩家名字}}',
-                    _playerNickname,
-                  )
-                  .replaceAll(
-                    '(玩家名字)',
-                    _playerNickname,
-                  ) ??
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
               '',
           'secrets': _currentCharacter.secrets
-                  ?.replaceAll(
-                    '{{玩家名字}}',
-                    _playerNickname,
-                  )
-                  .replaceAll(
-                    '(玩家名字)',
-                    _playerNickname,
-                  ) ??
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
               '',
           'gender': _currentCharacter.gender,
           'relationship': dynamicRelationship,
           'socialRelationships': '',
           'worldSetting': _currentCharacter.worldSetting
-                  ?.replaceAll(
-                    '{{玩家名字}}',
-                    _playerNickname,
-                  )
-                  .replaceAll(
-                    '(玩家名字)',
-                    _playerNickname,
-                  ) ??
+              ?.replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ) ??
               '',
         },
-        "npcCharacters": _currentCharacter.npcCharacters,
+        'npcCharacters': _currentCharacter.npcCharacters,
         'chatHistory': actualChatHistory,
       };
 
@@ -1972,41 +1978,41 @@ class _ChatPageState extends State<ChatPage> {
 
       final response = await _httpClient!
           .post(
-            Uri.parse(
-              'https://asia-east1-'
+        Uri.parse(
+          'https://asia-east1-'
               'lianlianshiguang.cloudfunctions.net/'
               'getAiResponse',
-            ),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $idToken',
-            },
-            body: jsonEncode(requestBody),
-          )
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode(requestBody),
+      )
           .timeout(
-            const Duration(seconds: 45),
-          );
+        const Duration(seconds: 45),
+      );
 
-      // 玩家已停止，安靜結束，不顯示系統錯誤
+      // 玩家已停止，安靜結束，不扣除次數
       if (_activeAiRequestId != clientRequestId) {
         debugPrint('🛑 重新生成已停止，忽略 HTTP 結果');
-        return;
+        return false;
       }
 
+      // HTTP 請求失敗，不扣除次數
       if (response.statusCode != 200) {
         debugPrint(
-          '⚠️ 重新生成 HTTP 錯誤碼：'
-          '${response.statusCode}',
+          '⚠️ 重新生成 HTTP 錯誤碼：${response.statusCode}',
         );
 
         _handleGenerationError(
           l10n.error_msg_send_failed,
         );
-        return;
+
+        return false;
       }
 
       final decodedBody = utf8.decode(response.bodyBytes);
-
       final dynamic decoded = jsonDecode(decodedBody);
 
       if (decoded is! Map<String, dynamic>) {
@@ -2015,34 +2021,37 @@ class _ChatPageState extends State<ChatPage> {
         );
       }
 
+      // 後端確認取消，不扣除次數
       if (decoded['status'] == 'cancelled') {
         debugPrint('🛑 後端確認重新生成已取消');
-        return;
+        return false;
       }
 
+      // 後端沒有成功，不扣除次數
       if (decoded['status'] != 'success') {
         _handleGenerationError(
           l10n.error_system_busy,
         );
-        return;
+
+        return false;
       }
 
       // 取得真正的新 AI 回覆
       final String regeneratedText =
-          (decoded['response'] ?? '').toString().trim();
+      (decoded['response'] ?? '').toString().trim();
 
-      // 後端雖然說 success，但沒有文字時，
-      // 絕對不能顯示成功或刪除舊訊息。
+      // 空回覆不算成功，也不扣除次數
       if (regeneratedText.isEmpty) {
         debugPrint(
           '⚠️ 重新生成回傳成功，'
-          '但 response 是空字串：$decodedBody',
+              '但 response 是空字串：$decodedBody',
         );
 
         _handleGenerationError(
           l10n.error_system_busy,
         );
-        return;
+
+        return false;
       }
 
       if (_messagesCollection == null) {
@@ -2051,58 +2060,65 @@ class _ChatPageState extends State<ChatPage> {
         );
       }
 
-// 現在才刪除原本的舊回覆，避免失敗時訊息直接消失。
+      // 確定新回覆成功產生後，才刪除原本的舊回覆
       await _messagesCollection!.doc(aiMessageId).delete();
 
-      final int finalAffectionChange = decoded['affectionChange'] is num
+      final int finalAffectionChange =
+      decoded['affectionChange'] is num
           ? (decoded['affectionChange'] as num).toInt()
           : 0;
 
-      if (!mounted) return;
+      if (mounted) {
+        setState(() {
+          if (finalAffectionChange != 0) {
+            final int oldScore = _currentFriendship;
 
-      setState(() {
-        if (finalAffectionChange != 0) {
-          final int oldScore = _currentFriendship;
+            _currentFriendship += finalAffectionChange;
 
-          _currentFriendship += finalAffectionChange;
+            _checkForLevelUp(
+              oldScore,
+              _currentFriendship,
+            );
+          }
 
-          _checkForLevelUp(
-            oldScore,
-            _currentFriendship,
-          );
-        }
+          _isGenerating = false;
+          _isRegenerating = false;
+        });
+      }
 
-        _isGenerating = false;
-        _isRegenerating = false;
-      });
-
-      // 到這裡才是真的完成：
-      // 已取得非空文字，而且成功寫回 Firestore。
       debugPrint(
-        '✅ 重新生成完成並成功寫入訊息：'
-        '$aiMessageId',
+        '✅ 重新生成完成並成功寫入訊息：$aiMessageId',
       );
+
+      // 只有走到這裡，才算真正成功
+      return true;
     } catch (e, stackTrace) {
       if (_activeAiRequestId != clientRequestId) {
-        debugPrint('🛑 重新生成已停止，忽略連線中斷：$e');
-        return;
+        debugPrint(
+          '🛑 重新生成已停止，忽略連線中斷：$e',
+        );
+
+        return false;
       }
+
       debugPrint(
         '❌ 重新生成在前端發生錯誤：$e',
       );
       debugPrint('$stackTrace');
 
-      if (!mounted) return;
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+          _isRegenerating = false;
+        });
 
-      setState(() {
-        _isGenerating = false;
-        _isRegenerating = false;
-      });
+        _showCenterToast(
+          l10n.chatPageRegenerateFailed,
+          isError: true,
+        );
+      }
 
-      _showCenterToast(
-        '重新生成失敗，原本的訊息已保留，請再試一次。',
-        isError: true,
-      );
+      return false;
     } finally {
       _httpClient?.close();
       _httpClient = null;
@@ -2914,8 +2930,9 @@ class _ChatPageState extends State<ChatPage> {
                     Navigator.pop(context);
                     final minutes = (duration / 60).floor();
                     final seconds = duration % 60;
-                    final timeString =
-                        minutes > 0 ? '$minutes分$seconds秒' : '$seconds秒';
+                    final timeString = minutes > 0
+                        ? l10n.chatPageMinutesSeconds(minutes, seconds)
+                        : l10n.chatPageSeconds(seconds);
                     await _addSystemMessage(l10n.chat_call_ended(
                         widget.character.name, timeString));
                     if (shouldSave) {
@@ -3175,7 +3192,10 @@ class _ChatPageState extends State<ChatPage> {
         _removePendingMediaMessage(pendingMediaId);
 
         if (mounted) {
-          _showCenterToast('媒體上傳失敗，請再試一次', isError: true);
+          _showCenterToast(
+            l10n.chatPageMediaUploadFailed,
+            isError: true,
+          );
         }
 
         return;
@@ -3419,7 +3439,7 @@ class _ChatPageState extends State<ChatPage> {
           body: jsonEncode(requestBody),
         )
             .timeout(
-          const Duration(seconds: 110), // ⏳ 總裁級防護：最多只等 15 秒！
+          const Duration(seconds: 110), // ⏳ 總裁級防護：最多只等 110 秒！
           onTimeout: () {
             // 超時的話，丟出一個特製的 TimeoutException
             throw TimeoutException('他思考太久了');
@@ -3562,11 +3582,11 @@ class _ChatPageState extends State<ChatPage> {
 
         if (mounted) {
           setState(() {
-            _isGenerating = true;
+            _isGenerating = false;
             _isLoading = false;
           });
 
-          _showCenterToast('他正在回覆中，請稍候一下，不要重複送出', isError: false);
+          _showCenterToast(l10n.chatPageAlreadyReplying, isError: false);
         }
 
         return;
@@ -4268,6 +4288,7 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> _openChatReportPage({
     required String reportedMessage,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
@@ -4287,7 +4308,7 @@ class _ChatPageState extends State<ChatPage> {
     if (result == true) {
       ToastUtils.showCenterToast(
         context,
-        '感謝你的回報，我們會盡快確認',
+        l10n.chatPageReportReceived,
         customIcon: Icons.mark_email_read_rounded,
       );
     }
@@ -4410,7 +4431,9 @@ class _ChatPageState extends State<ChatPage> {
           });
 
           // ✨ 總裁級：輕巧置中的成功提示！
-          _showCenterToast('✅ 已成功刪除 $count 則訊息');
+          _showCenterToast(
+            l10n.chatPageMessagesDeleted(count),
+          );
         }
       } catch (e) {
         if (mounted) Navigator.pop(context); // 關閉轉圈圈
@@ -4664,20 +4687,19 @@ class _ChatPageState extends State<ChatPage> {
       });
     } catch (e) {
       debugPrint("發送戳戳失敗: $e");
-      throw e; // 拋出錯誤讓 UI 層可以捕捉
+      rethrow;
     }
   }
 
   Future<void> _playAudio(String rawPath) async {
     final path = rawPath.trim();
-
+    final l10n = AppLocalizations.of(context)!;
     if (path.isEmpty) {
       debugPrint('⚠️ 音訊 path 是空的');
       return;
     }
 
     try {
-      debugPrint('🎧 準備播放音訊 path=$path');
 
       _audioPlayer ??= AudioPlayer();
 
@@ -4694,7 +4716,7 @@ class _ChatPageState extends State<ChatPage> {
           if (!mounted) return;
           ToastUtils.showCenterToast(
             context,
-            '找不到錄音檔案',
+            l10n.chatPageRecordingNotFound,
             isError: true,
           );
           return;
@@ -4707,7 +4729,7 @@ class _ChatPageState extends State<ChatPage> {
           if (!mounted) return;
           ToastUtils.showCenterToast(
             context,
-            '錄音檔案是空的',
+            l10n.chatPageRecordingEmpty,
             isError: true,
           );
           return;
@@ -4750,7 +4772,7 @@ class _ChatPageState extends State<ChatPage> {
 
       ToastUtils.showCenterToast(
         context,
-        '播放音訊失敗：$e',
+        l10n.chatPageAudioPlaybackFailed(e.toString()),
         isError: true,
       );
     }
@@ -4762,8 +4784,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _pickChatImage() async {
     if (_isGenerating || _isLoading) return;
-
-    debugPrint('🖼️ 聊天室照片按鈕被點擊');
+    final l10n = AppLocalizations.of(context)!;
 
     try {
       final XFile? pickedFile = await ImagePicker().pickImage(
@@ -4793,7 +4814,7 @@ class _ChatPageState extends State<ChatPage> {
 
       ToastUtils.showCenterToast(
         context,
-        '無法選擇照片：$e',
+        l10n.chatPageSelectPhotoFailed(e.toString()),
         isError: true,
       );
     }
@@ -5034,17 +5055,18 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // ✨ 4. 新增一個 getModeName 函式來處理多國語言
-  String _getModeName(ChatMode mode, AppLocalizations? l10n) {
+  String _getModeName(ChatMode mode) {
     final l10n = AppLocalizations.of(context)!;
+
     switch (mode) {
       case ChatMode.daily:
-        return l10n?.chatModeDaily ?? l10n.chatModeDaily;
+        return l10n.chatModeDaily;
       case ChatMode.story:
-        return l10n?.chatModeStory ?? l10n.chatModeStory;
+        return l10n.chatModeStory;
       case ChatMode.immersive:
-        return l10n?.chatModeImmersive ?? l10n.chatModeImmersive;
+        return l10n.chatModeImmersive;
       case ChatMode.gemini:
-        return l10n?.chatModeGemini ?? l10n.chat_mode_gemini;
+        return l10n.chat_mode_gemini;
     }
   }
 
@@ -5144,7 +5166,7 @@ class _ChatPageState extends State<ChatPage> {
 
                   ToastUtils.showCenterToast(
                     context,
-                    '需要麥克風權限才能錄音',
+                    l10n.chatPageMicrophonePermissionRequired,
                     isError: true,
                   );
                   return;
@@ -5217,7 +5239,7 @@ class _ChatPageState extends State<ChatPage> {
                 if (path == null || path.isEmpty) {
                   ToastUtils.showCenterToast(
                     context,
-                    '錄音檔案建立失敗，請重新錄製',
+                    l10n.chatPageRecordingCreationFailed,
                     isError: true,
                   );
                 }
@@ -5230,7 +5252,7 @@ class _ChatPageState extends State<ChatPage> {
 
                 ToastUtils.showCenterToast(
                   context,
-                  '錄音失敗：$e',
+                  l10n.chatPageRecordingFailed(e.toString()),
                   isError: true,
                 );
               }
@@ -5275,7 +5297,7 @@ class _ChatPageState extends State<ChatPage> {
 
                     ToastUtils.showCenterToast(
                       context,
-                      '找不到錄音檔案，請重新錄製',
+                      l10n.chatPageRecordingNotFoundRetry,
                       isError: true,
                     );
                     return;
@@ -5287,7 +5309,7 @@ class _ChatPageState extends State<ChatPage> {
                   if (fileSize <= 0) {
                     ToastUtils.showCenterToast(
                       context,
-                      '錄音檔案是空的，請重新錄製',
+                      l10n.chatPageRecordingEmptyRetry,
                       isError: true,
                     );
                     return;
@@ -5477,7 +5499,7 @@ class _ChatPageState extends State<ChatPage> {
                                                   path.isEmpty) {
                                                 ToastUtils.showCenterToast(
                                                   context,
-                                                  '沒有可傳送的錄音',
+                                                  l10n.chatPageNoRecordingToSend,
                                                   isError: true,
                                                 );
                                                 return;
@@ -6658,18 +6680,18 @@ class _ChatPageState extends State<ChatPage> {
       resultText = "$playerName贏了！";
       // 如果學長輸了，要他耍賴或是無奈
       aiActionPrompt =
-          "妳贏了！系統秘密指令：請根據你的傲嬌性格，表現出願賭服輸的無奈，或者是雖然輸了但嘴硬傲嬌耍賴的反應。請將這個反應融入對話中，並自然的開啟新話題。";
+          "對方贏了！系統秘密指令：請根據你的傲嬌性格，表現出願賭服輸的無奈，或者是雖然輸了但嘴硬傲嬌耍賴的反應。請將這個反應融入對話中，並自然的開啟新話題。";
     } else if (aiRoll > playerRoll) {
       resultText = "${aiName}贏了！";
       // 如果學長贏了，要他得意
-      aiActionPrompt = "你贏了！系統秘密指令：表現出獲勝後的得意洋洋，或是帶點寵溺的語氣取笑玩家的運氣壞，並自然的開啟新話題。";
+      aiActionPrompt = "對方贏了！系統秘密指令：表現出獲勝後的得意洋洋，或是帶點寵溺的語氣取笑玩家的運氣壞，並自然的開啟新話題。";
     } else {
       resultText = "平手！";
       aiActionPrompt = "平手了。系統秘密指令：表現出驚訝或是有趣的反應，或是提議再擲一次，並自然的開啟新話題。";
     }
     // 4. 🔑 組裝「極簡沉浸版」咒語 (B包，偷偷塞給AI)
     String secretPrompt = "【系統事件】骰子對決！"
-        "\n🎲 （$playerName擲出了 $playerRoll 點，妳擲出了 $aiRoll 點。結果：$resultText）"
+        "\n🎲 （$playerName擲出了 $playerRoll 點，$aiName擲出了 $aiRoll 點。結果：$resultText）"
         "\n[系統秘密指令：$aiActionPrompt]";
     // 5. 發送訊息 (A包顯示乾淨的文字，B包偷偷塞給AI)
     _sendMessage(
@@ -7139,7 +7161,7 @@ class _ChatPageState extends State<ChatPage> {
     final type = item['type']?.toString() ?? '';
     final path = item['path']?.toString() ?? '';
     final text = item['text']?.toString().trim() ?? '';
-
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Align(
@@ -7206,7 +7228,7 @@ class _ChatPageState extends State<ChatPage> {
                               const SizedBox(width: 8),
                               _buildStaticAudioWave(),
                               const SizedBox(width: 8),
-                              const Text('語音上傳中...'),
+                              Text(l10n.chatPageVoiceUploading),
                             ],
                           ),
                           if (text.isNotEmpty) ...[
@@ -7345,7 +7367,7 @@ class _ChatPageState extends State<ChatPage> {
                       IconButton(
                         icon: const Icon(Icons.brush),
                         color: theme.colorScheme.primary,
-                        tooltip: '更換浮水印顏色',
+                        tooltip: l10n.chatPageChangeWatermarkColor,
                         onPressed: isRecapturing
                             ? null
                             : () async {
@@ -7680,7 +7702,7 @@ class _ChatPageState extends State<ChatPage> {
                               ),
                             ),
                             child: Text(
-                              _getModeName(_currentMode!, l10n),
+                              _getModeName(_currentMode!),
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.colorScheme.onSurface
                                     .withValues(alpha: 0.7),
@@ -7710,7 +7732,7 @@ class _ChatPageState extends State<ChatPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    _getModeName(_currentMode!, l10n),
+                                    _getModeName(_currentMode!),
                                     style: theme.textTheme.labelSmall?.copyWith(
                                       color: theme.colorScheme.onSurface,
                                       fontWeight: FontWeight.bold,
@@ -7937,7 +7959,7 @@ class _ChatPageState extends State<ChatPage> {
                                                       ),
                                                       const SizedBox(width: 10),
                                                       Text(
-                                                        '💭 正在重新思考...',
+                                                        l10n.chatPageRegenerating,
                                                         style: TextStyle(
                                                           fontSize: 13,
                                                           color:
@@ -8529,31 +8551,19 @@ class _ChatPageState extends State<ChatPage> {
                               return;
                             }
 
-                            // 5. 扣除重新生成次數
-                            final consumed = await _consumeRegenerateCount();
-
-                            if (!consumed) {
-                              await _loadRegenerateCount();
-
-                              if (!mounted) return;
-
-                              if (_freeRegenerateCount <= 0) {
-                                _showSubscriptionDialog();
-                              } else {
-                                _showCenterToast(
-                                  '重新生成次數同步失敗，請再試一次 😢',
-                                  isError: true,
-                                );
-                              }
-
-                              return;
-                            }
-
-                            // 6. 等待重新生成完整執行完畢
+                            // 5. 先執行重新生成
                             await _regenerateAIResponse(
                               aiMessageId,
                               userMessageText,
                             );
+
+// 6. 重新生成成功後，才扣除次數
+                            final consumed = await _consumeRegenerateCount();
+
+                            if (!consumed) {
+                              await _loadRegenerateCount();
+                              debugPrint('⚠️ 重新生成成功，但扣除重新生成次數失敗');
+                            }
                           } catch (e, stackTrace) {
                             debugPrint('❌ 重新生成按鈕流程失敗：$e');
                             debugPrint('$stackTrace');
@@ -8561,7 +8571,7 @@ class _ChatPageState extends State<ChatPage> {
                             if (!mounted) return;
 
                             _showCenterToast(
-                              '重新生成失敗，請稍後再試 😢',
+                              l10n.chatPageRegenerateFailed,
                               isError: true,
                             );
                           }

@@ -1423,7 +1423,7 @@
   },
   "tab_heartbeat_diary": "心動日記",
   "tab_daily_chit_chat": "閒話家常",
-  "task_desc_chat_3_times": "與角色進行 3 次日常聊天",
+  "task_desc_chat_3_times": "與角色進行 3 次日常模式聊天",
   "tab_story_progression": "劇情推進",
   "task_desc_story_1_time": "完成 1 次劇情模式互動",
   "tab_social_tour": "社群巡禮",
@@ -2547,5 +2547,426 @@
 
   "mailCaseNumber": "案件編號",
   "mailCopyCaseNumber": "複製案件編號",
-  "mailCaseNumberCopied": "已複製案件編號"
+  "mailCaseNumberCopied": "已複製案件編號",
+  "profilePageAboutMe": "📝 關於我",
+  "profilePageTabBio": "自我介紹",
+  "profilePageTabCharacters": "角色",
+  "profilePageTabMoments": "動態",
+  "profilePageEditProfile": "編輯個人檔案",
+  "profilePageFriends": "朋友",
+  "profilePageWorks": "作品",
+  "profilePageFollowing": "追蹤",
+  "profilePageFollowers": "追蹤者",
+  "profilePageHeartbeatDiary": "心動日記",
+  "profilePageEditCharacter": "編輯角色",
+  "profilePagePreviewCharacter": "預覽角色檔案",
+  "profilePageNoBio": "還沒有自我介紹",
+  "profilePageNoBioHint": "點一下寫下關於你的介紹。",
+  "profilePageCreateCharacter": "建立新角色",
+  "profilePageNoCharacters": "還沒有創建角色",
+  "profilePageNoCharactersHint": "開始創建你的第一位角色吧。",
+  "profilePageCharacterActions": "角色操作",
+  "profilePagePublic": "公開",
+  "profilePagePrivate": "私人",
+  "profilePageCreator": "創作者",
+  "profilePageSelectPostingIdentity": "選擇發布身分",
+  "profilePagePostAsCreator": "以創作者本人發布",
+  "profilePagePublicCharacter": "公開角色",
+  "profilePagePrivateCharacter": "私人角色",
+  "profilePagePleaseSignIn": "請先登入",
+  "profilePagePublishMoment": "發布動態",
+  "profilePageFilterAll": "全部",
+  "profilePageFilterCreator": "本人",
+  "profilePageFilterCharacter": "角色",
+  "profilePageMomentsLoadFailed": "動態讀取失敗",
+  "profilePageTryAgainLater": "請稍後再試一次。",
+  "profilePageNoCreatorMoments": "本人還沒有發布動態",
+  "profilePageNoCreatorMomentsHint": "以創作者身分發布的內容會顯示在這裡。",
+  "profilePageNoCharacterMoments": "旗下角色還沒有發布動態",
+  "profilePageNoCharacterMomentsHint": "以角色身分發布的內容會顯示在這裡。",
+  "profilePageNoMoments": "還沒有動態",
+  "profilePageNoMomentsHint": "你與旗下角色發布的動態會顯示在這裡。",
+  "profilePageDeleteMomentTitle": "刪除動態",
+  "profilePageDeleteMomentConfirm": "確定要永久刪除這篇動態嗎？",
+  "profilePageCancel": "取消",
+  "profilePageDelete": "刪除",
+  "profilePageMomentDeleted": "動態已刪除",
+  "profilePageDeleteFailed": "刪除失敗，請稍後再試",
+  "profilePageReferralCompleted": "星之邀約已完成",
+  "profilePageInviter": "邀請人：{inviterId}",
+  "@profilePageInviter": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralRewardReceived": "雙方已獲得 50 花花",
+  "profilePageClaimed": "已領取",
+  "profilePageInviterBound": "已綁定邀請人：{inviterId}",
+  "@profilePageInviterBound": {
+    "placeholders": {
+      "inviterId": { "type": "String" }
+    }
+  },
+  "profilePageReferralProgressHint": "完成 15 句聊天後，雙方各獲得 50 花花",
+  "profilePageAlreadyCheckedIn": "今天已經簽到過囉",
+  "profilePageReferralBindFailed": "綁定失敗，請稍後再試",
+  "profilePageCharacterNotFound": "找不到這個角色的資料",
+  "periodGuideTitle": "生理期日記怎麼用？",
+  "periodGuideContent": "① 先點選月曆上的日期。\n② 選擇「今天來了」、「仍在生理期」或「今天結束」。\n③ 勾選當天心情與身體狀態，也可以自行補充。\n④ 按下儲存，角色就能在聊天時理解你今天的狀態。\n\n預測日期會依你的歷史紀錄調整，僅供生活紀錄參考。",
+  "periodGotIt": "我知道了",
+  "periodSelectAtLeastOne": "請至少選擇一項紀錄",
+  "periodFutureDateError": "未來日期不能標記生理期狀態。",
+  "periodAlreadyOngoingError": "已有一筆進行中的生理期，請先將它結束。",
+  "periodNoOngoingError": "目前沒有進行中的生理期，請先選擇「今天來了」。",
+  "periodBeforeStartError": "日期不能早於本次生理期開始日。",
+  "periodEndBeforeStartError": "結束日期不能早於開始日期。",
+  "periodRecordSaved": "{date}的紀錄已儲存",
+  "@periodRecordSaved": { "placeholders": { "date": { "type": "String" } } },
+  "periodSaveFailed": "儲存失敗，請稍後再試",
+  "periodDeleteTitle": "刪除這次生理期紀錄？",
+  "periodDeleteContent": "刪除後，週期平均與下次預測也會重新計算。",
+  "periodCancel": "取消",
+  "periodDelete": "刪除",
+  "periodNoOngoing": "目前沒有進行中的生理期",
+  "periodDayCount": "生理期第 {count} 天",
+  "@periodDayCount": { "placeholders": { "count": { "type": "int" } } },
+  "periodHelp": "使用說明",
+  "periodAverageCycle": "平均週期",
+  "periodAverageDuration": "平均經期",
+  "periodDays": "{count} 天",
+  "@periodDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodNextPrediction": "下次預測",
+  "periodCalculatedAfterRecording": "紀錄後推算",
+  "periodInsufficientData": "目前資料不足，暫以 28 天週期、5 天經期推估。",
+  "periodPredictionDisclaimer": "依現有紀錄推估，日期僅供生活紀錄參考。",
+  "periodStartedToday": "🩸 今天來了",
+  "periodStillOngoing": "仍在生理期",
+  "periodEndedToday": "今天結束",
+  "periodDateNotReached": "這天還沒到喔～",
+  "periodDateBeforeStart": "這一天早於目前生理期的開始日期。",
+  "periodMoodOkay": "還不錯",
+  "periodMoodHappy": "開心",
+  "periodMoodLow": "低落",
+  "periodMoodUnwell": "難受",
+  "periodMoodIrritable": "煩躁",
+  "periodMoodTired": "疲倦",
+  "periodMoodAnxious": "焦慮",
+  "periodSymptomAbdominalPain": "腹痛",
+  "periodSymptomLowerBackPain": "腰痠",
+  "periodSymptomHeadache": "頭痛",
+  "periodSymptomBreastTenderness": "胸脹",
+  "periodSymptomSwelling": "水腫",
+  "periodSymptomSleepy": "想睡",
+  "periodSymptomIncreasedAppetite": "食慾增加",
+  "periodSymptomDigestiveDiscomfort": "腸胃不適",
+  "periodDiaryTitle": "{characterName}的貼心日記",
+  "@periodDiaryTitle": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodLoadFailed": "讀取紀錄失敗，請稍後再試",
+  "periodWeekdaySun": "日",
+  "periodWeekdayMon": "一",
+  "periodWeekdayTue": "二",
+  "periodWeekdayWed": "三",
+  "periodWeekdayThu": "四",
+  "periodWeekdayFri": "五",
+  "periodWeekdaySat": "六",
+  "periodSaveInstruction": "選擇狀態後，請按最下方「儲存今日紀錄」才會正式保存。",
+  "periodTodayMood": "今天的心情（可複選）",
+  "periodMoodDescription": "這些是當天日記，不是貼到月曆上的圖示。",
+  "periodOtherMood": "其他心情",
+  "periodOtherMoodHint": "例如：委屈、沒安全感……",
+  "periodTodaySymptoms": "今天的身體狀態（可複選）",
+  "periodOtherSymptom": "其他身體狀態",
+  "periodOtherSymptomHint": "例如：怕冷、沒有胃口……",
+  "periodNoteForCharacter": "想讓 {characterName} 知道的事（選填）",
+  "@periodNoteForCharacter": { "placeholders": { "characterName": { "type": "String" } } },
+  "periodNoteHint": "例如：今天想安靜休息，不想被催……",
+  "periodSaving": "儲存中…",
+  "periodSaveToday": "儲存今日紀錄",
+  "periodHistory": "歷史生理期",
+  "periodOngoing": "進行中",
+  "periodTotalDays": "共 {count} 天",
+  "@periodTotalDays": { "placeholders": { "count": { "type": "int" } } },
+  "periodDeleteRecord": "刪除紀錄",
+  "privateProfilePleaseSignIn": "請先登入",
+  "privateProfileLoreLoadFailed": "記憶碎片讀取失敗：{error}",
+  "@privateProfileLoreLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "privateProfileWriteNewLore": "撰寫新的記憶碎片（{count} / {limit}）",
+  "@privateProfileWriteNewLore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "limit": { "type": "int" }
+    }
+  },
+  "privateProfileNoLore": "還沒有記憶碎片",
+  "privateProfileNoLoreHint": "可以在這裡整理測試設定、故事線索與角色的重要記憶。",
+  "privateProfileUntitledLore": "未命名碎片",
+  "privateProfileEdit": "編輯",
+  "privateProfileDelete": "刪除",
+  "privateProfileAddLore": "新增記憶碎片",
+  "privateProfileLoreTitle": "標題",
+  "privateProfileLoreTeaser": "簡短提示",
+  "privateProfileLoreContent": "完整內容",
+  "privateProfileLockLore": "鎖定碎片",
+  "privateProfileLockLoreHint": "私人角色目前只有創作者可見，此欄位仍會保留，方便角色公開後沿用。",
+  "privateProfileCancel": "取消",
+  "privateProfileTitleContentRequired": "請填寫標題與內容",
+  "privateProfileLoreAdded": "記憶碎片已新增",
+  "privateProfileAddFailed": "新增失敗，請稍後再試",
+  "privateProfilePublish": "發布",
+  "privateProfileDeleteLoreTitle": "刪除記憶碎片",
+  "privateProfileDeleteLoreConfirm": "確定要永久刪除這則記憶碎片嗎？",
+  "privateProfileLoreDeleted": "記憶碎片已刪除",
+  "privateProfileDeleteFailed": "刪除失敗，請稍後再試",
+  "privateProfileEditLore": "編輯記憶碎片",
+  "privateProfileSave": "儲存",
+  "editProfileBirthdayReminderTitle": "🎂 小提醒",
+  "editProfileBirthdayReminderContent": "生日將影響角色生日祝福、生日禮物及相關活動。\n\n建議確認生日後再完成設定，\n以免影響後續生日獎勵。",
+  "editProfileGotIt": "知道了",
+  "editProfileBirthdayConfirmTitle": "🎂 確認生日",
+  "editProfileBirthdayConfirmContent": "請確認生日是否正確。\n\n生日將用於生日祝福、生日禮物及相關活動。\n\n為避免生日獎勵遭到重複領取，生日完成設定後將無法再次修改。\n\n是否確定使用這個生日？",
+  "editProfileReturnToEdit": "返回修改",
+  "editProfileConfirmSetting": "確認設定",
+  "editProfileDefaultNickname": "初識的旅人",
+  "editProfileNoChanges": "沒有需要儲存的變更",
+  "editProfileCreateFailed": "建立資料失敗：{error}",
+  "@editProfileCreateFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileAvatarNumber": "頭像 {number}",
+  "@editProfileAvatarNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "editProfileImageSelectionFailed": "選擇圖片失敗，請重新選擇一張圖片",
+  "editProfileCancel": "取消",
+  "editProfileConfirm": "確定",
+  "editProfileImageProcessingFailed": "圖片處理失敗，請重新選擇一張圖片",
+  "editProfileLoadFailed": "載入資料失敗：{error}",
+  "@editProfileLoadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "editProfileBioLabel": "自我介紹",
+  "editProfileBioHelper": "簡單介紹自己或你的創作風格",
+  "editProfileBioHint": "例如：喜歡創作奇幻、病嬌與沉浸式戀愛角色。",
+  "editProfileUserNotFound": "找不到使用者",
+  "editProfileGenerateIdFailed": "產生玩家 ID 失敗，請再試一次",
+  "editProfileSignedInUserNotFound": "找不到目前登入的使用者",
+  "editProfileAvatarReadFailed": "讀取頭像失敗，狀態碼：{statusCode}",
+  "@editProfileAvatarReadFailed": {
+    "placeholders": {
+      "statusCode": { "type": "int" }
+    }
+  },
+  "editProfileAvatarFileNotFound": "找不到選取的頭像檔案：{path}",
+  "@editProfileAvatarFileNotFound": {
+    "placeholders": {
+      "path": { "type": "String" }
+    }
+  },
+  "editProfileAvatarEmpty": "頭像圖片資料是空的",
+  "chatPageSendFailed": "送出失敗，請稍後再試 😢",
+  "chatPageRegenerateFailed": "重新生成失敗，原本的訊息已保留，請再試一次。",
+  "chatPageRegenerating": "💭 正在重新思考...",
+  "chatPageThinkingTooLong": "他似乎在沉思，請稍後再試……",
+  "chatPageAlreadyReplying": "他正在回覆中，請稍候一下，不要重複送出",
+  "chatPageMediaUploadFailed": "媒體上傳失敗，請再試一次",
+  "chatPageReportReceived": "感謝你的回報，我們會盡快確認",
+  "chatPageMessagesDeleted": "✅ 已成功刪除 {count} 則訊息",
+  "@chatPageMessagesDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSelectPhotoFailed": "無法選擇照片：{error}",
+  "@chatPageSelectPhotoFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFound": "找不到錄音檔案",
+  "chatPageRecordingEmpty": "錄音檔案是空的",
+  "chatPageAudioPlaybackFailed": "播放音訊失敗：{error}",
+  "@chatPageAudioPlaybackFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageMicrophonePermissionRequired": "需要麥克風權限才能錄音",
+  "chatPageStartRecordingFailed": "無法開始錄音：{error}",
+  "@chatPageStartRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingCreationFailed": "錄音檔案建立失敗，請重新錄製",
+  "chatPageRecordingFailed": "錄音失敗：{error}",
+  "@chatPageRecordingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chatPageRecordingNotFoundRetry": "找不到錄音檔案，請重新錄製",
+  "chatPageRecordingEmptyRetry": "錄音檔案是空的，請重新錄製",
+  "chatPageNoRecordingToSend": "沒有可傳送的錄音",
+  "chatPagePointCost": "{count} 點",
+  "@chatPagePointCost": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageVoiceUploading": "語音上傳中……",
+  "chatPageChangeWatermarkColor": "更換浮水印顏色",
+  "chatPageMinutesSeconds": "{minutes} 分 {seconds} 秒",
+  "@chatPageMinutesSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "chatPageSeconds": "{seconds} 秒",
+  "@chatPageSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "characterEditSelectSupportingCharacter": "請選擇配角。",
+  "characterEditSelectGender": "請選擇角色性別。",
+  "characterEditCharacterSettings": "角色設定",
+  "characterEditWorldview": "世界觀",
+  "characterEditSettingsMinLength": "角色設定至少需要填寫 10 字。",
+  "characterEditWorldviewMinLength": "世界觀至少需要填寫 20 字。",
+  "characterEditSupportingCharacters": "配角",
+  "characterEditCharacterImage": "角色圖片",
+  "characterEditWorldviewHint": "描述世界背景、歷史、時代、地區、勢力、制度、科技、魔法與世界規則。",
+  "characterEditSettingsHint": "描述角色個性、價值觀、思考方式、情緒反應、行為習慣、說話方式與核心信念。",
+  "characterEditUnknownCharacter": "未知角色",
+  "characterEditEditSupportingCharacter": "編輯配角",
+  "characterEditAddSupportingCharacter": "新增配角" ,
+  "characterEditSupportingCharacterName": "配角名稱",
+  "characterEditGender": "性別",
+  "characterEditMale": "男性",
+  "characterEditFemale": "女性",
+  "characterEditOther": "其他",
+  "characterEditAge": "年齡",
+  "characterEditIdentityOccupation": "身分／職業",
+  "characterEditRelationshipWithMain": "與主角色的關係",
+  "characterEditRelationshipHint": "描述與主角色的過往、立場、情感、秘密與目前關係。",
+  "characterEditCharacterProfile": "人物設定",
+  "characterEditCharacterProfileHint": "描述個性、外貌、習慣、價值觀、能力、喜好、地雷與重要經歷。",
+  "characterEditSpeakingStyle": "說話語氣",
+  "characterEditSpeakingStyleHint": "例如：語速快、愛吐槽、說話直接。",
+  "characterEditSupportingNameRequired": "請填寫配角名稱。",
+  "characterEditSupportingGenderRequired": "請選擇配角性別。",
+  "characterEditProfileRequired": "請填寫人物設定。",
+  "characterEditRelationshipTooLong": "與主角色的關係已超過 1,500 字。",
+  "characterEditProfileTooLong": "人物設定已超過 1,500 字。",
+  "characterEditSave": "儲存",
+  "characterEditAdd": "新增",
+  "creatorProfileNoBio": "尚未填寫自我介紹",
+  "creatorProfileNoBioHint": "這位創作者還沒有留下介紹。",
+  "creatorProfileNoCreatorMoments": "創作者還沒有發布動態",
+  "creatorProfileNoCreatorMomentsHint": "以創作者本人身分發布的公開內容會顯示在這裡。",
+  "creatorProfileNoCharacterMoments": "旗下角色還沒有發布動態",
+  "creatorProfileNoCharacterMomentsHint": "旗下公開角色發布的內容會顯示在這裡。",
+  "creatorProfileNoPublicMoments": "還沒有公開動態",
+  "creatorProfileNoPublicMomentsHint": "創作者本人與旗下角色發布的公開動態會顯示在這裡。",
+  "creatorProfilePublicWorks": "公開作品",
+  "creatorProfileLikesReceived": "獲得喜歡",
+  "creatorProfileFollow": "追蹤",
+  "creatorProfileFollowing": "已追蹤",
+  "creatorProfileUnfollowed": "已取消追蹤",
+  "creatorProfileFollowedCreator": "已追蹤 {creatorName}",
+  "@creatorProfileFollowedCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "creatorProfileOperationFailed": "操作失敗，請稍後再試",
+  "creatorProfileWorksLoadFailed": "讀取作品失敗：{error}",
+  "@creatorProfileWorksLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareInvitation": "🦋 一封來自《戀戀拾光》的相遇邀請",
+  "characterProfileShareCreator": "✦ 創作者：{creatorName}",
+  "@characterProfileShareCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareMessage": "在《戀戀拾光》搜尋「{characterName}」，開始這段只屬於你們的故事。",
+  "@characterProfileShareMessage": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileInvitationLabel": "角色邀請卡",
+  "characterProfileCardCreator": "創作者  {creatorName}",
+  "@characterProfileCardCreator": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileCardSearchHint": "搜尋角色，開始相遇  🦋",
+  "characterProfileScanToDownload": "掃描下載",
+  "characterProfileShareTitle": "分享角色「{characterName}」",
+  "@characterProfileShareTitle": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareSubject": "來《戀戀拾光》認識 {characterName}",
+  "@characterProfileShareSubject": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "characterProfileShareFailed": "邀請卡產生失敗，請稍後再試",
+  "characterProfilePrivateShareUnavailable": "私人角色目前無法分享",
+  "characterProfileShareCard": "分享邀請卡",
+  "characterProfileShareCharacter": "分享角色",
+  "characterProfileReportCharacter": "檢舉角色",
+  "characterProfileTranslate": "翻譯"
 }
