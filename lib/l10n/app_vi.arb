@@ -2802,5 +2802,6 @@
   "characterProfileShareCard": "Chia sẻ Thiệp mời",
   "characterProfileShareCharacter": "Chia sẻ Nhân vật",
   "characterProfileReportCharacter": "Báo cáo Nhân vật",
-  "characterProfileTranslate": "Dịch"
+  "characterProfileTranslate": "Dịch",
+  "loginMethodInfoTooltip": "Thông tin về phương thức đăng nhập"
 }

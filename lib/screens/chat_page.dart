@@ -1763,23 +1763,41 @@ class _ChatPageState extends State<ChatPage> {
         final docsList = historySnapshot.docs.reversed.toList();
 
         for (final doc in docsList) {
-          // 不要把準備重新生成的舊 AI 回覆再次送進歷史紀錄
+          // 不要把準備重新生成的舊 AI 回覆送進歷史
           if (doc.id == aiMessageId) {
             continue;
           }
 
-          final data = doc.data() as Map<String, dynamic>;
-          final sender = data['sender']?.toString();
-          final text = data['text']?.toString().trim() ?? '';
 
-          if (text.isEmpty) {
+          final data = doc.data() as Map<String, dynamic>;
+
+          final sender = data['sender']?.toString();
+
+          final text =
+              data['text']?.toString().trim() ?? '';
+
+          final imageDescription =
+              data['imageDescription']?.toString().trim() ?? '';
+
+          if (text.isEmpty && imageDescription.isEmpty) {
             continue;
           }
 
           if (sender == 'user' || sender == 'ai') {
+            String historyText = text;
+
+            if (sender == 'user' && imageDescription.isNotEmpty) {
+              final imageContext =
+                  '[玩家曾傳來一張圖片，圖片內容如下：$imageDescription]';
+
+              historyText = historyText.isEmpty
+                  ? imageContext
+                  : '$historyText\n\n$imageContext';
+            }
+
             actualChatHistory.add({
               'role': sender == 'ai' ? 'assistant' : 'user',
-              'text': text,
+              'text': historyText,
             });
           }
         }
@@ -1869,10 +1887,6 @@ class _ChatPageState extends State<ChatPage> {
       final playerPronounGuide = _buildPlayerPronounGuide(
         playerGenderForAi,
       );
-
-      print('🔥🔥🔥 已進入真正的 requestBody 區塊');
-      print('👥 NPC 數量：${_currentCharacter.npcCharacters.length}');
-      print('👥 NPC 完整資料：${_currentCharacter.npcCharacters}');
 
       final Map<String, dynamic> requestBody = {
         'clientRequestId': clientRequestId,
@@ -3200,22 +3214,25 @@ class _ChatPageState extends State<ChatPage> {
 
         return;
       }
-
       // 🌟🌟🌟 總裁微創手術 2：強制畫面滾動到底部，確保玩家一定能看到男主的「...」！
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // 請確認您原本用來滾動的函式名稱是不是這個，如果叫其他名字 (如 _scrollController.animateTo) 請替換掉
         _scrollToBottom();
       });
+      String? userMessageId;
       // 🛡️ 防彈版：只要有集合存在，就直接寫入資料庫
       if (showInChat && !userMessageAlreadySaved) {
         if (_messagesCollection != null) {
-          await _messagesCollection!.add({
+          final userMessageRef = await _messagesCollection!.add({
             'sender': 'user',
             'text': userText.trim(),
             'type': messageType,
             'path': storagePath ?? '',
+            'imageDescription': '',
             'timestamp': FieldValue.serverTimestamp(),
           });
+
+          userMessageId = userMessageRef.id;
 // 真正訊息已經寫入 Firestore，移除本機 pending 泡泡
           _removePendingMediaMessage(pendingMediaId);
           final userCharRef = _db
@@ -3280,9 +3297,35 @@ class _ChatPageState extends State<ChatPage> {
         var docsList = historySnapshot.docs.reversed.toList();
 
         for (int i = 0; i < docsList.length; i++) {
-          final data = docsList[i].data() as Map<String, dynamic>;
+          final doc = docsList[i];
+
+          // 本次玩家訊息會透過後端的 finalUserMessage 加入，
+          // 因此不要再放進 chatHistory，避免 AI 收到兩次
+          if (userMessageId != null && doc.id == userMessageId) {
+            continue;
+          }
+
+          final data = doc.data() as Map<String, dynamic>;
           final sender = data['sender'];
-          String text = data['text'] as String? ?? '';
+
+          String text =
+              data['text']?.toString().trim() ?? '';
+
+          final imageDescription =
+              data['imageDescription']?.toString().trim() ?? '';
+
+          if (sender == 'user' && imageDescription.isNotEmpty) {
+            final imageContext =
+                '[玩家曾傳來一張圖片，圖片內容如下：$imageDescription]';
+
+            text = text.isEmpty
+                ? imageContext
+                : '$text\n\n$imageContext';
+          }
+
+          if (text.isEmpty) {
+            continue;
+          }
 
           // 處理秘密提示詞
           if (i == docsList.length - 1 &&
@@ -3292,8 +3335,12 @@ class _ChatPageState extends State<ChatPage> {
           }
 
           if (sender == 'user' || sender == 'ai') {
-            actualChatHistory.add(
-                {"role": sender == 'ai' ? "assistant" : "user", "text": text});
+            actualChatHistory.add({
+              'role': sender == 'ai'
+                  ? 'assistant'
+                  : 'user',
+              'text': text,
+            });
           }
         }
       } else {
@@ -3350,23 +3397,37 @@ class _ChatPageState extends State<ChatPage> {
       );
       // --- 🚀 D. 呼叫雲端 AI 大腦 ---
       final idToken = await currentUser.getIdToken();
+
       int currentScore = _currentFriendship;
-      String dynamicRelationship = currentScore.relationshipTitle(l10n);
-      String dynamicProfile = _buildDynamicUserProfileString();
-      final String effectiveUserMessage =
-          isContinue ? l10n.hiddenPromptContinue : userText.trim();
-      final String playerGenderForAi = _normalizePlayerGenderForAi(
+
+      String dynamicRelationship =
+      currentScore.relationshipTitle(l10n);
+
+      String dynamicProfile =
+      _buildDynamicUserProfileString();
+
+      final String effectiveUserMessage = isContinue
+          ? l10n.hiddenPromptContinue
+          : secretPrompt?.trim().isNotEmpty == true
+          ? secretPrompt!.trim()
+          : userText.trim();
+
+      final String playerGenderForAi =
+      _normalizePlayerGenderForAi(
         _currentAiProfile['gender']?.toString(),
       );
-      final bool hasImage = imagePath != null && imagePath.isNotEmpty;
-      final bool hasAudio = audioPath != null && audioPath.isNotEmpty;
+
+      final bool hasImage =
+          imagePath != null && imagePath.isNotEmpty;
+
+      final bool hasAudio =
+          audioPath != null && audioPath.isNotEmpty;
+
       final String playerPronounGuide =
-          _buildPlayerPronounGuide(playerGenderForAi);
-      print('🔥🔥🔥 已進入真正的 requestBody 區塊');
-      print('👥 NPC 數量：${_currentCharacter.npcCharacters.length}');
-      print('👥 NPC 完整資料：${_currentCharacter.npcCharacters}');
+      _buildPlayerPronounGuide(playerGenderForAi);
       final Map<String, dynamic> requestBody = {
         "clientRequestId": clientRequestId,
+        "userMessageId": userMessageId ?? "",
         "imageUrl": hasImage ? (storagePath ?? "") : "",
         "audioUrl": hasAudio ? (storagePath ?? "") : "",
         "userMessage": effectiveUserMessage,
@@ -5353,18 +5414,43 @@ class _ChatPageState extends State<ChatPage> {
               ),
               // 🌟 如果 showRecordingUI 是 true，就顯示【錄音介面】
               child: showRecordingUI
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ? Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          isCurrentlyRecording
-                              ? l10n.chat_record_recording
-                              : (finalAudioPath == null
-                                  ? l10n.chat_record_start
-                                  : l10n.chat_record_done),
-                          style: Theme.of(context).textTheme.titleMedium,
+                        Row(
+                          children: [
+                            IconButton(
+                              tooltip: l10n.profilePageCancel,
+                              onPressed: isCurrentlyRecording
+                                  ? null
+                                  : () {
+                                sheetSetState(() {
+                                  showRecordingUI = false;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                isCurrentlyRecording
+                                    ? l10n.chat_record_recording
+                                    : finalAudioPath == null
+                                    ? l10n.chat_tool_record
+                                    : l10n.chat_record_done,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         if (isCurrentlyRecording) ...[
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -5526,34 +5612,59 @@ class _ChatPageState extends State<ChatPage> {
                             ],
                           ),
                         ] else ...[
-                          InkWell(
-                            onTap: startRecording,
-                            child: Container(
-                              width: 88,
-                              height: 88,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .secondaryContainer,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.mic_rounded,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSecondaryContainer,
-                                size: 44,
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 24,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primaryContainer
+                                  .withValues(alpha: 0.28),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: theme.colorScheme.primary
+                                    .withValues(alpha: 0.18),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            l10n.chat_record_start,
-                            style: theme.textTheme.bodyMedium,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Material(
+                                  color: theme.colorScheme.primary,
+                                  shape: const CircleBorder(),
+                                  elevation: 3,
+                                  shadowColor: theme.colorScheme.primary
+                                      .withValues(alpha: 0.35),
+                                  child: InkWell(
+                                    customBorder: const CircleBorder(),
+                                    onTap: startRecording,
+                                    child: SizedBox(
+                                      width: 76,
+                                      height: 76,
+                                      child: Icon(
+                                        Icons.mic_rounded,
+                                        color: theme.colorScheme.onPrimary,
+                                        size: 38,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  l10n.chat_record_start,
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ],
-                    )
+                    ),
+              )
 
                   // ✨✨✨ 破案關鍵在這裡：加上這個冒號 (:) 代表「否則」，然後接上妳的【百寶箱九宮格】 ✨✨✨
                   : Padding(

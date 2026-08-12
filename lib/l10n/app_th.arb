@@ -2802,5 +2802,6 @@
     "characterProfileShareCard": "แชร์การ์ดเชิญ",
     "characterProfileShareCharacter": "แชร์ตัวละคร",
     "characterProfileReportCharacter": "รายงานตัวละคร",
-    "characterProfileTranslate": "แปล"
+    "characterProfileTranslate": "แปล",
+    "loginMethodInfoTooltip": "คำอธิบายวิธีเข้าสู่ระบบ"
 }

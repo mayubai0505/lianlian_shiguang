@@ -2803,5 +2803,6 @@
   "characterProfileShareCard": "招待カードをシェア",
   "characterProfileShareCharacter": "キャラクターをシェア",
   "characterProfileReportCharacter": "キャラクターを通報",
-  "characterProfileTranslate": "翻訳"
+  "characterProfileTranslate": "翻訳",
+  "loginMethodInfoTooltip": "ログイン方法の説明"
 }

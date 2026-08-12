@@ -5935,4 +5935,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'แปล';
+
+  @override
+  String get loginMethodInfoTooltip => 'คำอธิบายวิธีเข้าสู่ระบบ';
 }

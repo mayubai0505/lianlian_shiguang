@@ -2969,5 +2969,6 @@
   "characterProfileShareCard": "分享邀請卡",
   "characterProfileShareCharacter": "分享角色",
   "characterProfileReportCharacter": "檢舉角色",
-  "characterProfileTranslate": "翻譯"
+  "characterProfileTranslate": "翻譯",
+  "loginMethodInfoTooltip": "登入方式說明"
 }

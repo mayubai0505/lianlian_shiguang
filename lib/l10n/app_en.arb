@@ -3017,5 +3017,6 @@
   "characterProfileShareCard": "Share Invitation Card",
   "characterProfileShareCharacter": "Share Character",
   "characterProfileReportCharacter": "Report Character",
-  "characterProfileTranslate": "Translate"
+  "characterProfileTranslate": "Translate",
+  "loginMethodInfoTooltip": "Login Method Information"
 }

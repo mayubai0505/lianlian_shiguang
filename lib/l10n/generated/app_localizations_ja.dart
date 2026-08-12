@@ -5676,4 +5676,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => '翻訳';
+
+  @override
+  String get loginMethodInfoTooltip => 'ログイン方法の説明';
 }

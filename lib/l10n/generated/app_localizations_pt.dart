@@ -6034,4 +6034,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'Traduzir';
+
+  @override
+  String get loginMethodInfoTooltip => 'Informações sobre os métodos de login';
 }

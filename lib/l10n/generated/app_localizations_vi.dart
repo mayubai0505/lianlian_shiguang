@@ -5999,4 +5999,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'Dịch';
+
+  @override
+  String get loginMethodInfoTooltip => 'Thông tin về phương thức đăng nhập';
 }

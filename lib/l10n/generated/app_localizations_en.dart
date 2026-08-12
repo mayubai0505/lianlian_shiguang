@@ -5962,4 +5962,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'Translate';
+
+  @override
+  String get loginMethodInfoTooltip => 'Login Method Information';
 }

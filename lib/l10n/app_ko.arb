@@ -2801,5 +2801,6 @@
   "characterProfileShareCard": "초대 카드 공유",
   "characterProfileShareCharacter": "캐릭터 공유",
   "characterProfileReportCharacter": "캐릭터 신고",
-  "characterProfileTranslate": "번역"
+  "characterProfileTranslate": "번역",
+  "loginMethodInfoTooltip": "로그인 방법 안내"
 }

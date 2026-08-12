@@ -6054,4 +6054,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'Traducir';
+
+  @override
+  String get loginMethodInfoTooltip =>
+      'Información sobre los métodos de inicio de sesión';
 }

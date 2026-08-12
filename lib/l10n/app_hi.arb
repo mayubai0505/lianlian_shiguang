@@ -2802,5 +2802,6 @@
     "characterProfileShareCard": "निमंत्रण कार्ड साझा करें",
     "characterProfileShareCharacter": "पात्र साझा करें",
     "characterProfileReportCharacter": "पात्र की रिपोर्ट करें",
-    "characterProfileTranslate": "अनुवाद करें"
+    "characterProfileTranslate": "अनुवाद करें",
+    "loginMethodInfoTooltip": "लॉगिन के तरीकों की जानकारी"
 }

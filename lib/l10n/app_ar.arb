@@ -2843,5 +2843,6 @@
     "characterProfileShareCard": "مشاركة بطاقة الدعوة",
     "characterProfileShareCharacter": "مشاركة الشخصية",
     "characterProfileReportCharacter": "الإبلاغ عن الشخصية",
-    "characterProfileTranslate": "ترجمة"
+    "characterProfileTranslate": "ترجمة",
+    "loginMethodInfoTooltip": "شرح طرق تسجيل الدخول"
 }

@@ -5995,4 +5995,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'अनुवाद करें';
+
+  @override
+  String get loginMethodInfoTooltip => 'लॉगिन के तरीकों की जानकारी';
 }

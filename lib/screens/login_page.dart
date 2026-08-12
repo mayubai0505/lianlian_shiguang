@@ -32,6 +32,7 @@ bool _isLoginLoading = false;
 class _LoginPageState extends State<LoginPage> {
   static const String _currentTermsVersion = '1.0';
   static const String _currentPrivacyVersion = '1.0';
+
   // ⚠️ 換成你公開發布後的 Notion 網址
   static const String _termsNotionUrl =
       'https://adaptable-roof-829.notion.site/3ab919a5415180e89545dce77d552a6c?source=copy_link';
@@ -100,13 +101,12 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
+
   // 👆 貼到這裡結束 👆
 
 
   // ✨ 處理登入成功後的轉場
-  Future<void> _handleLoginSuccess(
-      Map<String, dynamic> resultMap,
-      ) async {
+  Future<void> _handleLoginSuccess(Map<String, dynamic> resultMap,) async {
     final User? user =
     resultMap['user'] as User?;
 
@@ -206,7 +206,9 @@ class _LoginPageState extends State<LoginPage> {
         );
       },
     );
-  }Future<bool> _showExternalPolicyDialog({
+  }
+
+  Future<bool> _showExternalPolicyDialog({
     required String title,
     required String url,
   }) async {
@@ -417,9 +419,7 @@ class _LoginPageState extends State<LoginPage> {
     return accepted;
   }
 
-  Future<bool> _ensureCurrentAgreement(
-      User user,
-      ) async {
+  Future<bool> _ensureCurrentAgreement(User user,) async {
     final l10n = AppLocalizations.of(context)!;
 
     final userRef = FirebaseFirestore.instance
@@ -522,8 +522,7 @@ class _LoginPageState extends State<LoginPage> {
 
   // 🌟 終極合併版：負責控制蝴蝶、精準紀錄、以及轉場導向
   Future<void> _performLogin(
-      Future<Map<String, dynamic>?> Function() loginMethod,
-      ) async {
+      Future<Map<String, dynamic>?> Function() loginMethod,) async {
     setState(() => _isLoginLoading = true);
     _showLoadingDialog(context);
 
@@ -538,8 +537,6 @@ class _LoginPageState extends State<LoginPage> {
       }
       await Future.delayed(const Duration(milliseconds: 300));
       if (result != null && mounted) {
-
-
         // ⭐ 檢查是否有刪除申請
         final user = result['user'];
         if (user != null) {
@@ -559,7 +556,6 @@ class _LoginPageState extends State<LoginPage> {
         }
         print("✅ [3. 成功] 拿到資料了，準備穿越時光隧道 (跳轉中)！");
         await _handleLoginSuccess(result);
-
       } else if (result != null && !mounted) {
         print("🚀 [超車提示] 登入其實成功了！資料也拿到了！");
       } else {
@@ -617,7 +613,10 @@ class _LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
-          height: MediaQuery.of(context).size.height,
+          height: MediaQuery
+              .of(context)
+              .size
+              .height,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -743,12 +742,10 @@ class _LoginPageState extends State<LoginPage> {
                 _buildLoginButton(
                   infoMethod: LoginMethod.email,
                   text: l10n.login_with_email,
-                  iconWidget: const Padding(
-                    padding: EdgeInsets.only(right: 16.0),
-                    child: Icon(
-                      Icons.email_outlined,
-                      color: Colors.white,
-                    ),
+                  iconWidget: const Icon(
+                    Icons.email_outlined,
+                    color: Colors.white,
+                    size: 23,
                   ),
                   backgroundColor: const Color(0xFFBA68C8),
                   textColor: Colors.white,
@@ -836,61 +833,97 @@ class _LoginPageState extends State<LoginPage> {
     required Color backgroundColor,
     required Color textColor,
     required VoidCallback onPressed,
-
     LoginMethod? infoMethod,
   }) {
+    final screenWidth = MediaQuery
+        .sizeOf(context)
+        .width;
+    final l10n = AppLocalizations.of(context)!;
+    // 小螢幕減少左右留白，避免按鈕內容太擠
+    final horizontalPadding =
+    screenWidth < 360 ? 20.0 : 40.0;
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+      ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: textColor,
+          disabledBackgroundColor:
+          backgroundColor.withValues(alpha: 0.6),
           elevation: 2,
-          minimumSize: const Size(double.infinity, 54),
+          padding: EdgeInsets.zero,
+          minimumSize: const Size(
+            double.infinity,
+            54,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(27),
           ),
         ),
-        onPressed: _isLoginLoading ? null : onPressed,
-        child: Stack(
-          children: [
-
-            // 左側 Icon
-            Align(
-              alignment: Alignment.centerLeft,
-              child: iconWidget,
-            ),
-
-            // 中間文字
-            Center(
-              child: Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        onPressed: _isLoginLoading
+            ? null
+            : onPressed,
+        child: SizedBox(
+          height: 54,
+          child: Row(
+            children: [
+              // 左側圖示固定區域
+              SizedBox(
+                width: 48,
+                child: Center(
+                  child: iconWidget,
                 ),
               ),
-            ),
 
-            // ⭐ 右側 i
-            if (infoMethod != null)
-              Positioned(
-                right: 10,
-                top: 0,
-                bottom: 0,
-                child: IconButton(
+              // 中間文字會依剩餘空間自動縮小
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                  ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      text,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // 右側固定相同寬度，維持文字視覺置中
+              SizedBox(
+                width: 48,
+                child: infoMethod == null
+                    ? SizedBox.shrink()
+                    : IconButton(
+                  tooltip: l10n.loginMethodInfoTooltip,
                   splashRadius: 18,
                   icon: Icon(
                     Icons.info_outline_rounded,
-                    size: 18,
-                    color: Colors.grey.shade500,
+                    size: 19,
+                    color: textColor.withValues(
+                      alpha: 0.72,
+                    ),
                   ),
                   onPressed: () {
-                    _showLoginMethodInfoDialog(infoMethod);
+                    _showLoginMethodInfoDialog(
+                      infoMethod,
+                    );
                   },
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );

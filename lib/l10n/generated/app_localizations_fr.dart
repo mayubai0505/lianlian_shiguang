@@ -6084,4 +6084,8 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'Traduire';
+
+  @override
+  String get loginMethodInfoTooltip =>
+      'Informations sur les modes de connexion';
 }

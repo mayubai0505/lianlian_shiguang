@@ -2801,5 +2801,6 @@
     "characterProfileShareCard": "Compartir tarjeta de invitación",
     "characterProfileShareCharacter": "Compartir personaje",
     "characterProfileReportCharacter": "Denunciar personaje",
-    "characterProfileTranslate": "Traducir"
+    "characterProfileTranslate": "Traducir",
+    "loginMethodInfoTooltip": "Información sobre los métodos de inicio de sesión"
 }

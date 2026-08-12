@@ -2801,5 +2801,6 @@
     "characterProfileShareCard": "Bagikan Kartu Undangan",
     "characterProfileShareCharacter": "Bagikan Karakter",
     "characterProfileReportCharacter": "Laporkan Karakter",
-    "characterProfileTranslate": "Terjemahkan"
+    "characterProfileTranslate": "Terjemahkan",
+    "loginMethodInfoTooltip": "Informasi Metode Login"
 }

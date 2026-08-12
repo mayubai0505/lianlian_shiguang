@@ -6004,4 +6004,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'Terjemahkan';
+
+  @override
+  String get loginMethodInfoTooltip => 'Informasi Metode Login';
 }

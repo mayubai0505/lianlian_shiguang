@@ -10401,6 +10401,12 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'翻譯'**
   String get characterProfileTranslate;
+
+  /// No description provided for @loginMethodInfoTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'登入方式說明'**
+  String get loginMethodInfoTooltip;
 }
 
 class _AppLocalizationsDelegate

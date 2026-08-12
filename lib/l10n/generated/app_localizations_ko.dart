@@ -5700,4 +5700,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => '번역';
+
+  @override
+  String get loginMethodInfoTooltip => '로그인 방법 안내';
 }

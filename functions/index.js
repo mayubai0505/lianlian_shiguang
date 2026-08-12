@@ -758,7 +758,7 @@ exports.getAiResponse = onRequest({
                 imagePath = "",
                 audioUrl = "",
                 audioPath = "",
-
+                userMessageId = "",
                 chatMode = "daily",
                 isContinue = false,
                 isBirthdayFreebie = false,
@@ -771,6 +771,10 @@ exports.getAiResponse = onRequest({
                 lastStoryLocation,
                 overrideSystemPrompt = ""
             } = body;
+
+            const safeUserMessageId = String(
+                userMessageId || ""
+            ).trim();
 
 console.log("👥 npcCharacters:");
 console.log(characterProfile.npcCharacters);
@@ -1011,9 +1015,51 @@ const cancellationRef =
                 let audioTranscript = "";
 
                 if (finalImageUrl) {
-                    console.log("🖼️ 偵測到玩家圖片，開始讀圖...");
-                    imageDescription = await describeImageWithGemini(finalImageUrl);
-                    console.log("🖼️ 圖片描述:", imageDescription);
+                  console.log("🖼️ 偵測到玩家圖片，開始讀圖...");
+
+                  imageDescription =
+                      await describeImageWithGemini(finalImageUrl);
+
+                  console.log("🖼️ 圖片描述:", imageDescription);
+
+                  // 將讀圖結果寫回原本的玩家訊息，
+                  // 讓下一輪聊天歷史仍然記得圖片內容
+                  if (
+                    imageDescription &&
+                    safeUserMessageId &&
+                    rawSessionId
+                  ) {
+                    try {
+                      await db
+                        .collection("artifacts")
+                        .doc(APP_ID)
+                        .collection("chat_sessions")
+                        .doc(rawSessionId)
+                        .collection("messages")
+                        .doc(safeUserMessageId)
+                        .set(
+                          {
+                            imageDescription,
+                            imageDescriptionUpdatedAt:
+                                FieldValue.serverTimestamp(),
+                          },
+                          {
+                            merge: true,
+                          }
+                        );
+
+                      console.log(
+                        "✅ 圖片描述已寫回玩家訊息:",
+                        safeUserMessageId
+                      );
+                    } catch (error) {
+                      // 寫回失敗不應中斷 AI 回覆
+                      console.error(
+                        "❌ 圖片描述寫回玩家訊息失敗:",
+                        error
+                      );
+                    }
+                  }
                 }
 
                 if (finalAudioUrl) {
@@ -2282,14 +2328,38 @@ systemPrompt += `
 
                           const trimmedHistory = chatHistory
                               .slice(-HISTORY_LIMIT)
-                              .map(msg => ({
-                                  role: msg.role === "assistant" ? "assistant" : "user",
-                                  content: limitPromptText(
-                                      msg.text || msg.content || "",
-                                      HISTORY_TEXT_LIMIT
-                                  )
-                              }))
-                              .filter(msg => msg.content && msg.content.trim() !== "");
+                              .map((msg) => {
+                                  const rawContent = String(
+                                      msg.text || msg.content || ""
+                                  ).trim();
+
+                                  // Flutter 已將 imageDescription 合併進 text，
+                                  // 因此用標記判斷這是不是包含圖片描述的歷史訊息
+                                  const hasImageContext = rawContent.includes(
+                                      "[玩家曾傳來一張圖片"
+                                  );
+
+                                  const historyLimit = hasImageContext
+                                      ? 1000
+                                      : HISTORY_TEXT_LIMIT;
+
+                                  return {
+                                      role:
+                                          msg.role === "assistant"
+                                              ? "assistant"
+                                              : "user",
+                                      content: limitPromptText(
+                                          rawContent,
+                                          historyLimit
+                                      ),
+                                      hasImage: hasImageContext,
+                                  };
+                              })
+                              .filter(
+                                  (msg) =>
+                                      msg.content &&
+                                      msg.content.trim() !== ""
+                              );
 
                                       const requestDocRef = await userDocRef.collection("aiRequests").add({
                                           status: "processing", createdAt: FieldValue.serverTimestamp(), chatMode: chatMode,
@@ -2333,33 +2403,55 @@ systemPrompt += `
 
                                   let trimmedCount = 0;
 
-                                  const safeTrimmedHistory = trimmedHistory.map(msg => {
-                                      let safeContent = msg.content || "";
+                                  const safeTrimmedHistory = trimmedHistory.map((msg) => {
+                                      let safeContent = String(
+                                          msg.content || ""
+                                      );
 
-                                      if (safeContent.length > HISTORY_TEXT_LIMIT) {
+                                      // 圖片歷史需要保留較完整的描述
+                                      const messageLimit = msg.hasImage
+                                          ? 1000
+                                          : HISTORY_TEXT_LIMIT;
+
+                                      if (safeContent.length > messageLimit) {
                                           trimmedCount++;
 
                                           safeContent = safeContent
-                                              .substring(0, HISTORY_TEXT_LIMIT)
+                                              .substring(0, messageLimit)
                                               .trim();
                                       }
 
                                       return {
                                           role: msg.role,
-                                          content: safeContent
+                                          content: safeContent,
                                       };
                                   });
 
                                   if (trimmedCount > 0) {
                                       console.log(
-                                          `⚠️ 二次防爆截斷：${trimmedCount} 則超過 ${HISTORY_TEXT_LIMIT} 字`
+                                          `⚠️ 二次防爆截斷：共有 ${trimmedCount} 則歷史訊息超出各自限制`
                                       );
                                   }
 
-                                  // 🌟🌟🌟 總裁！就是漏了這段啦！趕快補上！ 🌟🌟🌟
-                                  let safeFinalUserMessage = finalUserMessage || "";
-                                  if (safeFinalUserMessage.length > HISTORY_TEXT_LIMIT) {
-                                      safeFinalUserMessage = safeFinalUserMessage.substring(0, HISTORY_TEXT_LIMIT).trim();
+                                  // 本次訊息可能包含圖片描述或語音轉錄，
+                                  // 不能沿用歷史訊息的短字數限制
+                                  const CURRENT_MESSAGE_TEXT_LIMIT = 2000;
+
+                                  let safeFinalUserMessage = String(
+                                      finalUserMessage || ""
+                                  ).trim();
+
+                                  if (
+                                      safeFinalUserMessage.length >
+                                      CURRENT_MESSAGE_TEXT_LIMIT
+                                  ) {
+                                      console.warn(
+                                          `⚠️ 本次訊息超過 ${CURRENT_MESSAGE_TEXT_LIMIT} 字，已進行安全截斷`
+                                      );
+
+                                      safeFinalUserMessage = safeFinalUserMessage
+                                          .substring(0, CURRENT_MESSAGE_TEXT_LIMIT)
+                                          .trim();
                                   }
                                   // 🌟🌟🌟 補上這段，它才認識這個變數！ 🌟🌟🌟
 

@@ -2816,5 +2816,6 @@
   "characterProfileShareCard": "分享邀请卡",
   "characterProfileShareCharacter": "分享角色",
   "characterProfileReportCharacter": "举报角色",
-  "characterProfileTranslate": "翻译"
+  "characterProfileTranslate": "翻译",
+  "loginMethodInfoTooltip": "登录方式说明"
 }

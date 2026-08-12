@@ -6007,4 +6007,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'Terjemah';
+
+  @override
+  String get loginMethodInfoTooltip => 'Maklumat Kaedah Log Masuk';
 }

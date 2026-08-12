@@ -2810,5 +2810,6 @@
     "characterProfileShareCard": "Kongsi Kad Jemputan",
     "characterProfileShareCharacter": "Kongsi Watak",
     "characterProfileReportCharacter": "Laporkan Watak",
-    "characterProfileTranslate": "Terjemah"
+    "characterProfileTranslate": "Terjemah",
+    "loginMethodInfoTooltip": "Maklumat Kaedah Log Masuk"
 }

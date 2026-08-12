@@ -5921,4 +5921,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get characterProfileTranslate => 'ترجمة';
+
+  @override
+  String get loginMethodInfoTooltip => 'شرح طرق تسجيل الدخول';
 }

@@ -2975,5 +2975,6 @@
     "characterProfileShareCard": "Partager la carte d’invitation",
     "characterProfileShareCharacter": "Partager le personnage",
     "characterProfileReportCharacter": "Signaler le personnage",
-    "characterProfileTranslate": "Traduire"
+    "characterProfileTranslate": "Traduire",
+    "loginMethodInfoTooltip": "Informations sur les modes de connexion"
 }
