@@ -762,6 +762,7 @@ exports.getAiResponse = onRequest({
                 chatMode = "daily",
                 isContinue = false,
                 isBirthdayFreebie = false,
+                isTestMode = false,
                 userProfile = "未提供",
                 systemDirective = "",
                 aboutMeNotes = [],
@@ -771,6 +772,10 @@ exports.getAiResponse = onRequest({
                 lastStoryLocation,
                 overrideSystemPrompt = ""
             } = body;
+
+            // 角色建立頁的測試聊天室
+            // 只有明確傳入 true 才視為測試模式
+            const isTestChat = isTestMode === true;
 
             const safeUserMessageId = String(
                 userMessageId || ""
@@ -1025,9 +1030,10 @@ const cancellationRef =
                   // 將讀圖結果寫回原本的玩家訊息，
                   // 讓下一輪聊天歷史仍然記得圖片內容
                   if (
-                    imageDescription &&
-                    safeUserMessageId &&
-                    rawSessionId
+                      !isTestChat &&
+                      imageDescription &&
+                      safeUserMessageId &&
+                      rawSessionId
                   ) {
                     try {
                       await db
@@ -1137,9 +1143,56 @@ const cancellationRef =
             if (cost > 0 && (userDoc.data()?.flowerPoints || 0) < cost) return res.status(402).json({ error: "點數不足" });
 
             const name = characterProfile.name || "角色";
-            const toneAndStyle = characterProfile.toneAndStyle || "正常說話";
-            const relationship = characterProfile.relationship || "剛認識的陌生人";
-            const socialRelationships = characterProfile.socialRelationships || "無特別設定";
+            const newCoreCharacterSetting = String(
+                characterProfile.coreCharacterSetting || ""
+            ).trim();
+
+
+            const relationship =
+                characterProfile.relationship ||
+                "剛認識的陌生人";
+
+            const socialRelationships =
+                characterProfile.socialRelationships ||
+                "無特別設定";
+
+
+            const legacyDetailedPersonality = String(
+                characterProfile.detailedPersonality ||
+                characterProfile.personality ||
+                ""
+            ).trim();
+
+            const legacyToneAndStyle = String(
+                characterProfile.toneAndStyle || ""
+            ).trim();
+
+            // 暫時保留，避免尚未修改完成的舊 Prompt 找不到變數
+            const toneAndStyle =
+                legacyToneAndStyle || "正常說話";
+
+            const legacySocialInteraction = String(
+                characterProfile.socialInteraction || ""
+            ).trim();
+
+            // 新版角色優先使用合併後的核心設定。
+            // 舊版角色沒有新欄位時，才合併原本三個欄位。
+            const rawPersonality =
+                newCoreCharacterSetting ||
+                [
+                    legacyDetailedPersonality
+                        ? `角色性格與設定：\n${legacyDetailedPersonality}`
+                        : "",
+                    legacyToneAndStyle
+                        ? `說話語氣與風格：\n${legacyToneAndStyle}`
+                        : "",
+                    legacySocialInteraction
+                        ? `社交與環境互動：\n${legacySocialInteraction}`
+                        : "",
+                ]
+                    .filter(Boolean)
+                    .join("\n\n") ||
+                "無特別設定";
             const worldSetting =
                 String(
                     characterProfile.worldSetting ||
@@ -1147,7 +1200,6 @@ const cancellationRef =
                     ""
                 ).trim() || "無特別世界觀設定";
 
-            const rawPersonality = characterProfile.detailedPersonality || characterProfile.personality || "無特別設定";
             const rawNpcCharacters = Array.isArray(characterProfile.npcCharacters)
                 ? characterProfile.npcCharacters
                 : [];
@@ -1193,6 +1245,50 @@ const cancellationRef =
                 }).join("\n\n--------------------\n\n")
                 : "目前沒有已設定的配角。";
 
+// ==========================================
+// 創作者自訂回覆格式／狀態欄
+// ==========================================
+
+const customOutputFormat = String(
+    characterProfile.customOutputFormat || ""
+).trim();
+
+// 一定要先宣告，再由下面的 Directive 使用
+const supportsCustomStatusBar =
+    chatMode === "story" ||
+    chatMode === "immersive";
+
+const customOutputFormatDirective =
+    supportsCustomStatusBar &&
+    customOutputFormat
+        ? `
+### 創作者自訂狀態欄｜強制輸出
+
+創作者已設定以下狀態欄模板：
+
+${customOutputFormat}
+
+【最高優先執行規則】
+- 每一則回覆都必須在完整正文結束後輸出一次狀態欄。
+- 狀態欄必須是整則回覆的最後內容，不得放在正文中間。
+- 必須保留創作者設定的欄位名稱、符號、順序與換行格式。
+- 創作者提供的每一個非條件式欄位都必須輸出，不得自行刪除或省略。
+- 如果欄位只有名稱及冒號，例如「服裝：」，必須根據目前劇情補上內容，例如「服裝：黑色襯衫與長褲」。
+- 如果無法從角色設定、對話紀錄或當前情境合理判斷，必須填寫「未知」，不得省略欄位。
+- 狀態欄只能整理角色及目前場景的狀態，不得摘要或重演正文。
+- 不得替玩家創造內心想法、意願、身體反應或重大決定。
+- 條件式欄位只有在創作者明確寫出顯示條件且條件成立時才顯示。
+- 產生回覆後必須進行最後檢查；若正文最後沒有完整狀態欄，必須補齊後才能回傳。
+`
+        : `
+### 狀態欄規則
+
+本次回覆不得產生自訂結尾狀態欄。
+
+- 禁止在正文後追加角色狀態、所在地、服裝、姿勢、外觀特徵、
+  關係、好感度或其他條列式人物資訊。
+- 第一行原本規定的「時間｜地點」不屬於結尾狀態欄，仍須正常輸出。
+`;
                 const narrativeRules = `
                 【玩家敘事規則】
 
@@ -1610,21 +1706,21 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         6. **可以有陪伴感**：可以關心、吐槽、安慰、開玩笑，但要保持輕量。
         7. **回覆長度**：1～3 句即可，總字數約 15～60 字，最多不可超過 80 字。
 
-        [角色設定]
-        深層性格：${detailedPersonalityBlock}
-        語氣：${toneAndStyle}
-        目前關係：${relationship}
+       【角色核心設定】
+       ${detailedPersonalityBlock}
 
-        [世界觀設定]
-        ${worldSetting}
-        ${contextBriefing}
-        ${systemEventRules}
+       【目前與玩家的關係】
+       ${relationship}
 
-        【配角設定】
-        ${npcCharactersBlock}
+       【世界觀設定】
+       ${worldSetting}
+       ${contextBriefing}
+       ${systemEventRules}
 
-        ${narrativeRules}
+       【配角設定】
+       ${npcCharactersBlock}
 
+       ${narrativeRules}
         [稱呼規範]
         你可以根據語境稱呼對方為「${playerName}」「你」，或使用符合關係的輕量親暱稱呼，例如「小傢伙」「寶貝」「親愛的」。
         除非玩家資料明確指定為女性，否則不要使用「妳」「她」「女生」「小姐」「女主角」來稱呼或描述玩家。
@@ -1667,7 +1763,11 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
             【角色核心設定】
             深層性格：${detailedPersonalityBlock}
-            語氣與習慣：${toneAndStyle}
+            【角色核心設定】
+            ${detailedPersonalityBlock}
+
+            【目前與玩家的關係】
+            ${relationship}
             目前關係：${relationship}
 
             【世界觀設定】
@@ -1806,7 +1906,11 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
         【角色核心設定】
         ${detailedPersonalityBlock}
-        語氣與習慣：${toneAndStyle}
+        【角色核心設定】
+        ${detailedPersonalityBlock}
+
+        【目前與玩家的關係】
+        ${relationship}
         目前關係：${relationship}
 
         【世界觀設定】
@@ -1922,19 +2026,11 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         - 創作者範例、角色設定、舊對話或固定文案中的稱謂，不得覆蓋玩家目前的正式資料。
         - 不得直接使用「玩家」作為故事中的人物稱呼。
 
-        ### 創作者自訂格式相容規則
-        - 上方「語氣與習慣」欄位若包含明確的固定輸出格式、狀態欄、附加欄位或每輪必須呈現的結構，必須視為創作者自訂輸出要求，而不是普通的人設描述。
-        - 創作者要求固定出現在結尾的內容，應放在正文結束後完整輸出，不得因劇情模式的預設格式而省略。
-        - 自訂格式只能調整正文呈現方式，不得覆蓋玩家最新輸入、角色正式設定、設定優先順序、親密互動界線、安全規則、字數限制或合法 JSON 回傳要求。
-        - 狀態欄涉及日期、星期、天氣、服裝、姿勢或人物狀態時，應優先沿用對話、記憶與場景中已存在的資訊；無法合理判斷時標示為「未知」或使用不造成設定衝突的概括描述。
-        - 「所有角色的內心想法」僅指由 AI 演繹的主角色、配角及 NPC，不包含玩家。不得替玩家新增內心想法、情緒、慾望、身體反應或意願。
-        - 創作者指定的條件式欄位只在條件成立時顯示；條件不成立時應完全省略，不要輸出空白欄位、「無」或「沒有」。
-        - 創作者指定的狀態欄及結尾格式不受正文全形括號格式限制，應依創作者指定的格式輸出。
-        - 每則回覆只能生成一次正文。狀態欄開始後不得重新輸出時間地點標頭、正文、角色台詞或動作段落。
-        - 結尾狀態欄只能整理當前狀態，不得複製、摘要式重演或改寫本輪正文。
+        ${customOutputFormatDirective}
         `;
     }
-        else {
+        else if (chatMode === "immersive") {
+            // Immersive
             // ✨✨✨ Immersive 極限沉浸模式（已全面優化為最高階） ✨✨✨
             systemPrompt = `
             📢 【系統最高強制指令】：你輸出的 JSON 中，\`response\` 欄位內的文字，**第一行絕對必須是**「時間：XXX | 地點：XXX」，沒有任何例外！即使場景與時間完全沒變，也絕對不允許省略！
@@ -1961,10 +2057,13 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
 
            ${compactLoresContext}
            ${compactRelationContext}
-            [角色核心設定]
+
+            【角色核心設定】
             ${detailedPersonalityBlock}
-            語氣與習慣：${toneAndStyle}
-            目前關係：${relationship}
+
+            【目前與玩家的關係】
+            ${relationship}
+
 
             [世界觀設定]
             ${worldSetting}
@@ -2049,17 +2148,12 @@ ${narrativeRules}
             - 不得輸出規則說明、創作分析、修改過程或其他正文以外的內容。
             - 【玩家稱謂一致性】生成回覆前必須先依玩家資料確認本輪使用的稱謂。若玩家資料明確設定女性且指定女性代詞，可全程使用「妳」；明確設定男性時，全程使用「你」。資料未明、資料互相衝突或沒有指定代詞時，一律使用「你」。
             - 同一則回覆中不得混用「你／妳」指稱同一位玩家，也不得在不同段落任意切換玩家代詞。角色設定、創作者範例、舊對話或固定文案中的用字，不得覆蓋玩家目前的正式資料。
-                    ### 創作者自訂格式相容規則
-                    - 上方「語氣與習慣」欄位除了角色口吻外，若包含明確的固定輸出格式、狀態欄、附加欄位或每輪必須呈現的結構，必須將其視為創作者自訂輸出要求，而不是普通的人設描述。
-                    - 創作者要求固定出現在結尾的內容，應放在正文結束後完整輸出，不得因本模式的預設格式而直接省略。
-                    - 自訂格式只能調整正文的呈現方式，不得覆蓋玩家最新輸入、角色正式設定、設定優先順序、親密互動界線、安全規則、字數限制或合法 JSON 回傳要求。
-                    - 狀態欄涉及日期、星期、天氣、服裝、姿勢或人物狀態時，應優先沿用對話、記憶與場景中已存在的資訊；無法合理判斷的內容應標示為「未知」或使用不造成設定衝突的概括描述，不得捏造重大事實。
-                    - 創作者自訂格式提到「所有角色的內心想法」時，僅指由 AI 扮演的主角色與配角，不包含玩家。可以呈現主角色與配角的內心想法、慾望及未說出口的話，但不得替玩家新增內心想法、情緒、慾望、身體反應或意願。
-                    - 若創作者規定某個條件式欄位只在特定情境出現，例如只有角色產生性相關想法或身體反應時才顯示，必須依當前情境判斷；條件不成立時應整個省略該欄，不要輸出「無」、「沒有」或空白欄位。
-                    - 狀態欄及其他創作者創作者指定的結尾格式，不受「非台詞描寫必須放在全形括號內」的預設正文格式限制，應依創作者指定的格式輸出。
-                    - 每則回覆只能生成一次正文。狀態欄開始後不得重新輸出時間地點標頭、正文、角色台詞或動作段落。
-                    - 結尾狀態欄只能整理當前狀態，不得複製、摘要式重演或改寫本輪正文。
+            ${customOutputFormatDirective}
             `;
+        }
+
+        else {
+            throw new Error(`不支援的聊天模式：${chatMode}`);
         }
 
          if (chatMode !== "gemini") {
@@ -3377,55 +3471,53 @@ if (sessionId) {
                         }
                     }
 
-                    // A. 寫入 AI 回覆
-                    transaction.set(aiMessageRef, {
-                        sender: "ai",
-                        text: cleanDisplayText,
-                        voiceText: cleanVoiceText,
-                        type: "text",
+                    // A、B：只有正式聊天室才寫入 AI 訊息並更新聊天室
+                    if (!isTestChat) {
+                        transaction.set(aiMessageRef, {
+                            sender: "ai",
+                            text: cleanDisplayText,
+                            voiceText: cleanVoiceText,
+                            type: "text",
 
-                        timestamp:
-                            FieldValue.serverTimestamp(),
-
-                        characterId:
-                            characterProfile.id || "",
-
-                        characterName: name,
-                        role: "assistant",
-
-                        // 保留原始完整回覆，
-                        // 供除錯或其他功能使用
-                        content: finalResponseText,
-                    });
-
-                    // B. 更新聊天室摘要
-                    transaction.set(
-                        sessionRef,
-                        {
-                            userId,
+                            timestamp:
+                                FieldValue.serverTimestamp(),
 
                             characterId:
                                 characterProfile.id || "",
 
                             characterName: name,
-                            lastMessage: cleanDisplayText,
+                            role: "assistant",
 
-                            lastActivity:
-                                FieldValue.serverTimestamp(),
+                            content: finalResponseText,
+                        });
 
-                            friendshipScore:
-                                FieldValue.increment(
-                                    finalAffectionChange
-                                ),
+                        transaction.set(
+                            sessionRef,
+                            {
+                                userId,
 
-                            unreadCount:
-                                FieldValue.increment(1),
-                        },
-                        {
-                            merge: true,
-                        }
-                    );
+                                characterId:
+                                    characterProfile.id || "",
 
+                                characterName: name,
+                                lastMessage: cleanDisplayText,
+
+                                lastActivity:
+                                    FieldValue.serverTimestamp(),
+
+                                friendshipScore:
+                                    FieldValue.increment(
+                                        finalAffectionChange
+                                    ),
+
+                                unreadCount:
+                                    FieldValue.increment(1),
+                            },
+                            {
+                                merge: true,
+                            }
+                        );
+                    }
                     // C. 付費模式才扣點並寫入明細
                     if (
                         cost > 0 &&
@@ -3444,8 +3536,9 @@ if (sessionId) {
                         transaction.set(
                             flowerLogRef,
                             {
-                                title:
-                                    `與 ${name} 聊天`,
+                                title: isTestChat
+                                    ? `測試角色：${name}`
+                                    : `與 ${name} 聊天`,
 
                                 amount: -cost,
 
@@ -3453,14 +3546,20 @@ if (sessionId) {
                                     characterProfile.id || "",
 
                                 characterName: name,
+
+                                // 測試模式記錄測試 ID，不會建立正式聊天室
                                 sessionId,
-                                messageId:
-                                    aiMessageRef.id,
+
+                                // 測試模式沒有正式 AI 訊息文件
+                                messageId: isTestChat
+                                    ? ""
+                                    : aiMessageRef.id,
+
                                 chatMode,
+                                isTestMode: isTestChat,
 
                                 createdAt:
-                                    FieldValue
-                                        .serverTimestamp(),
+                                    FieldValue.serverTimestamp(),
                             }
                         );
                     }
@@ -3522,15 +3621,33 @@ if (sessionId) {
         // 成功後不要再無條件刪除 cancellationRef。
         // 若取消通知在交易提交後才抵達，
         // 讓它依 expiresAt 自動清理即可。
-        console.log(
-            cost > 0
-                ? `✅ [安全收銀台] AI 回覆已寫入，` +
-                  `成功向 ${userId} 收取 ${cost} 朵花花。` +
-                  ` messageId=${aiMessageRef.id}`
-                : `✅ [安全收銀台] AI 回覆已寫入，` +
-                  `本次為免費對話。` +
-                  ` messageId=${aiMessageRef.id}`
-        );
+        let successLogMessage = "";
+
+        if (isTestChat) {
+            if (cost > 0) {
+                successLogMessage =
+                    `✅ [測試聊天室] AI 回覆已成功生成，` +
+                    `已向玩家 ${userId} 收取 ${cost} 朵花花。`;
+            } else {
+                successLogMessage =
+                    `✅ [測試聊天室] AI 回覆已成功生成，` +
+                    `本次為免費對話，未扣除花花。`;
+            }
+        } else {
+            if (cost > 0) {
+                successLogMessage =
+                    `✅ [安全收銀台] AI 回覆已成功寫入，` +
+                    `已向玩家 ${userId} 收取 ${cost} 朵花花。` +
+                    ` messageId=${aiMessageRef.id}`;
+            } else {
+                successLogMessage =
+                    `✅ [安全收銀台] AI 回覆已成功寫入，` +
+                    `本次為免費對話，未扣除花花。` +
+                    ` messageId=${aiMessageRef.id}`;
+            }
+        }
+
+        console.log(successLogMessage);
         // ==========================================
         // 🧠 建立長期記憶背景工作單
         // 只建立 Firestore 文件，不在 HTTP 請求內等待記憶 AI
@@ -3549,6 +3666,7 @@ if (sessionId) {
 
             // 沒有玩家原始訊息時，不需要建立記憶工作
             if (
+                !isTestChat &&
                 finalCharacterId &&
                 originalUserMessage
             ) {
@@ -4736,7 +4854,24 @@ exports.generateStorySummary = onRequest({
             const decodedToken = await getAuth().verifyIdToken(idToken);
             const userId = decodedToken.uid;
 
-            const { characterId, characterName, playerName, chatHistory } = req.body;
+            const {
+                characterId,
+                characterName,
+                playerName,
+                chatHistory,
+                sessionId,
+            } = req.body;
+            const rawSessionId = String(sessionId || "").trim();
+
+            if (!rawSessionId) {
+                return res.status(400).json({
+                    error: "缺少聊天室 ID，無法分開儲存劇情摘要",
+                });
+            }
+
+            const safeSessionId = rawSessionId
+                .replace(/[\/\\#?\[\]\s]/g, "_")
+                .slice(0, 150);
             if (!characterId || !chatHistory || chatHistory.length === 0) {
                 return res.status(400).json({ error: "缺少參數或歷史對話為空" });
             }
@@ -4783,11 +4918,17 @@ exports.generateStorySummary = onRequest({
 
             // 4. 寫入總裁的那個專屬展示櫃抽屜
             await db
-                .collection('users').doc(userId)
-                .collection('friendships').doc(characterId)
-                .collection('summaries')
+                .collection("users")
+                .doc(userId)
+                .collection("friendships")
+                .doc(characterId)
+                .collection("chat_sessions")
+                .doc(safeSessionId)
+                .collection("summaries")
                 .add({
                     content: summaryText,
+                    sessionId: rawSessionId,
+                    characterId,
                     createdAt: FieldValue.serverTimestamp(),
                 });
 

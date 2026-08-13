@@ -244,6 +244,11 @@ class UserProfilePopup {
 // 2. 執行資料合併儲存 (更新個人檔案列表)
                                     await userRef.set({
                                       'profiles': profiles,
+
+                                      // 不論玩家選擇儲存或稍後，都代表已處理第一次提示
+                                      'hasHandledProfileIntro': true,
+
+                                      // 舊版本相容
                                       'hasSkippedProfile': true,
                                     }, SetOptions(merge: true));
 
@@ -284,10 +289,42 @@ class UserProfilePopup {
                             const SizedBox(height: 8),
                             Center(
                               child: TextButton(
-                                onPressed: isSaving ? null : () {
+                                onPressed: isSaving
+                                    ? null
+                                    : () async {
+                                  final user =
+                                      FirebaseAuth.instance.currentUser;
+
+                                  if (user != null) {
+                                    try {
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(user.uid)
+                                          .set({
+                                        // 全帳號只自動顯示一次
+                                        'hasHandledProfileIntro': true,
+
+                                        // 暫時保留舊欄位相容
+                                        'hasSkippedProfile': true,
+                                      }, SetOptions(merge: true));
+                                    } catch (e) {
+                                      debugPrint(
+                                        '❌ 記錄拾光檔案稍後填寫失敗：$e',
+                                      );
+                                    }
+                                  }
+
+                                  if (!context.mounted) return;
                                   Navigator.pop(context);
                                 },
-                                child: Text(l10n.fillLaterButton, style: TextStyle(color: isSaving ? Colors.grey.shade300 : Colors.grey)), // 🚀 替換
+                                child: Text(
+                                  l10n.fillLaterButton,
+                                  style: TextStyle(
+                                    color: isSaving
+                                        ? Colors.grey.shade300
+                                        : Colors.grey,
+                                  ),
+                                ),
                               ),
                             ),
                           ]

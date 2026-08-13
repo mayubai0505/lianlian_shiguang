@@ -36,13 +36,21 @@ class StorySummary {
   }
 }
 
-class StorySummaryPage extends StatefulWidget {  // <--- 名稱 A
-  const StorySummaryPage({super.key, required this.character});
+class StorySummaryPage extends StatefulWidget {
+  const StorySummaryPage({
+    super.key,
+    required this.character,
+    required this.sessionId,
+  });
+
   final Character character;
 
+  // 目前聊天室 ID，用來分開不同聊天室的劇情摘要
+  final String sessionId;
+
   @override
-  // 2. 這裡要對應到 State 類別
-  State<StorySummaryPage> createState() => _StorySummaryPageState();
+  State<StorySummaryPage> createState() =>
+      _StorySummaryPageState();
 }
 class _StorySummaryPageState extends State<StorySummaryPage> {
   // ✨ 新增 #1: 用於控制動畫列表的 Key
@@ -62,10 +70,14 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
         .doc(effectiveUserId)
         .collection('friendships')
         .doc(widget.character.id)
+        .collection('chat_sessions')
+        .doc(widget.sessionId)
         .collection('summaries')
         .withConverter<StorySummary>(
-      fromFirestore: (snapshot, _) => StorySummary.fromFirestore(snapshot),
-      toFirestore: (summary, _) => summary.toJson(),
+      fromFirestore: (snapshot, _) =>
+          StorySummary.fromFirestore(snapshot),
+      toFirestore: (summary, _) =>
+          summary.toJson(),
     );
   }
 

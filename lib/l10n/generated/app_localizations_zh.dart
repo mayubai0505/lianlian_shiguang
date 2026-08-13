@@ -107,7 +107,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get charAlbumTitle => '角色相冊 (第一張為主要頭像)';
 
   @override
-  String get charNameLabel => '角色名稱:*';
+  String get charNameLabel => '角色名稱:';
 
   @override
   String get charDescSection => '角色描述:';
@@ -116,13 +116,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get charAgeLabel => '年齡:';
 
   @override
-  String get charJobLabel => '職業:*';
+  String get charJobLabel => '職業:';
 
   @override
   String get charBirthdayLabel => '生日:(MMDD)';
 
   @override
-  String get charGenderLabel => '性別 *';
+  String get charGenderLabel => '性別';
 
   @override
   String get genderNotSelected => '未選擇';
@@ -5607,6 +5607,85 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => '登入方式說明';
+
+  @override
+  String get characterEditCoreSetting => '角色核心設定';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      '請描述角色的個性、行為模式、待人互動方式及說話語氣。\n\n例如：他外表冷淡寡言，實際十分細心。與陌生人保持距離，面對喜歡的人會用行動照顧對方，說話簡短直接，不會使用過度甜膩或輕浮的稱呼。';
+
+  @override
+  String get characterEditNameDescription => '這是角色公開顯示的名稱，完成建立後系統會自動產生角色用戶名。';
+
+  @override
+  String get characterEditNameHint => '請輸入角色名稱';
+
+  @override
+  String get characterEditAgeDescription => '設定角色的年齡，也可以依世界觀填寫外表年齡。';
+
+  @override
+  String get characterEditAgeHint => '例如：25';
+
+  @override
+  String get characterEditOccupationDescription => '角色目前的身分或職業，例如學生、醫生、騎士或企業家。';
+
+  @override
+  String get characterEditBirthdayDescription => '設定角色的生日，可填寫四位數或使用斜線分隔月份與日期。';
+
+  @override
+  String get characterEditBirthdayHint => '例如：0825 或 08/25';
+
+  @override
+  String get characterEditHeightDescription => '設定角色的身高，單位為公分。';
+
+  @override
+  String get characterEditHeightHint => '例如：182';
+
+  @override
+  String get characterEditGenderDescription => '系統會依照角色性別使用合適的代名詞。';
+
+  @override
+  String get characterEditAppearanceDescription => '描述角色的五官、髮型、穿著與其他外貌特徵。';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      '設定玩家在故事中的身分，例如助理、同學或青梅竹馬。';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      '描述故事發生的時代、地點、社會背景與特殊規則。此內容將公開顯示於角色頁的「角色簡介」，請避免填寫不希望玩家提前得知的秘密或劇情。';
+
+  @override
+  String get characterEditStorySummaryDescription => '用一句話簡短介紹這段故事，方便快速了解角色情境。';
+
+  @override
+  String get characterEditStorySummaryHint => '例如：與冷面醫生從契約關係開始的戀愛故事';
+
+  @override
+  String get characterEditInitialStoryDescription => '玩家第一次進入聊天室時，會先看到的故事情境。';
+
+  @override
+  String get characterEditFirstLineDescription => '角色第一次見到玩家時說出的第一句話。';
+
+  @override
+  String get characterEditCustomStatusBar => '劇情狀態欄（選填）';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      '僅套用於劇情模式與沉浸模式。可設定回覆結尾固定顯示的角色狀態、地點、服裝或關係資訊；留空時不會產生狀態欄。';
+
+  @override
+  String get characterProfileCharacterIntro => '角色簡介';
+
+  @override
+  String get characterProfileNoIntroduction => '創作者尚未填寫角色簡介';
+
+  @override
+  String get characterProfileViewMore => '查看更多';
+
+  @override
+  String get characterProfileCollapse => '收起來';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5712,7 +5791,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get charAlbumTitle => '角色相册 (第一张为主要头像)';
 
   @override
-  String get charNameLabel => '角色名称:*';
+  String get charNameLabel => '角色名称:';
 
   @override
   String get charDescSection => '角色描述:';
@@ -5721,13 +5800,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get charAgeLabel => '年龄:';
 
   @override
-  String get charJobLabel => '职业:*';
+  String get charJobLabel => '职业:';
 
   @override
   String get charBirthdayLabel => '生日:(MMDD)';
 
   @override
-  String get charGenderLabel => '性别 *';
+  String get charGenderLabel => '性别';
 
   @override
   String get genderNotSelected => '未选择';
@@ -11212,6 +11291,85 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get loginMethodInfoTooltip => '登录方式说明';
+
+  @override
+  String get characterEditCoreSetting => '角色核心设置';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      '请描述角色的个性、行为模式、待人互动方式及说话语气。\n\n例如：他外表冷淡寡言，实际十分细心。与陌生人保持距离，面对喜欢的人会用行动照顾对方，说话简短直接，不会使用过度甜腻或轻浮的称呼。';
+
+  @override
+  String get characterEditNameDescription => '这是角色公开显示的名称，完成创建后系统会自动生成角色用户名。';
+
+  @override
+  String get characterEditNameHint => '请输入角色名称';
+
+  @override
+  String get characterEditAgeDescription => '设置角色的年龄，也可以依世界观填写外表年龄。';
+
+  @override
+  String get characterEditAgeHint => '例如：25';
+
+  @override
+  String get characterEditOccupationDescription => '角色目前的身份或职业，例如学生、医生、骑士或企业家。';
+
+  @override
+  String get characterEditBirthdayDescription => '设置角色的生日，可填写四位数或使用斜线分隔月份与日期。';
+
+  @override
+  String get characterEditBirthdayHint => '例如：0825 或 08/25';
+
+  @override
+  String get characterEditHeightDescription => '设置角色的身高，单位为厘米。';
+
+  @override
+  String get characterEditHeightHint => '例如：182';
+
+  @override
+  String get characterEditGenderDescription => '系统会依照角色性别使用合适的代名词。';
+
+  @override
+  String get characterEditAppearanceDescription => '描述角色的五官、发型、穿着与其他外貌特征。';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      '设置玩家在故事中的身份，例如助理、同学或青梅竹马。';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      '描述故事发生的时代、地点、社会背景与特殊规则。此内容将公开显示于角色页的“角色简介”，请避免填写不希望玩家提前得知的秘密或剧情。';
+
+  @override
+  String get characterEditStorySummaryDescription => '用一句话简短介绍这段故事，方便快速了解角色情境。';
+
+  @override
+  String get characterEditStorySummaryHint => '例如：与冷面医生从契约关系开始的恋爱故事';
+
+  @override
+  String get characterEditInitialStoryDescription => '玩家第一次进入聊天室时，会先看到的故事情境。';
+
+  @override
+  String get characterEditFirstLineDescription => '角色第一次见到玩家时说出的第一句话。';
+
+  @override
+  String get characterEditCustomStatusBar => '剧情状态栏（选填）';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      '仅应用于剧情模式与沉浸模式。可设置回复结尾固定显示的角色状态、地点、服装或关系信息；留空时不会生成状态栏。';
+
+  @override
+  String get characterProfileCharacterIntro => '角色简介';
+
+  @override
+  String get characterProfileNoIntroduction => '创作者尚未填写角色简介';
+
+  @override
+  String get characterProfileViewMore => '查看更多';
+
+  @override
+  String get characterProfileCollapse => '收起';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -11317,7 +11475,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get charAlbumTitle => '角色相冊 (第一張為主要頭像)';
 
   @override
-  String get charNameLabel => '角色名稱:*';
+  String get charNameLabel => '角色名稱:';
 
   @override
   String get charDescSection => '角色描述:';
@@ -11326,13 +11484,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get charAgeLabel => '年齡:';
 
   @override
-  String get charJobLabel => '職業:*';
+  String get charJobLabel => '職業:';
 
   @override
   String get charBirthdayLabel => '生日:(MMDD)';
 
   @override
-  String get charGenderLabel => '性別 *';
+  String get charGenderLabel => '性別';
 
   @override
   String get genderNotSelected => '未選擇';
@@ -16817,4 +16975,83 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get loginMethodInfoTooltip => '登入方式說明';
+
+  @override
+  String get characterEditCoreSetting => '角色核心設定';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      '請描述角色的個性、行為模式、待人互動方式及說話語氣。\n\n例如：他外表冷淡寡言，實際十分細心。與陌生人保持距離，面對喜歡的人會用行動照顧對方，說話簡短直接，不會使用過度甜膩或輕浮的稱呼。';
+
+  @override
+  String get characterEditNameDescription => '這是角色公開顯示的名稱，完成建立後系統會自動產生角色用戶名。';
+
+  @override
+  String get characterEditNameHint => '請輸入角色名稱';
+
+  @override
+  String get characterEditAgeDescription => '設定角色的年齡，也可以依世界觀填寫外表年齡。';
+
+  @override
+  String get characterEditAgeHint => '例如：25';
+
+  @override
+  String get characterEditOccupationDescription => '角色目前的身分或職業，例如學生、醫生、騎士或企業家。';
+
+  @override
+  String get characterEditBirthdayDescription => '設定角色的生日，可填寫四位數或使用斜線分隔月份與日期。';
+
+  @override
+  String get characterEditBirthdayHint => '例如：0825 或 08/25';
+
+  @override
+  String get characterEditHeightDescription => '設定角色的身高，單位為公分。';
+
+  @override
+  String get characterEditHeightHint => '例如：182';
+
+  @override
+  String get characterEditGenderDescription => '系統會依照角色性別使用合適的代名詞。';
+
+  @override
+  String get characterEditAppearanceDescription => '描述角色的五官、髮型、穿著與其他外貌特徵。';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      '設定玩家在故事中的身分，例如助理、同學或青梅竹馬。';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      '描述故事發生的時代、地點、社會背景與特殊規則。此內容將公開顯示於角色頁的「角色簡介」，請避免填寫不希望玩家提前得知的秘密或劇情。';
+
+  @override
+  String get characterEditStorySummaryDescription => '用一句話簡短介紹這段故事，方便快速了解角色情境。';
+
+  @override
+  String get characterEditStorySummaryHint => '例如：與冷面醫生從契約關係開始的戀愛故事';
+
+  @override
+  String get characterEditInitialStoryDescription => '玩家第一次進入聊天室時，會先看到的故事情境。';
+
+  @override
+  String get characterEditFirstLineDescription => '角色第一次見到玩家時說出的第一句話。';
+
+  @override
+  String get characterEditCustomStatusBar => '劇情狀態欄（選填）';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      '僅套用於劇情模式與沉浸模式。可設定回覆結尾固定顯示的角色狀態、地點、服裝或關係資訊；留空時不會產生狀態欄。';
+
+  @override
+  String get characterProfileCharacterIntro => '角色簡介';
+
+  @override
+  String get characterProfileNoIntroduction => '創作者尚未填寫角色簡介';
+
+  @override
+  String get characterProfileViewMore => '查看更多';
+
+  @override
+  String get characterProfileCollapse => '收起來';
 }

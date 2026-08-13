@@ -317,7 +317,7 @@ abstract class AppLocalizations {
   /// No description provided for @charNameLabel.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'角色名稱:*'**
+  /// **'角色名稱:'**
   String get charNameLabel;
 
   /// No description provided for @charDescSection.
@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @charJobLabel.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'職業:*'**
+  /// **'職業:'**
   String get charJobLabel;
 
   /// No description provided for @charBirthdayLabel.
@@ -347,7 +347,7 @@ abstract class AppLocalizations {
   /// No description provided for @charGenderLabel.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'性別 *'**
+  /// **'性別'**
   String get charGenderLabel;
 
   /// No description provided for @genderNotSelected.
@@ -10407,6 +10407,156 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'登入方式說明'**
   String get loginMethodInfoTooltip;
+
+  /// No description provided for @characterEditCoreSetting.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色核心設定'**
+  String get characterEditCoreSetting;
+
+  /// No description provided for @characterEditCoreSettingHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請描述角色的個性、行為模式、待人互動方式及說話語氣。\n\n例如：他外表冷淡寡言，實際十分細心。與陌生人保持距離，面對喜歡的人會用行動照顧對方，說話簡短直接，不會使用過度甜膩或輕浮的稱呼。'**
+  String get characterEditCoreSettingHint;
+
+  /// No description provided for @characterEditNameDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這是角色公開顯示的名稱，完成建立後系統會自動產生角色用戶名。'**
+  String get characterEditNameDescription;
+
+  /// No description provided for @characterEditNameHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請輸入角色名稱'**
+  String get characterEditNameHint;
+
+  /// No description provided for @characterEditAgeDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'設定角色的年齡，也可以依世界觀填寫外表年齡。'**
+  String get characterEditAgeDescription;
+
+  /// No description provided for @characterEditAgeHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：25'**
+  String get characterEditAgeHint;
+
+  /// No description provided for @characterEditOccupationDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色目前的身分或職業，例如學生、醫生、騎士或企業家。'**
+  String get characterEditOccupationDescription;
+
+  /// No description provided for @characterEditBirthdayDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'設定角色的生日，可填寫四位數或使用斜線分隔月份與日期。'**
+  String get characterEditBirthdayDescription;
+
+  /// No description provided for @characterEditBirthdayHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：0825 或 08/25'**
+  String get characterEditBirthdayHint;
+
+  /// No description provided for @characterEditHeightDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'設定角色的身高，單位為公分。'**
+  String get characterEditHeightDescription;
+
+  /// No description provided for @characterEditHeightHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：182'**
+  String get characterEditHeightHint;
+
+  /// No description provided for @characterEditGenderDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'系統會依照角色性別使用合適的代名詞。'**
+  String get characterEditGenderDescription;
+
+  /// No description provided for @characterEditAppearanceDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述角色的五官、髮型、穿著與其他外貌特徵。'**
+  String get characterEditAppearanceDescription;
+
+  /// No description provided for @characterEditPlayerIdentityDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'設定玩家在故事中的身分，例如助理、同學或青梅竹馬。'**
+  String get characterEditPlayerIdentityDescription;
+
+  /// No description provided for @characterEditWorldviewDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述故事發生的時代、地點、社會背景與特殊規則。此內容將公開顯示於角色頁的「角色簡介」，請避免填寫不希望玩家提前得知的秘密或劇情。'**
+  String get characterEditWorldviewDescription;
+
+  /// No description provided for @characterEditStorySummaryDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'用一句話簡短介紹這段故事，方便快速了解角色情境。'**
+  String get characterEditStorySummaryDescription;
+
+  /// No description provided for @characterEditStorySummaryHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：與冷面醫生從契約關係開始的戀愛故事'**
+  String get characterEditStorySummaryHint;
+
+  /// No description provided for @characterEditInitialStoryDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'玩家第一次進入聊天室時，會先看到的故事情境。'**
+  String get characterEditInitialStoryDescription;
+
+  /// No description provided for @characterEditFirstLineDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色第一次見到玩家時說出的第一句話。'**
+  String get characterEditFirstLineDescription;
+
+  /// No description provided for @characterEditCustomStatusBar.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'劇情狀態欄（選填）'**
+  String get characterEditCustomStatusBar;
+
+  /// No description provided for @characterEditCustomStatusBarDescription.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'僅套用於劇情模式與沉浸模式。可設定回覆結尾固定顯示的角色狀態、地點、服裝或關係資訊；留空時不會產生狀態欄。'**
+  String get characterEditCustomStatusBarDescription;
+
+  /// No description provided for @characterProfileCharacterIntro.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色簡介'**
+  String get characterProfileCharacterIntro;
+
+  /// No description provided for @characterProfileNoIntroduction.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者尚未填寫角色簡介'**
+  String get characterProfileNoIntroduction;
+
+  /// No description provided for @characterProfileViewMore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'查看更多'**
+  String get characterProfileViewMore;
+
+  /// No description provided for @characterProfileCollapse.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收起來'**
+  String get characterProfileCollapse;
 }
 
 class _AppLocalizationsDelegate

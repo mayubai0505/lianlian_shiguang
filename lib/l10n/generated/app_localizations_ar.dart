@@ -109,7 +109,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'ألبوم الشخصيات (الصورة الأولى هي الصورة الرمزية الرئيسية)';
 
   @override
-  String get charNameLabel => 'اسم الشخصية:*';
+  String get charNameLabel => 'اسم الشخصية:';
 
   @override
   String get charDescSection => 'وصف الشخصية:';
@@ -118,13 +118,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get charAgeLabel => 'العمر:';
 
   @override
-  String get charJobLabel => 'المهنة:*';
+  String get charJobLabel => 'المهنة:';
 
   @override
   String get charBirthdayLabel => 'تاريخ الميلاد:(MMDD)';
 
   @override
-  String get charGenderLabel => 'الجنس *';
+  String get charGenderLabel => 'الجنس ';
 
   @override
   String get genderNotSelected => 'لم يتم الاختيار';
@@ -5924,4 +5924,94 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'شرح طرق تسجيل الدخول';
+
+  @override
+  String get characterEditCoreSetting => 'الإعدادات الأساسية للشخصية';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'يرجى وصف شخصية الدور، وأنماط سلوكه، وطريقة تعامله مع الآخرين، وأسلوب حديثه.\n\nمثال: يبدو باردًا وقليل الكلام، لكنه في الحقيقة شديد الاهتمام بالتفاصيل. يحافظ على مسافة مع الغرباء، ويعتني بمن يحب من خلال أفعاله، ويتحدث بإيجاز وصراحة، ولا يستخدم ألقابًا مفرطة في الحلاوة أو المغازلة.';
+
+  @override
+  String get characterEditNameDescription =>
+      'هذا هو الاسم الذي سيظهر علنًا للشخصية، وسيُنشئ النظام اسم مستخدم للشخصية تلقائيًا بعد إكمال إنشائها.';
+
+  @override
+  String get characterEditNameHint => 'يرجى إدخال اسم الشخصية';
+
+  @override
+  String get characterEditAgeDescription =>
+      'حدّد عمر الشخصية، ويمكنك أيضًا إدخال عمرها الظاهري وفقًا لعالم القصة.';
+
+  @override
+  String get characterEditAgeHint => 'مثال: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      'هوية الشخصية أو مهنتها الحالية، مثل طالب أو طبيب أو فارس أو رائد أعمال.';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'حدّد تاريخ ميلاد الشخصية باستخدام أربعة أرقام أو افصل الشهر واليوم بشرطة مائلة.';
+
+  @override
+  String get characterEditBirthdayHint => 'مثال: 0825 أو 08/25';
+
+  @override
+  String get characterEditHeightDescription => 'حدّد طول الشخصية بالسنتيمتر.';
+
+  @override
+  String get characterEditHeightHint => 'مثال: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'سيستخدم النظام الضمائر المناسبة وفقًا لجنس الشخصية.';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'صِف ملامح وجه الشخصية وتسريحة شعرها وملابسها وسماتها الجسدية الأخرى.';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      'حدّد هوية اللاعب في القصة، مثل مساعد أو زميل في الدراسة أو صديق طفولة.';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      'صِف الحقبة والمكان والخلفية الاجتماعية والقواعد الخاصة التي تدور فيها القصة. سيظهر هذا المحتوى علنًا في قسم «نبذة عن الشخصية» بصفحة الشخصية، لذا تجنّب إدخال الأسرار أو أحداث القصة التي لا تريد أن يعرفها اللاعبون مسبقًا.';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'قدّم القصة في جملة قصيرة لتسهيل فهم سياق الشخصية بسرعة.';
+
+  @override
+  String get characterEditStorySummaryHint =>
+      'مثال: قصة حب تبدأ بعلاقة تعاقدية مع طبيب بارد المشاعر';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'المشهد القصصي الذي سيظهر أولًا عندما يدخل اللاعب إلى غرفة الدردشة للمرة الأولى.';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'أول جملة تقولها الشخصية عندما تقابل اللاعب للمرة الأولى.';
+
+  @override
+  String get characterEditCustomStatusBar => 'شريط حالة القصة (اختياري)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'يُطبّق فقط على وضع القصة ووضع الانغماس. يمكنك إعداد معلومات حالة الشخصية أو موقعها أو ملابسها أو علاقتها لتظهر دائمًا في نهاية الرد؛ إذا تُرك فارغًا، فلن يتم إنشاء شريط حالة.';
+
+  @override
+  String get characterProfileCharacterIntro => 'نبذة عن الشخصية';
+
+  @override
+  String get characterProfileNoIntroduction =>
+      'لم يضف المنشئ نبذة عن الشخصية بعد';
+
+  @override
+  String get characterProfileViewMore => 'عرض المزيد';
+
+  @override
+  String get characterProfileCollapse => 'عرض أقل';
 }

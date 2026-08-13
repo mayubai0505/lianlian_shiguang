@@ -109,7 +109,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Album Karakter (Gambar pertama adalah avatar utama)';
 
   @override
-  String get charNameLabel => 'Nama Karakter:*';
+  String get charNameLabel => 'Nama Karakter:';
 
   @override
   String get charDescSection => 'Deskripsi Karakter:';
@@ -118,13 +118,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get charAgeLabel => 'Usia:';
 
   @override
-  String get charJobLabel => 'Pekerjaan:*';
+  String get charJobLabel => 'Pekerjaan:';
 
   @override
   String get charBirthdayLabel => 'Tanggal Lahir:(MMDD)';
 
   @override
-  String get charGenderLabel => 'Jenis Kelamin *';
+  String get charGenderLabel => 'Jenis Kelamin ';
 
   @override
   String get genderNotSelected => 'Belum Dipilih';
@@ -6007,4 +6007,95 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'Informasi Metode Login';
+
+  @override
+  String get characterEditCoreSetting => 'Pengaturan Inti Karakter';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'Jelaskan kepribadian karakter, pola perilaku, cara berinteraksi dengan orang lain, dan gaya bicaranya.\n\nContoh: Dia terlihat dingin dan pendiam, tetapi sebenarnya sangat perhatian. Dia menjaga jarak dengan orang asing, merawat orang yang disukainya melalui tindakan, berbicara dengan singkat dan terus terang, serta tidak menggunakan panggilan yang terlalu manis atau genit.';
+
+  @override
+  String get characterEditNameDescription =>
+      'Ini adalah nama karakter yang ditampilkan kepada publik. Sistem akan membuat nama pengguna karakter secara otomatis setelah karakter selesai dibuat.';
+
+  @override
+  String get characterEditNameHint => 'Masukkan nama karakter';
+
+  @override
+  String get characterEditAgeDescription =>
+      'Tentukan usia karakter. Anda juga dapat mengisi usia yang terlihat sesuai dengan latar dunianya.';
+
+  @override
+  String get characterEditAgeHint => 'Contoh: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      'Identitas atau pekerjaan karakter saat ini, seperti pelajar, dokter, kesatria, atau pengusaha.';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'Tentukan tanggal lahir karakter menggunakan empat digit atau pisahkan bulan dan tanggal dengan garis miring.';
+
+  @override
+  String get characterEditBirthdayHint => 'Contoh: 0825 atau 08/25';
+
+  @override
+  String get characterEditHeightDescription =>
+      'Tentukan tinggi karakter dalam sentimeter.';
+
+  @override
+  String get characterEditHeightHint => 'Contoh: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'Sistem akan menggunakan kata ganti yang sesuai berdasarkan gender karakter.';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'Jelaskan fitur wajah, gaya rambut, pakaian, dan ciri fisik karakter lainnya.';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      'Tentukan identitas pemain dalam cerita, seperti asisten, teman sekelas, atau teman masa kecil.';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      'Jelaskan era, lokasi, latar sosial, dan aturan khusus dalam cerita. Konten ini akan ditampilkan secara publik pada bagian “Pengenalan Karakter” di halaman karakter, jadi hindari mencantumkan rahasia atau detail alur yang tidak ingin diketahui pemain sebelumnya.';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'Perkenalkan cerita secara singkat dalam satu kalimat agar situasi karakter dapat dipahami dengan cepat.';
+
+  @override
+  String get characterEditStorySummaryHint =>
+      'Contoh: Kisah cinta yang dimulai dari hubungan kontrak dengan seorang dokter yang dingin';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'Situasi cerita yang akan dilihat pemain saat pertama kali memasuki ruang obrolan.';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'Kalimat pertama yang diucapkan karakter saat pertama kali bertemu dengan pemain.';
+
+  @override
+  String get characterEditCustomStatusBar => 'Bilah Status Cerita (Opsional)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'Hanya berlaku untuk Mode Cerita dan Mode Imersif. Anda dapat mengatur status, lokasi, pakaian, atau informasi hubungan karakter agar selalu ditampilkan di akhir balasan. Jika dibiarkan kosong, bilah status tidak akan dibuat.';
+
+  @override
+  String get characterProfileCharacterIntro => 'Pengenalan Karakter';
+
+  @override
+  String get characterProfileNoIntroduction =>
+      'Kreator belum menambahkan pengenalan karakter';
+
+  @override
+  String get characterProfileViewMore => 'Lihat Selengkapnya';
+
+  @override
+  String get characterProfileCollapse => 'Tampilkan Lebih Sedikit';
 }

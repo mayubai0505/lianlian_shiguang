@@ -108,7 +108,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get charAlbumTitle => 'Character Album (First is main avatar)';
 
   @override
-  String get charNameLabel => 'Character Name:*';
+  String get charNameLabel => 'Character Name:';
 
   @override
   String get charDescSection => 'Description';
@@ -117,13 +117,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get charAgeLabel => 'Age';
 
   @override
-  String get charJobLabel => 'Occupation:*';
+  String get charJobLabel => 'Occupation:';
 
   @override
   String get charBirthdayLabel => 'Birthday (MMDD)';
 
   @override
-  String get charGenderLabel => 'Gender *';
+  String get charGenderLabel => 'Gender ';
 
   @override
   String get genderNotSelected => 'Not Selected';
@@ -5965,4 +5965,95 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'Login Method Information';
+
+  @override
+  String get characterEditCoreSetting => 'Core Character Settings';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'Describe the character\'s personality, behavior patterns, interactions with others, and speaking style.\n\nFor example: He appears cold and reserved, but is actually very thoughtful. He keeps his distance from strangers, cares for the person he likes through his actions, speaks briefly and directly, and avoids overly sweet or flirtatious terms of endearment.';
+
+  @override
+  String get characterEditNameDescription =>
+      'This is the character\'s publicly displayed name. A character username will be generated automatically after creation.';
+
+  @override
+  String get characterEditNameHint => 'Enter the character\'s name';
+
+  @override
+  String get characterEditAgeDescription =>
+      'Set the character\'s age. You may also enter their apparent age based on the setting.';
+
+  @override
+  String get characterEditAgeHint => 'For example: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      'The character\'s current identity or occupation, such as a student, doctor, knight, or entrepreneur.';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'Set the character\'s birthday using four digits or a slash to separate the month and day.';
+
+  @override
+  String get characterEditBirthdayHint => 'For example: 0825 or 08/25';
+
+  @override
+  String get characterEditHeightDescription =>
+      'Set the character\'s height in centimeters.';
+
+  @override
+  String get characterEditHeightHint => 'For example: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'The system will use appropriate pronouns based on the character\'s gender.';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'Describe the character\'s facial features, hairstyle, clothing, and other physical characteristics.';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      'Set the player\'s identity in the story, such as an assistant, classmate, or childhood friend.';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      'Describe the era, location, social background, and special rules of the story. This content will be displayed publicly under “Character Introduction” on the character page, so avoid including secrets or plot details you do not want players to know in advance.';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'Briefly introduce the story in one sentence so the character\'s situation can be understood quickly.';
+
+  @override
+  String get characterEditStorySummaryHint =>
+      'For example: A love story that begins with a contractual relationship with a cold and aloof doctor';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'The story scenario the player will see when entering the chat room for the first time.';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'The first line the character says when meeting the player for the first time.';
+
+  @override
+  String get characterEditCustomStatusBar => 'Story Status Bar (Optional)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'Only applies to Story Mode and Immersive Mode. You can set character status, location, clothing, or relationship information to always appear at the end of replies. If left blank, no status bar will be generated.';
+
+  @override
+  String get characterProfileCharacterIntro => 'Character Introduction';
+
+  @override
+  String get characterProfileNoIntroduction =>
+      'The creator has not added a character introduction yet';
+
+  @override
+  String get characterProfileViewMore => 'View More';
+
+  @override
+  String get characterProfileCollapse => 'Show Less';
 }

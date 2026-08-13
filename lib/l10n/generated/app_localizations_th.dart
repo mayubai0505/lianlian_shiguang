@@ -108,7 +108,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get charAlbumTitle => 'อัลบั้มตัวละคร (รูปแรกเป็นรูปโปรไฟล์หลัก)';
 
   @override
-  String get charNameLabel => 'ชื่อตัวละคร:*';
+  String get charNameLabel => 'ชื่อตัวละคร:';
 
   @override
   String get charDescSection => 'คำอธิบายตัวละคร:';
@@ -117,13 +117,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get charAgeLabel => 'อายุ:';
 
   @override
-  String get charJobLabel => 'อาชีพ:*';
+  String get charJobLabel => 'อาชีพ:';
 
   @override
   String get charBirthdayLabel => 'วันเกิด:(MMDD)';
 
   @override
-  String get charGenderLabel => 'เพศ *';
+  String get charGenderLabel => 'เพศ ';
 
   @override
   String get genderNotSelected => 'ไม่ได้เลือก';
@@ -5938,4 +5938,95 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'คำอธิบายวิธีเข้าสู่ระบบ';
+
+  @override
+  String get characterEditCoreSetting => 'การตั้งค่าหลักของตัวละคร';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'โปรดอธิบายบุคลิก รูปแบบพฤติกรรม วิธีปฏิสัมพันธ์กับผู้อื่น และลักษณะการพูดของตัวละคร\n\nตัวอย่าง: ภายนอกเขาดูเย็นชาและพูดน้อย แต่ความจริงแล้วเป็นคนใส่ใจมาก เขารักษาระยะห่างกับคนแปลกหน้า ดูแลคนที่ชอบผ่านการกระทำ พูดสั้น กระชับ และตรงไปตรงมา โดยไม่ใช้คำเรียกที่หวานเลี่ยนหรือเจ้าชู้จนเกินไป';
+
+  @override
+  String get characterEditNameDescription =>
+      'นี่คือชื่อที่แสดงต่อสาธารณะของตัวละคร เมื่อสร้างเสร็จแล้ว ระบบจะสร้างชื่อผู้ใช้ของตัวละครให้โดยอัตโนมัติ';
+
+  @override
+  String get characterEditNameHint => 'โปรดป้อนชื่อตัวละคร';
+
+  @override
+  String get characterEditAgeDescription =>
+      'กำหนดอายุของตัวละคร และสามารถระบุอายุจากรูปลักษณ์ให้สอดคล้องกับโลกของเรื่องได้';
+
+  @override
+  String get characterEditAgeHint => 'ตัวอย่าง: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      'สถานะหรืออาชีพปัจจุบันของตัวละคร เช่น นักเรียน แพทย์ อัศวิน หรือผู้ประกอบการ';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'กำหนดวันเกิดของตัวละครด้วยตัวเลขสี่หลัก หรือใช้เครื่องหมายทับคั่นระหว่างเดือนและวัน';
+
+  @override
+  String get characterEditBirthdayHint => 'ตัวอย่าง: 0825 หรือ 08/25';
+
+  @override
+  String get characterEditHeightDescription =>
+      'กำหนดส่วนสูงของตัวละครในหน่วยเซนติเมตร';
+
+  @override
+  String get characterEditHeightHint => 'ตัวอย่าง: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'ระบบจะใช้สรรพนามที่เหมาะสมตามเพศของตัวละคร';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'อธิบายลักษณะใบหน้า ทรงผม การแต่งกาย และลักษณะภายนอกอื่น ๆ ของตัวละคร';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      'กำหนดสถานะของผู้เล่นในเรื่อง เช่น ผู้ช่วย เพื่อนร่วมชั้น หรือเพื่อนสมัยเด็ก';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      'อธิบายยุคสมัย สถานที่ ภูมิหลังทางสังคม และกฎพิเศษของเรื่อง เนื้อหานี้จะแสดงต่อสาธารณะในส่วน “แนะนำตัวละคร” บนหน้าตัวละคร ดังนั้นโปรดหลีกเลี่ยงการระบุความลับหรือรายละเอียดเนื้อเรื่องที่ไม่ต้องการให้ผู้เล่นทราบล่วงหน้า';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'แนะนำเรื่องราวนี้อย่างสั้น ๆ ด้วยหนึ่งประโยค เพื่อให้เข้าใจสถานการณ์ของตัวละครได้อย่างรวดเร็ว';
+
+  @override
+  String get characterEditStorySummaryHint =>
+      'ตัวอย่าง: เรื่องราวความรักที่เริ่มต้นจากความสัมพันธ์ตามสัญญากับแพทย์หนุ่มผู้เย็นชา';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'สถานการณ์ของเรื่องที่ผู้เล่นจะเห็นเป็นอันดับแรกเมื่อเข้าสู่ห้องแชตครั้งแรก';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'ประโยคแรกที่ตัวละครพูดเมื่อพบกับผู้เล่นเป็นครั้งแรก';
+
+  @override
+  String get characterEditCustomStatusBar => 'แถบสถานะเนื้อเรื่อง (ไม่บังคับ)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'ใช้เฉพาะในโหมดเนื้อเรื่องและโหมดดื่มด่ำเท่านั้น คุณสามารถกำหนดข้อมูลสถานะ ตำแหน่ง เสื้อผ้า หรือความสัมพันธ์ของตัวละครให้แสดงที่ท้ายข้อความตอบกลับทุกครั้ง หากเว้นว่างไว้ ระบบจะไม่สร้างแถบสถานะ';
+
+  @override
+  String get characterProfileCharacterIntro => 'แนะนำตัวละคร';
+
+  @override
+  String get characterProfileNoIntroduction =>
+      'ผู้สร้างยังไม่ได้เพิ่มคำแนะนำตัวละคร';
+
+  @override
+  String get characterProfileViewMore => 'ดูเพิ่มเติม';
+
+  @override
+  String get characterProfileCollapse => 'ย่อ';
 }

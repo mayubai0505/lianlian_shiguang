@@ -109,7 +109,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Álbum de Personagens (A primeira imagem é o avatar principal)';
 
   @override
-  String get charNameLabel => 'Nome do Personagem:*';
+  String get charNameLabel => 'Nome do Personagem:';
 
   @override
   String get charDescSection => 'Descrição do Personagem:';
@@ -118,13 +118,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get charAgeLabel => 'Idade:';
 
   @override
-  String get charJobLabel => 'Profissão:*';
+  String get charJobLabel => 'Profissão:';
 
   @override
   String get charBirthdayLabel => 'Aniversário:(MMDD)';
 
   @override
-  String get charGenderLabel => 'Gênero *';
+  String get charGenderLabel => 'Gênero ';
 
   @override
   String get genderNotSelected => 'Não selecionado';
@@ -6037,4 +6037,97 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'Informações sobre os métodos de login';
+
+  @override
+  String get characterEditCoreSetting =>
+      'Configurações principais do personagem';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'Descreva a personalidade do personagem, seus padrões de comportamento, sua forma de interagir com os outros e seu jeito de falar.\n\nPor exemplo: Ele parece frio e reservado, mas na verdade é muito atencioso. Mantém distância de desconhecidos, cuida da pessoa de quem gosta por meio de suas ações, fala de forma breve e direta e não utiliza apelidos excessivamente doces ou provocantes.';
+
+  @override
+  String get characterEditNameDescription =>
+      'Este é o nome do personagem exibido publicamente. O sistema gerará automaticamente um nome de usuário para o personagem após a conclusão da criação.';
+
+  @override
+  String get characterEditNameHint => 'Digite o nome do personagem';
+
+  @override
+  String get characterEditAgeDescription =>
+      'Defina a idade do personagem. Você também pode informar a idade aparente de acordo com a ambientação.';
+
+  @override
+  String get characterEditAgeHint => 'Por exemplo: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      'A identidade ou profissão atual do personagem, como estudante, médico, cavaleiro ou empresário.';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'Defina o aniversário do personagem usando quatro dígitos ou uma barra para separar o mês e o dia.';
+
+  @override
+  String get characterEditBirthdayHint => 'Por exemplo: 0825 ou 08/25';
+
+  @override
+  String get characterEditHeightDescription =>
+      'Defina a altura do personagem em centímetros.';
+
+  @override
+  String get characterEditHeightHint => 'Por exemplo: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'O sistema utilizará os pronomes adequados de acordo com o gênero do personagem.';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'Descreva os traços faciais, o penteado, as roupas e outras características físicas do personagem.';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      'Defina a identidade do jogador na história, como assistente, colega de classe ou amigo de infância.';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      'Descreva a época, o local, o contexto social e as regras especiais da história. Este conteúdo será exibido publicamente na seção “Apresentação do personagem” da página do personagem, portanto evite incluir segredos ou detalhes da trama que você não queira que os jogadores saibam antecipadamente.';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'Apresente brevemente esta história em uma frase para facilitar a compreensão da situação do personagem.';
+
+  @override
+  String get characterEditStorySummaryHint =>
+      'Por exemplo: Uma história de amor que começa com uma relação contratual com um médico frio e distante';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'A situação da história que o jogador verá ao entrar na sala de conversa pela primeira vez.';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'A primeira frase que o personagem diz ao encontrar o jogador pela primeira vez.';
+
+  @override
+  String get characterEditCustomStatusBar =>
+      'Barra de status da história (opcional)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'Aplica-se apenas ao Modo História e ao Modo Imersivo. Você pode configurar o estado, a localização, a roupa ou as informações de relacionamento do personagem para que sejam sempre exibidos no final das respostas. Se deixado em branco, nenhuma barra de status será gerada.';
+
+  @override
+  String get characterProfileCharacterIntro => 'Apresentação do personagem';
+
+  @override
+  String get characterProfileNoIntroduction =>
+      'O criador ainda não adicionou uma apresentação do personagem';
+
+  @override
+  String get characterProfileViewMore => 'Ver mais';
+
+  @override
+  String get characterProfileCollapse => 'Ver menos';
 }

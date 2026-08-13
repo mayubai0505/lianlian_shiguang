@@ -81,6 +81,13 @@ class _ProfilePageState extends State<ProfilePage>
   bool _isBirthdayToday = false; // ✨ 新進一個狀態變數來記錄今天是否生日
   bool _hasActiveMonthlyCard = false;   // 是否持有有效月卡
   bool _isMonthlyRewardClaimed = false; // 今日月卡任務是否已領取
+  bool _isDefaultTheme(BuildContext context) {
+    return Provider.of<ThemeNotifier>(
+      context,
+      listen: false,
+    ).currentThemeEnum ==
+        AppTheme.light;
+  }
 
 
   @override
@@ -2098,34 +2105,89 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildCheckInButton() {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final bool isDefaultTheme = _isDefaultTheme(context);
+    final bool isDarkMode =
+        theme.brightness == Brightness.dark;
 
+// 半透明背景，讓底下的漸層顏色能透出來
+    final Color adaptiveButtonColor = isDarkMode
+        ? theme.colorScheme.surface.withValues(alpha: 0.68)
+        : Colors.white.withValues(alpha: 0.58);
+
+// 邊框使用目前主題色
+    final Color adaptiveButtonBorderColor =
+    theme.colorScheme.primary.withValues(alpha: 0.32);
+
+    // 今天已完成簽到
     if (_hasCheckedInToday) {
       return ElevatedButton.icon(
-        icon: const Icon(Icons.check_circle),
-        label: Text(l10n.status_signed_in_today),
+        icon: const Icon(
+          Icons.check_circle,
+          size: 18,
+        ),
+        label: Text(
+          l10n.status_signed_in_today,
+        ),
         onPressed: null,
         style: ElevatedButton.styleFrom(
-          disabledBackgroundColor: Colors.white.withValues(alpha: 0.5),
-          disabledForegroundColor: Colors.grey,
+          disabledBackgroundColor: adaptiveButtonColor,
+          disabledForegroundColor: isDefaultTheme
+              ? theme.colorScheme.primary.withValues(alpha: 0.78)
+              : Colors.grey,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        ),
-      );
-    } else {
-      return ElevatedButton.icon(
-        icon: _isClaimingCheckIn
-            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-            : const Icon(Icons.calendar_today),
-        label: Text(_isClaimingCheckIn ? l10n.status_signing_in : l10n.status_daily_sign_in),
-        onPressed: _isClaimingCheckIn ? null : _performCheckIn,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white.withValues(alpha: 0.7),
-          foregroundColor: theme.colorScheme.primary,
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: isDefaultTheme
+                ? BorderSide(
+              color: adaptiveButtonBorderColor,
+              width: 0.9,
+            )
+                : BorderSide.none,
+          ),
         ),
       );
     }
+
+    // 今天尚未簽到
+    return ElevatedButton.icon(
+      icon: _isClaimingCheckIn
+          ? const SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      )
+          : const Icon(
+        Icons.calendar_today,
+        size: 18,
+      ),
+      label: Text(
+        _isClaimingCheckIn
+            ? l10n.status_signing_in
+            : l10n.status_daily_sign_in,
+      ),
+      onPressed: _isClaimingCheckIn
+          ? null
+          : _performCheckIn,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isDefaultTheme
+            ? adaptiveButtonColor
+            : Colors.white.withValues(alpha: 0.7),
+        foregroundColor: theme.colorScheme.primary,
+        disabledBackgroundColor: adaptiveButtonColor,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: isDefaultTheme
+              ? BorderSide(
+            color: adaptiveButtonBorderColor,
+            width: 0.9,
+          )
+              : BorderSide.none,
+        ),
+      ),
+    );
   }
 
   Widget _buildCreatorProfileHeader() {
@@ -2137,6 +2199,13 @@ class _ProfilePageState extends State<ProfilePage>
     final l10n = AppLocalizations.of(context)!;
     final bool isDarkMode =
         theme.brightness == Brightness.dark;
+    final bool isDefaultTheme = _isDefaultTheme(context);
+    final Color adaptiveButtonColor = isDarkMode
+        ? theme.colorScheme.surface.withValues(alpha: 0.68)
+        : Colors.white.withValues(alpha: 0.58);
+
+    final Color adaptiveButtonBorderColor =
+    primaryColor.withValues(alpha: 0.32);
 
     return Column(
       children: [
@@ -2433,6 +2502,20 @@ class _ProfilePageState extends State<ProfilePage>
                     label: Text(l10n.profilePageEditProfile),
                     style: OutlinedButton.styleFrom(
                       visualDensity: VisualDensity.compact,
+                      backgroundColor: isDefaultTheme
+                          ? const Color(0xFFFAF6FC)
+                          : Colors.transparent,
+                      foregroundColor: isDefaultTheme
+                          ? const Color(0xFF76529E)
+                          : primaryColor,
+                      side: isDefaultTheme
+                          ? const BorderSide(
+                        color: Color(0xFFDCCDE5),
+                        width: 0.8,
+                      )
+                          : BorderSide(
+                        color: primaryColor,
+                      ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
@@ -2552,14 +2635,15 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 label: Text(l10n.profilePageHeartbeatDiary),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: theme
-                      .colorScheme.surface
-                      .withValues(alpha: 0.8),
+                  backgroundColor: adaptiveButtonColor,
                   foregroundColor: primaryColor,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color: adaptiveButtonBorderColor,
+                      width: 0.9,
+                    ),
                   ),
                 ),
               ),
@@ -2773,6 +2857,7 @@ class _ProfilePageState extends State<ProfilePage>
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           // ＋ 建立新角色
+          // 建立角色／秘密工作室
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
@@ -2781,48 +2866,102 @@ class _ProfilePageState extends State<ProfilePage>
                 16,
                 4,
               ),
-              child: InkWell(
-                onTap: _createCharacter,
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary
-                        .withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: theme.colorScheme.primary
-                          .withValues(alpha: 0.22),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_rounded,
-                        size: 21,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        l10n.profilePageCreateCharacter,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
+              child: Row(
+                children: [
+                  // 建立角色
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: OutlinedButton.icon(
+                        onPressed: _createCharacter,
+                        icon: Icon(
+                          Icons.add_rounded,
+                          size: 19,
                           color: theme.colorScheme.primary,
                         ),
+                        label: Text(
+                          l10n.profilePageCreateCharacter,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                          ),
+                          backgroundColor: theme.colorScheme.primary
+                              .withValues(alpha: 0.08),
+                          side: BorderSide(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.24),
+                          ),
+                          shape: const StadiumBorder(),
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+
+                  const SizedBox(width: 10),
+
+                  // 秘密工作室
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          final result =
+                          await Navigator.push<bool>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                              const CreatorStudioPage(),
+                            ),
+                          );
+
+                          if (!mounted) return;
+
+                          if (result == true) {
+                            await _refreshData();
+                          }
+                        },
+                        icon: Icon(
+                          Icons.auto_awesome_rounded,
+                          size: 18,
+                          color: theme.colorScheme.secondary,
+                        ),
+                        label: Text(
+                          l10n.enter_secret_studio,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.secondary,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                          ),
+                          backgroundColor: theme.colorScheme.secondary
+                              .withValues(alpha: 0.08),
+                          side: BorderSide(
+                            color: theme.colorScheme.secondary
+                                .withValues(alpha: 0.24),
+                          ),
+                          shape: const StadiumBorder(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-
           if (_myCharacters.isEmpty)
             SliverFillRemaining(
               hasScrollBody: false,
@@ -4291,6 +4430,7 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildMyCharactersSection() {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final bool isDefaultTheme = _isDefaultTheme(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -4342,11 +4482,21 @@ class _ProfilePageState extends State<ProfilePage>
             ),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: theme.colorScheme.primaryContainer,
-              foregroundColor: theme.colorScheme.onPrimaryContainer,
+              backgroundColor: isDefaultTheme
+                  ? const Color(0xFFF6EEF9)
+                  : theme.colorScheme.primaryContainer,
+              foregroundColor: isDefaultTheme
+                  ? const Color(0xFF76529E)
+                  : theme.colorScheme.onPrimaryContainer,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
+                side: isDefaultTheme
+                    ? const BorderSide(
+                  color: Color(0xFFDECFE7),
+                  width: 0.8,
+                )
+                    : BorderSide.none,
               ),
             ),
             onPressed: () async {
@@ -4370,6 +4520,8 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildCreateCharacterButton(BuildContext context) {
+    final bool isDefaultTheme = _isDefaultTheme(context);
+    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: _createCharacter,
@@ -4377,21 +4529,34 @@ class _ProfilePageState extends State<ProfilePage>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          boxShadow: [
+          color: isDefaultTheme
+              ? const Color(0xFFF6EEF9)
+              : null,
+          borderRadius: BorderRadius.circular(20),
+          border: isDefaultTheme
+              ? Border.all(
+            color: const Color(0xFFDECFE7),
+            width: 0.8,
+          )
+              : null,
+          boxShadow: isDefaultTheme
+              ? null
+              : [
             BoxShadow(
-              color: Colors.black.withValues(alpha:0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               spreadRadius: 1,
               blurRadius: 3,
               offset: const Offset(0, 2),
             ),
           ],
-          gradient: LinearGradient(
+          gradient: isDefaultTheme
+              ? null
+              : LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.primary,
-              Theme.of(context).colorScheme.secondary,
+              theme.colorScheme.primary,
+              theme.colorScheme.secondary,
             ],
           ),
         ),
@@ -4400,7 +4565,9 @@ class _ProfilePageState extends State<ProfilePage>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.normal,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: isDefaultTheme
+                ? const Color(0xFF76529E)
+                : theme.colorScheme.onPrimary,
           ),
         ),
       ),

@@ -703,6 +703,8 @@ class _ChatHomePageState extends State<ChatHomePage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final bool isDefaultTheme =
+        themeNotifier.currentThemeEnum == AppTheme.light;
     // 🌟 1. 最外層包上總指揮中心
     return ShowCaseWidget(
         builder: (context) {
@@ -869,8 +871,22 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                     ],
                                   ),
                                   child: Material(
-                                    color: theme.cardColor.withOpacity(0.8),
-                                    borderRadius: BorderRadius.circular(16),
+                                    // 只有預設主題提高卡片不透明度
+                                    color: isDefaultTheme
+                                        ? Colors.white.withValues(alpha: 0.96)
+                                        : theme.cardColor.withValues(alpha: 0.8),
+
+                                    // 只有預設主題增加淡紫灰色細邊框
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                      side: isDefaultTheme
+                                          ? const BorderSide(
+                                        color: Color(0xFFE7DDEA),
+                                        width: 0.8,
+                                      )
+                                          : BorderSide.none,
+                                    ),
+
                                     clipBehavior: Clip.antiAlias,
                                     child: ListTile(
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

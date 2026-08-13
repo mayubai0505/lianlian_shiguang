@@ -108,7 +108,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get charAlbumTitle => 'चरित्र एल्बम (पहली तस्वीर मुख्य अवतार है)';
 
   @override
-  String get charNameLabel => 'चरित्र का नाम:*';
+  String get charNameLabel => 'चरित्र का नाम:';
 
   @override
   String get charDescSection => 'चरित्र का विवरण:';
@@ -117,13 +117,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get charAgeLabel => 'आयु:';
 
   @override
-  String get charJobLabel => 'पेशा:*';
+  String get charJobLabel => 'पेशा:';
 
   @override
   String get charBirthdayLabel => 'जन्मदिन:(MMDD)';
 
   @override
-  String get charGenderLabel => 'लिंग *';
+  String get charGenderLabel => 'लिंग ';
 
   @override
   String get genderNotSelected => 'चयनित नहीं';
@@ -5998,4 +5998,95 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'लॉगिन के तरीकों की जानकारी';
+
+  @override
+  String get characterEditCoreSetting => 'पात्र की मुख्य सेटिंग';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'कृपया पात्र के व्यक्तित्व, व्यवहार के तरीके, दूसरों के साथ बातचीत करने के ढंग और बोलने की शैली का वर्णन करें।\n\nउदाहरण: वह बाहर से ठंडा और कम बोलने वाला दिखाई देता है, लेकिन वास्तव में बहुत संवेदनशील और ध्यान रखने वाला है। वह अजनबियों से दूरी बनाए रखता है, पसंदीदा व्यक्ति की अपने कार्यों से देखभाल करता है, संक्षिप्त और सीधे तरीके से बात करता है तथा अत्यधिक मीठे या छिछोरे संबोधनों का उपयोग नहीं करता।';
+
+  @override
+  String get characterEditNameDescription =>
+      'यह पात्र का सार्वजनिक रूप से प्रदर्शित नाम है। पात्र बनाने की प्रक्रिया पूरी होने के बाद सिस्टम अपने आप उसका उपयोगकर्ता नाम तैयार करेगा।';
+
+  @override
+  String get characterEditNameHint => 'कृपया पात्र का नाम दर्ज करें';
+
+  @override
+  String get characterEditAgeDescription =>
+      'पात्र की आयु निर्धारित करें। आप कहानी की दुनिया के अनुसार उसकी दिखने वाली आयु भी दर्ज कर सकते हैं।';
+
+  @override
+  String get characterEditAgeHint => 'उदाहरण: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      'पात्र की वर्तमान पहचान या व्यवसाय, जैसे विद्यार्थी, डॉक्टर, शूरवीर या उद्यमी।';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'पात्र का जन्मदिन चार अंकों में दर्ज करें या महीने और दिन को स्लैश से अलग करें।';
+
+  @override
+  String get characterEditBirthdayHint => 'उदाहरण: 0825 या 08/25';
+
+  @override
+  String get characterEditHeightDescription =>
+      'पात्र की लंबाई सेंटीमीटर में निर्धारित करें।';
+
+  @override
+  String get characterEditHeightHint => 'उदाहरण: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'सिस्टम पात्र के लिंग के अनुसार उपयुक्त सर्वनामों का उपयोग करेगा।';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'पात्र के चेहरे की विशेषताओं, बालों की शैली, कपड़ों और अन्य शारीरिक विशेषताओं का वर्णन करें।';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      'कहानी में खिलाड़ी की पहचान निर्धारित करें, जैसे सहायक, सहपाठी या बचपन का मित्र।';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      'कहानी के समय, स्थान, सामाजिक पृष्ठभूमि और विशेष नियमों का वर्णन करें। यह सामग्री पात्र के पेज पर “पात्र परिचय” में सार्वजनिक रूप से दिखाई जाएगी, इसलिए ऐसे रहस्य या कथानक विवरण शामिल न करें जिन्हें आप खिलाड़ियों को पहले से नहीं बताना चाहते।';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'पात्र की परिस्थिति को तुरंत समझने के लिए कहानी का एक वाक्य में संक्षिप्त परिचय दें।';
+
+  @override
+  String get characterEditStorySummaryHint =>
+      'उदाहरण: एक ठंडे स्वभाव वाले डॉक्टर के साथ अनुबंधित संबंध से शुरू होने वाली प्रेम कहानी';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'वह कहानीगत परिस्थिति जिसे खिलाड़ी पहली बार चैट रूम में प्रवेश करते समय देखेगा।';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'पात्र द्वारा खिलाड़ी से पहली बार मिलने पर कही जाने वाली पहली पंक्ति।';
+
+  @override
+  String get characterEditCustomStatusBar => 'कहानी स्टेटस बार (वैकल्पिक)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'यह केवल कहानी मोड और इमर्सिव मोड पर लागू होता है। आप पात्र की स्थिति, स्थान, कपड़े या संबंध की जानकारी को प्रत्येक उत्तर के अंत में दिखाने के लिए सेट कर सकते हैं। इसे खाली छोड़ने पर कोई स्टेटस बार तैयार नहीं किया जाएगा।';
+
+  @override
+  String get characterProfileCharacterIntro => 'पात्र परिचय';
+
+  @override
+  String get characterProfileNoIntroduction =>
+      'निर्माता ने अभी तक पात्र का परिचय नहीं जोड़ा है';
+
+  @override
+  String get characterProfileViewMore => 'और देखें';
+
+  @override
+  String get characterProfileCollapse => 'कम दिखाएँ';
 }

@@ -109,7 +109,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Album Watak (Gambar pertama adalah avatar utama)';
 
   @override
-  String get charNameLabel => 'Nama Watak:*';
+  String get charNameLabel => 'Nama Watak:';
 
   @override
   String get charDescSection => 'Penerangan Watak:';
@@ -118,13 +118,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get charAgeLabel => 'Umur:';
 
   @override
-  String get charJobLabel => 'Pekerjaan:*';
+  String get charJobLabel => 'Pekerjaan:';
 
   @override
   String get charBirthdayLabel => 'Tarikh Lahir:(MMDD)';
 
   @override
-  String get charGenderLabel => 'Jantina *';
+  String get charGenderLabel => 'Jantina ';
 
   @override
   String get genderNotSelected => 'Tidak Dipilih';
@@ -6010,4 +6010,95 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'Maklumat Kaedah Log Masuk';
+
+  @override
+  String get characterEditCoreSetting => 'Tetapan Teras Watak';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'Sila terangkan keperibadian watak, corak tingkah laku, cara berinteraksi dengan orang lain dan gaya pertuturannya.\n\nContoh: Dia kelihatan dingin dan pendiam, tetapi sebenarnya sangat prihatin. Dia menjaga jarak dengan orang yang tidak dikenali, mengambil berat tentang orang yang disukainya melalui tindakan, bercakap secara ringkas dan terus terang, serta tidak menggunakan panggilan yang terlalu manis atau menggoda.';
+
+  @override
+  String get characterEditNameDescription =>
+      'Ini ialah nama watak yang dipaparkan kepada umum. Sistem akan menjana nama pengguna watak secara automatik selepas penciptaan selesai.';
+
+  @override
+  String get characterEditNameHint => 'Sila masukkan nama watak';
+
+  @override
+  String get characterEditAgeDescription =>
+      'Tetapkan umur watak. Anda juga boleh memasukkan umur penampilannya mengikut latar dunia.';
+
+  @override
+  String get characterEditAgeHint => 'Contoh: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      'Identiti atau pekerjaan semasa watak, seperti pelajar, doktor, kesatria atau usahawan.';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'Tetapkan hari lahir watak menggunakan empat digit atau pisahkan bulan dan hari dengan garis miring.';
+
+  @override
+  String get characterEditBirthdayHint => 'Contoh: 0825 atau 08/25';
+
+  @override
+  String get characterEditHeightDescription =>
+      'Tetapkan ketinggian watak dalam sentimeter.';
+
+  @override
+  String get characterEditHeightHint => 'Contoh: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'Sistem akan menggunakan kata ganti nama yang sesuai berdasarkan jantina watak.';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'Terangkan ciri wajah, gaya rambut, pakaian dan ciri fizikal watak yang lain.';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      'Tetapkan identiti pemain dalam cerita, seperti pembantu, rakan sekelas atau teman sejak kecil.';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      'Terangkan zaman, lokasi, latar belakang sosial dan peraturan khas cerita. Kandungan ini akan dipaparkan secara umum dalam bahagian “Pengenalan Watak” pada halaman watak, jadi elakkan daripada memasukkan rahsia atau butiran jalan cerita yang anda tidak mahu pemain ketahui lebih awal.';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'Perkenalkan cerita ini secara ringkas dalam satu ayat supaya situasi watak dapat difahami dengan cepat.';
+
+  @override
+  String get characterEditStorySummaryHint =>
+      'Contoh: Kisah cinta yang bermula daripada hubungan kontrak dengan seorang doktor yang dingin';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'Situasi cerita yang akan dilihat oleh pemain ketika memasuki ruang sembang buat kali pertama.';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'Ayat pertama yang diucapkan oleh watak ketika bertemu pemain buat kali pertama.';
+
+  @override
+  String get characterEditCustomStatusBar => 'Bar Status Cerita (Pilihan)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'Hanya digunakan dalam Mod Cerita dan Mod Imersif. Anda boleh menetapkan status, lokasi, pakaian atau maklumat hubungan watak untuk sentiasa dipaparkan pada penghujung balasan. Jika dibiarkan kosong, bar status tidak akan dihasilkan.';
+
+  @override
+  String get characterProfileCharacterIntro => 'Pengenalan Watak';
+
+  @override
+  String get characterProfileNoIntroduction =>
+      'Pencipta masih belum menambahkan pengenalan watak';
+
+  @override
+  String get characterProfileViewMore => 'Lihat Lagi';
+
+  @override
+  String get characterProfileCollapse => 'Tunjukkan Sedikit';
 }

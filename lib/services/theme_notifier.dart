@@ -18,10 +18,51 @@ enum AppTheme {
 // --- ✨✨✨ 核心修正 #1: 將所有主題和背景的定義移到 Class 外部 ---
 
 final ThemeData _lightTheme = ThemeData.light().copyWith(
-  scaffoldBackgroundColor: Colors.white,
+  scaffoldBackgroundColor: const Color(0xFFFFFBFF),
+
+  // 預設主題的卡片增加淡紫灰色細邊框
+  cardTheme: CardThemeData(
+    color: Colors.white,
+    surfaceTintColor: Colors.transparent,
+    elevation: 0.5,
+    shadowColor: Colors.black.withValues(alpha: 0.06),
+    margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: const BorderSide(
+        color: Color(0xFFE7DDEA),
+        width: 0.8,
+      ),
+    ),
+  ),
+
+  // 統一輸入框的淡邊框
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.white,
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(
+        color: Color(0xFFE7DDEA),
+        width: 0.8,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(
+        color: Color(0xFF9C73C7),
+        width: 1.2,
+      ),
+    ),
+  ),
+
+  // 點擊時的淡淡回饋
+  splashColor: const Color(0xFF9C73C7).withValues(alpha: 0.10),
+  highlightColor: const Color(0xFF9C73C7).withValues(alpha: 0.05),
+
   bottomSheetTheme: const BottomSheetThemeData(
     backgroundColor: Colors.white,
-    surfaceTintColor: Colors.transparent, // 避免被 Material 3 染成奇怪的紫色
+    surfaceTintColor: Colors.transparent,
   ),
 );
 

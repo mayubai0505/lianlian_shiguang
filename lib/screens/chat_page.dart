@@ -212,6 +212,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   String? _sessionId;
+  late final String _testSessionId;
   bool _isLoading = true;
   String? _currentStoryTime; //時間
   String? _currentStoryLocation; //地點
@@ -266,6 +267,10 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    _testSessionId =
+    'TEST_${FirebaseAuth.instance.currentUser?.uid ?? 'anonymous'}_'
+        '${widget.character.id}_'
+        '${DateTime.now().millisecondsSinceEpoch}';
 
     _focusNode.addListener(
       _handleInputFocusChange,
@@ -290,15 +295,70 @@ class _ChatPageState extends State<ChatPage> {
     // 🌟🌟🌟 總裁無敵星星：測試模式攔截器 🌟🌟🌟
     // 這裡我們直接幫妳把所有「開關」都打開，不讓它有機會去轉圈圈！
     if (widget.isTestMode) {
-      _sessionId = widget.sessionId; // 🔑 報到成功，給予假 ID
-      _currentCharacter = widget.character; // 👤 角色資料載入
-
-      // 🔥 關鍵修復：手動給它一個模式，左上角的按鈕才會出現！
+      _sessionId = _testSessionId;
+      _currentCharacter = widget.character;
       _currentMode = ChatMode.daily;
 
-      _isLoading = false; // 🏁 停止轉圈圈
+      final DateTime now = DateTime.now();
+
+      final String initialStory =
+      (_currentCharacter.initialStory ?? '')
+          .replaceAll(
+        '{{玩家名字}}',
+        _playerNickname,
+      )
+          .replaceAll(
+        '(玩家名字)',
+        _playerNickname,
+      )
+          .trim();
+
+      final String firstLine =
+      (_currentCharacter.firstLine ?? '')
+          .replaceAll(
+        '{{玩家名字}}',
+        _playerNickname,
+      )
+          .replaceAll(
+        '(玩家名字)',
+        _playerNickname,
+      )
+          .trim();
+
+      // 訊息列表採用「最新在前」的順序：
+      // 第一個是角色開場白，第二個是較早出現的初始故事。
+      if (firstLine.isNotEmpty) {
+        _testMessages.add(
+          ChatMessage(
+            id: 'test_first_line_${now.microsecondsSinceEpoch}',
+            sender: 'ai',
+            text: firstLine,
+            type: 'text',
+            path: '',
+            timestamp: Timestamp.fromDate(
+              now.add(const Duration(milliseconds: 1)),
+            ),
+            isAI: true,
+          ),
+        );
+      }
+
+      if (initialStory.isNotEmpty) {
+        _testMessages.add(
+          ChatMessage(
+            id: 'test_initial_story_${now.microsecondsSinceEpoch}',
+            sender: 'system',
+            text: initialStory,
+            type: 'text',
+            path: '',
+            timestamp: Timestamp.fromDate(now),
+            isAI: false,
+          ),
+        );
+      }
+
+      _isLoading = false;
       _loadRoomData();
-      // 💡 測試模式到此為止，後面那些去資料庫撈資料的程式碼「全部跳過」！
       return;
     }
     // --- 下面是正常模式的邏輯，只有不是測試模式才會跑到這裡 ---
@@ -392,37 +452,72 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _loadRoomData() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
 
-    // 1. 同時並行讀取房間資料與使用者月卡資料 (使用 Future.wait 讓速度加倍！)
+    if (user == null) {
+      if (mounted) {
+        setState(() {
+          _isLoadingRoom = false;
+        });
+      }
+      return;
+    }
+
+    // 測試聊天室沒有正式房間 ID，不讀取 rooms 資料
+    if (widget.isTestMode ||
+        widget.sessionId == null ||
+        widget.sessionId!.trim().isEmpty) {
+      if (mounted) {
+        setState(() {
+          _roomConfig = null;
+          _isLoadingRoom = false;
+        });
+      }
+
+      debugPrint('🧪 測試聊天室：略過正式房間資料讀取');
+      return;
+    }
+
+    final String sessionId = widget.sessionId!.trim();
+
     final roomRef = FirebaseFirestore.instance
         .collection('rooms')
-        .doc(widget.sessionId!)
+        .doc(sessionId)
         .get();
-    final userRef =
-        FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
-    final results = await Future.wait([roomRef, userRef]);
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    final results = await Future.wait([
+      roomRef,
+      userRef,
+    ]);
 
     final roomDoc = results[0];
     final userDoc = results[1];
 
-    if (mounted) {
-      setState(() {
-        _roomConfig = roomDoc.data();
+    if (!mounted) return;
 
-        // 🌟 直接算好月卡資格，存入變數
-        final userData = userDoc.data() as Map<String, dynamic>?;
-        final endDateStr = userData?['monthlySubEndDate'] as String?;
-        _isMonthlyPassActive = _calculateIsActive(endDateStr);
+    setState(() {
+      _roomConfig = roomDoc.data();
 
-        _isLoadingRoom = false;
-      });
+      final userData = userDoc.data() as Map<String, dynamic>?;
+      final endDateStr =
+      userData?['monthlySubEndDate'] as String?;
 
-      // 2. 資料都準備好後，才執行檢查檔案與次數
-      _checkProfileCompletion(widget.sessionId!, widget.character.id);
-      _initRegenerateCount(); // 確保重新生成次數邏輯也跑一次
-    }
+      _isMonthlyPassActive =
+          _calculateIsActive(endDateStr);
+
+      _isLoadingRoom = false;
+    });
+
+    _checkProfileCompletion(
+      sessionId,
+      widget.character.id,
+    );
+
+    _initRegenerateCount();
   }
 
 // 輔助函式：判斷月卡是否有效
@@ -453,9 +548,11 @@ class _ChatPageState extends State<ChatPage> {
               FirebaseAuth.instance.currentUser!.uid,
             )
             .set({
-          'profilePromptedCharacterIds': FieldValue.arrayUnion([
-            widget.characterId,
-          ]),
+          // 全帳號已處理過第一次拾光檔案提示
+          'hasHandledProfileIntro': true,
+
+          // 舊版相容
+          'hasSkippedProfile': true,
         }, SetOptions(merge: true));
         _checkProfileCompletion(
             safeRoomId, widget.characterId); // 🛡️ 這裡也換成安全的 ID
@@ -469,9 +566,11 @@ class _ChatPageState extends State<ChatPage> {
               .collection('users')
               .doc(user.uid)
               .set({
-            'profilePromptedCharacterIds': FieldValue.arrayUnion([
-              widget.characterId,
-            ]),
+            // 全帳號已處理過第一次拾光檔案提示
+            'hasHandledProfileIntro': true,
+
+            // 舊版相容
+            'hasSkippedProfile': true,
           }, SetOptions(merge: true));
         }
 
@@ -1920,71 +2019,129 @@ class _ChatPageState extends State<ChatPage> {
         'characterProfile': {
           'id': _currentCharacter.id,
           'name': _currentCharacter.name,
-          'toneAndStyle': _currentCharacter.toneAndStyle
-              ?.replaceAll(
+
+          // 新版角色核心設定
+          'coreCharacterSetting':
+          _currentCharacter.coreCharacterSetting
+              .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
           )
               .replaceAll(
             '(玩家名字)',
             _playerNickname,
-          ) ??
-              '',
-          'background': _currentCharacter.background
-              ?.replaceAll(
+          ),
+
+          'customOutputFormat':
+          _currentCharacter.customOutputFormat
+              .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
           )
               .replaceAll(
             '(玩家名字)',
             _playerNickname,
-          ) ??
-              '',
-          'detailedPersonality': _currentCharacter.detailedPersonality
-              ?.replaceAll(
+          ),
+
+          // 舊版角色相容欄位
+          'toneAndStyle':
+          _currentCharacter.toneAndStyle
+              .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
           )
               .replaceAll(
             '(玩家名字)',
             _playerNickname,
-          ) ??
-              '',
-          'likes': _currentCharacter.likes
-              ?.replaceAll(
+          ),
+
+          'detailedPersonality':
+          _currentCharacter.detailedPersonality
+              .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
           )
               .replaceAll(
             '(玩家名字)',
             _playerNickname,
-          ) ??
-              '',
-          'secrets': _currentCharacter.secrets
-              ?.replaceAll(
+          ),
+
+          'socialInteraction':
+          _currentCharacter.socialInteraction
+              .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
           )
               .replaceAll(
             '(玩家名字)',
             _playerNickname,
-          ) ??
-              '',
+          ),
+
+          'background':
+          _currentCharacter.background
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          'worldSetting':
+          _currentCharacter.worldSetting
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          'likes':
+          _currentCharacter.likes
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          'secrets':
+          _currentCharacter.secrets
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
           'gender': _currentCharacter.gender,
           'relationship': dynamicRelationship,
-          'socialRelationships': '',
-          'worldSetting': _currentCharacter.worldSetting
-              ?.replaceAll(
+
+          'socialRelationships':
+          _currentCharacter.relationships != null
+              ? jsonEncode(
+            _currentCharacter.relationships,
+          )
+              .replaceAll(
             '{{玩家名字}}',
             _playerNickname,
           )
               .replaceAll(
             '(玩家名字)',
             _playerNickname,
-          ) ??
-              '',
+          )
+              : '',
+
+          'npcCharacters': _currentCharacter.npcCharacters,
         },
-        'npcCharacters': _currentCharacter.npcCharacters,
+
         'chatHistory': actualChatHistory,
       };
 
@@ -3150,18 +3307,30 @@ class _ChatPageState extends State<ChatPage> {
       // 🌟 3. 防彈檢查：如果連線失敗，不要強行執行，避免 Unexpected null value
       // ✨ 總裁急救包：給它一點耐心，不要馬上放棄！
       // 🌟 改良後的等待機制：只檢查 Firebase 是否準備好，不管 shouldSave 了
-      if (_messagesCollection == null) {
-        // 讓程式稍微等一下 Firebase 建置房間
-        await Future.delayed(const Duration(milliseconds: 500));
+      // 正式聊天室才需要等待 Firestore 訊息集合。
+// 測試聊天室使用 _testMessages，因此沒有 _messagesCollection 是正常的。
+      if (!widget.isTestMode &&
+          _messagesCollection == null) {
+        await Future.delayed(
+          const Duration(milliseconds: 500),
+        );
 
-        // 0.5 秒後再檢查一次，如果還是 null，那才是真的出問題了！
         if (_messagesCollection == null) {
-          debugPrint("❌ 錯誤：等了 0.5 秒 _messagesCollection 還是 Null，無法寫入訊息！");
+          debugPrint(
+            '❌ 錯誤：等了 0.5 秒 '
+                '_messagesCollection 還是 Null，'
+                '無法寫入正式聊天室訊息！',
+          );
 
-          _removePendingMediaMessage(pendingMediaId);
+          _removePendingMediaMessage(
+            pendingMediaId,
+          );
 
           if (mounted) {
-            _showCenterToast(l10n.chat_room_not_ready, isError: true);
+            _showCenterToast(
+              l10n.chat_room_not_ready,
+              isError: true,
+            );
           }
 
           return;
@@ -3428,6 +3597,7 @@ class _ChatPageState extends State<ChatPage> {
       final Map<String, dynamic> requestBody = {
         "clientRequestId": clientRequestId,
         "userMessageId": userMessageId ?? "",
+        "isTestMode": widget.isTestMode,
         "imageUrl": hasImage ? (storagePath ?? "") : "",
         "audioUrl": hasAudio ? (storagePath ?? "") : "",
         "userMessage": effectiveUserMessage,
@@ -3435,7 +3605,9 @@ class _ChatPageState extends State<ChatPage> {
         "chatMode": _currentMode?.name ?? "daily",
         "isBirthdayFreebie": isFreeToday,
         "overrideSystemPrompt": overridePrompt ?? "",
-        "sessionId": _sessionId,
+        "sessionId": widget.isTestMode
+            ? _testSessionId
+            : _sessionId,
         "playerName": _playerNickname,
         "playerGender": playerGenderForAi,
         "playerPronounGuide": playerPronounGuide,
@@ -3444,6 +3616,7 @@ class _ChatPageState extends State<ChatPage> {
         "systemDirective": (overridePrompt != null && overridePrompt.isNotEmpty)
             ? "【最高防護指令】與你對話的對象叫做「$_playerNickname」！玩家已觸發特殊劇情，請配合 overrideSystemPrompt 的指示順暢地演出。以下是對方當前的時空設定：\n$dynamicProfile\n\n【玩家性別與稱呼規範】\n玩家性別設定：$playerGenderForAi\n$playerPronounGuide\n\n在實際回覆台詞中，禁止稱呼對方為「玩家」。你可以稱呼對方為「$_playerNickname」或使用符合性別設定的親暱稱呼。\n\n你必須嚴格以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數)。絕對不可以輸出任何其他格式或說明。"
             : "【最高防護指令】請你「維持當前的聊天情境與場景」。記住，與你對話的對象稱呼是「$_playerNickname」，絕對不能叫錯！以下是對方當前的專屬時空設定：\n$dynamicProfile\n\n【玩家性別與稱呼規範】\n玩家性別設定：$playerGenderForAi\n$playerPronounGuide\n\n在實際回覆台詞中，禁止稱呼對方為「玩家」。你可以稱呼對方為「$_playerNickname」或使用符合性別設定的親暱稱呼。\n\n你必須嚴格根據這些設定與對方互動，並以 JSON 格式回覆，格式為：{\"response\": \"你的對話台詞\", \"affectionChange\": 數字}。affectionChange 代表這句話增加或減少的好感度(整數)。絕對不可以輸出任何其他格式或說明。",
+        "aboutMeNotes": aboutMeNotes,
         "memos": memos,
         "periodStatus": periodStatus,
         "lastStoryTime": _currentStoryTime,
@@ -3451,36 +3624,128 @@ class _ChatPageState extends State<ChatPage> {
         "characterProfile": {
           "id": _currentCharacter.id,
           "name": _currentCharacter.name,
-          "toneAndStyle": _currentCharacter.toneAndStyle
-                  ?.replaceAll('{{玩家名字}}', _playerNickname)
-                  .replaceAll('(玩家名字)', _playerNickname) ??
-              "",
-          "background": _currentCharacter.background
-                  ?.replaceAll('{{玩家名字}}', _playerNickname)
-                  .replaceAll('(玩家名字)', _playerNickname) ??
-              "",
-          "worldSetting": _currentCharacter.worldSetting
-              .replaceAll('{{玩家名字}}', _playerNickname)
-              .replaceAll('(玩家名字)', _playerNickname),
-          "detailedPersonality": _currentCharacter.detailedPersonality
-                  ?.replaceAll('{{玩家名字}}', _playerNickname)
-                  .replaceAll('(玩家名字)', _playerNickname) ??
-              "",
-          "likes": _currentCharacter.likes
-                  ?.replaceAll('{{玩家名字}}', _playerNickname)
-                  .replaceAll('(玩家名字)', _playerNickname) ??
-              "",
-          "secrets": _currentCharacter.secrets
-                  ?.replaceAll('{{玩家名字}}', _playerNickname)
-                  .replaceAll('(玩家名字)', _playerNickname) ??
-              "",
+
+          // 新版合併後的角色核心設定
+          "coreCharacterSetting":
+          _currentCharacter.coreCharacterSetting
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          "customOutputFormat":
+          _currentCharacter.customOutputFormat
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          // 舊版相容欄位，暫時保留
+          "toneAndStyle":
+          _currentCharacter.toneAndStyle
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          "detailedPersonality":
+          _currentCharacter.detailedPersonality
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          // 舊角色的社交／環境互動相容資料
+          "socialInteraction":
+          _currentCharacter.socialInteraction
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          "background":
+          _currentCharacter.background
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          "worldSetting":
+          _currentCharacter.worldSetting
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          "likes":
+          _currentCharacter.likes
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
+          "secrets":
+          _currentCharacter.secrets
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          ),
+
           "gender": _currentCharacter.gender,
           "relationship": dynamicRelationship,
-          "socialRelationships": _currentCharacter.relationships != null
-              ? jsonEncode(_currentCharacter.relationships)
-                  .replaceAll('{{玩家名字}}', _playerNickname)
-                  .replaceAll('(玩家名字)', _playerNickname)
+
+          // 這是角色與其他角色的關係，不是 socialInteraction
+          "socialRelationships":
+          _currentCharacter.relationships != null
+              ? jsonEncode(
+            _currentCharacter.relationships,
+          )
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          )
               : "",
+
           "npcCharacters": _currentCharacter.npcCharacters,
         },
         "chatHistory": actualChatHistory,
@@ -3543,62 +3808,110 @@ class _ChatPageState extends State<ChatPage> {
           return;
         }
         if (responseData['status'] == 'success') {
-          // 1. 取得 AI 算出的好感度變化
-          int finalAffectionChange = responseData['affectionChange'] ?? 0;
+          final String aiResponseText =
+              responseData['response']?.toString().trim() ?? '';
+
+          final String aiVoiceText =
+              responseData['voiceText']?.toString().trim() ?? '';
+
+          final int finalAffectionChange =
+          responseData['affectionChange'] is num
+              ? (responseData['affectionChange'] as num).toInt()
+              : 0;
+
+          if (aiResponseText.isEmpty) {
+            generatingRooms.remove(_roomLockKey);
+
+            if (mounted) {
+              setState(() {
+                _isGenerating = false;
+                _isLoading = false;
+              });
+
+              _showCenterToast(
+                l10n.error_system_busy,
+                isError: true,
+              );
+            }
+
+            return;
+          }
 
           // ========================================================
           // 🟢 第一區：【資料庫鐵血執行】不管玩家在不在畫面，這段必須強行過水、記帳！
           // ========================================================
 
           //  同步更新全域最高好感度 (widget.shouldSave 整個邏輯搬到 mounted 外面)
-          try {
-            final userCharRef = FirebaseFirestore.instance
-                .collection('users')
-                .doc(userId)
-                .collection('characters')
-                .doc(characterId);
+          // 測試聊天室不能修改正式好感度或正式角色紀錄
+          if (!widget.isTestMode) {
+            try {
+              final userCharRef = FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .collection('characters')
+                  .doc(characterId);
 
-            await FirebaseFirestore.instance
-                .runTransaction((transaction) async {
-              final snapshot = await transaction.get(userCharRef);
-              int currentGlobalAffection = 0;
-              if (snapshot.exists) {
-                currentGlobalAffection = snapshot.data()?['affection'] ?? 0;
-              }
+              await FirebaseFirestore.instance
+                  .runTransaction((transaction) async {
+                final snapshot =
+                await transaction.get(userCharRef);
 
-              // 🎯 安全防護：因為玩家可能秒退，記憶體裡的 _currentFriendship 尚未 setState
-              // 我們直接用「當前分數 + 變動值」來做最精準的跨時空比對！
-              int targetGlobalScore = _currentFriendship + finalAffectionChange;
+                int currentGlobalAffection = 0;
 
-              // 🏆 只有新算出來的分數更猛時，才更新最高紀錄
-              if (targetGlobalScore > currentGlobalAffection) {
-                transaction.set(
+                if (snapshot.exists) {
+                  currentGlobalAffection =
+                      snapshot.data()?['affection'] ?? 0;
+                }
+
+                final int targetGlobalScore =
+                    _currentFriendship +
+                        finalAffectionChange;
+
+                if (targetGlobalScore >
+                    currentGlobalAffection) {
+                  transaction.set(
                     userCharRef,
                     {
                       'affection': targetGlobalScore,
-                      'characterName': _currentCharacter.name,
-                      'lastUpdate': FieldValue.serverTimestamp(),
+                      'characterName':
+                      _currentCharacter.name,
+                      'lastUpdate':
+                      FieldValue.serverTimestamp(),
                     },
-                    SetOptions(merge: true));
-              }
-            });
-          } catch (e) {
-            print("❌ 同步總存摺失敗: $e");
-          }
-
-          if (!_currentCharacter.isPublic) {
-            try {
-              await FirebaseFirestore.instance
-                  .collection('artifacts')
-                  .doc(const String.fromEnvironment('APP_ID',
-                      defaultValue: 'lianlianshiguang'))
-                  .collection('users')
-                  .doc(userId)
-                  .collection('private_characters')
-                  .doc(characterId)
-                  .update({'lastChatTime': FieldValue.serverTimestamp()});
+                    SetOptions(merge: true),
+                  );
+                }
+              });
             } catch (e) {
-              print('更新私人角色時間失敗: $e');
+              debugPrint(
+                '更新正式好感度失敗：$e',
+              );
+            }
+
+            if (!_currentCharacter.isPublic) {
+              try {
+                await FirebaseFirestore.instance
+                    .collection('artifacts')
+                    .doc(
+                  const String.fromEnvironment(
+                    'APP_ID',
+                    defaultValue:
+                    'lianlianshiguang',
+                  ),
+                )
+                    .collection('users')
+                    .doc(userId)
+                    .collection('private_characters')
+                    .doc(characterId)
+                    .update({
+                  'lastChatTime':
+                  FieldValue.serverTimestamp(),
+                });
+              } catch (e) {
+                debugPrint(
+                  '更新私人角色聊天時間失敗：$e',
+                );
+              }
             }
           }
 
@@ -3606,19 +3919,56 @@ class _ChatPageState extends State<ChatPage> {
           // 🟡 第二區：【UI 溫室防線】只有當玩家還在房間畫面上，才需要處理 setState 與升級動畫
           // ========================================================
           generatingRooms.remove(_roomLockKey);
+
           if (mounted) {
             setState(() {
-              final int uiCost = isFreeToday ? 0 : messageCost;
-              _flowerPoints = (_flowerPoints - uiCost).clamp(0, 999999);
+              // 測試聊天室沒有 Firestore 訊息監聽，
+              // 所以要自行將 AI 回覆加入本機訊息列表。
+              if (widget.isTestMode) {
+                _testMessages.insert(
+                  0,
+                  ChatMessage(
+                    id: 'test_ai_${DateTime.now().microsecondsSinceEpoch}',
+                    sender: 'ai',
+                    text: aiResponseText,
+                    type: 'text',
+                    path: '',
+                    timestamp: Timestamp.fromDate(
+                      DateTime.now(),
+                    ),
+                    isAI: true,
+                  ),
+                );
+              }
 
+              // 後端成功完成後，前端同步更新顯示的花花數量。
+              final int uiCost =
+              isFreeToday ? 0 : messageCost;
+
+              _flowerPoints =
+                  (_flowerPoints - uiCost)
+                      .clamp(0, 999999);
+
+              // 測試模式只在目前畫面模擬好感度變化，
+              // 不會寫入正式資料庫。
               if (finalAffectionChange != 0) {
-                int oldScore = _currentFriendship;
-                _currentFriendship += finalAffectionChange;
+                final int oldScore =
+                    _currentFriendship;
 
-                _checkForLevelUp(oldScore, _currentFriendship);
+                _currentFriendship +=
+                    finalAffectionChange;
 
-                if (finalAffectionChange > 0 && !_hasShownAffectionCard) {
-                  _showAffectionAnimation(finalAffectionChange);
+                _checkForLevelUp(
+                  oldScore,
+                  _currentFriendship,
+                );
+
+                if (finalAffectionChange > 0 &&
+                    !_hasShownAffectionCard) {
+                  _showAffectionAnimation(
+                    finalAffectionChange,
+                  );
+
                   _hasShownAffectionCard = true;
                 }
               }
@@ -4049,41 +4399,6 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Future<void> _checkFirstTimeEntry() async {
-    if (_hasTriggeredCheck) return;
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      final data = doc.data() ?? {};
-      bool noProfile = !data.containsKey('profile');
-      bool neverSkipped = !data.containsKey('hasSkippedProfile');
-      if (noProfile && neverSkipped) {
-        if (mounted) {
-          // 延遲一下下再彈出，等聊天室背景跟程宇的對話框跑出來，體感更流暢
-          Future.delayed(const Duration(milliseconds: 800), () {
-            if (mounted) {
-              // ✨ 總裁級修復：補上遺失的兩個必填參數！
-              UserProfilePopup.show(context,
-                  roomId: widget.sessionId!, // 🔑 補上房間 ID
-                  characterId: widget.character.id, // 🔑 補上角色 ID
-                  onSaved: () {
-                // 玩家填寫完畢後的邏輯
-                _checkProfileCompletion(widget.sessionId!, widget.character.id);
-              });
-            }
-          });
-        }
-      }
-      _hasTriggeredCheck = true;
-    } catch (e) {
-      print("檢查名片狀態失敗: $e");
-    }
-  }
-
   // ✨ 總裁級進化：加入 currentRoomId 參數，讓每個房間都能召喚專屬的分身！
   Future<void> _checkProfileCompletion(
       String roomId, String characterId) async {
@@ -4103,15 +4418,50 @@ class _ChatPageState extends State<ChatPage> {
           .doc(user.uid)
           .get();
       final data = doc.data() ?? {};
-      final List<dynamic> promptedCharacterIds =
-          data['profilePromptedCharacterIds'] ?? [];
 
-      final bool hasPromptedForThisCharacter =
-          promptedCharacterIds.contains(characterId);
-      final String nickname = data['nickname'] ?? l10n.chat_default_player_name;
-      final String birthday = data['birthday'] ?? l10n.authMethodUnknown;
+// 玩家是否已經建立過任何拾光檔案
+      final savedProfiles = data['profiles'];
+
+      final bool hasAnyProfile =
+          savedProfiles is List &&
+              savedProfiles.isNotEmpty;
+
+// 全帳號是否已處理過第一次提示
+      final bool hasHandledProfileIntro =
+          data['hasHandledProfileIntro'] == true;
+
+// 相容舊版：以前曾按過「稍後」
+      final bool hasSkippedProfile =
+          data['hasSkippedProfile'] == true;
+
+// 有檔案、儲存過或按過稍後，全部角色都不再自動彈出
+      final bool shouldNotShowWelcomePopup =
+          hasAnyProfile ||
+              hasHandledProfileIntro ||
+              hasSkippedProfile;
+
+      final String nickname =
+          data['nickname'] ??
+              l10n.chat_default_player_name;
+
+      final String birthday =
+          data['birthday'] ??
+              l10n.authMethodUnknown;
 
       Map<String, dynamic>? activeProfile;
+
+// 全帳號只自動顯示一次，不再依 characterId 判斷
+      if (!_hasPromptedProfileSetup &&
+          !shouldNotShowWelcomePopup) {
+        _hasPromptedProfileSetup = true;
+
+        WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+            if (!mounted) return;
+            _showWelcomeProfilePopup();
+          },
+        );
+      }
 
       if (data.containsKey('profiles')) {
         List<dynamic> allProfiles = data['profiles'];
@@ -4140,14 +4490,6 @@ class _ChatPageState extends State<ChatPage> {
           'occupation': '尚未填寫',
           'intro': '這份拾光檔案還在等待主人動筆...'
         };
-        // 🌟 條件升級：如果「本次還沒問過」且「玩家以前也沒按過跳過」，才准彈出！
-        if (!_hasPromptedProfileSetup && !hasPromptedForThisCharacter) {
-          _hasPromptedProfileSetup = true;
-
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _showWelcomeProfilePopup();
-          });
-        }
         // 完美渲染 (l10n.chat_profile_full...)
         if (mounted) {
           setState(() {
@@ -4191,56 +4533,155 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _triggerStorySummary() async {
     final user = FirebaseAuth.instance.currentUser;
-    // 🛡️ 確保有使用者，而且對話資料庫 (_messagesCollection) 已經準備好
-    if (user == null || _messagesCollection == null) return;
+
+    // 確保使用者及訊息資料庫已準備完成
+    if (user == null || _messagesCollection == null) {
+      return;
+    }
+
+    // 本次摘要所屬的聊天室
+    final String? summarySessionId =
+    (_sessionId != null &&
+        _sessionId!.trim().isNotEmpty)
+        ? _sessionId!.trim()
+        : (widget.sessionId != null &&
+        widget.sessionId!.trim().isNotEmpty)
+        ? widget.sessionId!.trim()
+        : null;
+
+    // 沒有真實聊天室 ID 時不建立摘要，避免不同房間混在一起
+    if (summarySessionId == null) {
+      debugPrint(
+        '⚠️ 劇情摘要未發送：尚未取得聊天室 ID',
+      );
+      return;
+    }
 
     try {
-      // 🌟 總裁無敵抓取法：直接去資料庫撈這個房間的最後 10 句話！
-      final querySnapshot = await _messagesCollection!
-          .orderBy('timestamp', descending: true)
+      // 只讀取目前聊天室的最後 10 則訊息
+      final querySnapshot =
+      await _messagesCollection!
+          .orderBy(
+        'timestamp',
+        descending: true,
+      )
           .limit(10)
           .get();
 
-      // 如果聊不到 4 句話，代表沒什麼進展，就不浪費錢寫摘要了
-      if (querySnapshot.docs.length < 4) return;
+      // 對話不足 4 則時不產生摘要
+      if (querySnapshot.docs.length < 4) {
+        return;
+      }
 
-      // 🔄 因為 descending: true 拿出來的順序是 [新 -> 舊]，我們要反轉成 [舊 -> 新] 給 AI 讀
-      final docs = querySnapshot.docs.reversed.toList();
+      // 將新→舊反轉為舊→新
+      final docs =
+      querySnapshot.docs.reversed.toList();
 
-      List<Map<String, String>> recentHistory = [];
-      for (var doc in docs) {
-        final data = doc.data() as Map<String, dynamic>;
-        final text = data['text'] ?? '';
+      final List<Map<String, String>>
+      recentHistory = [];
 
-        // 🕵️‍♀️ 判斷是玩家說的還是 AI 說的 (如果妳資料庫裡的欄位叫 isUser，就用 data['isUser'] == true 判斷)
-        final isUser = data['isUser'] == true;
-        final role = isUser ? 'user' : 'assistant';
+      for (final doc in docs) {
+        final data =
+        doc.data() as Map<String, dynamic>;
 
-        recentHistory.add({'role': role, 'content': text});
+        final text =
+            data['text']?.toString().trim() ?? '';
+
+        if (text.isEmpty) {
+          continue;
+        }
+
+        /*
+       * 你的訊息資料前面使用的是：
+       * sender: 'user' / 'ai'
+       *
+       * 原本用 data['isUser'] 可能會把所有訊息
+       * 都判斷成 assistant。
+       */
+        final sender =
+            data['sender']?.toString() ?? '';
+
+        if (sender != 'user' &&
+            sender != 'ai') {
+          continue;
+        }
+
+        recentHistory.add({
+          'role': sender == 'user'
+              ? 'user'
+              : 'assistant',
+          'content': text,
+        });
+      }
+
+      // 過濾後仍不足 4 則，不產生摘要
+      if (recentHistory.length < 4) {
+        return;
       }
 
       final idToken = await user.getIdToken();
-      // 🔗 記得把這行換成妳專案真正的 Cloud Functions 網址喔！
+
+      if (idToken == null ||
+          idToken.isEmpty) {
+        debugPrint(
+          '⚠️ 劇情摘要未發送：無法取得登入憑證',
+        );
+        return;
+      }
+
       final url = Uri.parse(
-          'https://asia-east1-lianlianshiguang.cloudfunctions.net/generateStorySummary');
-      // 射後不理，讓雲端慢慢寫
+        'https://asia-east1-lianlianshiguang.cloudfunctions.net/generateStorySummary',
+      );
+
+      // 保留非阻塞處理，但正確檢查 HTTP 狀態
       http
           .post(
-            url,
-            headers: {
-              'Authorization': 'Bearer $idToken',
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({
-              'characterId': widget.characterId,
-              'characterName': _currentCharacter.name,
-              'playerName': _playerNickname,
-              'chatHistory': recentHistory,
-            }),
-          )
-          .then((_) => debugPrint('📖 劇情摘要任務發送成功！'));
+        url,
+        headers: {
+          'Authorization':
+          'Bearer $idToken',
+          'Content-Type':
+          'application/json',
+        },
+        body: jsonEncode({
+          'characterId':
+          widget.characterId,
+          'characterName':
+          _currentCharacter.name,
+          'playerName':
+          _playerNickname,
+          'chatHistory':
+          recentHistory,
+
+          // 關鍵：依聊天室分開儲存
+          'sessionId':
+          summarySessionId,
+        }),
+      )
+          .then((response) {
+        if (response.statusCode >= 200 &&
+            response.statusCode < 300) {
+          debugPrint(
+            '📖 劇情摘要任務完成：'
+                '$summarySessionId',
+          );
+        } else {
+          debugPrint(
+            '⚠️ 劇情摘要任務失敗：'
+                '${response.statusCode} '
+                '${response.body}',
+          );
+        }
+      })
+          .catchError((error) {
+        debugPrint(
+          '⚠️ 劇情摘要連線失敗：$error',
+        );
+      });
     } catch (e) {
-      debugPrint('⚠️ 劇情摘要發送失敗: $e');
+      debugPrint(
+        '⚠️ 劇情摘要發送失敗：$e',
+      );
     }
   }
 
@@ -5718,15 +6159,39 @@ class _ChatPageState extends State<ChatPage> {
 
                           // 📖 2. 劇情摘要
                           _buildToolItem(
-                              Icons.article_outlined, l10n.chat_tool_story, () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => StorySummaryPage(
-                                  character: _currentCharacter,
+                            Icons.article_outlined,
+                            l10n.chat_tool_story,
+                                () async {
+                              final String? currentSessionId =
+                              _sessionId != null &&
+                                  _sessionId!.trim().isNotEmpty
+                                  ? _sessionId!.trim()
+                                  : widget.sessionId != null &&
+                                  widget.sessionId!.trim().isNotEmpty
+                                  ? widget.sessionId!.trim()
+                                  : null;
+
+                              if (currentSessionId == null) {
+                                ToastUtils.showCenterToast(
+                                  context,
+                                  '聊天室尚未準備完成，請稍後再試',
+                                  isError: true,
+                                );
+                                return;
+                              }
+
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => StorySummaryPage(
+                                    character: _currentCharacter,
+
+                                    // 目前真正開啟的聊天室 ID
+                                    sessionId: currentSessionId,
+                                  ),
                                 ),
-                              ),
-                            );
-                          }),
+                              );
+                            },
+                          ),
 
                           // 🖼️ 3. 照片
                           _buildToolItem(Icons.photo_library_outlined,
@@ -7948,15 +8413,31 @@ class _ChatPageState extends State<ChatPage> {
                   // ✨ 2. 中間訊息列表
                   Expanded(
                     child: _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : (_sessionId == null || _messagesCollection == null)
-                            ? Center(child: Text(l10n.chat_loading_failed))
-                            : widget.isTestMode
-                                ? (_testMessages.isEmpty && !_isGenerating
-                                    ? Center(
-                                        child: Text(l10n.chat_test_mode_msg))
-                                    : _buildMessageList(_testMessages))
-                                : StreamBuilder<QuerySnapshot>(
+                        ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+
+                    // 測試模式必須先判斷，因為它本來就沒有正式 session
+                        : widget.isTestMode
+                        ? (_testMessages.isEmpty && !_isGenerating
+                        ? Center(
+                      child: Text(
+                        l10n.chat_test_mode_msg,
+                      ),
+                    )
+                        : _buildMessageList(
+                      _testMessages,
+                    ))
+
+                    // 只有正式聊天室才檢查這兩個資料
+                        : (_sessionId == null ||
+                        _messagesCollection == null)
+                        ? Center(
+                      child: Text(
+                        l10n.chat_loading_failed,
+                      ),
+                    )
+                        : StreamBuilder<QuerySnapshot>(
                                     stream: _messagesCollection!
                                         .orderBy('timestamp', descending: true)
                                         .snapshots(),

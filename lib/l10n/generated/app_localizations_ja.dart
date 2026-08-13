@@ -107,7 +107,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get charAlbumTitle => 'キャラクターアルバム (最初の画像がメインアバター)';
 
   @override
-  String get charNameLabel => 'キャラクター名:*';
+  String get charNameLabel => 'キャラクター名:';
 
   @override
   String get charDescSection => 'キャラクター説明:';
@@ -116,13 +116,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get charAgeLabel => '年齢:';
 
   @override
-  String get charJobLabel => '職業:*';
+  String get charJobLabel => '職業:';
 
   @override
   String get charBirthdayLabel => '誕生日:(MMDD)';
 
   @override
-  String get charGenderLabel => '性別 *';
+  String get charGenderLabel => '性別 ';
 
   @override
   String get genderNotSelected => '未選択';
@@ -5679,4 +5679,92 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'ログイン方法の説明';
+
+  @override
+  String get characterEditCoreSetting => 'キャラクターの基本設定';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'キャラクターの性格、行動パターン、人との接し方、話し方について説明してください。\n\n例：一見すると冷淡で無口だが、実際はとても気配りができる。見知らぬ人とは距離を置き、好きな相手には行動で気遣いを示す。話し方は簡潔で率直であり、甘すぎる呼び方や軽薄な呼び方はしない。';
+
+  @override
+  String get characterEditNameDescription =>
+      'キャラクターの公開表示名です。作成完了後、キャラクターのユーザー名はシステムによって自動的に生成されます。';
+
+  @override
+  String get characterEditNameHint => 'キャラクター名を入力してください';
+
+  @override
+  String get characterEditAgeDescription =>
+      'キャラクターの年齢を設定します。世界観に合わせて外見年齢を入力することもできます。';
+
+  @override
+  String get characterEditAgeHint => '例：25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      '学生、医師、騎士、実業家など、キャラクターの現在の身分や職業です。';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'キャラクターの誕生日を4桁の数字で入力するか、月と日をスラッシュで区切って設定してください。';
+
+  @override
+  String get characterEditBirthdayHint => '例：0825 または 08/25';
+
+  @override
+  String get characterEditHeightDescription => 'キャラクターの身長をセンチメートル単位で設定します。';
+
+  @override
+  String get characterEditHeightHint => '例：182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'キャラクターの性別に応じて、システムが適切な代名詞を使用します。';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'キャラクターの顔立ち、髪型、服装、その他の外見的特徴を説明してください。';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      '助手、同級生、幼なじみなど、物語におけるプレイヤーの立場を設定します。';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      '物語の時代、場所、社会的背景、特別なルールを説明してください。この内容はキャラクターページの「キャラクター紹介」に公開表示されるため、プレイヤーに事前に知られたくない秘密や物語の展開は入力しないでください。';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'キャラクターの状況をすぐに理解できるよう、この物語を一文で簡潔に紹介してください。';
+
+  @override
+  String get characterEditStorySummaryHint => '例：冷淡な医師との契約関係から始まる恋物語';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'プレイヤーが初めてチャットルームに入ったとき、最初に表示される物語の場面です。';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'キャラクターが初めてプレイヤーに会ったときに話す最初の言葉です。';
+
+  @override
+  String get characterEditCustomStatusBar => 'ストーリーステータス欄（任意）';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'ストーリーモードと没入モードにのみ適用されます。返信の末尾に常に表示するキャラクターの状態、場所、服装、関係性などの情報を設定できます。空欄の場合、ステータス欄は生成されません。';
+
+  @override
+  String get characterProfileCharacterIntro => 'キャラクター紹介';
+
+  @override
+  String get characterProfileNoIntroduction => 'クリエイターはまだキャラクター紹介を入力していません';
+
+  @override
+  String get characterProfileViewMore => 'もっと見る';
+
+  @override
+  String get characterProfileCollapse => '折りたたむ';
 }

@@ -13,8 +13,7 @@ import '../page/theme_selection_page.dart';
 import '../page/character_management_page.dart';
 import '../page/app_texts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-import 'login_page.dart';
-import 'help_models.dart';
+
 
 //設定
 
@@ -295,7 +294,12 @@ class _SettingsPageState extends State<SettingsPage> {
         // ✅ 毛玻璃效果：根據主題自動調整透明度
         color: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: primaryColor.withValues(alpha:0.05)), // 極淡的邊框感
+        border: Border.all(
+          color: primaryColor.withValues(
+            alpha: isDarkMode ? 0.28 : 0.22,
+          ),
+          width: 0.9,
+        ),
       ),
       child: ListTile(
         leading: Icon(icon, color: iconColor ?? primaryColor),
@@ -413,30 +417,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       }
                     },
                     theme: theme,
-                  ),
-
-                  // ✨ 心動震動感應開關
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor.withValues(alpha:
-                          isDarkMode ? 0.6 : 0.4),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: SwitchListTile(
-                      secondary: Icon(Icons.vibration, color: primaryColor),
-                      title:  Text(l10n.vibrationHapticTitle,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle:  Text(l10n.vibrationHapticDescription),
-                      value: _vibrationEnabled,
-                      activeThumbColor: primaryColor,
-                      onChanged: (bool value) async {
-                        setState(() => _vibrationEnabled = value);
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setBool('vibration_enabled', value);
-                        if (value) HapticFeedback.mediumImpact();
-                      },
-                    ),
                   ),
 
                   _buildSettingsTile(

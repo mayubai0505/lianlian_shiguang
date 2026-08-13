@@ -109,7 +109,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Album nhân vật (ảnh đầu tiên là hình đại diện chính)';
 
   @override
-  String get charNameLabel => 'Tên nhân vật:*';
+  String get charNameLabel => 'Tên nhân vật:';
 
   @override
   String get charDescSection => 'Mô tả nhân vật:';
@@ -118,13 +118,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get charAgeLabel => 'Tuổi:';
 
   @override
-  String get charJobLabel => 'Nghề nghiệp:*';
+  String get charJobLabel => 'Nghề nghiệp:';
 
   @override
   String get charBirthdayLabel => 'Ngày sinh:(MMDD)';
 
   @override
-  String get charGenderLabel => 'Giới tính *';
+  String get charGenderLabel => 'Giới tính ';
 
   @override
   String get genderNotSelected => 'Chưa chọn';
@@ -6002,4 +6002,96 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => 'Thông tin về phương thức đăng nhập';
+
+  @override
+  String get characterEditCoreSetting => 'Thiết lập cốt lõi của nhân vật';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      'Hãy mô tả tính cách, kiểu hành vi, cách tương tác với người khác và phong cách nói chuyện của nhân vật.\n\nVí dụ: Bề ngoài anh ấy lạnh lùng và ít nói, nhưng thực chất lại rất tinh tế. Anh ấy giữ khoảng cách với người lạ, quan tâm người mình thích bằng hành động, nói chuyện ngắn gọn và thẳng thắn, đồng thời không sử dụng những cách gọi quá ngọt ngào hoặc suồng sã.';
+
+  @override
+  String get characterEditNameDescription =>
+      'Đây là tên hiển thị công khai của nhân vật. Sau khi hoàn tất quá trình tạo, hệ thống sẽ tự động tạo tên người dùng cho nhân vật.';
+
+  @override
+  String get characterEditNameHint => 'Vui lòng nhập tên nhân vật';
+
+  @override
+  String get characterEditAgeDescription =>
+      'Thiết lập tuổi của nhân vật. Bạn cũng có thể nhập độ tuổi ngoại hình phù hợp với thế giới của câu chuyện.';
+
+  @override
+  String get characterEditAgeHint => 'Ví dụ: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      'Thân phận hoặc nghề nghiệp hiện tại của nhân vật, chẳng hạn như học sinh, bác sĩ, hiệp sĩ hoặc doanh nhân.';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      'Thiết lập ngày sinh của nhân vật bằng bốn chữ số hoặc dùng dấu gạch chéo để ngăn cách tháng và ngày.';
+
+  @override
+  String get characterEditBirthdayHint => 'Ví dụ: 0825 hoặc 08/25';
+
+  @override
+  String get characterEditHeightDescription =>
+      'Thiết lập chiều cao của nhân vật theo đơn vị centimet.';
+
+  @override
+  String get characterEditHeightHint => 'Ví dụ: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      'Hệ thống sẽ sử dụng đại từ phù hợp dựa trên giới tính của nhân vật.';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      'Mô tả đường nét khuôn mặt, kiểu tóc, trang phục và các đặc điểm ngoại hình khác của nhân vật.';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      'Thiết lập thân phận của người chơi trong câu chuyện, chẳng hạn như trợ lý, bạn cùng lớp hoặc bạn thanh mai trúc mã.';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      'Mô tả thời đại, địa điểm, bối cảnh xã hội và các quy tắc đặc biệt của câu chuyện. Nội dung này sẽ được hiển thị công khai trong mục “Giới thiệu nhân vật” trên trang nhân vật, vì vậy hãy tránh điền những bí mật hoặc tình tiết mà bạn không muốn người chơi biết trước.';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      'Giới thiệu ngắn gọn câu chuyện bằng một câu để người chơi có thể nhanh chóng hiểu được tình huống của nhân vật.';
+
+  @override
+  String get characterEditStorySummaryHint =>
+      'Ví dụ: Câu chuyện tình yêu bắt đầu từ mối quan hệ hợp đồng với một bác sĩ lạnh lùng';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      'Bối cảnh câu chuyện mà người chơi sẽ nhìn thấy đầu tiên khi vào phòng trò chuyện lần đầu.';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      'Câu nói đầu tiên của nhân vật khi gặp người chơi lần đầu.';
+
+  @override
+  String get characterEditCustomStatusBar =>
+      'Thanh trạng thái cốt truyện (không bắt buộc)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      'Chỉ áp dụng cho Chế độ Cốt truyện và Chế độ Nhập vai. Bạn có thể thiết lập trạng thái, địa điểm, trang phục hoặc thông tin mối quan hệ của nhân vật để luôn hiển thị ở cuối câu trả lời. Nếu để trống, thanh trạng thái sẽ không được tạo.';
+
+  @override
+  String get characterProfileCharacterIntro => 'Giới thiệu nhân vật';
+
+  @override
+  String get characterProfileNoIntroduction =>
+      'Nhà sáng tạo chưa thêm phần giới thiệu nhân vật';
+
+  @override
+  String get characterProfileViewMore => 'Xem thêm';
+
+  @override
+  String get characterProfileCollapse => 'Thu gọn';
 }

@@ -105,7 +105,9 @@ class Character {
   final String initialStory;
   final String firstLine;
   final String background;
+  final String coreCharacterSetting;
   final String detailedPersonality;
+  final String customOutputFormat;
   final String appearance;
   final String gender;
   bool isPublic;
@@ -159,7 +161,9 @@ class Character {
     required this.appearance,
     required this.gender,
     required this.isPublic,
+    this.coreCharacterSetting = '',
     this.detailedPersonality = '',
+    this.customOutputFormat = '',
     required this.toneAndStyle,
     required this.likes,
     required this.likesCount,
@@ -188,6 +192,78 @@ class Character {
     this.npcCharacters = const [],
   }) : this.lastChatTime = lastChatTime ?? DateTime.fromMillisecondsSinceEpoch(0);
 
+  Character copyWith({
+    String? initialStory,
+    String? firstLine,
+    String? coreCharacterSetting,
+    String? worldSetting,
+    String? customOutputFormat,
+  }) {
+    return Character(
+      id: id,
+      name: name,
+      avatarPath: avatarPath,
+      bannerImagePath: bannerImagePath,
+      galleryPaths: galleryPaths,
+      gallery: gallery,
+      createdBy: createdBy,
+      worldSetting:
+      worldSetting ?? this.worldSetting,
+      createdAt: createdAt,
+      lastChatTime: lastChatTime,
+      creatorName: creatorName,
+      playCount: playCount,
+      age: age,
+      occupation: occupation,
+      birthday: birthday,
+      height: height,
+      personalityTags: personalityTags,
+      storySummary: storySummary,
+
+      // 測試時可使用尚未儲存的內容
+      initialStory: initialStory ?? this.initialStory,
+      firstLine: firstLine ?? this.firstLine,
+
+      background: background,
+      appearance: appearance,
+      gender: gender,
+      isPublic: isPublic,
+      coreCharacterSetting:
+      coreCharacterSetting ??
+          this.coreCharacterSetting,
+      detailedPersonality: detailedPersonality,
+      customOutputFormat:
+      customOutputFormat ??
+          this.customOutputFormat,
+      toneAndStyle: toneAndStyle,
+      likes: likes,
+      likesCount: likesCount,
+      dislikes: dislikes,
+      secrets: secrets,
+      storyModeFirstLine:
+      firstLine ?? storyModeFirstLine,
+      initialRelationship: initialRelationship,
+      dialogueExamples: dialogueExamples,
+      easterEggs: easterEggs,
+      extraInfoItems: extraInfoItems,
+      contentLanguage: contentLanguage,
+      stageStranger: stageStranger,
+      stageAcquaintance: stageAcquaintance,
+      stageIntimate: stageIntimate,
+      socialInteraction: socialInteraction,
+      playerIdentity: playerIdentity,
+      voiceId: voiceId,
+      voicePreviewUrl: voicePreviewUrl,
+      likedGifts: likedGifts,
+      identities: identities,
+      dislikedGifts: dislikedGifts,
+      voiceStability: voiceStability,
+      voiceStyle: voiceStyle,
+      translations: translations,
+      relationships: relationships,
+      npcCharacters: npcCharacters,
+    );
+  }
 
   static Future<Character> fromFirestoreAsync(DocumentSnapshot doc) async {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -268,7 +344,13 @@ class Character {
       initialStory: data['story'] ?? '',
       firstLine: data['storyModeFirstLine'] ?? '',
       background: data['background'] ?? '',
+      coreCharacterSetting:
+      data['coreCharacterSetting']?.toString().trim().isNotEmpty == true
+          ? data['coreCharacterSetting'].toString()
+          : data['detailedPersonality']?.toString() ?? '',
       detailedPersonality: data['detailedPersonality'] ?? '',
+      customOutputFormat:
+      data['customOutputFormat']?.toString() ?? '',
       appearance: data['appearance'] ?? '',
       gender: data['gender'] ?? '未選擇',
       isPublic: data['isPublic'] ?? true,
@@ -331,7 +413,9 @@ class Character {
       'story': initialStory,
       'storyModeFirstLine': firstLine,
       'background': background,
+      'coreCharacterSetting': coreCharacterSetting,
       'detailedPersonality': detailedPersonality,
+      'customOutputFormat': customOutputFormat,
       'worldSetting': worldSetting,
       'appearance': appearance,
       'gender': gender,
@@ -384,6 +468,7 @@ Character getCharacterById(String id) {
     firstLine: "正在準備開場白...",
     background: "正在加載背景...",
     worldSetting: "世界觀載入中...",
+    coreCharacterSetting: "正在載入角色核心設定...",
     detailedPersonality: "正在加載性格...",
     appearance: "外貌描述加載中...",
     gender: "未知",

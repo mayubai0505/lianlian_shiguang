@@ -107,7 +107,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get charAlbumTitle => '캐릭터 앨범 (첫 번째 이미지가 메인 아바타)';
 
   @override
-  String get charNameLabel => '캐릭터 이름:*';
+  String get charNameLabel => '캐릭터 이름:';
 
   @override
   String get charDescSection => '캐릭터 설명:';
@@ -116,13 +116,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get charAgeLabel => '나이:';
 
   @override
-  String get charJobLabel => '직업:*';
+  String get charJobLabel => '직업:';
 
   @override
   String get charBirthdayLabel => '생일:(MMDD)';
 
   @override
-  String get charGenderLabel => '성별 *';
+  String get charGenderLabel => '성별 ';
 
   @override
   String get genderNotSelected => '선택 안함';
@@ -5703,4 +5703,92 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get loginMethodInfoTooltip => '로그인 방법 안내';
+
+  @override
+  String get characterEditCoreSetting => '캐릭터 핵심 설정';
+
+  @override
+  String get characterEditCoreSettingHint =>
+      '캐릭터의 성격, 행동 방식, 다른 사람을 대하는 태도와 말투를 설명해 주세요.\n\n예시: 겉으로는 차갑고 말수가 적어 보이지만, 실제로는 매우 세심하다. 낯선 사람과는 거리를 두며, 좋아하는 사람에게는 행동으로 배려를 표현한다. 짧고 직설적으로 말하며, 지나치게 달콤하거나 가벼운 애칭은 사용하지 않는다.';
+
+  @override
+  String get characterEditNameDescription =>
+      '캐릭터에게 공개적으로 표시되는 이름입니다. 생성을 완료하면 시스템이 캐릭터 사용자 이름을 자동으로 생성합니다.';
+
+  @override
+  String get characterEditNameHint => '캐릭터 이름을 입력해 주세요';
+
+  @override
+  String get characterEditAgeDescription =>
+      '캐릭터의 나이를 설정합니다. 세계관에 따라 외관상 나이를 입력할 수도 있습니다.';
+
+  @override
+  String get characterEditAgeHint => '예: 25';
+
+  @override
+  String get characterEditOccupationDescription =>
+      '학생, 의사, 기사 또는 사업가 등 캐릭터의 현재 신분이나 직업입니다.';
+
+  @override
+  String get characterEditBirthdayDescription =>
+      '캐릭터의 생일을 네 자리 숫자로 입력하거나 월과 일을 슬래시로 구분해 설정해 주세요.';
+
+  @override
+  String get characterEditBirthdayHint => '예: 0825 또는 08/25';
+
+  @override
+  String get characterEditHeightDescription => '캐릭터의 키를 센티미터 단위로 설정합니다.';
+
+  @override
+  String get characterEditHeightHint => '예: 182';
+
+  @override
+  String get characterEditGenderDescription =>
+      '시스템이 캐릭터의 성별에 따라 적절한 대명사를 사용합니다.';
+
+  @override
+  String get characterEditAppearanceDescription =>
+      '캐릭터의 이목구비, 헤어스타일, 의상과 기타 외모 특징을 설명해 주세요.';
+
+  @override
+  String get characterEditPlayerIdentityDescription =>
+      '비서, 동급생 또는 소꿉친구 등 이야기 속 플레이어의 신분을 설정합니다.';
+
+  @override
+  String get characterEditWorldviewDescription =>
+      '이야기의 시대, 장소, 사회적 배경과 특별한 규칙을 설명해 주세요. 이 내용은 캐릭터 페이지의 ‘캐릭터 소개’에 공개되므로, 플레이어에게 미리 알리고 싶지 않은 비밀이나 이야기 전개는 입력하지 마세요.';
+
+  @override
+  String get characterEditStorySummaryDescription =>
+      '캐릭터의 상황을 빠르게 이해할 수 있도록 이야기를 한 문장으로 간단히 소개해 주세요.';
+
+  @override
+  String get characterEditStorySummaryHint => '예: 냉정한 의사와의 계약 관계에서 시작되는 사랑 이야기';
+
+  @override
+  String get characterEditInitialStoryDescription =>
+      '플레이어가 채팅방에 처음 입장했을 때 가장 먼저 보게 되는 이야기 상황입니다.';
+
+  @override
+  String get characterEditFirstLineDescription =>
+      '캐릭터가 플레이어를 처음 만났을 때 하는 첫 번째 말입니다.';
+
+  @override
+  String get characterEditCustomStatusBar => '스토리 상태 표시줄(선택 사항)';
+
+  @override
+  String get characterEditCustomStatusBarDescription =>
+      '스토리 모드와 몰입 모드에만 적용됩니다. 답변 끝에 항상 표시할 캐릭터의 상태, 위치, 복장 또는 관계 정보를 설정할 수 있습니다. 비워 두면 상태 표시줄이 생성되지 않습니다.';
+
+  @override
+  String get characterProfileCharacterIntro => '캐릭터 소개';
+
+  @override
+  String get characterProfileNoIntroduction => '크리에이터가 아직 캐릭터 소개를 작성하지 않았습니다';
+
+  @override
+  String get characterProfileViewMore => '더 보기';
+
+  @override
+  String get characterProfileCollapse => '접기';
 }

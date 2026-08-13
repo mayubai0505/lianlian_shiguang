@@ -105,6 +105,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   final _secretsController = TextEditingController();
   final _toneController = TextEditingController();
   final _detailedPersonalityController = TextEditingController();
+
+// 新版合併後的角色核心設定
+  final _coreCharacterSettingController = TextEditingController();
+// 創作者自訂狀態欄／固定回覆格式
+  final _customOutputFormatController = TextEditingController();
   final _worldSettingController = TextEditingController();
   final _dialogueExamplesController = TextEditingController();
   final _extraInputController = TextEditingController();
@@ -188,6 +193,20 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _firstLineController.text = char.firstLine;
       _toneController.text = char.toneAndStyle;
       _detailedPersonalityController.text = char.detailedPersonality;
+      final savedCoreCharacterSetting =
+          mapData['coreCharacterSetting']?.toString().trim() ?? '';
+      _customOutputFormatController.text =
+          mapData['customOutputFormat']?.toString() ?? '';
+
+      _coreCharacterSettingController.text =
+      savedCoreCharacterSetting.isNotEmpty
+          ? savedCoreCharacterSetting
+          : _buildLegacyCoreCharacterSetting(
+        detailedPersonality: char.detailedPersonality,
+        toneAndStyle: char.toneAndStyle,
+        socialInteraction:
+        mapData['socialInteraction']?.toString() ?? '',
+      );
       _worldSettingController.text =
       mapData['worldSetting']?.toString().trim().isNotEmpty == true
           ? mapData['worldSetting'].toString()
@@ -211,6 +230,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _stageAcquaintanceController.text = mapData['stageAcquaintance'] ?? '';
       _stageIntimateController.text = mapData['stageIntimate'] ?? '';
       _socialInteractionController.text = mapData['socialInteraction'] ?? '';
+
       String savedGender1 = char.gender;
       if (savedGender1 == '男') {
         _gender = 'male';
@@ -292,6 +312,22 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _stageAcquaintanceController.text = data['stageAcquaintance'] ?? '';
       _stageIntimateController.text = data['stageIntimate'] ?? '';
       _socialInteractionController.text = data['socialInteraction'] ?? '';
+      final savedCoreCharacterSetting =
+          data['coreCharacterSetting']?.toString().trim() ?? '';
+      _customOutputFormatController.text =
+          data['customOutputFormat']?.toString() ?? '';
+
+      _coreCharacterSettingController.text =
+      savedCoreCharacterSetting.isNotEmpty
+          ? savedCoreCharacterSetting
+          : _buildLegacyCoreCharacterSetting(
+        detailedPersonality:
+        data['detailedPersonality']?.toString() ?? '',
+        toneAndStyle:
+        data['toneAndStyle']?.toString() ?? '',
+        socialInteraction:
+        data['socialInteraction']?.toString() ?? '',
+      );
       _npcCharacters =
       List<Map<String, dynamic>>.from(
         data['npcCharacters'] ?? [],
@@ -411,6 +447,34 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       });
     }
   }
+
+  String _buildLegacyCoreCharacterSetting({
+    required String detailedPersonality,
+    required String toneAndStyle,
+    required String socialInteraction,
+  }) {
+    final sections = <String>[];
+
+    if (detailedPersonality.trim().isNotEmpty) {
+      sections.add(
+        '【角色性格與設定】\n${detailedPersonality.trim()}',
+      );
+    }
+
+    if (toneAndStyle.trim().isNotEmpty) {
+      sections.add(
+        '【說話語氣與風格】\n${toneAndStyle.trim()}',
+      );
+    }
+
+    if (socialInteraction.trim().isNotEmpty) {
+      sections.add(
+        '【社交與環境互動】\n${socialInteraction.trim()}',
+      );
+    }
+
+    return sections.join('\n\n');
+  }
   // ✨✨✨ 完美的翻譯與初始化區塊 ✨✨✨
   @override
   void didChangeDependencies() {
@@ -448,6 +512,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     _backgroundController.dispose();
     _storyController.dispose();
     _detailedPersonalityController.dispose();
+    _coreCharacterSettingController.dispose();
+    _customOutputFormatController.dispose();
     _worldSettingController.dispose();
     _likesController.dispose();
     _dislikesController.dispose();
@@ -625,13 +691,19 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'height': _heightController.text.trim(),
         'appearance': _appearanceController.text.trim(),
         'personalityTags': _personalityTags,
-        'detailedPersonality': _detailedPersonalityController.text.trim(),
+        'coreCharacterSetting':
+        _coreCharacterSettingController.text.trim(),
+        'customOutputFormat':
+        _customOutputFormatController.text.trim(),
+// 舊版相容：讓尚未更新的程式仍能取得完整角色設定
+        'detailedPersonality':
+        _coreCharacterSettingController.text.trim(),
         'worldSetting': _worldSettingController.text.trim(),
         'background': _backgroundController.text.trim(),
         'likes': _likesController.text.trim(),
         'dislikes': _dislikesController.text.trim(),
         'secrets': _secretsController.text.trim(),
-        'toneAndStyle': _toneController.text.trim(),
+        'toneAndStyle': '',
         'initialRelationship': finalRelationship,
         'dialogueExamples': _dialogueExamplesController.text.trim(),
         'storySummary': _storySummaryController.text.trim(),
@@ -649,7 +721,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'stageStranger': _stageStrangerController.text.trim(),
         'stageAcquaintance': _stageAcquaintanceController.text.trim(),
         'stageIntimate': _stageIntimateController.text.trim(),
-        'socialInteraction': _socialInteractionController.text.trim(),
+        'socialInteraction': '',
         'easterEggs': _easterEggs.map((egg) => egg.toMap()).toList(),
         'playerIdentity': _playerIdentityController.text.trim(),
         'voice_id': finalVoiceIdToSave.isEmpty ? null : finalVoiceIdToSave,
@@ -1066,9 +1138,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 // 🌟 1. 配置清單：直接把「標籤、控制器、上限」綁在一起
     final List<Map<String, dynamic>> checkList = [
       {
-        'label': l10n.characterEditCharacterSettings,
-        'controller': _detailedPersonalityController,
-        'limit': 5000,
+        'label': l10n.characterEditCoreSetting,
+        'controller': _coreCharacterSettingController,
+        'limit': 6000,
       },
       {
         'label': l10n.characterEditWorldview,
@@ -1076,14 +1148,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'limit': 10000,
       },
       {
-        'label': l10n.field_tone,
-        'controller': _toneController,
-        'limit': 500,
-      },
-      {
         'label': l10n.field_initial_story,
         'controller': _storyController,
-        'limit': 800,
+        'limit': 1500,
       },
     ];
 
@@ -1102,7 +1169,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       }
     }
 
-    if (_detailedPersonalityController.text.trim().length < 10) {
+    if (_coreCharacterSettingController.text.trim().length < 10) {
       _showErrorDialog(
         l10n.content_missing,
         l10n.characterEditSettingsMinLength,
@@ -1115,10 +1182,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         l10n.content_missing,
         l10n.characterEditWorldviewMinLength,
       );
-      return;
-    }
-    if (_toneController.text.trim().isEmpty) {
-      _showErrorDialog(l10n.content_missing, l10n.content_missing_tone);
       return;
     }
 
@@ -1391,7 +1454,13 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'height': _heightController.text.trim(),
         'appearance': _appearanceController.text.trim(),
         'personalityTags': _personalityTags,
-        'detailedPersonality': _detailedPersonalityController.text.trim(),
+        'coreCharacterSetting':
+        _coreCharacterSettingController.text.trim(),
+        'customOutputFormat':
+        _customOutputFormatController.text.trim(),
+// 舊版相容：讓尚未更新的程式仍能取得完整角色設定
+        'detailedPersonality':
+        _coreCharacterSettingController.text.trim(),
         'worldSetting': _worldSettingController.text.trim(),
 
 // 舊版相容欄位暫時保留
@@ -1399,7 +1468,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'likes': _likesController.text.trim(),
         'dislikes': _dislikesController.text.trim(),
         'secrets': _secretsController.text.trim(),
-        'toneAndStyle': _toneController.text.trim(),
+        'toneAndStyle': '',
         'initialRelationship': finalRelationship,
         'dialogueExamples': _dialogueExamplesController.text.trim(),
         'storySummary': _storySummaryController.text.trim(),
@@ -1418,7 +1487,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'stageStranger': _stageStrangerController.text.trim(),
         'stageAcquaintance': _stageAcquaintanceController.text.trim(),
         'stageIntimate': _stageIntimateController.text.trim(),
-        'socialInteraction': _socialInteractionController.text.trim(),
+        'socialInteraction': '',
         'easterEggs': _easterEggs.map((egg) => egg.toMap()).toList(),
         'playerIdentity': _playerIdentityController.text.trim(),
         'voice_id': finalVoiceIdToSave.isEmpty ? null : finalVoiceIdToSave,
@@ -1706,6 +1775,16 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _appearanceController.text = prefs.getString('temp_char_appearance') ?? '';
       _personalityTags = prefs.getStringList('temp_char_personalityTags') ?? [];
       _detailedPersonalityController.text = prefs.getString('temp_char_detailedPersonality') ?? '';
+      final savedCoreSetting =
+          prefs.getString('temp_char_coreCharacterSetting')?.trim() ?? '';
+
+      _coreCharacterSettingController.text =
+      savedCoreSetting.isNotEmpty
+          ? savedCoreSetting
+          : prefs
+          .getString('temp_char_detailedPersonality')
+          ?.trim() ??
+          '';
       _worldSettingController.text =
           prefs.getString('temp_char_worldSetting') ??
               prefs.getString('temp_char_background') ??
@@ -1754,8 +1833,16 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     await prefs.setString('temp_char_height', _heightController.text.trim());
     await prefs.setString('temp_char_appearance', _appearanceController.text.trim());
     await prefs.setStringList('temp_char_personalityTags', _personalityTags);
-    await prefs.setString('temp_char_detailedPersonality', _detailedPersonalityController.text.trim());
     await prefs.setString(
+      'temp_char_coreCharacterSetting',
+      _coreCharacterSettingController.text.trim(),
+    );
+
+// 舊版相容
+    await prefs.setString(
+      'temp_char_detailedPersonality',
+      _coreCharacterSettingController.text.trim(),
+    );    await prefs.setString(
       'temp_char_worldSetting',
       _worldSettingController.text.trim(),
     );
@@ -2689,13 +2776,46 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                         customIcon: Icons.science_rounded, // 💡 總裁秘技：「實驗室/燒杯」圖示！最適合用在 Test Mode 的放行提示
                         // 喜歡速度感的話，也可以用 Icons.rocket_launch_rounded (火箭發射) 🚀
                       );
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ChatPage(
-                        character: widget.character!, // 這時候用 ! 就絕對安全了
-                        chatMode: 'daily',
-                        sessionId: 'TEST_DRIVE_${DateTime.now().millisecondsSinceEpoch}',
-                        selectedLanguage: l10n.traditional_chinese,
-                        characterId: '',
-                      )));
+                      final Character previewCharacter =
+                      widget.character!.copyWith(
+                        // 初始故事
+                        initialStory:
+                        _storyController.text.trim(),
+
+                        // 角色第一句話
+                        firstLine:
+                        _firstLineController.text.trim(),
+
+                        // 合併後的角色個性、行為與說話風格
+                        coreCharacterSetting:
+                        _coreCharacterSettingController
+                            .text
+                            .trim(),
+
+                        // 世界觀與故事環境
+                        worldSetting:
+                        _worldSettingController.text.trim(),
+
+                        // 劇情／沉浸模式結尾狀態欄
+                        customOutputFormat:
+                        _customOutputFormatController
+                            .text
+                            .trim(),
+                      );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(
+                            character: previewCharacter,
+                            characterId: widget.character!.id,
+                            chatMode: 'daily',
+                            selectedLanguage: l10n.traditional_chinese,
+
+                            // 測試聊天室不讀寫正式聊天室資料
+                            isTestMode: true,
+                          ),
+                        ),
+                      );
                     },
                   ),
                 if (isEditing)
@@ -2864,51 +2984,108 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSectionTitle(l10n.section_basic_info, theme),
-                _buildTextField(_nameController, l10n.charNameLabel, isRequired: true,),
-                _buildTextField(_ageController, l10n.charAgeLabel),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextField(
-                    controller: _occupationController,
-                    decoration: InputDecoration(
-                      labelText: l10n.charJobLabel, // 標籤維持原本的多國語系
-                      hintText: l10n.hint_occupation, // ✨ 貼心的 UI 提示
-                      hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
-                      border: const OutlineInputBorder(),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                    ),
-                  ),
+                _buildTextField(
+                  _nameController,
+                  l10n.charNameLabel,
+                  description: l10n.characterEditNameDescription,
+                  hintText: l10n.characterEditNameHint,
+                  maxLength: 20,
+                  isRequired: true,
                 ),
-                _buildTextField(_birthdayController, l10n.charBirthdayLabel),
-                _buildTextField(_heightController, l10n.charHeightLabel),
+                _buildTextField(
+                  _ageController,
+                  l10n.charAgeLabel,
+                  description: l10n.characterEditAgeDescription,
+                  hintText: l10n.characterEditAgeHint,
+                  maxLength: 20,
+                ),
+                _buildTextField(
+                  _occupationController,
+                  l10n.charJobLabel,
+                  description: l10n.characterEditOccupationDescription,
+                  hintText: l10n.hint_occupation,
+                  maxLength: 50,
+                ),
+                _buildTextField(
+                  _birthdayController,
+                  l10n.charBirthdayLabel,
+                  description: l10n.characterEditBirthdayDescription,
+                  hintText: l10n.characterEditBirthdayHint,
+                  maxLength: 5,
+                ),
+                _buildTextField(
+                  _heightController,
+                  l10n.charHeightLabel,
+                  description: l10n.characterEditHeightDescription,
+                  hintText: l10n.characterEditHeightHint,
+                  maxLength: 10,
+                ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: DropdownButtonFormField<String>(
-                    value: currentValidGender,
-                    hint: Text(l10n.genderNotSelected),
-                    decoration: InputDecoration(
-                      label: _buildRequiredLabel(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildFieldHeading(
                         l10n.charGenderLabel,
                         theme,
+                        description: l10n.characterEditGenderDescription,
+                        isRequired: true,
                       ),
-                      border: const OutlineInputBorder(),
-                    ),
-                    items: genderOptions.map((g) {
-                      return DropdownMenuItem<String>(
-                        value: g['id'],
-                        child: Text(g['label']!),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        _gender = newValue ?? '';
-                      });
-                    },
+
+                      DropdownButtonFormField<String>(
+                        value: currentValidGender,
+                        hint: Text(l10n.genderNotSelected),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: theme.colorScheme.surface.withValues(
+                            alpha: 0.72,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide(
+                              color: theme.dividerColor.withValues(
+                                alpha: 0.75,
+                              ),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide(
+                              color: theme.colorScheme.primary,
+                              width: 1.6,
+                            ),
+                          ),
+                        ),
+                        items: genderOptions.map((g) {
+                          return DropdownMenuItem<String>(
+                            value: g['id'],
+                            child: Text(g['label']!),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            _gender = newValue ?? '';
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 12),
-                _buildBoxedTextField(_appearanceController, l10n.charAppearanceLabel, maxLength: 500, hintText:l10n.hint_appearance),
-              ],
+                _buildBoxedTextField(
+                  _appearanceController,
+                  l10n.charAppearanceLabel,
+                  description: l10n.characterEditAppearanceDescription,
+                  maxLength: 500,
+                  hintText: l10n.hint_appearance,
+                ),              ],
             ),
           ),
         ),
@@ -2958,10 +3135,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(
-                    _playerIdentityController,
-                    l10n.player_identity_label,
-                    maxLength: 200,
-                    hintText: l10n.player_identity_hint
+                  _likesController,
+                  l10n.charLikesLabel,
+                  maxLength: 200,
                 ),
                 const SizedBox(height: 16),
 
@@ -3006,19 +3182,34 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 _buildBoxedTextField(
                   _worldSettingController,
                   l10n.characterEditWorldview,
+                  description: l10n.characterEditWorldviewDescription,
                   maxLength: 10000,
                   hintText: l10n.characterEditWorldviewHint,
                   isRequired: true,
                 ),
                 const SizedBox(height: 16),
-                _buildBoxedTextField(_storySummaryController,l10n.story_summary_label, maxLength: 50),
+                _buildBoxedTextField(
+                  _storySummaryController,
+                  l10n.story_summary_label,
+                  description: l10n.characterEditStorySummaryDescription,
+                  maxLength: 50,
+                  hintText: l10n.characterEditStorySummaryHint,
+                ),
                 const SizedBox(height: 16),
-                _buildBoxedTextField(_storyController, l10n.story_initial_label, maxLength: 800, hintText:l10n.story_initial_hint),
+                _buildBoxedTextField(
+                  _storyController,
+                  l10n.story_initial_label,
+                  description: l10n.characterEditInitialStoryDescription,
+                  maxLength: 1500,
+                  hintText: l10n.story_initial_hint,
+                ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  scrollPadding: const EdgeInsets.only(bottom: 120),
-                  controller: _firstLineController,
-                  decoration: InputDecoration(labelText: l10n.first_line_label, hintText: l10n.first_line_hint, border: OutlineInputBorder()),
+                _buildBoxedTextField(
+                  _firstLineController,
+                  l10n.first_line_label,
+                  description: l10n.characterEditFirstLineDescription,
+                  maxLength: 500,
+                  hintText: l10n.first_line_hint,
                 ),
               ],
             ),
@@ -3053,22 +3244,21 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(
-                  _detailedPersonalityController,
-                  l10n.characterEditCharacterSettings,
-                  maxLength: 5000,
-                  hintText: l10n.characterEditSettingsHint,
+                  _coreCharacterSettingController,
+                  l10n.characterEditCoreSetting,
+                  maxLength: 6000,
+                  hintText: l10n.characterEditCoreSettingHint,
                   isRequired: true,
                 ),
                 const SizedBox(height: 16),
-                Text(l10n.affection_evo_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
-                const SizedBox(height: 12),
-                _buildBoxedTextField(_stageStrangerController, l10n.stage_1_label, maxLength: 400, hintText: l10n.stage_1_hint),
-                const SizedBox(height: 12),
-                _buildBoxedTextField(_stageAcquaintanceController, l10n.stage_2_label, maxLength: 400, hintText: l10n.stage_2_hint),
-                const SizedBox(height: 12),
-                _buildBoxedTextField(_stageIntimateController,l10n.stage_3_label, maxLength: 400, hintText:l10n.stage_3_hint),
-                const SizedBox(height: 12),
-                _buildBoxedTextField(_socialInteractionController, l10n.social_interaction_label, maxLength: 400, hintText:l10n.social_interaction_hint),
+
+                _buildBoxedTextField(
+                  _customOutputFormatController,
+                  l10n.characterEditCustomStatusBar,
+                  maxLength: 1500,
+                  hintText: l10n.characterEditCustomStatusBar,
+                  description: l10n.characterEditCustomStatusBarDescription,
+                ),
               ],
             ),
           ),
@@ -3086,16 +3276,18 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 _buildSectionTitle(l10n.section_habits, theme),
                 _buildBoxedTextField(_likesController, l10n.charLikesLabel, maxLength: 200),
                 const SizedBox(height: 16),
-                _buildBoxedTextField(_dislikesController, l10n.charDislikesLabel, maxLength: 200),
-                const SizedBox(height: 16),
-                _buildBoxedTextField(_secretsController, l10n.charSecretsLabel, maxLength: 200),
-                const SizedBox(height: 16),
                 _buildBoxedTextField(
-                  _toneController,
-                  l10n.charToneLabel,
-                  maxLength: 500,
-                  hintText: l10n.tone_hint_detail,
-                  isRequired: true,
+                  _dislikesController,
+                  l10n.charDislikesLabel,
+                  maxLength: 200,
+                ),
+
+                const SizedBox(height: 16),
+
+                _buildBoxedTextField(
+                  _secretsController,
+                  l10n.charSecretsLabel,
+                  maxLength: 200,
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(_dialogueExamplesController, l10n.charDialogueExampleLabel, maxLength: 500, hintText: l10n.dialogue_example_hint),
@@ -4707,35 +4899,139 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     );
   }
 
+  Widget _buildFieldHeading(
+      String label,
+      ThemeData theme, {
+        String? description,
+        bool isRequired = false,
+        double labelFontSize = 15,
+      }) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 8,
+        bottom: 10,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  label,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+
+              if (isRequired)
+                Text(
+                  ' *',
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontSize: labelFontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+            ],
+          ),
+
+          if (description != null &&
+              description.trim().isNotEmpty) ...[
+            const SizedBox(height: 5),
+            Text(
+              description,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 13,
+                height: 1.45,
+                color: theme.colorScheme.onSurface.withValues(
+                  alpha: 0.52,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildTextField(
       TextEditingController controller,
       String label, {
         int maxLines = 1,
         bool isRequired = false,
-      }) {    final theme = Theme.of(context);
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      style: TextStyle(color: theme.textTheme.bodyMedium?.color),
-      decoration: InputDecoration(
-        label: isRequired
-            ? _buildRequiredLabel(label, theme)
-            : Text(
-          label,
-          style: TextStyle(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+        String? description,
+        String? hintText,
+        int? maxLength,
+      }) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildFieldHeading(
+            label,
+            theme,
+            description: description,
+            isRequired: isRequired,
           ),
-        ),
-        enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: theme.dividerColor)),
-        focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-                color:  theme.colorScheme.primary, width: 2.0)),
+
+          TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            maxLength: maxLength,
+            style: TextStyle(
+              fontSize: 16,
+              color: theme.textTheme.bodyMedium?.color,
+            ),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(
+                  alpha: 0.35,
+                ),
+                fontSize: 14,
+              ),
+              filled: true,
+              fillColor: theme.colorScheme.surface.withValues(
+                alpha: 0.72,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 14,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: theme.dividerColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: theme.dividerColor.withValues(
+                    alpha: 0.75,
+                  ),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary,
+                  width: 1.6,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-    ),
-  );
+    );
   }
 
   Widget _buildBoxedTextField(
@@ -4743,7 +5039,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       String label, {
         required int maxLength,
         String? hintText,
+        String? description,
         bool isRequired = false,
+        double inputFontSize = 16,
       }) {
     final theme = Theme.of(context);
 
@@ -4770,10 +5068,18 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _buildFieldHeading(
+          label,
+          theme,
+          description: description,
+          isRequired: isRequired,
+        ),
+
         TextFormField(
           controller: controller,
-          style: TextStyle(
-            color: theme.textTheme.bodyMedium?.color,
+        style: TextStyle(
+        fontSize: inputFontSize,
+        color: theme.textTheme.bodyMedium?.color,
           ),
           keyboardType: TextInputType.multiline,
           maxLines: null,
@@ -4787,14 +5093,6 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           },
 
           decoration: InputDecoration(
-            label: isRequired
-                ? _buildRequiredLabel(label, theme)
-                : Text(
-              label,
-              style: TextStyle(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
             hintText: hintText,
             hintStyle: TextStyle(
               color: theme.colorScheme.onSurface.withValues(
@@ -4808,19 +5106,19 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               ),
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
                 color: theme.dividerColor,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
                 color: theme.dividerColor,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(14),
               borderSide: BorderSide(
                 color: overflow > 0
                     ? Colors.red

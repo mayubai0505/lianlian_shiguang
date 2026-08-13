@@ -66,6 +66,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   final LoreTranslateService _loreTranslateService = LoreTranslateService();
   String _playerNickname = '旅人';
   String _currentUserId = "";
+  bool _isWorldSettingExpanded = false;
   String _getCharacterShareAppLink() {
     return 'https://lianlianshiguang.web.app/download/';
   }
@@ -2505,8 +2506,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                           icon: Icon(Icons.person_outline),
                           text: l10n.tab_private_profile),
                       Tab(
-                          icon: Icon(Icons.mail_outline),
-                          text: l10n.tab_memory_fragments),
+                        icon: const Icon(Icons.auto_stories_outlined),
+                        text: l10n.characterProfileCharacterIntro,
+                      ),
                       Tab(icon: Icon(Icons.public), text: l10n.tab_time_echoes),
                     ],
                   ),
@@ -2520,7 +2522,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
             controller: _tabController,
             children: [
               _buildTabProfile(theme), // 頁籤 1
-              _buildTabLore(theme), // 頁籤 2
+              _buildCharacterIntroTab(theme), // 頁籤 2：角色簡介
               _buildTabEchoes(theme), // 頁籤 3
             ],
           ),
@@ -2931,6 +2933,152 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
           },
         ),
       ],
+    );
+  }
+
+  // ==========================================
+// 📖 頁籤 2：角色簡介
+// ==========================================
+  Widget _buildCharacterIntroTab(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+
+    final String worldSetting =
+    widget.character.worldSetting.trim();
+
+    final bool isLongContent = worldSetting.length > 200;
+
+    final String displayedWorldSetting =
+    isLongContent && !_isWorldSettingExpanded
+        ? '${worldSetting.substring(0, 200).trim()}...'
+        : worldSetting;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        24,
+        20,
+        150,
+      ),
+      children: [
+        Text(
+          l10n.characterProfileCharacterIntro,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        if (worldSetting.isEmpty)
+          Text(
+            l10n.characterProfileNoIntroduction,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(
+                alpha: 0.55,
+              ),
+              height: 1.7,
+            ),
+          )
+        else ...[
+          AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeInOut,
+            alignment: Alignment.topCenter,
+            child: Text(
+              displayedWorldSetting,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                height: 1.75,
+              ),
+            ),
+          ),
+
+          if (isLongContent) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _isWorldSettingExpanded =
+                    !_isWorldSettingExpanded;
+                  });
+                },
+                icon: Icon(
+                  _isWorldSettingExpanded
+                      ? Icons.keyboard_arrow_up_rounded
+                      : Icons.keyboard_arrow_down_rounded,
+                  size: 20,
+                ),
+                label: Text(
+                  _isWorldSettingExpanded
+                      ? l10n.characterProfileCollapse
+                      : l10n.characterProfileViewMore,
+                ),
+              ),
+            ),
+          ],
+        ],
+
+        const SizedBox(height: 28),
+        Divider(
+          color: theme.dividerColor.withValues(alpha: 0.45),
+        ),
+
+        // 記憶碎片入口
+        InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => _openLoreListPage(theme),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 18,
+              horizontal: 4,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.auto_awesome_outlined,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.tab_memory_fragments,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: theme.colorScheme.onSurface.withValues(
+                    alpha: 0.45,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _openLoreListPage(ThemeData theme) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (pageContext) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                l10n.tab_memory_fragments,
+              ),
+            ),
+            body: SafeArea(
+              child: _buildTabLore(theme),
+            ),
+          );
+        },
+      ),
     );
   }
   // ==========================================
