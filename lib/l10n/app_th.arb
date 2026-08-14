@@ -2828,5 +2828,6 @@
     "characterProfileCharacterIntro": "แนะนำตัวละคร",
     "characterProfileNoIntroduction": "ผู้สร้างยังไม่ได้เพิ่มคำแนะนำตัวละคร",
     "characterProfileViewMore": "ดูเพิ่มเติม",
-    "characterProfileCollapse": "ย่อ"
+    "characterProfileCollapse": "ย่อ",
+    "characterEditSelectedTagOrder": "ลากแท็กที่เลือกเพื่อปรับลำดับการแสดงผล"
 }

@@ -2827,5 +2827,6 @@
     "characterProfileCharacterIntro": "पात्र परिचय",
     "characterProfileNoIntroduction": "निर्माता ने अभी तक पात्र का परिचय नहीं जोड़ा है",
     "characterProfileViewMore": "और देखें",
-    "characterProfileCollapse": "कम दिखाएँ"
+    "characterProfileCollapse": "कम दिखाएँ",
+    "characterEditSelectedTagOrder": "चुने गए टैग को खींचकर उनके प्रदर्शित होने का क्रम बदलें"
 }

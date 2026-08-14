@@ -2828,5 +2828,6 @@
   "characterProfileCharacterIntro": "キャラクター紹介",
   "characterProfileNoIntroduction": "クリエイターはまだキャラクター紹介を入力していません",
   "characterProfileViewMore": "もっと見る",
-  "characterProfileCollapse": "折りたたむ"
+  "characterProfileCollapse": "折りたたむ",
+  "characterEditSelectedTagOrder": "選択したタグをドラッグして表示順を変更できます"
 }

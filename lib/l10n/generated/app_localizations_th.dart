@@ -6029,4 +6029,8 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'ย่อ';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'ลากแท็กที่เลือกเพื่อปรับลำดับการแสดงผล';
 }

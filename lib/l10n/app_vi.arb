@@ -2828,5 +2828,6 @@
   "characterProfileCharacterIntro": "Giới thiệu nhân vật",
   "characterProfileNoIntroduction": "Nhà sáng tạo chưa thêm phần giới thiệu nhân vật",
   "characterProfileViewMore": "Xem thêm",
-  "characterProfileCollapse": "Thu gọn"
+  "characterProfileCollapse": "Thu gọn",
+  "characterEditSelectedTagOrder": "Kéo các thẻ đã chọn để điều chỉnh thứ tự hiển thị"
 }

@@ -129,6 +129,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   ];}
   // --- State Variables ---
   bool _isDeleting = false; // 刪除狀態
+  bool _isCoreCharacterSettingExpanded = false;
+  bool _isWorldSettingExpanded = false;
   DocumentReference? _newCharacterDocRef; // 防止新建角色重複產生多筆
   String _gender = '';
   List<String> _personalityTags = [];
@@ -218,7 +220,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _dialogueExamplesController.text = char.dialogueExamples;
       _bannerImagePath = char.bannerImagePath;
       // -- 陣列與清單 (保留妳的安全寫法) --
-      _personalityTags = List.from(char.personalityTags);
+      _personalityTags = _deduplicateTagsPreservingOrder(
+        char.personalityTags,
+      );
       _easterEggs = List.from(char.easterEggs);
       _extraInfoItems = List<String>.from(char.extraInfoItems ); // 👈 統一留這個最安全的！
       _npcCharacters = List<Map<String, dynamic>>.from(char.npcCharacters,);
@@ -426,7 +430,11 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         _relationships = {}; // 真的沒抓到，就只能給空的
       }
       // 8. 【標籤與彩蛋】
-      if (data['personalityTags'] != null) _personalityTags = List<String>.from(data['personalityTags']);
+      if (data['personalityTags'] != null) {
+        _personalityTags = _deduplicateTagsPreservingOrder(
+          data['personalityTags'] as List<dynamic>,
+        );
+      }
       if (data['extraInfoItems'] != null) _extraInfoItems = List<String>.from(data['extraInfoItems']);
       if (data['easterEggs'] != null) {
         var rawEggs = data['easterEggs'] as List<dynamic>;
@@ -690,7 +698,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'gender': _gender,
         'height': _heightController.text.trim(),
         'appearance': _appearanceController.text.trim(),
-        'personalityTags': _personalityTags,
+        'personalityTags':
+        _deduplicateTagsPreservingOrder(_personalityTags),
         'coreCharacterSetting':
         _coreCharacterSettingController.text.trim(),
         'customOutputFormat':
@@ -1453,7 +1462,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'gender': _gender,
         'height': _heightController.text.trim(),
         'appearance': _appearanceController.text.trim(),
-        'personalityTags': _personalityTags,
+        'personalityTags':
+        _deduplicateTagsPreservingOrder(_personalityTags),
         'coreCharacterSetting':
         _coreCharacterSettingController.text.trim(),
         'customOutputFormat':
@@ -1773,7 +1783,9 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       _birthdayController.text = prefs.getString('temp_char_birthday') ?? '';
       _heightController.text = prefs.getString('temp_char_height') ?? '';
       _appearanceController.text = prefs.getString('temp_char_appearance') ?? '';
-      _personalityTags = prefs.getStringList('temp_char_personalityTags') ?? [];
+      _personalityTags = _deduplicateTagsPreservingOrder(
+        prefs.getStringList('temp_char_personalityTags') ?? [],
+      );
       _detailedPersonalityController.text = prefs.getString('temp_char_detailedPersonality') ?? '';
       final savedCoreSetting =
           prefs.getString('temp_char_coreCharacterSetting')?.trim() ?? '';
@@ -1832,7 +1844,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     await prefs.setString('temp_char_birthday', _birthdayController.text.trim());
     await prefs.setString('temp_char_height', _heightController.text.trim());
     await prefs.setString('temp_char_appearance', _appearanceController.text.trim());
-    await prefs.setStringList('temp_char_personalityTags', _personalityTags);
+    await prefs.setStringList(
+      'temp_char_personalityTags',
+      _deduplicateTagsPreservingOrder(_personalityTags),
+    );
     await prefs.setString(
       'temp_char_coreCharacterSetting',
       _coreCharacterSettingController.text.trim(),
@@ -2977,7 +2992,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         // 💡「卡片 1：🧬 基礎資料
         Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          color: _getSectionCardColor(theme),
+          shape: _buildSectionCardShape(theme),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -3093,7 +3109,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         // 💡 「卡片 2：🎭 劇本與你的身分」
         Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          color: _getSectionCardColor(theme),
+          shape: _buildSectionCardShape(theme),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -3186,6 +3203,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   maxLength: 10000,
                   hintText: l10n.characterEditWorldviewHint,
                   isRequired: true,
+                  isCollapsible: true,
+                  isExpanded: _isWorldSettingExpanded,
+                  onToggleExpanded: () {
+                    setState(() {
+                      _isWorldSettingExpanded =
+                      !_isWorldSettingExpanded;
+                    });
+                  },
                 ),
                 const SizedBox(height: 16),
                 _buildBoxedTextField(
@@ -3219,19 +3244,59 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         // 💡 「卡片 3：🌟 個性與好感度演變」
         Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          color: _getSectionCardColor(theme),
+          shape: _buildSectionCardShape(theme),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildSectionTitle(l10n.section_personality_evo, theme),
-                Wrap(
-                  spacing: 8.0,
-                  runSpacing: 4.0,
-                  children: {...defaultPersonalityTags, ..._personalityTags}.map((tag) {
-                    return _buildTagButton(tag, _personalityTags.contains(tag), theme);
-                  }).toList(),
+                Text(
+                  l10n.characterEditSelectedTagOrder,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface
+                        .withValues(alpha: 0.58),
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                Builder(
+                  builder: (context) {
+                    // 已選標籤使用創作者排列的順序。
+                    final selectedTags =
+                    List<String>.from(_personalityTags);
+
+                    // 尚未選擇的預設標籤放在後面。
+                    final unselectedDefaultTags =
+                    defaultPersonalityTags
+                        .where(
+                          (tag) =>
+                      !_personalityTags.contains(tag),
+                    )
+                        .toList();
+
+                    return Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ...selectedTags.map(
+                              (tag) => _buildDraggableSelectedTag(
+                            tag,
+                            theme,
+                          ),
+                        ),
+
+                        ...unselectedDefaultTags.map(
+                              (tag) => _buildTagButton(
+                            tag,
+                            false,
+                            theme,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -3249,6 +3314,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   maxLength: 6000,
                   hintText: l10n.characterEditCoreSettingHint,
                   isRequired: true,
+                  isCollapsible: true,
+                  isExpanded: _isCoreCharacterSettingExpanded,
+                  onToggleExpanded: () {
+                    setState(() {
+                      _isCoreCharacterSettingExpanded =
+                      !_isCoreCharacterSettingExpanded;
+                    });
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -3267,7 +3340,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         // 💡 「卡片 4：🗣️ 喜好與習慣」
         Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          color: _getSectionCardColor(theme),
+          shape: _buildSectionCardShape(theme),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -3299,7 +3373,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         // 💡「卡片 5：🎁 附加設定與彩蛋」
         Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          color: _getSectionCardColor(theme),
+          shape: _buildSectionCardShape(theme),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -3383,7 +3458,8 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         children: [
           Card(
             elevation: 2,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            color: _getSectionCardColor(theme),
+            shape: _buildSectionCardShape(theme),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -4864,6 +4940,58 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       child: Text(text),
     );
   }
+
+  Color _getSectionCardColor(ThemeData theme) {
+    final bool isDark =
+        theme.brightness == Brightness.dark;
+
+    // 將少量主題色混入 Card 的 surface，
+    // 比頁面背景稍微重一點，但不會太濃。
+    final mixedColor = Color.alphaBlend(
+      theme.colorScheme.primary.withValues(
+        alpha: isDark ? 0.16 : 0.10,
+      ),
+      theme.colorScheme.surface,
+    );
+
+    // 保留一點透明度，讓底下的漸層主題隱約透出。
+    return mixedColor.withValues(
+      alpha: isDark ? 0.94 : 0.88,
+    );
+  }
+
+  Color _getSectionBorderColor(ThemeData theme) {
+    final primaryHsl = HSLColor.fromColor(
+      theme.colorScheme.primary,
+    );
+
+    // 淺色主題稍微加深；黑色主題稍微提亮，
+    // 避免邊框融入背景看不見。
+    final double adjustedLightness =
+    theme.brightness == Brightness.dark
+        ? (primaryHsl.lightness + 0.08).clamp(0.0, 1.0)
+        : (primaryHsl.lightness - 0.10).clamp(0.0, 1.0);
+
+    return primaryHsl
+        .withLightness(adjustedLightness)
+        .toColor()
+        .withValues(
+      alpha: theme.brightness == Brightness.dark
+          ? 0.78
+          : 0.58,
+    );
+  }
+
+  ShapeBorder _buildSectionCardShape(ThemeData theme) {
+    return RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+      side: BorderSide(
+        color: _getSectionBorderColor(theme),
+        width: 1.1,
+      ),
+    );
+  }
+
   Widget _buildSectionTitle(String title, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.only(top: 24.0, bottom: 8.0),
@@ -5042,11 +5170,26 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         String? description,
         bool isRequired = false,
         double inputFontSize = 16,
+
+        // 超過指定字數時，是否支援展開／收合
+        bool isCollapsible = false,
+        bool isExpanded = false,
+        VoidCallback? onToggleExpanded,
       }) {
     final theme = Theme.of(context);
 
     final int currentLength = controller.text.characters.length;
     final int overflow = currentLength - maxLength;
+    const int collapseThreshold = 400;
+
+    final bool showExpandButton =
+        isCollapsible &&
+            currentLength > collapseThreshold;
+
+    final int? effectiveMaxLines =
+    showExpandButton && !isExpanded
+        ? 7
+        : null;
 
     final NumberFormat numberFormatter = NumberFormat.decimalPattern();
 
@@ -5075,14 +5218,21 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           isRequired: isRequired,
         ),
 
-        TextFormField(
-          controller: controller,
-        style: TextStyle(
-        fontSize: inputFontSize,
-        color: theme.textTheme.bodyMedium?.color,
-          ),
-          keyboardType: TextInputType.multiline,
-          maxLines: null,
+        AnimatedSize(
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.easeInOutCubic,
+            alignment: Alignment.topCenter,
+            child: TextFormField(
+              controller: controller,
+              style: TextStyle(
+                fontSize: inputFontSize,
+                color: theme.textTheme.bodyMedium?.color,
+              ),
+              keyboardType: TextInputType.multiline,
+
+              // 這兩個長欄位至少保留適當的輸入高度
+              minLines: isCollapsible ? 5 : null,
+              maxLines: effectiveMaxLines,
 
           // 保留字數統計，但不要截斷貼上的內容
           maxLength: maxLength,
@@ -5144,6 +5294,34 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
             ),
           ),
         ),
+        ),
+
+        if (showExpandButton)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: onToggleExpanded,
+              icon: Icon(
+                isExpanded
+                    ? Icons.keyboard_arrow_up_rounded
+                    : Icons.keyboard_arrow_down_rounded,
+                size: 20,
+              ),
+              label: Text(
+                isExpanded
+                    ? AppLocalizations.of(context)!.characterProfileCollapse
+                    : AppLocalizations.of(context)!.characterProfileViewMore,
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.primary,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
+          ),
 
         if (overflow > 0)
           Padding(
@@ -5165,6 +5343,73 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     );
   }
 
+  void _reorderPersonalityTag(
+      int oldIndex,
+      int newIndex,
+      ) {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+
+      final tag = _personalityTags.removeAt(oldIndex);
+      _personalityTags.insert(newIndex, tag);
+    });
+  }
+
+  List<String> _deduplicateTagsPreservingOrder(
+      Iterable<dynamic> tags,
+      ) {
+    final seen = <String>{};
+    final result = <String>[];
+
+    for (final rawTag in tags) {
+      final tag = rawTag.toString().trim();
+
+      if (tag.isEmpty) {
+        continue;
+      }
+
+      if (seen.add(tag)) {
+        result.add(tag);
+      }
+    }
+
+    return result;
+  }
+
+  void _movePersonalityTag(
+      String draggedTag,
+      String targetTag,
+      ) {
+    if (draggedTag == targetTag) {
+      return;
+    }
+
+    setState(() {
+      final oldIndex =
+      _personalityTags.indexOf(draggedTag);
+      final targetIndex =
+      _personalityTags.indexOf(targetTag);
+
+      if (oldIndex == -1 || targetIndex == -1) {
+        return;
+      }
+
+      _personalityTags.removeAt(oldIndex);
+
+      final insertIndex = targetIndex.clamp(
+        0,
+        _personalityTags.length,
+      );
+
+      _personalityTags.insert(
+        insertIndex,
+        draggedTag,
+      );
+    });
+  }
+
   void _togglePersonalityTag(String tag) {
     setState(() {
       if (_personalityTags.contains(tag)) {
@@ -5184,14 +5429,104 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         if (!_personalityTags.contains(tag)) {
           _personalityTags.add(tag);
         }
-        // 💡 額外保險：順便把整個清單用 Set 去重，確保萬無一失！
-        _personalityTags = _personalityTags.toSet().toList();
+
 
         _personalityController.clear();
       });
     }
   }
 
+  Widget _buildDraggableSelectedTag(
+      String tag,
+      ThemeData theme,
+      ) {
+    return DragTarget<String>(
+      onWillAccept: (draggedTag) {
+        return draggedTag != null &&
+            draggedTag != tag;
+      },
+      onAccept: (draggedTag) {
+        _movePersonalityTag(
+          draggedTag,
+          tag,
+        );
+      },
+      builder: (
+          context,
+          candidateData,
+          rejectedData,
+          ) {
+        final bool isReceiving =
+            candidateData.isNotEmpty;
+
+        final tagButton = AnimatedContainer(
+          duration: const Duration(
+            milliseconds: 160,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: isReceiving
+                ? [
+              BoxShadow(
+                color: theme.colorScheme.primary
+                    .withValues(alpha: 0.28),
+                blurRadius: 8,
+                spreadRadius: 1,
+              ),
+            ]
+                : const [],
+          ),
+          child: ElevatedButton.icon(
+            onPressed: () {
+              _togglePersonalityTag(tag);
+            },
+            icon: Icon(
+              Icons.drag_indicator_rounded,
+              size: 17,
+              color: theme.colorScheme.onPrimary
+                  .withValues(alpha: 0.82),
+            ),
+            label: Text(tag),
+            style: ElevatedButton.styleFrom(
+              backgroundColor:
+              theme.colorScheme.primary,
+              foregroundColor:
+              theme.colorScheme.onPrimary,
+              shape: StadiumBorder(
+                side: BorderSide(
+                  color: isReceiving
+                      ? theme.colorScheme.onPrimary
+                      : Colors.transparent,
+                  width: 1,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              elevation: isReceiving ? 4 : 2,
+            ),
+          ),
+        );
+
+        return LongPressDraggable<String>(
+          data: tag,
+          feedback: Material(
+            color: Colors.transparent,
+            child: Opacity(
+              opacity: 0.92,
+              child: tagButton,
+            ),
+          ),
+          childWhenDragging: Opacity(
+            opacity: 0.35,
+            child: tagButton,
+          ),
+          child: tagButton,
+        );
+      },
+    );
+  }
 
   Widget _buildTagButton(String tag, bool isSelected, ThemeData theme) {
     return ElevatedButton(

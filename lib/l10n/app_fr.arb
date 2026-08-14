@@ -3001,5 +3001,6 @@
     "characterProfileCharacterIntro": "Présentation du personnage",
     "characterProfileNoIntroduction": "Le créateur n’a pas encore ajouté de présentation du personnage",
     "characterProfileViewMore": "Voir plus",
-    "characterProfileCollapse": "Voir moins"
+    "characterProfileCollapse": "Voir moins",
+    "characterEditSelectedTagOrder": "Faites glisser les étiquettes sélectionnées pour modifier leur ordre d’affichage"
 }

@@ -5686,6 +5686,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => '收起來';
+
+  @override
+  String get characterEditSelectedTagOrder => '拖曳已選標籤以調整顯示順序';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -11370,6 +11373,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get characterProfileCollapse => '收起';
+
+  @override
+  String get characterEditSelectedTagOrder => '拖动已选标签以调整显示顺序';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -17054,4 +17060,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get characterProfileCollapse => '收起來';
+
+  @override
+  String get characterEditSelectedTagOrder => '拖曳已選標籤以調整顯示順序';
 }

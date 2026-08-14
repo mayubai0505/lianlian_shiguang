@@ -6151,4 +6151,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'Ver menos';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'Arrastra las etiquetas seleccionadas para ajustar el orden en que se muestran';
 }

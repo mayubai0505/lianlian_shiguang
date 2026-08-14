@@ -2826,5 +2826,6 @@
     "characterProfileCharacterIntro": "Presentación del personaje",
     "characterProfileNoIntroduction": "El creador aún no ha añadido una presentación del personaje",
     "characterProfileViewMore": "Ver más",
-    "characterProfileCollapse": "Ver menos"
+    "characterProfileCollapse": "Ver menos",
+    "characterEditSelectedTagOrder": "Arrastra las etiquetas seleccionadas para ajustar el orden en que se muestran"
 }

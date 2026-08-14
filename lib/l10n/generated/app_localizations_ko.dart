@@ -5791,4 +5791,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => '접기';
+
+  @override
+  String get characterEditSelectedTagOrder => '선택한 태그를 드래그하여 표시 순서를 조정하세요';
 }

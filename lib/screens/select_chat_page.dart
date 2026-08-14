@@ -959,21 +959,17 @@ class _LatestTabState extends State<_LatestTab> {
     final double maxContentWidth =
     useDesktopLayout ? 1280 : double.infinity;
 
-    final List<Character> sortedList =
-    List<Character>.from(
-      _visibleAllCharacters,
-    );
-
-    sortedList.sort((a, b) {
-      return b.createdAt.compareTo(a.createdAt);
-    });
-
     final List<Character> bannerList =
         _shuffledBannerCharacters;
 
     // 首頁只預覽最近 6 位角色，避免角色增加後首頁無限延伸。
+    // _loadCharacters() 進入頁面時已經洗牌，
+// 直接取前 6 位即可保持本次瀏覽的隨機結果。
+// 不要在 build() 裡再次 shuffle，否則畫面重建時角色會一直跳動。
     final List<Character> latestPreview =
-    sortedList.take(6).toList();
+    _visibleAllCharacters
+        .take(6)
+        .toList();
 
     return Align(
       alignment: const Alignment(0, -0.35),
@@ -1033,7 +1029,7 @@ class _LatestTabState extends State<_LatestTab> {
             _buildLatestSectionHeader(
               context,
               useDesktopLayout,
-              showMore: sortedList.length > 6,
+              showMore: _visibleAllCharacters.length > 6,
             ),
             const SizedBox(height: 12),
 
@@ -1961,16 +1957,10 @@ class _AllLatestCharactersPageState
     super.initState();
 
     // 先放原始資料，避免畫面一開始空白
-    _visibleCharacters =
-    List<Character>.from(
+    // 沿用探索大廳載入時已經洗牌的角色順序。
+    _visibleCharacters = List<Character>.from(
       widget.allCharacters,
-    )
-      ..sort(
-            (a, b) =>
-            b.createdAt.compareTo(
-              a.createdAt,
-            ),
-      );
+    );
 
     _listenBlockedCharacters();
   }
@@ -1998,21 +1988,15 @@ class _AllLatestCharactersPageState
                 .map((doc) => doc.id)
                 .toSet();
 
-            final visible =
-            widget.allCharacters
+            // 排除封鎖角色，但不重新依建立時間排序。
+            final visible = widget.allCharacters
                 .where(
                   (character) =>
               !blockedIds.contains(
                 character.id,
               ),
             )
-                .toList()
-              ..sort(
-                    (a, b) =>
-                    b.createdAt.compareTo(
-                      a.createdAt,
-                    ),
-              );
+                .toList();
 
             setState(() {
               _visibleCharacters = visible;

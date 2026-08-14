@@ -8921,9 +8921,11 @@ class _ChatPageState extends State<ChatPage> {
           // 💬 根據型態畫出對話氣泡
           if (type == 'text') {
             final normalStyle = TextStyle(
-                color: isUserMessage
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurfaceVariant);
+              color: isUserMessage
+                  ? theme.colorScheme.onPrimary
+                  : theme.colorScheme.primary,
+              height: 1.55,
+            );
             final actionStyle = TextStyle(
                 color: (isUserMessage
                         ? theme.colorScheme.onPrimary
@@ -8956,7 +8958,11 @@ class _ChatPageState extends State<ChatPage> {
               child: isUserMessage
                   ? _buildRichTextMessage(displayText,
                       normalStyle: normalStyle, actionStyle: actionStyle)
-                  : _buildStyledAiMessage(displayText, normalStyle),
+                  : _buildStyledAiMessage(
+                context,
+                displayText,
+                normalStyle,
+              ),
             );
           } else if (type == 'image') {
             final imageText = message.text.trim();
@@ -9402,66 +9408,110 @@ Future<void> _deleteMessagesFromDB(
   }
 }
 
-// ✨ AI 專屬文字掃描器：引號內正常色，引號外強制灰色
 // ✨ AI 專屬文字掃描器：引號內維持正常色，括號（）與其他旁白強制漆成灰色
-Widget _buildStyledAiMessage(String message, TextStyle normalStyle) {
-  // 🔍 鎖定目標：同時捕捉「全形/半形引號」以及「全形括號（）」
-  final RegExp mixedRegex = RegExp(r'(「.*?」|“.*?”|".*?"|（.*?）|\(.*?\))');
-  final Iterable<RegExpMatch> matches = mixedRegex.allMatches(message);
-
-  // 旁白與括號強制套用灰色
-  final greyStyle = const TextStyle(color: Colors.grey);
-
-  if (message.isEmpty) {
+// AI 訊息顯示規則：
+// 1. 「對話」使用主題色
+// 2. （動作）使用主要文字色，並隱藏外層括號
+// 3. 狀態欄與其他普通文字維持主要文字色
+Widget _buildStyledAiMessage(
+    BuildContext context,
+    String message,
+    TextStyle dialogueStyle,
+    ) {
+  if (message.trim().isEmpty) {
     return const SizedBox.shrink();
   }
 
-  // 如果這句話裡面完全沒有任何符合的括號或引號
+  final theme = Theme.of(context);
+  final actionStyle = TextStyle(
+    color: theme.colorScheme.onSurface,
+    height: 1.55,
+  );
+
+  final dialogueStyle = TextStyle(
+    color: theme.colorScheme.primary,
+    height: 1.55,
+  );
+  final RegExp mixedRegex = RegExp(
+    r'(「.*?」|“.*?”|".*?"|（.*?）|\(.*?\))',
+    dotAll: true,
+  );
+
+  final matches = mixedRegex.allMatches(message);
+
   if (matches.isEmpty) {
-    return Text(message, style: normalStyle);
+    // 沒有動作括號時，視為純對話，使用目前主題色。
+    return Text(
+      message,
+      style: dialogueStyle,
+    );
   }
 
-  List<TextSpan> spans = [];
+  final List<TextSpan> spans = [];
   int currentIndex = 0;
 
   for (final match in matches) {
-    String matchedText = match.group(0) ?? '';
+    final String matchedText = match.group(0) ?? '';
 
-    // 1. 處理配對目標「前面」漏掉的散落文字
+    // 引號或括號前面的普通文字，例如時間、地點、狀態欄。
     if (match.start > currentIndex) {
-      spans.add(TextSpan(
-        text: message.substring(currentIndex, match.start),
-        style: normalStyle,
-      ));
+      spans.add(
+        TextSpan(
+          text: message.substring(
+            currentIndex,
+            match.start,
+          ),
+          style: actionStyle,
+        ),
+      );
     }
 
-    // 2. 判斷這次抓到的是「引號（對話）」還是「括號（旁白）」
-    if (matchedText.startsWith('（') || matchedText.startsWith('(')) {
-      // 括號內部：強制漆成灰色
-      spans.add(TextSpan(
-        text: matchedText,
-        style: greyStyle,
-      ));
+    final bool isAction =
+        matchedText.startsWith('（') ||
+            matchedText.startsWith('(');
+
+    if (isAction) {
+      // 只移除最外層括號，不修改資料庫中的原始訊息。
+      final String actionText =
+      matchedText.length >= 2
+          ? matchedText.substring(
+        1,
+        matchedText.length - 1,
+      )
+          : matchedText;
+
+      spans.add(
+        TextSpan(
+          text: actionText,
+          style: actionStyle,
+        ),
+      );
     } else {
-      // 引號內部：維持正常的主題文字顏色
-      spans.add(TextSpan(
-        text: matchedText,
-        style: normalStyle,
-      ));
+      // 對話保留引號，並使用主題色。
+      spans.add(
+        TextSpan(
+          text: matchedText,
+          style: dialogueStyle,
+        ),
+      );
     }
 
     currentIndex = match.end;
   }
 
-  // 3. 處理最後一個目標「後面」剩下的文字
+  // 最後一段普通文字或狀態欄。
   if (currentIndex < message.length) {
-    spans.add(TextSpan(
-      text: message.substring(currentIndex),
-      style: normalStyle,
-    ));
+    spans.add(
+      TextSpan(
+        text: message.substring(currentIndex),
+        style: actionStyle,
+      ),
+    );
   }
 
-  return Text.rich(TextSpan(children: spans));
+  return Text.rich(
+    TextSpan(children: spans),
+  );
 }
 
 // 🌟 總裁專屬：高級去殼過濾器 (Flutter 端)

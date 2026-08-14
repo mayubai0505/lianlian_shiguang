@@ -6089,4 +6089,8 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'कम दिखाएँ';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'चुने गए टैग को खींचकर उनके प्रदर्शित होने का क्रम बदलें';
 }

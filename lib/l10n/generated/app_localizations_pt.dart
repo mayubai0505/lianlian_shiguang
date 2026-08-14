@@ -6130,4 +6130,8 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'Ver menos';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'Arraste as etiquetas selecionadas para ajustar a ordem de exibição';
 }

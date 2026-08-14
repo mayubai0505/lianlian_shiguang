@@ -2836,5 +2836,6 @@
     "characterProfileCharacterIntro": "Pengenalan Watak",
     "characterProfileNoIntroduction": "Pencipta masih belum menambahkan pengenalan watak",
     "characterProfileViewMore": "Lihat Lagi",
-    "characterProfileCollapse": "Tunjukkan Sedikit"
+    "characterProfileCollapse": "Tunjukkan Sedikit",
+    "characterEditSelectedTagOrder": "Seret tag yang dipilih untuk melaraskan susunan paparannya"
 }

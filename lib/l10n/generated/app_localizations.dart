@@ -10557,6 +10557,12 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'收起來'**
   String get characterProfileCollapse;
+
+  /// No description provided for @characterEditSelectedTagOrder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'拖曳已選標籤以調整顯示順序'**
+  String get characterEditSelectedTagOrder;
 }
 
 class _AppLocalizationsDelegate

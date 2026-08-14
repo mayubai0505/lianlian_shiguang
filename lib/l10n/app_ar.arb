@@ -2869,5 +2869,6 @@
     "characterProfileCharacterIntro": "نبذة عن الشخصية",
     "characterProfileNoIntroduction": "لم يضف المنشئ نبذة عن الشخصية بعد",
     "characterProfileViewMore": "عرض المزيد",
-    "characterProfileCollapse": "عرض أقل"
+    "characterProfileCollapse": "عرض أقل",
+    "characterEditSelectedTagOrder": "اسحب الوسوم المحددة لتعديل ترتيب عرضها"
 }

@@ -3043,5 +3043,6 @@
   "characterProfileCharacterIntro": "Character Introduction",
   "characterProfileNoIntroduction": "The creator has not added a character introduction yet",
   "characterProfileViewMore": "View More",
-  "characterProfileCollapse": "Show Less"
+  "characterProfileCollapse": "Show Less",
+  "characterEditSelectedTagOrder": "Drag the selected tags to adjust their display order"
 }

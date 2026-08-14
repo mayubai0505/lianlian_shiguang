@@ -6098,4 +6098,8 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'Tampilkan Lebih Sedikit';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'Seret tag yang dipilih untuk menyesuaikan urutan tampilannya';
 }

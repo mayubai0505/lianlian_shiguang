@@ -6094,4 +6094,8 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'Thu gọn';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'Kéo các thẻ đã chọn để điều chỉnh thứ tự hiển thị';
 }

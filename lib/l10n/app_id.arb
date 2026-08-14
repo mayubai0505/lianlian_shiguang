@@ -2827,5 +2827,6 @@
     "characterProfileCharacterIntro": "Pengenalan Karakter",
     "characterProfileNoIntroduction": "Kreator belum menambahkan pengenalan karakter",
     "characterProfileViewMore": "Lihat Selengkapnya",
-    "characterProfileCollapse": "Tampilkan Lebih Sedikit"
+    "characterProfileCollapse": "Tampilkan Lebih Sedikit",
+    "characterEditSelectedTagOrder": "Seret tag yang dipilih untuk menyesuaikan urutan tampilannya"
 }

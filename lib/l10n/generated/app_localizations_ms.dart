@@ -6101,4 +6101,8 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'Tunjukkan Sedikit';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'Seret tag yang dipilih untuk melaraskan susunan paparannya';
 }

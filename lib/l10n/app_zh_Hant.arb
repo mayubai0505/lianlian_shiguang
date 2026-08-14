@@ -2994,5 +2994,6 @@
   "characterProfileCharacterIntro": "角色簡介",
   "characterProfileNoIntroduction": "創作者尚未填寫角色簡介",
   "characterProfileViewMore": "查看更多",
-  "characterProfileCollapse": "收起來"
+  "characterProfileCollapse": "收起來",
+  "characterEditSelectedTagOrder": "拖曳已選標籤以調整顯示順序"
 }

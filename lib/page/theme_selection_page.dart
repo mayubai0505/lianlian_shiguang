@@ -23,8 +23,12 @@ class ThemeSelectionPage extends StatelessWidget {
       {'theme': AppTheme.dark, 'name': l10n.theme_midnight, 'colors': [Colors.black, Colors.grey[900]!], 'textColor': Colors.white}, // ✨ 深夜模式專屬白字！
     ];
     return Scaffold(
-      appBar: AppBar(title:  Text(l10n.change_atmosphere)),
-      body: Container(
+      appBar: AppBar(
+        title: Text(l10n.change_atmosphere),
+      ),
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOutCubic,
         decoration: themeNotifier.currentBackground,
         child: GridView.builder(
           padding: const EdgeInsets.all(20),

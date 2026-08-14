@@ -6181,4 +6181,8 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'Voir moins';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'Faites glisser les étiquettes sélectionnées pour modifier leur ordre d’affichage';
 }

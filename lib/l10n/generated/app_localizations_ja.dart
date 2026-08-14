@@ -5767,4 +5767,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => '折りたたむ';
+
+  @override
+  String get characterEditSelectedTagOrder => '選択したタグをドラッグして表示順を変更できます';
 }

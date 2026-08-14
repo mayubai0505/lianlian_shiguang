@@ -6014,4 +6014,8 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get characterProfileCollapse => 'عرض أقل';
+
+  @override
+  String get characterEditSelectedTagOrder =>
+      'اسحب الوسوم المحددة لتعديل ترتيب عرضها';
 }
