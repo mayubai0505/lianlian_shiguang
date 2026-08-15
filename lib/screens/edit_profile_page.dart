@@ -1180,8 +1180,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 height: 1.5,
               ),
               minLines: 3,
-              maxLines: 5,
-              maxLength: 120,
+              maxLines: 8,
+              maxLength: 450,
               textInputAction: TextInputAction.newline,
               decoration: customInputDecoration(
                 l10n.editProfileBioLabel,
@@ -1189,7 +1189,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ).copyWith(
                 hintText: l10n.editProfileBioHint,
                 alignLabelWithHint: true,
-                counterText: '',
               ),
             ),
             const SizedBox(height: 20),

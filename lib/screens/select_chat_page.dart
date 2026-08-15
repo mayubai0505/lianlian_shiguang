@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import '../services/character_report_service.dart';
 import '../services/character_block_service.dart';
 import 'dart:async';
@@ -865,6 +865,42 @@ class _LatestTab extends StatefulWidget {
 }
 
 class _LatestTabState extends State<_LatestTab> {
+  // 2026 七夕限定活動：台灣時間 8/18 00:00～8/21 00:00。
+  // 使用 UTC 邊界，避免玩家位於不同時區時提早出現或延後消失。
+  static final DateTime _qixiStartUtc = DateTime.utc(2026, 8, 17, 16);
+  static final DateTime _qixiEndUtc = DateTime.utc(2026, 8, 20, 16);
+  Timer? _qixiBoundaryTimer;
+
+  bool get _isQixiEventActive {
+    final nowUtc = DateTime.now().toUtc();
+    return !nowUtc.isBefore(_qixiStartUtc) && nowUtc.isBefore(_qixiEndUtc);
+  }
+
+  // Debug 版先顯示，方便活動開始前確認版面；正式版只顯示三天。
+  bool get _shouldShowQixiBanner => kDebugMode || _isQixiEventActive;
+
+  void _scheduleQixiBoundaryRefresh() {
+    _qixiBoundaryTimer?.cancel();
+
+    final nowUtc = DateTime.now().toUtc();
+    final DateTime? nextBoundary = nowUtc.isBefore(_qixiStartUtc)
+        ? _qixiStartUtc
+        : nowUtc.isBefore(_qixiEndUtc)
+        ? _qixiEndUtc
+        : null;
+
+    if (nextBoundary == null) return;
+
+    _qixiBoundaryTimer = Timer(
+      nextBoundary.difference(nowUtc) + const Duration(seconds: 1),
+          () {
+        if (!mounted) return;
+        setState(() {});
+        _scheduleQixiBoundaryRefresh();
+      },
+    );
+  }
+
   List<Character> get _visibleAllCharacters {
     return widget.allCharacters
         .where(
@@ -934,6 +970,13 @@ class _LatestTabState extends State<_LatestTab> {
     dayKey % _dailyOpeningLines.length
     ];
     _rebuildBannerCharacters();
+    _scheduleQixiBoundaryRefresh();
+  }
+
+  @override
+  void dispose() {
+    _qixiBoundaryTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -983,6 +1026,10 @@ class _LatestTabState extends State<_LatestTab> {
             vertical: 16,
           ),
           children: [
+            if (_shouldShowQixiBanner) ...[
+              _buildQixiEventBanner(context, useDesktopLayout),
+              SizedBox(height: useDesktopLayout ? 20 : 14),
+            ],
             _buildDailyOpening(context, useDesktopLayout),
             SizedBox(height: useDesktopLayout ? 28 : 20),
 
@@ -1047,6 +1094,89 @@ class _LatestTabState extends State<_LatestTab> {
             SizedBox(height: useDesktopLayout ? 40 : 28),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildQixiEventBanner(
+      BuildContext context,
+      bool useDesktopLayout,
+      ) {
+    final theme = Theme.of(context);
+    final bool isActive = _isQixiEventActive;
+
+    return Container(
+      height: useDesktopLayout ? 76 : 68,
+      padding: EdgeInsets.symmetric(
+        horizontal: useDesktopLayout ? 20 : 15,
+      ),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFFFE4EE),
+            Color(0xFFEDE3FF),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFE8B8D0).withValues(alpha: 0.65),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB989AD).withValues(alpha: 0.12),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: useDesktopLayout ? 44 : 38,
+            height: useDesktopLayout ? 44 : 38,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.78),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: Text('💗', style: TextStyle(fontSize: 20)),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '戀戀七夕・與你共赴鵲橋',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: const Color(0xFF6D3F62),
+                    fontSize: useDesktopLayout ? 16 : 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  isActive ? '限時三天・8/20 截止' : '8/18 限定開啟',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: const Color(0xFF765E72).withValues(alpha: 0.88),
+                    fontSize: useDesktopLayout ? 13 : 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.auto_awesome_rounded,
+            size: useDesktopLayout ? 24 : 20,
+            color: theme.colorScheme.primary.withValues(alpha: 0.72),
+          ),
+        ],
       ),
     );
   }

@@ -1670,11 +1670,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get gallery_reset_bg => 'تم استعادة خلفية المكالمة الافتراضية';
 
   @override
-  String get background_story_title => 'قصة الخلفية';
+  String get background_story_title => 'قصة اللقاء الأول';
 
   @override
   String get background_story_empty =>
-      'هذه الشخصية غامضة للغاية، لا توجد قصة خلفية بعد...';
+      'هذه الشخصية غامضة جدًا، ولا توجد قصة لقاء أول بعد...';
 
   @override
   String followed_creator_msg(String creatorName) {

@@ -625,8 +625,8 @@
     }
   },
   "gallery_reset_bg": "Đã khôi phục nền cuộc gọi mặc định",
-  "background_story_title": "Câu chuyện bối cảnh",
-  "background_story_empty": "Nhân vật này rất bí ẩn, chưa có câu chuyện bối cảnh...",
+  "background_story_title": "Câu chuyện gặp gỡ đầu tiên",
+  "background_story_empty": "Nhân vật này rất bí ẩn và vẫn chưa có câu chuyện gặp gỡ đầu tiên...",
   "followed_creator_msg": "Đã theo dõi {creatorName} 🦋",
   "@followed_creator_msg": {
     "placeholders": {

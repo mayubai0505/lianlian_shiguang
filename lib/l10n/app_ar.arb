@@ -666,8 +666,8 @@
         }
     },
     "gallery_reset_bg": "تم استعادة خلفية المكالمة الافتراضية",
-    "background_story_title": "قصة الخلفية",
-    "background_story_empty": "هذه الشخصية غامضة للغاية، لا توجد قصة خلفية بعد...",
+    "background_story_title": "قصة اللقاء الأول",
+    "background_story_empty": "هذه الشخصية غامضة جدًا، ولا توجد قصة لقاء أول بعد...",
     "followed_creator_msg": "تمت متابعة {creatorName} 🦋",
     "@followed_creator_msg": {
         "placeholders": {

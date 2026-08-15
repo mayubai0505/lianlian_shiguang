@@ -624,8 +624,8 @@
         }
     },
     "gallery_reset_bg": "Latar belakang panggilan lalai telah dipulihkan",
-    "background_story_title": "Latar Belakang Cerita",
-    "background_story_empty": "Watak ini sangat misteri, belum ada latar belakang cerita lagi...",
+    "background_story_title": "Kisah Pertemuan Pertama",
+    "background_story_empty": "Watak ini sangat misteri dan masih belum mempunyai kisah pertemuan pertama...",
     "followed_creator_msg": "Telah mengikuti {creatorName} 🦋",
     "@followed_creator_msg": {
         "placeholders": {

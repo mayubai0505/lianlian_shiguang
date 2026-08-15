@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 //主題切換
 
 enum AppTheme {
@@ -374,14 +375,30 @@ class ThemeNotifier extends ChangeNotifier {
 
   // ✨ 4. 智慧背景產生器 (修正顯示邏輯)
   BoxDecoration get characterChatBackground {
-    if (_activeCharacterBackground != null) {
+    final String path =
+    (_activeCharacterBackground ?? '').trim();
+
+    if (path.isNotEmpty) {
+      late final ImageProvider imageProvider;
+
+      if (path.startsWith('http://') ||
+          path.startsWith('https://')) {
+        // Firebase／網路背景：使用磁碟快取
+        imageProvider = CachedNetworkImageProvider(path);
+      } else if (path.startsWith('assets/')) {
+        // App 內建背景
+        imageProvider = AssetImage(path);
+      } else {
+        // 手機本機選擇的背景
+        imageProvider = FileImage(
+          File(path.replaceFirst('file://', '')),
+        );
+      }
+
       return BoxDecoration(
         image: DecorationImage(
-          image: _activeCharacterBackground!.startsWith('http')
-              ? NetworkImage(_activeCharacterBackground!) as ImageProvider
-              : AssetImage(_activeCharacterBackground!),
+          image: imageProvider,
           fit: BoxFit.cover,
-          // 加上淡淡的暗色過濾，讓白色的字更好看
           colorFilter: ColorFilter.mode(
             Colors.black.withValues(alpha: 0.1),
             BlendMode.darken,
@@ -389,10 +406,10 @@ class ThemeNotifier extends ChangeNotifier {
         ),
       );
     }
-    // 沒專屬背景就用全域預設
+
+    // 沒有角色專屬背景，使用全域主題背景
     return currentBackground;
   }
-
   // 📸 設定背景圖
   Future<void> setBackgroundImage(String path) async {
     _backgroundImagePath = path;

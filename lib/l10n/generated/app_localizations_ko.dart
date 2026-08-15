@@ -1628,10 +1628,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get gallery_reset_bg => '기본 통화 배경으로 복원되었습니다';
 
   @override
-  String get background_story_title => '배경 스토리';
+  String get background_story_title => '첫 만남 이야기';
 
   @override
-  String get background_story_empty => '이 캐릭터는 신비로워요. 아직 배경 스토리가 없습니다...';
+  String get background_story_empty => '이 캐릭터는 매우 신비로우며 아직 첫 만남 이야기가 없습니다...';
 
   @override
   String followed_creator_msg(String creatorName) {

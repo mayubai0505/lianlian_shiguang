@@ -1604,10 +1604,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gallery_reset_bg => '已恢復預設通話背景';
 
   @override
-  String get background_story_title => '背景故事';
+  String get background_story_title => '初始相遇故事';
 
   @override
-  String get background_story_empty => '這個角色很神秘，還沒有背景故事...';
+  String get background_story_empty => '這個角色很神秘，還沒有初始相遇故事...';
 
   @override
   String followed_creator_msg(String creatorName) {
@@ -7291,10 +7291,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get gallery_reset_bg => '已恢复默认通话背景';
 
   @override
-  String get background_story_title => '背景故事';
+  String get background_story_title => '初始相遇故事';
 
   @override
-  String get background_story_empty => '这个角色很神秘，还没有背景故事...';
+  String get background_story_empty => '这个角色很神秘，还没有初始相遇故事...';
 
   @override
   String followed_creator_msg(String creatorName) {
@@ -12978,10 +12978,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get gallery_reset_bg => '已恢復預設通話背景';
 
   @override
-  String get background_story_title => '背景故事';
+  String get background_story_title => '初始相遇故事';
 
   @override
-  String get background_story_empty => '這個角色很神秘，還沒有背景故事...';
+  String get background_story_empty => '這個角色很神秘，還沒有初始相遇故事...';
 
   @override
   String followed_creator_msg(String creatorName) {

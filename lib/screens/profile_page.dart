@@ -51,6 +51,7 @@ class _ProfilePageState extends State<ProfilePage>
   String _nickname = '';
   String _avatarPath = 'assets/images/avatar1.png';
   String _bio = '';
+  bool _isBioExpanded = false;
   String _playerID = '';
   int _flowerPoints = 0;
   bool _isLoading = true;
@@ -1828,6 +1829,11 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildProfileBio() {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final bioStyle = TextStyle(
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+      fontSize: 13,
+      height: 1.6,
+    );
 
     return Container(
       width: double.infinity,
@@ -1858,13 +1864,69 @@ class _ProfilePageState extends State<ProfilePage>
 
           const SizedBox(height: 8),
 
-          Text(
-            _bio,
-            style: TextStyle(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
-              fontSize: 13,
-              height: 1.6,
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final textPainter = TextPainter(
+                text: TextSpan(
+                  text: _bio,
+                  style: bioStyle,
+                ),
+                maxLines: 4,
+                textDirection: Directionality.of(context),
+                textScaler: MediaQuery.textScalerOf(context),
+              )..layout(maxWidth: constraints.maxWidth);
+
+              final bool hasOverflow =
+                  textPainter.didExceedMaxLines;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _bio,
+                    maxLines: _isBioExpanded ? null : 4,
+                    overflow: _isBioExpanded
+                        ? TextOverflow.visible
+                        : TextOverflow.ellipsis,
+                    style: bioStyle,
+                  ),
+                  if (hasOverflow) ...[
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isBioExpanded = !_isBioExpanded;
+                          });
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor:
+                          theme.colorScheme.primary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 4,
+                          ),
+                          minimumSize: Size.zero,
+                          tapTargetSize:
+                          MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        child: Text(
+                          _isBioExpanded
+                              ? l10n.characterProfileCollapse
+                              : l10n.characterProfileViewMore,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
           ),
         ],
       ),

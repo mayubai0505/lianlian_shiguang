@@ -3107,13 +3107,13 @@ abstract class AppLocalizations {
   /// No description provided for @background_story_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'背景故事'**
+  /// **'初始相遇故事'**
   String get background_story_title;
 
   /// No description provided for @background_story_empty.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'這個角色很神秘，還沒有背景故事...'**
+  /// **'這個角色很神秘，還沒有初始相遇故事...'**
   String get background_story_empty;
 
   /// No description provided for @followed_creator_msg.

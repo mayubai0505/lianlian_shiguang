@@ -1694,11 +1694,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get gallery_reset_bg => 'Latar belakang panggilan default dipulihkan';
 
   @override
-  String get background_story_title => 'Cerita Latar Belakang';
+  String get background_story_title => 'Kisah Pertemuan Pertama';
 
   @override
   String get background_story_empty =>
-      'Karakter ini misterius, belum ada cerita latar belakang...';
+      'Karakter ini sangat misterius dan belum memiliki kisah pertemuan pertama...';
 
   @override
   String followed_creator_msg(String creatorName) {

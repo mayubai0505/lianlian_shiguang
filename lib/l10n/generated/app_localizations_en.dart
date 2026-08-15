@@ -1676,11 +1676,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gallery_reset_bg => 'Restored default call background';
 
   @override
-  String get background_story_title => 'Background Story';
+  String get background_story_title => 'Initial Encounter Story';
 
   @override
   String get background_story_empty =>
-      'This character is mysterious; there\'s no background story yet...';
+      'This character is very mysterious and does not have an initial encounter story yet...';
 
   @override
   String followed_creator_msg(String creatorName) {

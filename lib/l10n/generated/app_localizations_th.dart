@@ -1676,11 +1676,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get gallery_reset_bg => 'คืนค่าพื้นหลังการโทรเริ่มต้นแล้ว';
 
   @override
-  String get background_story_title => 'เรื่องราวเบื้องหลัง';
+  String get background_story_title => 'เรื่องราวการพบกันครั้งแรก';
 
   @override
   String get background_story_empty =>
-      'ตัวละครนี้ลึกลับมาก ยังไม่มีเรื่องราวเบื้องหลังเลย...';
+      'ตัวละครนี้ดูลึกลับมาก และยังไม่มีเรื่องราวการพบกันครั้งแรก...';
 
   @override
   String followed_creator_msg(String creatorName) {

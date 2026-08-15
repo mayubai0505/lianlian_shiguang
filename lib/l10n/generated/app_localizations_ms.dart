@@ -1698,11 +1698,11 @@ class AppLocalizationsMs extends AppLocalizations {
       'Latar belakang panggilan lalai telah dipulihkan';
 
   @override
-  String get background_story_title => 'Latar Belakang Cerita';
+  String get background_story_title => 'Kisah Pertemuan Pertama';
 
   @override
   String get background_story_empty =>
-      'Watak ini sangat misteri, belum ada latar belakang cerita lagi...';
+      'Watak ini sangat misteri dan masih belum mempunyai kisah pertemuan pertama...';
 
   @override
   String followed_creator_msg(String creatorName) {

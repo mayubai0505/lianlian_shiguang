@@ -1713,11 +1713,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get gallery_reset_bg => 'Fond d\'appel par défaut restauré';
 
   @override
-  String get background_story_title => 'Histoire de fond';
+  String get background_story_title => 'Histoire de la première rencontre';
 
   @override
   String get background_story_empty =>
-      'Ce personnage est mystérieux ; il n\'y a pas encore d\'histoire de fond...';
+      'Ce personnage est très mystérieux et ne possède pas encore d’histoire de première rencontre...';
 
   @override
   String followed_creator_msg(String creatorName) {

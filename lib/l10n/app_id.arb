@@ -624,8 +624,8 @@
         }
     },
     "gallery_reset_bg": "Latar belakang panggilan default dipulihkan",
-    "background_story_title": "Cerita Latar Belakang",
-    "background_story_empty": "Karakter ini misterius, belum ada cerita latar belakang...",
+    "background_story_title": "Kisah Pertemuan Pertama",
+    "background_story_empty": "Karakter ini sangat misterius dan belum memiliki kisah pertemuan pertama...",
     "followed_creator_msg": "Telah mengikuti {creatorName} 🦋",
     "@followed_creator_msg": {
         "placeholders": {

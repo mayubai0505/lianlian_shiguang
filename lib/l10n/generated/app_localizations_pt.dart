@@ -1701,11 +1701,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get gallery_reset_bg => 'Fundo de chamada padrão restaurado';
 
   @override
-  String get background_story_title => 'História de Fundo';
+  String get background_story_title => 'História do primeiro encontro';
 
   @override
   String get background_story_empty =>
-      'Este personagem é misterioso, ainda não há uma história de fundo...';
+      'Este personagem é muito misterioso e ainda não possui uma história de primeiro encontro...';
 
   @override
   String followed_creator_msg(String creatorName) {

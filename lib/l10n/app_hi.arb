@@ -624,8 +624,8 @@
         }
     },
     "gallery_reset_bg": "डिफ़ॉल्ट कॉल बैकग्राउंड रिस्टोर किया गया",
-    "background_story_title": "बैकग्राउंड कहानी",
-    "background_story_empty": "यह पात्र रहस्यमय है, अभी तक कोई बैकग्राउंड कहानी नहीं है...",
+    "background_story_title": "पहली मुलाकात की कहानी",
+    "background_story_empty": "यह पात्र बहुत रहस्यमय है और अभी तक इसकी पहली मुलाकात की कोई कहानी नहीं है...",
     "followed_creator_msg": "{creatorName} को फॉलो किया गया 🦋",
     "@followed_creator_msg": {
         "placeholders": {

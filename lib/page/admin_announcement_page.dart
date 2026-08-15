@@ -426,10 +426,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         DocumentReference notifyRef =
             FirebaseFirestore.instance.collection('system_notifications').doc();
         batch.set(notifyRef, {
-          'title':
-              '📢 ${l10n.announcement_new}：${_titleController.text.trim()}',
-          'message': l10n.mail_notification,
+          'title': '📢 ${_titleController.text.trim()}',
+          'message': _contentController.text.trim(),
           'type': 'global_announcement',
+          'announcementId': annRef.id,
           'createdAt': FieldValue.serverTimestamp(),
         });
       }

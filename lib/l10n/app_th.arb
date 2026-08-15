@@ -624,8 +624,8 @@
         }
     },
     "gallery_reset_bg": "คืนค่าพื้นหลังการโทรเริ่มต้นแล้ว",
-    "background_story_title": "เรื่องราวเบื้องหลัง",
-    "background_story_empty": "ตัวละครนี้ลึกลับมาก ยังไม่มีเรื่องราวเบื้องหลังเลย...",
+    "background_story_title": "เรื่องราวการพบกันครั้งแรก",
+    "background_story_empty": "ตัวละครนี้ดูลึกลับมาก และยังไม่มีเรื่องราวการพบกันครั้งแรก...",
     "followed_creator_msg": "ติดตาม {creatorName} แล้ว 🦋",
     "@followed_creator_msg": {
         "placeholders": {

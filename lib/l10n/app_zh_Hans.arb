@@ -640,8 +640,8 @@
     }
   },
   "gallery_reset_bg": "已恢复默认通话背景",
-  "background_story_title": "背景故事",
-  "background_story_empty": "这个角色很神秘，还没有背景故事...",
+  "background_story_title": "初始相遇故事",
+  "background_story_empty": "这个角色很神秘，还没有初始相遇故事...",
   "followed_creator_msg": "已关注 {creatorName} 🦋",
   "@followed_creator_msg": {
     "placeholders": {

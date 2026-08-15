@@ -1621,10 +1621,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get gallery_reset_bg => 'デフォルトの通話背景に戻しました';
 
   @override
-  String get background_story_title => '背景ストーリー';
+  String get background_story_title => '最初の出会いの物語';
 
   @override
-  String get background_story_empty => 'このキャラクターは謎に包まれており、背景ストーリーはまだありません...';
+  String get background_story_empty =>
+      'このキャラクターはとても謎めいていて、まだ最初の出会いの物語がありません...';
 
   @override
   String followed_creator_msg(String creatorName) {

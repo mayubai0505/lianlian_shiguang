@@ -428,10 +428,11 @@ Future<void> setupPushNotifications() async {
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true,
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: false,
       badge: true,
-      sound: true,
+      sound: false,
     );
 
     await messaging.requestPermission(alert: true, badge: true, sound: true);

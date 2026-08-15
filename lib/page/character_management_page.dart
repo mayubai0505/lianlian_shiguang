@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/character_block_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 class CharacterManagementPage extends StatelessWidget {
@@ -78,9 +79,8 @@ class CharacterManagementPage extends StatelessWidget {
                       backgroundColor: isBlocked
                           ? colorScheme.surfaceVariant
                           : colorScheme.primaryContainer,
-                      // ✨ 完美細節：優先顯示圖片頭像
                       backgroundImage: avatarPath.isNotEmpty
-                          ? NetworkImage(avatarPath)
+                          ? CachedNetworkImageProvider(avatarPath)
                           : null,
                       child: avatarPath.isEmpty
                           ? Text(

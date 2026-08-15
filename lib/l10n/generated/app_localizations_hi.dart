@@ -1691,11 +1691,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get gallery_reset_bg => 'डिफ़ॉल्ट कॉल बैकग्राउंड रिस्टोर किया गया';
 
   @override
-  String get background_story_title => 'बैकग्राउंड कहानी';
+  String get background_story_title => 'पहली मुलाकात की कहानी';
 
   @override
   String get background_story_empty =>
-      'यह पात्र रहस्यमय है, अभी तक कोई बैकग्राउंड कहानी नहीं है...';
+      'यह पात्र बहुत रहस्यमय है और अभी तक इसकी पहली मुलाकात की कोई कहानी नहीं है...';
 
   @override
   String followed_creator_msg(String creatorName) {

@@ -1693,11 +1693,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get gallery_reset_bg => 'Đã khôi phục nền cuộc gọi mặc định';
 
   @override
-  String get background_story_title => 'Câu chuyện bối cảnh';
+  String get background_story_title => 'Câu chuyện gặp gỡ đầu tiên';
 
   @override
   String get background_story_empty =>
-      'Nhân vật này rất bí ẩn, chưa có câu chuyện bối cảnh...';
+      'Nhân vật này rất bí ẩn và vẫn chưa có câu chuyện gặp gỡ đầu tiên...';
 
   @override
   String followed_creator_msg(String creatorName) {

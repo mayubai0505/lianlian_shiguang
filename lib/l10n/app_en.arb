@@ -733,8 +733,8 @@
     }
   },
   "gallery_reset_bg": "Restored default call background",
-  "background_story_title": "Background Story",
-  "background_story_empty": "This character is mysterious; there's no background story yet...",
+  "background_story_title": "Initial Encounter Story",
+  "background_story_empty": "This character is very mysterious and does not have an initial encounter story yet...",
   "followed_creator_msg": "Followed {creatorName} 🦋",
   "@followed_creator_msg": {
     "placeholders": {

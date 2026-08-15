@@ -2906,50 +2906,72 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   // --- 懸浮儲存按鈕 (維持在最上層，不管哪個分頁都看得到) ---
                   Align(
                     alignment: Alignment.bottomCenter,
-                    child: SafeArea(
-                      top: false,
-                      child: Container(
-                        padding: const EdgeInsets.all(16.0),
-                        width: double.infinity,
-                        color: theme.scaffoldBackgroundColor.withValues(alpha: 0.95),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            elevation: 4,
-                          ),
-                          onPressed: () {
-                            debugPrint(
-                              '🟢 強制儲存按鈕被點擊：'
-                                  'isEditing=$isEditing, '
-                                  'isSaving=$_isSaving, '
-                                  'isPublic=$_isPublic',
-                            );
+                    child: Builder(
+                      builder: (context) {
+                        // 取得目前手機實際的底部安全距離
+                        final double bottomSafeArea =
+                            MediaQuery.viewPaddingOf(context).bottom;
 
-                            _saveCharacter();
-                          },
-                          child: _isSaving
-                              ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                              : Text(
-                            isEditing
-                                ? l10n.save_changes_button
-                                : l10n.createButton,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                        // 有系統導覽區就採用系統距離，
+                        // 沒有則保留基本的 10px
+                        final double adaptiveBottomPadding =
+                        bottomSafeArea > 0 ? bottomSafeArea : 10;
+
+                        return Container(
+                          width: double.infinity,
+                          color: theme.scaffoldBackgroundColor.withValues(
+                            alpha: 0.95,
+                          ),
+                          padding: EdgeInsets.fromLTRB(
+                            16, // 左
+                            10, // 上
+                            16, // 右
+                            adaptiveBottomPadding, // 下
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                elevation: 4,
+                              ),
+                              onPressed: _isSaving
+                                  ? null
+                                  : () {
+                                debugPrint(
+                                  '🟢 強制儲存按鈕被點擊：'
+                                      'isEditing=$isEditing, '
+                                      'isSaving=$_isSaving, '
+                                      'isPublic=$_isPublic',
+                                );
+
+                                _saveCharacter();
+                              },
+                              child: _isSaving
+                                  ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                                  : Text(
+                                isEditing
+                                    ? l10n.save_changes_button
+                                    : l10n.createButton,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -3153,7 +3175,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 const SizedBox(height: 16),
                 _buildBoxedTextField(
                   _likesController,
-                  l10n.charLikesLabel,
+                  l10n.player_identity_label,
                   maxLength: 200,
                 ),
                 const SizedBox(height: 16),

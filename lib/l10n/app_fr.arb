@@ -745,8 +745,8 @@
         }
     },
     "gallery_reset_bg": "Fond d'appel par défaut restauré",
-    "background_story_title": "Histoire de fond",
-    "background_story_empty": "Ce personnage est mystérieux ; il n'y a pas encore d'histoire de fond...",
+    "background_story_title": "Histoire de la première rencontre",
+    "background_story_empty": "Ce personnage est très mystérieux et ne possède pas encore d’histoire de première rencontre...",
     "followed_creator_msg": "Vous suivez maintenant {creatorName} 🦋",
     "@followed_creator_msg": {
         "placeholders": {
