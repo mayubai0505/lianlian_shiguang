@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -2501,7 +2502,9 @@ class _ProfilePageState extends State<ProfilePage>
 
                   const SizedBox(height: 10),
                   InkWell(
-                    onTap: () => Navigator.push(
+                    onTap: kIsWeb
+                        ? null
+                        : () => Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const StorePage(),
@@ -2542,12 +2545,14 @@ class _ProfilePageState extends State<ProfilePage>
                               fontSize: 14,
                             ),
                           ),
-                          const SizedBox(width: 6),
-                          Icon(
-                            Icons.add_circle_outline,
-                            size: 16,
-                            color: primaryColor.withValues(alpha: 0.7),
-                          ),
+                          if (!kIsWeb) ...[
+                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.add_circle_outline,
+                              size: 16,
+                              color: primaryColor.withValues(alpha: 0.7),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -4258,9 +4263,13 @@ class _ProfilePageState extends State<ProfilePage>
               ],
               const SizedBox(height: 8),
               InkWell(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const StorePage())
+                onTap: kIsWeb
+                    ? null
+                    : () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const StorePage(),
+                  ),
                 ),
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
@@ -4288,12 +4297,14 @@ class _ProfilePageState extends State<ProfilePage>
                           fontSize: 14,
                         ),
                       ),
-                      const SizedBox(width: 6),
-                      Icon(
+                      if (!kIsWeb) ...[
+                        const SizedBox(width: 6),
+                        Icon(
                           Icons.add_circle_outline,
                           size: 16,
-                          color: primaryColor.withValues(alpha:0.7)
-                      ),
+                          color: primaryColor.withValues(alpha: 0.7),
+                        ),
+                      ],
                     ],
                   ),
                 ),

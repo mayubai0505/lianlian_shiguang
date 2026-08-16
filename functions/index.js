@@ -761,6 +761,7 @@ exports.getAiResponse = onRequest({
                 userMessageId = "",
                 chatMode = "daily",
                 isContinue = false,
+                isRegenerate = false,
                 isBirthdayFreebie = false,
                 isTestMode = false,
                 userProfile = "未提供",
@@ -776,6 +777,20 @@ exports.getAiResponse = onRequest({
             // 角色建立頁的測試聊天室
             // 只有明確傳入 true 才視為測試模式
             const isTestChat = isTestMode === true;
+            // 新版 App 會明確傳入 isRegenerate。
+            // 舊版 App 則透過原本的固定 systemDirective 辨識。
+            const isExplicitRegenerateRequest =
+                isRegenerate === true;
+
+            const isLegacyRegenerateRequest =
+                !isExplicitRegenerateRequest &&
+                String(systemDirective || "").includes(
+                    "這是玩家要求重新生成的對話"
+                );
+
+            const isRegenerateRequest =
+                isExplicitRegenerateRequest ||
+                isLegacyRegenerateRequest;
 
             const safeUserMessageId = String(
                 userMessageId || ""
@@ -1136,7 +1151,11 @@ const cancellationRef =
 
             const config = modeConfig[chatMode] || modeConfig["daily"];
             const targetModel = config.modelId;
-            const cost = isBirthdayFreebie ? 0 : config.cost;
+            // 生日免費與重新生成都不得扣一般聊天花花。
+            const cost =
+                isBirthdayFreebie || isRegenerateRequest
+                    ? 0
+                    : config.cost;
 
             const userDoc = await userDocRef.get();
             if (!userDoc.exists) return res.status(404).json({ error: "找不到資料" });
@@ -2633,11 +2652,73 @@ systemPrompt += `
                                                                            // ==========================================
                                                                            // 🎯 字數防爆設定
                                                                            // ==========================================
+                                                                           // 狀態欄位於回覆最尾端，因此劇情／沉浸模式
+                                                                           // 必須預留足夠長度，避免正文太長時把狀態欄切掉。
                                                                            const MAX_RESPONSE_LENGTH =
-                                                                               chatMode === "immersive" ? 3000 :
-                                                                               chatMode === "story" ? 2500 :
+                                                                               chatMode === "immersive" ? 4500 :
+                                                                               chatMode === "story" ? 3500 :
                                                                                chatMode === "daily" ? 300 :
                                                                                500;
+
+                                                                               // 檢查創作者設定的狀態欄是否真的出現在回覆中。
+                                                                               function hasRequiredCustomStatus(text) {
+                                                                                   // 只有劇情與沉浸模式需要自訂狀態欄。
+                                                                                   if (
+                                                                                       !supportsCustomStatusBar ||
+                                                                                       !customOutputFormat
+                                                                                   ) {
+                                                                                       return true;
+                                                                                   }
+
+                                                                                   const normalizedText = String(text || "")
+                                                                                       .replace(/\s+/g, " ")
+                                                                                       .trim();
+
+                                                                                   // 從創作者模板擷取前幾個具有辨識度的欄位名稱。
+                                                                                   const anchors = String(customOutputFormat)
+                                                                                       .split(/\r?\n/)
+                                                                                       .map((line) => line.trim())
+                                                                                       .filter(
+                                                                                           (line) =>
+                                                                                               line &&
+                                                                                               !/^---+$/.test(line)
+                                                                                       )
+                                                                                       .map((line) => {
+                                                                                           // 優先擷取「欄位名稱：」。
+                                                                                           const fieldMatch =
+                                                                                               line.match(/^(.{1,40}?[：:])/);
+
+                                                                                           return (
+                                                                                               fieldMatch
+                                                                                                   ? fieldMatch[1]
+                                                                                                   : line.slice(0, 24)
+                                                                                           )
+                                                                                               .replace(/\{\{[^}]+\}\}/g, "")
+                                                                                               .trim();
+                                                                                       })
+                                                                                       .filter((anchor) => anchor.length >= 2)
+                                                                                       .slice(0, 4);
+
+                                                                                   if (anchors.length === 0) {
+                                                                                       const templateStart =
+                                                                                           String(customOutputFormat)
+                                                                                               .trim()
+                                                                                               .slice(0, 12);
+
+                                                                                       return normalizedText.includes(
+                                                                                           templateStart,
+                                                                                       );
+                                                                                   }
+
+                                                                                   const matchedCount = anchors.filter(
+                                                                                       (anchor) =>
+                                                                                           normalizedText.includes(anchor),
+                                                                                   ).length;
+
+                                                                                   // 至少確認兩個欄位；模板只有一個欄位時確認一個。
+                                                                                   return matchedCount >=
+                                                                                       Math.min(2, anchors.length);
+                                                                               }
 
                                                                            const SAFE_MAX_TOKENS =
                                                                                chatMode === "immersive" ? 2500 :
@@ -3021,12 +3102,26 @@ systemPrompt += `
                                                                                loopCount++;
 
                                                                                // 🚪 達標或達到最大輪數就離開
+                                                                               const hasCompleteStatus =
+                                                                                   hasRequiredCustomStatus(
+                                                                                       finalResponseText,
+                                                                                   );
+
                                                                                if (
-                                                                                   finalResponseText.length >= TARGET_LENGTH ||
+                                                                                   (
+                                                                                       finalResponseText.length >= TARGET_LENGTH &&
+                                                                                       hasCompleteStatus
+                                                                                   ) ||
                                                                                    finalResponseText.length >= MAX_RESPONSE_LENGTH ||
                                                                                    loopCount >= MAX_LOOPS
                                                                                ) {
                                                                                    break;
+                                                                               }
+
+                                                                               if (!hasCompleteStatus) {
+                                                                                   console.warn(
+                                                                                       "⚠️ 創作者自訂狀態欄缺漏，啟動完整回覆重生。",
+                                                                                   );
                                                                                }
 
                                                                                console.log(
@@ -3060,8 +3155,13 @@ systemPrompt += `
                                                                                9. 第一行必須使用系統指定的完整時間與地點格式。
                                                                                10. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
                                                                                11. 同一位玩家不得混用「你／妳」。
-                                                                               12. 若「語氣與習慣」包含創作者指定的狀態欄或固定結尾格式，必須在正文結束後完整保留。每則回覆只能生成一次正文；狀態欄開始後不得重新輸出時間地點標頭、正文、台詞或動作段落。狀態欄只能整理當前狀態，不得複製、重演或改寫本輪正文。
-                                                                               13. 只回傳合法 JSON：
+                                                                               12. 若創作者設定了狀態欄或固定結尾格式，必須在正文結束後完整保留。每則回覆只能生成一次正文；狀態欄開始後不得重新輸出時間地點標頭、正文、台詞或動作段落。狀態欄只能整理當前狀態，不得複製、重演或改寫本輪正文。
+
+                                                                               13. 本輪必須在正文最後完整輸出以下創作者狀態欄模板，不得省略任何非條件式欄位：
+
+                                                                               ${customOutputFormat}
+
+                                                                               14. 只回傳合法 JSON：
                                                                                {"response":"重新生成的完整沉浸回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞"}
                                                                                `;
                                                                                } else if (chatMode === "story") {
@@ -3086,8 +3186,13 @@ systemPrompt += `
                                                                                11. 第一行必須使用系統指定的完整時間與地點格式，不得自行增加數分鐘。
                                                                                12. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
                                                                                13. 同一位玩家不得混用「你／妳」。
-                                                                               14. 若「語氣與習慣」包含創作者指定的狀態欄或固定結尾格式，必須在正文結束後完整保留。每則回覆只能生成一次正文；狀態欄開始後不得重新輸出時間地點標頭、正文、台詞或動作段落。狀態欄只能整理當前狀態，不得複製、重演或改寫本輪正文。
-                                                                               15. 只回傳合法 JSON：
+                                                                               14. 若創作者設定了狀態欄或固定結尾格式，必須在正文結束後完整保留。每則回覆只能生成一次正文；狀態欄開始後不得重新輸出時間地點標頭、正文、台詞或動作段落。狀態欄只能整理當前狀態，不得複製、重演或改寫本輪正文。
+
+                                                                               15. 本輪必須在正文最後完整輸出以下創作者狀態欄模板，不得省略任何非條件式欄位：
+
+                                                                               ${customOutputFormat}
+
+                                                                               16. 只回傳合法 JSON：
                                                                                {"response":"重新生成的完整劇情回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞"}
                                                                                `;
                                                                                } else {

@@ -736,6 +736,24 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  String get _webPurchaseUnavailableMessage {
+    final locale = Localizations.localeOf(context);
+
+    if (locale.languageCode == 'zh') {
+      final isSimplifiedChinese =
+          locale.scriptCode == 'Hans' ||
+              locale.countryCode == 'CN' ||
+              locale.countryCode == 'SG';
+
+      return isSimplifiedChinese
+          ? '网页版目前不提供充值服务，请使用《恋恋拾光》App 购买花花或订阅。'
+          : '網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。';
+    }
+
+    return 'Purchases are currently unavailable on the web version. '
+        'Please use the LoveyDovey app to buy flowers or subscribe.';
+  }
+
   void _showSubscriptionDialog() {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -754,7 +772,8 @@ class _ChatPageState extends State<ChatPage> {
         // 在 content 裡面：
         content: Text(
           '${l10n.dailyLimitReachedPrefix}'
-          '${_hasMonthlyPass ? l10n.monthlyPassExhausted : l10n.subscribeMonthlyPassPrompt}}',
+              '${_hasMonthlyPass ? l10n.monthlyPassExhausted : l10n.subscribeMonthlyPassPrompt}'
+              '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
           style: const TextStyle(fontSize: 16),
         ),
         actions: [
@@ -763,6 +782,7 @@ class _ChatPageState extends State<ChatPage> {
             child: Text(l10n.cancelButton,
                 style: const TextStyle(color: Colors.grey)),
           ),
+          if (!kIsWeb)
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary, // 跟隨你的主題色
@@ -1992,6 +2012,8 @@ class _ChatPageState extends State<ChatPage> {
         'audioUrl': '',
         'userMessage': lastUserText,
         'chatMode': _currentMode?.name ?? 'daily',
+// 明確告訴後端這是免費重新生成，不能扣聊天花花。
+        'isRegenerate': true,
         'isBirthdayFreebie': false,
         'overrideSystemPrompt': '',
         'sessionId': _sessionId,
@@ -3253,7 +3275,8 @@ class _ChatPageState extends State<ChatPage> {
                   '${l10n.chat_points_shortage(
                     myActualFlowers.toString(),
                   )}\n\n'
-                  '${l10n.chat_points_not_enough_desc}',
+                      '${l10n.chat_points_not_enough_desc}'
+                      '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
                   style: const TextStyle(
                     fontSize: 16,
                   ),
@@ -3270,6 +3293,7 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                   ),
+                  if (!kIsWeb)
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -6878,8 +6902,11 @@ class _ChatPageState extends State<ChatPage> {
           ),
           // ✨ 替換：接上新的提示問句
           content: Text(
-              '${l10n.chat_gift_points_needed(gift['cost'].toString())}\n\n${l10n.gift_insufficient_prompt}',
-              style: const TextStyle(fontSize: 16)),
+            '${l10n.chat_gift_points_needed(gift['cost'].toString())}\n\n'
+                '${l10n.gift_insufficient_prompt}'
+                '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
+            style: const TextStyle(fontSize: 16),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
@@ -6887,6 +6914,7 @@ class _ChatPageState extends State<ChatPage> {
               child: Text(l10n.cancelButton ?? l10n.not_now,
                   style: const TextStyle(color: Colors.grey)),
             ),
+            if (!kIsWeb)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -8367,7 +8395,9 @@ class _ChatPageState extends State<ChatPage> {
 
                                   // 花花點數
                                   InkWell(
-                                    onTap: () => Navigator.push(
+                                    onTap: kIsWeb
+                                        ? null
+                                        : () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => const StorePage(),
@@ -9150,17 +9180,28 @@ class _ChatPageState extends State<ChatPage> {
                             }
 
                             // 5. 先執行重新生成
+                            // 5. 先執行重新生成，並接住成功或失敗結果
+                            final regenerateSucceeded =
                             await _regenerateAIResponse(
                               aiMessageId,
                               userMessageText,
                             );
 
-// 6. 重新生成成功後，才扣除次數
+// 重新生成失敗或被取消時，直接停止。
+// 不扣免費次數，也不扣花花。
+                            if (!regenerateSucceeded) {
+                              return;
+                            }
+
+// 6. 只有真正成功後，才扣除一次免費重新生成次數
                             final consumed = await _consumeRegenerateCount();
 
                             if (!consumed) {
                               await _loadRegenerateCount();
-                              debugPrint('⚠️ 重新生成成功，但扣除重新生成次數失敗');
+
+                              debugPrint(
+                                '⚠️ 重新生成成功，但扣除重新生成次數失敗',
+                              );
                             }
                           } catch (e, stackTrace) {
                             debugPrint('❌ 重新生成按鈕流程失敗：$e');
