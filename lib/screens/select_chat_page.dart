@@ -18,6 +18,7 @@ import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import '../services/character_report_service.dart';
 import '../services/character_block_service.dart';
 import 'dart:async';
+import 'qixi_event_page.dart';
 
 // 邂逅頁面
 class SelectChatPage extends StatefulWidget {
@@ -1105,78 +1106,100 @@ class _LatestTabState extends State<_LatestTab> {
     final theme = Theme.of(context);
     final bool isActive = _isQixiEventActive;
 
-    return Container(
-      height: useDesktopLayout ? 76 : 68,
-      padding: EdgeInsets.symmetric(
-        horizontal: useDesktopLayout ? 20 : 15,
-      ),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFFFFE4EE),
-            Color(0xFFEDE3FF),
-          ],
-        ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const QixiEventPage(),
+            ),
+          );
+        },
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFE8B8D0).withValues(alpha: 0.65),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFB989AD).withValues(alpha: 0.12),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+        child: Container(
+          height: useDesktopLayout ? 76 : 68,
+          padding: EdgeInsets.symmetric(
+            horizontal: useDesktopLayout ? 20 : 15,
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: useDesktopLayout ? 44 : 38,
-            height: useDesktopLayout ? 44 : 38,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.78),
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: Text('💗', style: TextStyle(fontSize: 20)),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '戀戀七夕・與你共赴鵲橋',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: const Color(0xFF6D3F62),
-                    fontSize: useDesktopLayout ? 16 : 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  isActive ? '限時三天・8/20 截止' : '8/18 限定開啟',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: const Color(0xFF765E72).withValues(alpha: 0.88),
-                    fontSize: useDesktopLayout ? 13 : 11,
-                  ),
-                ),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFFFFE4EE),
+                Color(0xFFEDE3FF),
               ],
             ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFE8B8D0).withValues(alpha: 0.65),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFB989AD).withValues(alpha: 0.12),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          Icon(
-            Icons.auto_awesome_rounded,
-            size: useDesktopLayout ? 24 : 20,
-            color: theme.colorScheme.primary.withValues(alpha: 0.72),
+          child: Row(
+            children: [
+              Container(
+                width: useDesktopLayout ? 44 : 38,
+                height: useDesktopLayout ? 44 : 38,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.78),
+                  shape: BoxShape.circle,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Image.asset(
+                    'assets/images/love.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.favorite_rounded,
+                        color: Color(0xFFE889AD),
+                        size: 22,
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '戀戀七夕・與你共赴鵲橋',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: const Color(0xFF6D3F62),
+                        fontSize: useDesktopLayout ? 16 : 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      isActive
+                          ? '限時三天・8/21 23:59 截止'
+                          : '8/19 限定開啟',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: const Color(0xFF765E72)
+                            .withValues(alpha: 0.88),
+                        fontSize: useDesktopLayout ? 13 : 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

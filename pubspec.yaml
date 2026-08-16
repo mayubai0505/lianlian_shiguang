@@ -103,6 +103,8 @@ flutter:
     - assets/images/tree_blooming.png
     - assets/images/tree_full_flower.png
     - assets/images/tree_star.png
+    - assets/images/love.png
+    - assets/images/qixi_chat_badge.png
   fonts:
     - family: NotoSansTC
       fonts:
