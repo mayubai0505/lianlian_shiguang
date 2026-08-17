@@ -105,6 +105,8 @@ flutter:
     - assets/images/tree_star.png
     - assets/images/love.png
     - assets/images/qixi_chat_badge.png
+    - assets/images/qixi_progress_off.png
+    - assets/images/qixi_progress_on.png
   fonts:
     - family: NotoSansTC
       fonts:

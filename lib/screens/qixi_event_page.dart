@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../services/app_constants.dart';
-import '../services/toast_utils.dart';
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 
 class QixiEventPage extends StatefulWidget {
   const QixiEventPage({super.key});
@@ -14,12 +14,13 @@ class QixiEventPage extends StatefulWidget {
 
 class _QixiEventPageState extends State<QixiEventPage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final Map<
-      String,
-      Future<DocumentSnapshot<Map<String, dynamic>>>>
-  _characterFutureCache = {};
-  static final DateTime _eventStart = DateTime(2026, 8, 19);
-  static final DateTime _eventEnd = DateTime(2026, 8, 22);
+  final Map<String, Future<DocumentSnapshot<Map<String, dynamic>>>>
+      _characterFutureCache = {};
+  // 台灣時間：2026/8/19 00:00～2026/8/26 23:59。
+  static final DateTime _eventStartUtc = DateTime.utc(2026, 8, 18, 16);
+
+  static final DateTime _eventEndUtc = DateTime.utc(2026, 8, 26, 16);
+
   OverlayEntry? _pageToastEntry;
   Timer? _pageToastTimer;
   final Set<String> _savedCharacterIds = {};
@@ -30,15 +31,31 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
   String? get _userId => FirebaseAuth.instance.currentUser?.uid;
 
-  bool get _isEventActive => true;
+  bool get _isEventActive {
+    // Debug 測試版可以提前進入活動；
+    // 正式發布版仍依照活動時間判斷。
+    if (kDebugMode) return true;
 
-  bool get _isBeforeEvent => DateTime.now().isBefore(_eventStart);
+    final nowUtc = DateTime.now().toUtc();
+
+    return !nowUtc.isBefore(_eventStartUtc) &&
+        nowUtc.isBefore(_eventEndUtc);
+  }
+
+  bool get _isBeforeEvent {
+    if (kDebugMode) return false;
+
+    return DateTime.now()
+        .toUtc()
+        .isBefore(_eventStartUtc);
+  }
   String _qixiSessionId(
-      String userId,
-      String characterId,
-      ) {
+    String userId,
+    String characterId,
+  ) {
     return 'qixi_2026_${userId}_$characterId';
   }
+
   int get _selectedCount =>
       _savedCharacterIds.length + _pendingCharacterIds.length;
 
@@ -65,10 +82,10 @@ class _QixiEventPageState extends State<QixiEventPage> {
   }
 
   void _showPageToast(
-      String message, {
-        bool isError = false,
-        IconData? icon,
-      }) {
+    String message, {
+    bool isError = false,
+    IconData? icon,
+  }) {
     if (!mounted) return;
 
     _removePageToast();
@@ -100,7 +117,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
                       color: isError
                           ? const Color(0xFF4A2634)
                           : theme.colorScheme.inverseSurface
-                          .withValues(alpha: 0.94),
+                              .withValues(alpha: 0.94),
                       borderRadius: BorderRadius.circular(18),
                       boxShadow: [
                         BoxShadow(
@@ -201,8 +218,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
   }
 
   void _toggleCharacter(String characterId) {
-    if (!_isEventActive ||
-        _savedCharacterIds.contains(characterId)) {
+    if (!_isEventActive || _savedCharacterIds.contains(characterId)) {
       return;
     }
 
@@ -261,7 +277,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
       // 先讀取待選角色的正式資料。
       final characterSnapshots = await Future.wait(
         _pendingCharacterIds.map(
-              (characterId) => _db
+          (characterId) => _db
               .collection('artifacts')
               .doc(AppConfig.appId)
               .collection('public_characters')
@@ -275,8 +291,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
       for (final snapshot in characterSnapshots) {
         if (!snapshot.exists) continue;
 
-        characterDataMap[snapshot.id] =
-            snapshot.data() ?? <String, dynamic>{};
+        characterDataMap[snapshot.id] = snapshot.data() ?? <String, dynamic>{};
       }
 
       final pendingIds = _pendingCharacterIds.toList();
@@ -285,6 +300,9 @@ class _QixiEventPageState extends State<QixiEventPage> {
           .collection('artifacts')
           .doc(AppConfig.appId)
           .collection('chat_sessions');
+
+      final userCharactersRef =
+          _db.collection('users').doc(userId).collection('characters');
 
       List<String> acceptedIds = [];
 
@@ -310,6 +328,23 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
         if (acceptedIds.isEmpty) return;
 
+        if (acceptedIds.isEmpty) return;
+
+// Firestore Transaction 規定所有讀取必須先於寫入。
+// 讀取玩家與各角色目前保存的全域最高好感度。
+        final Map<String, int> globalAffectionMap = {};
+
+        for (final characterId in acceptedIds) {
+          final affectionSnapshot = await transaction.get(
+            userCharactersRef.doc(characterId),
+          );
+
+          final affectionValue = affectionSnapshot.data()?['affection'];
+
+          globalAffectionMap[characterId] =
+              affectionValue is num ? affectionValue.toInt() : 0;
+        }
+
         final updatedIds = <String>{
           ...existingIds,
           ...acceptedIds,
@@ -321,9 +356,9 @@ class _QixiEventPageState extends State<QixiEventPage> {
             'eventId': 'qixi_2026',
             'selectedCharacterIds': updatedIds,
             'completedCharacterIds':
-            eventData?['completedCharacterIds'] ?? <String>[],
+                eventData?['completedCharacterIds'] ?? <String>[],
             'rewardedCharacterIds':
-            eventData?['rewardedCharacterIds'] ?? <String>[],
+                eventData?['rewardedCharacterIds'] ?? <String>[],
             'updatedAt': FieldValue.serverTimestamp(),
             if (!eventSnapshot.exists)
               'createdAt': FieldValue.serverTimestamp(),
@@ -339,12 +374,29 @@ class _QixiEventPageState extends State<QixiEventPage> {
               characterDataMap[characterId] ?? <String, dynamic>{};
 
           final characterName =
-              (characterData['name'] as String?)?.trim() ??
-                  '神秘角色';
+              (characterData['name'] as String?)?.trim() ?? '神秘角色';
 
           final characterAvatarPath =
-              (characterData['avatarPath'] as String?)?.trim() ??
-                  '';
+              (characterData['avatarPath'] as String?)?.trim() ?? '';
+
+          final globalAffection = globalAffectionMap[characterId] ?? 0;
+
+          final openingStory = '''
+（七夕將近，沉睡在夜色深處的星河悄然甦醒。散落的星光沿著天際緩緩匯聚，像是在等待兩個願意赴約的人，寫下彼此的名字。）
+
+（傳說，鵲橋只會為真正想要相見的人亮起。當你與「$characterName」的名字同時出現在星河之上，一道微光穿過夜幕，落進這間只屬於你們的聊天室。）
+
+（從此刻起，你們擁有了一場「七夕三日之約」。不必連續，也不必刻意準備盛大的告白；只要在活動期間，選擇三個不同的日子回到這裡，與對方分享一句問候、一段心情，或一件今天發生的小事。）
+
+（每一次成功相遇，都會讓鵲橋上的一點星光亮起。當三日星光全部點亮，這些散落在對話裡的心意與回憶，將在第三個完成日結束後，化為一封只寫給你的七夕限定信件。）
+
+（此刻，第一縷星光已經落下。鵲橋的另一端，「$characterName」似乎也收到了這場約定。）
+
+——七夕三日之約，現在開始。
+''';
+
+          final openingStoryRef =
+              roomRef.collection('messages').doc('qixi_opening_story');
 
           transaction.set(
             roomRef,
@@ -356,7 +408,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
               // 聊天室基本資料。
               'chatMode': 'daily',
-              'friendshipScore': 0,
+              'friendshipScore': globalAffection,
               'createdAt': FieldValue.serverTimestamp(),
               'lastMessage': '七夕三日之約已開啟',
               'lastActivity': FieldValue.serverTimestamp(),
@@ -367,11 +419,24 @@ class _QixiEventPageState extends State<QixiEventPage> {
               'eventId': 'qixi_2026',
               'qixiYear': 2026,
               'qixiPinnedUntil': Timestamp.fromDate(
-                DateTime(2026, 8, 22),
+                DateTime.utc(2026, 8, 26, 16),
               ),
               'qixiInteractionDates': <String>[],
               'qixiLetterSent': false,
               'updatedAt': FieldValue.serverTimestamp(),
+            },
+          );
+          transaction.set(
+            openingStoryRef,
+            {
+              'sender': 'system',
+              'text': openingStory,
+              'type': 'text',
+              'path': '',
+              'timestamp': FieldValue.serverTimestamp(),
+              'orderIndex': 0,
+              'isQixiOpeningStory': true,
+              'eventId': 'qixi_2026',
             },
           );
         }
@@ -418,8 +483,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
   }
 
   Widget _buildAvatar(String avatarPath) {
-    if (avatarPath.startsWith('http://') ||
-        avatarPath.startsWith('https://')) {
+    if (avatarPath.startsWith('http://') || avatarPath.startsWith('https://')) {
       return Image.network(
         avatarPath,
         width: 54,
@@ -454,7 +518,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
       statusText = '活動將於 8/19 00:00 開始';
       statusIcon = Icons.schedule_rounded;
     } else if (_isEventActive) {
-      statusText = '活動進行中・8/21 23:59 截止';
+      statusText = '活動進行中・8/26 23:59 截止';
       statusIcon = Icons.auto_awesome_rounded;
     } else {
       statusText = '本次七夕活動已結束';
@@ -542,9 +606,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isSelected
-                ? const Color(0xFFFFEDF4)
-                : theme.cardColor,
+            color: isSelected ? const Color(0xFFFFEDF4) : theme.cardColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected
@@ -585,9 +647,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
                   isPending
                       ? Icons.check_circle_rounded
                       : Icons.radio_button_unchecked_rounded,
-                  color: isPending
-                      ? const Color(0xFFE56F9F)
-                      : Colors.grey,
+                  color: isPending ? const Color(0xFFE56F9F) : Colors.grey,
                 ),
             ],
           ),
@@ -675,8 +735,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
             final characterId =
                 (friendData['characterId'] as String?) ?? friendDoc.id;
 
-            final savedName =
-                (friendData['name'] as String?)?.trim() ?? '';
+            final savedName = (friendData['name'] as String?)?.trim() ?? '';
 
             final savedAvatarPath =
                 (friendData['avatarPath'] as String?)?.trim() ?? '';
@@ -694,7 +753,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
             return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
               future: _characterFutureCache.putIfAbsent(
                 characterId,
-                    () => _db
+                () => _db
                     .collection('artifacts')
                     .doc(AppConfig.appId)
                     .collection('public_characters')
@@ -760,71 +819,90 @@ class _QixiEventPageState extends State<QixiEventPage> {
       body: _isLoadingProgress
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(18, 16, 18, 36),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildStatusCard(theme),
-              const SizedBox(height: 22),
-              Text(
-                '選擇同行角色（$_selectedCount/3）',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                '最多可選擇 3 位已添加好友的角色；選定後不可更換。',
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.65),
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 15),
-              _buildFriendList(),
-              const SizedBox(height: 24),
-              if (_isEventActive)
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed:
-                    _isSaving ||
-                        _pendingCharacterIds.isEmpty
-                        ? null
-                        : _confirmSelection,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      const Color(0xFFE56F9F),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(26),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 36),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildStatusCard(theme),
+                    const SizedBox(height: 14),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            theme.colorScheme.primary.withValues(alpha: 0.07),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        '活動期間任選 3 個不同日期，在七夕限定聊天室傳送訊息並成功收到角色回覆，即可點亮三日星光。限定信件將於第三個完成日結束後寄出。活動日期與每日進度均以台灣時間（UTC+8）為準。',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.72),
+                          fontSize: 12,
+                          height: 1.55,
+                        ),
                       ),
                     ),
-                    child: _isSaving
-                        ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: Colors.white,
-                      ),
-                    )
-                        : const Text(
-                      '確認同行角色',
-                      style: TextStyle(
-                        fontSize: 16,
+                    const SizedBox(height: 22),
+                    Text(
+                      '選擇同行角色（$_selectedCount/3）',
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '最多可選擇 3 位已添加好友的角色；選定後不可更換。',
+                      style: TextStyle(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    _buildFriendList(),
+                    const SizedBox(height: 24),
+                    if (_isEventActive)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: _isSaving || _pendingCharacterIds.isEmpty
+                              ? null
+                              : _confirmSelection,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE56F9F),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(26),
+                            ),
+                          ),
+                          child: _isSaving
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  '確認同行角色',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                      ),
+                  ],
                 ),
-            ],
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 }

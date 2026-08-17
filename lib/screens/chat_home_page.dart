@@ -835,7 +835,53 @@ class _ChatHomePageState extends State<ChatHomePage> {
                           );
                         }
 
-                        final sessionDocs = snapshot.data!.docs;
+                        final sessionDocs =
+                        List<QueryDocumentSnapshot>.from(snapshot.data!.docs);
+
+// 七夕聊天室在 qixiPinnedUntil 前置頂；
+// 同一區域內仍依最後活動時間排序。
+                        sessionDocs.sort((a, b) {
+                          final aData = a.data() as Map<String, dynamic>;
+                          final bData = b.data() as Map<String, dynamic>;
+
+                          final now = DateTime.now();
+
+                          final aPinnedUntil =
+                          aData['qixiPinnedUntil'] as Timestamp?;
+                          final bPinnedUntil =
+                          bData['qixiPinnedUntil'] as Timestamp?;
+
+                          final bool aIsQixiPinned =
+                              aData['isQixiRoom'] == true &&
+                                  aPinnedUntil != null &&
+                                  now.isBefore(aPinnedUntil.toDate());
+
+                          final bool bIsQixiPinned =
+                              bData['isQixiRoom'] == true &&
+                                  bPinnedUntil != null &&
+                                  now.isBefore(bPinnedUntil.toDate());
+
+                          // 其中一個是活動中的七夕房間時，七夕房間排前面。
+                          if (aIsQixiPinned != bIsQixiPinned) {
+                            return aIsQixiPinned ? -1 : 1;
+                          }
+
+                          // 同為七夕房間或同為普通房間時，
+                          // 再依原本的最後活動時間排序。
+                          final aLastActivity =
+                          aData['lastActivity'] as Timestamp?;
+                          final bLastActivity =
+                          bData['lastActivity'] as Timestamp?;
+
+                          if (aLastActivity == null && bLastActivity == null) {
+                            return 0;
+                          }
+
+                          if (aLastActivity == null) return 1;
+                          if (bLastActivity == null) return -1;
+
+                          return bLastActivity.compareTo(aLastActivity);
+                        });
 
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           if (!mounted) return;
@@ -857,6 +903,8 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                 final chatMode = sessionData['chatMode'] ?? 'daily';
                                 final unreadCount = sessionData['unreadCount'] ?? 0;
                                 final avatarUrl = sessionData['characterAvatarPath'] as String? ?? '';
+                                final bool isQixiRoom =
+                                    sessionData['isQixiRoom'] == true;
 
                                 return Container(
                                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -931,6 +979,23 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
+                                          if (isQixiRoom) ...[
+                                            const SizedBox(width: 5),
+                                            Image.asset(
+                                              'assets/images/qixi_chat_badge.png',
+                                              width: 23,
+                                              height: 23,
+                                              fit: BoxFit.contain,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return const Icon(
+                                                  Icons.favorite_rounded,
+                                                  size: 18,
+                                                  color: Color(0xFFE889AD),
+                                                );
+                                              },
+                                            ),
+                                            const SizedBox(width: 6),
+                                          ],
                                           Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(

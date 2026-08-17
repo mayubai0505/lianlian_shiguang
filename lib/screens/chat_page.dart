@@ -128,6 +128,13 @@ class _ChatPageState extends State<ChatPage> {
   Map<String, dynamic>? _roomConfig;
   bool _isMonthlyPassActive = false;
   bool _isBirthdayFreeToday = false;
+  // 七夕限定聊天室
+  bool _isQixiRoom = false;
+  bool _isQixiProgressExpanded = false;
+  List<String> _qixiInteractionDates = [];
+  bool _isGeneratingQixiOpening = false;
+  bool _hasRequestedQixiOpeningThisVisit = false;
+  bool _qixiLetterSent = false;
   final Map<String, String> _imageUrlCache = {};
   bool _isInputFocused = false;
   bool _isLoadingRoom = true;
@@ -168,6 +175,7 @@ class _ChatPageState extends State<ChatPage> {
   CollectionReference? _messagesCollection;
   late Character _currentCharacter;
   StreamSubscription? _recorderSub;
+  StreamSubscription? _qixiProgressSubscription;
   bool _isRecordingVoice = false;
   bool _isPreviewPlaying = false;
   String? _recordingFilePath;
@@ -234,6 +242,228 @@ class _ChatPageState extends State<ChatPage> {
     return safePoints.toString();
   }
 
+  Widget _buildQixiProgressCard(ThemeData theme) {
+    final int completedCount = _qixiInteractionDates.length.clamp(0, 3);
+
+    final taipeiNow = DateTime.now().toUtc().add(const Duration(hours: 8));
+
+    final todayKey = DateFormat('yyyy-MM-dd').format(taipeiNow);
+
+    final bool todayCompleted = _qixiInteractionDates.contains(todayKey);
+
+    String progressMessage;
+
+    if (_qixiLetterSent) {
+      progressMessage = '限定信件已寄出 💌';
+    } else if (completedCount >= 3) {
+      progressMessage = '三日星光已點亮・今夜過後寄出信件';
+    } else if (todayCompleted) {
+      progressMessage = '今日星光已點亮';
+    } else {
+      progressMessage = '今日尚未完成';
+    }
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 10,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFFFFEDF4).withValues(alpha: 0.96),
+            const Color(0xFFF0E9FF).withValues(alpha: 0.96),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: const Color(0xFFE5B8D0).withValues(alpha: 0.65),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFAF7E9E).withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 點這一列即可展開或收合
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isQixiProgressExpanded = !_isQixiProgressExpanded;
+              });
+            },
+            borderRadius: BorderRadius.circular(14),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 2,
+              ),
+              child: Row(
+                children: [
+                  Image.asset(
+                    'assets/images/qixi_chat_badge.png',
+                    width: 28,
+                    height: 28,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.favorite_rounded,
+                        size: 24,
+                        color: Color(0xFFE87AA5),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      '戀戀七夕・三日之約',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Color(0xFF68425F),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '星光 $completedCount/3',
+                    style: const TextStyle(
+                      color: Color(0xFF9B4269),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  AnimatedRotation(
+                    turns: _isQixiProgressExpanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 250),
+                    child: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 22,
+                      color: Color(0xFF806779),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 展開內容
+          AnimatedSize(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            child: _isQixiProgressExpanded
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 8),
+                      const Text(
+                        '任選三日完成聊天，即可點亮星光。限定信件將於第三日結束後寄出；每日進度以台灣時間（UTC+8）計算。',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF806779),
+                          fontSize: 11,
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: todayCompleted || completedCount >= 3
+                              ? const Color(0xFFFFD6E5)
+                              : const Color(0xFFE4DDEA),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          progressMessage,
+                          style: TextStyle(
+                            color: todayCompleted || completedCount >= 3
+                                ? const Color(0xFF9B4269)
+                                : const Color(0xFF766B78),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 9),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(3, (index) {
+                          final bool isCompleted = index < completedCount;
+
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AnimatedSwitcher(
+                                duration: const Duration(
+                                  milliseconds: 300,
+                                ),
+                                child: Image.asset(
+                                  isCompleted
+                                      ? 'assets/images/qixi_progress_on.png'
+                                      : 'assets/images/qixi_progress_off.png',
+                                  key: ValueKey(
+                                    'qixi_${index}_$isCompleted',
+                                  ),
+                                  width: 46,
+                                  height: 46,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (
+                                    context,
+                                    error,
+                                    stackTrace,
+                                  ) {
+                                    return Icon(
+                                      isCompleted
+                                          ? Icons.favorite_rounded
+                                          : Icons.favorite_border_rounded,
+                                      size: 32,
+                                      color: isCompleted
+                                          ? const Color(0xFFE87AA5)
+                                          : const Color(0xFF9A8EA2),
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 1),
+                              Text(
+                                '第 ${index + 1} 日',
+                                style: TextStyle(
+                                  color: isCompleted
+                                      ? const Color(0xFF9B4269)
+                                      : const Color(0xFF817684),
+                                  fontSize: 10,
+                                  fontWeight: isCompleted
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ✨ 總裁級專屬：動態人設字串產生器
   String _buildDynamicUserProfileString() {
     // 防呆機制：如果沒有讀到，給個最基本的預設值
@@ -268,7 +498,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     _testSessionId =
-    'TEST_${FirebaseAuth.instance.currentUser?.uid ?? 'anonymous'}_'
+        'TEST_${FirebaseAuth.instance.currentUser?.uid ?? 'anonymous'}_'
         '${widget.character.id}_'
         '${DateTime.now().millisecondsSinceEpoch}';
 
@@ -301,28 +531,26 @@ class _ChatPageState extends State<ChatPage> {
 
       final DateTime now = DateTime.now();
 
-      final String initialStory =
-      (_currentCharacter.initialStory ?? '')
+      final String initialStory = (_currentCharacter.initialStory ?? '')
           .replaceAll(
-        '{{玩家名字}}',
-        _playerNickname,
-      )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
           .replaceAll(
-        '(玩家名字)',
-        _playerNickname,
-      )
+            '(玩家名字)',
+            _playerNickname,
+          )
           .trim();
 
-      final String firstLine =
-      (_currentCharacter.firstLine ?? '')
+      final String firstLine = (_currentCharacter.firstLine ?? '')
           .replaceAll(
-        '{{玩家名字}}',
-        _playerNickname,
-      )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
           .replaceAll(
-        '(玩家名字)',
-        _playerNickname,
-      )
+            '(玩家名字)',
+            _playerNickname,
+          )
           .trim();
 
       // 訊息列表採用「最新在前」的順序：
@@ -420,6 +648,7 @@ class _ChatPageState extends State<ChatPage> {
     );
     _focusNode.dispose();
     _pointsSubscription?.cancel();
+    _qixiProgressSubscription?.cancel();
     _audioPlayer.dispose();
     _triggerStorySummary(); //劇情摘要
     super.dispose();
@@ -479,15 +708,11 @@ class _ChatPageState extends State<ChatPage> {
 
     final String sessionId = widget.sessionId!.trim();
 
-    final roomRef = FirebaseFirestore.instance
-        .collection('rooms')
-        .doc(sessionId)
-        .get();
+    final roomRef =
+        FirebaseFirestore.instance.collection('rooms').doc(sessionId).get();
 
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+    final userRef =
+        FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
     final results = await Future.wait([
       roomRef,
@@ -503,11 +728,9 @@ class _ChatPageState extends State<ChatPage> {
       _roomConfig = roomDoc.data();
 
       final userData = userDoc.data() as Map<String, dynamic>?;
-      final endDateStr =
-      userData?['monthlySubEndDate'] as String?;
+      final endDateStr = userData?['monthlySubEndDate'] as String?;
 
-      _isMonthlyPassActive =
-          _calculateIsActive(endDateStr);
+      _isMonthlyPassActive = _calculateIsActive(endDateStr);
 
       _isLoadingRoom = false;
     });
@@ -740,10 +963,9 @@ class _ChatPageState extends State<ChatPage> {
     final locale = Localizations.localeOf(context);
 
     if (locale.languageCode == 'zh') {
-      final isSimplifiedChinese =
-          locale.scriptCode == 'Hans' ||
-              locale.countryCode == 'CN' ||
-              locale.countryCode == 'SG';
+      final isSimplifiedChinese = locale.scriptCode == 'Hans' ||
+          locale.countryCode == 'CN' ||
+          locale.countryCode == 'SG';
 
       return isSimplifiedChinese
           ? '网页版目前不提供充值服务，请使用《恋恋拾光》App 购买花花或订阅。'
@@ -772,8 +994,8 @@ class _ChatPageState extends State<ChatPage> {
         // 在 content 裡面：
         content: Text(
           '${l10n.dailyLimitReachedPrefix}'
-              '${_hasMonthlyPass ? l10n.monthlyPassExhausted : l10n.subscribeMonthlyPassPrompt}'
-              '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
+          '${_hasMonthlyPass ? l10n.monthlyPassExhausted : l10n.subscribeMonthlyPassPrompt}'
+          '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
           style: const TextStyle(fontSize: 16),
         ),
         actions: [
@@ -783,25 +1005,25 @@ class _ChatPageState extends State<ChatPage> {
                 style: const TextStyle(color: Colors.grey)),
           ),
           if (!kIsWeb)
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary, // 跟隨你的主題色
-                foregroundColor: Colors.white,
-                shape: const StadiumBorder(),
-              ),
-              onPressed: () {
-                // 1. 關掉警告視窗
-                Navigator.pop(context);
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary, // 跟隨你的主題色
+                  foregroundColor: Colors.white,
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: () {
+                  // 1. 關掉警告視窗
+                  Navigator.pop(context);
 
-                // 2. 飛向商城
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const StorePage(),
-                  ),
-                );
-              },
-              child: Text(l10n.goToSubscribeButton)),
+                  // 2. 飛向商城
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StorePage(),
+                    ),
+                  );
+                },
+                child: Text(l10n.goToSubscribeButton)),
         ],
       ),
     );
@@ -1054,6 +1276,104 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  void _listenToQixiProgress(
+    DocumentReference sessionDocRef,
+  ) {
+    _qixiProgressSubscription?.cancel();
+
+    _qixiProgressSubscription = sessionDocRef.snapshots().listen((snapshot) {
+      if (!mounted || !snapshot.exists) return;
+
+      final data = snapshot.data() as Map<String, dynamic>?;
+
+      if (data == null || data['isQixiRoom'] != true) {
+        return;
+      }
+
+      final interactionDates =
+          (data['qixiInteractionDates'] as List<dynamic>? ?? const <dynamic>[])
+              .map((date) => date.toString())
+              .where((date) => date.trim().isNotEmpty)
+              .toSet()
+              .toList()
+            ..sort();
+
+      final letterSent = data['qixiLetterSent'] == true;
+
+      setState(() {
+        _isQixiRoom = true;
+        _qixiInteractionDates = interactionDates;
+        _qixiLetterSent = letterSent;
+      });
+    });
+  }
+
+  Future<void> _triggerQixiOpeningIfNeeded(
+    Map<String, dynamic> sessionData,
+  ) async {
+    if (widget.isTestMode ||
+        sessionData['isQixiRoom'] != true ||
+        sessionData['eventId'] != 'qixi_2026' ||
+        sessionData['qixiOpeningGenerated'] == true ||
+        _isGeneratingQixiOpening ||
+        _hasRequestedQixiOpeningThisVisit ||
+        _sessionId == null) {
+      return;
+    }
+
+    final roomLockKey = _sessionId ?? widget.sessionId ?? widget.character.id;
+
+    if (_isGenerating || generatingRooms.contains(roomLockKey)) {
+      return;
+    }
+
+    _isGeneratingQixiOpening = true;
+    _hasRequestedQixiOpeningThisVisit = true;
+
+    final clientRequestId = _createAiRequestId();
+
+    _activeAiRequestId = clientRequestId;
+
+    generatingRooms.add(roomLockKey);
+
+    if (mounted) {
+      setState(() {
+        _isGenerating = true;
+        _isLoading = false;
+
+        // 七夕免費開場不是玩家互動，
+        // 不得觸發每日星光判斷。
+        _waitingForNewAiReply = false;
+      });
+    }
+
+    try {
+      await _executeMessageSending(
+        userText: '',
+        clientRequestId: clientRequestId,
+        showInChat: false,
+        isContinue: false,
+        userMessageAlreadySaved: false,
+        isQixiOpening: true,
+      );
+    } catch (e, stackTrace) {
+      debugPrint(
+        '🌙 七夕首次赴約生成失敗：$e',
+      );
+      debugPrint('$stackTrace');
+    } finally {
+      _isGeneratingQixiOpening = false;
+      generatingRooms.remove(roomLockKey);
+
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   Future<void> _loadExistingChat(String sessionId) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -1072,6 +1392,18 @@ class _ChatPageState extends State<ChatPage> {
       // ✨ 如果房間存在，正常讀取
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
+        final bool isQixiRoom = data['isQixiRoom'] == true;
+
+        final List<String> qixiInteractionDates = (data['qixiInteractionDates']
+                    as List<dynamic>? ??
+                const <dynamic>[])
+            .map((date) => date.toString())
+            .where((date) => date.trim().isNotEmpty)
+            .toSet()
+            .toList()
+          ..sort();
+
+        final bool qixiLetterSent = data['qixiLetterSent'] == true;
         int initialFriendship = data['friendshipScore'] ?? 0;
         final modeName = data['chatMode'] ?? 'daily';
         _currentMode = ChatMode.values.firstWhere((e) => e.name == modeName,
@@ -1079,6 +1411,7 @@ class _ChatPageState extends State<ChatPage> {
 
         _sessionDocRef = sessionDocRef;
         _messagesCollection = sessionDocRef.collection('messages'); // 這裡確保賦值
+        _listenToQixiProgress(sessionDocRef);
 
         await sessionDocRef.update({'unreadCount': 0});
 
@@ -1089,8 +1422,24 @@ class _ChatPageState extends State<ChatPage> {
               _currentFriendship = initialFriendship;
               _currentStoryTime = data['lastStoryTime'];
               _currentStoryLocation = data['lastStoryLocation'];
+
+// 七夕房間狀態
+              _isQixiRoom = isQixiRoom;
+              _qixiInteractionDates = qixiInteractionDates;
+              _qixiLetterSent = qixiLetterSent;
+
               _isLoading = false;
             });
+        }
+        if (data['isQixiRoom'] == true &&
+            data['qixiOpeningGenerated'] != true) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+
+            unawaited(
+              _triggerQixiOpeningIfNeeded(data),
+            );
+          });
         }
       }
       // ✨ 只有一個 else！如果房間不存在，自動原地建房
@@ -1110,6 +1459,7 @@ class _ChatPageState extends State<ChatPage> {
         // 2. 乖乖把管線接好，絕對不讓 _messagesCollection 變成 Null！
         _sessionDocRef = sessionDocRef;
         _messagesCollection = sessionDocRef.collection('messages');
+        _listenToQixiProgress(sessionDocRef);
 
         if (mounted) {
           if (mounted)
@@ -1355,10 +1705,10 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _showCenterToast(
-      String message, {
-        bool isError = false,
-        IconData? customIcon,
-      }) {
+    String message, {
+    bool isError = false,
+    IconData? customIcon,
+  }) {
     if (!mounted) return;
 
     showDialog<void>(
@@ -1369,7 +1719,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (dialogContext) {
         Future.delayed(
           const Duration(milliseconds: 1500),
-              () {
+          () {
             if (!dialogContext.mounted) return;
 
             Navigator.of(
@@ -1398,9 +1748,7 @@ class _ChatPageState extends State<ChatPage> {
                           (isError
                               ? Icons.error_outline
                               : Icons.check_circle_outline),
-                      color: isError
-                          ? Colors.redAccent
-                          : Colors.white,
+                      color: isError ? Colors.redAccent : Colors.white,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -1836,9 +2184,9 @@ class _ChatPageState extends State<ChatPage> {
 
   // ✨ VIP 無痕重新生成通道
   Future<bool> _regenerateAIResponse(
-      String aiMessageId,
-      String lastUserText,
-      ) async {
+    String aiMessageId,
+    String lastUserText,
+  ) async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser == null || _isGenerating || _sessionId == null) {
@@ -1867,9 +2215,9 @@ class _ChatPageState extends State<ChatPage> {
       if (_messagesCollection != null) {
         final historySnapshot = await _messagesCollection!
             .orderBy(
-          'timestamp',
-          descending: true,
-        )
+              'timestamp',
+              descending: true,
+            )
             .limit(16)
             .get()
             .timeout(
@@ -1887,13 +2235,11 @@ class _ChatPageState extends State<ChatPage> {
             continue;
           }
 
-
           final data = doc.data() as Map<String, dynamic>;
 
           final sender = data['sender']?.toString();
 
-          final text =
-              data['text']?.toString().trim() ?? '';
+          final text = data['text']?.toString().trim() ?? '';
 
           final imageDescription =
               data['imageDescription']?.toString().trim() ?? '';
@@ -1906,8 +2252,7 @@ class _ChatPageState extends State<ChatPage> {
             String historyText = text;
 
             if (sender == 'user' && imageDescription.isNotEmpty) {
-              final imageContext =
-                  '[玩家曾傳來一張圖片，圖片內容如下：$imageDescription]';
+              final imageContext = '[玩家曾傳來一張圖片，圖片內容如下：$imageDescription]';
 
               historyText = historyText.isEmpty
                   ? imageContext
@@ -1924,7 +2269,7 @@ class _ChatPageState extends State<ChatPage> {
         final recentTests = _testMessages
             .where(
               (message) => message.id != aiMessageId,
-        )
+            )
             .take(8)
             .toList()
             .reversed
@@ -1958,17 +2303,16 @@ class _ChatPageState extends State<ChatPage> {
       final aboutMeNotes = aboutMeSnapshot.docs
           .map(
             (doc) => doc.data()['text']?.toString() ?? '',
-      )
+          )
           .where(
             (text) => text.trim().isNotEmpty,
-      )
+          )
           .toList();
 
       // 讀取備忘錄
       List<String> memos = [];
 
-      if (_currentMode == ChatMode.daily ||
-          _currentMode == ChatMode.gemini) {
+      if (_currentMode == ChatMode.daily || _currentMode == ChatMode.gemini) {
         final memosSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -1980,10 +2324,10 @@ class _ChatPageState extends State<ChatPage> {
         memos = memosSnapshot.docs
             .map(
               (doc) => doc.data()['content']?.toString() ?? '',
-        )
+            )
             .where(
               (text) => text.trim().isNotEmpty,
-        )
+            )
             .toList();
       }
 
@@ -1994,8 +2338,7 @@ class _ChatPageState extends State<ChatPage> {
 
       final idToken = await currentUser.getIdToken();
 
-      final dynamicRelationship =
-      _currentFriendship.relationshipTitle(l10n);
+      final dynamicRelationship = _currentFriendship.relationshipTitle(l10n);
 
       final dynamicProfile = _buildDynamicUserProfileString();
 
@@ -2043,122 +2386,112 @@ class _ChatPageState extends State<ChatPage> {
           'name': _currentCharacter.name,
 
           // 新版角色核心設定
-          'coreCharacterSetting':
-          _currentCharacter.coreCharacterSetting
+          'coreCharacterSetting': _currentCharacter.coreCharacterSetting
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          'customOutputFormat':
-          _currentCharacter.customOutputFormat
+          'customOutputFormat': _currentCharacter.customOutputFormat
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
           // 舊版角色相容欄位
-          'toneAndStyle':
-          _currentCharacter.toneAndStyle
+          'toneAndStyle': _currentCharacter.toneAndStyle
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          'detailedPersonality':
-          _currentCharacter.detailedPersonality
+          'detailedPersonality': _currentCharacter.detailedPersonality
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          'socialInteraction':
-          _currentCharacter.socialInteraction
+          'socialInteraction': _currentCharacter.socialInteraction
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          'background':
-          _currentCharacter.background
+          'background': _currentCharacter.background
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          'worldSetting':
-          _currentCharacter.worldSetting
+          'worldSetting': _currentCharacter.worldSetting
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          'likes':
-          _currentCharacter.likes
+          'likes': _currentCharacter.likes
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          'secrets':
-          _currentCharacter.secrets
+          'secrets': _currentCharacter.secrets
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
           'gender': _currentCharacter.gender,
           'relationship': dynamicRelationship,
 
-          'socialRelationships':
-          _currentCharacter.relationships != null
+          'socialRelationships': _currentCharacter.relationships != null
               ? jsonEncode(
-            _currentCharacter.relationships,
-          )
-              .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
-              .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          )
+                  _currentCharacter.relationships,
+                )
+                  .replaceAll(
+                    '{{玩家名字}}',
+                    _playerNickname,
+                  )
+                  .replaceAll(
+                    '(玩家名字)',
+                    _playerNickname,
+                  )
               : '',
 
           'npcCharacters': _currentCharacter.npcCharacters,
@@ -2171,20 +2504,20 @@ class _ChatPageState extends State<ChatPage> {
 
       final response = await _httpClient!
           .post(
-        Uri.parse(
-          'https://asia-east1-'
+            Uri.parse(
+              'https://asia-east1-'
               'lianlianshiguang.cloudfunctions.net/'
               'getAiResponse',
-        ),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $idToken',
-        },
-        body: jsonEncode(requestBody),
-      )
+            ),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $idToken',
+            },
+            body: jsonEncode(requestBody),
+          )
           .timeout(
-        const Duration(seconds: 45),
-      );
+            const Duration(seconds: 45),
+          );
 
       // 玩家已停止，安靜結束，不扣除次數
       if (_activeAiRequestId != clientRequestId) {
@@ -2231,13 +2564,13 @@ class _ChatPageState extends State<ChatPage> {
 
       // 取得真正的新 AI 回覆
       final String regeneratedText =
-      (decoded['response'] ?? '').toString().trim();
+          (decoded['response'] ?? '').toString().trim();
 
       // 空回覆不算成功，也不扣除次數
       if (regeneratedText.isEmpty) {
         debugPrint(
           '⚠️ 重新生成回傳成功，'
-              '但 response 是空字串：$decodedBody',
+          '但 response 是空字串：$decodedBody',
         );
 
         _handleGenerationError(
@@ -2256,8 +2589,7 @@ class _ChatPageState extends State<ChatPage> {
       // 確定新回覆成功產生後，才刪除原本的舊回覆
       await _messagesCollection!.doc(aiMessageId).delete();
 
-      final int finalAffectionChange =
-      decoded['affectionChange'] is num
+      final int finalAffectionChange = decoded['affectionChange'] is num
           ? (decoded['affectionChange'] as num).toInt()
           : 0;
 
@@ -3196,6 +3528,7 @@ class _ChatPageState extends State<ChatPage> {
     bool showInChat = true,
     bool isContinue = false,
     bool userMessageAlreadySaved = false,
+    bool isQixiOpening = false,
   }) async {
     // 🌟 1. 身分檢查
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -3245,7 +3578,7 @@ class _ChatPageState extends State<ChatPage> {
       }
 
 // 生日免費時跳過前端點數不足檢查
-      if (!isFreeToday && myActualFlowers < messageCost) {
+      if (!isQixiOpening && !isFreeToday && myActualFlowers < messageCost) {
         if (mounted) {
           showDialog(
             context: context,
@@ -3275,8 +3608,8 @@ class _ChatPageState extends State<ChatPage> {
                   '${l10n.chat_points_shortage(
                     myActualFlowers.toString(),
                   )}\n\n'
-                      '${l10n.chat_points_not_enough_desc}'
-                      '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
+                  '${l10n.chat_points_not_enough_desc}'
+                  '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
                   style: const TextStyle(
                     fontSize: 16,
                   ),
@@ -3294,26 +3627,26 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                   if (!kIsWeb)
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      shape: const StadiumBorder(),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(dialogContext);
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        shape: const StadiumBorder(),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(dialogContext);
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const StorePage(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      l10n.goToSubscribeButton,
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const StorePage(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        l10n.goToSubscribeButton,
+                      ),
                     ),
-                  ),
                 ],
               );
             },
@@ -3333,8 +3666,7 @@ class _ChatPageState extends State<ChatPage> {
       // 🌟 改良後的等待機制：只檢查 Firebase 是否準備好，不管 shouldSave 了
       // 正式聊天室才需要等待 Firestore 訊息集合。
 // 測試聊天室使用 _testMessages，因此沒有 _messagesCollection 是正常的。
-      if (!widget.isTestMode &&
-          _messagesCollection == null) {
+      if (!widget.isTestMode && _messagesCollection == null) {
         await Future.delayed(
           const Duration(milliseconds: 500),
         );
@@ -3342,8 +3674,8 @@ class _ChatPageState extends State<ChatPage> {
         if (_messagesCollection == null) {
           debugPrint(
             '❌ 錯誤：等了 0.5 秒 '
-                '_messagesCollection 還是 Null，'
-                '無法寫入正式聊天室訊息！',
+            '_messagesCollection 還是 Null，'
+            '無法寫入正式聊天室訊息！',
           );
 
           _removePendingMediaMessage(
@@ -3475,8 +3807,13 @@ class _ChatPageState extends State<ChatPage> {
         }
       }
 
-      await Future.delayed(const Duration(milliseconds: 300));
-      _handleTaskProgressAfterSendingMessage();
+      await Future.delayed(
+        const Duration(milliseconds: 300),
+      );
+
+      if (!isQixiOpening) {
+        _handleTaskProgressAfterSendingMessage();
+      }
 
       // --- C. 喚醒真正的長期記憶 ---
       List<Map<String, String>> actualChatHistory = [];
@@ -3501,19 +3838,15 @@ class _ChatPageState extends State<ChatPage> {
           final data = doc.data() as Map<String, dynamic>;
           final sender = data['sender'];
 
-          String text =
-              data['text']?.toString().trim() ?? '';
+          String text = data['text']?.toString().trim() ?? '';
 
           final imageDescription =
               data['imageDescription']?.toString().trim() ?? '';
 
           if (sender == 'user' && imageDescription.isNotEmpty) {
-            final imageContext =
-                '[玩家曾傳來一張圖片，圖片內容如下：$imageDescription]';
+            final imageContext = '[玩家曾傳來一張圖片，圖片內容如下：$imageDescription]';
 
-            text = text.isEmpty
-                ? imageContext
-                : '$text\n\n$imageContext';
+            text = text.isEmpty ? imageContext : '$text\n\n$imageContext';
           }
 
           if (text.isEmpty) {
@@ -3529,9 +3862,7 @@ class _ChatPageState extends State<ChatPage> {
 
           if (sender == 'user' || sender == 'ai') {
             actualChatHistory.add({
-              'role': sender == 'ai'
-                  ? 'assistant'
-                  : 'user',
+              'role': sender == 'ai' ? 'assistant' : 'user',
               'text': text,
             });
           }
@@ -3552,7 +3883,10 @@ class _ChatPageState extends State<ChatPage> {
         }
       }
 
-      if (!showInChat && !isContinue && !userMessageAlreadySaved) {
+      if (!isQixiOpening &&
+          !showInChat &&
+          !isContinue &&
+          !userMessageAlreadySaved) {
         actualChatHistory.add({
           "role": "user",
           "text": secretPrompt ?? userText.trim(),
@@ -3593,31 +3927,26 @@ class _ChatPageState extends State<ChatPage> {
 
       int currentScore = _currentFriendship;
 
-      String dynamicRelationship =
-      currentScore.relationshipTitle(l10n);
+      String dynamicRelationship = currentScore.relationshipTitle(l10n);
 
-      String dynamicProfile =
-      _buildDynamicUserProfileString();
+      String dynamicProfile = _buildDynamicUserProfileString();
 
       final String effectiveUserMessage = isContinue
           ? l10n.hiddenPromptContinue
           : secretPrompt?.trim().isNotEmpty == true
-          ? secretPrompt!.trim()
-          : userText.trim();
+              ? secretPrompt!.trim()
+              : userText.trim();
 
-      final String playerGenderForAi =
-      _normalizePlayerGenderForAi(
+      final String playerGenderForAi = _normalizePlayerGenderForAi(
         _currentAiProfile['gender']?.toString(),
       );
 
-      final bool hasImage =
-          imagePath != null && imagePath.isNotEmpty;
+      final bool hasImage = imagePath != null && imagePath.isNotEmpty;
 
-      final bool hasAudio =
-          audioPath != null && audioPath.isNotEmpty;
+      final bool hasAudio = audioPath != null && audioPath.isNotEmpty;
 
       final String playerPronounGuide =
-      _buildPlayerPronounGuide(playerGenderForAi);
+          _buildPlayerPronounGuide(playerGenderForAi);
       final Map<String, dynamic> requestBody = {
         "clientRequestId": clientRequestId,
         "userMessageId": userMessageId ?? "",
@@ -3628,10 +3957,9 @@ class _ChatPageState extends State<ChatPage> {
         "isContinue": isContinue,
         "chatMode": _currentMode?.name ?? "daily",
         "isBirthdayFreebie": isFreeToday,
+        "isQixiOpening": isQixiOpening,
         "overrideSystemPrompt": overridePrompt ?? "",
-        "sessionId": widget.isTestMode
-            ? _testSessionId
-            : _sessionId,
+        "sessionId": widget.isTestMode ? _testSessionId : _sessionId,
         "playerName": _playerNickname,
         "playerGender": playerGenderForAi,
         "playerPronounGuide": playerPronounGuide,
@@ -3650,124 +3978,114 @@ class _ChatPageState extends State<ChatPage> {
           "name": _currentCharacter.name,
 
           // 新版合併後的角色核心設定
-          "coreCharacterSetting":
-          _currentCharacter.coreCharacterSetting
+          "coreCharacterSetting": _currentCharacter.coreCharacterSetting
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          "customOutputFormat":
-          _currentCharacter.customOutputFormat
+          "customOutputFormat": _currentCharacter.customOutputFormat
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
           // 舊版相容欄位，暫時保留
-          "toneAndStyle":
-          _currentCharacter.toneAndStyle
+          "toneAndStyle": _currentCharacter.toneAndStyle
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          "detailedPersonality":
-          _currentCharacter.detailedPersonality
+          "detailedPersonality": _currentCharacter.detailedPersonality
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
           // 舊角色的社交／環境互動相容資料
-          "socialInteraction":
-          _currentCharacter.socialInteraction
+          "socialInteraction": _currentCharacter.socialInteraction
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          "background":
-          _currentCharacter.background
+          "background": _currentCharacter.background
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          "worldSetting":
-          _currentCharacter.worldSetting
+          "worldSetting": _currentCharacter.worldSetting
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          "likes":
-          _currentCharacter.likes
+          "likes": _currentCharacter.likes
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
-          "secrets":
-          _currentCharacter.secrets
+          "secrets": _currentCharacter.secrets
               .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+                '{{玩家名字}}',
+                _playerNickname,
+              )
               .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          ),
+                '(玩家名字)',
+                _playerNickname,
+              ),
 
           "gender": _currentCharacter.gender,
           "relationship": dynamicRelationship,
 
           // 這是角色與其他角色的關係，不是 socialInteraction
-          "socialRelationships":
-          _currentCharacter.relationships != null
+          "socialRelationships": _currentCharacter.relationships != null
               ? jsonEncode(
-            _currentCharacter.relationships,
-          )
-              .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
-              .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          )
+                  _currentCharacter.relationships,
+                )
+                  .replaceAll(
+                    '{{玩家名字}}',
+                    _playerNickname,
+                  )
+                  .replaceAll(
+                    '(玩家名字)',
+                    _playerNickname,
+                  )
               : "",
 
           "npcCharacters": _currentCharacter.npcCharacters,
@@ -3831,6 +4149,20 @@ class _ChatPageState extends State<ChatPage> {
           debugPrint('🛑 後端確認訊息生成已取消');
           return;
         }
+        if (responseData['status'] == 'already_generated') {
+          debugPrint('🌙 七夕首次赴約訊息已經生成，略過重複請求');
+
+          generatingRooms.remove(_roomLockKey);
+
+          if (mounted) {
+            setState(() {
+              _isGenerating = false;
+              _isLoading = false;
+            });
+          }
+
+          return;
+        }
         if (responseData['status'] == 'success') {
           final String aiResponseText =
               responseData['response']?.toString().trim() ?? '';
@@ -3839,9 +4171,9 @@ class _ChatPageState extends State<ChatPage> {
               responseData['voiceText']?.toString().trim() ?? '';
 
           final int finalAffectionChange =
-          responseData['affectionChange'] is num
-              ? (responseData['affectionChange'] as num).toInt()
-              : 0;
+              responseData['affectionChange'] is num
+                  ? (responseData['affectionChange'] as num).toInt()
+                  : 0;
 
           if (aiResponseText.isEmpty) {
             generatingRooms.remove(_roomLockKey);
@@ -3877,30 +4209,24 @@ class _ChatPageState extends State<ChatPage> {
 
               await FirebaseFirestore.instance
                   .runTransaction((transaction) async {
-                final snapshot =
-                await transaction.get(userCharRef);
+                final snapshot = await transaction.get(userCharRef);
 
                 int currentGlobalAffection = 0;
 
                 if (snapshot.exists) {
-                  currentGlobalAffection =
-                      snapshot.data()?['affection'] ?? 0;
+                  currentGlobalAffection = snapshot.data()?['affection'] ?? 0;
                 }
 
                 final int targetGlobalScore =
-                    _currentFriendship +
-                        finalAffectionChange;
+                    _currentFriendship + finalAffectionChange;
 
-                if (targetGlobalScore >
-                    currentGlobalAffection) {
+                if (targetGlobalScore > currentGlobalAffection) {
                   transaction.set(
                     userCharRef,
                     {
                       'affection': targetGlobalScore,
-                      'characterName':
-                      _currentCharacter.name,
-                      'lastUpdate':
-                      FieldValue.serverTimestamp(),
+                      'characterName': _currentCharacter.name,
+                      'lastUpdate': FieldValue.serverTimestamp(),
                     },
                     SetOptions(merge: true),
                   );
@@ -3917,19 +4243,17 @@ class _ChatPageState extends State<ChatPage> {
                 await FirebaseFirestore.instance
                     .collection('artifacts')
                     .doc(
-                  const String.fromEnvironment(
-                    'APP_ID',
-                    defaultValue:
-                    'lianlianshiguang',
-                  ),
-                )
+                      const String.fromEnvironment(
+                        'APP_ID',
+                        defaultValue: 'lianlianshiguang',
+                      ),
+                    )
                     .collection('users')
                     .doc(userId)
                     .collection('private_characters')
                     .doc(characterId)
                     .update({
-                  'lastChatTime':
-                  FieldValue.serverTimestamp(),
+                  'lastChatTime': FieldValue.serverTimestamp(),
                 });
               } catch (e) {
                 debugPrint(
@@ -3966,29 +4290,23 @@ class _ChatPageState extends State<ChatPage> {
               }
 
               // 後端成功完成後，前端同步更新顯示的花花數量。
-              final int uiCost =
-              isFreeToday ? 0 : messageCost;
+              final int uiCost = isQixiOpening || isFreeToday ? 0 : messageCost;
 
-              _flowerPoints =
-                  (_flowerPoints - uiCost)
-                      .clamp(0, 999999);
+              _flowerPoints = (_flowerPoints - uiCost).clamp(0, 999999);
 
               // 測試模式只在目前畫面模擬好感度變化，
               // 不會寫入正式資料庫。
               if (finalAffectionChange != 0) {
-                final int oldScore =
-                    _currentFriendship;
+                final int oldScore = _currentFriendship;
 
-                _currentFriendship +=
-                    finalAffectionChange;
+                _currentFriendship += finalAffectionChange;
 
                 _checkForLevelUp(
                   oldScore,
                   _currentFriendship,
                 );
 
-                if (finalAffectionChange > 0 &&
-                    !_hasShownAffectionCard) {
+                if (finalAffectionChange > 0 && !_hasShownAffectionCard) {
                   _showAffectionAnimation(
                     finalAffectionChange,
                   );
@@ -4447,40 +4765,31 @@ class _ChatPageState extends State<ChatPage> {
       final savedProfiles = data['profiles'];
 
       final bool hasAnyProfile =
-          savedProfiles is List &&
-              savedProfiles.isNotEmpty;
+          savedProfiles is List && savedProfiles.isNotEmpty;
 
 // 全帳號是否已處理過第一次提示
       final bool hasHandledProfileIntro =
           data['hasHandledProfileIntro'] == true;
 
 // 相容舊版：以前曾按過「稍後」
-      final bool hasSkippedProfile =
-          data['hasSkippedProfile'] == true;
+      final bool hasSkippedProfile = data['hasSkippedProfile'] == true;
 
 // 有檔案、儲存過或按過稍後，全部角色都不再自動彈出
       final bool shouldNotShowWelcomePopup =
-          hasAnyProfile ||
-              hasHandledProfileIntro ||
-              hasSkippedProfile;
+          hasAnyProfile || hasHandledProfileIntro || hasSkippedProfile;
 
-      final String nickname =
-          data['nickname'] ??
-              l10n.chat_default_player_name;
+      final String nickname = data['nickname'] ?? l10n.chat_default_player_name;
 
-      final String birthday =
-          data['birthday'] ??
-              l10n.authMethodUnknown;
+      final String birthday = data['birthday'] ?? l10n.authMethodUnknown;
 
       Map<String, dynamic>? activeProfile;
 
 // 全帳號只自動顯示一次，不再依 characterId 判斷
-      if (!_hasPromptedProfileSetup &&
-          !shouldNotShowWelcomePopup) {
+      if (!_hasPromptedProfileSetup && !shouldNotShowWelcomePopup) {
         _hasPromptedProfileSetup = true;
 
         WidgetsBinding.instance.addPostFrameCallback(
-              (_) {
+          (_) {
             if (!mounted) return;
             _showWelcomeProfilePopup();
           },
@@ -4565,13 +4874,11 @@ class _ChatPageState extends State<ChatPage> {
 
     // 本次摘要所屬的聊天室
     final String? summarySessionId =
-    (_sessionId != null &&
-        _sessionId!.trim().isNotEmpty)
-        ? _sessionId!.trim()
-        : (widget.sessionId != null &&
-        widget.sessionId!.trim().isNotEmpty)
-        ? widget.sessionId!.trim()
-        : null;
+        (_sessionId != null && _sessionId!.trim().isNotEmpty)
+            ? _sessionId!.trim()
+            : (widget.sessionId != null && widget.sessionId!.trim().isNotEmpty)
+                ? widget.sessionId!.trim()
+                : null;
 
     // 沒有真實聊天室 ID 時不建立摘要，避免不同房間混在一起
     if (summarySessionId == null) {
@@ -4583,12 +4890,11 @@ class _ChatPageState extends State<ChatPage> {
 
     try {
       // 只讀取目前聊天室的最後 10 則訊息
-      final querySnapshot =
-      await _messagesCollection!
+      final querySnapshot = await _messagesCollection!
           .orderBy(
-        'timestamp',
-        descending: true,
-      )
+            'timestamp',
+            descending: true,
+          )
           .limit(10)
           .get();
 
@@ -4598,18 +4904,14 @@ class _ChatPageState extends State<ChatPage> {
       }
 
       // 將新→舊反轉為舊→新
-      final docs =
-      querySnapshot.docs.reversed.toList();
+      final docs = querySnapshot.docs.reversed.toList();
 
-      final List<Map<String, String>>
-      recentHistory = [];
+      final List<Map<String, String>> recentHistory = [];
 
       for (final doc in docs) {
-        final data =
-        doc.data() as Map<String, dynamic>;
+        final data = doc.data() as Map<String, dynamic>;
 
-        final text =
-            data['text']?.toString().trim() ?? '';
+        final text = data['text']?.toString().trim() ?? '';
 
         if (text.isEmpty) {
           continue;
@@ -4622,18 +4924,14 @@ class _ChatPageState extends State<ChatPage> {
        * 原本用 data['isUser'] 可能會把所有訊息
        * 都判斷成 assistant。
        */
-        final sender =
-            data['sender']?.toString() ?? '';
+        final sender = data['sender']?.toString() ?? '';
 
-        if (sender != 'user' &&
-            sender != 'ai') {
+        if (sender != 'user' && sender != 'ai') {
           continue;
         }
 
         recentHistory.add({
-          'role': sender == 'user'
-              ? 'user'
-              : 'assistant',
+          'role': sender == 'user' ? 'user' : 'assistant',
           'content': text,
         });
       }
@@ -4645,8 +4943,7 @@ class _ChatPageState extends State<ChatPage> {
 
       final idToken = await user.getIdToken();
 
-      if (idToken == null ||
-          idToken.isEmpty) {
+      if (idToken == null || idToken.isEmpty) {
         debugPrint(
           '⚠️ 劇情摘要未發送：無法取得登入憑證',
         );
@@ -4662,42 +4959,33 @@ class _ChatPageState extends State<ChatPage> {
           .post(
         url,
         headers: {
-          'Authorization':
-          'Bearer $idToken',
-          'Content-Type':
-          'application/json',
+          'Authorization': 'Bearer $idToken',
+          'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'characterId':
-          widget.characterId,
-          'characterName':
-          _currentCharacter.name,
-          'playerName':
-          _playerNickname,
-          'chatHistory':
-          recentHistory,
+          'characterId': widget.characterId,
+          'characterName': _currentCharacter.name,
+          'playerName': _playerNickname,
+          'chatHistory': recentHistory,
 
           // 關鍵：依聊天室分開儲存
-          'sessionId':
-          summarySessionId,
+          'sessionId': summarySessionId,
         }),
       )
           .then((response) {
-        if (response.statusCode >= 200 &&
-            response.statusCode < 300) {
+        if (response.statusCode >= 200 && response.statusCode < 300) {
           debugPrint(
             '📖 劇情摘要任務完成：'
-                '$summarySessionId',
+            '$summarySessionId',
           );
         } else {
           debugPrint(
             '⚠️ 劇情摘要任務失敗：'
-                '${response.statusCode} '
-                '${response.body}',
+            '${response.statusCode} '
+            '${response.body}',
           );
         }
-      })
-          .catchError((error) {
+      }).catchError((error) {
         debugPrint(
           '⚠️ 劇情摘要連線失敗：$error',
         );
@@ -5226,7 +5514,6 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     try {
-
       _audioPlayer ??= AudioPlayer();
 
       await _audioPlayer!.stop();
@@ -5880,107 +6167,54 @@ class _ChatPageState extends State<ChatPage> {
               // 🌟 如果 showRecordingUI 是 true，就顯示【錄音介面】
               child: showRecordingUI
                   ? Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          children: [
-                            IconButton(
-                              tooltip: l10n.profilePageCancel,
-                              onPressed: isCurrentlyRecording
-                                  ? null
-                                  : () {
-                                sheetSetState(() {
-                                  showRecordingUI = false;
-                                });
-                              },
-                              icon: const Icon(
-                                Icons.arrow_back_ios_new_rounded,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                isCurrentlyRecording
-                                    ? l10n.chat_record_recording
-                                    : finalAudioPath == null
-                                    ? l10n.chat_tool_record
-                                    : l10n.chat_record_done,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              IconButton(
+                                tooltip: l10n.profilePageCancel,
+                                onPressed: isCurrentlyRecording
+                                    ? null
+                                    : () {
+                                        sheetSetState(() {
+                                          showRecordingUI = false;
+                                        });
+                                      },
+                                icon: const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  size: 20,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        if (isCurrentlyRecording) ...[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.fiber_manual_record,
-                                color: Colors.redAccent,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 8),
-                              _buildRecordingWave(recordDb),
-                              const SizedBox(width: 12),
-                              Text(
-                                _formatRecordDuration(recordDuration),
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  isCurrentlyRecording
+                                      ? l10n.chat_record_recording
+                                      : finalAudioPath == null
+                                          ? l10n.chat_tool_record
+                                          : l10n.chat_record_done,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 28),
-                          InkWell(
-                            onTap: stopRecording,
-                            child: Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .errorContainer,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.stop_rounded,
-                                color: Theme.of(context).colorScheme.error,
-                                size: 42,
-                              ),
-                            ),
-                          ),
-                        ] else if (finalAudioPath != null) ...[
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 24),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer
-                                  .withValues(alpha: 0.55),
-                              borderRadius: BorderRadius.circular(99),
-                            ),
-                            child: Row(
+                          const SizedBox(height: 16),
+                          if (isCurrentlyRecording) ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                IconButton(
-                                  icon: Icon(
-                                    isPreviewPlaying
-                                        ? Icons.pause_rounded
-                                        : Icons.play_arrow_rounded,
-                                  ),
-                                  onPressed: playRecordedAudio,
-                                ),
-                                Expanded(
-                                  child: _buildRecordingWave(-25),
+                                const Icon(
+                                  Icons.fiber_manual_record,
+                                  color: Colors.redAccent,
+                                  size: 14,
                                 ),
                                 const SizedBox(width: 8),
+                                _buildRecordingWave(recordDb),
+                                const SizedBox(width: 12),
                                 Text(
                                   _formatRecordDuration(recordDuration),
                                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -5989,147 +6223,201 @@ class _ChatPageState extends State<ChatPage> {
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline),
-                                color: Colors.redAccent,
-                                iconSize: 32,
-                                onPressed: () async {
-                                  await _audioPlayer?.stop();
-
-                                  final pathToDelete = finalAudioPath;
-
-                                  if (pathToDelete != null &&
-                                      pathToDelete.isNotEmpty &&
-                                      !kIsWeb) {
-                                    final file = File(pathToDelete);
-                                    if (await file.exists()) {
-                                      await file.delete();
-                                    }
-                                  }
-
-                                  sheetSetState(() {
-                                    finalAudioPath = null;
-                                    recordingPath = null;
-                                    isPreviewPlaying = false;
-                                    recordDuration = Duration.zero;
-                                    recordDb = -60.0;
-                                  });
-
-                                  debugPrint('🗑️ 已刪除錄音預覽，不會送出');
-                                },
+                            const SizedBox(height: 28),
+                            InkWell(
+                              onTap: stopRecording,
+                              child: Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .errorContainer,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.stop_rounded,
+                                  color: Theme.of(context).colorScheme.error,
+                                  size: 42,
+                                ),
                               ),
-                              const SizedBox(width: 28),
-                              _isGenerating
-                                  ? IconButton(
-                                      icon: const Icon(
-                                        Icons.stop_circle_outlined,
-                                        color: Colors.red,
-                                        size: 36,
-                                      ),
-                                      onPressed: _stopGenerating,
-                                    )
-                                  : IconButton(
-                                      icon: Icon(
-                                        Icons.send_rounded,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        size: 36,
-                                      ),
-                                      onPressed: isSendingVoice
-                                          ? null
-                                          : () async {
-                                              final path = finalAudioPath;
-
-                                              if (path == null ||
-                                                  path.isEmpty) {
-                                                ToastUtils.showCenterToast(
-                                                  context,
-                                                  l10n.chatPageNoRecordingToSend,
-                                                  isError: true,
-                                                );
-                                                return;
-                                              }
-
-                                              sheetSetState(() {
-                                                isSendingVoice = true;
-                                              });
-
-                                              await _audioPlayer?.stop();
-
-                                              debugPrint(
-                                                  '📤 準備送出語音 path=$path');
-
-                                              Navigator.pop(context);
-
-                                              await _sendMessage(
-                                                text: '[語音訊息]',
-                                                audioPath: path,
-                                                showInChat: true,
-                                              );
-                                            },
+                            ),
+                          ] else if (finalAudioPath != null) ...[
+                            Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 24),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer
+                                    .withValues(alpha: 0.55),
+                                borderRadius: BorderRadius.circular(99),
+                              ),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      isPreviewPlaying
+                                          ? Icons.pause_rounded
+                                          : Icons.play_arrow_rounded,
                                     ),
-                            ],
-                          ),
-                        ] else ...[
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 24,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primaryContainer
-                                  .withValues(alpha: 0.28),
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(
-                                color: theme.colorScheme.primary
-                                    .withValues(alpha: 0.18),
+                                    onPressed: playRecordedAudio,
+                                  ),
+                                  Expanded(
+                                    child: _buildRecordingWave(-25),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _formatRecordDuration(recordDuration),
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Material(
-                                  color: theme.colorScheme.primary,
-                                  shape: const CircleBorder(),
-                                  elevation: 3,
-                                  shadowColor: theme.colorScheme.primary
-                                      .withValues(alpha: 0.35),
-                                  child: InkWell(
-                                    customBorder: const CircleBorder(),
-                                    onTap: startRecording,
-                                    child: SizedBox(
-                                      width: 76,
-                                      height: 76,
-                                      child: Icon(
-                                        Icons.mic_rounded,
-                                        color: theme.colorScheme.onPrimary,
-                                        size: 38,
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline),
+                                  color: Colors.redAccent,
+                                  iconSize: 32,
+                                  onPressed: () async {
+                                    await _audioPlayer?.stop();
+
+                                    final pathToDelete = finalAudioPath;
+
+                                    if (pathToDelete != null &&
+                                        pathToDelete.isNotEmpty &&
+                                        !kIsWeb) {
+                                      final file = File(pathToDelete);
+                                      if (await file.exists()) {
+                                        await file.delete();
+                                      }
+                                    }
+
+                                    sheetSetState(() {
+                                      finalAudioPath = null;
+                                      recordingPath = null;
+                                      isPreviewPlaying = false;
+                                      recordDuration = Duration.zero;
+                                      recordDb = -60.0;
+                                    });
+
+                                    debugPrint('🗑️ 已刪除錄音預覽，不會送出');
+                                  },
+                                ),
+                                const SizedBox(width: 28),
+                                _isGenerating
+                                    ? IconButton(
+                                        icon: const Icon(
+                                          Icons.stop_circle_outlined,
+                                          color: Colors.red,
+                                          size: 36,
+                                        ),
+                                        onPressed: _stopGenerating,
+                                      )
+                                    : IconButton(
+                                        icon: Icon(
+                                          Icons.send_rounded,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          size: 36,
+                                        ),
+                                        onPressed: isSendingVoice
+                                            ? null
+                                            : () async {
+                                                final path = finalAudioPath;
+
+                                                if (path == null ||
+                                                    path.isEmpty) {
+                                                  ToastUtils.showCenterToast(
+                                                    context,
+                                                    l10n.chatPageNoRecordingToSend,
+                                                    isError: true,
+                                                  );
+                                                  return;
+                                                }
+
+                                                sheetSetState(() {
+                                                  isSendingVoice = true;
+                                                });
+
+                                                await _audioPlayer?.stop();
+
+                                                debugPrint(
+                                                    '📤 準備送出語音 path=$path');
+
+                                                Navigator.pop(context);
+
+                                                await _sendMessage(
+                                                  text: '[語音訊息]',
+                                                  audioPath: path,
+                                                  showInChat: true,
+                                                );
+                                              },
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  l10n.chat_record_start,
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
                               ],
                             ),
-                          ),
+                          ] else ...[
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 24,
+                              ),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primaryContainer
+                                    .withValues(alpha: 0.28),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: theme.colorScheme.primary
+                                      .withValues(alpha: 0.18),
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Material(
+                                    color: theme.colorScheme.primary,
+                                    shape: const CircleBorder(),
+                                    elevation: 3,
+                                    shadowColor: theme.colorScheme.primary
+                                        .withValues(alpha: 0.35),
+                                    child: InkWell(
+                                      customBorder: const CircleBorder(),
+                                      onTap: startRecording,
+                                      child: SizedBox(
+                                        width: 76,
+                                        height: 76,
+                                        child: Icon(
+                                          Icons.mic_rounded,
+                                          color: theme.colorScheme.onPrimary,
+                                          size: 38,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    l10n.chat_record_start,
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
-                    ),
-              )
+                      ),
+                    )
 
                   // ✨✨✨ 破案關鍵在這裡：加上這個冒號 (:) 代表「否則」，然後接上妳的【百寶箱九宮格】 ✨✨✨
                   : Padding(
@@ -6185,15 +6473,15 @@ class _ChatPageState extends State<ChatPage> {
                           _buildToolItem(
                             Icons.article_outlined,
                             l10n.chat_tool_story,
-                                () async {
-                              final String? currentSessionId =
-                              _sessionId != null &&
-                                  _sessionId!.trim().isNotEmpty
+                            () async {
+                              final String? currentSessionId = _sessionId !=
+                                          null &&
+                                      _sessionId!.trim().isNotEmpty
                                   ? _sessionId!.trim()
                                   : widget.sessionId != null &&
-                                  widget.sessionId!.trim().isNotEmpty
-                                  ? widget.sessionId!.trim()
-                                  : null;
+                                          widget.sessionId!.trim().isNotEmpty
+                                      ? widget.sessionId!.trim()
+                                      : null;
 
                               if (currentSessionId == null) {
                                 ToastUtils.showCenterToast(
@@ -6903,8 +7191,8 @@ class _ChatPageState extends State<ChatPage> {
           // ✨ 替換：接上新的提示問句
           content: Text(
             '${l10n.chat_gift_points_needed(gift['cost'].toString())}\n\n'
-                '${l10n.gift_insufficient_prompt}'
-                '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
+            '${l10n.gift_insufficient_prompt}'
+            '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
             style: const TextStyle(fontSize: 16),
           ),
           actions: [
@@ -6915,25 +7203,26 @@ class _ChatPageState extends State<ChatPage> {
                   style: const TextStyle(color: Colors.grey)),
             ),
             if (!kIsWeb)
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Colors.white,
-                shape: const StadiumBorder(),
-              ),
-              onPressed: () {
-                Navigator.pop(dialogContext); // 先關閉彈窗
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: () {
+                  Navigator.pop(dialogContext); // 先關閉彈窗
 
-                // 🚀 飛向商城或是任務頁面！(請換成你實際的頁面名稱)
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const StorePage()), // 或 TaskPage()
-                );
-              },
-              // ✨ 替換：前往獲取
-              child: Text(l10n.go_to_get),
-            ),
+                  // 🚀 飛向商城或是任務頁面！(請換成你實際的頁面名稱)
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const StorePage()), // 或 TaskPage()
+                  );
+                },
+                // ✨ 替換：前往獲取
+                child: Text(l10n.go_to_get),
+              ),
           ],
         ),
       );
@@ -7643,15 +7932,115 @@ class _ChatPageState extends State<ChatPage> {
                 // 💬 渲染對話 (這段維持不變)
                 ...selectedMsgs.map((msg) {
                   final bool isUser = msg.sender == 'user';
+                  final bool isSystem = msg.sender == 'system';
 
-                  final Color messageTextColor;
+                  // 截圖主題為「跟隨 App」時，完全沿用聊天室色彩。
+                  final Color bubbleColor;
 
-                  if (isUser) {
-                    messageTextColor = Colors.white;
+                  if (_watermarkStyle == 0) {
+                    bubbleColor = isUser
+                        ? theme.colorScheme.primary
+                        : isSystem
+                        ? theme.cardColor.withValues(alpha: 0.72)
+                        : theme.colorScheme.surfaceVariant;
                   } else if (_watermarkStyle == 1) {
-                    messageTextColor = Colors.white;
+                    // 曜石黑背景。
+                    bubbleColor = isUser
+                        ? theme.colorScheme.primary
+                        : Colors.white.withValues(alpha: 0.16);
                   } else {
-                    messageTextColor = Colors.black87;
+                    // 晨曦白背景。
+                    bubbleColor = isUser
+                        ? theme.colorScheme.primary
+                        : Colors.black.withValues(alpha: 0.06);
+                  }
+
+                  final Color normalTextColor = isUser
+                      ? theme.colorScheme.onPrimary
+                      : isSystem
+                      ? theme.colorScheme.onSurface.withValues(alpha: 0.8)
+                      : _watermarkStyle == 1
+                      ? Colors.white
+                      : _watermarkStyle == 2
+                      ? Colors.black87
+                      : theme.colorScheme.primary;
+
+                  final Color actionTextColor = isUser
+                      ? theme.colorScheme.onPrimary.withValues(alpha: 0.72)
+                      : _watermarkStyle == 1
+                      ? Colors.white.withValues(alpha: 0.7)
+                      : _watermarkStyle == 2
+                      ? Colors.black54
+                      : theme.colorScheme.onSurfaceVariant
+                      .withValues(alpha: 0.7);
+
+                  final String rawDisplayText = isUser
+                      ? msg.text
+                      : _getCleanAiMessage(msg.text);
+
+                  final String displayText = rawDisplayText
+                      .replaceAll('(玩家名字)', _playerNickname)
+                      .replaceAll('{{玩家名字}}', _playerNickname)
+                      .replaceAll('【玩家名字】', _playerNickname);
+
+                  Widget messageBody;
+
+                  if (isSystem) {
+                    messageBody = Text(
+                      displayText,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: normalTextColor,
+                        fontSize: 14,
+                        height: 1.5,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    );
+                  } else if (isUser) {
+                    messageBody = _buildRichTextMessage(
+                      displayText,
+                      normalStyle: TextStyle(
+                        color: normalTextColor,
+                        fontSize: 15,
+                        height: 1.45,
+                      ),
+                      actionStyle: TextStyle(
+                        color: actionTextColor,
+                        fontSize: 15,
+                        height: 1.45,
+                      ),
+                    );
+                  } else {
+                    messageBody = _buildStyledAiMessage(
+                      context,
+                      displayText,
+                      TextStyle(
+                        color: normalTextColor,
+                        fontSize: 15,
+                        height: 1.45,
+                      ),
+                    );
+                  }
+
+                  // 系統故事／旁白維持中央卡片，不顯示角色頭像。
+                  if (isSystem) {
+                    return Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(
+                        left: 28,
+                        right: 28,
+                        bottom: 16,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: bubbleColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: messageBody,
+                    );
                   }
 
                   return Padding(
@@ -7666,7 +8055,7 @@ class _ChatPageState extends State<ChatPage> {
                           CircleAvatar(
                             radius: 16,
                             backgroundColor:
-                                theme.colorScheme.secondaryContainer,
+                            theme.colorScheme.secondaryContainer,
                             backgroundImage: _getAvatarProvider(
                               _currentCharacter.avatarPath,
                             ),
@@ -7680,27 +8069,10 @@ class _ChatPageState extends State<ChatPage> {
                               vertical: 12,
                             ),
                             decoration: BoxDecoration(
-                              color: _watermarkStyle == 0
-                                  ? theme.colorScheme.onSurface
-                                      .withValues(alpha: 0.1)
-                                  : (_watermarkStyle == 1
-                                      ? Colors.white.withValues(
-                                          alpha: 0.2,
-                                        )
-                                      : Colors.black.withValues(
-                                          alpha: 0.05,
-                                        )),
+                              color: bubbleColor,
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: Text(
-                              msg.text,
-                              style: TextStyle(
-                                color: messageTextColor,
-                                fontSize: 15,
-                                height: 1.35,
-                              ),
-                              softWrap: true,
-                            ),
+                            child: messageBody,
                           ),
                         ),
                       ],
@@ -8398,11 +8770,12 @@ class _ChatPageState extends State<ChatPage> {
                                     onTap: kIsWeb
                                         ? null
                                         : () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const StorePage(),
-                                      ),
-                                    ),
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const StorePage(),
+                                              ),
+                                            ),
                                     borderRadius: BorderRadius.circular(14),
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -8440,34 +8813,35 @@ class _ChatPageState extends State<ChatPage> {
                       ],
                     ),
                   ),
+                  if (_isQixiRoom) _buildQixiProgressCard(theme),
                   // ✨ 2. 中間訊息列表
                   Expanded(
                     child: _isLoading
                         ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
+                            child: CircularProgressIndicator(),
+                          )
 
-                    // 測試模式必須先判斷，因為它本來就沒有正式 session
+                        // 測試模式必須先判斷，因為它本來就沒有正式 session
                         : widget.isTestMode
-                        ? (_testMessages.isEmpty && !_isGenerating
-                        ? Center(
-                      child: Text(
-                        l10n.chat_test_mode_msg,
-                      ),
-                    )
-                        : _buildMessageList(
-                      _testMessages,
-                    ))
+                            ? (_testMessages.isEmpty && !_isGenerating
+                                ? Center(
+                                    child: Text(
+                                      l10n.chat_test_mode_msg,
+                                    ),
+                                  )
+                                : _buildMessageList(
+                                    _testMessages,
+                                  ))
 
-                    // 只有正式聊天室才檢查這兩個資料
-                        : (_sessionId == null ||
-                        _messagesCollection == null)
-                        ? Center(
-                      child: Text(
-                        l10n.chat_loading_failed,
-                      ),
-                    )
-                        : StreamBuilder<QuerySnapshot>(
+                            // 只有正式聊天室才檢查這兩個資料
+                            : (_sessionId == null ||
+                                    _messagesCollection == null)
+                                ? Center(
+                                    child: Text(
+                                      l10n.chat_loading_failed,
+                                    ),
+                                  )
+                                : StreamBuilder<QuerySnapshot>(
                                     stream: _messagesCollection!
                                         .orderBy('timestamp', descending: true)
                                         .snapshots(),
@@ -8989,10 +9363,10 @@ class _ChatPageState extends State<ChatPage> {
                   ? _buildRichTextMessage(displayText,
                       normalStyle: normalStyle, actionStyle: actionStyle)
                   : _buildStyledAiMessage(
-                context,
-                displayText,
-                normalStyle,
-              ),
+                      context,
+                      displayText,
+                      normalStyle,
+                    ),
             );
           } else if (type == 'image') {
             final imageText = message.text.trim();
@@ -9182,7 +9556,7 @@ class _ChatPageState extends State<ChatPage> {
                             // 5. 先執行重新生成
                             // 5. 先執行重新生成，並接住成功或失敗結果
                             final regenerateSucceeded =
-                            await _regenerateAIResponse(
+                                await _regenerateAIResponse(
                               aiMessageId,
                               userMessageText,
                             );
@@ -9455,10 +9829,10 @@ Future<void> _deleteMessagesFromDB(
 // 2. （動作）使用主要文字色，並隱藏外層括號
 // 3. 狀態欄與其他普通文字維持主要文字色
 Widget _buildStyledAiMessage(
-    BuildContext context,
-    String message,
-    TextStyle dialogueStyle,
-    ) {
+  BuildContext context,
+  String message,
+  TextStyle dialogueStyle,
+) {
   if (message.trim().isEmpty) {
     return const SizedBox.shrink();
   }
@@ -9508,17 +9882,15 @@ Widget _buildStyledAiMessage(
     }
 
     final bool isAction =
-        matchedText.startsWith('（') ||
-            matchedText.startsWith('(');
+        matchedText.startsWith('（') || matchedText.startsWith('(');
 
     if (isAction) {
       // 只移除最外層括號，不修改資料庫中的原始訊息。
-      final String actionText =
-      matchedText.length >= 2
+      final String actionText = matchedText.length >= 2
           ? matchedText.substring(
-        1,
-        matchedText.length - 1,
-      )
+              1,
+              matchedText.length - 1,
+            )
           : matchedText;
 
       spans.add(

@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 import '../services/toast_utils.dart';
 import 'moment_detail_page.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 
 // 信件內容
 class NotificationListPage extends StatefulWidget {
@@ -20,6 +22,7 @@ class NotificationListPage extends StatefulWidget {
 class _NotificationListPageState extends State<NotificationListPage> {
   bool _isSelectionMode = false;
   bool _isSyncingRewardMail = false;
+  bool _showCollectedOnly = false;
   final Set<String> _selectedMailIds = <String>{};
   final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
     region: 'asia-east1',
@@ -68,6 +71,30 @@ class _NotificationListPageState extends State<NotificationListPage> {
         .collection('mailbox')
         .doc(docId)
         .update({'isRead': true});
+  }
+
+  Future<void> _toggleMailCollected({
+    required String userId,
+    required String docId,
+    required bool isCollected,
+  }) async {
+    final mailRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('mailbox')
+        .doc(docId);
+
+    if (isCollected) {
+      await mailRef.update({
+        'isCollected': false,
+        'collectedAt': FieldValue.delete(),
+      });
+    } else {
+      await mailRef.update({
+        'isCollected': true,
+        'collectedAt': FieldValue.serverTimestamp(),
+      });
+    }
   }
 
   void _enterSelectionMode() {
@@ -236,6 +263,11 @@ class _NotificationListPageState extends State<NotificationListPage> {
     required String caseNumber,
     required String timeText,
     String fromName = '',
+    bool isCollectible = false,
+    bool isCollected = false,
+    String mailTheme = '',
+    String characterAvatarPath = '',
+    List<String> interactionDates = const [],
   }) async {
     if (!isRead) {
       await _markAsRead(userId, docId);
@@ -247,11 +279,18 @@ class _NotificationListPageState extends State<NotificationListPage> {
       context,
       MaterialPageRoute(
         builder: (_) => _MailDetailPage(
+          userId: userId,
+          docId: docId,
           title: title,
           body: body,
           caseNumber: caseNumber,
           timeText: timeText,
           fromName: fromName,
+          isCollectible: isCollectible,
+          initiallyCollected: isCollected,
+          mailTheme: mailTheme,
+          characterAvatarPath: characterAvatarPath,
+          interactionDates: interactionDates,
         ),
       ),
     );
@@ -369,9 +408,45 @@ class _NotificationListPageState extends State<NotificationListPage> {
         ),
       )
           : null,
-      body: userId == null
-          ? Center(child: Text(l10n.please_login_first))
-          : StreamBuilder<QuerySnapshot>(
+        body: userId == null
+            ? Center(child: Text(l10n.please_login_first))
+            : Column(
+            children: [
+            if (!_isSelectionMode)
+        Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+    child:
+    SegmentedButton<bool>(
+      showSelectedIcon: false,
+      segments: const [
+        ButtonSegment<bool>(
+          value: false,
+          icon: Icon(
+            Icons.mail_outline_rounded,
+            size: 18,
+          ),
+          label: Text('全部'),
+        ),
+        ButtonSegment<bool>(
+          value: true,
+          icon: Icon(
+            Icons.favorite_border_rounded,
+            size: 18,
+          ),
+          label: Text('珍藏'),
+        ),
+      ],
+      selected: {_showCollectedOnly},
+      onSelectionChanged: (selection) {
+        setState(() {
+          _showCollectedOnly = selection.first;
+          _selectedMailIds.clear();
+        });
+      },
+    ),
+    ),
+    Expanded(
+    child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -404,7 +479,45 @@ class _NotificationListPageState extends State<NotificationListPage> {
             );
           }
 
-          final mailbox = snapshot.data!.docs;
+          final allMailbox = snapshot.data!.docs;
+
+          final mailbox = _showCollectedOnly
+              ? allMailbox.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return data['isCollected'] == true;
+          }).toList()
+              : allMailbox;
+
+          if (mailbox.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.bookmark_border_rounded,
+                    size: 52,
+                    color: theme.colorScheme.primary.withValues(alpha: 0.45),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    '目前還沒有收藏信件',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '打開想珍藏的信件，點擊右上角收藏即可。',
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
 
           return ListView.builder(
             padding: const EdgeInsets.only(bottom: 12),
@@ -416,6 +529,12 @@ class _NotificationListPageState extends State<NotificationListPage> {
               final bool isRead = data['isRead'] ?? true;
               final String type =
                   data['type']?.toString() ?? 'system';
+              final bool isQixiLetter =
+                  type == 'qixi_letter' ||
+                      data['theme']?.toString() == 'qixi_2026';
+
+              final bool isCollected =
+                  data['isCollected'] == true;
               String title =
                   data['title']?.toString() ?? l10n.new_notification;
               String body = data['body']?.toString() ?? '';
@@ -449,7 +568,38 @@ class _NotificationListPageState extends State<NotificationListPage> {
               final bool isSelected = _selectedMailIds.contains(doc.id);
 
               Widget leadingIcon;
-              if (type == 'like') {
+
+              if (isQixiLetter) {
+                leadingIcon = Container(
+                  width: 50,
+                  height: 50,
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.88),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFE9B4CA),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFE38CAF)
+                            .withValues(alpha: 0.18),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    'assets/images/love.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) {
+                      return const Icon(
+                        Icons.favorite_rounded,
+                        color: Color(0xFFE1779E),
+                      );
+                    },
+                  ),
+                );
+              } else if (type == 'like') {
                 leadingIcon = const CircleAvatar(
                   backgroundColor: Colors.white,
                   child: Icon(
@@ -652,10 +802,19 @@ class _NotificationListPageState extends State<NotificationListPage> {
                         userId: userId,
                         docId: doc.id,
                         isRead: isRead,
-                        title: affectionTitle,
-                        body: affectionBody,
-                        caseNumber: '',
+                        title: title,
+                        body: body,
+                        caseNumber: caseNumber,
                         timeText: timeText,
+                        fromName: fromName,
+                        isCollectible: data['isCollectible'] == true,
+                        isCollected: data['isCollected'] == true,
+                        mailTheme: data['theme']?.toString() ?? '',
+                        characterAvatarPath:
+                        data['characterAvatarPath']?.toString() ?? '',
+                        interactionDates: List<String>.from(
+                          data['interactionDates'] ?? const <String>[],
+                        ),
                       );
                     },
                   ),
@@ -670,12 +829,53 @@ class _NotificationListPageState extends State<NotificationListPage> {
                     .withValues(alpha: 0.15),
                 child: ListTile(
                   leading: buildSelectionLeading(),
-                  title: Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight:
-                      isRead ? FontWeight.normal : FontWeight.bold,
-                    ),
+                  title: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: isQixiLetter
+                                ? const Color(0xFF68425F)
+                                : null,
+                            fontWeight: isQixiLetter || !isRead
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                      if (isQixiLetter) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFFFFD8E7),
+                                Color(0xFFE7DBFF),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color(0xFFE5ABC4),
+                            ),
+                          ),
+                          child: const Text(
+                            '七夕限定',
+                            style: TextStyle(
+                              color: Color(0xFF984A6B),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   subtitle: Text(
                     body,
@@ -684,12 +884,26 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   ),
                   trailing: _isSelectionMode
                       ? null
-                      : Text(
-                    timeText,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                      : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        timeText,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      if (isCollected) ...[
+                        const SizedBox(height: 4),
+                        const Icon(
+                          Icons.bookmark_rounded,
+                          size: 18,
+                          color: Color(0xFFD96391),
+                        ),
+                      ],
+                    ],
                   ),
                   onTap: () async {
                     if (_isSelectionMode) {
@@ -736,6 +950,14 @@ class _NotificationListPageState extends State<NotificationListPage> {
                       caseNumber: caseNumber,
                       timeText: timeText,
                       fromName: fromName,
+                      isCollectible: data['isCollectible'] == true,
+                      isCollected: data['isCollected'] == true,
+                      mailTheme: data['theme']?.toString().trim() ?? '',
+                      characterAvatarPath:
+                      data['characterAvatarPath']?.toString().trim() ?? '',
+                      interactionDates: List<String>.from(
+                        data['interactionDates'] ?? const <String>[],
+                      ),
                     );
                   },
                 ),
@@ -744,6 +966,9 @@ class _NotificationListPageState extends State<NotificationListPage> {
           );
         },
       ),
+    ),
+    ],
+    ),
     );
   }
 }
@@ -1034,29 +1259,305 @@ class _RewardCampaignDetailPageState
   }
 }
 
-class _MailDetailPage extends StatelessWidget {
+class _MailDetailPage extends StatefulWidget {
+  final String userId;
+  final String docId;
   final String title;
   final String body;
   final String caseNumber;
   final String timeText;
   final String fromName;
+  final bool isCollectible;
+  final bool initiallyCollected;
+  final String mailTheme;
+  final String characterAvatarPath;
+  final List<String> interactionDates;
 
   const _MailDetailPage({
+    required this.userId,
+    required this.docId,
     required this.title,
     required this.body,
     required this.caseNumber,
     required this.timeText,
-    this.fromName = '',
+    required this.fromName,
+    required this.isCollectible,
+    required this.initiallyCollected,
+    required this.mailTheme,
+    required this.characterAvatarPath,
+    required this.interactionDates,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
+  State<_MailDetailPage> createState() => _MailDetailPageState();
+}
+
+class _MailDetailPageState extends State<_MailDetailPage> {
+  late bool _isCollected;
+  bool _isUpdatingCollected = false;
+  OverlayEntry? _mailToastEntry;
+  Timer? _mailToastTimer;
+  bool get _isQixiLetter => widget.mailTheme == 'qixi_2026';
+
+  @override
+  void initState() {
+    super.initState();
+    _isCollected = widget.initiallyCollected;
+  }
+
+  void _showMailCenterToast(
+      String message, {
+        bool isError = false,
+        IconData? icon,
+      }) {
+    _mailToastTimer?.cancel();
+    _mailToastEntry?.remove();
+    _mailToastEntry = null;
+
+    final overlay = Overlay.of(context);
+
+    _mailToastEntry = OverlayEntry(
+      builder: (_) {
+        return Positioned.fill(
+          child: IgnorePointer(
+            child: Material(
+              color: Colors.transparent,
+              child: Center(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2B252A)
+                        .withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 14,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        icon ??
+                            (isError
+                                ? Icons.error_outline_rounded
+                                : Icons.bookmark_rounded),
+                        color: isError
+                            ? Colors.redAccent.shade100
+                            : const Color(0xFFFFB7D0),
+                        size: 21,
+                      ),
+                      const SizedBox(width: 9),
+                      Flexible(
+                        child: Text(
+                          message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    overlay.insert(_mailToastEntry!);
+
+    _mailToastTimer = Timer(
+      const Duration(milliseconds: 1500),
+          () {
+        _mailToastEntry?.remove();
+        _mailToastEntry = null;
+      },
+    );
+  }
+
+  Future<void> _toggleCollected() async {
+    if (!widget.isCollectible || _isUpdatingCollected) {
+      return;
+    }
+
+    final bool nextValue = !_isCollected;
+
+    setState(() {
+      _isCollected = nextValue;
+      _isUpdatingCollected = true;
+    });
+
+    try {
+      final mailRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .collection('mailbox')
+          .doc(widget.docId);
+
+      await mailRef.set(
+        {
+          'isCollected': nextValue,
+          if (nextValue)
+            'collectedAt': FieldValue.serverTimestamp()
+          else
+            'collectedAt': FieldValue.delete(),
+        },
+        SetOptions(merge: true),
+      );
+
+      if (!mounted) return;
+
+      _showMailCenterToast(
+        nextValue ? '已收藏這封信 💌' : '已取消收藏',
+      );
+    } catch (error, stackTrace) {
+      debugPrint('❌ 更新信件收藏狀態失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      setState(() {
+        _isCollected = !nextValue;
+      });
+
+      _showMailCenterToast(
+        '收藏狀態更新失敗，請稍後再試',
+        isError: true,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdatingCollected = false;
+        });
+      }
+    }
+  }
+
+  Widget _buildCollectButton({
+    required Color color,
+  }) {
+    if (!widget.isCollectible) {
+      return const SizedBox.shrink();
+    }
+
+    return IconButton(
+      tooltip: _isCollected ? '取消收藏' : '收藏信件',
+      onPressed: _isUpdatingCollected ? null : _toggleCollected,
+      icon: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 220),
+        child: _isUpdatingCollected
+            ? SizedBox(
+          key: const ValueKey('loading'),
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: color,
+          ),
+        )
+            : Icon(
+          _isCollected
+              ? Icons.bookmark_rounded
+              : Icons.bookmark_border_rounded,
+          key: ValueKey(_isCollected),
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCaseNumberCard(
+      ThemeData theme,
+      AppLocalizations l10n,
+      ) {
+    if (widget.caseNumber.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 14,
+      ),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer
+            .withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.mailCaseNumber,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface
+                        .withValues(alpha: 0.55),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                SelectableText(
+                  widget.caseNumber,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.mailCopyCaseNumber,
+            icon: const Icon(
+              Icons.copy_rounded,
+              size: 20,
+            ),
+            onPressed: () async {
+              await Clipboard.setData(
+                ClipboardData(text: widget.caseNumber),
+              );
+
+              if (!mounted) return;
+
+              _showMailCenterToast(
+                l10n.mailCaseNumberCopied,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNormalMail(
+      ThemeData theme,
+      AppLocalizations l10n,
+      ) {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.mailDetailTitle),
         elevation: 0,
+        actions: [
+          _buildCollectButton(
+            color: theme.colorScheme.primary,
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -1065,12 +1566,12 @@ class _MailDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                title,
+                widget.title,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (fromName.isNotEmpty) ...[
+              if (widget.fromName.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -1082,7 +1583,7 @@ class _MailDetailPage extends StatelessWidget {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                          l10n.mailSender(fromName),
+                        l10n.mailSender(widget.fromName),
                         style: TextStyle(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.65),
@@ -1094,82 +1595,24 @@ class _MailDetailPage extends StatelessWidget {
                   ],
                 ),
               ],
-              if (timeText.isNotEmpty) ...[
+              if (widget.timeText.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 Text(
-                  timeText,
+                  widget.timeText,
                   style: TextStyle(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurface
+                        .withValues(alpha: 0.5),
                     fontSize: 12,
                   ),
                 ),
               ],
-              if (caseNumber.isNotEmpty) ...[
+              if (widget.caseNumber.isNotEmpty) ...[
                 const SizedBox(height: 24),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer
-                        .withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.mailCaseNumber,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.55),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            SelectableText(
-                              caseNumber,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: l10n.mailCopyCaseNumber,
-                        icon: const Icon(
-                          Icons.copy_rounded,
-                          size: 20,
-                        ),
-                        onPressed: () async {
-                          await Clipboard.setData(
-                            ClipboardData(text: caseNumber),
-                          );
-
-                          if (!context.mounted) return;
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(l10n.mailCaseNumberCopied),
-                              duration: Duration(seconds: 1),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                _buildCaseNumberCard(theme, l10n),
               ],
               const SizedBox(height: 28),
               SelectableText(
-                body,
+                widget.body,
                 style: const TextStyle(
                   fontSize: 16,
                   height: 1.75,
@@ -1180,5 +1623,324 @@ class _MailDetailPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildQixiProgress() {
+    final int completedCount =
+    widget.interactionDates.length.clamp(0, 3);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(3, (index) {
+        final bool isCompleted = index < completedCount;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                isCompleted
+                    ? 'assets/images/qixi_progress_on.png'
+                    : 'assets/images/qixi_progress_off.png',
+                width: 42,
+                height: 42,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) {
+                  return Icon(
+                    isCompleted
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                    color: isCompleted
+                        ? const Color(0xFFE777A2)
+                        : const Color(0xFF96899C),
+                    size: 30,
+                  );
+                },
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '第 ${index + 1} 日',
+                style: TextStyle(
+                  color: isCompleted
+                      ? const Color(0xFF9A456A)
+                      : const Color(0xFF837686),
+                  fontSize: 10,
+                  fontWeight: isCompleted
+                      ? FontWeight.bold
+                      : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildQixiMail(
+      ThemeData theme,
+      AppLocalizations l10n,
+      ) {
+    const darkPurple = Color(0xFF68425F);
+    const mutedPurple = Color(0xFF806779);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFF8FB),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text('七夕限定信件'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: darkPurple,
+        actions: [
+          _buildCollectButton(
+            color: const Color(0xFFD75E8E),
+          ),
+        ],
+      ),
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFFFEAF2),
+              Color(0xFFF1E9FF),
+              Color(0xFFFFF9FC),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(18, 18, 18, 42),
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/images/qixi_chat_badge.png',
+                  width: 68,
+                  height: 68,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) {
+                    return const Icon(
+                      Icons.nightlight_round,
+                      color: Color(0xFFE078A0),
+                      size: 52,
+                    );
+                  },
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '戀戀七夕・三日之約',
+                  style: TextStyle(
+                    color: darkPurple,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                _buildQixiProgress(),
+                const SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(
+                    22,
+                    26,
+                    22,
+                    30,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.82),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: const Color(0xFFE7B5CB)
+                          .withValues(alpha: 0.75),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF9D6887)
+                            .withValues(alpha: 0.13),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.characterAvatarPath.isNotEmpty)
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFFFFB7D0),
+                                  Color(0xFFBDA7F2),
+                                ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFE88AAE)
+                                      .withValues(alpha: 0.22),
+                                  blurRadius: 12,
+                                ),
+                              ],
+                            ),
+                            child: ClipOval(
+                              child: SizedBox(
+                                width: 64,
+                                height: 64,
+                                child: CachedNetworkImage(
+                                  imageUrl: widget.characterAvatarPath,
+                                  fit: BoxFit.cover,
+                                  fadeInDuration: const Duration(milliseconds: 180),
+                                  placeholder: (_, __) {
+                                    return Container(
+                                      color: const Color(0xFFF4EAF1),
+                                      alignment: Alignment.center,
+                                      child: const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Color(0xFFD8789D),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  errorWidget: (_, __, ___) {
+                                    return Container(
+                                      color: const Color(0xFFF4EAF1),
+                                      alignment: Alignment.center,
+                                      child: const Icon(
+                                        Icons.person_rounded,
+                                        color: Color(0xFF9B7D91),
+                                        size: 32,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (widget.characterAvatarPath.isNotEmpty)
+                        const SizedBox(height: 18),
+                      Text(
+                        widget.title,
+                        style: const TextStyle(
+                          color: darkPurple,
+                          fontSize: 23,
+                          height: 1.35,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (widget.fromName.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.auto_awesome_rounded,
+                              size: 16,
+                              color: Color(0xFFD76A94),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                '來自 ${widget.fromName} 的七夕信',
+                                style: const TextStyle(
+                                  color: mutedPurple,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      if (widget.timeText.isNotEmpty) ...[
+                        const SizedBox(height: 7),
+                        Text(
+                          widget.timeText,
+                          style: const TextStyle(
+                            color: Color(0xFF9A8794),
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 18),
+                      Container(
+                        height: 1,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Color(0xFFE6AFC7),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      SelectableText(
+                        widget.body,
+                        style: const TextStyle(
+                          color: Color(0xFF4F414B),
+                          fontSize: 16,
+                          height: 1.9,
+                          letterSpacing: 0.15,
+                        ),
+                      ),
+                      const SizedBox(height: 26),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 7,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFE3EE),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFFEAB2CA),
+                            ),
+                          ),
+                          child: const Text(
+                            '2026 七夕限定收藏',
+                            style: TextStyle(
+                              color: Color(0xFF9A456A),
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    if (_isQixiLetter) {
+      return _buildQixiMail(theme, l10n);
+    }
+
+    return _buildNormalMail(theme, l10n);
   }
 }

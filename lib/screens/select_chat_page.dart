@@ -868,8 +868,13 @@ class _LatestTab extends StatefulWidget {
 class _LatestTabState extends State<_LatestTab> {
   // 2026 七夕限定活動：台灣時間 8/18 00:00～8/21 00:00。
   // 使用 UTC 邊界，避免玩家位於不同時區時提早出現或延後消失。
-  static final DateTime _qixiStartUtc = DateTime.utc(2026, 8, 17, 16);
-  static final DateTime _qixiEndUtc = DateTime.utc(2026, 8, 20, 16);
+  // 台灣時間：2026/8/19 00:00～2026/8/26 23:59。
+// 使用 UTC 邊界，確保所有玩家看到相同的活動時間。
+  static final DateTime _qixiStartUtc =
+  DateTime.utc(2026, 8, 18, 16);
+
+  static final DateTime _qixiEndUtc =
+  DateTime.utc(2026, 8, 26, 16);
   Timer? _qixiBoundaryTimer;
 
   bool get _isQixiEventActive {
@@ -1184,7 +1189,7 @@ class _LatestTabState extends State<_LatestTab> {
                     const SizedBox(height: 3),
                     Text(
                       isActive
-                          ? '限時三天・8/21 23:59 截止'
+                          ? '限時開啟・8/26 23:59 截止'
                           : '8/19 限定開啟',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
