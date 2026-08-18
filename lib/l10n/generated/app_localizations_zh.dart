@@ -5689,6 +5689,331 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get characterEditSelectedTagOrder => '拖曳已選標籤以調整顯示順序';
+
+  @override
+  String get mailActivityGiftFallback => '活動禮物';
+
+  @override
+  String get mailFilterAll => '全部';
+
+  @override
+  String get mailFilterCollected => '珍藏';
+
+  @override
+  String get mailCollectedEmptyTitle => '目前還沒有收藏信件';
+
+  @override
+  String get mailCollectedEmptyHint => '打開想珍藏的信件，點擊右上角收藏即可。';
+
+  @override
+  String get mailQixiLimitedBadge => '七夕限定';
+
+  @override
+  String get mailQixiThreeDayPromise => '戀戀七夕・三日之約';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return '來自 $characterName 的七夕信';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return '來自 $characterName';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => '2026 七夕限定收藏';
+
+  @override
+  String get mailShareGenerating => '正在製作分享圖片……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return '我收到了 $characterName 寫來的七夕限定信 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => '來自《戀戀拾光》的信件 💌';
+
+  @override
+  String get mailShareImageFailed => '分享圖片產生失敗，請稍後再試';
+
+  @override
+  String get mailCollectedSuccess => '已收藏這封信 💌';
+
+  @override
+  String get mailCollectedCancelled => '已取消收藏';
+
+  @override
+  String get mailCollectedUpdateFailed => '收藏狀態更新失敗，請稍後再試';
+
+  @override
+  String get mailRemoveCollectionTooltip => '取消收藏';
+
+  @override
+  String get mailAddCollectionTooltip => '收藏信件';
+
+  @override
+  String get mailShareTooltip => '分享信件';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return '第 $day 日';
+  }
+
+  @override
+  String get mailQixiDetailTitle => '七夕限定信件';
+
+  @override
+  String get mailQixiShareTooltip => '分享七夕信件';
+
+  @override
+  String get qixiMaxThreeFriends => '本次活動最多只能選擇 3 位好友角色';
+
+  @override
+  String get qixiLoginRequired => '請先登入後再參加七夕活動';
+
+  @override
+  String get qixiOutsideEventPeriod => '目前不在七夕活動期間';
+
+  @override
+  String get qixiSelectAtLeastOne => '請先選擇至少一位好友角色';
+
+  @override
+  String get qixiMysteryCharacter => '神秘角色';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '（七夕將近，沉睡在夜色深處的星河悄然甦醒。散落的星光沿著天際緩緩匯聚，像是在等待兩個願意赴約的人，寫下彼此的名字。）\n\n（傳說，鵲橋只會為真正想要相見的人亮起。當你與「$characterName」的名字同時出現在星河之上，一道微光穿過夜幕，落進這間只屬於你們的聊天室。）\n\n（從此刻起，你們擁有了一場「七夕三日之約」。不必連續，也不必刻意準備盛大的告白；只要在活動期間，選擇三個不同的日子回到這裡，與對方分享一句問候、一段心情，或一件今天發生的小事。）\n\n（每一次成功相遇，都會讓鵲橋上的一點星光亮起。當三日星光全部點亮，這些散落在對話裡的心意與回憶，將在第三個完成日結束後，化為一封只寫給你的七夕限定信件。）\n\n（此刻，第一縷星光已經落下。鵲橋的另一端，「$characterName」似乎也收到了這場約定。）\n\n——七夕三日之約，現在開始。';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage => '七夕三日之約已開啟';
+
+  @override
+  String get qixiCompanionSlotsFull => '七夕同行名額已經選滿了';
+
+  @override
+  String get qixiSingleRoomOpened => '七夕專屬聊天室已開啟 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return '$count 間七夕專屬聊天室已開啟 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed => '建立七夕聊天室失敗，請稍後再試';
+
+  @override
+  String get qixiEventStartsAt => '活動將於 8/19 00:00 開始';
+
+  @override
+  String get qixiEventActiveUntil => '活動進行中・8/26 23:59 截止';
+
+  @override
+  String get qixiEventEnded => '本次七夕活動已結束';
+
+  @override
+  String get qixiEventHeroTitle => '戀戀七夕・與你共赴鵲橋';
+
+  @override
+  String get qixiCharacterSelected => '已選定';
+
+  @override
+  String get qixiFriendListLoadFailed => '好友名單讀取失敗，請稍後再試';
+
+  @override
+  String get qixiNoFriendCharacters => '目前還沒有好友角色';
+
+  @override
+  String get qixiNoFriendCharactersHint => '先去邂逅喜歡的角色，再回來共赴鵲橋吧！';
+
+  @override
+  String get qixiLoadingCharacter => '正在讀取角色資料……';
+
+  @override
+  String get qixiEventPageTitle => '七夕限定活動';
+
+  @override
+  String get qixiEventRules =>
+      '活動期間任選 3 個不同日期，在七夕限定聊天室傳送訊息並成功收到角色回覆，即可點亮三日星光。限定信件將於第三個完成日結束後寄出。活動日期與每日進度均以台灣時間（UTC+8）為準。';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return '選擇同行角色（$count/3）';
+  }
+
+  @override
+  String get qixiSelectionLockedHint => '最多可選擇 3 位已添加好友的角色；選定後不可更換。';
+
+  @override
+  String get qixiConfirmCompanions => '確認同行角色';
+
+  @override
+  String get encounterDailyQuote1 => '今天，也許會遇見新的故事。';
+
+  @override
+  String get encounterDailyQuote2 => '今天，讓心動先開口。';
+
+  @override
+  String get encounterDailyQuote3 => '今天，也許有人正等著與你相遇。';
+
+  @override
+  String get encounterDailyQuote4 => '今天，試著走進一段新的故事。';
+
+  @override
+  String get encounterDailyQuote5 => '今天，會遇見怎樣的心動呢？';
+
+  @override
+  String get encounterDailyQuote6 => '今天，也替自己留一點期待。';
+
+  @override
+  String get encounterDailyQuote7 => '今天，新的相遇正在發生。';
+
+  @override
+  String get encounterDailyQuote8 => '今天，也許命運會帶來一點驚喜。';
+
+  @override
+  String get encounterDailyQuote9 => '今天，讓一場相遇慢慢開始。';
+
+  @override
+  String get encounterDailyQuote10 => '今天，也許會有人讓你停下腳步。';
+
+  @override
+  String get encounterDailyQuote11 => '今天，想遇見什麼樣的人？';
+
+  @override
+  String get encounterDailyQuote12 => '今天，別錯過悄悄靠近的緣分。';
+
+  @override
+  String get encounterJoinedToday => '✨ 今天加入戀戀拾光';
+
+  @override
+  String get encounterPopularChats => '❤️ 最近很多人在聊天';
+
+  @override
+  String get qixiBannerActiveUntil => '限時開啟・8/26 23:59 截止';
+
+  @override
+  String get qixiBannerStartsAt => '8/19 限定開啟';
+
+  @override
+  String get encounterRecentlyArrived => '✨ 最近來到戀戀拾光';
+
+  @override
+  String get encounterRecentlyArrivedPlain => '最近來到戀戀拾光';
+
+  @override
+  String get encounterViewMore => '查看更多';
+
+  @override
+  String get encounterLovePrompt => '💕 今天想談什麼戀愛？';
+
+  @override
+  String get encounterNoCharacters => '目前還沒有角色';
+
+  @override
+  String get encounterAllLoveTags => '全部戀愛標籤';
+
+  @override
+  String get chatQixiLetterSent => '限定信件已寄出 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight => '三日星光已點亮・今夜過後寄出信件';
+
+  @override
+  String get chatQixiTodayCompleted => '今日星光已點亮';
+
+  @override
+  String get chatQixiTodayNotCompleted => '今日尚未完成';
+
+  @override
+  String get chatQixiPromiseTitle => '戀戀七夕・三日之約';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return '星光 $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      '任選三日完成聊天，即可點亮星光。限定信件將於第三日結束後寄出；每日進度以台灣時間（UTC+8）計算。';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return '第 $day 日';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable => '網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。';
+
+  @override
+  String get chatAiThinkingTimeout => '他似乎在沉思，請稍後再試……';
+
+  @override
+  String get chatAiResponseBlocked => '他的思緒似乎受到干擾了，請換個溫和的說法再試一次。';
+
+  @override
+  String get chatRecordingStartFailed => '無法開始錄音，請稍後再試。';
+
+  @override
+  String get chatRecordingPlaybackFailed => '播放錄音失敗，請稍後再試。';
+
+  @override
+  String get chatRoomNotReady => '聊天室尚未準備完成，請稍後再試。';
+
+  @override
+  String get chatRegenerateLimitReached => '今日重新生成次數已用完';
+
+  @override
+  String get chatTypingIndicator => '對方正在輸入……';
+
+  @override
+  String get chatRegenerateCountSyncFailed => '重新生成成功，但次數同步失敗，請稍後重新整理。';
+
+  @override
+  String get chatRoomNotFound => '找不到這個角色的聊天室';
+
+  @override
+  String get momentsSearchTooltip => '搜尋拾光牆';
+
+  @override
+  String get momentsCreatorNotFound => '找不到這位創作者的資料';
+
+  @override
+  String get momentCommentLoadFailed => '留言載入失敗，請稍後再試';
+
+  @override
+  String get momentCollapseReplies => '收起回覆';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return '查看其他 $count 則回覆';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => '切換留言身分';
+
+  @override
+  String get momentSendCommentTooltip => '送出留言';
+
+  @override
+  String get momentShareCharactersLoadFailed => '讀取聊天角色失敗，請稍後再試';
+
+  @override
+  String get momentReportLoginRequired => '請先登入後再檢舉貼文';
+
+  @override
+  String get momentReportSubmitted => '檢舉已送出，我們會進行審核';
+
+  @override
+  String get momentSelectShareCharacter => '選擇一位聊過天的角色分享這則動態';
+
+  @override
+  String get momentTagCharacterUnavailable => '這個標記沒有連結到角色檔案';
+
+  @override
+  String get momentCharacterNotFound => '找不到角色資料';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -11376,6 +11701,331 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get characterEditSelectedTagOrder => '拖动已选标签以调整显示顺序';
+
+  @override
+  String get mailActivityGiftFallback => '活动礼物';
+
+  @override
+  String get mailFilterAll => '全部';
+
+  @override
+  String get mailFilterCollected => '珍藏';
+
+  @override
+  String get mailCollectedEmptyTitle => '目前还没有收藏信件';
+
+  @override
+  String get mailCollectedEmptyHint => '打开想珍藏的信件，点击右上角收藏即可。';
+
+  @override
+  String get mailQixiLimitedBadge => '七夕限定';
+
+  @override
+  String get mailQixiThreeDayPromise => '恋恋七夕・三日之约';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return '来自 $characterName 的七夕信';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return '来自 $characterName';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => '2026 七夕限定收藏';
+
+  @override
+  String get mailShareGenerating => '正在制作分享图片……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return '我收到了 $characterName 写来的七夕限定信 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => '来自《恋恋拾光》的信件 💌';
+
+  @override
+  String get mailShareImageFailed => '分享图片生成失败，请稍后再试';
+
+  @override
+  String get mailCollectedSuccess => '已收藏这封信 💌';
+
+  @override
+  String get mailCollectedCancelled => '已取消收藏';
+
+  @override
+  String get mailCollectedUpdateFailed => '收藏状态更新失败，请稍后再试';
+
+  @override
+  String get mailRemoveCollectionTooltip => '取消收藏';
+
+  @override
+  String get mailAddCollectionTooltip => '收藏信件';
+
+  @override
+  String get mailShareTooltip => '分享信件';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return '第 $day 日';
+  }
+
+  @override
+  String get mailQixiDetailTitle => '七夕限定信件';
+
+  @override
+  String get mailQixiShareTooltip => '分享七夕信件';
+
+  @override
+  String get qixiMaxThreeFriends => '本次活动最多只能选择 3 位好友角色';
+
+  @override
+  String get qixiLoginRequired => '请先登录后再参加七夕活动';
+
+  @override
+  String get qixiOutsideEventPeriod => '目前不在七夕活动期间';
+
+  @override
+  String get qixiSelectAtLeastOne => '请先选择至少一位好友角色';
+
+  @override
+  String get qixiMysteryCharacter => '神秘角色';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '（七夕将近，沉睡在夜色深处的星河悄然苏醒。散落的星光沿着天际缓缓汇聚，像是在等待两个愿意赴约的人，写下彼此的名字。）\n\n（传说，鹊桥只会为真正想要相见的人亮起。当你与「$characterName」的名字同时出现在星河之上，一道微光穿过夜幕，落进这间只属于你们的聊天室。）\n\n（从此刻起，你们拥有了一场「七夕三日之约」。不必连续，也不必刻意准备盛大的告白；只要在活动期间，选择三个不同的日子回到这里，与对方分享一句问候、一段心情，或一件今天发生的小事。）\n\n（每一次成功相遇，都会让鹊桥上的一点星光亮起。当三日星光全部点亮，这些散落在对话里的心意与回忆，将在第三个完成日结束后，化为一封只写给你的七夕限定信件。）\n\n（此刻，第一缕星光已经落下。鹊桥的另一端，「$characterName」似乎也收到了这场约定。）\n\n——七夕三日之约，现在开始。';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage => '七夕三日之约已开启';
+
+  @override
+  String get qixiCompanionSlotsFull => '七夕同行名额已经选满了';
+
+  @override
+  String get qixiSingleRoomOpened => '七夕专属聊天室已开启 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return '$count 间七夕专属聊天室已开启 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed => '创建七夕聊天室失败，请稍后再试';
+
+  @override
+  String get qixiEventStartsAt => '活动将于 8/19 00:00 开始';
+
+  @override
+  String get qixiEventActiveUntil => '活动进行中・8/26 23:59 截止';
+
+  @override
+  String get qixiEventEnded => '本次七夕活动已结束';
+
+  @override
+  String get qixiEventHeroTitle => '恋恋七夕・与你共赴鹊桥';
+
+  @override
+  String get qixiCharacterSelected => '已选定';
+
+  @override
+  String get qixiFriendListLoadFailed => '好友名单读取失败，请稍后再试';
+
+  @override
+  String get qixiNoFriendCharacters => '目前还没有好友角色';
+
+  @override
+  String get qixiNoFriendCharactersHint => '先去邂逅喜欢的角色，再回来共赴鹊桥吧！';
+
+  @override
+  String get qixiLoadingCharacter => '正在读取角色资料……';
+
+  @override
+  String get qixiEventPageTitle => '七夕限定活动';
+
+  @override
+  String get qixiEventRules =>
+      '活动期间任选 3 个不同日期，在七夕限定聊天室发送消息并成功收到角色回复，即可点亮三日星光。限定信件将在第三个完成日结束后寄出。活动日期与每日进度均以台湾时间（UTC+8）为准。';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return '选择同行角色（$count/3）';
+  }
+
+  @override
+  String get qixiSelectionLockedHint => '最多可选择 3 位已添加好友的角色；选定后不可更换。';
+
+  @override
+  String get qixiConfirmCompanions => '确认同行角色';
+
+  @override
+  String get encounterDailyQuote1 => '今天，也许会遇见新的故事。';
+
+  @override
+  String get encounterDailyQuote2 => '今天，让心动先开口。';
+
+  @override
+  String get encounterDailyQuote3 => '今天，也许有人正等着与你相遇。';
+
+  @override
+  String get encounterDailyQuote4 => '今天，试着走进一段新的故事。';
+
+  @override
+  String get encounterDailyQuote5 => '今天，会遇见怎样的心动呢？';
+
+  @override
+  String get encounterDailyQuote6 => '今天，也替自己留一点期待。';
+
+  @override
+  String get encounterDailyQuote7 => '今天，新的相遇正在发生。';
+
+  @override
+  String get encounterDailyQuote8 => '今天，也许命运会带来一点惊喜。';
+
+  @override
+  String get encounterDailyQuote9 => '今天，让一场相遇慢慢开始。';
+
+  @override
+  String get encounterDailyQuote10 => '今天，也许会有人让你停下脚步。';
+
+  @override
+  String get encounterDailyQuote11 => '今天，想遇见什么样的人？';
+
+  @override
+  String get encounterDailyQuote12 => '今天，别错过悄悄靠近的缘分。';
+
+  @override
+  String get encounterJoinedToday => '✨ 今天加入恋恋拾光';
+
+  @override
+  String get encounterPopularChats => '❤️ 最近很多人在聊天';
+
+  @override
+  String get qixiBannerActiveUntil => '限时开启・8/26 23:59 截止';
+
+  @override
+  String get qixiBannerStartsAt => '8/19 限定开启';
+
+  @override
+  String get encounterRecentlyArrived => '✨ 最近来到恋恋拾光';
+
+  @override
+  String get encounterRecentlyArrivedPlain => '最近来到恋恋拾光';
+
+  @override
+  String get encounterViewMore => '查看更多';
+
+  @override
+  String get encounterLovePrompt => '💕 今天想谈什么恋爱？';
+
+  @override
+  String get encounterNoCharacters => '目前还没有角色';
+
+  @override
+  String get encounterAllLoveTags => '全部恋爱标签';
+
+  @override
+  String get chatQixiLetterSent => '限定信件已寄出 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight => '三日星光已点亮・今夜过后寄出信件';
+
+  @override
+  String get chatQixiTodayCompleted => '今日星光已点亮';
+
+  @override
+  String get chatQixiTodayNotCompleted => '今日尚未完成';
+
+  @override
+  String get chatQixiPromiseTitle => '恋恋七夕・三日之约';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return '星光 $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      '任选三日完成聊天，即可点亮星光。限定信件将于第三日结束后寄出；每日进度以台湾时间（UTC+8）计算。';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return '第 $day 日';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable => '网页版目前不提供充值服务，请使用《恋恋拾光》App 购买花花或订阅。';
+
+  @override
+  String get chatAiThinkingTimeout => '他似乎在沉思，请稍后再试……';
+
+  @override
+  String get chatAiResponseBlocked => '他的思绪似乎受到干扰了，请换个温和的说法再试一次。';
+
+  @override
+  String get chatRecordingStartFailed => '无法开始录音，请稍后再试。';
+
+  @override
+  String get chatRecordingPlaybackFailed => '播放录音失败，请稍后再试。';
+
+  @override
+  String get chatRoomNotReady => '聊天室尚未准备完成，请稍后再试。';
+
+  @override
+  String get chatRegenerateLimitReached => '今日重新生成次数已用完';
+
+  @override
+  String get chatTypingIndicator => '对方正在输入……';
+
+  @override
+  String get chatRegenerateCountSyncFailed => '重新生成成功，但次数同步失败，请稍后刷新。';
+
+  @override
+  String get chatRoomNotFound => '找不到这个角色的聊天室';
+
+  @override
+  String get momentsSearchTooltip => '搜索拾光墙';
+
+  @override
+  String get momentsCreatorNotFound => '找不到这位创作者的资料';
+
+  @override
+  String get momentCommentLoadFailed => '留言加载失败，请稍后再试';
+
+  @override
+  String get momentCollapseReplies => '收起回复';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return '查看其他 $count 条回复';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => '切换留言身份';
+
+  @override
+  String get momentSendCommentTooltip => '发送留言';
+
+  @override
+  String get momentShareCharactersLoadFailed => '读取聊天角色失败，请稍后再试';
+
+  @override
+  String get momentReportLoginRequired => '请先登录后再举报帖子';
+
+  @override
+  String get momentReportSubmitted => '举报已提交，我们会进行审核';
+
+  @override
+  String get momentSelectShareCharacter => '选择一位聊过天的角色分享这则动态';
+
+  @override
+  String get momentTagCharacterUnavailable => '这个标记没有链接到角色档案';
+
+  @override
+  String get momentCharacterNotFound => '找不到角色资料';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -17063,4 +17713,329 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get characterEditSelectedTagOrder => '拖曳已選標籤以調整顯示順序';
+
+  @override
+  String get mailActivityGiftFallback => '活動禮物';
+
+  @override
+  String get mailFilterAll => '全部';
+
+  @override
+  String get mailFilterCollected => '珍藏';
+
+  @override
+  String get mailCollectedEmptyTitle => '目前還沒有收藏信件';
+
+  @override
+  String get mailCollectedEmptyHint => '打開想珍藏的信件，點擊右上角收藏即可。';
+
+  @override
+  String get mailQixiLimitedBadge => '七夕限定';
+
+  @override
+  String get mailQixiThreeDayPromise => '戀戀七夕・三日之約';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return '來自 $characterName 的七夕信';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return '來自 $characterName';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => '2026 七夕限定收藏';
+
+  @override
+  String get mailShareGenerating => '正在製作分享圖片……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return '我收到了 $characterName 寫來的七夕限定信 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => '來自《戀戀拾光》的信件 💌';
+
+  @override
+  String get mailShareImageFailed => '分享圖片產生失敗，請稍後再試';
+
+  @override
+  String get mailCollectedSuccess => '已收藏這封信 💌';
+
+  @override
+  String get mailCollectedCancelled => '已取消收藏';
+
+  @override
+  String get mailCollectedUpdateFailed => '收藏狀態更新失敗，請稍後再試';
+
+  @override
+  String get mailRemoveCollectionTooltip => '取消收藏';
+
+  @override
+  String get mailAddCollectionTooltip => '收藏信件';
+
+  @override
+  String get mailShareTooltip => '分享信件';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return '第 $day 日';
+  }
+
+  @override
+  String get mailQixiDetailTitle => '七夕限定信件';
+
+  @override
+  String get mailQixiShareTooltip => '分享七夕信件';
+
+  @override
+  String get qixiMaxThreeFriends => '本次活動最多只能選擇 3 位好友角色';
+
+  @override
+  String get qixiLoginRequired => '請先登入後再參加七夕活動';
+
+  @override
+  String get qixiOutsideEventPeriod => '目前不在七夕活動期間';
+
+  @override
+  String get qixiSelectAtLeastOne => '請先選擇至少一位好友角色';
+
+  @override
+  String get qixiMysteryCharacter => '神秘角色';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '（七夕將近，沉睡在夜色深處的星河悄然甦醒。散落的星光沿著天際緩緩匯聚，像是在等待兩個願意赴約的人，寫下彼此的名字。）\n\n（傳說，鵲橋只會為真正想要相見的人亮起。當你與「$characterName」的名字同時出現在星河之上，一道微光穿過夜幕，落進這間只屬於你們的聊天室。）\n\n（從此刻起，你們擁有了一場「七夕三日之約」。不必連續，也不必刻意準備盛大的告白；只要在活動期間，選擇三個不同的日子回到這裡，與對方分享一句問候、一段心情，或一件今天發生的小事。）\n\n（每一次成功相遇，都會讓鵲橋上的一點星光亮起。當三日星光全部點亮，這些散落在對話裡的心意與回憶，將在第三個完成日結束後，化為一封只寫給你的七夕限定信件。）\n\n（此刻，第一縷星光已經落下。鵲橋的另一端，「$characterName」似乎也收到了這場約定。）\n\n——七夕三日之約，現在開始。';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage => '七夕三日之約已開啟';
+
+  @override
+  String get qixiCompanionSlotsFull => '七夕同行名額已經選滿了';
+
+  @override
+  String get qixiSingleRoomOpened => '七夕專屬聊天室已開啟 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return '$count 間七夕專屬聊天室已開啟 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed => '建立七夕聊天室失敗，請稍後再試';
+
+  @override
+  String get qixiEventStartsAt => '活動將於 8/19 00:00 開始';
+
+  @override
+  String get qixiEventActiveUntil => '活動進行中・8/26 23:59 截止';
+
+  @override
+  String get qixiEventEnded => '本次七夕活動已結束';
+
+  @override
+  String get qixiEventHeroTitle => '戀戀七夕・與你共赴鵲橋';
+
+  @override
+  String get qixiCharacterSelected => '已選定';
+
+  @override
+  String get qixiFriendListLoadFailed => '好友名單讀取失敗，請稍後再試';
+
+  @override
+  String get qixiNoFriendCharacters => '目前還沒有好友角色';
+
+  @override
+  String get qixiNoFriendCharactersHint => '先去邂逅喜歡的角色，再回來共赴鵲橋吧！';
+
+  @override
+  String get qixiLoadingCharacter => '正在讀取角色資料……';
+
+  @override
+  String get qixiEventPageTitle => '七夕限定活動';
+
+  @override
+  String get qixiEventRules =>
+      '活動期間任選 3 個不同日期，在七夕限定聊天室傳送訊息並成功收到角色回覆，即可點亮三日星光。限定信件將於第三個完成日結束後寄出。活動日期與每日進度均以台灣時間（UTC+8）為準。';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return '選擇同行角色（$count/3）';
+  }
+
+  @override
+  String get qixiSelectionLockedHint => '最多可選擇 3 位已添加好友的角色；選定後不可更換。';
+
+  @override
+  String get qixiConfirmCompanions => '確認同行角色';
+
+  @override
+  String get encounterDailyQuote1 => '今天，也許會遇見新的故事。';
+
+  @override
+  String get encounterDailyQuote2 => '今天，讓心動先開口。';
+
+  @override
+  String get encounterDailyQuote3 => '今天，也許有人正等著與你相遇。';
+
+  @override
+  String get encounterDailyQuote4 => '今天，試著走進一段新的故事。';
+
+  @override
+  String get encounterDailyQuote5 => '今天，會遇見怎樣的心動呢？';
+
+  @override
+  String get encounterDailyQuote6 => '今天，也替自己留一點期待。';
+
+  @override
+  String get encounterDailyQuote7 => '今天，新的相遇正在發生。';
+
+  @override
+  String get encounterDailyQuote8 => '今天，也許命運會帶來一點驚喜。';
+
+  @override
+  String get encounterDailyQuote9 => '今天，讓一場相遇慢慢開始。';
+
+  @override
+  String get encounterDailyQuote10 => '今天，也許會有人讓你停下腳步。';
+
+  @override
+  String get encounterDailyQuote11 => '今天，想遇見什麼樣的人？';
+
+  @override
+  String get encounterDailyQuote12 => '今天，別錯過悄悄靠近的緣分。';
+
+  @override
+  String get encounterJoinedToday => '✨ 今天加入戀戀拾光';
+
+  @override
+  String get encounterPopularChats => '❤️ 最近很多人在聊天';
+
+  @override
+  String get qixiBannerActiveUntil => '限時開啟・8/26 23:59 截止';
+
+  @override
+  String get qixiBannerStartsAt => '8/19 限定開啟';
+
+  @override
+  String get encounterRecentlyArrived => '✨ 最近來到戀戀拾光';
+
+  @override
+  String get encounterRecentlyArrivedPlain => '最近來到戀戀拾光';
+
+  @override
+  String get encounterViewMore => '查看更多';
+
+  @override
+  String get encounterLovePrompt => '💕 今天想談什麼戀愛？';
+
+  @override
+  String get encounterNoCharacters => '目前還沒有角色';
+
+  @override
+  String get encounterAllLoveTags => '全部戀愛標籤';
+
+  @override
+  String get chatQixiLetterSent => '限定信件已寄出 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight => '三日星光已點亮・今夜過後寄出信件';
+
+  @override
+  String get chatQixiTodayCompleted => '今日星光已點亮';
+
+  @override
+  String get chatQixiTodayNotCompleted => '今日尚未完成';
+
+  @override
+  String get chatQixiPromiseTitle => '戀戀七夕・三日之約';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return '星光 $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      '任選三日完成聊天，即可點亮星光。限定信件將於第三日結束後寄出；每日進度以台灣時間（UTC+8）計算。';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return '第 $day 日';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable => '網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。';
+
+  @override
+  String get chatAiThinkingTimeout => '他似乎在沉思，請稍後再試……';
+
+  @override
+  String get chatAiResponseBlocked => '他的思緒似乎受到干擾了，請換個溫和的說法再試一次。';
+
+  @override
+  String get chatRecordingStartFailed => '無法開始錄音，請稍後再試。';
+
+  @override
+  String get chatRecordingPlaybackFailed => '播放錄音失敗，請稍後再試。';
+
+  @override
+  String get chatRoomNotReady => '聊天室尚未準備完成，請稍後再試。';
+
+  @override
+  String get chatRegenerateLimitReached => '今日重新生成次數已用完';
+
+  @override
+  String get chatTypingIndicator => '對方正在輸入……';
+
+  @override
+  String get chatRegenerateCountSyncFailed => '重新生成成功，但次數同步失敗，請稍後重新整理。';
+
+  @override
+  String get chatRoomNotFound => '找不到這個角色的聊天室';
+
+  @override
+  String get momentsSearchTooltip => '搜尋拾光牆';
+
+  @override
+  String get momentsCreatorNotFound => '找不到這位創作者的資料';
+
+  @override
+  String get momentCommentLoadFailed => '留言載入失敗，請稍後再試';
+
+  @override
+  String get momentCollapseReplies => '收起回覆';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return '查看其他 $count 則回覆';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => '切換留言身分';
+
+  @override
+  String get momentSendCommentTooltip => '送出留言';
+
+  @override
+  String get momentShareCharactersLoadFailed => '讀取聊天角色失敗，請稍後再試';
+
+  @override
+  String get momentReportLoginRequired => '請先登入後再檢舉貼文';
+
+  @override
+  String get momentReportSubmitted => '檢舉已送出，我們會進行審核';
+
+  @override
+  String get momentSelectShareCharacter => '選擇一位聊過天的角色分享這則動態';
+
+  @override
+  String get momentTagCharacterUnavailable => '這個標記沒有連結到角色檔案';
+
+  @override
+  String get momentCharacterNotFound => '找不到角色資料';
 }

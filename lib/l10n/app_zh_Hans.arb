@@ -2842,5 +2842,189 @@
   "characterProfileNoIntroduction": "创作者尚未填写角色简介",
   "characterProfileViewMore": "查看更多",
   "characterProfileCollapse": "收起",
-  "characterEditSelectedTagOrder": "拖动已选标签以调整显示顺序"
+  "characterEditSelectedTagOrder": "拖动已选标签以调整显示顺序",
+  "mailActivityGiftFallback": "活动礼物",
+  "mailFilterAll": "全部",
+  "mailFilterCollected": "珍藏",
+  "mailCollectedEmptyTitle": "目前还没有收藏信件",
+  "mailCollectedEmptyHint": "打开想珍藏的信件，点击右上角收藏即可。",
+  "mailQixiLimitedBadge": "七夕限定",
+  "mailQixiThreeDayPromise": "恋恋七夕・三日之约",
+  "mailQixiFromCharacter": "来自 {characterName} 的七夕信",
+  "@mailQixiFromCharacter": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailFromCharacter": "来自 {characterName}",
+  "@mailFromCharacter": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailQixiCollectionLabel": "2026 七夕限定收藏",
+  "mailShareGenerating": "正在制作分享图片……",
+  "mailShareQixiMessage": "我收到了 {characterName} 写来的七夕限定信 💌",
+  "@mailShareQixiMessage": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailShareDefaultMessage": "来自《恋恋拾光》的信件 💌",
+  "mailShareImageFailed": "分享图片生成失败，请稍后再试",
+  "mailCollectedSuccess": "已收藏这封信 💌",
+  "mailCollectedCancelled": "已取消收藏",
+  "mailCollectedUpdateFailed": "收藏状态更新失败，请稍后再试",
+  "mailRemoveCollectionTooltip": "取消收藏",
+  "mailAddCollectionTooltip": "收藏信件",
+  "mailShareTooltip": "分享信件",
+  "mailQixiDayNumber": "第 {day} 日",
+  "@mailQixiDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "mailQixiDetailTitle": "七夕限定信件",
+  "mailQixiShareTooltip": "分享七夕信件",
+  "qixiMaxThreeFriends": "本次活动最多只能选择 3 位好友角色",
+  "qixiLoginRequired": "请先登录后再参加七夕活动",
+  "qixiOutsideEventPeriod": "目前不在七夕活动期间",
+  "qixiSelectAtLeastOne": "请先选择至少一位好友角色",
+  "qixiMysteryCharacter": "神秘角色",
+
+  "qixiOpeningStory": "（七夕将近，沉睡在夜色深处的星河悄然苏醒。散落的星光沿着天际缓缓汇聚，像是在等待两个愿意赴约的人，写下彼此的名字。）\n\n（传说，鹊桥只会为真正想要相见的人亮起。当你与「{characterName}」的名字同时出现在星河之上，一道微光穿过夜幕，落进这间只属于你们的聊天室。）\n\n（从此刻起，你们拥有了一场「七夕三日之约」。不必连续，也不必刻意准备盛大的告白；只要在活动期间，选择三个不同的日子回到这里，与对方分享一句问候、一段心情，或一件今天发生的小事。）\n\n（每一次成功相遇，都会让鹊桥上的一点星光亮起。当三日星光全部点亮，这些散落在对话里的心意与回忆，将在第三个完成日结束后，化为一封只写给你的七夕限定信件。）\n\n（此刻，第一缕星光已经落下。鹊桥的另一端，「{characterName}」似乎也收到了这场约定。）\n\n——七夕三日之约，现在开始。",
+  "@qixiOpeningStory": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "qixiRoomOpenedLastMessage": "七夕三日之约已开启",
+  "qixiCompanionSlotsFull": "七夕同行名额已经选满了",
+  "qixiSingleRoomOpened": "七夕专属聊天室已开启 💕",
+
+  "qixiMultipleRoomsOpened": "{count} 间七夕专属聊天室已开启 💕",
+  "@qixiMultipleRoomsOpened": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "qixiCreateRoomFailed": "创建七夕聊天室失败，请稍后再试",
+  "qixiEventStartsAt": "活动将于 8/19 00:00 开始",
+  "qixiEventActiveUntil": "活动进行中・8/26 23:59 截止",
+  "qixiEventEnded": "本次七夕活动已结束",
+  "qixiEventHeroTitle": "恋恋七夕・与你共赴鹊桥",
+  "qixiCharacterSelected": "已选定",
+  "qixiFriendListLoadFailed": "好友名单读取失败，请稍后再试",
+  "qixiNoFriendCharacters": "目前还没有好友角色",
+  "qixiNoFriendCharactersHint": "先去邂逅喜欢的角色，再回来共赴鹊桥吧！",
+  "qixiLoadingCharacter": "正在读取角色资料……",
+  "qixiEventPageTitle": "七夕限定活动",
+  "qixiEventRules": "活动期间任选 3 个不同日期，在七夕限定聊天室发送消息并成功收到角色回复，即可点亮三日星光。限定信件将在第三个完成日结束后寄出。活动日期与每日进度均以台湾时间（UTC+8）为准。",
+
+  "qixiSelectCompanions": "选择同行角色（{count}/3）",
+  "@qixiSelectCompanions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "qixiSelectionLockedHint": "最多可选择 3 位已添加好友的角色；选定后不可更换。",
+  "qixiConfirmCompanions": "确认同行角色",
+  "encounterDailyQuote1": "今天，也许会遇见新的故事。",
+  "encounterDailyQuote2": "今天，让心动先开口。",
+  "encounterDailyQuote3": "今天，也许有人正等着与你相遇。",
+  "encounterDailyQuote4": "今天，试着走进一段新的故事。",
+  "encounterDailyQuote5": "今天，会遇见怎样的心动呢？",
+  "encounterDailyQuote6": "今天，也替自己留一点期待。",
+  "encounterDailyQuote7": "今天，新的相遇正在发生。",
+  "encounterDailyQuote8": "今天，也许命运会带来一点惊喜。",
+  "encounterDailyQuote9": "今天，让一场相遇慢慢开始。",
+  "encounterDailyQuote10": "今天，也许会有人让你停下脚步。",
+  "encounterDailyQuote11": "今天，想遇见什么样的人？",
+  "encounterDailyQuote12": "今天，别错过悄悄靠近的缘分。",
+
+  "encounterJoinedToday": "✨ 今天加入恋恋拾光",
+  "encounterPopularChats": "❤️ 最近很多人在聊天",
+  "qixiBannerActiveUntil": "限时开启・8/26 23:59 截止",
+  "qixiBannerStartsAt": "8/19 限定开启",
+  "encounterRecentlyArrived": "✨ 最近来到恋恋拾光",
+  "encounterRecentlyArrivedPlain": "最近来到恋恋拾光",
+  "encounterViewMore": "查看更多",
+  "encounterLovePrompt": "💕 今天想谈什么恋爱？",
+  "encounterNoCharacters": "目前还没有角色",
+  "encounterAllLoveTags": "全部恋爱标签",
+  "chatQixiLetterSent": "限定信件已寄出 💌",
+  "chatQixiLetterPendingTonight": "三日星光已点亮・今夜过后寄出信件",
+  "chatQixiTodayCompleted": "今日星光已点亮",
+  "chatQixiTodayNotCompleted": "今日尚未完成",
+  "chatQixiPromiseTitle": "恋恋七夕・三日之约",
+
+  "chatQixiStarProgress": "星光 {count}/3",
+  "@chatQixiStarProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "chatQixiProgressRule": "任选三日完成聊天，即可点亮星光。限定信件将于第三日结束后寄出；每日进度以台湾时间（UTC+8）计算。",
+
+  "chatQixiDayNumber": "第 {day} 日",
+  "@chatQixiDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+
+  "chatWebPurchaseUnavailable": "网页版目前不提供充值服务，请使用《恋恋拾光》App 购买花花或订阅。",
+  "chatAiThinkingTimeout": "他似乎在沉思，请稍后再试……",
+  "chatAiResponseBlocked": "他的思绪似乎受到干扰了，请换个温和的说法再试一次。",
+  "chatRecordingStartFailed": "无法开始录音，请稍后再试。",
+  "chatRecordingPlaybackFailed": "播放录音失败，请稍后再试。",
+  "chatRoomNotReady": "聊天室尚未准备完成，请稍后再试。",
+  "chatRegenerateLimitReached": "今日重新生成次数已用完",
+  "chatTypingIndicator": "对方正在输入……",
+  "chatRegenerateCountSyncFailed": "重新生成成功，但次数同步失败，请稍后刷新。",
+  "chatRoomNotFound": "找不到这个角色的聊天室",
+  "momentsSearchTooltip": "搜索拾光墙",
+  "momentsCreatorNotFound": "找不到这位创作者的资料",
+  "momentCommentLoadFailed": "留言加载失败，请稍后再试",
+  "momentCollapseReplies": "收起回复",
+
+  "momentViewOtherReplies": "查看其他 {count} 条回复",
+  "@momentViewOtherReplies": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "momentSwitchCommentIdentity": "切换留言身份",
+  "momentSendCommentTooltip": "发送留言",
+  "momentShareCharactersLoadFailed": "读取聊天角色失败，请稍后再试",
+  "momentReportLoginRequired": "请先登录后再举报帖子",
+  "momentReportSubmitted": "举报已提交，我们会进行审核",
+  "momentSelectShareCharacter": "选择一位聊过天的角色分享这则动态",
+  "momentTagCharacterUnavailable": "这个标记没有链接到角色档案",
+  "momentCharacterNotFound": "找不到角色资料"
 }

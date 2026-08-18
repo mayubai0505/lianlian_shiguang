@@ -4,13 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:intl/intl.dart';
-
 import '../services/toast_utils.dart';
 import 'moment_detail_page.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:typed_data';
 
+import 'package:screenshot/screenshot.dart';
+import 'package:share_plus/share_plus.dart';
 // 信件內容
 class NotificationListPage extends StatefulWidget {
   const NotificationListPage({super.key});
@@ -160,7 +162,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                     ).pop(false);
                   },
                   child:
-                   Text(l10n.cancelButton),
+                  Text(l10n.cancelButton),
                 ),
                 FilledButton(
                   style:
@@ -174,7 +176,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                     ).pop(true);
                   },
                   child:
-                   Text(l10n.delete_btn),
+                  Text(l10n.delete_btn),
                 ),
               ],
             );
@@ -220,7 +222,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
       // ==========================================
       ToastUtils.showCenterToast(
         context,
-        l10n.mailDeleteSuccess(_selectedMailIds.length),
+        l10n.mailDeleteSuccess(deleteCount),
         customIcon:
         Icons.delete_outline_rounded,
       );
@@ -303,6 +305,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
     required Map<String, dynamic> data,
     required String timeText,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     if (!isRead) {
       await _markAsRead(userId, docId);
     }
@@ -316,7 +319,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
           campaignId: data['rewardCampaignId']?.toString() ??
               data['campaignId']?.toString() ??
               '',
-          title: data['title']?.toString() ?? '活動禮物',
+          title: data['title']?.toString() ?? l10n.mailActivityGiftFallback,
           body: data['body']?.toString() ?? '',
           rewardAmount: (data['rewardAmount'] as num?)?.toInt() ??
               int.tryParse(data['rewardAmount']?.toString() ?? '') ??
@@ -408,567 +411,567 @@ class _NotificationListPageState extends State<NotificationListPage> {
         ),
       )
           : null,
-        body: userId == null
-            ? Center(child: Text(l10n.please_login_first))
-            : Column(
-            children: [
-            if (!_isSelectionMode)
-        Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-    child:
-    SegmentedButton<bool>(
-      showSelectedIcon: false,
-      segments: const [
-        ButtonSegment<bool>(
-          value: false,
-          icon: Icon(
-            Icons.mail_outline_rounded,
-            size: 18,
-          ),
-          label: Text('全部'),
-        ),
-        ButtonSegment<bool>(
-          value: true,
-          icon: Icon(
-            Icons.favorite_border_rounded,
-            size: 18,
-          ),
-          label: Text('珍藏'),
-        ),
-      ],
-      selected: {_showCollectedOnly},
-      onSelectionChanged: (selection) {
-        setState(() {
-          _showCollectedOnly = selection.first;
-          _selectedMailIds.clear();
-        });
-      },
-    ),
-    ),
-    Expanded(
-    child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .collection('mailbox')
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-              ConnectionState.waiting &&
-              !snapshot.hasData) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            if (_isSelectionMode || _selectedMailIds.isNotEmpty) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  _exitSelectionMode();
-                }
-              });
-            }
-
-            return Center(
-              child: Text(
-                l10n.mailbox_empty,
-                style: const TextStyle(color: Colors.grey),
-              ),
-            );
-          }
-
-          final allMailbox = snapshot.data!.docs;
-
-          final mailbox = _showCollectedOnly
-              ? allMailbox.where((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return data['isCollected'] == true;
-          }).toList()
-              : allMailbox;
-
-          if (mailbox.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.bookmark_border_rounded,
-                    size: 52,
-                    color: theme.colorScheme.primary.withValues(alpha: 0.45),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    '目前還沒有收藏信件',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+      body: userId == null
+          ? Center(child: Text(l10n.please_login_first))
+          : Column(
+        children: [
+          if (!_isSelectionMode)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+              child:
+              SegmentedButton<bool>(
+                showSelectedIcon: false,
+                segments:  [
+                  ButtonSegment<bool>(
+                    value: false,
+                    icon: Icon(
+                      Icons.mail_outline_rounded,
+                      size: 18,
                     ),
+                    label: Text(l10n.mailFilterAll),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    '打開想珍藏的信件，點擊右上角收藏即可。',
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
-                      fontSize: 12,
+                  ButtonSegment<bool>(
+                    value: true,
+                    icon: Icon(
+                      Icons.favorite_border_rounded,
+                      size: 18,
                     ),
+                    label: Text(l10n.mailFilterCollected),
                   ),
                 ],
+                selected: {_showCollectedOnly},
+                onSelectionChanged: (selection) {
+                  setState(() {
+                    _showCollectedOnly = selection.first;
+                    _selectedMailIds.clear();
+                  });
+                },
               ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.only(bottom: 12),
-            itemCount: mailbox.length,
-            itemBuilder: (context, index) {
-              final doc = mailbox[index];
-              final data = doc.data() as Map<String, dynamic>;
-
-              final bool isRead = data['isRead'] ?? true;
-              final String type =
-                  data['type']?.toString() ?? 'system';
-              final bool isQixiLetter =
-                  type == 'qixi_letter' ||
-                      data['theme']?.toString() == 'qixi_2026';
-
-              final bool isCollected =
-                  data['isCollected'] == true;
-              String title =
-                  data['title']?.toString() ?? l10n.new_notification;
-              String body = data['body']?.toString() ?? '';
-
-              final String caseNumber =
-                  data['caseNumber']?.toString().trim() ?? '';
-
-              final String storedFromName =
-                  data['fromName']?.toString().trim() ?? '';
-
-              final String fromName = storedFromName.isNotEmpty
-                  ? storedFromName
-                  : type == 'admin_mail'
-                  ? l10n.officialManagementTeam
-                  : '';
-
-              if (type == 'follow') {
-                title = l10n.mailbox_follow_title;
-                final String followFromName = data['fromName']?.toString() ??
-                    l10n.default_new_player;
-                body = l10n.mailbox_follow_body(followFromName);
-              }
-
-              final Timestamp? createdAt = data['createdAt'] as Timestamp?;
-              final String? postId = data['postId']?.toString();
-
-              final String timeText = createdAt != null
-                  ? DateFormat('MM/dd HH:mm').format(createdAt.toDate())
-                  : '';
-
-              final bool isSelected = _selectedMailIds.contains(doc.id);
-
-              Widget leadingIcon;
-
-              if (isQixiLetter) {
-                leadingIcon = Container(
-                  width: 50,
-                  height: 50,
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.88),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFE9B4CA),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFE38CAF)
-                            .withValues(alpha: 0.18),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: Image.asset(
-                    'assets/images/love.png',
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) {
-                      return const Icon(
-                        Icons.favorite_rounded,
-                        color: Color(0xFFE1779E),
-                      );
-                    },
-                  ),
-                );
-              } else if (type == 'like') {
-                leadingIcon = const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.favorite,
-                    color: Colors.pinkAccent,
-                  ),
-                );
-              } else if (type == 'comment') {
-                leadingIcon = const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.chat_bubble_rounded,
-                    color: Colors.blueAccent,
-                  ),
-                );
-              } else if (type == 'affection') {
-                leadingIcon = const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.auto_awesome,
-                    color: Colors.orangeAccent,
-                  ),
-                );
-              } else if (type == 'cs_reply') {
-                leadingIcon = const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.mark_email_read_rounded,
-                    color: Colors.pinkAccent,
-                  ),
-                );
-              } else if (type == 'cs_received') {
-                leadingIcon = const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.inbox_rounded,
-                    color: Colors.pinkAccent,
-                  ),
-                );
-              } else if (type == 'reward_campaign') {
-                leadingIcon = CircleAvatar(
-                  backgroundColor: Colors.pink.shade50,
-                  child: const Icon(
-                    Icons.redeem_rounded,
-                    color: Colors.pinkAccent,
-                  ),
-                );
-              } else if (type == 'admin_mail') {
-                leadingIcon = CircleAvatar(
-                  backgroundColor: Colors.blue.shade50,
-                  child: const Icon(
-                    Icons.mark_email_read_outlined,
-                    color: Colors.blueAccent,
-                  ),
-                );
-              } else {
-                leadingIcon = const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.notifications,
-                    color: Colors.grey,
-                  ),
-                );
-              }
-
-              Widget buildSelectionLeading() {
-                if (_isSelectionMode) {
-                  return Checkbox(
-                    value: isSelected,
-                    onChanged: (_) => _toggleMailSelection(doc.id),
+            ),
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .collection('mailbox')
+                  .orderBy('createdAt', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState ==
+                    ConnectionState.waiting &&
+                    !snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
                 }
 
-                return Stack(
-                  children: [
-                    leadingIcon,
-                    if (!isRead)
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  if (_isSelectionMode || _selectedMailIds.isNotEmpty) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        _exitSelectionMode();
+                      }
+                    });
+                  }
 
-              // 好感度升級卡片
-              if (type == 'affection') {
-                final int score = data['score'] is num
-                    ? (data['score'] as num).toInt()
-                    : int.tryParse(data['score']?.toString() ?? '') ?? 0;
-                final String charName =
-                    data['characterName']?.toString() ?? l10n.default_he;
-                final String affectionTitle =
-                l10n.affection_upgrade_title(charName);
-                final String affectionBody =
-                    '${_getAffectionQuote(score, l10n)}\n\n${l10n.flower_reward}';
+                  return Center(
+                    child: Text(
+                      l10n.mailbox_empty,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  );
+                }
 
-                return Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: isRead
-                          ? [theme.cardColor, theme.cardColor]
-                          : [
-                        Colors.pink.shade50,
-                        Colors.orange.shade50,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.pinkAccent.withValues(alpha: 0.3),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.pink.withValues(alpha: 0.1),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
-                    leading: buildSelectionLeading(),
-                    title: Text(
-                      affectionTitle,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.pink,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                final allMailbox = snapshot.data!.docs;
+
+                final mailbox = _showCollectedOnly
+                    ? allMailbox.where((doc) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  return data['isCollected'] == true;
+                }).toList()
+                    : allMailbox;
+
+                if (mailbox.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const SizedBox(height: 8),
-                        Text(
-                          _getAffectionQuote(score, l10n),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontStyle: FontStyle.italic,
-                          ),
+                        Icon(
+                          Icons.bookmark_border_rounded,
+                          size: 52,
+                          color: theme.colorScheme.primary.withValues(alpha: 0.45),
                         ),
                         const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
+                         Text(
+                          l10n.mailCollectedEmptyTitle,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.pinkAccent.shade100,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          l10n.mailCollectedEmptyHint,
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  itemCount: mailbox.length,
+                  itemBuilder: (context, index) {
+                    final doc = mailbox[index];
+                    final data = doc.data() as Map<String, dynamic>;
+
+                    final bool isRead = data['isRead'] ?? true;
+                    final String type =
+                        data['type']?.toString() ?? 'system';
+                    final bool isQixiLetter =
+                        type == 'qixi_letter' ||
+                            data['theme']?.toString() == 'qixi_2026';
+
+                    final bool isCollected =
+                        data['isCollected'] == true;
+                    String title =
+                        data['title']?.toString() ?? l10n.new_notification;
+                    String body = data['body']?.toString() ?? '';
+
+                    final String caseNumber =
+                        data['caseNumber']?.toString().trim() ?? '';
+
+                    final String storedFromName =
+                        data['fromName']?.toString().trim() ?? '';
+
+                    final String fromName = storedFromName.isNotEmpty
+                        ? storedFromName
+                        : type == 'admin_mail'
+                        ? l10n.officialManagementTeam
+                        : '';
+
+                    if (type == 'follow') {
+                      title = l10n.mailbox_follow_title;
+                      final String followFromName = data['fromName']?.toString() ??
+                          l10n.default_new_player;
+                      body = l10n.mailbox_follow_body(followFromName);
+                    }
+
+                    final Timestamp? createdAt = data['createdAt'] as Timestamp?;
+                    final String? postId = data['postId']?.toString();
+
+                    final String timeText = createdAt != null
+                        ? DateFormat('MM/dd HH:mm').format(createdAt.toDate())
+                        : '';
+
+                    final bool isSelected = _selectedMailIds.contains(doc.id);
+
+                    Widget leadingIcon;
+
+                    if (isQixiLetter) {
+                      leadingIcon = Container(
+                        width: 50,
+                        height: 50,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.88),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFFE9B4CA),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFE38CAF)
+                                  .withValues(alpha: 0.18),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Image.asset(
+                          'assets/images/love.png',
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) {
+                            return const Icon(
+                              Icons.favorite_rounded,
+                              color: Color(0xFFE1779E),
+                            );
+                          },
+                        ),
+                      );
+                    } else if (type == 'like') {
+                      leadingIcon = const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.favorite,
+                          color: Colors.pinkAccent,
+                        ),
+                      );
+                    } else if (type == 'comment') {
+                      leadingIcon = const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.chat_bubble_rounded,
+                          color: Colors.blueAccent,
+                        ),
+                      );
+                    } else if (type == 'affection') {
+                      leadingIcon = const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.auto_awesome,
+                          color: Colors.orangeAccent,
+                        ),
+                      );
+                    } else if (type == 'cs_reply') {
+                      leadingIcon = const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.mark_email_read_rounded,
+                          color: Colors.pinkAccent,
+                        ),
+                      );
+                    } else if (type == 'cs_received') {
+                      leadingIcon = const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.inbox_rounded,
+                          color: Colors.pinkAccent,
+                        ),
+                      );
+                    } else if (type == 'reward_campaign') {
+                      leadingIcon = CircleAvatar(
+                        backgroundColor: Colors.pink.shade50,
+                        child: const Icon(
+                          Icons.redeem_rounded,
+                          color: Colors.pinkAccent,
+                        ),
+                      );
+                    } else if (type == 'admin_mail') {
+                      leadingIcon = CircleAvatar(
+                        backgroundColor: Colors.blue.shade50,
+                        child: const Icon(
+                          Icons.mark_email_read_outlined,
+                          color: Colors.blueAccent,
+                        ),
+                      );
+                    } else {
+                      leadingIcon = const CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          Icons.notifications,
+                          color: Colors.grey,
+                        ),
+                      );
+                    }
+
+                    Widget buildSelectionLeading() {
+                      if (_isSelectionMode) {
+                        return Checkbox(
+                          value: isSelected,
+                          onChanged: (_) => _toggleMailSelection(doc.id),
+                        );
+                      }
+
+                      return Stack(
+                        children: [
+                          leadingIcon,
+                          if (!isRead)
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    }
+
+                    // 好感度升級卡片
+                    if (type == 'affection') {
+                      final int score = data['score'] is num
+                          ? (data['score'] as num).toInt()
+                          : int.tryParse(data['score']?.toString() ?? '') ?? 0;
+                      final String charName =
+                          data['characterName']?.toString() ?? l10n.default_he;
+                      final String affectionTitle =
+                      l10n.affection_upgrade_title(charName);
+                      final String affectionBody =
+                          '${_getAffectionQuote(score, l10n)}\n\n${l10n.flower_reward}';
+
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: isRead
+                                ? [theme.cardColor, theme.cardColor]
+                                : [
+                              Colors.pink.shade50,
+                              Colors.orange.shade50,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.pinkAccent.withValues(alpha: 0.3),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.pink.withValues(alpha: 0.1),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(16),
+                          leading: buildSelectionLeading(),
+                          title: Text(
+                            affectionTitle,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.pink,
                             ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const SizedBox(height: 8),
                               Text(
-                                l10n.flower_reward,
-                                style: const TextStyle(
-                                  color: Colors.pinkAccent,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                                _getAffectionQuote(score, l10n),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.grey[800],
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: Colors.pinkAccent.shade100,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      l10n.flower_reward,
+                                      style: const TextStyle(
+                                        color: Colors.pinkAccent,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    trailing: _isSelectionMode
-                        ? null
-                        : Text(
-                      timeText,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    onTap: () async {
-                      if (_isSelectionMode) {
-                        _toggleMailSelection(doc.id);
-                        return;
-                      }
+                          trailing: _isSelectionMode
+                              ? null
+                              : Text(
+                            timeText,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          onTap: () async {
+                            if (_isSelectionMode) {
+                              _toggleMailSelection(doc.id);
+                              return;
+                            }
 
-                      await _openMailDetail(
-                        context: context,
-                        userId: userId,
-                        docId: doc.id,
-                        isRead: isRead,
-                        title: title,
-                        body: body,
-                        caseNumber: caseNumber,
-                        timeText: timeText,
-                        fromName: fromName,
-                        isCollectible: data['isCollectible'] == true,
-                        isCollected: data['isCollected'] == true,
-                        mailTheme: data['theme']?.toString() ?? '',
-                        characterAvatarPath:
-                        data['characterAvatarPath']?.toString() ?? '',
-                        interactionDates: List<String>.from(
-                          data['interactionDates'] ?? const <String>[],
+                            await _openMailDetail(
+                              context: context,
+                              userId: userId,
+                              docId: doc.id,
+                              isRead: isRead,
+                              title: title,
+                              body: body,
+                              caseNumber: caseNumber,
+                              timeText: timeText,
+                              fromName: fromName,
+                              isCollectible: data['isCollectible'] == true,
+                              isCollected: data['isCollected'] == true,
+                              mailTheme: data['theme']?.toString() ?? '',
+                              characterAvatarPath:
+                              data['characterAvatarPath']?.toString() ?? '',
+                              interactionDates: List<String>.from(
+                                data['interactionDates'] ?? const <String>[],
+                              ),
+                            );
+                          },
                         ),
                       );
-                    },
-                  ),
-                );
-              }
+                    }
 
-              // 一般信件／通知
-              return Container(
-                color: isRead
-                    ? Colors.transparent
-                    : theme.colorScheme.primaryContainer
-                    .withValues(alpha: 0.15),
-                child: ListTile(
-                  leading: buildSelectionLeading(),
-                  title: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          maxLines: 1,
+                    // 一般信件／通知
+                    return Container(
+                      color: isRead
+                          ? Colors.transparent
+                          : theme.colorScheme.primaryContainer
+                          .withValues(alpha: 0.15),
+                      child: ListTile(
+                        leading: buildSelectionLeading(),
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: isQixiLetter
+                                      ? const Color(0xFF68425F)
+                                      : null,
+                                  fontWeight: isQixiLetter || !isRead
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                            if (isQixiLetter) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFFFD8E7),
+                                      Color(0xFFE7DBFF),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(0xFFE5ABC4),
+                                  ),
+                                ),
+                                child: Text(
+                                  l10n.mailQixiLimitedBadge,
+                                  style: TextStyle(
+                                    color: Color(0xFF984A6B),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        subtitle: Text(
+                          body,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: isQixiLetter
-                                ? const Color(0xFF68425F)
-                                : null,
-                            fontWeight: isQixiLetter || !isRead
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
                         ),
-                      ),
-                      if (isQixiLetter) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFFFFD8E7),
-                                Color(0xFFE7DBFF),
-                              ],
+                        trailing: _isSelectionMode
+                            ? null
+                            : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              timeText,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
                             ),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: const Color(0xFFE5ABC4),
+                            if (isCollected) ...[
+                              const SizedBox(height: 4),
+                              const Icon(
+                                Icons.bookmark_rounded,
+                                size: 18,
+                                color: Color(0xFFD96391),
+                              ),
+                            ],
+                          ],
+                        ),
+                        onTap: () async {
+                          if (_isSelectionMode) {
+                            _toggleMailSelection(doc.id);
+                            return;
+                          }
+
+                          if (postId != null &&
+                              (type == 'like' || type == 'comment')) {
+                            if (!isRead) {
+                              await _markAsRead(userId, doc.id);
+                            }
+
+                            if (!context.mounted) return;
+
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    MomentDetailPage(postId: postId),
+                              ),
+                            );
+                            return;
+                          }
+
+                          if (type == 'reward_campaign') {
+                            await _openRewardCampaignDetail(
+                              userId: userId,
+                              docId: doc.id,
+                              isRead: isRead,
+                              data: data,
+                              timeText: timeText,
+                            );
+                            return;
+                          }
+
+                          await _openMailDetail(
+                            context: context,
+                            userId: userId,
+                            docId: doc.id,
+                            isRead: isRead,
+                            title: title,
+                            body: body,
+                            caseNumber: caseNumber,
+                            timeText: timeText,
+                            fromName: fromName,
+                            isCollectible: data['isCollectible'] == true,
+                            isCollected: data['isCollected'] == true,
+                            mailTheme: data['theme']?.toString().trim() ?? '',
+                            characterAvatarPath:
+                            data['characterAvatarPath']?.toString().trim() ?? '',
+                            interactionDates: List<String>.from(
+                              data['interactionDates'] ?? const <String>[],
                             ),
-                          ),
-                          child: const Text(
-                            '七夕限定',
-                            style: TextStyle(
-                              color: Color(0xFF984A6B),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  subtitle: Text(
-                    body,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: _isSelectionMode
-                      ? null
-                      : Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        timeText,
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      if (isCollected) ...[
-                        const SizedBox(height: 4),
-                        const Icon(
-                          Icons.bookmark_rounded,
-                          size: 18,
-                          color: Color(0xFFD96391),
-                        ),
-                      ],
-                    ],
-                  ),
-                  onTap: () async {
-                    if (_isSelectionMode) {
-                      _toggleMailSelection(doc.id);
-                      return;
-                    }
-
-                    if (postId != null &&
-                        (type == 'like' || type == 'comment')) {
-                      if (!isRead) {
-                        await _markAsRead(userId, doc.id);
-                      }
-
-                      if (!context.mounted) return;
-
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              MomentDetailPage(postId: postId),
-                        ),
-                      );
-                      return;
-                    }
-
-                    if (type == 'reward_campaign') {
-                      await _openRewardCampaignDetail(
-                        userId: userId,
-                        docId: doc.id,
-                        isRead: isRead,
-                        data: data,
-                        timeText: timeText,
-                      );
-                      return;
-                    }
-
-                    await _openMailDetail(
-                      context: context,
-                      userId: userId,
-                      docId: doc.id,
-                      isRead: isRead,
-                      title: title,
-                      body: body,
-                      caseNumber: caseNumber,
-                      timeText: timeText,
-                      fromName: fromName,
-                      isCollectible: data['isCollectible'] == true,
-                      isCollected: data['isCollected'] == true,
-                      mailTheme: data['theme']?.toString().trim() ?? '',
-                      characterAvatarPath:
-                      data['characterAvatarPath']?.toString().trim() ?? '',
-                      interactionDates: List<String>.from(
-                        data['interactionDates'] ?? const <String>[],
+                          );
+                        },
                       ),
                     );
                   },
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
-    ),
-    ],
-    ),
     );
   }
 }
@@ -1180,7 +1183,7 @@ class _RewardCampaignDetailPageState
                 ),
                 child: Column(
                   children: [
-                     Text(
+                    Text(
                       l10n.rewardCampaignContains,
                       style: TextStyle(color: Colors.grey),
                     ),
@@ -1305,6 +1308,283 @@ class _MailDetailPageState extends State<_MailDetailPage> {
     _isCollected = widget.initiallyCollected;
   }
 
+  @override
+  void dispose() {
+    _mailToastTimer?.cancel();
+    _mailToastEntry?.remove();
+    _mailToastEntry = null;
+    super.dispose();
+  }
+
+  Widget _buildMailShareCard({
+    ImageProvider<Object>? avatarProvider,
+  }) {
+    final bool isQixi = _isQixiLetter;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: 420,
+        padding: const EdgeInsets.fromLTRB(28, 30, 28, 28),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isQixi
+                ? const [
+              Color(0xFFFFEAF2),
+              Color(0xFFF0E8FF),
+              Color(0xFFFFF9FC),
+            ]
+                : const [
+              Color(0xFFF8F5F7),
+              Color(0xFFFFFFFF),
+            ],
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isQixi) ...[
+              Image.asset(
+                'assets/images/love.png',
+                width: 82,
+                height: 82,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 7),
+              Text(
+                l10n.mailQixiThreeDayPromise,
+                style: TextStyle(
+                  color: Color(0xFF68425F),
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(3, (index) {
+                  final bool completed =
+                      index < widget.interactionDates.length.clamp(0, 3);
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 7),
+                    child: Image.asset(
+                      completed
+                          ? 'assets/images/qixi_progress_on.png'
+                          : 'assets/images/qixi_progress_off.png',
+                      width: 38,
+                      height: 38,
+                      fit: BoxFit.contain,
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 20),
+            ],
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(24, 25, 24, 28),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.88),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  color: isQixi
+                      ? const Color(0xFFE6AEC7)
+                      : const Color(0xFFE1D9DE),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF9E718B).withValues(alpha: 0.12),
+                    blurRadius: 18,
+                    offset: const Offset(0, 7),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (avatarProvider != null) ...[
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [
+                              Color(0xFFFFB7D0),
+                              Color(0xFFBDA7F2),
+                            ],
+                          ),
+                        ),
+                        child: ClipOval(
+                          child: Image(
+                            image: avatarProvider,
+                            width: 62,
+                            height: 62,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                  ],
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      color: Color(0xFF68425F),
+                      fontSize: 23,
+                      height: 1.35,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (widget.fromName.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      isQixi
+                          ? l10n.mailQixiFromCharacter(widget.fromName)
+                          : l10n.mailFromCharacter(widget.fromName),
+                      style: const TextStyle(
+                        color: Color(0xFF806779),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 18),
+                  Container(
+                    height: 1,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.transparent,
+                          Color(0xFFE5ABC4),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    widget.body,
+                    style: const TextStyle(
+                      color: Color(0xFF4F414B),
+                      fontSize: 16,
+                      height: 1.85,
+                    ),
+                  ),
+                  if (isQixi) ...[
+                    const SizedBox(height: 24),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        l10n.mailQixiCollectionLabel,
+                        style: TextStyle(
+                          color: Color(0xFF9A456A),
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              l10n.lianlianShiguang,
+              style: TextStyle(
+                color: Color(0xFF8D7284),
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _shareMailAsImage() async {
+    final l10n = AppLocalizations.of(context)!;
+    ImageProvider<Object>? avatarProvider;
+
+    try {
+      final String avatarPath = widget.characterAvatarPath.trim();
+
+      if (avatarPath.startsWith('http')) {
+        avatarProvider = CachedNetworkImageProvider(avatarPath);
+      } else if (avatarPath.isNotEmpty) {
+        avatarProvider = AssetImage(avatarPath);
+      }
+
+      if (avatarProvider != null) {
+        await precacheImage(avatarProvider, context);
+      }
+
+      if (!mounted) return;
+
+      _showMailCenterToast(
+        l10n.mailShareGenerating,
+        icon: Icons.auto_awesome_rounded,
+      );
+
+      final Uint8List imageBytes =
+      await ScreenshotController().captureFromLongWidget(
+        InheritedTheme.captureAll(
+          context,
+          Directionality(
+            textDirection: Directionality.of(context),
+            child: _buildMailShareCard(
+              avatarProvider: avatarProvider,
+            ),
+          ),
+        ),
+        constraints: const BoxConstraints(
+          maxWidth: 420,
+        ),
+        delay: const Duration(milliseconds: 150),
+        pixelRatio: 2,
+      );
+
+      if (!mounted) return;
+
+      final String safeFileName = widget.title
+          .replaceAll(RegExp(r'[\\/:*?"<>|]'), '')
+          .trim();
+
+      await Share.shareXFiles(
+        [
+          XFile.fromData(
+            imageBytes,
+            mimeType: 'image/png',
+            name: safeFileName.isNotEmpty
+                ? '$safeFileName.png'
+                : 'lianlian_letter.png',
+          ),
+        ],
+        text: _isQixiLetter && widget.fromName.isNotEmpty
+            ? l10n.mailShareQixiMessage(widget.fromName)
+            : l10n.mailShareDefaultMessage,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('❌ 生成信件分享圖片失敗：$error');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!mounted) return;
+
+      _showMailCenterToast(
+        l10n.mailShareImageFailed,
+        isError: true,
+      );
+    }
+  }
+
   void _showMailCenterToast(
       String message, {
         bool isError = false,
@@ -1391,7 +1671,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
     if (!widget.isCollectible || _isUpdatingCollected) {
       return;
     }
-
+    final l10n = AppLocalizations.of(context)!;
     final bool nextValue = !_isCollected;
 
     setState(() {
@@ -1420,7 +1700,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
       if (!mounted) return;
 
       _showMailCenterToast(
-        nextValue ? '已收藏這封信 💌' : '已取消收藏',
+        nextValue ? l10n.mailCollectedSuccess : l10n.mailCollectedCancelled,
       );
     } catch (error, stackTrace) {
       debugPrint('❌ 更新信件收藏狀態失敗：$error');
@@ -1433,7 +1713,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
       });
 
       _showMailCenterToast(
-        '收藏狀態更新失敗，請稍後再試',
+       l10n.mailCollectedUpdateFailed,
         isError: true,
       );
     } finally {
@@ -1451,9 +1731,9 @@ class _MailDetailPageState extends State<_MailDetailPage> {
     if (!widget.isCollectible) {
       return const SizedBox.shrink();
     }
-
+    final l10n = AppLocalizations.of(context)!;
     return IconButton(
-      tooltip: _isCollected ? '取消收藏' : '收藏信件',
+      tooltip: _isCollected ? l10n.mailRemoveCollectionTooltip : l10n.mailAddCollectionTooltip,
       onPressed: _isUpdatingCollected ? null : _toggleCollected,
       icon: AnimatedSwitcher(
         duration: const Duration(milliseconds: 220),
@@ -1537,6 +1817,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
 
               _showMailCenterToast(
                 l10n.mailCaseNumberCopied,
+                icon: Icons.copy_rounded,
               );
             },
           ),
@@ -1554,6 +1835,16 @@ class _MailDetailPageState extends State<_MailDetailPage> {
         title: Text(l10n.mailDetailTitle),
         elevation: 0,
         actions: [
+          IconButton(
+            tooltip: '分享信件',
+            onPressed: _shareMailAsImage,
+            icon: Transform.flip(
+              flipX: true,
+              child: const Icon(
+                Icons.reply_rounded,
+              ),
+            ),
+          ),
           _buildCollectButton(
             color: theme.colorScheme.primary,
           ),
@@ -1628,6 +1919,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
   Widget _buildQixiProgress() {
     final int completedCount =
     widget.interactionDates.length.clamp(0, 3);
+    final l10n = AppLocalizations.of(context)!;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -1660,7 +1952,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
               ),
               const SizedBox(height: 2),
               Text(
-                '第 ${index + 1} 日',
+                l10n.mailQixiDayNumber(index + 1),
                 style: TextStyle(
                   color: isCompleted
                       ? const Color(0xFF9A456A)
@@ -1684,16 +1976,28 @@ class _MailDetailPageState extends State<_MailDetailPage> {
       ) {
     const darkPurple = Color(0xFF68425F);
     const mutedPurple = Color(0xFF806779);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8FB),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('七夕限定信件'),
+        title: Text(l10n.mailQixiDetailTitle),
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: darkPurple,
         actions: [
+          IconButton(
+            tooltip: l10n.mailQixiShareTooltip,
+            onPressed: _shareMailAsImage,
+            icon: Transform.flip(
+              flipX: true,
+              child: const Icon(
+                Icons.reply_rounded,
+                color: Color(0xFFD75E8E),
+              ),
+            ),
+          ),
           _buildCollectButton(
             color: const Color(0xFFD75E8E),
           ),
@@ -1731,8 +2035,8 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                   },
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  '戀戀七夕・三日之約',
+                Text(
+                  l10n.mailQixiThreeDayPromise,
                   style: TextStyle(
                     color: darkPurple,
                     fontSize: 14,
@@ -1910,8 +2214,8 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                               color: const Color(0xFFEAB2CA),
                             ),
                           ),
-                          child: const Text(
-                            '2026 七夕限定收藏',
+                          child: Text(
+                            l10n.mailQixiCollectionLabel,
                             style: TextStyle(
                               color: Color(0xFF9A456A),
                               fontSize: 11,

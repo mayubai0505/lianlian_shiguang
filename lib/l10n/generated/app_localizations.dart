@@ -10563,6 +10563,612 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'拖曳已選標籤以調整顯示順序'**
   String get characterEditSelectedTagOrder;
+
+  /// No description provided for @mailActivityGiftFallback.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動禮物'**
+  String get mailActivityGiftFallback;
+
+  /// No description provided for @mailFilterAll.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'全部'**
+  String get mailFilterAll;
+
+  /// No description provided for @mailFilterCollected.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'珍藏'**
+  String get mailFilterCollected;
+
+  /// No description provided for @mailCollectedEmptyTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有收藏信件'**
+  String get mailCollectedEmptyTitle;
+
+  /// No description provided for @mailCollectedEmptyHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'打開想珍藏的信件，點擊右上角收藏即可。'**
+  String get mailCollectedEmptyHint;
+
+  /// No description provided for @mailQixiLimitedBadge.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'七夕限定'**
+  String get mailQixiLimitedBadge;
+
+  /// No description provided for @mailQixiThreeDayPromise.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀七夕・三日之約'**
+  String get mailQixiThreeDayPromise;
+
+  /// No description provided for @mailQixiFromCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'來自 {characterName} 的七夕信'**
+  String mailQixiFromCharacter(String characterName);
+
+  /// No description provided for @mailFromCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'來自 {characterName}'**
+  String mailFromCharacter(String characterName);
+
+  /// No description provided for @mailQixiCollectionLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'2026 七夕限定收藏'**
+  String get mailQixiCollectionLabel;
+
+  /// No description provided for @mailShareGenerating.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在製作分享圖片……'**
+  String get mailShareGenerating;
+
+  /// No description provided for @mailShareQixiMessage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我收到了 {characterName} 寫來的七夕限定信 💌'**
+  String mailShareQixiMessage(String characterName);
+
+  /// No description provided for @mailShareDefaultMessage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'來自《戀戀拾光》的信件 💌'**
+  String get mailShareDefaultMessage;
+
+  /// No description provided for @mailShareImageFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享圖片產生失敗，請稍後再試'**
+  String get mailShareImageFailed;
+
+  /// No description provided for @mailCollectedSuccess.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已收藏這封信 💌'**
+  String get mailCollectedSuccess;
+
+  /// No description provided for @mailCollectedCancelled.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已取消收藏'**
+  String get mailCollectedCancelled;
+
+  /// No description provided for @mailCollectedUpdateFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏狀態更新失敗，請稍後再試'**
+  String get mailCollectedUpdateFailed;
+
+  /// No description provided for @mailRemoveCollectionTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消收藏'**
+  String get mailRemoveCollectionTooltip;
+
+  /// No description provided for @mailAddCollectionTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏信件'**
+  String get mailAddCollectionTooltip;
+
+  /// No description provided for @mailShareTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享信件'**
+  String get mailShareTooltip;
+
+  /// No description provided for @mailQixiDayNumber.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'第 {day} 日'**
+  String mailQixiDayNumber(int day);
+
+  /// No description provided for @mailQixiDetailTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'七夕限定信件'**
+  String get mailQixiDetailTitle;
+
+  /// No description provided for @mailQixiShareTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享七夕信件'**
+  String get mailQixiShareTooltip;
+
+  /// No description provided for @qixiMaxThreeFriends.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'本次活動最多只能選擇 3 位好友角色'**
+  String get qixiMaxThreeFriends;
+
+  /// No description provided for @qixiLoginRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再參加七夕活動'**
+  String get qixiLoginRequired;
+
+  /// No description provided for @qixiOutsideEventPeriod.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前不在七夕活動期間'**
+  String get qixiOutsideEventPeriod;
+
+  /// No description provided for @qixiSelectAtLeastOne.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先選擇至少一位好友角色'**
+  String get qixiSelectAtLeastOne;
+
+  /// No description provided for @qixiMysteryCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'神秘角色'**
+  String get qixiMysteryCharacter;
+
+  /// No description provided for @qixiOpeningStory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'（七夕將近，沉睡在夜色深處的星河悄然甦醒。散落的星光沿著天際緩緩匯聚，像是在等待兩個願意赴約的人，寫下彼此的名字。）\n\n（傳說，鵲橋只會為真正想要相見的人亮起。當你與「{characterName}」的名字同時出現在星河之上，一道微光穿過夜幕，落進這間只屬於你們的聊天室。）\n\n（從此刻起，你們擁有了一場「七夕三日之約」。不必連續，也不必刻意準備盛大的告白；只要在活動期間，選擇三個不同的日子回到這裡，與對方分享一句問候、一段心情，或一件今天發生的小事。）\n\n（每一次成功相遇，都會讓鵲橋上的一點星光亮起。當三日星光全部點亮，這些散落在對話裡的心意與回憶，將在第三個完成日結束後，化為一封只寫給你的七夕限定信件。）\n\n（此刻，第一縷星光已經落下。鵲橋的另一端，「{characterName}」似乎也收到了這場約定。）\n\n——七夕三日之約，現在開始。'**
+  String qixiOpeningStory(String characterName);
+
+  /// No description provided for @qixiRoomOpenedLastMessage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'七夕三日之約已開啟'**
+  String get qixiRoomOpenedLastMessage;
+
+  /// No description provided for @qixiCompanionSlotsFull.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'七夕同行名額已經選滿了'**
+  String get qixiCompanionSlotsFull;
+
+  /// No description provided for @qixiSingleRoomOpened.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'七夕專屬聊天室已開啟 💕'**
+  String get qixiSingleRoomOpened;
+
+  /// No description provided for @qixiMultipleRoomsOpened.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{count} 間七夕專屬聊天室已開啟 💕'**
+  String qixiMultipleRoomsOpened(int count);
+
+  /// No description provided for @qixiCreateRoomFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建立七夕聊天室失敗，請稍後再試'**
+  String get qixiCreateRoomFailed;
+
+  /// No description provided for @qixiEventStartsAt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動將於 8/19 00:00 開始'**
+  String get qixiEventStartsAt;
+
+  /// No description provided for @qixiEventActiveUntil.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動進行中・8/26 23:59 截止'**
+  String get qixiEventActiveUntil;
+
+  /// No description provided for @qixiEventEnded.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'本次七夕活動已結束'**
+  String get qixiEventEnded;
+
+  /// No description provided for @qixiEventHeroTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀七夕・與你共赴鵲橋'**
+  String get qixiEventHeroTitle;
+
+  /// No description provided for @qixiCharacterSelected.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已選定'**
+  String get qixiCharacterSelected;
+
+  /// No description provided for @qixiFriendListLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好友名單讀取失敗，請稍後再試'**
+  String get qixiFriendListLoadFailed;
+
+  /// No description provided for @qixiNoFriendCharacters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有好友角色'**
+  String get qixiNoFriendCharacters;
+
+  /// No description provided for @qixiNoFriendCharactersHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'先去邂逅喜歡的角色，再回來共赴鵲橋吧！'**
+  String get qixiNoFriendCharactersHint;
+
+  /// No description provided for @qixiLoadingCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在讀取角色資料……'**
+  String get qixiLoadingCharacter;
+
+  /// No description provided for @qixiEventPageTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'七夕限定活動'**
+  String get qixiEventPageTitle;
+
+  /// No description provided for @qixiEventRules.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'活動期間任選 3 個不同日期，在七夕限定聊天室傳送訊息並成功收到角色回覆，即可點亮三日星光。限定信件將於第三個完成日結束後寄出。活動日期與每日進度均以台灣時間（UTC+8）為準。'**
+  String get qixiEventRules;
+
+  /// No description provided for @qixiSelectCompanions.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇同行角色（{count}/3）'**
+  String qixiSelectCompanions(int count);
+
+  /// No description provided for @qixiSelectionLockedHint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最多可選擇 3 位已添加好友的角色；選定後不可更換。'**
+  String get qixiSelectionLockedHint;
+
+  /// No description provided for @qixiConfirmCompanions.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認同行角色'**
+  String get qixiConfirmCompanions;
+
+  /// No description provided for @encounterDailyQuote1.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，也許會遇見新的故事。'**
+  String get encounterDailyQuote1;
+
+  /// No description provided for @encounterDailyQuote2.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，讓心動先開口。'**
+  String get encounterDailyQuote2;
+
+  /// No description provided for @encounterDailyQuote3.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，也許有人正等著與你相遇。'**
+  String get encounterDailyQuote3;
+
+  /// No description provided for @encounterDailyQuote4.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，試著走進一段新的故事。'**
+  String get encounterDailyQuote4;
+
+  /// No description provided for @encounterDailyQuote5.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，會遇見怎樣的心動呢？'**
+  String get encounterDailyQuote5;
+
+  /// No description provided for @encounterDailyQuote6.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，也替自己留一點期待。'**
+  String get encounterDailyQuote6;
+
+  /// No description provided for @encounterDailyQuote7.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，新的相遇正在發生。'**
+  String get encounterDailyQuote7;
+
+  /// No description provided for @encounterDailyQuote8.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，也許命運會帶來一點驚喜。'**
+  String get encounterDailyQuote8;
+
+  /// No description provided for @encounterDailyQuote9.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，讓一場相遇慢慢開始。'**
+  String get encounterDailyQuote9;
+
+  /// No description provided for @encounterDailyQuote10.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，也許會有人讓你停下腳步。'**
+  String get encounterDailyQuote10;
+
+  /// No description provided for @encounterDailyQuote11.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，想遇見什麼樣的人？'**
+  String get encounterDailyQuote11;
+
+  /// No description provided for @encounterDailyQuote12.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天，別錯過悄悄靠近的緣分。'**
+  String get encounterDailyQuote12;
+
+  /// No description provided for @encounterJoinedToday.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 今天加入戀戀拾光'**
+  String get encounterJoinedToday;
+
+  /// No description provided for @encounterPopularChats.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'❤️ 最近很多人在聊天'**
+  String get encounterPopularChats;
+
+  /// No description provided for @qixiBannerActiveUntil.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'限時開啟・8/26 23:59 截止'**
+  String get qixiBannerActiveUntil;
+
+  /// No description provided for @qixiBannerStartsAt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'8/19 限定開啟'**
+  String get qixiBannerStartsAt;
+
+  /// No description provided for @encounterRecentlyArrived.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✨ 最近來到戀戀拾光'**
+  String get encounterRecentlyArrived;
+
+  /// No description provided for @encounterRecentlyArrivedPlain.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最近來到戀戀拾光'**
+  String get encounterRecentlyArrivedPlain;
+
+  /// No description provided for @encounterViewMore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'查看更多'**
+  String get encounterViewMore;
+
+  /// No description provided for @encounterLovePrompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'💕 今天想談什麼戀愛？'**
+  String get encounterLovePrompt;
+
+  /// No description provided for @encounterNoCharacters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有角色'**
+  String get encounterNoCharacters;
+
+  /// No description provided for @encounterAllLoveTags.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'全部戀愛標籤'**
+  String get encounterAllLoveTags;
+
+  /// No description provided for @chatQixiLetterSent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'限定信件已寄出 💌'**
+  String get chatQixiLetterSent;
+
+  /// No description provided for @chatQixiLetterPendingTonight.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'三日星光已點亮・今夜過後寄出信件'**
+  String get chatQixiLetterPendingTonight;
+
+  /// No description provided for @chatQixiTodayCompleted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日星光已點亮'**
+  String get chatQixiTodayCompleted;
+
+  /// No description provided for @chatQixiTodayNotCompleted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日尚未完成'**
+  String get chatQixiTodayNotCompleted;
+
+  /// No description provided for @chatQixiPromiseTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀七夕・三日之約'**
+  String get chatQixiPromiseTitle;
+
+  /// No description provided for @chatQixiStarProgress.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星光 {count}/3'**
+  String chatQixiStarProgress(int count);
+
+  /// No description provided for @chatQixiProgressRule.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'任選三日完成聊天，即可點亮星光。限定信件將於第三日結束後寄出；每日進度以台灣時間（UTC+8）計算。'**
+  String get chatQixiProgressRule;
+
+  /// No description provided for @chatQixiDayNumber.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'第 {day} 日'**
+  String chatQixiDayNumber(int day);
+
+  /// No description provided for @chatWebPurchaseUnavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'網頁版目前不提供儲值服務，請使用《戀戀拾光》App 購買花花或訂閱。'**
+  String get chatWebPurchaseUnavailable;
+
+  /// No description provided for @chatAiThinkingTimeout.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'他似乎在沉思，請稍後再試……'**
+  String get chatAiThinkingTimeout;
+
+  /// No description provided for @chatAiResponseBlocked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'他的思緒似乎受到干擾了，請換個溫和的說法再試一次。'**
+  String get chatAiResponseBlocked;
+
+  /// No description provided for @chatRecordingStartFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法開始錄音，請稍後再試。'**
+  String get chatRecordingStartFailed;
+
+  /// No description provided for @chatRecordingPlaybackFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'播放錄音失敗，請稍後再試。'**
+  String get chatRecordingPlaybackFailed;
+
+  /// No description provided for @chatRoomNotReady.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聊天室尚未準備完成，請稍後再試。'**
+  String get chatRoomNotReady;
+
+  /// No description provided for @chatRegenerateLimitReached.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日重新生成次數已用完'**
+  String get chatRegenerateLimitReached;
+
+  /// No description provided for @chatTypingIndicator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'對方正在輸入……'**
+  String get chatTypingIndicator;
+
+  /// No description provided for @chatRegenerateCountSyncFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新生成成功，但次數同步失敗，請稍後重新整理。'**
+  String get chatRegenerateCountSyncFailed;
+
+  /// No description provided for @chatRoomNotFound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到這個角色的聊天室'**
+  String get chatRoomNotFound;
+
+  /// No description provided for @momentsSearchTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'搜尋拾光牆'**
+  String get momentsSearchTooltip;
+
+  /// No description provided for @momentsCreatorNotFound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到這位創作者的資料'**
+  String get momentsCreatorNotFound;
+
+  /// No description provided for @momentCommentLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'留言載入失敗，請稍後再試'**
+  String get momentCommentLoadFailed;
+
+  /// No description provided for @momentCollapseReplies.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收起回覆'**
+  String get momentCollapseReplies;
+
+  /// No description provided for @momentViewOtherReplies.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'查看其他 {count} 則回覆'**
+  String momentViewOtherReplies(int count);
+
+  /// No description provided for @momentSwitchCommentIdentity.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'切換留言身分'**
+  String get momentSwitchCommentIdentity;
+
+  /// No description provided for @momentSendCommentTooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出留言'**
+  String get momentSendCommentTooltip;
+
+  /// No description provided for @momentShareCharactersLoadFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取聊天角色失敗，請稍後再試'**
+  String get momentShareCharactersLoadFailed;
+
+  /// No description provided for @momentReportLoginRequired.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再檢舉貼文'**
+  String get momentReportLoginRequired;
+
+  /// No description provided for @momentReportSubmitted.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉已送出，我們會進行審核'**
+  String get momentReportSubmitted;
+
+  /// No description provided for @momentSelectShareCharacter.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇一位聊過天的角色分享這則動態'**
+  String get momentSelectShareCharacter;
+
+  /// No description provided for @momentTagCharacterUnavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個標記沒有連結到角色檔案'**
+  String get momentTagCharacterUnavailable;
+
+  /// No description provided for @momentCharacterNotFound.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到角色資料'**
+  String get momentCharacterNotFound;
 }
 
 class _AppLocalizationsDelegate

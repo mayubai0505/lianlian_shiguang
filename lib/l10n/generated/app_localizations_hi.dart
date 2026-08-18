@@ -6093,4 +6093,364 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get characterEditSelectedTagOrder =>
       'चुने गए टैग को खींचकर उनके प्रदर्शित होने का क्रम बदलें';
+
+  @override
+  String get mailActivityGiftFallback => 'इवेंट उपहार';
+
+  @override
+  String get mailFilterAll => 'सभी';
+
+  @override
+  String get mailFilterCollected => 'सहेजे गए';
+
+  @override
+  String get mailCollectedEmptyTitle => 'अभी तक कोई पत्र सहेजा नहीं गया है';
+
+  @override
+  String get mailCollectedEmptyHint =>
+      'जिस पत्र को सहेजना चाहते हैं उसे खोलें और ऊपर दाईं ओर स्थित सहेजें बटन पर टैप करें।';
+
+  @override
+  String get mailQixiLimitedBadge => 'छीशी विशेष संस्करण';
+
+  @override
+  String get mailQixiThreeDayPromise => 'LoveyDovey छीशी・तीन दिनों का वादा';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return '$characterName की ओर से छीशी पत्र';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return '$characterName की ओर से';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => '2026 छीशी विशेष संग्रह';
+
+  @override
+  String get mailShareGenerating => 'साझा करने के लिए चित्र बनाया जा रहा है……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return 'मुझे $characterName द्वारा लिखा गया छीशी विशेष पत्र मिला 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => '「LoveyDovey」की ओर से एक पत्र 💌';
+
+  @override
+  String get mailShareImageFailed =>
+      'साझा करने वाला चित्र बनाने में विफल। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get mailCollectedSuccess => 'यह पत्र सहेज लिया गया है 💌';
+
+  @override
+  String get mailCollectedCancelled => 'सहेजे गए पत्रों से हटा दिया गया है';
+
+  @override
+  String get mailCollectedUpdateFailed =>
+      'सहेजने की स्थिति अपडेट नहीं हो सकी। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get mailRemoveCollectionTooltip => 'सहेजे गए पत्रों से हटाएँ';
+
+  @override
+  String get mailAddCollectionTooltip => 'पत्र सहेजें';
+
+  @override
+  String get mailShareTooltip => 'पत्र साझा करें';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return 'दिन $day';
+  }
+
+  @override
+  String get mailQixiDetailTitle => 'छीशी विशेष पत्र';
+
+  @override
+  String get mailQixiShareTooltip => 'छीशी पत्र साझा करें';
+
+  @override
+  String get qixiMaxThreeFriends =>
+      'इस इवेंट में आप अधिकतम 3 मित्र पात्र चुन सकते हैं';
+
+  @override
+  String get qixiLoginRequired =>
+      'Qixi इवेंट में भाग लेने से पहले कृपया लॉग इन करें';
+
+  @override
+  String get qixiOutsideEventPeriod => 'अभी Qixi इवेंट की अवधि नहीं है';
+
+  @override
+  String get qixiSelectAtLeastOne => 'कृपया पहले कम से कम एक मित्र पात्र चुनें';
+
+  @override
+  String get qixiMysteryCharacter => 'रहस्यमय पात्र';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '(Qixi के करीब आते ही, रात की गहराइयों में सोई हुई आकाशगंगा धीरे-धीरे जाग उठती है। बिखरी हुई तारों की रोशनी क्षितिज पर धीरे-धीरे एकत्र होने लगती है, मानो वे दो ऐसे लोगों की प्रतीक्षा कर रही हों जो इस मुलाक़ात को निभाने और एक-दूसरे का नाम लिखने के लिए तैयार हों।)\n\n(किंवदंती है कि मैगपाई ब्रिज केवल उन्हीं लोगों के लिए चमकता है जो सच में एक-दूसरे से मिलना चाहते हैं। जब आपका नाम और \"$characterName\" का नाम एक साथ तारों की नदी पर दिखाई देता है, तो एक हल्की रोशनी रात को चीरते हुए इस चैटरूम में उतरती है, जो केवल आप दोनों के लिए है।)\n\n(इस क्षण से, आप दोनों के बीच \"Qixi का तीन-दिवसीय वादा\" शुरू होता है। ये दिन लगातार होना ज़रूरी नहीं है, और किसी भव्य प्रेम-स्वीकारोक्ति की तैयारी की भी आवश्यकता नहीं है। इवेंट के दौरान बस तीन अलग-अलग दिनों में यहाँ लौटें और एक अभिवादन, कोई भावना या आज की कोई छोटी-सी घटना साझा करें।)\n\n(हर सफल मुलाक़ात के साथ मैगपाई ब्रिज पर एक नया तारा जगमगा उठेगा। जब तीनों दिनों की तारों की रोशनी पूरी तरह जगमगा उठेगी, तब आपकी बातचीत में बिखरी भावनाएँ और यादें तीसरे पूरे किए गए दिन के समाप्त होने के बाद केवल आपके लिए लिखे गए एक सीमित Qixi पत्र में बदल जाएँगी।)\n\n(इस समय पहली तारों की किरण उतर चुकी है। मैगपाई ब्रिज के दूसरी ओर, \"$characterName\" को भी शायद यह वादा मिल चुका है।)\n\n——Qixi का तीन-दिवसीय वादा अब शुरू होता है।';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage =>
+      'Qixi का तीन-दिवसीय वादा शुरू हो गया है';
+
+  @override
+  String get qixiCompanionSlotsFull =>
+      'Qixi के सभी साथी स्लॉट चुने जा चुके हैं';
+
+  @override
+  String get qixiSingleRoomOpened => 'आपका विशेष Qixi चैटरूम खुल गया है 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return '$count विशेष Qixi चैटरूम खुल गए हैं 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed =>
+      'Qixi चैटरूम बनाने में विफल। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get qixiEventStartsAt => 'इवेंट 8/19 को 00:00 बजे शुरू होगा';
+
+  @override
+  String get qixiEventActiveUntil =>
+      'इवेंट जारी है · 8/26 को 23:59 बजे समाप्त होगा';
+
+  @override
+  String get qixiEventEnded => 'यह Qixi इवेंट समाप्त हो चुका है';
+
+  @override
+  String get qixiEventHeroTitle => 'Lovey Time Qixi · आपके साथ मैगपाई ब्रिज तक';
+
+  @override
+  String get qixiCharacterSelected => 'चुना गया';
+
+  @override
+  String get qixiFriendListLoadFailed =>
+      'मित्र सूची लोड नहीं हो सकी। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get qixiNoFriendCharacters => 'अभी आपके पास कोई मित्र पात्र नहीं है';
+
+  @override
+  String get qixiNoFriendCharactersHint =>
+      'पहले किसी पसंदीदा पात्र से मिलें, फिर उसके साथ मैगपाई ब्रिज पार करने वापस आएँ!';
+
+  @override
+  String get qixiLoadingCharacter => 'पात्र की जानकारी लोड हो रही है……';
+
+  @override
+  String get qixiEventPageTitle => 'सीमित Qixi इवेंट';
+
+  @override
+  String get qixiEventRules =>
+      'इवेंट के दौरान 3 अलग-अलग तारीखें चुनें, विशेष Qixi चैटरूम में संदेश भेजें और पात्र से सफलतापूर्वक उत्तर प्राप्त करें ताकि तीन दिनों की तारों की रोशनी में से एक जगमगा उठे। सीमित पत्र तीसरे पूरे किए गए दिन के समाप्त होने के बाद भेजा जाएगा। इवेंट की तारीखें और दैनिक प्रगति ताइवान समय (UTC+8) के अनुसार होंगी।';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return 'साथी चुनें ($count/3)';
+  }
+
+  @override
+  String get qixiSelectionLockedHint =>
+      'आप मित्र के रूप में जोड़े गए अधिकतम 3 पात्र चुन सकते हैं। एक बार चुनने के बाद उन्हें बदला नहीं जा सकता।';
+
+  @override
+  String get qixiConfirmCompanions => 'साथियों की पुष्टि करें';
+
+  @override
+  String get encounterDailyQuote1 =>
+      'आज, शायद कोई नई कहानी आपका इंतज़ार कर रही हो।';
+
+  @override
+  String get encounterDailyQuote2 => 'आज, अपने दिल को पहले बोलने दें।';
+
+  @override
+  String get encounterDailyQuote3 =>
+      'आज, शायद कोई आपसे मिलने का इंतज़ार कर रहा हो।';
+
+  @override
+  String get encounterDailyQuote4 => 'आज, किसी नई कहानी में कदम रखकर देखें।';
+
+  @override
+  String get encounterDailyQuote5 =>
+      'आज कैसी दिल की धड़कन आपका इंतज़ार कर रही होगी?';
+
+  @override
+  String get encounterDailyQuote6 => 'आज, अपने लिए थोड़ी-सी उम्मीद बचाकर रखें।';
+
+  @override
+  String get encounterDailyQuote7 => 'आज, एक नई मुलाक़ात शुरू हो रही है।';
+
+  @override
+  String get encounterDailyQuote8 =>
+      'आज, शायद किस्मत आपके लिए कोई छोटा-सा सरप्राइज़ लेकर आए।';
+
+  @override
+  String get encounterDailyQuote9 =>
+      'आज, किसी मुलाक़ात को धीरे-धीरे शुरू होने दें।';
+
+  @override
+  String get encounterDailyQuote10 =>
+      'आज, शायद कोई ऐसा मिले जो आपको एक पल के लिए रोक दे।';
+
+  @override
+  String get encounterDailyQuote11 => 'आज आप किससे मिलना चाहेंगे?';
+
+  @override
+  String get encounterDailyQuote12 =>
+      'आज, चुपचाप करीब आ रहे किसी रिश्ते को यूँ ही न जाने दें।';
+
+  @override
+  String get encounterJoinedToday => '✨ आज Lovey Time में शामिल हुए';
+
+  @override
+  String get encounterPopularChats =>
+      '❤️ हाल ही में बहुत लोग इनसे बात कर रहे हैं';
+
+  @override
+  String get qixiBannerActiveUntil => 'सीमित समय · 8/26 को 23:59 तक';
+
+  @override
+  String get qixiBannerStartsAt => '8/19 से सीमित समय के लिए उपलब्ध';
+
+  @override
+  String get encounterRecentlyArrived => '✨ हाल ही में Lovey Time में आए';
+
+  @override
+  String get encounterRecentlyArrivedPlain => 'हाल ही में Lovey Time में आए';
+
+  @override
+  String get encounterViewMore => 'और देखें';
+
+  @override
+  String get encounterLovePrompt => '💕 आज आप किस तरह का प्यार जीना चाहते हैं?';
+
+  @override
+  String get encounterNoCharacters => 'अभी कोई पात्र नहीं है';
+
+  @override
+  String get encounterAllLoveTags => 'सभी प्रेम टैग';
+
+  @override
+  String get chatQixiLetterSent => 'सीमित पत्र भेज दिया गया है 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight =>
+      'तीनों तारों की रोशनी जगमगा उठी है · आज रात के बाद पत्र भेजा जाएगा';
+
+  @override
+  String get chatQixiTodayCompleted => 'आज की तारों की रोशनी जगमगा उठी है';
+
+  @override
+  String get chatQixiTodayNotCompleted => 'आज की प्रगति अभी पूरी नहीं हुई है';
+
+  @override
+  String get chatQixiPromiseTitle => 'Lovey Time Qixi · तीन-दिवसीय वादा';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return 'तारों की रोशनी $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      'किसी भी तीन अलग-अलग दिनों में चैट पूरी करके तारों की रोशनी जगाएँ। सीमित पत्र तीसरे दिन के समाप्त होने के बाद भेजा जाएगा। दैनिक प्रगति ताइवान समय (UTC+8) के अनुसार गणना की जाती है।';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return 'दिन $day';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable =>
+      'वेब संस्करण पर फिलहाल खरीदारी उपलब्ध नहीं है। Flowers खरीदने या सदस्यता लेने के लिए Lovey Time ऐप का उपयोग करें।';
+
+  @override
+  String get chatAiThinkingTimeout =>
+      'लगता है वह गहरी सोच में है। कृपया थोड़ी देर बाद फिर कोशिश करें……';
+
+  @override
+  String get chatAiResponseBlocked =>
+      'लगता है उसके विचार थोड़े बाधित हो गए हैं। इसे थोड़ा नरम तरीके से कहकर फिर कोशिश करें।';
+
+  @override
+  String get chatRecordingStartFailed =>
+      'रिकॉर्डिंग शुरू नहीं हो सकी। कृपया बाद में फिर कोशिश करें।';
+
+  @override
+  String get chatRecordingPlaybackFailed =>
+      'रिकॉर्डिंग चलाने में विफल। कृपया बाद में फिर कोशिश करें।';
+
+  @override
+  String get chatRoomNotReady =>
+      'चैटरूम अभी तैयार नहीं है। कृपया बाद में फिर कोशिश करें।';
+
+  @override
+  String get chatRegenerateLimitReached =>
+      'आज के सभी पुनः-जनरेशन प्रयास समाप्त हो चुके हैं';
+
+  @override
+  String get chatTypingIndicator => 'सामने वाला टाइप कर रहा है……';
+
+  @override
+  String get chatRegenerateCountSyncFailed =>
+      'पुनः-जनरेशन सफल रहा, लेकिन संख्या सिंक नहीं हो सकी। कृपया बाद में रीफ़्रेश करें।';
+
+  @override
+  String get chatRoomNotFound => 'इस पात्र का चैटरूम नहीं मिला';
+
+  @override
+  String get momentsSearchTooltip => 'मोमेंट्स वॉल में खोजें';
+
+  @override
+  String get momentsCreatorNotFound => 'इस क्रिएटर की जानकारी नहीं मिली';
+
+  @override
+  String get momentCommentLoadFailed =>
+      'टिप्पणियाँ लोड नहीं हो सकीं। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get momentCollapseReplies => 'जवाब समेटें';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return '$count और जवाब देखें';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => 'टिप्पणी की पहचान बदलें';
+
+  @override
+  String get momentSendCommentTooltip => 'टिप्पणी भेजें';
+
+  @override
+  String get momentShareCharactersLoadFailed =>
+      'चैट पात्र लोड नहीं हो सके। कृपया बाद में फिर प्रयास करें';
+
+  @override
+  String get momentReportLoginRequired =>
+      'पोस्ट की रिपोर्ट करने से पहले कृपया लॉग इन करें';
+
+  @override
+  String get momentReportSubmitted =>
+      'रिपोर्ट भेज दी गई है। हम इसकी समीक्षा करेंगे';
+
+  @override
+  String get momentSelectShareCharacter =>
+      'इस पोस्ट को साझा करने के लिए उस पात्र को चुनें जिससे आपने पहले चैट की है';
+
+  @override
+  String get momentTagCharacterUnavailable =>
+      'यह टैग किसी पात्र प्रोफ़ाइल से लिंक नहीं है';
+
+  @override
+  String get momentCharacterNotFound => 'पात्र की जानकारी नहीं मिली';
 }

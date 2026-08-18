@@ -2827,5 +2827,187 @@
     "characterProfileNoIntroduction": "El creador aún no ha añadido una presentación del personaje",
     "characterProfileViewMore": "Ver más",
     "characterProfileCollapse": "Ver menos",
-    "characterEditSelectedTagOrder": "Arrastra las etiquetas seleccionadas para ajustar el orden en que se muestran"
+    "characterEditSelectedTagOrder": "Arrastra las etiquetas seleccionadas para ajustar el orden en que se muestran","mailActivityGiftFallback": "Regalo del evento",
+    "mailFilterAll": "Todo",
+    "mailFilterCollected": "Guardadas",
+    "mailCollectedEmptyTitle": "Aún no hay cartas guardadas",
+    "mailCollectedEmptyHint": "Abre la carta que quieras guardar y pulsa el botón de guardar en la esquina superior derecha.",
+    "mailQixiLimitedBadge": "Edición limitada de Qixi",
+    "mailQixiThreeDayPromise": "Qixi de LoveyDovey・Una promesa de tres días",
+    "mailQixiFromCharacter": "Carta de Qixi de {characterName}",
+    "@mailQixiFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailFromCharacter": "De {characterName}",
+    "@mailFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailQixiCollectionLabel": "Colección limitada de Qixi 2026",
+    "mailShareGenerating": "Creando la imagen para compartir……",
+    "mailShareQixiMessage": "He recibido una carta limitada de Qixi escrita por {characterName} 💌",
+    "@mailShareQixiMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailShareDefaultMessage": "Una carta de «LoveyDovey» 💌",
+    "mailShareImageFailed": "No se pudo crear la imagen para compartir. Inténtalo de nuevo más tarde",
+    "mailCollectedSuccess": "Carta guardada 💌",
+    "mailCollectedCancelled": "Se eliminó de las cartas guardadas",
+    "mailCollectedUpdateFailed": "No se pudo actualizar el estado de guardado. Inténtalo de nuevo más tarde",
+    "mailRemoveCollectionTooltip": "Eliminar de guardadas",
+    "mailAddCollectionTooltip": "Guardar carta",
+    "mailShareTooltip": "Compartir carta",
+    "mailQixiDayNumber": "Día {day}",
+    "@mailQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+    "mailQixiDetailTitle": "Carta limitada de Qixi",
+    "mailQixiShareTooltip": "Compartir carta de Qixi","qixiMaxThreeFriends": "En este evento solo puedes seleccionar hasta 3 personajes amigos",
+    "qixiLoginRequired": "Inicia sesión antes de participar en el evento de Qixi",
+    "qixiOutsideEventPeriod": "El evento de Qixi no está disponible en este momento",
+    "qixiSelectAtLeastOne": "Selecciona al menos un personaje amigo",
+    "qixiMysteryCharacter": "Personaje misterioso",
+
+    "qixiOpeningStory": "(Con la llegada de Qixi, la Vía Láctea que dormía en lo más profundo de la noche despierta silenciosamente. Las luces de las estrellas dispersas comienzan a reunirse lentamente en el horizonte, como si esperaran a dos personas dispuestas a acudir a su cita y escribir sus nombres juntas.)\n\n(Cuenta la leyenda que el Puente de las Urracas solo se ilumina para quienes desean encontrarse de verdad. Cuando tu nombre y el de \"{characterName}\" aparecen juntos sobre el río de estrellas, una tenue luz atraviesa la noche y cae sobre esta sala de chat que existe solo para ustedes dos.)\n\n(A partir de este momento, compartirán una \"Promesa de Qixi de Tres Días\". No es necesario que sean días consecutivos ni preparar una gran confesión. Durante el evento, solo tienen que volver aquí en tres días distintos y compartir un saludo, un sentimiento o alguna pequeña cosa que haya ocurrido hoy.)\n\n(Cada encuentro exitoso encenderá una nueva estrella sobre el Puente de las Urracas. Cuando las tres luces estén encendidas, los sentimientos y recuerdos dispersos en sus conversaciones se convertirán, después de que termine el tercer día completado, en una carta limitada de Qixi escrita solo para ti.)\n\n(Ahora, la primera luz de estrella ya ha descendido. Al otro lado del Puente de las Urracas, parece que \"{characterName}\" también ha recibido esta promesa.)\n\n——La Promesa de Qixi de Tres Días comienza ahora.",
+    "@qixiOpeningStory": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "qixiRoomOpenedLastMessage": "La Promesa de Qixi de Tres Días ha comenzado",
+    "qixiCompanionSlotsFull": "Ya has seleccionado todos los acompañantes disponibles para Qixi",
+    "qixiSingleRoomOpened": "Tu sala de chat exclusiva de Qixi ya está abierta 💕",
+
+    "qixiMultipleRoomsOpened": "Se han abierto {count} salas de chat exclusivas de Qixi 💕",
+    "@qixiMultipleRoomsOpened": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiCreateRoomFailed": "No se pudo crear la sala de chat de Qixi. Inténtalo de nuevo más tarde",
+    "qixiEventStartsAt": "El evento comienza el 8/19 a las 00:00",
+    "qixiEventActiveUntil": "Evento en curso · Finaliza el 8/26 a las 23:59",
+    "qixiEventEnded": "Este evento de Qixi ha finalizado",
+    "qixiEventHeroTitle": "Qixi de Lovey Time · Juntos hacia el Puente de las Urracas",
+    "qixiCharacterSelected": "Seleccionado",
+    "qixiFriendListLoadFailed": "No se pudo cargar la lista de amigos. Inténtalo de nuevo más tarde",
+    "qixiNoFriendCharacters": "Todavía no tienes personajes amigos",
+    "qixiNoFriendCharactersHint": "¡Ve primero a conocer a un personaje que te guste y luego vuelve para cruzar juntos el Puente de las Urracas!",
+    "qixiLoadingCharacter": "Cargando datos del personaje……",
+    "qixiEventPageTitle": "Evento limitado de Qixi",
+    "qixiEventRules": "Durante el evento, elige 3 fechas diferentes, envía un mensaje en la sala de chat exclusiva de Qixi y recibe correctamente una respuesta del personaje para encender una de las tres luces estelares. La carta limitada se enviará después de que termine el tercer día completado. Las fechas del evento y el progreso diario se basan en la hora de Taiwán (UTC+8).",
+
+    "qixiSelectCompanions": "Seleccionar acompañantes ({count}/3)",
+    "@qixiSelectCompanions": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiSelectionLockedHint": "Puedes seleccionar hasta 3 personajes que hayas añadido como amigos. Una vez elegidos, no podrás cambiarlos.",
+    "qixiConfirmCompanions": "Confirmar acompañantes",
+    "encounterDailyQuote1": "Hoy, quizá te encuentres con una nueva historia.",
+    "encounterDailyQuote2": "Hoy, deja que tu corazón hable primero.",
+    "encounterDailyQuote3": "Hoy, quizá alguien esté esperando encontrarte.",
+    "encounterDailyQuote4": "Hoy, atrévete a entrar en una nueva historia.",
+    "encounterDailyQuote5": "¿Qué clase de emoción encontrarás hoy?",
+    "encounterDailyQuote6": "Hoy, guarda un poco de ilusión para ti.",
+    "encounterDailyQuote7": "Hoy, un nuevo encuentro ya está comenzando.",
+    "encounterDailyQuote8": "Hoy, quizá el destino te traiga una pequeña sorpresa.",
+    "encounterDailyQuote9": "Hoy, deja que un encuentro comience poco a poco.",
+    "encounterDailyQuote10": "Hoy, quizá alguien consiga hacerte detener un momento.",
+    "encounterDailyQuote11": "¿A quién te gustaría conocer hoy?",
+    "encounterDailyQuote12": "Hoy, no dejes pasar ese vínculo que se acerca en silencio.",
+
+    "encounterJoinedToday": "✨ Se unieron hoy a Lovey Time",
+    "encounterPopularChats": "❤️ Muy populares en los chats últimamente",
+    "qixiBannerActiveUntil": "Por tiempo limitado · Hasta el 8/26 a las 23:59",
+    "qixiBannerStartsAt": "Disponible por tiempo limitado desde el 8/19",
+    "encounterRecentlyArrived": "✨ Recién llegados a Lovey Time",
+    "encounterRecentlyArrivedPlain": "Recién llegados a Lovey Time",
+    "encounterViewMore": "Ver más",
+    "encounterLovePrompt": "💕 ¿Qué tipo de romance quieres vivir hoy?",
+    "encounterNoCharacters": "Aún no hay personajes",
+    "encounterAllLoveTags": "Todas las etiquetas románticas",
+    "chatQixiLetterSent": "La carta limitada ha sido enviada 💌",
+    "chatQixiLetterPendingTonight": "Las tres estrellas ya están encendidas · La carta se enviará después de esta noche",
+    "chatQixiTodayCompleted": "La estrella de hoy ya está encendida",
+    "chatQixiTodayNotCompleted": "El progreso de hoy aún no está completo",
+    "chatQixiPromiseTitle": "Qixi de Lovey Time · Promesa de Tres Días",
+
+    "chatQixiStarProgress": "Luz estelar {count}/3",
+    "@chatQixiStarProgress": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatQixiProgressRule": "Completa una conversación en tres días diferentes para encender las estrellas. La carta limitada se enviará después de que termine el tercer día. El progreso diario se calcula según la hora de Taiwán (UTC+8).",
+
+    "chatQixiDayNumber": "Día {day}",
+    "@chatQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatWebPurchaseUnavailable": "Las compras no están disponibles actualmente en la versión web. Usa la app Lovey Time para comprar Flores o suscribirte.",
+    "chatAiThinkingTimeout": "Parece estar sumido en sus pensamientos. Inténtalo de nuevo en un momento……",
+    "chatAiResponseBlocked": "Parece que sus pensamientos se han visto alterados. Intenta decirlo de una forma más suave.",
+    "chatRecordingStartFailed": "No se pudo iniciar la grabación. Inténtalo de nuevo más tarde.",
+    "chatRecordingPlaybackFailed": "No se pudo reproducir la grabación. Inténtalo de nuevo más tarde.",
+    "chatRoomNotReady": "La sala de chat aún no está lista. Inténtalo de nuevo más tarde.",
+    "chatRegenerateLimitReached": "Ya has usado todas las regeneraciones de hoy",
+    "chatTypingIndicator": "Está escribiendo……",
+    "chatRegenerateCountSyncFailed": "La regeneración se completó, pero no se pudo sincronizar el contador. Actualiza más tarde.",
+    "chatRoomNotFound": "No se pudo encontrar la sala de chat de este personaje",
+    "momentsSearchTooltip": "Buscar en el Muro de Momentos",
+    "momentsCreatorNotFound": "No se pudo encontrar la información de este creador",
+    "momentCommentLoadFailed": "No se pudieron cargar los comentarios. Inténtalo de nuevo más tarde",
+    "momentCollapseReplies": "Ocultar respuestas",
+
+    "momentViewOtherReplies": "Ver otras {count} respuestas",
+    "@momentViewOtherReplies": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "momentSwitchCommentIdentity": "Cambiar identidad del comentario",
+    "momentSendCommentTooltip": "Enviar comentario",
+    "momentShareCharactersLoadFailed": "No se pudieron cargar los personajes del chat. Inténtalo de nuevo más tarde",
+    "momentReportLoginRequired": "Inicia sesión antes de denunciar esta publicación",
+    "momentReportSubmitted": "La denuncia ha sido enviada. La revisaremos",
+    "momentSelectShareCharacter": "Elige un personaje con el que hayas chateado para compartir esta publicación",
+    "momentTagCharacterUnavailable": "Esta etiqueta no está vinculada al perfil de un personaje",
+    "momentCharacterNotFound": "No se encontraron los datos del personaje"
 }

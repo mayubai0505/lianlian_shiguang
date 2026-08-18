@@ -421,7 +421,7 @@ class _MomentCardState extends State<MomentCard> {
                       }
 
                       if (snapshot.hasError) {
-                        return Center(child: Text('讀取失敗：${snapshot.error}'));
+                        return Center(child: Text(l10n.momentShareCharactersLoadFailed));
                       }
 
                       // 💡 如果沒聊過天，給一個溫馨提示
@@ -805,13 +805,14 @@ class _MomentCardState extends State<MomentCard> {
 
   // 🛡️ 真實檢舉寫入功能 (多國語系版)
   Future<void> _submitReport() async {
+    final l10n = AppLocalizations.of(context)!;
     final String? reporterId =
         FirebaseAuth.instance.currentUser?.uid;
 
     if (reporterId == null) {
       ToastUtils.showCenterToast(
         context,
-        '請先登入後再檢舉貼文',
+        l10n.momentReportLoginRequired,
         isError: true,
       );
       return;
@@ -839,7 +840,7 @@ class _MomentCardState extends State<MomentCard> {
     if (result == true) {
       ToastUtils.showCenterToast(
         context,
-        '檢舉已送出，我們會進行審核',
+        l10n.momentReportSubmitted,
         customIcon:
         Icons.flag_outlined,
       );
@@ -895,8 +896,8 @@ class _MomentCardState extends State<MomentCard> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                subtitle: const Text(
-                  '選擇一位聊過天的角色分享這則動態',
+                subtitle: Text(
+                  l10n.momentSelectShareCharacter,
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -947,6 +948,7 @@ class _MomentCardState extends State<MomentCard> {
   Future<void> _openMentionedCharacter(
       String characterName,
       ) async {
+    final l10n = AppLocalizations.of(context)!;
     Map<String, String>? matchedMention;
 
     for (final mention
@@ -962,7 +964,7 @@ class _MomentCardState extends State<MomentCard> {
 
       ToastUtils.showCenterToast(
         context,
-        '這個標記沒有連結到角色檔案',
+        l10n.momentTagCharacterUnavailable,
         isError: true,
       );
       return;
@@ -978,7 +980,7 @@ class _MomentCardState extends State<MomentCard> {
 
       ToastUtils.showCenterToast(
         context,
-        '找不到角色資料',
+        l10n.momentCharacterNotFound,
         isError: true,
       );
       return;
@@ -1106,7 +1108,11 @@ class _MomentCardState extends State<MomentCard> {
               style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
             ),
             subtitle: Text(
-              DateFormat('M月d日 HH:mm').format(widget.moment.createdAt.toDate()),
+              DateFormat.MMMd(
+                Localizations.localeOf(context).toString(),
+              ).add_Hm().format(
+                widget.moment.createdAt.toDate(),
+              ),
               style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
             ),
             trailing: IconButton(
@@ -1175,7 +1181,7 @@ class _MomentCardState extends State<MomentCard> {
                 // 🍃 1. 按讚 (有氣泡)
                 Showcase(
                   key: _likeKey,
-                  description: l10n.tip_post_like ?? '喜歡這則動態嗎？給他一點心意吧！',
+                  description: l10n.tip_post_like,
                   child: IconButton(
                     icon: Icon(
                       _isLiked ? Icons.eco : Icons.eco_outlined,
@@ -1211,7 +1217,7 @@ class _MomentCardState extends State<MomentCard> {
                 // 🌳 4. 收藏 (有氣泡)
                 Showcase(
                   key: _bookmarkKey,
-                  description: l10n.tip_post_bookmark ?? '把特別的動態悄悄收進口袋裡。',
+                  description: l10n.tip_post_bookmark,
                   child: IconButton(
                     icon: Icon(
                       _isBookmarked ? Icons.park : Icons.park_outlined,

@@ -130,6 +130,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
       String characterId,
       ) async {
     final user = _currentUser;
+    final l10n = AppLocalizations.of(context)!;
 
     if (user == null || !mounted) {
       return;
@@ -166,7 +167,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
         if (mounted) {
           ToastUtils.showCenterToast(
             context,
-            '找不到這個角色的聊天室',
+            l10n.chatRoomNotFound,
             isError: true,
           );
         }

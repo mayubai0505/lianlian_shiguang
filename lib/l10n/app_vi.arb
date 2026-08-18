@@ -2829,5 +2829,188 @@
   "characterProfileNoIntroduction": "Nhà sáng tạo chưa thêm phần giới thiệu nhân vật",
   "characterProfileViewMore": "Xem thêm",
   "characterProfileCollapse": "Thu gọn",
-  "characterEditSelectedTagOrder": "Kéo các thẻ đã chọn để điều chỉnh thứ tự hiển thị"
+  "characterEditSelectedTagOrder": "Kéo các thẻ đã chọn để điều chỉnh thứ tự hiển thị",
+  "mailActivityGiftFallback": "Quà sự kiện",
+  "mailFilterAll": "Tất cả",
+  "mailFilterCollected": "Đã lưu",
+  "mailCollectedEmptyTitle": "Hiện chưa có thư nào được lưu",
+  "mailCollectedEmptyHint": "Mở bức thư bạn muốn lưu rồi nhấn nút lưu ở góc trên bên phải.",
+  "mailQixiLimitedBadge": "Phiên bản giới hạn Thất Tịch",
+  "mailQixiThreeDayPromise": "Thất Tịch LoveyDovey・Lời hẹn ba ngày",
+  "mailQixiFromCharacter": "Thư Thất Tịch từ {characterName}",
+  "@mailQixiFromCharacter": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailFromCharacter": "Từ {characterName}",
+  "@mailFromCharacter": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailQixiCollectionLabel": "Bộ sưu tập giới hạn Thất Tịch 2026",
+  "mailShareGenerating": "Đang tạo ảnh chia sẻ……",
+  "mailShareQixiMessage": "Tôi đã nhận được thư Thất Tịch giới hạn từ {characterName} 💌",
+  "@mailShareQixiMessage": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailShareDefaultMessage": "Một bức thư từ 「LoveyDovey」💌",
+  "mailShareImageFailed": "Không thể tạo ảnh chia sẻ, vui lòng thử lại sau",
+  "mailCollectedSuccess": "Đã lưu bức thư này 💌",
+  "mailCollectedCancelled": "Đã bỏ lưu",
+  "mailCollectedUpdateFailed": "Không thể cập nhật trạng thái lưu, vui lòng thử lại sau",
+  "mailRemoveCollectionTooltip": "Bỏ lưu",
+  "mailAddCollectionTooltip": "Lưu thư",
+  "mailShareTooltip": "Chia sẻ thư",
+  "mailQixiDayNumber": "Ngày thứ {day}",
+  "@mailQixiDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "mailQixiDetailTitle": "Thư giới hạn Thất Tịch",
+  "mailQixiShareTooltip": "Chia sẻ thư Thất Tịch",
+  "qixiMaxThreeFriends": "Trong sự kiện này, bạn chỉ có thể chọn tối đa 3 nhân vật bạn bè",
+  "qixiLoginRequired": "Vui lòng đăng nhập trước khi tham gia sự kiện Thất Tịch",
+  "qixiOutsideEventPeriod": "Hiện không nằm trong thời gian diễn ra sự kiện Thất Tịch",
+  "qixiSelectAtLeastOne": "Vui lòng chọn ít nhất một nhân vật bạn bè trước",
+  "qixiMysteryCharacter": "Nhân vật bí ẩn",
+
+  "qixiOpeningStory": "(Khi Thất Tịch đến gần, dải ngân hà đang ngủ sâu trong màn đêm khẽ thức giấc. Những ánh sao rải rác dần tụ lại nơi chân trời, như thể đang chờ hai người sẵn lòng đến cuộc hẹn và viết tên của nhau.)\n\n(Tương truyền, Cầu Ô Thước chỉ sáng lên vì những người thực sự mong muốn được gặp nhau. Khi tên của bạn và \"{characterName}\" cùng xuất hiện trên dòng sông sao, một tia sáng dịu dàng xuyên qua màn đêm và rơi xuống phòng trò chuyện chỉ thuộc về hai người.)\n\n(Từ giây phút này, hai người cùng có một \"Lời Hẹn Ba Ngày Thất Tịch\". Không cần phải là ba ngày liên tiếp, cũng không cần chuẩn bị một lời tỏ tình thật hoành tráng. Trong thời gian diễn ra sự kiện, chỉ cần quay lại đây vào ba ngày khác nhau và chia sẻ một lời chào, một tâm trạng, hay một chuyện nhỏ xảy ra trong ngày hôm nay.)\n\n(Mỗi lần gặp nhau thành công sẽ thắp sáng thêm một ánh sao trên Cầu Ô Thước. Khi ánh sao của cả ba ngày đều được thắp sáng, những tình cảm và ký ức rải rác trong cuộc trò chuyện sẽ hóa thành một lá thư Thất Tịch giới hạn chỉ dành riêng cho bạn sau khi ngày hoàn thành thứ ba kết thúc.)\n\n(Lúc này, tia sáng đầu tiên đã rơi xuống. Ở đầu bên kia của Cầu Ô Thước, dường như \"{characterName}\" cũng đã nhận được lời hẹn này.)\n\n——Lời Hẹn Ba Ngày Thất Tịch bắt đầu từ bây giờ.",
+  "@qixiOpeningStory": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "qixiRoomOpenedLastMessage": "Lời Hẹn Ba Ngày Thất Tịch đã bắt đầu",
+  "qixiCompanionSlotsFull": "Bạn đã chọn đủ số nhân vật đồng hành Thất Tịch",
+  "qixiSingleRoomOpened": "Phòng trò chuyện Thất Tịch riêng đã được mở 💕",
+
+  "qixiMultipleRoomsOpened": "Đã mở {count} phòng trò chuyện Thất Tịch riêng 💕",
+  "@qixiMultipleRoomsOpened": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "qixiCreateRoomFailed": "Không thể tạo phòng trò chuyện Thất Tịch. Vui lòng thử lại sau",
+  "qixiEventStartsAt": "Sự kiện bắt đầu lúc 00:00 ngày 8/19",
+  "qixiEventActiveUntil": "Sự kiện đang diễn ra · Kết thúc lúc 23:59 ngày 8/26",
+  "qixiEventEnded": "Sự kiện Thất Tịch lần này đã kết thúc",
+  "qixiEventHeroTitle": "Thất Tịch Lovey Time · Cùng Bạn Đến Cầu Ô Thước",
+  "qixiCharacterSelected": "Đã chọn",
+  "qixiFriendListLoadFailed": "Không thể tải danh sách bạn bè. Vui lòng thử lại sau",
+  "qixiNoFriendCharacters": "Hiện bạn chưa có nhân vật bạn bè nào",
+  "qixiNoFriendCharactersHint": "Hãy gặp một nhân vật bạn thích trước, rồi quay lại cùng nhau bước lên Cầu Ô Thước nhé!",
+  "qixiLoadingCharacter": "Đang tải dữ liệu nhân vật……",
+  "qixiEventPageTitle": "Sự Kiện Thất Tịch Giới Hạn",
+  "qixiEventRules": "Trong thời gian sự kiện, hãy chọn 3 ngày khác nhau, gửi tin nhắn trong phòng trò chuyện Thất Tịch riêng và nhận được phản hồi thành công từ nhân vật để thắp sáng một trong ba ánh sao. Thư giới hạn sẽ được gửi sau khi ngày hoàn thành thứ ba kết thúc. Ngày sự kiện và tiến độ hằng ngày đều được tính theo giờ Đài Loan (UTC+8).",
+
+  "qixiSelectCompanions": "Chọn Nhân Vật Đồng Hành ({count}/3)",
+  "@qixiSelectCompanions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "qixiSelectionLockedHint": "Bạn có thể chọn tối đa 3 nhân vật đã thêm làm bạn. Sau khi chọn sẽ không thể thay đổi.",
+  "qixiConfirmCompanions": "Xác Nhận Nhân Vật Đồng Hành",
+  "encounterDailyQuote1": "Hôm nay, có lẽ bạn sẽ gặp một câu chuyện mới.",
+  "encounterDailyQuote2": "Hôm nay, hãy để trái tim lên tiếng trước.",
+  "encounterDailyQuote3": "Hôm nay, có lẽ ai đó đang chờ được gặp bạn.",
+  "encounterDailyQuote4": "Hôm nay, hãy thử bước vào một câu chuyện mới.",
+  "encounterDailyQuote5": "Hôm nay, bạn sẽ gặp cảm giác rung động như thế nào nhỉ?",
+  "encounterDailyQuote6": "Hôm nay, hãy dành cho bản thân một chút mong chờ.",
+  "encounterDailyQuote7": "Hôm nay, một cuộc gặp gỡ mới đang bắt đầu.",
+  "encounterDailyQuote8": "Hôm nay, có lẽ định mệnh sẽ mang đến một bất ngờ nho nhỏ.",
+  "encounterDailyQuote9": "Hôm nay, hãy để một cuộc gặp gỡ từ từ bắt đầu.",
+  "encounterDailyQuote10": "Hôm nay, có lẽ sẽ có ai đó khiến bạn phải dừng bước.",
+  "encounterDailyQuote11": "Hôm nay, bạn muốn gặp một người như thế nào?",
+  "encounterDailyQuote12": "Hôm nay, đừng bỏ lỡ nhân duyên đang lặng lẽ đến gần.",
+
+  "encounterJoinedToday": "✨ Tham gia Lovey Time hôm nay",
+  "encounterPopularChats": "❤️ Gần đây có rất nhiều người đang trò chuyện",
+  "qixiBannerActiveUntil": "Mở giới hạn thời gian · Đến 23:59 ngày 8/26",
+  "qixiBannerStartsAt": "Mở giới hạn từ 8/19",
+  "encounterRecentlyArrived": "✨ Gần đây đã đến Lovey Time",
+  "encounterRecentlyArrivedPlain": "Gần đây đã đến Lovey Time",
+  "encounterViewMore": "Xem thêm",
+  "encounterLovePrompt": "💕 Hôm nay bạn muốn trải nghiệm kiểu tình yêu nào?",
+  "encounterNoCharacters": "Hiện chưa có nhân vật nào",
+  "encounterAllLoveTags": "Tất cả thẻ tình yêu",
+  "chatQixiLetterSent": "Thư giới hạn đã được gửi 💌",
+  "chatQixiLetterPendingTonight": "Ba ánh sao đã được thắp sáng · Thư sẽ được gửi sau đêm nay",
+  "chatQixiTodayCompleted": "Ánh sao hôm nay đã được thắp sáng",
+  "chatQixiTodayNotCompleted": "Hôm nay vẫn chưa hoàn thành",
+  "chatQixiPromiseTitle": "Thất Tịch Lovey Time · Lời Hẹn Ba Ngày",
+
+  "chatQixiStarProgress": "Ánh sao {count}/3",
+  "@chatQixiStarProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "chatQixiProgressRule": "Hoàn thành trò chuyện vào ba ngày khác nhau để thắp sáng các vì sao. Thư giới hạn sẽ được gửi sau khi ngày thứ ba kết thúc. Tiến độ hằng ngày được tính theo giờ Đài Loan (UTC+8).",
+
+  "chatQixiDayNumber": "Ngày {day}",
+  "@chatQixiDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+
+  "chatWebPurchaseUnavailable": "Phiên bản web hiện chưa hỗ trợ nạp tiền. Vui lòng sử dụng ứng dụng Lovey Time để mua Flowers hoặc đăng ký gói.",
+  "chatAiThinkingTimeout": "Có vẻ anh ấy đang chìm trong suy nghĩ. Vui lòng thử lại sau một lát……",
+  "chatAiResponseBlocked": "Có vẻ suy nghĩ của anh ấy đang bị xáo trộn đôi chút. Hãy thử diễn đạt lại nhẹ nhàng hơn.",
+  "chatRecordingStartFailed": "Không thể bắt đầu ghi âm. Vui lòng thử lại sau.",
+  "chatRecordingPlaybackFailed": "Không thể phát bản ghi âm. Vui lòng thử lại sau.",
+  "chatRoomNotReady": "Phòng trò chuyện vẫn chưa sẵn sàng. Vui lòng thử lại sau.",
+  "chatRegenerateLimitReached": "Bạn đã dùng hết số lần tạo lại hôm nay",
+  "chatTypingIndicator": "Đối phương đang nhập……",
+  "chatRegenerateCountSyncFailed": "Đã tạo lại thành công nhưng không thể đồng bộ số lượt. Vui lòng tải lại sau.",
+  "chatRoomNotFound": "Không tìm thấy phòng trò chuyện của nhân vật này",
+  "momentsSearchTooltip": "Tìm kiếm trên Tường Khoảnh Khắc",
+  "momentsCreatorNotFound": "Không tìm thấy thông tin của nhà sáng tạo này",
+  "momentCommentLoadFailed": "Không thể tải bình luận. Vui lòng thử lại sau",
+  "momentCollapseReplies": "Thu gọn phản hồi",
+  "momentViewOtherReplies": "Xem thêm {count} phản hồi khác",
+  "@momentViewOtherReplies": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "momentSwitchCommentIdentity": "Chuyển danh tính bình luận",
+  "momentSendCommentTooltip": "Gửi bình luận",
+  "momentShareCharactersLoadFailed": "Không thể tải các nhân vật đã trò chuyện. Vui lòng thử lại sau",
+  "momentReportLoginRequired": "Vui lòng đăng nhập trước khi báo cáo bài đăng",
+  "momentReportSubmitted": "Báo cáo đã được gửi. Chúng tôi sẽ tiến hành xem xét",
+  "momentSelectShareCharacter": "Chọn một nhân vật bạn đã từng trò chuyện để chia sẻ bài đăng này",
+  "momentTagCharacterUnavailable": "Thẻ này không được liên kết với hồ sơ nhân vật",
+  "momentCharacterNotFound": "Không tìm thấy dữ liệu nhân vật"
 }

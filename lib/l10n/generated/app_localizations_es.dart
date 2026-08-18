@@ -6155,4 +6155,377 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get characterEditSelectedTagOrder =>
       'Arrastra las etiquetas seleccionadas para ajustar el orden en que se muestran';
+
+  @override
+  String get mailActivityGiftFallback => 'Regalo del evento';
+
+  @override
+  String get mailFilterAll => 'Todo';
+
+  @override
+  String get mailFilterCollected => 'Guardadas';
+
+  @override
+  String get mailCollectedEmptyTitle => 'Aún no hay cartas guardadas';
+
+  @override
+  String get mailCollectedEmptyHint =>
+      'Abre la carta que quieras guardar y pulsa el botón de guardar en la esquina superior derecha.';
+
+  @override
+  String get mailQixiLimitedBadge => 'Edición limitada de Qixi';
+
+  @override
+  String get mailQixiThreeDayPromise =>
+      'Qixi de LoveyDovey・Una promesa de tres días';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return 'Carta de Qixi de $characterName';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return 'De $characterName';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => 'Colección limitada de Qixi 2026';
+
+  @override
+  String get mailShareGenerating => 'Creando la imagen para compartir……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return 'He recibido una carta limitada de Qixi escrita por $characterName 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => 'Una carta de «LoveyDovey» 💌';
+
+  @override
+  String get mailShareImageFailed =>
+      'No se pudo crear la imagen para compartir. Inténtalo de nuevo más tarde';
+
+  @override
+  String get mailCollectedSuccess => 'Carta guardada 💌';
+
+  @override
+  String get mailCollectedCancelled => 'Se eliminó de las cartas guardadas';
+
+  @override
+  String get mailCollectedUpdateFailed =>
+      'No se pudo actualizar el estado de guardado. Inténtalo de nuevo más tarde';
+
+  @override
+  String get mailRemoveCollectionTooltip => 'Eliminar de guardadas';
+
+  @override
+  String get mailAddCollectionTooltip => 'Guardar carta';
+
+  @override
+  String get mailShareTooltip => 'Compartir carta';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return 'Día $day';
+  }
+
+  @override
+  String get mailQixiDetailTitle => 'Carta limitada de Qixi';
+
+  @override
+  String get mailQixiShareTooltip => 'Compartir carta de Qixi';
+
+  @override
+  String get qixiMaxThreeFriends =>
+      'En este evento solo puedes seleccionar hasta 3 personajes amigos';
+
+  @override
+  String get qixiLoginRequired =>
+      'Inicia sesión antes de participar en el evento de Qixi';
+
+  @override
+  String get qixiOutsideEventPeriod =>
+      'El evento de Qixi no está disponible en este momento';
+
+  @override
+  String get qixiSelectAtLeastOne => 'Selecciona al menos un personaje amigo';
+
+  @override
+  String get qixiMysteryCharacter => 'Personaje misterioso';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '(Con la llegada de Qixi, la Vía Láctea que dormía en lo más profundo de la noche despierta silenciosamente. Las luces de las estrellas dispersas comienzan a reunirse lentamente en el horizonte, como si esperaran a dos personas dispuestas a acudir a su cita y escribir sus nombres juntas.)\n\n(Cuenta la leyenda que el Puente de las Urracas solo se ilumina para quienes desean encontrarse de verdad. Cuando tu nombre y el de \"$characterName\" aparecen juntos sobre el río de estrellas, una tenue luz atraviesa la noche y cae sobre esta sala de chat que existe solo para ustedes dos.)\n\n(A partir de este momento, compartirán una \"Promesa de Qixi de Tres Días\". No es necesario que sean días consecutivos ni preparar una gran confesión. Durante el evento, solo tienen que volver aquí en tres días distintos y compartir un saludo, un sentimiento o alguna pequeña cosa que haya ocurrido hoy.)\n\n(Cada encuentro exitoso encenderá una nueva estrella sobre el Puente de las Urracas. Cuando las tres luces estén encendidas, los sentimientos y recuerdos dispersos en sus conversaciones se convertirán, después de que termine el tercer día completado, en una carta limitada de Qixi escrita solo para ti.)\n\n(Ahora, la primera luz de estrella ya ha descendido. Al otro lado del Puente de las Urracas, parece que \"$characterName\" también ha recibido esta promesa.)\n\n——La Promesa de Qixi de Tres Días comienza ahora.';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage =>
+      'La Promesa de Qixi de Tres Días ha comenzado';
+
+  @override
+  String get qixiCompanionSlotsFull =>
+      'Ya has seleccionado todos los acompañantes disponibles para Qixi';
+
+  @override
+  String get qixiSingleRoomOpened =>
+      'Tu sala de chat exclusiva de Qixi ya está abierta 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return 'Se han abierto $count salas de chat exclusivas de Qixi 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed =>
+      'No se pudo crear la sala de chat de Qixi. Inténtalo de nuevo más tarde';
+
+  @override
+  String get qixiEventStartsAt => 'El evento comienza el 8/19 a las 00:00';
+
+  @override
+  String get qixiEventActiveUntil =>
+      'Evento en curso · Finaliza el 8/26 a las 23:59';
+
+  @override
+  String get qixiEventEnded => 'Este evento de Qixi ha finalizado';
+
+  @override
+  String get qixiEventHeroTitle =>
+      'Qixi de Lovey Time · Juntos hacia el Puente de las Urracas';
+
+  @override
+  String get qixiCharacterSelected => 'Seleccionado';
+
+  @override
+  String get qixiFriendListLoadFailed =>
+      'No se pudo cargar la lista de amigos. Inténtalo de nuevo más tarde';
+
+  @override
+  String get qixiNoFriendCharacters => 'Todavía no tienes personajes amigos';
+
+  @override
+  String get qixiNoFriendCharactersHint =>
+      '¡Ve primero a conocer a un personaje que te guste y luego vuelve para cruzar juntos el Puente de las Urracas!';
+
+  @override
+  String get qixiLoadingCharacter => 'Cargando datos del personaje……';
+
+  @override
+  String get qixiEventPageTitle => 'Evento limitado de Qixi';
+
+  @override
+  String get qixiEventRules =>
+      'Durante el evento, elige 3 fechas diferentes, envía un mensaje en la sala de chat exclusiva de Qixi y recibe correctamente una respuesta del personaje para encender una de las tres luces estelares. La carta limitada se enviará después de que termine el tercer día completado. Las fechas del evento y el progreso diario se basan en la hora de Taiwán (UTC+8).';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return 'Seleccionar acompañantes ($count/3)';
+  }
+
+  @override
+  String get qixiSelectionLockedHint =>
+      'Puedes seleccionar hasta 3 personajes que hayas añadido como amigos. Una vez elegidos, no podrás cambiarlos.';
+
+  @override
+  String get qixiConfirmCompanions => 'Confirmar acompañantes';
+
+  @override
+  String get encounterDailyQuote1 =>
+      'Hoy, quizá te encuentres con una nueva historia.';
+
+  @override
+  String get encounterDailyQuote2 => 'Hoy, deja que tu corazón hable primero.';
+
+  @override
+  String get encounterDailyQuote3 =>
+      'Hoy, quizá alguien esté esperando encontrarte.';
+
+  @override
+  String get encounterDailyQuote4 =>
+      'Hoy, atrévete a entrar en una nueva historia.';
+
+  @override
+  String get encounterDailyQuote5 => '¿Qué clase de emoción encontrarás hoy?';
+
+  @override
+  String get encounterDailyQuote6 => 'Hoy, guarda un poco de ilusión para ti.';
+
+  @override
+  String get encounterDailyQuote7 =>
+      'Hoy, un nuevo encuentro ya está comenzando.';
+
+  @override
+  String get encounterDailyQuote8 =>
+      'Hoy, quizá el destino te traiga una pequeña sorpresa.';
+
+  @override
+  String get encounterDailyQuote9 =>
+      'Hoy, deja que un encuentro comience poco a poco.';
+
+  @override
+  String get encounterDailyQuote10 =>
+      'Hoy, quizá alguien consiga hacerte detener un momento.';
+
+  @override
+  String get encounterDailyQuote11 => '¿A quién te gustaría conocer hoy?';
+
+  @override
+  String get encounterDailyQuote12 =>
+      'Hoy, no dejes pasar ese vínculo que se acerca en silencio.';
+
+  @override
+  String get encounterJoinedToday => '✨ Se unieron hoy a Lovey Time';
+
+  @override
+  String get encounterPopularChats =>
+      '❤️ Muy populares en los chats últimamente';
+
+  @override
+  String get qixiBannerActiveUntil =>
+      'Por tiempo limitado · Hasta el 8/26 a las 23:59';
+
+  @override
+  String get qixiBannerStartsAt =>
+      'Disponible por tiempo limitado desde el 8/19';
+
+  @override
+  String get encounterRecentlyArrived => '✨ Recién llegados a Lovey Time';
+
+  @override
+  String get encounterRecentlyArrivedPlain => 'Recién llegados a Lovey Time';
+
+  @override
+  String get encounterViewMore => 'Ver más';
+
+  @override
+  String get encounterLovePrompt =>
+      '💕 ¿Qué tipo de romance quieres vivir hoy?';
+
+  @override
+  String get encounterNoCharacters => 'Aún no hay personajes';
+
+  @override
+  String get encounterAllLoveTags => 'Todas las etiquetas románticas';
+
+  @override
+  String get chatQixiLetterSent => 'La carta limitada ha sido enviada 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight =>
+      'Las tres estrellas ya están encendidas · La carta se enviará después de esta noche';
+
+  @override
+  String get chatQixiTodayCompleted => 'La estrella de hoy ya está encendida';
+
+  @override
+  String get chatQixiTodayNotCompleted =>
+      'El progreso de hoy aún no está completo';
+
+  @override
+  String get chatQixiPromiseTitle =>
+      'Qixi de Lovey Time · Promesa de Tres Días';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return 'Luz estelar $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      'Completa una conversación en tres días diferentes para encender las estrellas. La carta limitada se enviará después de que termine el tercer día. El progreso diario se calcula según la hora de Taiwán (UTC+8).';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return 'Día $day';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable =>
+      'Las compras no están disponibles actualmente en la versión web. Usa la app Lovey Time para comprar Flores o suscribirte.';
+
+  @override
+  String get chatAiThinkingTimeout =>
+      'Parece estar sumido en sus pensamientos. Inténtalo de nuevo en un momento……';
+
+  @override
+  String get chatAiResponseBlocked =>
+      'Parece que sus pensamientos se han visto alterados. Intenta decirlo de una forma más suave.';
+
+  @override
+  String get chatRecordingStartFailed =>
+      'No se pudo iniciar la grabación. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get chatRecordingPlaybackFailed =>
+      'No se pudo reproducir la grabación. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get chatRoomNotReady =>
+      'La sala de chat aún no está lista. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get chatRegenerateLimitReached =>
+      'Ya has usado todas las regeneraciones de hoy';
+
+  @override
+  String get chatTypingIndicator => 'Está escribiendo……';
+
+  @override
+  String get chatRegenerateCountSyncFailed =>
+      'La regeneración se completó, pero no se pudo sincronizar el contador. Actualiza más tarde.';
+
+  @override
+  String get chatRoomNotFound =>
+      'No se pudo encontrar la sala de chat de este personaje';
+
+  @override
+  String get momentsSearchTooltip => 'Buscar en el Muro de Momentos';
+
+  @override
+  String get momentsCreatorNotFound =>
+      'No se pudo encontrar la información de este creador';
+
+  @override
+  String get momentCommentLoadFailed =>
+      'No se pudieron cargar los comentarios. Inténtalo de nuevo más tarde';
+
+  @override
+  String get momentCollapseReplies => 'Ocultar respuestas';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return 'Ver otras $count respuestas';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => 'Cambiar identidad del comentario';
+
+  @override
+  String get momentSendCommentTooltip => 'Enviar comentario';
+
+  @override
+  String get momentShareCharactersLoadFailed =>
+      'No se pudieron cargar los personajes del chat. Inténtalo de nuevo más tarde';
+
+  @override
+  String get momentReportLoginRequired =>
+      'Inicia sesión antes de denunciar esta publicación';
+
+  @override
+  String get momentReportSubmitted =>
+      'La denuncia ha sido enviada. La revisaremos';
+
+  @override
+  String get momentSelectShareCharacter =>
+      'Elige un personaje con el que hayas chateado para compartir esta publicación';
+
+  @override
+  String get momentTagCharacterUnavailable =>
+      'Esta etiqueta no está vinculada al perfil de un personaje';
+
+  @override
+  String get momentCharacterNotFound =>
+      'No se encontraron los datos del personaje';
 }

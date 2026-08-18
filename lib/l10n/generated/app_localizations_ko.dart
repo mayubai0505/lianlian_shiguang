@@ -5794,4 +5794,337 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get characterEditSelectedTagOrder => '선택한 태그를 드래그하여 표시 순서를 조정하세요';
+
+  @override
+  String get mailActivityGiftFallback => '이벤트 선물';
+
+  @override
+  String get mailFilterAll => '전체';
+
+  @override
+  String get mailFilterCollected => '보관함';
+
+  @override
+  String get mailCollectedEmptyTitle => '아직 보관한 편지가 없습니다';
+
+  @override
+  String get mailCollectedEmptyHint => '보관하고 싶은 편지를 열고 오른쪽 상단의 보관 버튼을 눌러 주세요.';
+
+  @override
+  String get mailQixiLimitedBadge => '칠석 한정';
+
+  @override
+  String get mailQixiThreeDayPromise => 'LoveyDovey 칠석・3일간의 약속';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return '$characterName에게서 온 칠석 편지';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return '$characterName에게서';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => '2026 칠석 한정 컬렉션';
+
+  @override
+  String get mailShareGenerating => '공유 이미지를 만들고 있습니다……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return '$characterName에게서 칠석 한정 편지를 받았어요 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => '「LoveyDovey」에서 온 편지 💌';
+
+  @override
+  String get mailShareImageFailed => '공유 이미지 생성에 실패했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get mailCollectedSuccess => '이 편지를 보관했습니다 💌';
+
+  @override
+  String get mailCollectedCancelled => '보관을 취소했습니다';
+
+  @override
+  String get mailCollectedUpdateFailed =>
+      '보관 상태를 업데이트하지 못했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get mailRemoveCollectionTooltip => '보관 취소';
+
+  @override
+  String get mailAddCollectionTooltip => '편지 보관';
+
+  @override
+  String get mailShareTooltip => '편지 공유';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return '$day일 차';
+  }
+
+  @override
+  String get mailQixiDetailTitle => '칠석 한정 편지';
+
+  @override
+  String get mailQixiShareTooltip => '칠석 편지 공유';
+
+  @override
+  String get qixiMaxThreeFriends => '이번 이벤트에서는 친구 캐릭터를 최대 3명까지 선택할 수 있습니다';
+
+  @override
+  String get qixiLoginRequired => '칠석 이벤트에 참여하려면 먼저 로그인해 주세요';
+
+  @override
+  String get qixiOutsideEventPeriod => '현재는 칠석 이벤트 기간이 아닙니다';
+
+  @override
+  String get qixiSelectAtLeastOne => '친구 캐릭터를 최소 1명 선택해 주세요';
+
+  @override
+  String get qixiMysteryCharacter => '신비로운 캐릭터';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '(칠석이 다가오자 깊은 밤 속에 잠들어 있던 은하수가 조용히 깨어난다. 흩어져 있던 별빛이 하늘 끝에서 천천히 모여들며, 약속을 지키러 온 두 사람이 서로의 이름을 새기기를 기다리는 듯하다.)\n\n(전설에 따르면 오작교는 진심으로 서로를 만나고 싶어 하는 사람들을 위해서만 빛난다고 한다. 당신과 「$characterName」의 이름이 동시에 은하수 위에 나타나는 순간, 희미한 빛 한 줄기가 밤하늘을 가로질러 오직 두 사람만을 위한 이 채팅방으로 내려온다.)\n\n(지금부터 두 사람에게는 「칠석, 사흘의 약속」이 주어진다. 꼭 연속된 날일 필요도 없고, 거창한 고백을 준비할 필요도 없다. 이벤트 기간 동안 서로 다른 세 날에 이곳으로 돌아와 인사 한마디, 마음 한 조각, 혹은 오늘 있었던 작은 일을 나누면 된다.)\n\n(만남이 이루어질 때마다 오작교 위의 별빛 하나가 켜진다. 사흘의 별빛이 모두 밝혀지면, 대화 속에 흩어져 있던 마음과 추억은 세 번째 완료일이 끝난 뒤 오직 당신만을 위한 칠석 한정 편지가 되어 찾아올 것이다.)\n\n(지금, 첫 번째 별빛이 내려앉았다. 오작교의 반대편에서 「$characterName」도 이 약속을 받은 듯하다.)\n\n——칠석, 사흘의 약속. 지금 시작됩니다.';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage => '칠석, 사흘의 약속이 시작되었습니다';
+
+  @override
+  String get qixiCompanionSlotsFull => '칠석 동행 캐릭터를 모두 선택했습니다';
+
+  @override
+  String get qixiSingleRoomOpened => '칠석 전용 채팅방이 열렸습니다 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return '칠석 전용 채팅방 $count개가 열렸습니다 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed => '칠석 채팅방을 만들지 못했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get qixiEventStartsAt => '이벤트는 8/19 00:00에 시작됩니다';
+
+  @override
+  String get qixiEventActiveUntil => '이벤트 진행 중 · 8/26 23:59 종료';
+
+  @override
+  String get qixiEventEnded => '이번 칠석 이벤트가 종료되었습니다';
+
+  @override
+  String get qixiEventHeroTitle => '러브러브 칠석 · 당신과 함께 오작교로';
+
+  @override
+  String get qixiCharacterSelected => '선택됨';
+
+  @override
+  String get qixiFriendListLoadFailed => '친구 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get qixiNoFriendCharacters => '아직 친구 캐릭터가 없습니다';
+
+  @override
+  String get qixiNoFriendCharactersHint =>
+      '먼저 마음에 드는 캐릭터를 만나고, 다시 돌아와 함께 오작교를 건너 보세요!';
+
+  @override
+  String get qixiLoadingCharacter => '캐릭터 정보를 불러오는 중……';
+
+  @override
+  String get qixiEventPageTitle => '칠석 한정 이벤트';
+
+  @override
+  String get qixiEventRules =>
+      '이벤트 기간 동안 서로 다른 3일을 선택해 칠석 전용 채팅방에서 메시지를 보내고 캐릭터의 답장을 받으면 사흘의 별빛 중 하나가 켜집니다. 한정 편지는 세 번째 완료일이 끝난 뒤 발송됩니다. 이벤트 날짜와 일일 진행 상황은 모두 대만 시간(UTC+8)을 기준으로 합니다.';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return '동행 캐릭터 선택 ($count/3)';
+  }
+
+  @override
+  String get qixiSelectionLockedHint =>
+      '친구로 추가한 캐릭터 중 최대 3명까지 선택할 수 있으며, 선택 후에는 변경할 수 없습니다.';
+
+  @override
+  String get qixiConfirmCompanions => '동행 캐릭터 확정';
+
+  @override
+  String get encounterDailyQuote1 => '오늘, 새로운 이야기를 만나게 될지도 몰라요.';
+
+  @override
+  String get encounterDailyQuote2 => '오늘은 설렘이 먼저 말을 걸게 해봐요.';
+
+  @override
+  String get encounterDailyQuote3 => '오늘, 누군가 당신과의 만남을 기다리고 있을지도 몰라요.';
+
+  @override
+  String get encounterDailyQuote4 => '오늘, 새로운 이야기 속으로 한 걸음 들어가 봐요.';
+
+  @override
+  String get encounterDailyQuote5 => '오늘은 어떤 설렘을 만나게 될까요?';
+
+  @override
+  String get encounterDailyQuote6 => '오늘, 나를 위해 작은 기대 하나쯤 남겨둬요.';
+
+  @override
+  String get encounterDailyQuote7 => '오늘, 새로운 만남이 시작되고 있어요.';
+
+  @override
+  String get encounterDailyQuote8 => '오늘, 운명이 작은 깜짝 선물을 가져올지도 몰라요.';
+
+  @override
+  String get encounterDailyQuote9 => '오늘, 하나의 만남을 천천히 시작해 봐요.';
+
+  @override
+  String get encounterDailyQuote10 => '오늘, 문득 발걸음을 멈추게 할 누군가를 만날지도 몰라요.';
+
+  @override
+  String get encounterDailyQuote11 => '오늘은 어떤 사람을 만나고 싶나요?';
+
+  @override
+  String get encounterDailyQuote12 => '오늘, 조용히 다가오는 인연을 놓치지 마세요.';
+
+  @override
+  String get encounterJoinedToday => '✨ 오늘 Lovey Time에 합류했어요';
+
+  @override
+  String get encounterPopularChats => '❤️ 최근 대화가 활발한 캐릭터';
+
+  @override
+  String get qixiBannerActiveUntil => '기간 한정 · 8/26 23:59까지';
+
+  @override
+  String get qixiBannerStartsAt => '8/19 한정 오픈';
+
+  @override
+  String get encounterRecentlyArrived => '✨ 최근 Lovey Time에 찾아왔어요';
+
+  @override
+  String get encounterRecentlyArrivedPlain => '최근 Lovey Time에 찾아왔어요';
+
+  @override
+  String get encounterViewMore => '더 보기';
+
+  @override
+  String get encounterLovePrompt => '💕 오늘은 어떤 사랑을 하고 싶나요?';
+
+  @override
+  String get encounterNoCharacters => '아직 캐릭터가 없습니다';
+
+  @override
+  String get encounterAllLoveTags => '모든 연애 태그';
+
+  @override
+  String get chatQixiLetterSent => '한정 편지가 발송되었습니다 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight =>
+      '사흘의 별빛이 모두 켜졌어요 · 오늘 밤이 지나면 편지가 발송됩니다';
+
+  @override
+  String get chatQixiTodayCompleted => '오늘의 별빛이 켜졌어요';
+
+  @override
+  String get chatQixiTodayNotCompleted => '오늘은 아직 완료하지 않았어요';
+
+  @override
+  String get chatQixiPromiseTitle => '러브러브 칠석 · 사흘의 약속';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return '별빛 $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      '서로 다른 3일에 채팅을 완료하면 별빛이 켜집니다. 한정 편지는 세 번째 날이 끝난 뒤 발송됩니다. 일일 진행 상황은 대만 시간(UTC+8)을 기준으로 계산됩니다.';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return '$day일차';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable =>
+      '웹 버전에서는 현재 충전 서비스를 제공하지 않습니다. 꽃 구매 또는 구독은 Lovey Time 앱을 이용해 주세요.';
+
+  @override
+  String get chatAiThinkingTimeout => '그가 생각에 잠긴 것 같아요. 잠시 후 다시 시도해 주세요……';
+
+  @override
+  String get chatAiResponseBlocked =>
+      '그의 생각이 조금 흐트러진 것 같아요. 조금 더 부드럽게 표현해서 다시 시도해 주세요.';
+
+  @override
+  String get chatRecordingStartFailed => '녹음을 시작할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get chatRecordingPlaybackFailed => '녹음을 재생하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get chatRoomNotReady => '채팅방이 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get chatRegenerateLimitReached => '오늘의 재생성 횟수를 모두 사용했습니다';
+
+  @override
+  String get chatTypingIndicator => '상대가 입력 중……';
+
+  @override
+  String get chatRegenerateCountSyncFailed =>
+      '재생성은 완료되었지만 횟수를 동기화하지 못했습니다. 잠시 후 새로고침해 주세요.';
+
+  @override
+  String get chatRoomNotFound => '이 캐릭터의 채팅방을 찾을 수 없습니다';
+
+  @override
+  String get momentsSearchTooltip => '모먼트 월 검색';
+
+  @override
+  String get momentsCreatorNotFound => '이 크리에이터의 정보를 찾을 수 없습니다';
+
+  @override
+  String get momentCommentLoadFailed => '댓글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get momentCollapseReplies => '답글 접기';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return '다른 답글 $count개 보기';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => '댓글 작성 신분 변경';
+
+  @override
+  String get momentSendCommentTooltip => '댓글 보내기';
+
+  @override
+  String get momentShareCharactersLoadFailed =>
+      '대화한 캐릭터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get momentReportLoginRequired => '게시물을 신고하려면 먼저 로그인해 주세요';
+
+  @override
+  String get momentReportSubmitted => '신고가 접수되었습니다. 검토 후 처리하겠습니다';
+
+  @override
+  String get momentSelectShareCharacter => '이 게시물을 공유할, 대화한 적 있는 캐릭터를 선택해 주세요';
+
+  @override
+  String get momentTagCharacterUnavailable => '이 태그는 캐릭터 프로필에 연결되어 있지 않습니다';
+
+  @override
+  String get momentCharacterNotFound => '캐릭터 정보를 찾을 수 없습니다';
 }

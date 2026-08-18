@@ -2837,5 +2837,189 @@
     "characterProfileNoIntroduction": "Pencipta masih belum menambahkan pengenalan watak",
     "characterProfileViewMore": "Lihat Lagi",
     "characterProfileCollapse": "Tunjukkan Sedikit",
-    "characterEditSelectedTagOrder": "Seret tag yang dipilih untuk melaraskan susunan paparannya"
+    "characterEditSelectedTagOrder": "Seret tag yang dipilih untuk melaraskan susunan paparannya",
+    "mailActivityGiftFallback": "Hadiah Acara",
+    "mailFilterAll": "Semua",
+    "mailFilterCollected": "Disimpan",
+    "mailCollectedEmptyTitle": "Belum ada surat yang disimpan",
+    "mailCollectedEmptyHint": "Buka surat yang ingin disimpan dan ketik butang simpan di penjuru kanan sebelah atas.",
+    "mailQixiLimitedBadge": "Edisi Terhad Qixi",
+    "mailQixiThreeDayPromise": "Qixi LoveyDovey・Janji Tiga Hari",
+    "mailQixiFromCharacter": "Surat Qixi daripada {characterName}",
+    "@mailQixiFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailFromCharacter": "Daripada {characterName}",
+    "@mailFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailQixiCollectionLabel": "Koleksi Terhad Qixi 2026",
+    "mailShareGenerating": "Sedang menghasilkan imej untuk dikongsi……",
+    "mailShareQixiMessage": "Saya menerima surat edisi terhad Qixi daripada {characterName} 💌",
+    "@mailShareQixiMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailShareDefaultMessage": "Surat daripada 「LoveyDovey」💌",
+    "mailShareImageFailed": "Gagal menghasilkan imej untuk dikongsi. Sila cuba lagi kemudian",
+    "mailCollectedSuccess": "Surat ini telah disimpan 💌",
+    "mailCollectedCancelled": "Surat telah dikeluarkan daripada simpanan",
+    "mailCollectedUpdateFailed": "Gagal mengemas kini status simpanan. Sila cuba lagi kemudian",
+    "mailRemoveCollectionTooltip": "Keluarkan daripada simpanan",
+    "mailAddCollectionTooltip": "Simpan surat",
+    "mailShareTooltip": "Kongsi surat",
+    "mailQixiDayNumber": "Hari ke-{day}",
+    "@mailQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+    "mailQixiDetailTitle": "Surat Edisi Terhad Qixi",
+    "mailQixiShareTooltip": "Kongsi surat Qixi",
+    "qixiMaxThreeFriends": "Untuk acara ini, anda hanya boleh memilih maksimum 3 watak rakan",
+    "qixiLoginRequired": "Sila log masuk terlebih dahulu sebelum menyertai acara Qixi",
+    "qixiOutsideEventPeriod": "Acara Qixi tidak sedang berlangsung pada masa ini",
+    "qixiSelectAtLeastOne": "Sila pilih sekurang-kurangnya satu watak rakan terlebih dahulu",
+    "qixiMysteryCharacter": "Watak Misteri",
+
+    "qixiOpeningStory": "(Menjelang Qixi, galaksi yang lena jauh di dalam malam perlahan-lahan terjaga. Cahaya bintang yang bertaburan mula berkumpul di sepanjang kaki langit, seolah-olah menanti dua insan yang sanggup menunaikan janji dan menuliskan nama satu sama lain.)\n\n(Kononnya, Jambatan Murai hanya akan bersinar untuk mereka yang benar-benar ingin bertemu. Apabila namamu dan nama \"{characterName}\" muncul bersama di sungai bintang, sejalur cahaya lembut menembusi malam dan jatuh ke dalam bilik sembang yang hanya milik kalian berdua.)\n\n(Bermula saat ini, kalian memiliki sebuah \"Janji Tiga Hari Qixi\". Hari-harinya tidak perlu berturut-turut, dan tidak perlu menyediakan pengakuan cinta yang hebat. Sepanjang tempoh acara, cukup kembali ke sini pada tiga hari yang berbeza dan kongsikan satu ucapan, perasaan, atau sesuatu yang kecil yang berlaku hari ini.)\n\n(Setiap pertemuan yang berjaya akan menyalakan satu cahaya bintang di Jambatan Murai. Apabila ketiga-tiga cahaya bintang telah menyala, perasaan dan kenangan yang bertaburan dalam perbualan kalian akan berubah menjadi sepucuk surat terhad Qixi yang ditulis khas untukmu selepas hari ketiga yang berjaya diselesaikan berakhir.)\n\n(Kini, cahaya bintang pertama telah pun turun. Di hujung satu lagi Jambatan Murai, \"{characterName}\" juga seolah-olah telah menerima janji ini.)\n\n——Janji Tiga Hari Qixi bermula sekarang.",
+    "@qixiOpeningStory": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "qixiRoomOpenedLastMessage": "Janji Tiga Hari Qixi telah bermula",
+    "qixiCompanionSlotsFull": "Semua slot teman Qixi telah dipilih",
+    "qixiSingleRoomOpened": "Bilik sembang eksklusif Qixi telah dibuka 💕",
+
+    "qixiMultipleRoomsOpened": "{count} bilik sembang eksklusif Qixi telah dibuka 💕",
+    "@qixiMultipleRoomsOpened": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiCreateRoomFailed": "Gagal mencipta bilik sembang Qixi. Sila cuba lagi kemudian",
+    "qixiEventStartsAt": "Acara bermula pada 8/19 pukul 00:00",
+    "qixiEventActiveUntil": "Acara sedang berlangsung · Tamat pada 8/26 pukul 23:59",
+    "qixiEventEnded": "Acara Qixi kali ini telah berakhir",
+    "qixiEventHeroTitle": "Qixi Lovey Time · Bersamamu Menuju Jambatan Murai",
+    "qixiCharacterSelected": "Dipilih",
+    "qixiFriendListLoadFailed": "Gagal memuatkan senarai rakan. Sila cuba lagi kemudian",
+    "qixiNoFriendCharacters": "Anda belum mempunyai watak rakan",
+    "qixiNoFriendCharactersHint": "Temui dahulu watak yang anda sukai, kemudian kembali untuk menyeberangi Jambatan Murai bersama!",
+    "qixiLoadingCharacter": "Sedang memuatkan data watak……",
+    "qixiEventPageTitle": "Acara Terhad Qixi",
+    "qixiEventRules": "Sepanjang acara, pilih 3 tarikh yang berbeza, hantar mesej dalam bilik sembang eksklusif Qixi dan berjaya menerima balasan daripada watak untuk menyalakan satu daripada tiga cahaya bintang. Surat terhad akan dihantar selepas hari ketiga yang berjaya diselesaikan berakhir. Tarikh acara dan kemajuan harian adalah berdasarkan Waktu Taiwan (UTC+8).",
+
+    "qixiSelectCompanions": "Pilih Teman ({count}/3)",
+    "@qixiSelectCompanions": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiSelectionLockedHint": "Anda boleh memilih maksimum 3 watak yang telah ditambahkan sebagai rakan. Setelah dipilih, mereka tidak boleh ditukar.",
+    "qixiConfirmCompanions": "Sahkan Teman",
+    "encounterDailyQuote1": "Hari ini, mungkin sebuah kisah baharu sedang menantimu.",
+    "encounterDailyQuote2": "Hari ini, biarkan hatimu bersuara terlebih dahulu.",
+    "encounterDailyQuote3": "Hari ini, mungkin ada seseorang yang sedang menunggu untuk bertemu denganmu.",
+    "encounterDailyQuote4": "Hari ini, cuba melangkah masuk ke dalam sebuah kisah baharu.",
+    "encounterDailyQuote5": "Degupan hati seperti apa yang akan kamu temui hari ini?",
+    "encounterDailyQuote6": "Hari ini, tinggalkan sedikit ruang untuk harapan.",
+    "encounterDailyQuote7": "Hari ini, sebuah pertemuan baharu sedang bermula.",
+    "encounterDailyQuote8": "Hari ini, mungkin takdir membawa kejutan kecil buatmu.",
+    "encounterDailyQuote9": "Hari ini, biarkan sebuah pertemuan bermula perlahan-lahan.",
+    "encounterDailyQuote10": "Hari ini, mungkin ada seseorang yang membuatmu berhenti seketika.",
+    "encounterDailyQuote11": "Siapa yang ingin kamu temui hari ini?",
+    "encounterDailyQuote12": "Hari ini, jangan lepaskan jodoh yang sedang mendekat perlahan-lahan.",
+
+    "encounterJoinedToday": "✨ Menyertai Lovey Time Hari Ini",
+    "encounterPopularChats": "❤️ Ramai Sedang Berbual Dengan Mereka",
+    "qixiBannerActiveUntil": "Masa Terhad · Hingga 8/26 23:59",
+    "qixiBannerStartsAt": "Dibuka Terhad Mulai 8/19",
+    "encounterRecentlyArrived": "✨ Baru Tiba di Lovey Time",
+    "encounterRecentlyArrivedPlain": "Baru Tiba di Lovey Time",
+    "encounterViewMore": "Lihat Lagi",
+    "encounterLovePrompt": "💕 Cinta seperti apa yang ingin kamu alami hari ini?",
+    "encounterNoCharacters": "Belum ada watak",
+    "encounterAllLoveTags": "Semua Tag Cinta",
+    "chatQixiLetterSent": "Surat terhad telah dihantar 💌",
+    "chatQixiLetterPendingTonight": "Ketiga-tiga cahaya bintang telah menyala · Surat akan dihantar selepas malam ini",
+    "chatQixiTodayCompleted": "Cahaya bintang hari ini telah menyala",
+    "chatQixiTodayNotCompleted": "Kemajuan hari ini belum selesai",
+    "chatQixiPromiseTitle": "Qixi Lovey Time · Janji Tiga Hari",
+
+    "chatQixiStarProgress": "Cahaya Bintang {count}/3",
+    "@chatQixiStarProgress": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatQixiProgressRule": "Lengkapkan sembang pada tiga hari yang berbeza untuk menyalakan cahaya bintang. Surat terhad akan dihantar selepas hari ketiga berakhir. Kemajuan harian dikira berdasarkan Waktu Taiwan (UTC+8).",
+
+    "chatQixiDayNumber": "Hari {day}",
+    "@chatQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatWebPurchaseUnavailable": "Pembelian tidak tersedia pada versi web buat masa ini. Gunakan aplikasi Lovey Time untuk membeli Flowers atau melanggan.",
+    "chatAiThinkingTimeout": "Nampaknya dia sedang termenung. Cuba lagi sebentar nanti……",
+    "chatAiResponseBlocked": "Fikirannya nampaknya sedikit terganggu. Cuba sampaikan semula dengan cara yang lebih lembut.",
+    "chatRecordingStartFailed": "Tidak dapat memulakan rakaman. Sila cuba lagi kemudian.",
+    "chatRecordingPlaybackFailed": "Gagal memainkan rakaman. Sila cuba lagi kemudian.",
+    "chatRoomNotReady": "Bilik sembang masih belum bersedia. Sila cuba lagi kemudian.",
+    "chatRegenerateLimitReached": "Percubaan penjanaan semula hari ini telah habis",
+    "chatTypingIndicator": "Dia sedang menaip……",
+    "chatRegenerateCountSyncFailed": "Penjanaan semula berjaya, tetapi jumlahnya gagal disegerakkan. Sila muat semula kemudian.",
+    "chatRoomNotFound": "Bilik sembang untuk watak ini tidak ditemui",
+    "momentsSearchTooltip": "Cari di Dinding Momen",
+    "momentsCreatorNotFound": "Maklumat pencipta ini tidak ditemui",
+    "momentCommentLoadFailed": "Gagal memuatkan komen. Sila cuba lagi kemudian",
+    "momentCollapseReplies": "Tutup balasan",
+
+    "momentViewOtherReplies": "Lihat {count} balasan lain",
+    "@momentViewOtherReplies": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "momentSwitchCommentIdentity": "Tukar identiti komen",
+    "momentSendCommentTooltip": "Hantar komen",
+    "momentShareCharactersLoadFailed": "Gagal memuatkan watak sembang. Sila cuba lagi kemudian",
+    "momentReportLoginRequired": "Sila log masuk terlebih dahulu sebelum melaporkan siaran ini",
+    "momentReportSubmitted": "Laporan telah dihantar. Kami akan menyemaknya",
+    "momentSelectShareCharacter": "Pilih watak yang pernah anda berbual dengannya untuk berkongsi siaran ini",
+    "momentTagCharacterUnavailable": "Tag ini tidak dipautkan kepada profil watak",
+    "momentCharacterNotFound": "Data watak tidak ditemui"
 }

@@ -917,22 +917,26 @@ class _LatestTabState extends State<_LatestTab> {
     )
         .toList();
   }
-  static const List<String> _dailyOpeningLines = [
-    '今天，也許會遇見新的故事。',
-    '今天，讓心動先開口。',
-    '今天，也許有人正等著與你相遇。',
-    '今天，試著走進一段新的故事。',
-    '今天，會遇見怎樣的心動呢？',
-    '今天，也替自己留一點期待。',
-    '今天，新的相遇正在發生。',
-    '今天，也許命運會帶來一點驚喜。',
-    '今天，讓一場相遇慢慢開始。',
-    '今天，也許會有人讓你停下腳步。',
-    '今天，想遇見什麼樣的人？',
-    '今天，別錯過悄悄靠近的緣分。',
-  ];
+  List<String> get _dailyOpeningLines {
+    final l10n = AppLocalizations.of(context)!;
 
-  late final String _openingLine;
+    return [
+      l10n.encounterDailyQuote1,
+      l10n.encounterDailyQuote2,
+      l10n.encounterDailyQuote3,
+      l10n.encounterDailyQuote4,
+      l10n.encounterDailyQuote5,
+      l10n.encounterDailyQuote6,
+      l10n.encounterDailyQuote7,
+      l10n.encounterDailyQuote8,
+      l10n.encounterDailyQuote9,
+      l10n.encounterDailyQuote10,
+      l10n.encounterDailyQuote11,
+      l10n.encounterDailyQuote12,
+    ];
+  }
+
+  late String _openingLine;
   late List<Character>
   _shuffledBannerCharacters;
 
@@ -966,19 +970,25 @@ class _LatestTabState extends State<_LatestTab> {
   @override
   void initState() {
     super.initState();
+    _rebuildBannerCharacters();
+    _scheduleQixiBoundaryRefresh();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
     final now = DateTime.now();
     final dayKey = DateTime(now.year, now.month, now.day)
         .millisecondsSinceEpoch ~/
         Duration.millisecondsPerDay;
 
-    // 同一天固定顯示同一句；隔天自動換下一句。
-    _openingLine = _dailyOpeningLines[
-    dayKey % _dailyOpeningLines.length
-    ];
-    _rebuildBannerCharacters();
-    _scheduleQixiBoundaryRefresh();
-  }
+    final openingLines = _dailyOpeningLines;
 
+    // 同一天固定顯示同一句；切換語言時也會重新取得翻譯。
+    _openingLine =
+    openingLines[dayKey % openingLines.length];
+  }
   @override
   void dispose() {
     _qixiBoundaryTimer?.cancel();
@@ -1041,7 +1051,7 @@ class _LatestTabState extends State<_LatestTab> {
 
             if (bannerList.isNotEmpty) ...[
               Text(
-                '✨ 今天加入戀戀拾光',
+                l10n.encounterJoinedToday,
                 style: TextStyle(
                   fontSize: useDesktopLayout ? 22 : 18,
                   fontWeight: FontWeight.bold,
@@ -1061,7 +1071,7 @@ class _LatestTabState extends State<_LatestTab> {
             ],
 
             _buildSectionTitle(
-              '❤️ 最近很多人在聊天',
+              l10n.encounterPopularChats,
               useDesktopLayout,
             ),
             const SizedBox(height: 12),
@@ -1110,7 +1120,7 @@ class _LatestTabState extends State<_LatestTab> {
       ) {
     final theme = Theme.of(context);
     final bool isActive = _isQixiEventActive;
-
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1177,7 +1187,7 @@ class _LatestTabState extends State<_LatestTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '戀戀七夕・與你共赴鵲橋',
+                      l10n.qixiEventHeroTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -1189,8 +1199,8 @@ class _LatestTabState extends State<_LatestTab> {
                     const SizedBox(height: 3),
                     Text(
                       isActive
-                          ? '限時開啟・8/26 23:59 截止'
-                          : '8/19 限定開啟',
+                          ? l10n.qixiBannerActiveUntil
+                          : l10n.qixiBannerStartsAt,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -1228,12 +1238,13 @@ class _LatestTabState extends State<_LatestTab> {
         required bool showMore,
       }) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Row(
       children: [
         Expanded(
           child: Text(
-            '✨ 最近來到戀戀拾光',
+            l10n.encounterRecentlyArrived,
             style: TextStyle(
               fontSize: useDesktopLayout ? 22 : 18,
               fontWeight: FontWeight.bold,
@@ -1263,11 +1274,11 @@ class _LatestTabState extends State<_LatestTab> {
               ),
               visualDensity: VisualDensity.compact,
             ),
-            child: const Row(
+            child:  Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '查看更多',
+                  l10n.encounterViewMore,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                   ),
@@ -1289,12 +1300,13 @@ class _LatestTabState extends State<_LatestTab> {
       bool useDesktopLayout,
       ) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Row(
       children: [
         Expanded(
           child: Text(
-            '💕 今天想談什麼戀愛？',
+            l10n.encounterLovePrompt,
             style: TextStyle(
               fontSize: useDesktopLayout ? 22 : 18,
               fontWeight: FontWeight.bold,
@@ -1322,11 +1334,11 @@ class _LatestTabState extends State<_LatestTab> {
               ),
               visualDensity: VisualDensity.compact,
             ),
-            child: const Row(
+            child:  Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '查看更多',
+                  l10n.encounterViewMore,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                   ),
@@ -2176,15 +2188,16 @@ class _AllLatestCharactersPageState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title:
-        const Text('最近來到戀戀拾光'),
+         Text(l10n.encounterRecentlyArrivedPlain),
       ),
       body: _visibleCharacters.isEmpty
-          ? const Center(
+          ? Center(
         child: Text(
-          '目前還沒有角色',
+          l10n.encounterNoCharacters,
         ),
       )
           : LayoutBuilder(
@@ -2472,6 +2485,7 @@ class _AllTagsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final uniqueTags = <String>{};
+    final l10n = AppLocalizations.of(context)!;
 
     for (final character in allCharacters) {
       for (final rawTag in character.personalityTags) {
@@ -2491,7 +2505,7 @@ class _AllTagsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('全部戀愛標籤'),
+        title:  Text(l10n.encounterAllLoveTags),
       ),
       body: tags.isEmpty
           ? Center(

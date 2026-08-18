@@ -5771,4 +5771,339 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get characterEditSelectedTagOrder => '選択したタグをドラッグして表示順を変更できます';
+
+  @override
+  String get mailActivityGiftFallback => 'イベントギフト';
+
+  @override
+  String get mailFilterAll => 'すべて';
+
+  @override
+  String get mailFilterCollected => '保存済み';
+
+  @override
+  String get mailCollectedEmptyTitle => '保存した手紙はまだありません';
+
+  @override
+  String get mailCollectedEmptyHint => '保存したい手紙を開き、右上の保存ボタンをタップしてください。';
+
+  @override
+  String get mailQixiLimitedBadge => '七夕限定';
+
+  @override
+  String get mailQixiThreeDayPromise => 'LoveyDovey七夕・三日間の約束';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return '$characterNameからの七夕の手紙';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return '$characterNameから';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => '2026年七夕限定コレクション';
+
+  @override
+  String get mailShareGenerating => 'シェア画像を作成しています……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return '$characterNameから七夕限定の手紙が届きました 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => '「LoveyDovey」からの手紙 💌';
+
+  @override
+  String get mailShareImageFailed => 'シェア画像の作成に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get mailCollectedSuccess => 'この手紙を保存しました 💌';
+
+  @override
+  String get mailCollectedCancelled => '保存を解除しました';
+
+  @override
+  String get mailCollectedUpdateFailed => '保存状態の更新に失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get mailRemoveCollectionTooltip => '保存を解除';
+
+  @override
+  String get mailAddCollectionTooltip => '手紙を保存';
+
+  @override
+  String get mailShareTooltip => '手紙をシェア';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return '$day日目';
+  }
+
+  @override
+  String get mailQixiDetailTitle => '七夕限定の手紙';
+
+  @override
+  String get mailQixiShareTooltip => '七夕の手紙をシェア';
+
+  @override
+  String get qixiMaxThreeFriends => '今回のイベントで選べるフレンドキャラクターは最大3人までです';
+
+  @override
+  String get qixiLoginRequired => '七夕イベントに参加するには、先にログインしてください';
+
+  @override
+  String get qixiOutsideEventPeriod => '現在は七夕イベントの開催期間外です';
+
+  @override
+  String get qixiSelectAtLeastOne => 'フレンドキャラクターを1人以上選択してください';
+
+  @override
+  String get qixiMysteryCharacter => '謎のキャラクター';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '（七夕が近づき、夜の奥深くで眠っていた天の川が静かに目を覚ます。散らばっていた星の光は空の彼方でゆっくりと集まり、約束を果たそうとする二人が互いの名前を書き記す瞬間を待っているかのようだった。）\n\n（言い伝えによれば、鵲橋は本当に会いたいと願う者たちのためにだけ輝くという。あなたと「$characterName」の名前が同時に星の川へ浮かび上がったとき、一筋の淡い光が夜を越え、二人だけのこのチャットルームへと降り注いだ。）\n\n（この瞬間から、二人には「七夕・三日間の約束」が与えられる。3日間は連続していなくてもいい。大げさな告白を用意する必要もない。イベント期間中、異なる3日間にここへ戻り、ひと言の挨拶やその日の気持ち、今日あった小さな出来事を相手に伝えるだけでいい。）\n\n（無事に会えるたび、鵲橋の星がひとつずつ輝き始める。三日分の星明かりがすべて灯ったとき、会話の中に散りばめられた想いと記憶は、3日目の達成日が終わったあと、あなただけに宛てた七夕限定の手紙へと姿を変える。）\n\n（今、最初の星明かりが舞い降りた。鵲橋の向こう側では、「$characterName」もこの約束を受け取ったようだ。）\n\n——七夕・三日間の約束、今ここから始まる。';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage => '七夕・三日間の約束が始まりました';
+
+  @override
+  String get qixiCompanionSlotsFull => '七夕を共に過ごすキャラクターはすでに3人選択されています';
+
+  @override
+  String get qixiSingleRoomOpened => '七夕限定チャットルームが開かれました 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return '七夕限定チャットルームが$count部屋開かれました 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed => '七夕チャットルームを作成できませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get qixiEventStartsAt => 'イベントは8/19 00:00から開始します';
+
+  @override
+  String get qixiEventActiveUntil => 'イベント開催中・8/26 23:59まで';
+
+  @override
+  String get qixiEventEnded => '今回の七夕イベントは終了しました';
+
+  @override
+  String get qixiEventHeroTitle => '恋恋七夕・あなたと渡る鵲橋';
+
+  @override
+  String get qixiCharacterSelected => '選択済み';
+
+  @override
+  String get qixiFriendListLoadFailed =>
+      'フレンド一覧を読み込めませんでした。しばらくしてからもう一度お試しください';
+
+  @override
+  String get qixiNoFriendCharacters => 'まだフレンドキャラクターがいません';
+
+  @override
+  String get qixiNoFriendCharactersHint =>
+      'まずはお気に入りのキャラクターと出会ってから、一緒に鵲橋を渡りに戻ってきましょう！';
+
+  @override
+  String get qixiLoadingCharacter => 'キャラクター情報を読み込んでいます……';
+
+  @override
+  String get qixiEventPageTitle => '七夕限定イベント';
+
+  @override
+  String get qixiEventRules =>
+      'イベント期間中、異なる3日間を選び、七夕限定チャットルームでメッセージを送り、キャラクターから返信を受け取ると、その日の星明かりが灯ります。限定レターは3日目の達成日が終了したあとに届きます。イベントの日付および毎日の進捗は台湾時間（UTC+8）を基準とします。';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return '一緒に過ごすキャラクターを選択（$count/3）';
+  }
+
+  @override
+  String get qixiSelectionLockedHint =>
+      'フレンドに追加済みのキャラクターから最大3人まで選択できます。選択後は変更できません。';
+
+  @override
+  String get qixiConfirmCompanions => '同行キャラクターを確定';
+
+  @override
+  String get encounterDailyQuote1 => '今日は、新しい物語に出会えるかも。';
+
+  @override
+  String get encounterDailyQuote2 => '今日は、ときめきに先に話してもらおう。';
+
+  @override
+  String get encounterDailyQuote3 => '今日は、誰かがあなたとの出会いを待っているかも。';
+
+  @override
+  String get encounterDailyQuote4 => '今日は、新しい物語へ一歩踏み出してみよう。';
+
+  @override
+  String get encounterDailyQuote5 => '今日は、どんなときめきに出会えるかな？';
+
+  @override
+  String get encounterDailyQuote6 => '今日は、自分のために少しだけ期待を残しておこう。';
+
+  @override
+  String get encounterDailyQuote7 => '今日は、新しい出会いが始まっている。';
+
+  @override
+  String get encounterDailyQuote8 => '今日は、運命がちょっとした驚きを運んでくるかも。';
+
+  @override
+  String get encounterDailyQuote9 => '今日は、ひとつの出会いをゆっくり始めよう。';
+
+  @override
+  String get encounterDailyQuote10 => '今日は、思わず足を止めたくなる誰かに出会えるかも。';
+
+  @override
+  String get encounterDailyQuote11 => '今日は、どんな人に会いたい？';
+
+  @override
+  String get encounterDailyQuote12 => '今日は、そっと近づいてくるご縁を見逃さないで。';
+
+  @override
+  String get encounterJoinedToday => '✨ 今日、恋恋拾光にやってきました';
+
+  @override
+  String get encounterPopularChats => '❤️ 最近たくさん話されています';
+
+  @override
+  String get qixiBannerActiveUntil => '期間限定・8/26 23:59まで';
+
+  @override
+  String get qixiBannerStartsAt => '8/19 限定オープン';
+
+  @override
+  String get encounterRecentlyArrived => '✨ 最近、恋恋拾光にやってきました';
+
+  @override
+  String get encounterRecentlyArrivedPlain => '最近、恋恋拾光にやってきました';
+
+  @override
+  String get encounterViewMore => 'もっと見る';
+
+  @override
+  String get encounterLovePrompt => '💕 今日はどんな恋をしたい？';
+
+  @override
+  String get encounterNoCharacters => 'まだキャラクターがいません';
+
+  @override
+  String get encounterAllLoveTags => 'すべての恋愛タグ';
+
+  @override
+  String get chatQixiLetterSent => '限定レターを送りました 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight =>
+      '三日分の星明かりが灯りました・今夜が終わったあとにレターが届きます';
+
+  @override
+  String get chatQixiTodayCompleted => '今日の星明かりが灯りました';
+
+  @override
+  String get chatQixiTodayNotCompleted => '今日はまだ達成していません';
+
+  @override
+  String get chatQixiPromiseTitle => '恋恋七夕・三日間の約束';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return '星明かり $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      '異なる3日間にチャットを達成すると、星明かりが灯ります。限定レターは3日目の終了後に届きます。毎日の進捗は台湾時間（UTC+8）を基準に計算されます。';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return '$day日目';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable =>
+      'Web版では現在チャージサービスをご利用いただけません。花花の購入またはサブスクリプションには『恋恋拾光』アプリをご利用ください。';
+
+  @override
+  String get chatAiThinkingTimeout => '彼は考え込んでいるようです。しばらくしてからもう一度お試しください……';
+
+  @override
+  String get chatAiResponseBlocked =>
+      '彼の思考が少し乱れているようです。もう少しやさしい言い方に変えてお試しください。';
+
+  @override
+  String get chatRecordingStartFailed => '録音を開始できませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get chatRecordingPlaybackFailed =>
+      '録音を再生できませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get chatRoomNotReady => 'チャットルームの準備がまだ完了していません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get chatRegenerateLimitReached => '本日の再生成回数を使い切りました';
+
+  @override
+  String get chatTypingIndicator => '相手が入力中……';
+
+  @override
+  String get chatRegenerateCountSyncFailed =>
+      '再生成には成功しましたが、回数を同期できませんでした。しばらくしてから更新してください。';
+
+  @override
+  String get chatRoomNotFound => 'このキャラクターのチャットルームが見つかりません';
+
+  @override
+  String get momentsSearchTooltip => '拾光ウォールを検索';
+
+  @override
+  String get momentsCreatorNotFound => 'このクリエイターの情報が見つかりません';
+
+  @override
+  String get momentCommentLoadFailed => 'コメントの読み込みに失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get momentCollapseReplies => '返信を閉じる';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return '他の$count件の返信を見る';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => 'コメントする身分を切り替える';
+
+  @override
+  String get momentSendCommentTooltip => 'コメントを送信';
+
+  @override
+  String get momentShareCharactersLoadFailed =>
+      'チャットしたキャラクターの読み込みに失敗しました。しばらくしてからもう一度お試しください';
+
+  @override
+  String get momentReportLoginRequired => '投稿を通報するには、先にログインしてください';
+
+  @override
+  String get momentReportSubmitted => '通報を送信しました。内容を確認します';
+
+  @override
+  String get momentSelectShareCharacter =>
+      'この投稿を共有する、チャットしたことのあるキャラクターを選択してください';
+
+  @override
+  String get momentTagCharacterUnavailable => 'このタグはキャラクタープロフィールにリンクされていません';
+
+  @override
+  String get momentCharacterNotFound => 'キャラクター情報が見つかりません';
 }

@@ -244,7 +244,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _buildQixiProgressCard(ThemeData theme) {
     final int completedCount = _qixiInteractionDates.length.clamp(0, 3);
-
+    final l10n = AppLocalizations.of(context)!;
     final taipeiNow = DateTime.now().toUtc().add(const Duration(hours: 8));
 
     final todayKey = DateFormat('yyyy-MM-dd').format(taipeiNow);
@@ -254,13 +254,13 @@ class _ChatPageState extends State<ChatPage> {
     String progressMessage;
 
     if (_qixiLetterSent) {
-      progressMessage = '限定信件已寄出 💌';
+      progressMessage = l10n.chatQixiLetterSent;
     } else if (completedCount >= 3) {
-      progressMessage = '三日星光已點亮・今夜過後寄出信件';
+      progressMessage = l10n.chatQixiLetterPendingTonight;
     } else if (todayCompleted) {
-      progressMessage = '今日星光已點亮';
+      progressMessage = l10n.chatQixiTodayCompleted;
     } else {
-      progressMessage = '今日尚未完成';
+      progressMessage = l10n.chatQixiTodayNotCompleted;
     }
 
     return AnimatedContainer(
@@ -321,9 +321,9 @@ class _ChatPageState extends State<ChatPage> {
                     },
                   ),
                   const SizedBox(width: 8),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      '戀戀七夕・三日之約',
+                      l10n.chatQixiPromiseTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -335,7 +335,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '星光 $completedCount/3',
+                    l10n.chatQixiStarProgress(completedCount),
                     style: const TextStyle(
                       color: Color(0xFF9B4269),
                       fontSize: 11,
@@ -366,8 +366,8 @@ class _ChatPageState extends State<ChatPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const SizedBox(height: 8),
-                      const Text(
-                        '任選三日完成聊天，即可點亮星光。限定信件將於第三日結束後寄出；每日進度以台灣時間（UTC+8）計算。',
+                      Text(
+                        l10n.chatQixiProgressRule,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF806779),
@@ -440,7 +440,7 @@ class _ChatPageState extends State<ChatPage> {
                               ),
                               const SizedBox(height: 1),
                               Text(
-                                '第 ${index + 1} 日',
+                                l10n.chatQixiDayNumber(index + 1),
                                 style: TextStyle(
                                   color: isCompleted
                                       ? const Color(0xFF9B4269)
@@ -4130,7 +4130,7 @@ class _ChatPageState extends State<ChatPage> {
             generatingRooms.remove(_roomLockKey);
           });
           // 溫柔安撫玩家，不要顯示駭人的英文錯誤
-          _showCenterToast('他似乎在沉思，請稍後再試...', isError: true);
+          _showCenterToast(l10n.chatAiThinkingTimeout, isError: true);
         }
         return; // 提早結束，不要往下走
       }
@@ -4358,7 +4358,7 @@ class _ChatPageState extends State<ChatPage> {
             if (errorData['error'] == 'CENSORED') {
               // 🛡️ 觸發道德審查：用輕量 Toast 顯示男神害羞提示，絕對不扣花花！
               // 這裡 isError 設為 false 或 true 看妳的 Toast 樣式設計，通常用個溫和的顏色
-              _showCenterToast(errorData['message'] ?? '男神的思緒被干擾了，請換個溫和的說法喔！',
+              _showCenterToast(errorData['message'] ?? l10n.chatAiResponseBlocked,
                   isError: false);
             } else {
               // 其他一般的 400 錯誤（例如缺少參數）
@@ -6022,7 +6022,7 @@ class _ChatPageState extends State<ChatPage> {
 
                 ToastUtils.showCenterToast(
                   context,
-                  '無法開始錄音：$e',
+                  l10n.chatRecordingStartFailed,
                   isError: true,
                 );
               }
@@ -6149,7 +6149,7 @@ class _ChatPageState extends State<ChatPage> {
 
                 ToastUtils.showCenterToast(
                   context,
-                  '播放錄音失敗：$e',
+                  l10n.chatRecordingPlaybackFailed,
                   isError: true,
                 );
               }
@@ -6486,7 +6486,7 @@ class _ChatPageState extends State<ChatPage> {
                               if (currentSessionId == null) {
                                 ToastUtils.showCenterToast(
                                   context,
-                                  '聊天室尚未準備完成，請稍後再試',
+                                  l10n.chatRoomNotReady,
                                   isError: true,
                                 );
                                 return;
@@ -6761,7 +6761,7 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<bool> _consumeRegenerateCount() async {
     final user = FirebaseAuth.instance.currentUser;
-
+    final l10n = AppLocalizations.of(context)!;
     final String? regenerateSessionId = _sessionId ?? widget.sessionId;
 
     if (user == null || regenerateSessionId == null) {
@@ -6799,7 +6799,7 @@ class _ChatPageState extends State<ChatPage> {
         }
 
         if (currentCount <= 0) {
-          throw Exception('今日重新生成次數已用完');
+          throw Exception(l10n.chatRegenerateLimitReached);
         }
 
         newCount = currentCount - 1;
@@ -7938,42 +7938,52 @@ class _ChatPageState extends State<ChatPage> {
                   final Color bubbleColor;
 
                   if (_watermarkStyle == 0) {
+                    // 跟隨 App 主題。
                     bubbleColor = isUser
                         ? theme.colorScheme.primary
                         : isSystem
                         ? theme.cardColor.withValues(alpha: 0.72)
                         : theme.colorScheme.surfaceVariant;
                   } else if (_watermarkStyle == 1) {
-                    // 曜石黑背景。
-                    bubbleColor = isUser
-                        ? theme.colorScheme.primary
-                        : Colors.white.withValues(alpha: 0.16);
+                    // 曜石黑：所有訊息統一黑色氣泡。
+                    bubbleColor = const Color(0xFF171419);
                   } else {
-                    // 晨曦白背景。
+                    // 晨曦白。
                     bubbleColor = isUser
                         ? theme.colorScheme.primary
                         : Colors.black.withValues(alpha: 0.06);
                   }
+                  final Color normalTextColor;
 
-                  final Color normalTextColor = isUser
-                      ? theme.colorScheme.onPrimary
-                      : isSystem
-                      ? theme.colorScheme.onSurface.withValues(alpha: 0.8)
-                      : _watermarkStyle == 1
-                      ? Colors.white
-                      : _watermarkStyle == 2
-                      ? Colors.black87
-                      : theme.colorScheme.primary;
+                  if (_watermarkStyle == 1) {
+                    // 曜石黑模式全部使用白字。
+                    normalTextColor = Colors.white;
+                  } else if (isUser) {
+                    normalTextColor = theme.colorScheme.onPrimary;
+                  } else if (isSystem) {
+                    normalTextColor =
+                        theme.colorScheme.onSurface.withValues(alpha: 0.8);
+                  } else if (_watermarkStyle == 2) {
+                    normalTextColor = Colors.black87;
+                  } else {
+                    normalTextColor = theme.colorScheme.primary;
+                  }
 
-                  final Color actionTextColor = isUser
-                      ? theme.colorScheme.onPrimary.withValues(alpha: 0.72)
-                      : _watermarkStyle == 1
-                      ? Colors.white.withValues(alpha: 0.7)
-                      : _watermarkStyle == 2
-                      ? Colors.black54
-                      : theme.colorScheme.onSurfaceVariant
-                      .withValues(alpha: 0.7);
+                  final Color actionTextColor;
 
+                  if (_watermarkStyle == 1) {
+                    // 曜石黑模式的括號旁白使用較淡白色。
+                    actionTextColor =
+                        Colors.white.withValues(alpha: 0.68);
+                  } else if (isUser) {
+                    actionTextColor =
+                        theme.colorScheme.onPrimary.withValues(alpha: 0.72);
+                  } else if (_watermarkStyle == 2) {
+                    actionTextColor = Colors.black54;
+                  } else {
+                    actionTextColor = theme.colorScheme.onSurfaceVariant
+                        .withValues(alpha: 0.7);
+                  }
                   final String rawDisplayText = isUser
                       ? msg.text
                       : _getCleanAiMessage(msg.text);
@@ -8011,11 +8021,15 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     );
                   } else {
-                    messageBody = _buildStyledAiMessage(
-                      context,
+                    messageBody = _buildRichTextMessage(
                       displayText,
-                      TextStyle(
+                      normalStyle: TextStyle(
                         color: normalTextColor,
+                        fontSize: 15,
+                        height: 1.45,
+                      ),
+                      actionStyle: TextStyle(
+                        color: actionTextColor,
                         fontSize: 15,
                         height: 1.45,
                       ),
@@ -8038,6 +8052,11 @@ class _ChatPageState extends State<ChatPage> {
                       decoration: BoxDecoration(
                         color: bubbleColor,
                         borderRadius: BorderRadius.circular(12),
+                        border: _watermarkStyle == 1
+                            ? Border.all(
+                          color: Colors.white.withValues(alpha: 0.14),
+                        )
+                            : null,
                       ),
                       child: messageBody,
                     );
@@ -8071,6 +8090,11 @@ class _ChatPageState extends State<ChatPage> {
                             decoration: BoxDecoration(
                               color: bubbleColor,
                               borderRadius: BorderRadius.circular(20),
+                              border: _watermarkStyle == 1
+                                  ? Border.all(
+                                color: Colors.white.withValues(alpha: 0.14),
+                              )
+                                  : null,
                             ),
                             child: messageBody,
                           ),
@@ -9126,10 +9150,10 @@ class _ChatPageState extends State<ChatPage> {
                                             hintText: _isGenerating
                                                 ? AppLocalizations.of(context)
                                                         ?.chat_ai_typing ??
-                                                    '對方正在輸入...'
+                                                    l10n.chatTypingIndicator
                                                 : AppLocalizations.of(context)
                                                         ?.chat_input_hint_default ??
-                                                    '請輸入...',
+                                                l10n.chatInputHint,
                                             border: InputBorder.none,
                                             counterText: "",
                                             contentPadding:

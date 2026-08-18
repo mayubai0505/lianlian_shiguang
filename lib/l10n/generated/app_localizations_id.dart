@@ -6102,4 +6102,372 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get characterEditSelectedTagOrder =>
       'Seret tag yang dipilih untuk menyesuaikan urutan tampilannya';
+
+  @override
+  String get mailActivityGiftFallback => 'Hadiah Acara';
+
+  @override
+  String get mailFilterAll => 'Semua';
+
+  @override
+  String get mailFilterCollected => 'Tersimpan';
+
+  @override
+  String get mailCollectedEmptyTitle => 'Belum ada surat yang disimpan';
+
+  @override
+  String get mailCollectedEmptyHint =>
+      'Buka surat yang ingin disimpan, lalu ketuk tombol simpan di sudut kanan atas.';
+
+  @override
+  String get mailQixiLimitedBadge => 'Edisi Terbatas Qixi';
+
+  @override
+  String get mailQixiThreeDayPromise => 'Qixi LoveyDovey・Janji Tiga Hari';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return 'Surat Qixi dari $characterName';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return 'Dari $characterName';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => 'Koleksi Terbatas Qixi 2026';
+
+  @override
+  String get mailShareGenerating => 'Membuat gambar untuk dibagikan……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return 'Aku menerima surat edisi terbatas Qixi dari $characterName 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => 'Surat dari 「LoveyDovey」💌';
+
+  @override
+  String get mailShareImageFailed =>
+      'Gagal membuat gambar untuk dibagikan. Silakan coba lagi nanti';
+
+  @override
+  String get mailCollectedSuccess => 'Surat ini telah disimpan 💌';
+
+  @override
+  String get mailCollectedCancelled => 'Surat dihapus dari daftar tersimpan';
+
+  @override
+  String get mailCollectedUpdateFailed =>
+      'Gagal memperbarui status penyimpanan. Silakan coba lagi nanti';
+
+  @override
+  String get mailRemoveCollectionTooltip => 'Hapus dari tersimpan';
+
+  @override
+  String get mailAddCollectionTooltip => 'Simpan surat';
+
+  @override
+  String get mailShareTooltip => 'Bagikan surat';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return 'Hari ke-$day';
+  }
+
+  @override
+  String get mailQixiDetailTitle => 'Surat Edisi Terbatas Qixi';
+
+  @override
+  String get mailQixiShareTooltip => 'Bagikan surat Qixi';
+
+  @override
+  String get qixiMaxThreeFriends =>
+      'Dalam event ini, kamu hanya dapat memilih maksimal 3 karakter teman';
+
+  @override
+  String get qixiLoginRequired =>
+      'Silakan masuk terlebih dahulu sebelum mengikuti event Qixi';
+
+  @override
+  String get qixiOutsideEventPeriod => 'Saat ini event Qixi belum berlangsung';
+
+  @override
+  String get qixiSelectAtLeastOne =>
+      'Silakan pilih setidaknya satu karakter teman terlebih dahulu';
+
+  @override
+  String get qixiMysteryCharacter => 'Karakter Misterius';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '(Menjelang Qixi, galaksi yang tertidur jauh di dalam malam perlahan terbangun. Cahaya bintang yang tersebar mulai berkumpul di sepanjang cakrawala, seolah menunggu dua orang yang bersedia memenuhi janji dan menuliskan nama satu sama lain.)\n\n(Konon, Jembatan Murai hanya akan menyala bagi mereka yang benar-benar ingin bertemu. Saat namamu dan nama \"$characterName\" muncul bersama di sungai bintang, seberkas cahaya lembut menembus malam dan jatuh ke ruang obrolan yang hanya menjadi milik kalian berdua.)\n\n(Mulai saat ini, kalian memiliki sebuah \"Janji Tiga Hari Qixi\". Harinya tidak perlu berurutan, dan kalian juga tidak perlu menyiapkan pengakuan cinta yang besar. Selama event berlangsung, cukup kembali ke sini pada tiga hari yang berbeda dan bagikan sebuah sapaan, perasaanmu, atau satu hal kecil yang terjadi hari ini.)\n\n(Setiap pertemuan yang berhasil akan menyalakan satu cahaya bintang di Jembatan Murai. Setelah ketiga cahaya bintang menyala, perasaan dan kenangan yang tersebar dalam percakapan kalian akan berubah menjadi sebuah surat terbatas Qixi yang ditulis khusus untukmu setelah hari ketiga yang diselesaikan berakhir.)\n\n(Saat ini, cahaya bintang pertama telah turun. Di ujung lain Jembatan Murai, \"$characterName\" tampaknya juga telah menerima janji ini.)\n\n——Janji Tiga Hari Qixi dimulai sekarang.';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage => 'Janji Tiga Hari Qixi telah dimulai';
+
+  @override
+  String get qixiCompanionSlotsFull =>
+      'Semua slot pendamping Qixi telah dipilih';
+
+  @override
+  String get qixiSingleRoomOpened =>
+      'Ruang obrolan khusus Qixi telah dibuka 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return '$count ruang obrolan khusus Qixi telah dibuka 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed =>
+      'Gagal membuat ruang obrolan Qixi. Silakan coba lagi nanti';
+
+  @override
+  String get qixiEventStartsAt => 'Event dimulai pada 8/19 pukul 00:00';
+
+  @override
+  String get qixiEventActiveUntil =>
+      'Event sedang berlangsung · Berakhir 8/26 pukul 23:59';
+
+  @override
+  String get qixiEventEnded => 'Event Qixi kali ini telah berakhir';
+
+  @override
+  String get qixiEventHeroTitle =>
+      'Qixi Lovey Time · Bersamamu Menuju Jembatan Murai';
+
+  @override
+  String get qixiCharacterSelected => 'Dipilih';
+
+  @override
+  String get qixiFriendListLoadFailed =>
+      'Gagal memuat daftar teman. Silakan coba lagi nanti';
+
+  @override
+  String get qixiNoFriendCharacters => 'Kamu belum memiliki karakter teman';
+
+  @override
+  String get qixiNoFriendCharactersHint =>
+      'Temui dulu karakter yang kamu sukai, lalu kembali dan seberangi Jembatan Murai bersama!';
+
+  @override
+  String get qixiLoadingCharacter => 'Memuat data karakter……';
+
+  @override
+  String get qixiEventPageTitle => 'Event Terbatas Qixi';
+
+  @override
+  String get qixiEventRules =>
+      'Selama event berlangsung, pilih 3 tanggal yang berbeda, kirim pesan di ruang obrolan khusus Qixi, dan berhasil menerima balasan dari karakter untuk menyalakan satu cahaya dari tiga hari. Surat terbatas akan dikirim setelah hari ketiga yang diselesaikan berakhir. Tanggal event dan progres harian mengikuti Waktu Taiwan (UTC+8).';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return 'Pilih Pendamping ($count/3)';
+  }
+
+  @override
+  String get qixiSelectionLockedHint =>
+      'Kamu dapat memilih maksimal 3 karakter yang telah ditambahkan sebagai teman. Setelah dipilih, mereka tidak dapat diganti.';
+
+  @override
+  String get qixiConfirmCompanions => 'Konfirmasi Pendamping';
+
+  @override
+  String get encounterDailyQuote1 =>
+      'Hari ini, mungkin ada kisah baru yang menunggumu.';
+
+  @override
+  String get encounterDailyQuote2 =>
+      'Hari ini, biarkan hatimu berbicara lebih dulu.';
+
+  @override
+  String get encounterDailyQuote3 =>
+      'Hari ini, mungkin ada seseorang yang sedang menunggu untuk bertemu denganmu.';
+
+  @override
+  String get encounterDailyQuote4 =>
+      'Hari ini, cobalah melangkah masuk ke sebuah kisah baru.';
+
+  @override
+  String get encounterDailyQuote5 =>
+      'Degup seperti apa yang akan kamu temui hari ini?';
+
+  @override
+  String get encounterDailyQuote6 =>
+      'Hari ini, sisakan sedikit harapan untuk dirimu sendiri.';
+
+  @override
+  String get encounterDailyQuote7 =>
+      'Hari ini, sebuah pertemuan baru sedang dimulai.';
+
+  @override
+  String get encounterDailyQuote8 =>
+      'Hari ini, mungkin takdir membawa sedikit kejutan untukmu.';
+
+  @override
+  String get encounterDailyQuote9 =>
+      'Hari ini, biarkan sebuah pertemuan dimulai perlahan.';
+
+  @override
+  String get encounterDailyQuote10 =>
+      'Hari ini, mungkin ada seseorang yang membuatmu berhenti sejenak.';
+
+  @override
+  String get encounterDailyQuote11 => 'Siapa yang ingin kamu temui hari ini?';
+
+  @override
+  String get encounterDailyQuote12 =>
+      'Hari ini, jangan lewatkan ikatan yang perlahan mendekat.';
+
+  @override
+  String get encounterJoinedToday => '✨ Bergabung dengan Lovey Time Hari Ini';
+
+  @override
+  String get encounterPopularChats => '❤️ Banyak Dibicarakan Akhir-Akhir Ini';
+
+  @override
+  String get qixiBannerActiveUntil =>
+      'Waktu Terbatas · Hingga 8/26 pukul 23:59';
+
+  @override
+  String get qixiBannerStartsAt => 'Terbatas Mulai 8/19';
+
+  @override
+  String get encounterRecentlyArrived => '✨ Baru Tiba di Lovey Time';
+
+  @override
+  String get encounterRecentlyArrivedPlain => 'Baru Tiba di Lovey Time';
+
+  @override
+  String get encounterViewMore => 'Lihat Selengkapnya';
+
+  @override
+  String get encounterLovePrompt =>
+      '💕 Kisah cinta seperti apa yang ingin kamu jalani hari ini?';
+
+  @override
+  String get encounterNoCharacters => 'Belum ada karakter';
+
+  @override
+  String get encounterAllLoveTags => 'Semua Tag Cinta';
+
+  @override
+  String get chatQixiLetterSent => 'Surat terbatas telah dikirim 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight =>
+      'Ketiga cahaya bintang telah menyala · Surat akan dikirim setelah malam ini';
+
+  @override
+  String get chatQixiTodayCompleted => 'Cahaya bintang hari ini telah menyala';
+
+  @override
+  String get chatQixiTodayNotCompleted => 'Progres hari ini belum selesai';
+
+  @override
+  String get chatQixiPromiseTitle => 'Qixi Lovey Time · Janji Tiga Hari';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return 'Cahaya Bintang $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      'Selesaikan obrolan pada tiga hari yang berbeda untuk menyalakan cahaya bintang. Surat terbatas akan dikirim setelah hari ketiga berakhir. Progres harian dihitung berdasarkan Waktu Taiwan (UTC+8).';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return 'Hari $day';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable =>
+      'Pembelian saat ini tidak tersedia di versi web. Gunakan aplikasi Lovey Time untuk membeli Flowers atau berlangganan.';
+
+  @override
+  String get chatAiThinkingTimeout =>
+      'Sepertinya dia sedang tenggelam dalam pikirannya. Coba lagi sebentar lagi……';
+
+  @override
+  String get chatAiResponseBlocked =>
+      'Sepertinya pikirannya sedikit terganggu. Coba sampaikan kembali dengan cara yang lebih lembut.';
+
+  @override
+  String get chatRecordingStartFailed =>
+      'Tidak dapat memulai rekaman. Silakan coba lagi nanti.';
+
+  @override
+  String get chatRecordingPlaybackFailed =>
+      'Gagal memutar rekaman. Silakan coba lagi nanti.';
+
+  @override
+  String get chatRoomNotReady =>
+      'Ruang obrolan belum siap. Silakan coba lagi nanti.';
+
+  @override
+  String get chatRegenerateLimitReached =>
+      'Kesempatan regenerasi hari ini sudah habis';
+
+  @override
+  String get chatTypingIndicator => 'Dia sedang mengetik……';
+
+  @override
+  String get chatRegenerateCountSyncFailed =>
+      'Regenerasi berhasil, tetapi jumlahnya gagal disinkronkan. Silakan muat ulang nanti.';
+
+  @override
+  String get chatRoomNotFound =>
+      'Ruang obrolan untuk karakter ini tidak ditemukan';
+
+  @override
+  String get momentsSearchTooltip => 'Cari di Dinding Momen';
+
+  @override
+  String get momentsCreatorNotFound => 'Informasi kreator ini tidak ditemukan';
+
+  @override
+  String get momentCommentLoadFailed =>
+      'Gagal memuat komentar. Silakan coba lagi nanti';
+
+  @override
+  String get momentCollapseReplies => 'Tutup balasan';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return 'Lihat $count balasan lainnya';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => 'Ganti identitas komentar';
+
+  @override
+  String get momentSendCommentTooltip => 'Kirim komentar';
+
+  @override
+  String get momentShareCharactersLoadFailed =>
+      'Gagal memuat karakter chat. Silakan coba lagi nanti';
+
+  @override
+  String get momentReportLoginRequired =>
+      'Silakan masuk terlebih dahulu sebelum melaporkan postingan ini';
+
+  @override
+  String get momentReportSubmitted =>
+      'Laporan telah dikirim. Kami akan meninjaunya';
+
+  @override
+  String get momentSelectShareCharacter =>
+      'Pilih karakter yang pernah kamu ajak mengobrol untuk membagikan postingan ini';
+
+  @override
+  String get momentTagCharacterUnavailable =>
+      'Tag ini tidak terhubung ke profil karakter';
+
+  @override
+  String get momentCharacterNotFound => 'Data karakter tidak ditemukan';
 }

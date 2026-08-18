@@ -719,8 +719,8 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
                                 ),
                                 label: Text(
                                   isExpanded
-                                      ? '收起回覆'
-                                      : '查看其他 $hiddenReplyCount 則回覆',
+                                      ? l10n.momentCollapseReplies
+                                      : l10n.momentViewOtherReplies(hiddenReplyCount),
                                   style: const TextStyle(fontSize: 13),
                                 ),
                               ),

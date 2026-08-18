@@ -251,7 +251,7 @@ class MomentsPageState extends State<MomentsPage> {
                     actions: [
                       IconButton(
                         icon: const Icon(Icons.search),
-                        tooltip: '搜尋拾光牆',
+                        tooltip: l10n.momentsSearchTooltip,
                         onPressed: _openMomentSearch,
                       ),
                       Showcase(
@@ -550,6 +550,7 @@ class MomentsPageState extends State<MomentsPage> {
   Future<void> _navigateToCharacterProfile(
     Moment moment,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     // 創作者本人貼文：前往該創作者的作品集。
     if (moment.isCreatorPost) {
       final String creatorId = moment.createdBy.trim();
@@ -559,7 +560,7 @@ class MomentsPageState extends State<MomentsPage> {
 
         ToastUtils.showCenterToast(
           context,
-          '找不到這位創作者的資料',
+          l10n.momentsCreatorNotFound,
           isError: true,
         );
         return;

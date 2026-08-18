@@ -2828,5 +2828,188 @@
     "characterProfileNoIntroduction": "निर्माता ने अभी तक पात्र का परिचय नहीं जोड़ा है",
     "characterProfileViewMore": "और देखें",
     "characterProfileCollapse": "कम दिखाएँ",
-    "characterEditSelectedTagOrder": "चुने गए टैग को खींचकर उनके प्रदर्शित होने का क्रम बदलें"
+    "characterEditSelectedTagOrder": "चुने गए टैग को खींचकर उनके प्रदर्शित होने का क्रम बदलें",
+    "mailActivityGiftFallback": "इवेंट उपहार",
+    "mailFilterAll": "सभी",
+    "mailFilterCollected": "सहेजे गए",
+    "mailCollectedEmptyTitle": "अभी तक कोई पत्र सहेजा नहीं गया है",
+    "mailCollectedEmptyHint": "जिस पत्र को सहेजना चाहते हैं उसे खोलें और ऊपर दाईं ओर स्थित सहेजें बटन पर टैप करें।",
+    "mailQixiLimitedBadge": "छीशी विशेष संस्करण",
+    "mailQixiThreeDayPromise": "LoveyDovey छीशी・तीन दिनों का वादा",
+    "mailQixiFromCharacter": "{characterName} की ओर से छीशी पत्र",
+    "@mailQixiFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailFromCharacter": "{characterName} की ओर से",
+    "@mailFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailQixiCollectionLabel": "2026 छीशी विशेष संग्रह",
+    "mailShareGenerating": "साझा करने के लिए चित्र बनाया जा रहा है……",
+    "mailShareQixiMessage": "मुझे {characterName} द्वारा लिखा गया छीशी विशेष पत्र मिला 💌",
+    "@mailShareQixiMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailShareDefaultMessage": "「LoveyDovey」की ओर से एक पत्र 💌",
+    "mailShareImageFailed": "साझा करने वाला चित्र बनाने में विफल। कृपया बाद में फिर प्रयास करें",
+    "mailCollectedSuccess": "यह पत्र सहेज लिया गया है 💌",
+    "mailCollectedCancelled": "सहेजे गए पत्रों से हटा दिया गया है",
+    "mailCollectedUpdateFailed": "सहेजने की स्थिति अपडेट नहीं हो सकी। कृपया बाद में फिर प्रयास करें",
+    "mailRemoveCollectionTooltip": "सहेजे गए पत्रों से हटाएँ",
+    "mailAddCollectionTooltip": "पत्र सहेजें",
+    "mailShareTooltip": "पत्र साझा करें",
+    "mailQixiDayNumber": "दिन {day}",
+    "@mailQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+    "mailQixiDetailTitle": "छीशी विशेष पत्र",
+    "mailQixiShareTooltip": "छीशी पत्र साझा करें","qixiMaxThreeFriends": "इस इवेंट में आप अधिकतम 3 मित्र पात्र चुन सकते हैं",
+    "qixiLoginRequired": "Qixi इवेंट में भाग लेने से पहले कृपया लॉग इन करें",
+    "qixiOutsideEventPeriod": "अभी Qixi इवेंट की अवधि नहीं है",
+    "qixiSelectAtLeastOne": "कृपया पहले कम से कम एक मित्र पात्र चुनें",
+    "qixiMysteryCharacter": "रहस्यमय पात्र",
+
+    "qixiOpeningStory": "(Qixi के करीब आते ही, रात की गहराइयों में सोई हुई आकाशगंगा धीरे-धीरे जाग उठती है। बिखरी हुई तारों की रोशनी क्षितिज पर धीरे-धीरे एकत्र होने लगती है, मानो वे दो ऐसे लोगों की प्रतीक्षा कर रही हों जो इस मुलाक़ात को निभाने और एक-दूसरे का नाम लिखने के लिए तैयार हों।)\n\n(किंवदंती है कि मैगपाई ब्रिज केवल उन्हीं लोगों के लिए चमकता है जो सच में एक-दूसरे से मिलना चाहते हैं। जब आपका नाम और \"{characterName}\" का नाम एक साथ तारों की नदी पर दिखाई देता है, तो एक हल्की रोशनी रात को चीरते हुए इस चैटरूम में उतरती है, जो केवल आप दोनों के लिए है।)\n\n(इस क्षण से, आप दोनों के बीच \"Qixi का तीन-दिवसीय वादा\" शुरू होता है। ये दिन लगातार होना ज़रूरी नहीं है, और किसी भव्य प्रेम-स्वीकारोक्ति की तैयारी की भी आवश्यकता नहीं है। इवेंट के दौरान बस तीन अलग-अलग दिनों में यहाँ लौटें और एक अभिवादन, कोई भावना या आज की कोई छोटी-सी घटना साझा करें।)\n\n(हर सफल मुलाक़ात के साथ मैगपाई ब्रिज पर एक नया तारा जगमगा उठेगा। जब तीनों दिनों की तारों की रोशनी पूरी तरह जगमगा उठेगी, तब आपकी बातचीत में बिखरी भावनाएँ और यादें तीसरे पूरे किए गए दिन के समाप्त होने के बाद केवल आपके लिए लिखे गए एक सीमित Qixi पत्र में बदल जाएँगी।)\n\n(इस समय पहली तारों की किरण उतर चुकी है। मैगपाई ब्रिज के दूसरी ओर, \"{characterName}\" को भी शायद यह वादा मिल चुका है।)\n\n——Qixi का तीन-दिवसीय वादा अब शुरू होता है।",
+    "@qixiOpeningStory": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "qixiRoomOpenedLastMessage": "Qixi का तीन-दिवसीय वादा शुरू हो गया है",
+    "qixiCompanionSlotsFull": "Qixi के सभी साथी स्लॉट चुने जा चुके हैं",
+    "qixiSingleRoomOpened": "आपका विशेष Qixi चैटरूम खुल गया है 💕",
+
+    "qixiMultipleRoomsOpened": "{count} विशेष Qixi चैटरूम खुल गए हैं 💕",
+    "@qixiMultipleRoomsOpened": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiCreateRoomFailed": "Qixi चैटरूम बनाने में विफल। कृपया बाद में फिर प्रयास करें",
+    "qixiEventStartsAt": "इवेंट 8/19 को 00:00 बजे शुरू होगा",
+    "qixiEventActiveUntil": "इवेंट जारी है · 8/26 को 23:59 बजे समाप्त होगा",
+    "qixiEventEnded": "यह Qixi इवेंट समाप्त हो चुका है",
+    "qixiEventHeroTitle": "Lovey Time Qixi · आपके साथ मैगपाई ब्रिज तक",
+    "qixiCharacterSelected": "चुना गया",
+    "qixiFriendListLoadFailed": "मित्र सूची लोड नहीं हो सकी। कृपया बाद में फिर प्रयास करें",
+    "qixiNoFriendCharacters": "अभी आपके पास कोई मित्र पात्र नहीं है",
+    "qixiNoFriendCharactersHint": "पहले किसी पसंदीदा पात्र से मिलें, फिर उसके साथ मैगपाई ब्रिज पार करने वापस आएँ!",
+    "qixiLoadingCharacter": "पात्र की जानकारी लोड हो रही है……",
+    "qixiEventPageTitle": "सीमित Qixi इवेंट",
+    "qixiEventRules": "इवेंट के दौरान 3 अलग-अलग तारीखें चुनें, विशेष Qixi चैटरूम में संदेश भेजें और पात्र से सफलतापूर्वक उत्तर प्राप्त करें ताकि तीन दिनों की तारों की रोशनी में से एक जगमगा उठे। सीमित पत्र तीसरे पूरे किए गए दिन के समाप्त होने के बाद भेजा जाएगा। इवेंट की तारीखें और दैनिक प्रगति ताइवान समय (UTC+8) के अनुसार होंगी।",
+
+    "qixiSelectCompanions": "साथी चुनें ({count}/3)",
+    "@qixiSelectCompanions": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiSelectionLockedHint": "आप मित्र के रूप में जोड़े गए अधिकतम 3 पात्र चुन सकते हैं। एक बार चुनने के बाद उन्हें बदला नहीं जा सकता।",
+    "qixiConfirmCompanions": "साथियों की पुष्टि करें",
+    "encounterDailyQuote1": "आज, शायद कोई नई कहानी आपका इंतज़ार कर रही हो।",
+    "encounterDailyQuote2": "आज, अपने दिल को पहले बोलने दें।",
+    "encounterDailyQuote3": "आज, शायद कोई आपसे मिलने का इंतज़ार कर रहा हो।",
+    "encounterDailyQuote4": "आज, किसी नई कहानी में कदम रखकर देखें।",
+    "encounterDailyQuote5": "आज कैसी दिल की धड़कन आपका इंतज़ार कर रही होगी?",
+    "encounterDailyQuote6": "आज, अपने लिए थोड़ी-सी उम्मीद बचाकर रखें।",
+    "encounterDailyQuote7": "आज, एक नई मुलाक़ात शुरू हो रही है।",
+    "encounterDailyQuote8": "आज, शायद किस्मत आपके लिए कोई छोटा-सा सरप्राइज़ लेकर आए।",
+    "encounterDailyQuote9": "आज, किसी मुलाक़ात को धीरे-धीरे शुरू होने दें।",
+    "encounterDailyQuote10": "आज, शायद कोई ऐसा मिले जो आपको एक पल के लिए रोक दे।",
+    "encounterDailyQuote11": "आज आप किससे मिलना चाहेंगे?",
+    "encounterDailyQuote12": "आज, चुपचाप करीब आ रहे किसी रिश्ते को यूँ ही न जाने दें।",
+
+    "encounterJoinedToday": "✨ आज Lovey Time में शामिल हुए",
+    "encounterPopularChats": "❤️ हाल ही में बहुत लोग इनसे बात कर रहे हैं",
+    "qixiBannerActiveUntil": "सीमित समय · 8/26 को 23:59 तक",
+    "qixiBannerStartsAt": "8/19 से सीमित समय के लिए उपलब्ध",
+    "encounterRecentlyArrived": "✨ हाल ही में Lovey Time में आए",
+    "encounterRecentlyArrivedPlain": "हाल ही में Lovey Time में आए",
+    "encounterViewMore": "और देखें",
+    "encounterLovePrompt": "💕 आज आप किस तरह का प्यार जीना चाहते हैं?",
+    "encounterNoCharacters": "अभी कोई पात्र नहीं है",
+    "encounterAllLoveTags": "सभी प्रेम टैग",
+    "chatQixiLetterSent": "सीमित पत्र भेज दिया गया है 💌",
+    "chatQixiLetterPendingTonight": "तीनों तारों की रोशनी जगमगा उठी है · आज रात के बाद पत्र भेजा जाएगा",
+    "chatQixiTodayCompleted": "आज की तारों की रोशनी जगमगा उठी है",
+    "chatQixiTodayNotCompleted": "आज की प्रगति अभी पूरी नहीं हुई है",
+    "chatQixiPromiseTitle": "Lovey Time Qixi · तीन-दिवसीय वादा",
+
+    "chatQixiStarProgress": "तारों की रोशनी {count}/3",
+    "@chatQixiStarProgress": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatQixiProgressRule": "किसी भी तीन अलग-अलग दिनों में चैट पूरी करके तारों की रोशनी जगाएँ। सीमित पत्र तीसरे दिन के समाप्त होने के बाद भेजा जाएगा। दैनिक प्रगति ताइवान समय (UTC+8) के अनुसार गणना की जाती है।",
+
+    "chatQixiDayNumber": "दिन {day}",
+    "@chatQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatWebPurchaseUnavailable": "वेब संस्करण पर फिलहाल खरीदारी उपलब्ध नहीं है। Flowers खरीदने या सदस्यता लेने के लिए Lovey Time ऐप का उपयोग करें।",
+    "chatAiThinkingTimeout": "लगता है वह गहरी सोच में है। कृपया थोड़ी देर बाद फिर कोशिश करें……",
+    "chatAiResponseBlocked": "लगता है उसके विचार थोड़े बाधित हो गए हैं। इसे थोड़ा नरम तरीके से कहकर फिर कोशिश करें।",
+    "chatRecordingStartFailed": "रिकॉर्डिंग शुरू नहीं हो सकी। कृपया बाद में फिर कोशिश करें।",
+    "chatRecordingPlaybackFailed": "रिकॉर्डिंग चलाने में विफल। कृपया बाद में फिर कोशिश करें।",
+    "chatRoomNotReady": "चैटरूम अभी तैयार नहीं है। कृपया बाद में फिर कोशिश करें।",
+    "chatRegenerateLimitReached": "आज के सभी पुनः-जनरेशन प्रयास समाप्त हो चुके हैं",
+    "chatTypingIndicator": "सामने वाला टाइप कर रहा है……",
+    "chatRegenerateCountSyncFailed": "पुनः-जनरेशन सफल रहा, लेकिन संख्या सिंक नहीं हो सकी। कृपया बाद में रीफ़्रेश करें।",
+    "chatRoomNotFound": "इस पात्र का चैटरूम नहीं मिला",
+    "momentsSearchTooltip": "मोमेंट्स वॉल में खोजें",
+    "momentsCreatorNotFound": "इस क्रिएटर की जानकारी नहीं मिली",
+    "momentCommentLoadFailed": "टिप्पणियाँ लोड नहीं हो सकीं। कृपया बाद में फिर प्रयास करें",
+    "momentCollapseReplies": "जवाब समेटें",
+
+    "momentViewOtherReplies": "{count} और जवाब देखें",
+    "@momentViewOtherReplies": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "momentSwitchCommentIdentity": "टिप्पणी की पहचान बदलें",
+    "momentSendCommentTooltip": "टिप्पणी भेजें",
+    "momentShareCharactersLoadFailed": "चैट पात्र लोड नहीं हो सके। कृपया बाद में फिर प्रयास करें",
+    "momentReportLoginRequired": "पोस्ट की रिपोर्ट करने से पहले कृपया लॉग इन करें",
+    "momentReportSubmitted": "रिपोर्ट भेज दी गई है। हम इसकी समीक्षा करेंगे",
+    "momentSelectShareCharacter": "इस पोस्ट को साझा करने के लिए उस पात्र को चुनें जिससे आपने पहले चैट की है",
+    "momentTagCharacterUnavailable": "यह टैग किसी पात्र प्रोफ़ाइल से लिंक नहीं है",
+    "momentCharacterNotFound": "पात्र की जानकारी नहीं मिली"
 }

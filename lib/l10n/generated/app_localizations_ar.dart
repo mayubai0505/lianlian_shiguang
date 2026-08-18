@@ -6018,4 +6018,356 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get characterEditSelectedTagOrder =>
       'اسحب الوسوم المحددة لتعديل ترتيب عرضها';
+
+  @override
+  String get mailActivityGiftFallback => 'هدية الفعالية';
+
+  @override
+  String get mailFilterAll => 'الكل';
+
+  @override
+  String get mailFilterCollected => 'المحفوظة';
+
+  @override
+  String get mailCollectedEmptyTitle => 'لا توجد رسائل محفوظة حاليًا';
+
+  @override
+  String get mailCollectedEmptyHint =>
+      'افتح الرسالة التي تريد حفظها واضغط على زر الحفظ في الزاوية العلوية اليمنى.';
+
+  @override
+  String get mailQixiLimitedBadge => 'حصري لمهرجان تشيشي';
+
+  @override
+  String get mailQixiThreeDayPromise => 'تشيشي LoveyDovey・وعد الأيام الثلاثة';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return 'رسالة تشيشي من $characterName';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return 'من $characterName';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => 'مجموعة تشيشي الحصرية لعام 2026';
+
+  @override
+  String get mailShareGenerating => 'جارٍ إنشاء صورة المشاركة……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return 'تلقيت رسالة تشيشي حصرية كتبها $characterName 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => 'رسالة من «LoveyDovey» 💌';
+
+  @override
+  String get mailShareImageFailed =>
+      'فشل إنشاء صورة المشاركة، يرجى المحاولة لاحقًا';
+
+  @override
+  String get mailCollectedSuccess => 'تم حفظ هذه الرسالة 💌';
+
+  @override
+  String get mailCollectedCancelled => 'تم إلغاء الحفظ';
+
+  @override
+  String get mailCollectedUpdateFailed =>
+      'فشل تحديث حالة الحفظ، يرجى المحاولة لاحقًا';
+
+  @override
+  String get mailRemoveCollectionTooltip => 'إلغاء الحفظ';
+
+  @override
+  String get mailAddCollectionTooltip => 'حفظ الرسالة';
+
+  @override
+  String get mailShareTooltip => 'مشاركة الرسالة';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return 'اليوم $day';
+  }
+
+  @override
+  String get mailQixiDetailTitle => 'رسالة تشيشي الحصرية';
+
+  @override
+  String get mailQixiShareTooltip => 'مشاركة رسالة تشيشي';
+
+  @override
+  String get qixiMaxThreeFriends =>
+      'يمكنك اختيار ما يصل إلى 3 شخصيات من الأصدقاء فقط في هذا الحدث';
+
+  @override
+  String get qixiLoginRequired =>
+      'يرجى تسجيل الدخول أولًا قبل المشاركة في فعالية تشيشي';
+
+  @override
+  String get qixiOutsideEventPeriod => 'فعالية تشيشي غير متاحة حاليًا';
+
+  @override
+  String get qixiSelectAtLeastOne =>
+      'يرجى اختيار شخصية صديق واحدة على الأقل أولًا';
+
+  @override
+  String get qixiMysteryCharacter => 'شخصية غامضة';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '(مع اقتراب تشيشي، تستيقظ درب التبانة التي كانت غارقة في سبات عميق وسط ظلام الليل بهدوء. تتجمع أضواء النجوم المتناثرة ببطء على امتداد الأفق، كما لو كانت تنتظر شخصين مستعدين للوفاء بالموعد وكتابة اسميهما معًا.)\n\n(تقول الأسطورة إن جسر العقعق لا يضيء إلا لمن يرغبون حقًا في لقاء بعضهم البعض. عندما يظهر اسمك واسم \"$characterName\" معًا فوق نهر النجوم، يخترق شعاع خافت ستار الليل ويهبط في غرفة الدردشة هذه التي تخصكما وحدكما.)\n\n(من هذه اللحظة، أصبح لديكما \"وعد تشيشي لثلاثة أيام\". ليس من الضروري أن تكون الأيام متتالية، ولا حاجة إلى إعداد اعتراف كبير ومبالغ فيه. خلال فترة الفعالية، ما عليكما سوى العودة إلى هنا في ثلاثة أيام مختلفة ومشاركة تحية قصيرة، أو شعور ما، أو شيء صغير حدث اليوم.)\n\n(في كل مرة تلتقيان فيها بنجاح، يضيء نجم جديد على جسر العقعق. وعندما تكتمل أضواء الأيام الثلاثة، ستتحول المشاعر والذكريات المتناثرة في محادثاتكما، بعد انتهاء اليوم الثالث المكتمل، إلى رسالة تشيشي محدودة كُتبت لك وحدك.)\n\n(والآن، هبط أول شعاع من ضوء النجوم. وعلى الطرف الآخر من جسر العقعق، يبدو أن \"$characterName\" قد تلقى هذا الوعد أيضًا.)\n\n——وعد تشيشي لثلاثة أيام يبدأ الآن.';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage => 'بدأ وعد تشيشي لثلاثة أيام';
+
+  @override
+  String get qixiCompanionSlotsFull => 'تم اختيار جميع رفاق تشيشي المتاحين';
+
+  @override
+  String get qixiSingleRoomOpened => 'تم فتح غرفة دردشة تشيشي الخاصة 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return 'تم فتح $count من غرف دردشة تشيشي الخاصة 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed =>
+      'تعذر إنشاء غرفة دردشة تشيشي، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get qixiEventStartsAt => 'تبدأ الفعالية في 8/19 الساعة 00:00';
+
+  @override
+  String get qixiEventActiveUntil =>
+      'الفعالية جارية · تنتهي في 8/26 الساعة 23:59';
+
+  @override
+  String get qixiEventEnded => 'انتهت فعالية تشيشي الحالية';
+
+  @override
+  String get qixiEventHeroTitle =>
+      'تشيشي في Lovey Time · لنلتقِ معًا على جسر العقعق';
+
+  @override
+  String get qixiCharacterSelected => 'تم الاختيار';
+
+  @override
+  String get qixiFriendListLoadFailed =>
+      'تعذر تحميل قائمة الأصدقاء، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get qixiNoFriendCharacters => 'ليس لديك أي شخصيات أصدقاء حتى الآن';
+
+  @override
+  String get qixiNoFriendCharactersHint =>
+      'اذهب أولًا للقاء شخصية تعجبك، ثم عد لعبور جسر العقعق معها!';
+
+  @override
+  String get qixiLoadingCharacter => 'جارٍ تحميل بيانات الشخصية……';
+
+  @override
+  String get qixiEventPageTitle => 'فعالية تشيشي محدودة';
+
+  @override
+  String get qixiEventRules =>
+      'خلال فترة الفعالية، اختر 3 أيام مختلفة وأرسل رسالة في غرفة دردشة تشيشي الخاصة، ثم استلم ردًا من الشخصية بنجاح لإضاءة نجمة من نجوم الأيام الثلاثة. سيتم إرسال الرسالة المحدودة بعد انتهاء اليوم الثالث المكتمل. تعتمد تواريخ الفعالية والتقدم اليومي على توقيت تايوان (UTC+8).';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return 'اختيار الرفاق ($count/3)';
+  }
+
+  @override
+  String get qixiSelectionLockedHint =>
+      'يمكنك اختيار ما يصل إلى 3 شخصيات أضفتها كأصدقاء، ولا يمكن تغييرها بعد الاختيار.';
+
+  @override
+  String get qixiConfirmCompanions => 'تأكيد الرفاق';
+
+  @override
+  String get encounterDailyQuote1 => 'اليوم، ربما تلتقي بقصة جديدة.';
+
+  @override
+  String get encounterDailyQuote2 => 'اليوم، دع قلبك يتحدث أولًا.';
+
+  @override
+  String get encounterDailyQuote3 => 'اليوم، ربما هناك من ينتظر لقاءك.';
+
+  @override
+  String get encounterDailyQuote4 => 'اليوم، جرّب أن تخطو إلى قصة جديدة.';
+
+  @override
+  String get encounterDailyQuote5 => 'أي خفقة قلب قد تنتظرك اليوم؟';
+
+  @override
+  String get encounterDailyQuote6 => 'اليوم، اترك لنفسك قليلًا من الترقب.';
+
+  @override
+  String get encounterDailyQuote7 => 'اليوم، لقاء جديد يبدأ بالفعل.';
+
+  @override
+  String get encounterDailyQuote8 => 'اليوم، ربما يحمل لك القدر مفاجأة صغيرة.';
+
+  @override
+  String get encounterDailyQuote9 => 'اليوم، دع لقاءً جديدًا يبدأ بهدوء.';
+
+  @override
+  String get encounterDailyQuote10 => 'اليوم، ربما يظهر شخص يجعلك تتوقف للحظة.';
+
+  @override
+  String get encounterDailyQuote11 => 'من تود أن تلتقي اليوم؟';
+
+  @override
+  String get encounterDailyQuote12 =>
+      'اليوم، لا تدع فرصة لقاء تقترب منك بهدوء تفوتك.';
+
+  @override
+  String get encounterJoinedToday => '✨ انضموا إلى Lovey Time اليوم';
+
+  @override
+  String get encounterPopularChats => '❤️ الكثيرون يتحدثون معهم مؤخرًا';
+
+  @override
+  String get qixiBannerActiveUntil => 'لفترة محدودة · حتى 8/26 الساعة 23:59';
+
+  @override
+  String get qixiBannerStartsAt => 'متاح حصريًا ابتداءً من 8/19';
+
+  @override
+  String get encounterRecentlyArrived => '✨ وصلوا مؤخرًا إلى Lovey Time';
+
+  @override
+  String get encounterRecentlyArrivedPlain => 'وصلوا مؤخرًا إلى Lovey Time';
+
+  @override
+  String get encounterViewMore => 'عرض المزيد';
+
+  @override
+  String get encounterLovePrompt => '💕 أي نوع من الحب تريد أن تعيشه اليوم؟';
+
+  @override
+  String get encounterNoCharacters => 'لا توجد شخصيات حاليًا';
+
+  @override
+  String get encounterAllLoveTags => 'جميع وسوم الحب';
+
+  @override
+  String get chatQixiLetterSent => 'تم إرسال الرسالة المحدودة 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight =>
+      'اكتملت أضواء الأيام الثلاثة · سيتم إرسال الرسالة بعد انتهاء هذه الليلة';
+
+  @override
+  String get chatQixiTodayCompleted => 'تمت إضاءة نجمة اليوم';
+
+  @override
+  String get chatQixiTodayNotCompleted => 'لم يكتمل تقدم اليوم بعد';
+
+  @override
+  String get chatQixiPromiseTitle => 'تشيشي في Lovey Time · وعد الثلاثة أيام';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return 'ضوء النجوم $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      'أكمل الدردشة في أي ثلاثة أيام مختلفة لإضاءة النجوم. سيتم إرسال الرسالة المحدودة بعد انتهاء اليوم الثالث، ويتم احتساب التقدم اليومي وفق توقيت تايوان (UTC+8).';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return 'اليوم $day';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable =>
+      'خدمة الشحن غير متاحة حاليًا على نسخة الويب. يرجى استخدام تطبيق Lovey Time لشراء الزهور أو الاشتراك.';
+
+  @override
+  String get chatAiThinkingTimeout =>
+      'يبدو أنه غارق في التفكير. يرجى المحاولة مرة أخرى بعد قليل……';
+
+  @override
+  String get chatAiResponseBlocked =>
+      'يبدو أن أفكاره قد تشوشت قليلًا. جرّب إعادة صياغة كلامك بطريقة ألطف.';
+
+  @override
+  String get chatRecordingStartFailed =>
+      'تعذر بدء التسجيل. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get chatRecordingPlaybackFailed =>
+      'تعذر تشغيل التسجيل. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get chatRoomNotReady =>
+      'غرفة الدردشة ليست جاهزة بعد. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get chatRegenerateLimitReached =>
+      'لقد استخدمت جميع محاولات إعادة التوليد لليوم';
+
+  @override
+  String get chatTypingIndicator => 'الطرف الآخر يكتب الآن……';
+
+  @override
+  String get chatRegenerateCountSyncFailed =>
+      'تمت إعادة التوليد بنجاح، لكن تعذرت مزامنة عدد المحاولات. يرجى التحديث لاحقًا.';
+
+  @override
+  String get chatRoomNotFound => 'تعذر العثور على غرفة دردشة لهذه الشخصية';
+
+  @override
+  String get momentsSearchTooltip => 'البحث في جدار اللحظات';
+
+  @override
+  String get momentsCreatorNotFound => 'تعذر العثور على بيانات هذا المنشئ';
+
+  @override
+  String get momentCommentLoadFailed =>
+      'فشل تحميل التعليقات، يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get momentCollapseReplies => 'طيّ الردود';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return 'عرض $count ردود أخرى';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => 'تبديل هوية التعليق';
+
+  @override
+  String get momentSendCommentTooltip => 'إرسال التعليق';
+
+  @override
+  String get momentShareCharactersLoadFailed =>
+      'تعذر تحميل شخصيات الدردشة. يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get momentReportLoginRequired =>
+      'يرجى تسجيل الدخول أولًا قبل الإبلاغ عن المنشور';
+
+  @override
+  String get momentReportSubmitted => 'تم إرسال البلاغ، وسنقوم بمراجعته';
+
+  @override
+  String get momentSelectShareCharacter =>
+      'اختر شخصية سبق أن تحدثت معها لمشاركة هذا المنشور';
+
+  @override
+  String get momentTagCharacterUnavailable =>
+      'هذه الإشارة غير مرتبطة بملف شخصية';
+
+  @override
+  String get momentCharacterNotFound => 'تعذر العثور على بيانات الشخصية';
 }

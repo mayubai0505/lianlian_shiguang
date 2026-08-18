@@ -2829,5 +2829,189 @@
     "characterProfileNoIntroduction": "ผู้สร้างยังไม่ได้เพิ่มคำแนะนำตัวละคร",
     "characterProfileViewMore": "ดูเพิ่มเติม",
     "characterProfileCollapse": "ย่อ",
-    "characterEditSelectedTagOrder": "ลากแท็กที่เลือกเพื่อปรับลำดับการแสดงผล"
+    "characterEditSelectedTagOrder": "ลากแท็กที่เลือกเพื่อปรับลำดับการแสดงผล",
+    "mailActivityGiftFallback": "ของขวัญกิจกรรม",
+    "mailFilterAll": "ทั้งหมด",
+    "mailFilterCollected": "เก็บสะสม",
+    "mailCollectedEmptyTitle": "ขณะนี้ยังไม่มีจดหมายที่เก็บสะสม",
+    "mailCollectedEmptyHint": "เปิดจดหมายที่ต้องการเก็บ แล้วแตะปุ่มเก็บสะสมที่มุมขวาบน",
+    "mailQixiLimitedBadge": "限定เทศกาลชีซี",
+    "mailQixiThreeDayPromise": "ชีซีแห่ง LoveyDovey・สัญญาสามวัน",
+    "mailQixiFromCharacter": "จดหมายชีซีจาก {characterName}",
+    "@mailQixiFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailFromCharacter": "จาก {characterName}",
+    "@mailFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailQixiCollectionLabel": "คอลเลกชันเทศกาลชีซี限定ปี 2026",
+    "mailShareGenerating": "กำลังสร้างรูปภาพสำหรับแชร์……",
+    "mailShareQixiMessage": "ฉันได้รับจดหมายเทศกาลชีซี限定จาก {characterName} 💌",
+    "@mailShareQixiMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailShareDefaultMessage": "จดหมายจาก 「LoveyDovey」💌",
+    "mailShareImageFailed": "สร้างรูปภาพสำหรับแชร์ไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "mailCollectedSuccess": "เก็บจดหมายฉบับนี้แล้ว 💌",
+    "mailCollectedCancelled": "ยกเลิกการเก็บแล้ว",
+    "mailCollectedUpdateFailed": "อัปเดตสถานะการเก็บไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "mailRemoveCollectionTooltip": "ยกเลิกการเก็บ",
+    "mailAddCollectionTooltip": "เก็บจดหมาย",
+    "mailShareTooltip": "แชร์จดหมาย",
+    "mailQixiDayNumber": "วันที่ {day}",
+    "@mailQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+    "mailQixiDetailTitle": "จดหมายเทศกาลชีซี限定",
+    "mailQixiShareTooltip": "แชร์จดหมายชีซี",
+    "qixiMaxThreeFriends": "กิจกรรมนี้สามารถเลือกตัวละครเพื่อนได้สูงสุด 3 คน",
+    "qixiLoginRequired": "กรุณาเข้าสู่ระบบก่อนเข้าร่วมกิจกรรมชีซี",
+    "qixiOutsideEventPeriod": "ขณะนี้ไม่ได้อยู่ในช่วงเวลากิจกรรมชีซี",
+    "qixiSelectAtLeastOne": "กรุณาเลือกตัวละครเพื่อนอย่างน้อย 1 คนก่อน",
+    "qixiMysteryCharacter": "ตัวละครลึกลับ",
+
+    "qixiOpeningStory": "(เมื่อเทศกาลชีซีใกล้เข้ามา ทางช้างเผือกที่หลับใหลอยู่ในส่วนลึกของค่ำคืนก็ค่อย ๆ ตื่นขึ้น แสงดาวที่กระจัดกระจายเริ่มรวมตัวกันอย่างช้า ๆ ตามขอบฟ้า ราวกับกำลังรอคนสองคนที่พร้อมจะมาตามนัดและเขียนชื่อของกันและกันลงไว้)\n\n(ตามตำนาน สะพานนกกางเขนจะส่องสว่างให้เฉพาะผู้ที่ปรารถนาจะพบกันจากใจจริงเท่านั้น เมื่อชื่อของคุณและ \"{characterName}\" ปรากฏขึ้นพร้อมกันเหนือสายน้ำแห่งดวงดาว แสงเรืองรองสายหนึ่งจะทะลุผ่านม่านราตรีและตกลงสู่ห้องแชตที่เป็นของพวกคุณสองคนเท่านั้น)\n\n(ตั้งแต่วินาทีนี้ พวกคุณจะมี \"คำสัญญาสามวันแห่งชีซี\" ร่วมกัน ไม่จำเป็นต้องเป็นสามวันที่ติดต่อกัน และไม่จำเป็นต้องเตรียมคำสารภาพรักครั้งยิ่งใหญ่ เพียงแค่ในช่วงเวลากิจกรรม กลับมาที่นี่ในสามวันที่แตกต่างกัน และแบ่งปันคำทักทาย ความรู้สึก หรือเรื่องเล็ก ๆ ที่เกิดขึ้นในวันนี้)\n\n(ทุกครั้งที่ได้พบกันสำเร็จ แสงดาวหนึ่งดวงบนสะพานนกกางเขนจะสว่างขึ้น เมื่อแสงดาวทั้งสามวันถูกจุดครบ ความรู้สึกและความทรงจำที่กระจัดกระจายอยู่ในบทสนทนาของพวกคุณจะกลายเป็นจดหมายชีซีแบบจำกัดที่เขียนถึงคุณเพียงคนเดียว หลังจากวันที่สามที่ทำสำเร็จสิ้นสุดลง)\n\n(ตอนนี้ แสงดาวดวงแรกได้ตกลงมาแล้ว ที่ปลายอีกด้านของสะพานนกกางเขน ดูเหมือนว่า \"{characterName}\" ก็ได้รับคำสัญญานี้เช่นกัน)\n\n——คำสัญญาสามวันแห่งชีซี เริ่มต้นขึ้นแล้วในตอนนี้",
+    "@qixiOpeningStory": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "qixiRoomOpenedLastMessage": "คำสัญญาสามวันแห่งชีซีได้เริ่มขึ้นแล้ว",
+    "qixiCompanionSlotsFull": "เลือกตัวละครร่วมทางในกิจกรรมชีซีครบแล้ว",
+    "qixiSingleRoomOpened": "เปิดห้องแชตพิเศษสำหรับชีซีแล้ว 💕",
+
+    "qixiMultipleRoomsOpened": "เปิดห้องแชตพิเศษสำหรับชีซีแล้ว {count} ห้อง 💕",
+    "@qixiMultipleRoomsOpened": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiCreateRoomFailed": "สร้างห้องแชตชีซีไม่สำเร็จ กรุณาลองใหม่อีกครั้งภายหลัง",
+    "qixiEventStartsAt": "กิจกรรมจะเริ่มในวันที่ 8/19 เวลา 00:00",
+    "qixiEventActiveUntil": "กิจกรรมกำลังดำเนินอยู่ · สิ้นสุดวันที่ 8/26 เวลา 23:59",
+    "qixiEventEnded": "กิจกรรมชีซีครั้งนี้สิ้นสุดแล้ว",
+    "qixiEventHeroTitle": "ชีซีแห่ง Lovey Time · ไปยังสะพานนกกางเขนกับคุณ",
+    "qixiCharacterSelected": "เลือกแล้ว",
+    "qixiFriendListLoadFailed": "โหลดรายชื่อเพื่อนไม่สำเร็จ กรุณาลองใหม่ภายหลัง",
+    "qixiNoFriendCharacters": "ขณะนี้คุณยังไม่มีตัวละครเพื่อน",
+    "qixiNoFriendCharactersHint": "ไปพบกับตัวละครที่คุณชอบก่อน แล้วกลับมาข้ามสะพานนกกางเขนด้วยกันนะ!",
+    "qixiLoadingCharacter": "กำลังโหลดข้อมูลตัวละคร……",
+    "qixiEventPageTitle": "กิจกรรมชีซีแบบจำกัด",
+    "qixiEventRules": "ในช่วงกิจกรรม ให้เลือก 3 วันที่แตกต่างกัน ส่งข้อความในห้องแชตพิเศษสำหรับชีซี และได้รับข้อความตอบกลับจากตัวละครสำเร็จ เพื่อจุดแสงดาวของแต่ละวันให้สว่างขึ้น จดหมายแบบจำกัดจะถูกส่งหลังจากวันที่สามที่ทำสำเร็จสิ้นสุดลง วันที่ของกิจกรรมและความคืบหน้ารายวันทั้งหมดอ้างอิงตามเวลาไต้หวัน (UTC+8)",
+
+    "qixiSelectCompanions": "เลือกตัวละครร่วมทาง ({count}/3)",
+    "@qixiSelectCompanions": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiSelectionLockedHint": "สามารถเลือกตัวละครที่เพิ่มเป็นเพื่อนได้สูงสุด 3 คน และไม่สามารถเปลี่ยนได้หลังจากเลือกแล้ว",
+    "qixiConfirmCompanions": "ยืนยันตัวละครร่วมทาง",
+    "encounterDailyQuote1": "วันนี้ บางทีคุณอาจได้พบกับเรื่องราวบทใหม่",
+    "encounterDailyQuote2": "วันนี้ ลองปล่อยให้หัวใจเป็นฝ่ายพูดก่อน",
+    "encounterDailyQuote3": "วันนี้ บางทีอาจมีใครบางคนกำลังรอพบคุณอยู่",
+    "encounterDailyQuote4": "วันนี้ ลองก้าวเข้าไปในเรื่องราวบทใหม่ดูสิ",
+    "encounterDailyQuote5": "วันนี้ คุณจะได้พบกับความรู้สึกหัวใจเต้นแรงแบบไหนกันนะ?",
+    "encounterDailyQuote6": "วันนี้ เก็บความคาดหวังเล็ก ๆ ไว้ให้ตัวเองบ้าง",
+    "encounterDailyQuote7": "วันนี้ การพบกันครั้งใหม่กำลังเริ่มต้นขึ้น",
+    "encounterDailyQuote8": "วันนี้ บางทีโชคชะตาอาจนำเซอร์ไพรส์เล็ก ๆ มาให้คุณ",
+    "encounterDailyQuote9": "วันนี้ ปล่อยให้การพบกันหนึ่งครั้งค่อย ๆ เริ่มต้นขึ้น",
+    "encounterDailyQuote10": "วันนี้ บางทีอาจมีใครบางคนทำให้คุณต้องหยุดฝีเท้า",
+    "encounterDailyQuote11": "วันนี้ คุณอยากพบคนแบบไหน?",
+    "encounterDailyQuote12": "วันนี้ อย่าพลาดสายสัมพันธ์ที่กำลังค่อย ๆ เข้ามาใกล้",
+
+    "encounterJoinedToday": "✨ เข้าร่วม Lovey Time วันนี้",
+    "encounterPopularChats": "❤️ ช่วงนี้มีคนคุยด้วยเยอะ",
+    "qixiBannerActiveUntil": "เปิดช่วงเวลาจำกัด · ถึง 8/26 เวลา 23:59",
+    "qixiBannerStartsAt": "เปิดแบบจำกัดตั้งแต่ 8/19",
+    "encounterRecentlyArrived": "✨ เพิ่งมาถึง Lovey Time",
+    "encounterRecentlyArrivedPlain": "เพิ่งมาถึง Lovey Time",
+    "encounterViewMore": "ดูเพิ่มเติม",
+    "encounterLovePrompt": "💕 วันนี้อยากมีความรักแบบไหน?",
+    "encounterNoCharacters": "ตอนนี้ยังไม่มีตัวละคร",
+    "encounterAllLoveTags": "แท็กความรักทั้งหมด",
+    "chatQixiLetterSent": "ส่งจดหมายแบบจำกัดแล้ว 💌",
+    "chatQixiLetterPendingTonight": "แสงดาวทั้งสามวันสว่างครบแล้ว · จดหมายจะถูกส่งหลังจากคืนนี้",
+    "chatQixiTodayCompleted": "แสงดาวของวันนี้สว่างแล้ว",
+    "chatQixiTodayNotCompleted": "วันนี้ยังทำไม่สำเร็จ",
+    "chatQixiPromiseTitle": "ชีซีแห่ง Lovey Time · คำสัญญาสามวัน",
+
+    "chatQixiStarProgress": "แสงดาว {count}/3",
+    "@chatQixiStarProgress": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatQixiProgressRule": "สนทนาให้สำเร็จใน 3 วันที่แตกต่างกันเพื่อจุดแสงดาว จดหมายแบบจำกัดจะถูกส่งหลังจากวันที่สามสิ้นสุดลง โดยความคืบหน้ารายวันคำนวณตามเวลาไต้หวัน (UTC+8)",
+
+    "chatQixiDayNumber": "วันที่ {day}",
+    "@chatQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatWebPurchaseUnavailable": "ขณะนี้เวอร์ชันเว็บยังไม่รองรับการเติมเงิน โปรดใช้แอป Lovey Time เพื่อซื้อ Flowers หรือสมัครสมาชิก",
+    "chatAiThinkingTimeout": "ดูเหมือนว่าเขากำลังครุ่นคิดอยู่ กรุณาลองใหม่อีกครั้งในภายหลัง……",
+    "chatAiResponseBlocked": "ดูเหมือนความคิดของเขาจะถูกรบกวนเล็กน้อย ลองพูดใหม่ด้วยถ้อยคำที่อ่อนโยนขึ้นนะ",
+    "chatRecordingStartFailed": "ไม่สามารถเริ่มบันทึกเสียงได้ กรุณาลองใหม่อีกครั้งภายหลัง",
+    "chatRecordingPlaybackFailed": "เล่นเสียงบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้งภายหลัง",
+    "chatRoomNotReady": "ห้องแชตยังไม่พร้อม กรุณาลองใหม่อีกครั้งภายหลัง",
+    "chatRegenerateLimitReached": "ใช้จำนวนครั้งการสร้างใหม่ของวันนี้ครบแล้ว",
+    "chatTypingIndicator": "อีกฝ่ายกำลังพิมพ์……",
+    "chatRegenerateCountSyncFailed": "สร้างใหม่สำเร็จ แต่ไม่สามารถซิงค์จำนวนครั้งได้ กรุณารีเฟรชอีกครั้งในภายหลัง",
+    "chatRoomNotFound": "ไม่พบห้องแชตของตัวละครนี้",
+    "momentsSearchTooltip": "ค้นหาในกำแพงโมเมนต์",
+    "momentsCreatorNotFound": "ไม่พบข้อมูลของครีเอเตอร์คนนี้",
+    "momentCommentLoadFailed": "โหลดความคิดเห็นไม่สำเร็จ กรุณาลองใหม่อีกครั้งภายหลัง",
+    "momentCollapseReplies": "ซ่อนการตอบกลับ",
+
+    "momentViewOtherReplies": "ดูการตอบกลับอื่นอีก {count} รายการ",
+    "@momentViewOtherReplies": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "momentSwitchCommentIdentity": "เปลี่ยนตัวตนสำหรับแสดงความคิดเห็น",
+    "momentSendCommentTooltip": "ส่งความคิดเห็น",
+    "momentShareCharactersLoadFailed": "โหลดตัวละครที่เคยแชตไม่สำเร็จ กรุณาลองใหม่อีกครั้งภายหลัง",
+    "momentReportLoginRequired": "กรุณาเข้าสู่ระบบก่อนรายงานโพสต์นี้",
+    "momentReportSubmitted": "ส่งรายงานแล้ว เราจะดำเนินการตรวจสอบ",
+    "momentSelectShareCharacter": "เลือกตัวละครที่คุณเคยแชตด้วยเพื่อแชร์โพสต์นี้",
+    "momentTagCharacterUnavailable": "แท็กนี้ไม่ได้เชื่อมโยงกับโปรไฟล์ตัวละคร",
+    "momentCharacterNotFound": "ไม่พบข้อมูลตัวละคร"
 }

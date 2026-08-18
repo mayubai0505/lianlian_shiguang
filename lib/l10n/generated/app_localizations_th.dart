@@ -6033,4 +6033,365 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get characterEditSelectedTagOrder =>
       'ลากแท็กที่เลือกเพื่อปรับลำดับการแสดงผล';
+
+  @override
+  String get mailActivityGiftFallback => 'ของขวัญกิจกรรม';
+
+  @override
+  String get mailFilterAll => 'ทั้งหมด';
+
+  @override
+  String get mailFilterCollected => 'เก็บสะสม';
+
+  @override
+  String get mailCollectedEmptyTitle => 'ขณะนี้ยังไม่มีจดหมายที่เก็บสะสม';
+
+  @override
+  String get mailCollectedEmptyHint =>
+      'เปิดจดหมายที่ต้องการเก็บ แล้วแตะปุ่มเก็บสะสมที่มุมขวาบน';
+
+  @override
+  String get mailQixiLimitedBadge => '限定เทศกาลชีซี';
+
+  @override
+  String get mailQixiThreeDayPromise => 'ชีซีแห่ง LoveyDovey・สัญญาสามวัน';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return 'จดหมายชีซีจาก $characterName';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return 'จาก $characterName';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => 'คอลเลกชันเทศกาลชีซี限定ปี 2026';
+
+  @override
+  String get mailShareGenerating => 'กำลังสร้างรูปภาพสำหรับแชร์……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return 'ฉันได้รับจดหมายเทศกาลชีซี限定จาก $characterName 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => 'จดหมายจาก 「LoveyDovey」💌';
+
+  @override
+  String get mailShareImageFailed =>
+      'สร้างรูปภาพสำหรับแชร์ไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get mailCollectedSuccess => 'เก็บจดหมายฉบับนี้แล้ว 💌';
+
+  @override
+  String get mailCollectedCancelled => 'ยกเลิกการเก็บแล้ว';
+
+  @override
+  String get mailCollectedUpdateFailed =>
+      'อัปเดตสถานะการเก็บไม่สำเร็จ โปรดลองอีกครั้งภายหลัง';
+
+  @override
+  String get mailRemoveCollectionTooltip => 'ยกเลิกการเก็บ';
+
+  @override
+  String get mailAddCollectionTooltip => 'เก็บจดหมาย';
+
+  @override
+  String get mailShareTooltip => 'แชร์จดหมาย';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return 'วันที่ $day';
+  }
+
+  @override
+  String get mailQixiDetailTitle => 'จดหมายเทศกาลชีซี限定';
+
+  @override
+  String get mailQixiShareTooltip => 'แชร์จดหมายชีซี';
+
+  @override
+  String get qixiMaxThreeFriends =>
+      'กิจกรรมนี้สามารถเลือกตัวละครเพื่อนได้สูงสุด 3 คน';
+
+  @override
+  String get qixiLoginRequired => 'กรุณาเข้าสู่ระบบก่อนเข้าร่วมกิจกรรมชีซี';
+
+  @override
+  String get qixiOutsideEventPeriod => 'ขณะนี้ไม่ได้อยู่ในช่วงเวลากิจกรรมชีซี';
+
+  @override
+  String get qixiSelectAtLeastOne =>
+      'กรุณาเลือกตัวละครเพื่อนอย่างน้อย 1 คนก่อน';
+
+  @override
+  String get qixiMysteryCharacter => 'ตัวละครลึกลับ';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '(เมื่อเทศกาลชีซีใกล้เข้ามา ทางช้างเผือกที่หลับใหลอยู่ในส่วนลึกของค่ำคืนก็ค่อย ๆ ตื่นขึ้น แสงดาวที่กระจัดกระจายเริ่มรวมตัวกันอย่างช้า ๆ ตามขอบฟ้า ราวกับกำลังรอคนสองคนที่พร้อมจะมาตามนัดและเขียนชื่อของกันและกันลงไว้)\n\n(ตามตำนาน สะพานนกกางเขนจะส่องสว่างให้เฉพาะผู้ที่ปรารถนาจะพบกันจากใจจริงเท่านั้น เมื่อชื่อของคุณและ \"$characterName\" ปรากฏขึ้นพร้อมกันเหนือสายน้ำแห่งดวงดาว แสงเรืองรองสายหนึ่งจะทะลุผ่านม่านราตรีและตกลงสู่ห้องแชตที่เป็นของพวกคุณสองคนเท่านั้น)\n\n(ตั้งแต่วินาทีนี้ พวกคุณจะมี \"คำสัญญาสามวันแห่งชีซี\" ร่วมกัน ไม่จำเป็นต้องเป็นสามวันที่ติดต่อกัน และไม่จำเป็นต้องเตรียมคำสารภาพรักครั้งยิ่งใหญ่ เพียงแค่ในช่วงเวลากิจกรรม กลับมาที่นี่ในสามวันที่แตกต่างกัน และแบ่งปันคำทักทาย ความรู้สึก หรือเรื่องเล็ก ๆ ที่เกิดขึ้นในวันนี้)\n\n(ทุกครั้งที่ได้พบกันสำเร็จ แสงดาวหนึ่งดวงบนสะพานนกกางเขนจะสว่างขึ้น เมื่อแสงดาวทั้งสามวันถูกจุดครบ ความรู้สึกและความทรงจำที่กระจัดกระจายอยู่ในบทสนทนาของพวกคุณจะกลายเป็นจดหมายชีซีแบบจำกัดที่เขียนถึงคุณเพียงคนเดียว หลังจากวันที่สามที่ทำสำเร็จสิ้นสุดลง)\n\n(ตอนนี้ แสงดาวดวงแรกได้ตกลงมาแล้ว ที่ปลายอีกด้านของสะพานนกกางเขน ดูเหมือนว่า \"$characterName\" ก็ได้รับคำสัญญานี้เช่นกัน)\n\n——คำสัญญาสามวันแห่งชีซี เริ่มต้นขึ้นแล้วในตอนนี้';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage =>
+      'คำสัญญาสามวันแห่งชีซีได้เริ่มขึ้นแล้ว';
+
+  @override
+  String get qixiCompanionSlotsFull =>
+      'เลือกตัวละครร่วมทางในกิจกรรมชีซีครบแล้ว';
+
+  @override
+  String get qixiSingleRoomOpened => 'เปิดห้องแชตพิเศษสำหรับชีซีแล้ว 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return 'เปิดห้องแชตพิเศษสำหรับชีซีแล้ว $count ห้อง 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed =>
+      'สร้างห้องแชตชีซีไม่สำเร็จ กรุณาลองใหม่อีกครั้งภายหลัง';
+
+  @override
+  String get qixiEventStartsAt => 'กิจกรรมจะเริ่มในวันที่ 8/19 เวลา 00:00';
+
+  @override
+  String get qixiEventActiveUntil =>
+      'กิจกรรมกำลังดำเนินอยู่ · สิ้นสุดวันที่ 8/26 เวลา 23:59';
+
+  @override
+  String get qixiEventEnded => 'กิจกรรมชีซีครั้งนี้สิ้นสุดแล้ว';
+
+  @override
+  String get qixiEventHeroTitle =>
+      'ชีซีแห่ง Lovey Time · ไปยังสะพานนกกางเขนกับคุณ';
+
+  @override
+  String get qixiCharacterSelected => 'เลือกแล้ว';
+
+  @override
+  String get qixiFriendListLoadFailed =>
+      'โหลดรายชื่อเพื่อนไม่สำเร็จ กรุณาลองใหม่ภายหลัง';
+
+  @override
+  String get qixiNoFriendCharacters => 'ขณะนี้คุณยังไม่มีตัวละครเพื่อน';
+
+  @override
+  String get qixiNoFriendCharactersHint =>
+      'ไปพบกับตัวละครที่คุณชอบก่อน แล้วกลับมาข้ามสะพานนกกางเขนด้วยกันนะ!';
+
+  @override
+  String get qixiLoadingCharacter => 'กำลังโหลดข้อมูลตัวละคร……';
+
+  @override
+  String get qixiEventPageTitle => 'กิจกรรมชีซีแบบจำกัด';
+
+  @override
+  String get qixiEventRules =>
+      'ในช่วงกิจกรรม ให้เลือก 3 วันที่แตกต่างกัน ส่งข้อความในห้องแชตพิเศษสำหรับชีซี และได้รับข้อความตอบกลับจากตัวละครสำเร็จ เพื่อจุดแสงดาวของแต่ละวันให้สว่างขึ้น จดหมายแบบจำกัดจะถูกส่งหลังจากวันที่สามที่ทำสำเร็จสิ้นสุดลง วันที่ของกิจกรรมและความคืบหน้ารายวันทั้งหมดอ้างอิงตามเวลาไต้หวัน (UTC+8)';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return 'เลือกตัวละครร่วมทาง ($count/3)';
+  }
+
+  @override
+  String get qixiSelectionLockedHint =>
+      'สามารถเลือกตัวละครที่เพิ่มเป็นเพื่อนได้สูงสุด 3 คน และไม่สามารถเปลี่ยนได้หลังจากเลือกแล้ว';
+
+  @override
+  String get qixiConfirmCompanions => 'ยืนยันตัวละครร่วมทาง';
+
+  @override
+  String get encounterDailyQuote1 =>
+      'วันนี้ บางทีคุณอาจได้พบกับเรื่องราวบทใหม่';
+
+  @override
+  String get encounterDailyQuote2 => 'วันนี้ ลองปล่อยให้หัวใจเป็นฝ่ายพูดก่อน';
+
+  @override
+  String get encounterDailyQuote3 =>
+      'วันนี้ บางทีอาจมีใครบางคนกำลังรอพบคุณอยู่';
+
+  @override
+  String get encounterDailyQuote4 =>
+      'วันนี้ ลองก้าวเข้าไปในเรื่องราวบทใหม่ดูสิ';
+
+  @override
+  String get encounterDailyQuote5 =>
+      'วันนี้ คุณจะได้พบกับความรู้สึกหัวใจเต้นแรงแบบไหนกันนะ?';
+
+  @override
+  String get encounterDailyQuote6 =>
+      'วันนี้ เก็บความคาดหวังเล็ก ๆ ไว้ให้ตัวเองบ้าง';
+
+  @override
+  String get encounterDailyQuote7 =>
+      'วันนี้ การพบกันครั้งใหม่กำลังเริ่มต้นขึ้น';
+
+  @override
+  String get encounterDailyQuote8 =>
+      'วันนี้ บางทีโชคชะตาอาจนำเซอร์ไพรส์เล็ก ๆ มาให้คุณ';
+
+  @override
+  String get encounterDailyQuote9 =>
+      'วันนี้ ปล่อยให้การพบกันหนึ่งครั้งค่อย ๆ เริ่มต้นขึ้น';
+
+  @override
+  String get encounterDailyQuote10 =>
+      'วันนี้ บางทีอาจมีใครบางคนทำให้คุณต้องหยุดฝีเท้า';
+
+  @override
+  String get encounterDailyQuote11 => 'วันนี้ คุณอยากพบคนแบบไหน?';
+
+  @override
+  String get encounterDailyQuote12 =>
+      'วันนี้ อย่าพลาดสายสัมพันธ์ที่กำลังค่อย ๆ เข้ามาใกล้';
+
+  @override
+  String get encounterJoinedToday => '✨ เข้าร่วม Lovey Time วันนี้';
+
+  @override
+  String get encounterPopularChats => '❤️ ช่วงนี้มีคนคุยด้วยเยอะ';
+
+  @override
+  String get qixiBannerActiveUntil => 'เปิดช่วงเวลาจำกัด · ถึง 8/26 เวลา 23:59';
+
+  @override
+  String get qixiBannerStartsAt => 'เปิดแบบจำกัดตั้งแต่ 8/19';
+
+  @override
+  String get encounterRecentlyArrived => '✨ เพิ่งมาถึง Lovey Time';
+
+  @override
+  String get encounterRecentlyArrivedPlain => 'เพิ่งมาถึง Lovey Time';
+
+  @override
+  String get encounterViewMore => 'ดูเพิ่มเติม';
+
+  @override
+  String get encounterLovePrompt => '💕 วันนี้อยากมีความรักแบบไหน?';
+
+  @override
+  String get encounterNoCharacters => 'ตอนนี้ยังไม่มีตัวละคร';
+
+  @override
+  String get encounterAllLoveTags => 'แท็กความรักทั้งหมด';
+
+  @override
+  String get chatQixiLetterSent => 'ส่งจดหมายแบบจำกัดแล้ว 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight =>
+      'แสงดาวทั้งสามวันสว่างครบแล้ว · จดหมายจะถูกส่งหลังจากคืนนี้';
+
+  @override
+  String get chatQixiTodayCompleted => 'แสงดาวของวันนี้สว่างแล้ว';
+
+  @override
+  String get chatQixiTodayNotCompleted => 'วันนี้ยังทำไม่สำเร็จ';
+
+  @override
+  String get chatQixiPromiseTitle => 'ชีซีแห่ง Lovey Time · คำสัญญาสามวัน';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return 'แสงดาว $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      'สนทนาให้สำเร็จใน 3 วันที่แตกต่างกันเพื่อจุดแสงดาว จดหมายแบบจำกัดจะถูกส่งหลังจากวันที่สามสิ้นสุดลง โดยความคืบหน้ารายวันคำนวณตามเวลาไต้หวัน (UTC+8)';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return 'วันที่ $day';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable =>
+      'ขณะนี้เวอร์ชันเว็บยังไม่รองรับการเติมเงิน โปรดใช้แอป Lovey Time เพื่อซื้อ Flowers หรือสมัครสมาชิก';
+
+  @override
+  String get chatAiThinkingTimeout =>
+      'ดูเหมือนว่าเขากำลังครุ่นคิดอยู่ กรุณาลองใหม่อีกครั้งในภายหลัง……';
+
+  @override
+  String get chatAiResponseBlocked =>
+      'ดูเหมือนความคิดของเขาจะถูกรบกวนเล็กน้อย ลองพูดใหม่ด้วยถ้อยคำที่อ่อนโยนขึ้นนะ';
+
+  @override
+  String get chatRecordingStartFailed =>
+      'ไม่สามารถเริ่มบันทึกเสียงได้ กรุณาลองใหม่อีกครั้งภายหลัง';
+
+  @override
+  String get chatRecordingPlaybackFailed =>
+      'เล่นเสียงบันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้งภายหลัง';
+
+  @override
+  String get chatRoomNotReady =>
+      'ห้องแชตยังไม่พร้อม กรุณาลองใหม่อีกครั้งภายหลัง';
+
+  @override
+  String get chatRegenerateLimitReached =>
+      'ใช้จำนวนครั้งการสร้างใหม่ของวันนี้ครบแล้ว';
+
+  @override
+  String get chatTypingIndicator => 'อีกฝ่ายกำลังพิมพ์……';
+
+  @override
+  String get chatRegenerateCountSyncFailed =>
+      'สร้างใหม่สำเร็จ แต่ไม่สามารถซิงค์จำนวนครั้งได้ กรุณารีเฟรชอีกครั้งในภายหลัง';
+
+  @override
+  String get chatRoomNotFound => 'ไม่พบห้องแชตของตัวละครนี้';
+
+  @override
+  String get momentsSearchTooltip => 'ค้นหาในกำแพงโมเมนต์';
+
+  @override
+  String get momentsCreatorNotFound => 'ไม่พบข้อมูลของครีเอเตอร์คนนี้';
+
+  @override
+  String get momentCommentLoadFailed =>
+      'โหลดความคิดเห็นไม่สำเร็จ กรุณาลองใหม่อีกครั้งภายหลัง';
+
+  @override
+  String get momentCollapseReplies => 'ซ่อนการตอบกลับ';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return 'ดูการตอบกลับอื่นอีก $count รายการ';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => 'เปลี่ยนตัวตนสำหรับแสดงความคิดเห็น';
+
+  @override
+  String get momentSendCommentTooltip => 'ส่งความคิดเห็น';
+
+  @override
+  String get momentShareCharactersLoadFailed =>
+      'โหลดตัวละครที่เคยแชตไม่สำเร็จ กรุณาลองใหม่อีกครั้งภายหลัง';
+
+  @override
+  String get momentReportLoginRequired => 'กรุณาเข้าสู่ระบบก่อนรายงานโพสต์นี้';
+
+  @override
+  String get momentReportSubmitted => 'ส่งรายงานแล้ว เราจะดำเนินการตรวจสอบ';
+
+  @override
+  String get momentSelectShareCharacter =>
+      'เลือกตัวละครที่คุณเคยแชตด้วยเพื่อแชร์โพสต์นี้';
+
+  @override
+  String get momentTagCharacterUnavailable =>
+      'แท็กนี้ไม่ได้เชื่อมโยงกับโปรไฟล์ตัวละคร';
+
+  @override
+  String get momentCharacterNotFound => 'ไม่พบข้อมูลตัวละคร';
 }

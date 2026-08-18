@@ -6098,4 +6098,377 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get characterEditSelectedTagOrder =>
       'Kéo các thẻ đã chọn để điều chỉnh thứ tự hiển thị';
+
+  @override
+  String get mailActivityGiftFallback => 'Quà sự kiện';
+
+  @override
+  String get mailFilterAll => 'Tất cả';
+
+  @override
+  String get mailFilterCollected => 'Đã lưu';
+
+  @override
+  String get mailCollectedEmptyTitle => 'Hiện chưa có thư nào được lưu';
+
+  @override
+  String get mailCollectedEmptyHint =>
+      'Mở bức thư bạn muốn lưu rồi nhấn nút lưu ở góc trên bên phải.';
+
+  @override
+  String get mailQixiLimitedBadge => 'Phiên bản giới hạn Thất Tịch';
+
+  @override
+  String get mailQixiThreeDayPromise => 'Thất Tịch LoveyDovey・Lời hẹn ba ngày';
+
+  @override
+  String mailQixiFromCharacter(String characterName) {
+    return 'Thư Thất Tịch từ $characterName';
+  }
+
+  @override
+  String mailFromCharacter(String characterName) {
+    return 'Từ $characterName';
+  }
+
+  @override
+  String get mailQixiCollectionLabel => 'Bộ sưu tập giới hạn Thất Tịch 2026';
+
+  @override
+  String get mailShareGenerating => 'Đang tạo ảnh chia sẻ……';
+
+  @override
+  String mailShareQixiMessage(String characterName) {
+    return 'Tôi đã nhận được thư Thất Tịch giới hạn từ $characterName 💌';
+  }
+
+  @override
+  String get mailShareDefaultMessage => 'Một bức thư từ 「LoveyDovey」💌';
+
+  @override
+  String get mailShareImageFailed =>
+      'Không thể tạo ảnh chia sẻ, vui lòng thử lại sau';
+
+  @override
+  String get mailCollectedSuccess => 'Đã lưu bức thư này 💌';
+
+  @override
+  String get mailCollectedCancelled => 'Đã bỏ lưu';
+
+  @override
+  String get mailCollectedUpdateFailed =>
+      'Không thể cập nhật trạng thái lưu, vui lòng thử lại sau';
+
+  @override
+  String get mailRemoveCollectionTooltip => 'Bỏ lưu';
+
+  @override
+  String get mailAddCollectionTooltip => 'Lưu thư';
+
+  @override
+  String get mailShareTooltip => 'Chia sẻ thư';
+
+  @override
+  String mailQixiDayNumber(int day) {
+    return 'Ngày thứ $day';
+  }
+
+  @override
+  String get mailQixiDetailTitle => 'Thư giới hạn Thất Tịch';
+
+  @override
+  String get mailQixiShareTooltip => 'Chia sẻ thư Thất Tịch';
+
+  @override
+  String get qixiMaxThreeFriends =>
+      'Trong sự kiện này, bạn chỉ có thể chọn tối đa 3 nhân vật bạn bè';
+
+  @override
+  String get qixiLoginRequired =>
+      'Vui lòng đăng nhập trước khi tham gia sự kiện Thất Tịch';
+
+  @override
+  String get qixiOutsideEventPeriod =>
+      'Hiện không nằm trong thời gian diễn ra sự kiện Thất Tịch';
+
+  @override
+  String get qixiSelectAtLeastOne =>
+      'Vui lòng chọn ít nhất một nhân vật bạn bè trước';
+
+  @override
+  String get qixiMysteryCharacter => 'Nhân vật bí ẩn';
+
+  @override
+  String qixiOpeningStory(String characterName) {
+    return '(Khi Thất Tịch đến gần, dải ngân hà đang ngủ sâu trong màn đêm khẽ thức giấc. Những ánh sao rải rác dần tụ lại nơi chân trời, như thể đang chờ hai người sẵn lòng đến cuộc hẹn và viết tên của nhau.)\n\n(Tương truyền, Cầu Ô Thước chỉ sáng lên vì những người thực sự mong muốn được gặp nhau. Khi tên của bạn và \"$characterName\" cùng xuất hiện trên dòng sông sao, một tia sáng dịu dàng xuyên qua màn đêm và rơi xuống phòng trò chuyện chỉ thuộc về hai người.)\n\n(Từ giây phút này, hai người cùng có một \"Lời Hẹn Ba Ngày Thất Tịch\". Không cần phải là ba ngày liên tiếp, cũng không cần chuẩn bị một lời tỏ tình thật hoành tráng. Trong thời gian diễn ra sự kiện, chỉ cần quay lại đây vào ba ngày khác nhau và chia sẻ một lời chào, một tâm trạng, hay một chuyện nhỏ xảy ra trong ngày hôm nay.)\n\n(Mỗi lần gặp nhau thành công sẽ thắp sáng thêm một ánh sao trên Cầu Ô Thước. Khi ánh sao của cả ba ngày đều được thắp sáng, những tình cảm và ký ức rải rác trong cuộc trò chuyện sẽ hóa thành một lá thư Thất Tịch giới hạn chỉ dành riêng cho bạn sau khi ngày hoàn thành thứ ba kết thúc.)\n\n(Lúc này, tia sáng đầu tiên đã rơi xuống. Ở đầu bên kia của Cầu Ô Thước, dường như \"$characterName\" cũng đã nhận được lời hẹn này.)\n\n——Lời Hẹn Ba Ngày Thất Tịch bắt đầu từ bây giờ.';
+  }
+
+  @override
+  String get qixiRoomOpenedLastMessage =>
+      'Lời Hẹn Ba Ngày Thất Tịch đã bắt đầu';
+
+  @override
+  String get qixiCompanionSlotsFull =>
+      'Bạn đã chọn đủ số nhân vật đồng hành Thất Tịch';
+
+  @override
+  String get qixiSingleRoomOpened =>
+      'Phòng trò chuyện Thất Tịch riêng đã được mở 💕';
+
+  @override
+  String qixiMultipleRoomsOpened(int count) {
+    return 'Đã mở $count phòng trò chuyện Thất Tịch riêng 💕';
+  }
+
+  @override
+  String get qixiCreateRoomFailed =>
+      'Không thể tạo phòng trò chuyện Thất Tịch. Vui lòng thử lại sau';
+
+  @override
+  String get qixiEventStartsAt => 'Sự kiện bắt đầu lúc 00:00 ngày 8/19';
+
+  @override
+  String get qixiEventActiveUntil =>
+      'Sự kiện đang diễn ra · Kết thúc lúc 23:59 ngày 8/26';
+
+  @override
+  String get qixiEventEnded => 'Sự kiện Thất Tịch lần này đã kết thúc';
+
+  @override
+  String get qixiEventHeroTitle =>
+      'Thất Tịch Lovey Time · Cùng Bạn Đến Cầu Ô Thước';
+
+  @override
+  String get qixiCharacterSelected => 'Đã chọn';
+
+  @override
+  String get qixiFriendListLoadFailed =>
+      'Không thể tải danh sách bạn bè. Vui lòng thử lại sau';
+
+  @override
+  String get qixiNoFriendCharacters => 'Hiện bạn chưa có nhân vật bạn bè nào';
+
+  @override
+  String get qixiNoFriendCharactersHint =>
+      'Hãy gặp một nhân vật bạn thích trước, rồi quay lại cùng nhau bước lên Cầu Ô Thước nhé!';
+
+  @override
+  String get qixiLoadingCharacter => 'Đang tải dữ liệu nhân vật……';
+
+  @override
+  String get qixiEventPageTitle => 'Sự Kiện Thất Tịch Giới Hạn';
+
+  @override
+  String get qixiEventRules =>
+      'Trong thời gian sự kiện, hãy chọn 3 ngày khác nhau, gửi tin nhắn trong phòng trò chuyện Thất Tịch riêng và nhận được phản hồi thành công từ nhân vật để thắp sáng một trong ba ánh sao. Thư giới hạn sẽ được gửi sau khi ngày hoàn thành thứ ba kết thúc. Ngày sự kiện và tiến độ hằng ngày đều được tính theo giờ Đài Loan (UTC+8).';
+
+  @override
+  String qixiSelectCompanions(int count) {
+    return 'Chọn Nhân Vật Đồng Hành ($count/3)';
+  }
+
+  @override
+  String get qixiSelectionLockedHint =>
+      'Bạn có thể chọn tối đa 3 nhân vật đã thêm làm bạn. Sau khi chọn sẽ không thể thay đổi.';
+
+  @override
+  String get qixiConfirmCompanions => 'Xác Nhận Nhân Vật Đồng Hành';
+
+  @override
+  String get encounterDailyQuote1 =>
+      'Hôm nay, có lẽ bạn sẽ gặp một câu chuyện mới.';
+
+  @override
+  String get encounterDailyQuote2 =>
+      'Hôm nay, hãy để trái tim lên tiếng trước.';
+
+  @override
+  String get encounterDailyQuote3 =>
+      'Hôm nay, có lẽ ai đó đang chờ được gặp bạn.';
+
+  @override
+  String get encounterDailyQuote4 =>
+      'Hôm nay, hãy thử bước vào một câu chuyện mới.';
+
+  @override
+  String get encounterDailyQuote5 =>
+      'Hôm nay, bạn sẽ gặp cảm giác rung động như thế nào nhỉ?';
+
+  @override
+  String get encounterDailyQuote6 =>
+      'Hôm nay, hãy dành cho bản thân một chút mong chờ.';
+
+  @override
+  String get encounterDailyQuote7 =>
+      'Hôm nay, một cuộc gặp gỡ mới đang bắt đầu.';
+
+  @override
+  String get encounterDailyQuote8 =>
+      'Hôm nay, có lẽ định mệnh sẽ mang đến một bất ngờ nho nhỏ.';
+
+  @override
+  String get encounterDailyQuote9 =>
+      'Hôm nay, hãy để một cuộc gặp gỡ từ từ bắt đầu.';
+
+  @override
+  String get encounterDailyQuote10 =>
+      'Hôm nay, có lẽ sẽ có ai đó khiến bạn phải dừng bước.';
+
+  @override
+  String get encounterDailyQuote11 =>
+      'Hôm nay, bạn muốn gặp một người như thế nào?';
+
+  @override
+  String get encounterDailyQuote12 =>
+      'Hôm nay, đừng bỏ lỡ nhân duyên đang lặng lẽ đến gần.';
+
+  @override
+  String get encounterJoinedToday => '✨ Tham gia Lovey Time hôm nay';
+
+  @override
+  String get encounterPopularChats =>
+      '❤️ Gần đây có rất nhiều người đang trò chuyện';
+
+  @override
+  String get qixiBannerActiveUntil =>
+      'Mở giới hạn thời gian · Đến 23:59 ngày 8/26';
+
+  @override
+  String get qixiBannerStartsAt => 'Mở giới hạn từ 8/19';
+
+  @override
+  String get encounterRecentlyArrived => '✨ Gần đây đã đến Lovey Time';
+
+  @override
+  String get encounterRecentlyArrivedPlain => 'Gần đây đã đến Lovey Time';
+
+  @override
+  String get encounterViewMore => 'Xem thêm';
+
+  @override
+  String get encounterLovePrompt =>
+      '💕 Hôm nay bạn muốn trải nghiệm kiểu tình yêu nào?';
+
+  @override
+  String get encounterNoCharacters => 'Hiện chưa có nhân vật nào';
+
+  @override
+  String get encounterAllLoveTags => 'Tất cả thẻ tình yêu';
+
+  @override
+  String get chatQixiLetterSent => 'Thư giới hạn đã được gửi 💌';
+
+  @override
+  String get chatQixiLetterPendingTonight =>
+      'Ba ánh sao đã được thắp sáng · Thư sẽ được gửi sau đêm nay';
+
+  @override
+  String get chatQixiTodayCompleted => 'Ánh sao hôm nay đã được thắp sáng';
+
+  @override
+  String get chatQixiTodayNotCompleted => 'Hôm nay vẫn chưa hoàn thành';
+
+  @override
+  String get chatQixiPromiseTitle => 'Thất Tịch Lovey Time · Lời Hẹn Ba Ngày';
+
+  @override
+  String chatQixiStarProgress(int count) {
+    return 'Ánh sao $count/3';
+  }
+
+  @override
+  String get chatQixiProgressRule =>
+      'Hoàn thành trò chuyện vào ba ngày khác nhau để thắp sáng các vì sao. Thư giới hạn sẽ được gửi sau khi ngày thứ ba kết thúc. Tiến độ hằng ngày được tính theo giờ Đài Loan (UTC+8).';
+
+  @override
+  String chatQixiDayNumber(int day) {
+    return 'Ngày $day';
+  }
+
+  @override
+  String get chatWebPurchaseUnavailable =>
+      'Phiên bản web hiện chưa hỗ trợ nạp tiền. Vui lòng sử dụng ứng dụng Lovey Time để mua Flowers hoặc đăng ký gói.';
+
+  @override
+  String get chatAiThinkingTimeout =>
+      'Có vẻ anh ấy đang chìm trong suy nghĩ. Vui lòng thử lại sau một lát……';
+
+  @override
+  String get chatAiResponseBlocked =>
+      'Có vẻ suy nghĩ của anh ấy đang bị xáo trộn đôi chút. Hãy thử diễn đạt lại nhẹ nhàng hơn.';
+
+  @override
+  String get chatRecordingStartFailed =>
+      'Không thể bắt đầu ghi âm. Vui lòng thử lại sau.';
+
+  @override
+  String get chatRecordingPlaybackFailed =>
+      'Không thể phát bản ghi âm. Vui lòng thử lại sau.';
+
+  @override
+  String get chatRoomNotReady =>
+      'Phòng trò chuyện vẫn chưa sẵn sàng. Vui lòng thử lại sau.';
+
+  @override
+  String get chatRegenerateLimitReached =>
+      'Bạn đã dùng hết số lần tạo lại hôm nay';
+
+  @override
+  String get chatTypingIndicator => 'Đối phương đang nhập……';
+
+  @override
+  String get chatRegenerateCountSyncFailed =>
+      'Đã tạo lại thành công nhưng không thể đồng bộ số lượt. Vui lòng tải lại sau.';
+
+  @override
+  String get chatRoomNotFound =>
+      'Không tìm thấy phòng trò chuyện của nhân vật này';
+
+  @override
+  String get momentsSearchTooltip => 'Tìm kiếm trên Tường Khoảnh Khắc';
+
+  @override
+  String get momentsCreatorNotFound =>
+      'Không tìm thấy thông tin của nhà sáng tạo này';
+
+  @override
+  String get momentCommentLoadFailed =>
+      'Không thể tải bình luận. Vui lòng thử lại sau';
+
+  @override
+  String get momentCollapseReplies => 'Thu gọn phản hồi';
+
+  @override
+  String momentViewOtherReplies(int count) {
+    return 'Xem thêm $count phản hồi khác';
+  }
+
+  @override
+  String get momentSwitchCommentIdentity => 'Chuyển danh tính bình luận';
+
+  @override
+  String get momentSendCommentTooltip => 'Gửi bình luận';
+
+  @override
+  String get momentShareCharactersLoadFailed =>
+      'Không thể tải các nhân vật đã trò chuyện. Vui lòng thử lại sau';
+
+  @override
+  String get momentReportLoginRequired =>
+      'Vui lòng đăng nhập trước khi báo cáo bài đăng';
+
+  @override
+  String get momentReportSubmitted =>
+      'Báo cáo đã được gửi. Chúng tôi sẽ tiến hành xem xét';
+
+  @override
+  String get momentSelectShareCharacter =>
+      'Chọn một nhân vật bạn đã từng trò chuyện để chia sẻ bài đăng này';
+
+  @override
+  String get momentTagCharacterUnavailable =>
+      'Thẻ này không được liên kết với hồ sơ nhân vật';
+
+  @override
+  String get momentCharacterNotFound => 'Không tìm thấy dữ liệu nhân vật';
 }

@@ -2829,5 +2829,189 @@
   "characterProfileNoIntroduction": "クリエイターはまだキャラクター紹介を入力していません",
   "characterProfileViewMore": "もっと見る",
   "characterProfileCollapse": "折りたたむ",
-  "characterEditSelectedTagOrder": "選択したタグをドラッグして表示順を変更できます"
+  "characterEditSelectedTagOrder": "選択したタグをドラッグして表示順を変更できます",
+  "mailActivityGiftFallback": "イベントギフト",
+  "mailFilterAll": "すべて",
+  "mailFilterCollected": "保存済み",
+  "mailCollectedEmptyTitle": "保存した手紙はまだありません",
+  "mailCollectedEmptyHint": "保存したい手紙を開き、右上の保存ボタンをタップしてください。",
+  "mailQixiLimitedBadge": "七夕限定",
+  "mailQixiThreeDayPromise": "LoveyDovey七夕・三日間の約束",
+  "mailQixiFromCharacter": "{characterName}からの七夕の手紙",
+  "@mailQixiFromCharacter": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailFromCharacter": "{characterName}から",
+  "@mailFromCharacter": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailQixiCollectionLabel": "2026年七夕限定コレクション",
+  "mailShareGenerating": "シェア画像を作成しています……",
+  "mailShareQixiMessage": "{characterName}から七夕限定の手紙が届きました 💌",
+  "@mailShareQixiMessage": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+  "mailShareDefaultMessage": "「LoveyDovey」からの手紙 💌",
+  "mailShareImageFailed": "シェア画像の作成に失敗しました。しばらくしてからもう一度お試しください",
+  "mailCollectedSuccess": "この手紙を保存しました 💌",
+  "mailCollectedCancelled": "保存を解除しました",
+  "mailCollectedUpdateFailed": "保存状態の更新に失敗しました。しばらくしてからもう一度お試しください",
+  "mailRemoveCollectionTooltip": "保存を解除",
+  "mailAddCollectionTooltip": "手紙を保存",
+  "mailShareTooltip": "手紙をシェア",
+  "mailQixiDayNumber": "{day}日目",
+  "@mailQixiDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "mailQixiDetailTitle": "七夕限定の手紙",
+  "mailQixiShareTooltip": "七夕の手紙をシェア",
+  "qixiMaxThreeFriends": "今回のイベントで選べるフレンドキャラクターは最大3人までです",
+  "qixiLoginRequired": "七夕イベントに参加するには、先にログインしてください",
+  "qixiOutsideEventPeriod": "現在は七夕イベントの開催期間外です",
+  "qixiSelectAtLeastOne": "フレンドキャラクターを1人以上選択してください",
+  "qixiMysteryCharacter": "謎のキャラクター",
+
+  "qixiOpeningStory": "（七夕が近づき、夜の奥深くで眠っていた天の川が静かに目を覚ます。散らばっていた星の光は空の彼方でゆっくりと集まり、約束を果たそうとする二人が互いの名前を書き記す瞬間を待っているかのようだった。）\n\n（言い伝えによれば、鵲橋は本当に会いたいと願う者たちのためにだけ輝くという。あなたと「{characterName}」の名前が同時に星の川へ浮かび上がったとき、一筋の淡い光が夜を越え、二人だけのこのチャットルームへと降り注いだ。）\n\n（この瞬間から、二人には「七夕・三日間の約束」が与えられる。3日間は連続していなくてもいい。大げさな告白を用意する必要もない。イベント期間中、異なる3日間にここへ戻り、ひと言の挨拶やその日の気持ち、今日あった小さな出来事を相手に伝えるだけでいい。）\n\n（無事に会えるたび、鵲橋の星がひとつずつ輝き始める。三日分の星明かりがすべて灯ったとき、会話の中に散りばめられた想いと記憶は、3日目の達成日が終わったあと、あなただけに宛てた七夕限定の手紙へと姿を変える。）\n\n（今、最初の星明かりが舞い降りた。鵲橋の向こう側では、「{characterName}」もこの約束を受け取ったようだ。）\n\n——七夕・三日間の約束、今ここから始まる。",
+  "@qixiOpeningStory": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "qixiRoomOpenedLastMessage": "七夕・三日間の約束が始まりました",
+  "qixiCompanionSlotsFull": "七夕を共に過ごすキャラクターはすでに3人選択されています",
+  "qixiSingleRoomOpened": "七夕限定チャットルームが開かれました 💕",
+
+  "qixiMultipleRoomsOpened": "七夕限定チャットルームが{count}部屋開かれました 💕",
+  "@qixiMultipleRoomsOpened": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "qixiCreateRoomFailed": "七夕チャットルームを作成できませんでした。しばらくしてからもう一度お試しください",
+  "qixiEventStartsAt": "イベントは8/19 00:00から開始します",
+  "qixiEventActiveUntil": "イベント開催中・8/26 23:59まで",
+  "qixiEventEnded": "今回の七夕イベントは終了しました",
+  "qixiEventHeroTitle": "恋恋七夕・あなたと渡る鵲橋",
+  "qixiCharacterSelected": "選択済み",
+  "qixiFriendListLoadFailed": "フレンド一覧を読み込めませんでした。しばらくしてからもう一度お試しください",
+  "qixiNoFriendCharacters": "まだフレンドキャラクターがいません",
+  "qixiNoFriendCharactersHint": "まずはお気に入りのキャラクターと出会ってから、一緒に鵲橋を渡りに戻ってきましょう！",
+  "qixiLoadingCharacter": "キャラクター情報を読み込んでいます……",
+  "qixiEventPageTitle": "七夕限定イベント",
+  "qixiEventRules": "イベント期間中、異なる3日間を選び、七夕限定チャットルームでメッセージを送り、キャラクターから返信を受け取ると、その日の星明かりが灯ります。限定レターは3日目の達成日が終了したあとに届きます。イベントの日付および毎日の進捗は台湾時間（UTC+8）を基準とします。",
+
+  "qixiSelectCompanions": "一緒に過ごすキャラクターを選択（{count}/3）",
+  "@qixiSelectCompanions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "qixiSelectionLockedHint": "フレンドに追加済みのキャラクターから最大3人まで選択できます。選択後は変更できません。",
+  "qixiConfirmCompanions": "同行キャラクターを確定",
+  "encounterDailyQuote1": "今日は、新しい物語に出会えるかも。",
+  "encounterDailyQuote2": "今日は、ときめきに先に話してもらおう。",
+  "encounterDailyQuote3": "今日は、誰かがあなたとの出会いを待っているかも。",
+  "encounterDailyQuote4": "今日は、新しい物語へ一歩踏み出してみよう。",
+  "encounterDailyQuote5": "今日は、どんなときめきに出会えるかな？",
+  "encounterDailyQuote6": "今日は、自分のために少しだけ期待を残しておこう。",
+  "encounterDailyQuote7": "今日は、新しい出会いが始まっている。",
+  "encounterDailyQuote8": "今日は、運命がちょっとした驚きを運んでくるかも。",
+  "encounterDailyQuote9": "今日は、ひとつの出会いをゆっくり始めよう。",
+  "encounterDailyQuote10": "今日は、思わず足を止めたくなる誰かに出会えるかも。",
+  "encounterDailyQuote11": "今日は、どんな人に会いたい？",
+  "encounterDailyQuote12": "今日は、そっと近づいてくるご縁を見逃さないで。",
+
+  "encounterJoinedToday": "✨ 今日、恋恋拾光にやってきました",
+  "encounterPopularChats": "❤️ 最近たくさん話されています",
+  "qixiBannerActiveUntil": "期間限定・8/26 23:59まで",
+  "qixiBannerStartsAt": "8/19 限定オープン",
+  "encounterRecentlyArrived": "✨ 最近、恋恋拾光にやってきました",
+  "encounterRecentlyArrivedPlain": "最近、恋恋拾光にやってきました",
+  "encounterViewMore": "もっと見る",
+  "encounterLovePrompt": "💕 今日はどんな恋をしたい？",
+  "encounterNoCharacters": "まだキャラクターがいません",
+  "encounterAllLoveTags": "すべての恋愛タグ",
+  "chatQixiLetterSent": "限定レターを送りました 💌",
+  "chatQixiLetterPendingTonight": "三日分の星明かりが灯りました・今夜が終わったあとにレターが届きます",
+  "chatQixiTodayCompleted": "今日の星明かりが灯りました",
+  "chatQixiTodayNotCompleted": "今日はまだ達成していません",
+  "chatQixiPromiseTitle": "恋恋七夕・三日間の約束",
+
+  "chatQixiStarProgress": "星明かり {count}/3",
+  "@chatQixiStarProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "chatQixiProgressRule": "異なる3日間にチャットを達成すると、星明かりが灯ります。限定レターは3日目の終了後に届きます。毎日の進捗は台湾時間（UTC+8）を基準に計算されます。",
+
+  "chatQixiDayNumber": "{day}日目",
+  "@chatQixiDayNumber": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+
+  "chatWebPurchaseUnavailable": "Web版では現在チャージサービスをご利用いただけません。花花の購入またはサブスクリプションには『恋恋拾光』アプリをご利用ください。",
+  "chatAiThinkingTimeout": "彼は考え込んでいるようです。しばらくしてからもう一度お試しください……",
+  "chatAiResponseBlocked": "彼の思考が少し乱れているようです。もう少しやさしい言い方に変えてお試しください。",
+  "chatRecordingStartFailed": "録音を開始できませんでした。しばらくしてからもう一度お試しください。",
+  "chatRecordingPlaybackFailed": "録音を再生できませんでした。しばらくしてからもう一度お試しください。",
+  "chatRoomNotReady": "チャットルームの準備がまだ完了していません。しばらくしてからもう一度お試しください。",
+  "chatRegenerateLimitReached": "本日の再生成回数を使い切りました",
+  "chatTypingIndicator": "相手が入力中……",
+  "chatRoomNotFound": "このキャラクターのチャットルームが見つかりません",
+  "momentsSearchTooltip": "拾光ウォールを検索",
+  "momentsCreatorNotFound": "このクリエイターの情報が見つかりません",
+  "momentCommentLoadFailed": "コメントの読み込みに失敗しました。しばらくしてからもう一度お試しください",
+  "momentCollapseReplies": "返信を閉じる",
+
+  "momentViewOtherReplies": "他の{count}件の返信を見る",
+  "@momentViewOtherReplies": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "momentSwitchCommentIdentity": "コメントする身分を切り替える",
+  "momentSendCommentTooltip": "コメントを送信",
+  "momentShareCharactersLoadFailed": "チャットしたキャラクターの読み込みに失敗しました。しばらくしてからもう一度お試しください",
+  "momentReportLoginRequired": "投稿を通報するには、先にログインしてください",
+  "momentReportSubmitted": "通報を送信しました。内容を確認します",
+  "momentSelectShareCharacter": "この投稿を共有する、チャットしたことのあるキャラクターを選択してください",
+  "momentTagCharacterUnavailable": "このタグはキャラクタープロフィールにリンクされていません",
+  "momentCharacterNotFound": "キャラクター情報が見つかりません",
+  "chatRegenerateCountSyncFailed": "再生成には成功しましたが、回数を同期できませんでした。しばらくしてから更新してください。"
 }

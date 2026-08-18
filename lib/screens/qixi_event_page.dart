@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import '../services/app_constants.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
@@ -221,7 +222,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
     if (!_isEventActive || _savedCharacterIds.contains(characterId)) {
       return;
     }
-
+    final l10n = AppLocalizations.of(context)!;
     if (_pendingCharacterIds.contains(characterId)) {
       setState(() {
         _pendingCharacterIds.remove(characterId);
@@ -231,7 +232,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
     if (_selectedCount >= 3) {
       _showPageToast(
-        '本次活動最多只能選擇 3 位好友角色',
+        l10n.qixiMaxThreeFriends,
         isError: true,
       );
       return;
@@ -244,10 +245,11 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
   Future<void> _confirmSelection() async {
     final userId = _userId;
+    final l10n = AppLocalizations.of(context)!;
 
     if (userId == null) {
       _showPageToast(
-        '請先登入後再參加活動',
+        l10n.qixiLoginRequired,
         isError: true,
       );
       return;
@@ -255,7 +257,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
     if (!_isEventActive) {
       _showPageToast(
-        '目前不在七夕活動期間',
+        l10n.qixiOutsideEventPeriod,
         isError: true,
       );
       return;
@@ -263,7 +265,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
     if (_pendingCharacterIds.isEmpty) {
       _showPageToast(
-        '請先選擇至少一位好友角色',
+        l10n.qixiSelectAtLeastOne,
         isError: true,
       );
       return;
@@ -374,26 +376,15 @@ class _QixiEventPageState extends State<QixiEventPage> {
               characterDataMap[characterId] ?? <String, dynamic>{};
 
           final characterName =
-              (characterData['name'] as String?)?.trim() ?? '神秘角色';
+              (characterData['name'] as String?)?.trim() ?? l10n.qixiMysteryCharacter;
 
           final characterAvatarPath =
               (characterData['avatarPath'] as String?)?.trim() ?? '';
 
           final globalAffection = globalAffectionMap[characterId] ?? 0;
 
-          final openingStory = '''
-（七夕將近，沉睡在夜色深處的星河悄然甦醒。散落的星光沿著天際緩緩匯聚，像是在等待兩個願意赴約的人，寫下彼此的名字。）
-
-（傳說，鵲橋只會為真正想要相見的人亮起。當你與「$characterName」的名字同時出現在星河之上，一道微光穿過夜幕，落進這間只屬於你們的聊天室。）
-
-（從此刻起，你們擁有了一場「七夕三日之約」。不必連續，也不必刻意準備盛大的告白；只要在活動期間，選擇三個不同的日子回到這裡，與對方分享一句問候、一段心情，或一件今天發生的小事。）
-
-（每一次成功相遇，都會讓鵲橋上的一點星光亮起。當三日星光全部點亮，這些散落在對話裡的心意與回憶，將在第三個完成日結束後，化為一封只寫給你的七夕限定信件。）
-
-（此刻，第一縷星光已經落下。鵲橋的另一端，「$characterName」似乎也收到了這場約定。）
-
-——七夕三日之約，現在開始。
-''';
+          final openingStory =
+          l10n.qixiOpeningStory(characterName);
 
           final openingStoryRef =
               roomRef.collection('messages').doc('qixi_opening_story');
@@ -410,7 +401,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
               'chatMode': 'daily',
               'friendshipScore': globalAffection,
               'createdAt': FieldValue.serverTimestamp(),
-              'lastMessage': '七夕三日之約已開啟',
+              'lastMessage': l10n.qixiRoomOpenedLastMessage,
               'lastActivity': FieldValue.serverTimestamp(),
               'unreadCount': 0,
 
@@ -446,7 +437,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
       if (acceptedIds.isEmpty) {
         _showPageToast(
-          '七夕同行名額已經選滿了',
+          l10n.qixiCompanionSlotsFull,
           isError: true,
         );
         return;
@@ -459,8 +450,8 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
       _showPageToast(
         acceptedIds.length == 1
-            ? '七夕專屬聊天室已開啟 💕'
-            : '${acceptedIds.length} 間七夕專屬聊天室已開啟 💕',
+            ? l10n.qixiSingleRoomOpened
+            : l10n.qixiMultipleRoomsOpened(acceptedIds.length),
         icon: Icons.favorite_rounded,
       );
     } catch (error, stackTrace) {
@@ -470,7 +461,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
       if (!mounted) return;
 
       _showPageToast(
-        '建立七夕聊天室失敗，請稍後再試',
+        l10n.qixiCreateRoomFailed,
         isError: true,
       );
     } finally {
@@ -513,15 +504,16 @@ class _QixiEventPageState extends State<QixiEventPage> {
   Widget _buildStatusCard(ThemeData theme) {
     String statusText;
     IconData statusIcon;
+    final l10n = AppLocalizations.of(context)!;
 
     if (_isBeforeEvent) {
-      statusText = '活動將於 8/19 00:00 開始';
+      statusText = l10n.qixiEventStartsAt;
       statusIcon = Icons.schedule_rounded;
     } else if (_isEventActive) {
-      statusText = '活動進行中・8/26 23:59 截止';
+      statusText = l10n.qixiEventActiveUntil;
       statusIcon = Icons.auto_awesome_rounded;
     } else {
-      statusText = '本次七夕活動已結束';
+      statusText = l10n.qixiEventEnded;
       statusIcon = Icons.event_busy_rounded;
     }
 
@@ -550,8 +542,8 @@ class _QixiEventPageState extends State<QixiEventPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '戀戀七夕・與你共赴鵲橋',
+                Text(
+                  l10n.qixiEventHeroTitle,
                   style: TextStyle(
                     color: Color(0xFF6D3F62),
                     fontSize: 17,
@@ -592,6 +584,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
     required String avatarPath,
   }) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final isSaved = _savedCharacterIds.contains(characterId);
     final isPending = _pendingCharacterIds.contains(characterId);
@@ -638,8 +631,8 @@ class _QixiEventPageState extends State<QixiEventPage> {
                 ),
               ),
               if (isSaved)
-                const Chip(
-                  label: Text('已選定'),
+                Chip(
+                  label: Text(l10n.qixiCharacterSelected),
                   visualDensity: VisualDensity.compact,
                 )
               else
@@ -658,12 +651,13 @@ class _QixiEventPageState extends State<QixiEventPage> {
 
   Widget _buildFriendList() {
     final userId = _userId;
+    final l10n = AppLocalizations.of(context)!;
 
     if (userId == null) {
-      return const Center(
+      return  Center(
         child: Padding(
           padding: EdgeInsets.all(32),
-          child: Text('請先登入後再參加七夕活動'),
+          child: Text(l10n.qixiLoginRequired),
         ),
       );
     }
@@ -677,10 +671,10 @@ class _QixiEventPageState extends State<QixiEventPage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Center(
+          return  Center(
             child: Padding(
               padding: EdgeInsets.all(32),
-              child: Text('好友名單讀取失敗，請稍後再試'),
+              child: Text(l10n.qixiFriendListLoadFailed),
             ),
           );
         }
@@ -697,7 +691,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
         final friends = snapshot.data!.docs;
 
         if (friends.isEmpty) {
-          return const Center(
+          return  Center(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 48),
               child: Column(
@@ -709,14 +703,14 @@ class _QixiEventPageState extends State<QixiEventPage> {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    '目前還沒有好友角色',
+                    l10n.qixiNoFriendCharacters,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 6),
-                  Text('先去邂逅喜歡的角色，再回來共赴鵲橋吧！'),
+                  Text(l10n.qixiNoFriendCharactersHint),
                 ],
               ),
             ),
@@ -770,7 +764,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
                         SizedBox(
                           width: 24,
@@ -780,7 +774,7 @@ class _QixiEventPageState extends State<QixiEventPage> {
                           ),
                         ),
                         SizedBox(width: 14),
-                        Text('正在讀取角色資料……'),
+                        Text(l10n.qixiLoadingCharacter),
                       ],
                     ),
                   );
@@ -811,10 +805,11 @@ class _QixiEventPageState extends State<QixiEventPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('七夕限定活動'),
+        title:  Text(l10n.qixiEventPageTitle),
       ),
       body: _isLoadingProgress
           ? const Center(child: CircularProgressIndicator())
@@ -838,8 +833,8 @@ class _QixiEventPageState extends State<QixiEventPage> {
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
-                        '活動期間任選 3 個不同日期，在七夕限定聊天室傳送訊息並成功收到角色回覆，即可點亮三日星光。限定信件將於第三個完成日結束後寄出。活動日期與每日進度均以台灣時間（UTC+8）為準。',
-                        style: TextStyle(
+                          l10n.qixiEventRules,
+                          style: TextStyle(
                           color: theme.colorScheme.onSurface
                               .withValues(alpha: 0.72),
                           fontSize: 12,
@@ -849,14 +844,14 @@ class _QixiEventPageState extends State<QixiEventPage> {
                     ),
                     const SizedBox(height: 22),
                     Text(
-                      '選擇同行角色（$_selectedCount/3）',
+                      l10n.qixiSelectCompanions(_selectedCount),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '最多可選擇 3 位已添加好友的角色；選定後不可更換。',
+                      l10n.qixiSelectionLockedHint,
                       style: TextStyle(
                         color:
                             theme.colorScheme.onSurface.withValues(alpha: 0.65),
@@ -890,8 +885,8 @@ class _QixiEventPageState extends State<QixiEventPage> {
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Text(
-                                  '確認同行角色',
+                              : Text(
+                                  l10n.qixiConfirmCompanions,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

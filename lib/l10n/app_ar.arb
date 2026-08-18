@@ -2870,5 +2870,189 @@
     "characterProfileNoIntroduction": "لم يضف المنشئ نبذة عن الشخصية بعد",
     "characterProfileViewMore": "عرض المزيد",
     "characterProfileCollapse": "عرض أقل",
-    "characterEditSelectedTagOrder": "اسحب الوسوم المحددة لتعديل ترتيب عرضها"
+    "characterEditSelectedTagOrder": "اسحب الوسوم المحددة لتعديل ترتيب عرضها",
+    "mailActivityGiftFallback": "هدية الفعالية",
+    "mailFilterAll": "الكل",
+    "mailFilterCollected": "المحفوظة",
+    "mailCollectedEmptyTitle": "لا توجد رسائل محفوظة حاليًا",
+    "mailCollectedEmptyHint": "افتح الرسالة التي تريد حفظها واضغط على زر الحفظ في الزاوية العلوية اليمنى.",
+    "mailQixiLimitedBadge": "حصري لمهرجان تشيشي",
+    "mailQixiThreeDayPromise": "تشيشي LoveyDovey・وعد الأيام الثلاثة",
+    "mailQixiFromCharacter": "رسالة تشيشي من {characterName}",
+    "@mailQixiFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailFromCharacter": "من {characterName}",
+    "@mailFromCharacter": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailQixiCollectionLabel": "مجموعة تشيشي الحصرية لعام 2026",
+    "mailShareGenerating": "جارٍ إنشاء صورة المشاركة……",
+    "mailShareQixiMessage": "تلقيت رسالة تشيشي حصرية كتبها {characterName} 💌",
+    "@mailShareQixiMessage": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+    "mailShareDefaultMessage": "رسالة من «LoveyDovey» 💌",
+    "mailShareImageFailed": "فشل إنشاء صورة المشاركة، يرجى المحاولة لاحقًا",
+    "mailCollectedSuccess": "تم حفظ هذه الرسالة 💌",
+    "mailCollectedCancelled": "تم إلغاء الحفظ",
+    "mailCollectedUpdateFailed": "فشل تحديث حالة الحفظ، يرجى المحاولة لاحقًا",
+    "mailRemoveCollectionTooltip": "إلغاء الحفظ",
+    "mailAddCollectionTooltip": "حفظ الرسالة",
+    "mailShareTooltip": "مشاركة الرسالة",
+    "mailQixiDayNumber": "اليوم {day}",
+    "@mailQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+    "mailQixiDetailTitle": "رسالة تشيشي الحصرية",
+    "mailQixiShareTooltip": "مشاركة رسالة تشيشي",
+    "qixiMaxThreeFriends": "يمكنك اختيار ما يصل إلى 3 شخصيات من الأصدقاء فقط في هذا الحدث",
+    "qixiLoginRequired": "يرجى تسجيل الدخول أولًا قبل المشاركة في فعالية تشيشي",
+    "qixiOutsideEventPeriod": "فعالية تشيشي غير متاحة حاليًا",
+    "qixiSelectAtLeastOne": "يرجى اختيار شخصية صديق واحدة على الأقل أولًا",
+    "qixiMysteryCharacter": "شخصية غامضة",
+
+    "qixiOpeningStory": "(مع اقتراب تشيشي، تستيقظ درب التبانة التي كانت غارقة في سبات عميق وسط ظلام الليل بهدوء. تتجمع أضواء النجوم المتناثرة ببطء على امتداد الأفق، كما لو كانت تنتظر شخصين مستعدين للوفاء بالموعد وكتابة اسميهما معًا.)\n\n(تقول الأسطورة إن جسر العقعق لا يضيء إلا لمن يرغبون حقًا في لقاء بعضهم البعض. عندما يظهر اسمك واسم \"{characterName}\" معًا فوق نهر النجوم، يخترق شعاع خافت ستار الليل ويهبط في غرفة الدردشة هذه التي تخصكما وحدكما.)\n\n(من هذه اللحظة، أصبح لديكما \"وعد تشيشي لثلاثة أيام\". ليس من الضروري أن تكون الأيام متتالية، ولا حاجة إلى إعداد اعتراف كبير ومبالغ فيه. خلال فترة الفعالية، ما عليكما سوى العودة إلى هنا في ثلاثة أيام مختلفة ومشاركة تحية قصيرة، أو شعور ما، أو شيء صغير حدث اليوم.)\n\n(في كل مرة تلتقيان فيها بنجاح، يضيء نجم جديد على جسر العقعق. وعندما تكتمل أضواء الأيام الثلاثة، ستتحول المشاعر والذكريات المتناثرة في محادثاتكما، بعد انتهاء اليوم الثالث المكتمل، إلى رسالة تشيشي محدودة كُتبت لك وحدك.)\n\n(والآن، هبط أول شعاع من ضوء النجوم. وعلى الطرف الآخر من جسر العقعق، يبدو أن \"{characterName}\" قد تلقى هذا الوعد أيضًا.)\n\n——وعد تشيشي لثلاثة أيام يبدأ الآن.",
+    "@qixiOpeningStory": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "qixiRoomOpenedLastMessage": "بدأ وعد تشيشي لثلاثة أيام",
+    "qixiCompanionSlotsFull": "تم اختيار جميع رفاق تشيشي المتاحين",
+    "qixiSingleRoomOpened": "تم فتح غرفة دردشة تشيشي الخاصة 💕",
+
+    "qixiMultipleRoomsOpened": "تم فتح {count} من غرف دردشة تشيشي الخاصة 💕",
+    "@qixiMultipleRoomsOpened": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiCreateRoomFailed": "تعذر إنشاء غرفة دردشة تشيشي، يرجى المحاولة مرة أخرى لاحقًا",
+    "qixiEventStartsAt": "تبدأ الفعالية في 8/19 الساعة 00:00",
+    "qixiEventActiveUntil": "الفعالية جارية · تنتهي في 8/26 الساعة 23:59",
+    "qixiEventEnded": "انتهت فعالية تشيشي الحالية",
+    "qixiEventHeroTitle": "تشيشي في Lovey Time · لنلتقِ معًا على جسر العقعق",
+    "qixiCharacterSelected": "تم الاختيار",
+    "qixiFriendListLoadFailed": "تعذر تحميل قائمة الأصدقاء، يرجى المحاولة مرة أخرى لاحقًا",
+    "qixiNoFriendCharacters": "ليس لديك أي شخصيات أصدقاء حتى الآن",
+    "qixiNoFriendCharactersHint": "اذهب أولًا للقاء شخصية تعجبك، ثم عد لعبور جسر العقعق معها!",
+    "qixiLoadingCharacter": "جارٍ تحميل بيانات الشخصية……",
+    "qixiEventPageTitle": "فعالية تشيشي محدودة",
+    "qixiEventRules": "خلال فترة الفعالية، اختر 3 أيام مختلفة وأرسل رسالة في غرفة دردشة تشيشي الخاصة، ثم استلم ردًا من الشخصية بنجاح لإضاءة نجمة من نجوم الأيام الثلاثة. سيتم إرسال الرسالة المحدودة بعد انتهاء اليوم الثالث المكتمل. تعتمد تواريخ الفعالية والتقدم اليومي على توقيت تايوان (UTC+8).",
+
+    "qixiSelectCompanions": "اختيار الرفاق ({count}/3)",
+    "@qixiSelectCompanions": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "qixiSelectionLockedHint": "يمكنك اختيار ما يصل إلى 3 شخصيات أضفتها كأصدقاء، ولا يمكن تغييرها بعد الاختيار.",
+    "qixiConfirmCompanions": "تأكيد الرفاق",
+    "encounterDailyQuote1": "اليوم، ربما تلتقي بقصة جديدة.",
+    "encounterDailyQuote2": "اليوم، دع قلبك يتحدث أولًا.",
+    "encounterDailyQuote3": "اليوم، ربما هناك من ينتظر لقاءك.",
+    "encounterDailyQuote4": "اليوم، جرّب أن تخطو إلى قصة جديدة.",
+    "encounterDailyQuote5": "أي خفقة قلب قد تنتظرك اليوم؟",
+    "encounterDailyQuote6": "اليوم، اترك لنفسك قليلًا من الترقب.",
+    "encounterDailyQuote7": "اليوم، لقاء جديد يبدأ بالفعل.",
+    "encounterDailyQuote8": "اليوم، ربما يحمل لك القدر مفاجأة صغيرة.",
+    "encounterDailyQuote9": "اليوم، دع لقاءً جديدًا يبدأ بهدوء.",
+    "encounterDailyQuote10": "اليوم، ربما يظهر شخص يجعلك تتوقف للحظة.",
+    "encounterDailyQuote11": "من تود أن تلتقي اليوم؟",
+    "encounterDailyQuote12": "اليوم، لا تدع فرصة لقاء تقترب منك بهدوء تفوتك.",
+
+    "encounterJoinedToday": "✨ انضموا إلى Lovey Time اليوم",
+    "encounterPopularChats": "❤️ الكثيرون يتحدثون معهم مؤخرًا",
+    "qixiBannerActiveUntil": "لفترة محدودة · حتى 8/26 الساعة 23:59",
+    "qixiBannerStartsAt": "متاح حصريًا ابتداءً من 8/19",
+    "encounterRecentlyArrived": "✨ وصلوا مؤخرًا إلى Lovey Time",
+    "encounterRecentlyArrivedPlain": "وصلوا مؤخرًا إلى Lovey Time",
+    "encounterViewMore": "عرض المزيد",
+    "encounterLovePrompt": "💕 أي نوع من الحب تريد أن تعيشه اليوم؟",
+    "encounterNoCharacters": "لا توجد شخصيات حاليًا",
+    "encounterAllLoveTags": "جميع وسوم الحب",
+    "chatQixiLetterSent": "تم إرسال الرسالة المحدودة 💌",
+    "chatQixiLetterPendingTonight": "اكتملت أضواء الأيام الثلاثة · سيتم إرسال الرسالة بعد انتهاء هذه الليلة",
+    "chatQixiTodayCompleted": "تمت إضاءة نجمة اليوم",
+    "chatQixiTodayNotCompleted": "لم يكتمل تقدم اليوم بعد",
+    "chatQixiPromiseTitle": "تشيشي في Lovey Time · وعد الثلاثة أيام",
+
+    "chatQixiStarProgress": "ضوء النجوم {count}/3",
+    "@chatQixiStarProgress": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatQixiProgressRule": "أكمل الدردشة في أي ثلاثة أيام مختلفة لإضاءة النجوم. سيتم إرسال الرسالة المحدودة بعد انتهاء اليوم الثالث، ويتم احتساب التقدم اليومي وفق توقيت تايوان (UTC+8).",
+
+    "chatQixiDayNumber": "اليوم {day}",
+    "@chatQixiDayNumber": {
+        "placeholders": {
+            "day": {
+                "type": "int"
+            }
+        }
+    },
+
+    "chatWebPurchaseUnavailable": "خدمة الشحن غير متاحة حاليًا على نسخة الويب. يرجى استخدام تطبيق Lovey Time لشراء الزهور أو الاشتراك.",
+    "chatAiThinkingTimeout": "يبدو أنه غارق في التفكير. يرجى المحاولة مرة أخرى بعد قليل……",
+    "chatAiResponseBlocked": "يبدو أن أفكاره قد تشوشت قليلًا. جرّب إعادة صياغة كلامك بطريقة ألطف.",
+    "chatRecordingStartFailed": "تعذر بدء التسجيل. يرجى المحاولة مرة أخرى لاحقًا.",
+    "chatRecordingPlaybackFailed": "تعذر تشغيل التسجيل. يرجى المحاولة مرة أخرى لاحقًا.",
+    "chatRoomNotReady": "غرفة الدردشة ليست جاهزة بعد. يرجى المحاولة مرة أخرى لاحقًا.",
+    "chatRegenerateLimitReached": "لقد استخدمت جميع محاولات إعادة التوليد لليوم",
+    "chatTypingIndicator": "الطرف الآخر يكتب الآن……",
+    "chatRegenerateCountSyncFailed": "تمت إعادة التوليد بنجاح، لكن تعذرت مزامنة عدد المحاولات. يرجى التحديث لاحقًا.",
+    "chatRoomNotFound": "تعذر العثور على غرفة دردشة لهذه الشخصية",
+    "momentsSearchTooltip": "البحث في جدار اللحظات",
+    "momentsCreatorNotFound": "تعذر العثور على بيانات هذا المنشئ",
+    "momentCommentLoadFailed": "فشل تحميل التعليقات، يرجى المحاولة مرة أخرى لاحقًا",
+    "momentCollapseReplies": "طيّ الردود",
+
+    "momentViewOtherReplies": "عرض {count} ردود أخرى",
+    "@momentViewOtherReplies": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "momentSwitchCommentIdentity": "تبديل هوية التعليق",
+    "momentSendCommentTooltip": "إرسال التعليق",
+    "momentShareCharactersLoadFailed": "تعذر تحميل شخصيات الدردشة. يرجى المحاولة مرة أخرى لاحقًا",
+    "momentReportLoginRequired": "يرجى تسجيل الدخول أولًا قبل الإبلاغ عن المنشور",
+    "momentReportSubmitted": "تم إرسال البلاغ، وسنقوم بمراجعته",
+    "momentSelectShareCharacter": "اختر شخصية سبق أن تحدثت معها لمشاركة هذا المنشور",
+    "momentTagCharacterUnavailable": "هذه الإشارة غير مرتبطة بملف شخصية",
+    "momentCharacterNotFound": "تعذر العثور على بيانات الشخصية"
 }
