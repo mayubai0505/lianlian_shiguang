@@ -1143,7 +1143,7 @@ const cancellationRef =
                     cost: 5,
                     modelId: "deepseek/deepseek-v4-pro",
                     fallbackModelId: "deepseek/deepseek-v4-flash",
-                    maxTokens: 1600,
+                    maxTokens: 2400,
                     temperature: 0.6,
                 },
 
@@ -1343,14 +1343,22 @@ const customOutputFormat = String(
     characterProfile.customOutputFormat || ""
 ).trim();
 
-// 一定要先宣告，再由下面的 Directive 使用
+// 只有真的有自訂格式內容，才視為有狀態欄
+const hasCustomStatusBar =
+    customOutputFormat.length >= 3 &&
+    customOutputFormat
+        .replace(/[\s\r\n\-—_=]/g, "")
+        .length >= 2;
+
 const supportsCustomStatusBar =
-    chatMode === "story" ||
-    chatMode === "immersive";
+    hasCustomStatusBar &&
+    (
+        chatMode === "story" ||
+        chatMode === "immersive"
+    );
 
 const customOutputFormatDirective =
-    supportsCustomStatusBar &&
-    customOutputFormat
+    supportsCustomStatusBar
         ? `
 ### 創作者自訂狀態欄｜強制輸出
 
@@ -2137,9 +2145,26 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
         你必須只回傳合法 JSON。
         JSON 中的 \`response\` 欄位第一行必須是：
         時間：${lastStoryTime || "根據情境合理推算"} | 地點：${lastStoryLocation || "根據情境合理推算"}
+        【故事狀態同步｜最高優先】
+
+        - response 第一行的「時間｜地點」代表本輪開始時的故事狀態。
+        - storyTime 與 storyLocation 代表本輪完整劇情結束後的最新狀態。
+        - 若本輪沒有發生明確時間流逝，storyTime 應沿用本輪時間。
+        - 若本輪沒有完成移動，storyLocation 必須沿用目前地點，不得自行更換。
+        - 只有人物在正文中確實完成移動並抵達新地點，storyLocation 才能更新。
+        - 不得為了填寫 storyLocation 而創造正文沒有發生的移動。
+        - storyLocation 必須與正文結束時人物真正所在的位置一致。
+        - 若創作者自訂狀態欄包含地點／所在地／位置／場景，
+          該欄位必須與 storyLocation 表示同一個實際位置，不得互相矛盾。
 
         合法格式：
-        {"response":"完整劇情回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞"}
+        {
+          "response":"完整劇情回覆",
+          "affectionChange":0,
+          "voiceText":"適合語音播放的角色台詞",
+          "storyTime":"本輪結束後的故事時間",
+          "storyLocation":"本輪結束後人物實際所在位置"
+        }
 
         ${langDirective}
         ${npcDirective}
@@ -2229,8 +2254,16 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             12. 【自然描寫】
             動作、環境、感官與心理描寫必須服務於人物或劇情。每次只選擇當下最相關的細節，不必固定描寫視線、喉結、呼吸、指尖、體溫、沉默或肌肉反應。
 
-            13. 【避免重複】
-            生成前參考最近三輪回覆，避免重複相同的開場、完整句型、特色詞彙、比喻、微動作、場景道具、情緒轉折及結尾方式。若同一動作仍在持續，只需簡短承接並推進結果。
+            13. 【避免重複與已完成劇情重演】
+            生成前參考最近三輪回覆，避免重複相同的開場、完整句型、特色詞彙、比喻、微動作、場景道具、情緒轉折及結尾方式。
+
+            上一輪已完成的角色決定、回答、拒絕、承諾、判斷、動作結果與事件結果，均視為已成立的劇情事實。除非玩家明確追問、重新確認、改變條件或事件產生新的變化，下一輪不得換句話再次表達相同意思，也不得重新演出功能相同的情節。
+
+            若玩家最新輸入只有沉默、注視、點頭、「嗯」、簡短回應或沒有新增事件，仍必須從上一輪結束點繼續推進，不得重播上一輪內容。
+
+            若同一動作仍在持續，只需簡短承接目前狀態並推進下一個結果，不得再次完整描寫該動作如何開始、如何進行或再次重述相同理由。
+
+            生成完成前必須檢查：本輪是否只是把上一輪已完成的意思換句話再說？若是，刪除重複部分，改為新的角色反應、資訊、決定、事件、關係變化或自然的劇情推進。
 
             14. 【物理連續性與生活常識】
             生成前確認人物雙手、嘴部狀態、身體姿勢、衣物狀態、人物距離及物件位置。雙手被占用時須先放下物品或騰出一隻手；嘴裡有食物時須先吞下再清楚說話；不得瞬間移動、憑空取得物件或同時完成互相衝突的動作。
@@ -2257,8 +2290,10 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             - 場景、動作、神態、語氣、心理及其他非台詞描寫必須使用全形括號（　）完整包住。
             - 【台詞與敘述分離】使用「」的台詞段落只能包含角色實際說出口的內容。台詞結束後的語氣、動作、神態、心理與旁白必須另起一段並放進全形括號。禁止輸出「台詞。」他說、我的語氣、他看向等未被括號包住的敘述。
             - 台詞與動作描寫交錯呈現，段落之間保留空行。
-            - 每次回覆至少 600 個中文字，建議控制在 600～900 字。
-            - 生成結束前必須確認正文已達至少 600 個中文字；標點符號、時間地點標頭及創作者自訂狀態欄不計入正文長度。未達 600 字時不得提前結束。
+            - 劇情模式正文建議控制在 350～600 個中文字，不必為了篇幅強行延長。
+            - 正文最多以約 600 個中文字為主要目標；完成必要劇情推進後應立即進入狀態欄與 JSON 收尾，不得持續擴寫正文而壓縮狀態欄輸出空間。
+            - 創作者自訂狀態欄、storyTime、storyLocation 與合法 JSON 結尾的完整性，優先級高於正文篇幅。
+            - 若剩餘輸出空間可能不足，必須立即縮短正文並完整輸出狀態欄與 JSON，不得讓回覆停在正文或狀態欄中途。
             - 若主要問題已回答但篇幅仍不足，應繼續推進與本輪相關的角色決定、具體後果、關係變化、新資訊或當下衝突，不得只增加環境、視線、呼吸、沉默、重複解釋或無意義動作。
             - 每輪應包含對玩家最新輸入的直接反應、至少一項有效的新資訊或事件進展，以及一個讓玩家能自然接續的角色行動或未完成衝突；不要將這些內容輸出成清單。
             - 角色台詞仍須符合人設，不得為了篇幅突然變得話多。
@@ -2374,7 +2409,16 @@ ${narrativeRules}
 
             13. 【避免固定套路】角色是否靠近、沉默、害羞、憤怒、安慰或保持距離，必須由人設與當下情境決定，不得套用固定戀愛小說反應。角色的關心應以符合人設的自然台詞與具體行動表達，避免心理諮商、權利宣導、概念定義、人生講座或教科書式安慰。
 
-            14. 【避免重複】生成前參考最近三輪回覆，避免重複相同的特色詞彙、完整句型、比喻、開場、結尾、微動作、感官意象、場景道具與情緒轉折。一般必要詞彙可以自然重複；若同一動作仍在持續，只需簡短承接，不必每輪重新完整描寫。
+            14. 【避免重複與已完成劇情重演】
+            生成前參考最近三輪回覆，避免重複相同的特色詞彙、完整句型、比喻、開場、結尾、微動作、感官意象、場景道具與情緒轉折。一般必要詞彙可以自然重複。
+
+            上一輪已完成的角色決定、回答、拒絕、承諾、判斷、動作結果與事件結果，均視為已成立的劇情事實。除非玩家明確追問、重新確認、改變條件或事件產生新的變化，下一輪不得以不同措辭再次表達相同決定，也不得重新演出功能相同的情節。
+
+            若玩家最新輸入只有沉默、注視、點頭、「嗯」、簡短回應或沒有新增事件，仍必須從上一輪結束點向後發展，不得把上一輪的意思重新敘述一次。
+
+            若同一動作仍在持續，只需簡短承接當前狀態並推進後續，不得重新完整描寫動作的開始、過程或重複相同的角色心理理由。
+
+            生成完成前必須檢查：本輪是否只是把上一輪已完成的意思換句話再說？若是，刪除重複部分，改為新的角色反應、資訊、事件、情緒變化、關係變化或合理的劇情推進。
 
             15. 【物理連續性與基本常識】生成前先確認人物雙手正在拿取的物品、嘴裡是否有食物、身體姿勢、衣物狀態、人物距離、物件位置，以及上一個動作是否完成。完成草稿後，必須再次逐段檢查整份回覆，包括 AI 自行新增的後續情節；若出現含著食物說話、濕手碰電器、物件無故移動、時間不足卻完成大量行動、雙手占用衝突、動作順序錯誤、衛生疑慮或人體無法完成的行為，必須先修正再輸出。
 
@@ -2387,7 +2431,19 @@ ${narrativeRules}
             ### 沉浸模式輸出格式
 
             - 第一行固定格式：時間：${lastStoryTime || "根據情境推算"} | 地點：${lastStoryLocation || "當前地點"}
-            - 上述時間與地點是本輪起點。若本輪或連續劇情中已發生用餐、洗澡、移動、等待、睡眠或其他明顯耗時行為，應依合理經過時間更新第一行；不得在已經過數分鐘或更久後仍固定沿用原時間。地點只有在人物實際完成移動後才能更新。
+            【故事狀態同步｜最高優先】
+            - response 第一行的「時間｜地點」代表本輪開始時的故事狀態。
+            - storyTime 與 storyLocation 代表本輪完整劇情結束後的最新狀態。
+            - 若本輪沒有發生明確時間流逝，storyTime 應沿用本輪時間。
+            - 若本輪沒有完成移動，storyLocation 必須沿用目前地點，不得自行更換。
+            - 只有人物在正文中確實完成移動並抵達新地點，storyLocation 才能更新。
+            - 不得為了填寫 storyLocation 而創造正文沒有發生的移動。
+            - storyLocation 必須與正文結束時人物真正所在的位置一致。
+            - 若創作者自訂狀態欄包含地點／所在地／位置／場景，
+              該欄位必須與 storyLocation 表示同一個實際位置，不得互相矛盾。
+            - 上述第一行時間與地點代表本輪開始時的狀態，不得因本輪後續事件而回頭修改。
+            - 若本輪發生用餐、洗澡、移動、等待、睡眠或其他明顯耗時行為，應將經過後的最新時間寫入 storyTime。
+            - 若本輪人物實際完成移動並抵達新地點，應將抵達後的位置寫入 storyLocation；若沒有完成移動，storyLocation 必須沿用原地點。
             - 除第一行時間與地點外，所有場景、動作及非台詞描寫都必須完整放在全形括號（）內，且括號必須完整閉合。
             - 角色說出口的台詞必須使用全形引號「」呈現，並放在動作括號外。
             - 敘事中優先使用「你」或「${playerName}」指稱玩家；只有玩家資料已明確提供性別與代詞時，才可以使用相符的「他／她」或「你／妳」。不得直接以「玩家」作為故事中的人物稱呼。
@@ -2654,23 +2710,53 @@ systemPrompt += `
 
                           const maxTokens =
                               chatMode === "immersive" ? 2500 :
-                              chatMode === "story"     ? 1800 :
+                              chatMode === "story"     ? 2400 :
                               chatMode === "daily"     ? 600  :
                               chatMode === "gemini"    ? 180  : // 1 點輕聊：限制輸出長度
                               1000;
 
-                          function limitPromptText(text, maxLength) {
+                          function limitPromptText(
+                              text,
+                              maxLength,
+                              preserveTail = false
+                          ) {
                               if (!text || typeof text !== "string") return "";
 
                               const cleaned = fixMojibake(text)
                                   .replace(/�/g, "")
                                   .trim();
 
-                              if (cleaned.length <= maxLength) return cleaned;
+                              if (cleaned.length <= maxLength) {
+                                  return cleaned;
+                              }
+
+                              // 劇情／沉浸的 AI 歷史：
+                              // 保留前段正文，也保留尾端狀態欄。
+                              if (preserveTail) {
+                                  const tailLength = Math.min(
+                                      350,
+                                      Math.floor(maxLength * 0.6)
+                                  );
+
+                                  const headLength =
+                                      maxLength - tailLength - 4;
+
+                                  const head = cleaned
+                                      .slice(0, headLength)
+                                      .trim();
+
+                                  const tail = cleaned
+                                      .slice(-tailLength)
+                                      .trim();
+
+                                  return `${head}\n……\n${tail}`;
+                              }
 
                               const suffix = "……";
 
-                              return cleaned.slice(0, maxLength - suffix.length).trim() + suffix;
+                              return cleaned
+                                  .slice(0, maxLength - suffix.length)
+                                  .trim() + suffix;
                           }
 
                           const trimmedHistory = chatHistory
@@ -2697,7 +2783,12 @@ systemPrompt += `
                                               : "user",
                                       content: limitPromptText(
                                           rawContent,
-                                          historyLimit
+                                          historyLimit,
+                                          msg.role === "assistant" &&
+                                              (
+                                                  chatMode === "story" ||
+                                                  chatMode === "immersive"
+                                              )
                                       ),
                                       hasImage: hasImageContext,
                                   };
@@ -2723,6 +2814,8 @@ systemPrompt += `
                                    let finalResponseText = "";
                                    let finalVoiceText = "";
                                    let finalAffectionChange = 0;
+                                   let finalStoryTime = String(lastStoryTime || "").trim();
+                                   let finalStoryLocation = String(lastStoryLocation || "").trim();
                                    let loopCount = 0;
                                    // 🛡️ 總裁級防漏：確保 playerName 在迴圈執行時永遠有定義
                                    const safePlayerName = (typeof playerName !== 'undefined' && playerName && playerName !== '玩家') ? playerName : '你';
@@ -2734,7 +2827,7 @@ systemPrompt += `
                                        TARGET_LENGTH = 800;
                                        MAX_LOOPS = 2;
                                    } else if (chatMode === "story") {
-                                       TARGET_LENGTH = 600;
+                                       TARGET_LENGTH = 350;
                                        MAX_LOOPS = 2;
                                    } else if (chatMode === "daily") {
                                        TARGET_LENGTH = 80;
@@ -2763,11 +2856,16 @@ systemPrompt += `
                                       if (safeContent.length > messageLimit) {
                                           trimmedCount++;
 
-                                          safeContent = safeContent
-                                              .substring(0, messageLimit)
-                                              .trim();
+                                          safeContent = limitPromptText(
+                                              safeContent,
+                                              messageLimit,
+                                              msg.role === "assistant" &&
+                                                  (
+                                                      chatMode === "story" ||
+                                                      chatMode === "immersive"
+                                                  )
+                                          );
                                       }
-
                                       return {
                                           role: msg.role,
                                           content: safeContent,
@@ -2909,6 +3007,108 @@ systemPrompt += `
                                                                                if (!text || typeof text !== "string") return text;
                                                                                if (text.length <= maxLength) return text;
 
+                                                                               // ==================================================
+                                                                               // 🛡️ 劇情／沉浸模式：優先保留創作者自訂狀態欄
+                                                                               // ==================================================
+                                                                               if (
+                                                                                   supportsCustomStatusBar
+                                                                               ) {
+                                                                                   try {
+                                                                                       // 從創作者模板取得可辨識的欄位名稱
+                                                                                       const anchors = String(customOutputFormat)
+                                                                                           .split(/\r?\n/)
+                                                                                           .map((line) => line.trim())
+                                                                                           .filter(
+                                                                                               (line) =>
+                                                                                                   line &&
+                                                                                                   !/^---+$/.test(line)
+                                                                                           )
+                                                                                           .map((line) => {
+                                                                                               const fieldMatch =
+                                                                                                   line.match(/^(.{1,40}?[：:])/);
+
+                                                                                               return (
+                                                                                                   fieldMatch
+                                                                                                       ? fieldMatch[1]
+                                                                                                       : line.slice(0, 24)
+                                                                                               )
+                                                                                                   .replace(/\{\{[^}]+\}\}/g, "")
+                                                                                                   .trim();
+                                                                                           })
+                                                                                           .filter((anchor) => anchor.length >= 2)
+                                                                                           .slice(0, 4);
+
+                                                                                       const statusPositions = anchors
+                                                                                           .map((anchor) => text.lastIndexOf(anchor))
+                                                                                           .filter((index) => index >= 0);
+
+                                                                                       if (statusPositions.length > 0) {
+                                                                                           // 找到狀態欄最前面的欄位
+                                                                                           let statusStart = Math.min(
+                                                                                               ...statusPositions
+                                                                                           );
+
+                                                                                           // 若狀態欄前面有 ---，一起保留
+                                                                                           const separatorIndex =
+                                                                                               text.lastIndexOf(
+                                                                                                   "\n---",
+                                                                                                   statusStart
+                                                                                               );
+
+                                                                                           if (
+                                                                                               separatorIndex >= 0 &&
+                                                                                               statusStart - separatorIndex < 300
+                                                                                           ) {
+                                                                                               statusStart = separatorIndex + 1;
+                                                                                           }
+
+                                                                                           const statusText =
+                                                                                               text.slice(statusStart).trim();
+
+                                                                                           // 預留狀態欄空間給正文
+                                                                                           const bodyMaxLength =
+                                                                                               maxLength -
+                                                                                               statusText.length -
+                                                                                               2;
+
+                                                                                           if (bodyMaxLength > 100) {
+                                                                                               const body =
+                                                                                                   text
+                                                                                                       .slice(0, bodyMaxLength);
+
+                                                                                               const lastBreak = Math.max(
+                                                                                                   body.lastIndexOf("\n\n"),
+                                                                                                   body.lastIndexOf("。"),
+                                                                                                   body.lastIndexOf("」"),
+                                                                                                   body.lastIndexOf("）")
+                                                                                               );
+
+                                                                                               const safeBody =
+                                                                                                   lastBreak > bodyMaxLength * 0.6
+                                                                                                       ? body
+                                                                                                           .slice(
+                                                                                                               0,
+                                                                                                               lastBreak + 1
+                                                                                                           )
+                                                                                                           .trim()
+                                                                                                       : body.trim();
+
+                                                                                               return (
+                                                                                                   `${safeBody}\n\n${statusText}`
+                                                                                               ).trim();
+                                                                                           }
+                                                                                       }
+                                                                                   } catch (error) {
+                                                                                       console.error(
+                                                                                           "⚠️ 保留自訂狀態欄截斷失敗，改用一般截斷：",
+                                                                                           error
+                                                                                       );
+                                                                                   }
+                                                                               }
+
+                                                                               // ==================================================
+                                                                               // 一般模式／找不到狀態欄：沿用原本截斷方式
+                                                                               // ==================================================
                                                                                const cut = text.slice(0, maxLength);
 
                                                                                const lastBreak = Math.max(
@@ -2919,10 +3119,12 @@ systemPrompt += `
                                                                                );
 
                                                                                if (lastBreak > maxLength * 0.6) {
-                                                                                   return cut.slice(0, lastBreak + 1).trim() ;
+                                                                                   return cut
+                                                                                       .slice(0, lastBreak + 1)
+                                                                                       .trim();
                                                                                }
 
-                                                                               return cut.trim() ;
+                                                                               return cut.trim();
                                                                            }
 
                                                                            function cleanAiResponseText(raw, safePlayerName = "") {
@@ -3003,8 +3205,6 @@ systemPrompt += `
                                                                                        if (targetModel.includes("deepseek")) {
                                                                                            console.log("🛤️ 偵測到 DeepSeek 模型，維持 OpenRouter 路線發車，準備狂飆！");
                                                                                            // 💡 這裡把原本切換 apiUrl 和 apiKey 的程式碼刪掉了，讓它乖乖走上面的 OpenRouter 預設路線！
-
-                                                                                           // 🚀 強制注入 JSON 醒腦劑：把指令偷偷綁在玩家最後一句話的尾巴（這段要留著防空白當機）
                                                                                            // 🚀 強制注入：JSON 醒腦劑 ＋ 角色扮演動作解析規則！
                                                                                                        if (loopCount === 0 && currentMessages.length > 0) {
                                                                                                            const lastIndex = currentMessages.length - 1;
@@ -3227,23 +3427,60 @@ systemPrompt += `
                                                                                // ==========================================
                                                                                // 🧩 拼接 / 覆蓋回覆
                                                                                // ==========================================
-                                                                               if (currentText && currentText !== "null") {
-                                                                                   if (loopCount > 0) {
-                                                                                       const previousLength = finalResponseText.trim().length;
-                                                                                       const expandedLength = currentText.trim().length;
+                                                                               if (loopCount > 0) {
+                                                                                   const previousLength = finalResponseText.trim().length;
+                                                                                   const expandedLength = currentText.trim().length;
 
-                                                                                       if (expandedLength >= previousLength) {
-                                                                                           console.log(
-                                                                                               `✅ 採用完整擴寫版本：${previousLength} → ${expandedLength} 字`
-                                                                                           );
-                                                                                           finalResponseText = currentText.trim() + "\n\n";
-                                                                                       } else {
-                                                                                           console.warn(
-                                                                                               `⚠️ 擴寫版本反而較短：${previousLength} → ${expandedLength} 字，保留第一次結果`
-                                                                                           );
+                                                                                   if (expandedLength >= previousLength) {
+                                                                                       console.log(
+                                                                                           `✅ 採用完整擴寫版本：${previousLength} → ${expandedLength} 字`
+                                                                                       );
+
+                                                                                       finalResponseText = currentText.trim() + "\n\n";
+
+                                                                                       // 🕒📍 第二輪正文有被採用，故事狀態才一起更新
+                                                                                       if (chatMode === "story" || chatMode === "immersive") {
+                                                                                           const nextStoryTime = String(
+                                                                                               parsedData?.storyTime || ""
+                                                                                           ).trim();
+
+                                                                                           const nextStoryLocation = String(
+                                                                                               parsedData?.storyLocation || ""
+                                                                                           ).trim();
+
+                                                                                           if (nextStoryTime) {
+                                                                                               finalStoryTime = nextStoryTime;
+                                                                                           }
+
+                                                                                           if (nextStoryLocation) {
+                                                                                               finalStoryLocation = nextStoryLocation;
+                                                                                           }
                                                                                        }
                                                                                    } else {
-                                                                                       finalResponseText = currentText.trim() + "\n\n";
+                                                                                       console.warn(
+                                                                                           `⚠️ 擴寫版本反而較短：${previousLength} → ${expandedLength} 字，保留第一次結果`
+                                                                                       );
+                                                                                   }
+                                                                               } else {
+                                                                                   finalResponseText = currentText.trim() + "\n\n";
+
+                                                                                   // 🕒📍 第一輪正文被採用，同步保存本輪結束後故事狀態
+                                                                                   if (chatMode === "story" || chatMode === "immersive") {
+                                                                                       const nextStoryTime = String(
+                                                                                           parsedData?.storyTime || ""
+                                                                                       ).trim();
+
+                                                                                       const nextStoryLocation = String(
+                                                                                           parsedData?.storyLocation || ""
+                                                                                       ).trim();
+
+                                                                                       if (nextStoryTime) {
+                                                                                           finalStoryTime = nextStoryTime;
+                                                                                       }
+
+                                                                                       if (nextStoryLocation) {
+                                                                                           finalStoryLocation = nextStoryLocation;
+                                                                                       }
                                                                                    }
                                                                                }
 
@@ -3290,7 +3527,6 @@ systemPrompt += `
                                                                                        finalResponseText.length >= TARGET_LENGTH &&
                                                                                        hasCompleteStatus
                                                                                    ) ||
-                                                                                   finalResponseText.length >= MAX_RESPONSE_LENGTH ||
                                                                                    loopCount >= MAX_LOOPS
                                                                                ) {
                                                                                    break;
@@ -3339,8 +3575,12 @@ systemPrompt += `
 
                                                                                ${customOutputFormat}
 
-                                                                               14. 只回傳合法 JSON：
-                                                                               {"response":"重新生成的完整沉浸回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞"}
+                                                                               14. storyTime 與 storyLocation 必須代表重新生成後這一輪結束時的最新故事狀態，
+                                                                               並與正文及創作者自訂狀態欄保持一致。
+
+                                                                               15. 只回傳合法 JSON：
+                                                                               {"response":"重新生成的完整沉浸回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞","storyTime":"本輪結束後的故事時間","storyLocation":"本輪結束後人物實際所在位置"}
+
                                                                                `;
                                                                                } else if (chatMode === "story") {
                                                                                    retryInstruction = `
@@ -3351,7 +3591,9 @@ systemPrompt += `
 
                                                                                要求：
 
-                                                                               1. 正文至少 ${TARGET_LENGTH} 個中文字，建議控制在 600～900 字；完成前不得提前結束。
+                                                                               1. 正文至少 ${TARGET_LENGTH} 個中文字，建議控制在 350～600 字。
+                                                                                  正文可以簡潔，但創作者自訂狀態欄不得因篇幅而省略；
+                                                                                  狀態欄不計入正文篇幅，必須完整輸出後才能結束本輪。
                                                                                2. 優先直接回應玩家最新輸入，再自然推進一至兩個彼此相關的劇情節點。
                                                                                3. 完整回覆應包含角色對玩家的直接反應、至少一項有效新資訊或事件進展，以及一個可讓玩家接續的角色行動或未完成衝突。
                                                                                4. 角色台詞必須符合人設，不得為了增加篇幅突然變得話多。
@@ -3365,13 +3607,16 @@ systemPrompt += `
                                                                                12. 所有非台詞正文必須完整放在全形括號（　）內；角色台詞使用「」並獨立成段。
                                                                                13. 同一位玩家不得混用「你／妳」。
                                                                                14. 若創作者設定了狀態欄或固定結尾格式，必須在正文結束後完整保留。每則回覆只能生成一次正文；狀態欄開始後不得重新輸出時間地點標頭、正文、台詞或動作段落。狀態欄只能整理當前狀態，不得複製、重演或改寫本輪正文。
-
-                                                                               15. 本輪必須在正文最後完整輸出以下創作者狀態欄模板，不得省略任何非條件式欄位：
+                                                                               15. 若篇幅限制與創作者狀態欄發生衝突，優先保留完整狀態欄；可以縮短正文，但不得刪除、截斷或省略狀態欄。
+                                                                               16. 本輪必須在正文最後完整輸出以下創作者狀態欄模板，不得省略任何非條件式欄位：
 
                                                                                ${customOutputFormat}
 
-                                                                               16. 只回傳合法 JSON：
-                                                                               {"response":"重新生成的完整劇情回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞"}
+                                                                               17. storyTime 與 storyLocation 必須代表重新生成後這一輪結束時的最新故事狀態，
+                                                                                   並與正文及創作者自訂狀態欄保持一致。
+
+                                                                                   只回傳合法 JSON：
+                                                                                   {"response":"重新生成的完整劇情回覆","affectionChange":0,"voiceText":"適合語音播放的角色台詞","storyTime":"本輪結束後的故事時間","storyLocation":"本輪結束後人物實際所在位置"}
                                                                                `;
                                                                                } else {
                                                                                    retryInstruction = `
@@ -3390,7 +3635,141 @@ systemPrompt += `
                                                                                ${retryInstruction}`,
                                                                                };
                                                                                                                                } // 👈 關閉暴力接文的迴圈
+                                                                                                                               // ==================================================
+                                                                                                                               // 🛡️ 最終狀態欄完整性防線
+                                                                                                                               // 劇情／沉浸模式只要創作者有設定狀態欄，
+                                                                                                                               // 最終版本缺漏時不得寫入聊天室或扣點。
+                                                                                                                               // ==================================================
+                                                                                                                               // ==================================================
+                                                                                                                               // 🩹 創作者狀態欄自動修復
+                                                                                                                               // 正文已生成成功，但模型漏掉狀態欄時，
+                                                                                                                               // 不重生整篇，只額外生成一次狀態欄。
+                                                                                                                               // ==================================================
+                                                                                                                               if (
+                                                                                                                                   supportsCustomStatusBar &&
+                                                                                                                                   !hasRequiredCustomStatus(finalResponseText)
+                                                                                                                               ) {
+                                                                                                                                   console.warn(
+                                                                                                                                       "🩹 偵測到最終回覆缺少創作者狀態欄，啟動狀態欄專用修復。"
+                                                                                                                                   );
 
+                                                                                                                                   try {
+                                                                                                                                       const statusRepairResult =
+                                                                                                                                           await callAiWithRetry({
+                                                                                                                                               modelId:
+                                                                                                                                                   "deepseek/deepseek-v4-flash",
+
+                                                                                                                                               fallbackModelId:
+                                                                                                                                                   "z-ai/glm-5.2",
+
+                                                                                                                                               abortController,
+
+                                                                                                                                               timeoutMs: 30_000,
+
+                                                                                                                                               requestBody: {
+                                                                                                                                                   messages: [
+                                                                                                                                                       {
+                                                                                                                                                           role: "system",
+                                                                                                                                                           content: `
+                                                                                                                               你現在只負責補齊「創作者自訂狀態欄」。
+
+                                                                                                                               禁止重新生成正文。
+                                                                                                                               禁止摘要正文。
+                                                                                                                               禁止重述劇情。
+                                                                                                                               禁止新增時間地點標頭。
+                                                                                                                               禁止解釋。
+                                                                                                                               禁止 Markdown 程式碼區塊。
+                                                                                                                               禁止輸出 JSON。
+
+                                                                                                                               你必須根據已完成正文，
+                                                                                                                               填寫創作者指定的狀態欄模板。
+
+                                                                                                                               所有非條件式欄位都必須存在。
+                                                                                                                               無法判斷的欄位填「未知」。
+
+                                                                                                                               只回傳完整狀態欄純文字。
+                                                                                                                               第一個字就直接開始輸出狀態欄。
+                                                                                                                               不得加入任何前言、說明或結尾。
+                                                                                                                               `.trim(),
+                                                                                                                                                       },
+                                                                                                                                                       {
+                                                                                                                                                           role: "user",
+                                                                                                                                                           content: `
+                                                                                                                               【本輪完整正文】
+
+                                                                                                                               ${finalResponseText}
+
+                                                                                                                               【本輪結束故事時間】
+                                                                                                                               ${finalStoryTime || "未知"}
+
+                                                                                                                               【本輪結束故事地點】
+                                                                                                                               ${finalStoryLocation || "未知"}
+
+                                                                                                                               【必須完整填寫的創作者狀態欄模板】
+
+                                                                                                                               ${customOutputFormat}
+                                                                                                                               `.trim(),
+                                                                                                                                                       },
+                                                                                                                                                   ],
+
+                                                                                                                                                   max_tokens: 1000,
+
+                                                                                                                                                   temperature: 0.2,
+                                                                                                                                               },
+                                                                                                                                           });
+
+                                                                                                                                       const rawStatusRepair =
+                                                                                                                                           statusRepairResult
+                                                                                                                                               ?.choices?.[0]
+                                                                                                                                               ?.message?.content || "";
+
+                                                                                                                                       if (rawStatusRepair.trim()) {
+                                                                                                                                           const repairedStatus =
+                                                                                                                                               String(rawStatusRepair)
+                                                                                                                                                   .replace(/```(?:json)?/gi, "")
+                                                                                                                                                   .replace(/```/g, "")
+                                                                                                                                                   .trim();
+
+                                                                                                                                           if (repairedStatus) {
+                                                                                                                                               const repairedResponse =
+                                                                                                                                                   `${finalResponseText.trim()}\n\n` +
+                                                                                                                                                   `${repairedStatus}`;
+
+                                                                                                                                               if (
+                                                                                                                                                   hasRequiredCustomStatus(
+                                                                                                                                                       repairedResponse
+                                                                                                                                                   )
+                                                                                                                                               ) {
+                                                                                                                                                   finalResponseText =
+                                                                                                                                                       limitTextLength(
+                                                                                                                                                           repairedResponse,
+                                                                                                                                                           MAX_RESPONSE_LENGTH
+                                                                                                                                                       );
+
+                                                                                                                                                   console.log(
+                                                                                                                                                       "✅ 創作者狀態欄自動修復成功。",
+                                                                                                                                                       {
+                                                                                                                                                           chatMode,
+                                                                                                                                                           repairedLength:
+                                                                                                                                                               repairedStatus.length,
+                                                                                                                                                           finalLength:
+                                                                                                                                                               finalResponseText.length,
+                                                                                                                                                       }
+                                                                                                                                                   );
+                                                                                                                                               } else {
+                                                                                                                                                   console.warn(
+                                                                                                                                                       "⚠️ AI 有回傳修復內容，但狀態欄仍不完整。"
+                                                                                                                                                   );
+                                                                                                                                               }
+                                                                                                                                           }
+                                                                                                                                       }
+                                                                                                                                   } catch (statusRepairError) {
+                                                                                                                                       console.error(
+                                                                                                                                           "⚠️ 創作者狀態欄自動修復失敗：",
+                                                                                                                                           statusRepairError
+                                                                                                                                       );
+                                                                                                                                   }
+                                                                                                                               }
 // ==========================================
 // 🛡️ 安全回覆與扣款系統
 // 原則：有有效回覆，並成功寫入聊天室後，才允許扣點
@@ -3969,10 +4348,6 @@ if (sessionId) {
             qixiTodayKey >= qixiEventStartDate &&
             qixiTodayKey <= qixiEventEndDate;
 
-            // TODO：正式發布前移除七夕提前測試權限。
-            const isQixiDeveloperTestUser =
-                userId === "B71k2kyooubYsOtIO1nkiBwyBXt2";
-
     // ==========================================
     // 4. 原子化安全收銀台
     // 取消檢查、回覆、聊天室、扣點與明細
@@ -4051,7 +4426,7 @@ const sessionData =
         sessionData.userId === userId &&
         sessionData.isQixiRoom === true &&
         sessionData.eventId === "qixi_2026" &&
-        (isQixiEventDate || isQixiDeveloperTestUser) &&
+        isQixiEventDate &&
         existingOfficialQixiDates.length < 3 &&
         isRegenerateRequest !== true &&
         isQixiOpeningRequest !== true &&
@@ -4121,6 +4496,17 @@ const sessionData =
 
                             characterName: name,
                             role: "assistant",
+
+                            // 🕒📍 這則 AI 回覆開始前的故事狀態
+                            storyStartTime:
+                                chatMode === "story" || chatMode === "immersive"
+                                    ? String(lastStoryTime || "").trim()
+                                    : null,
+
+                            storyStartLocation:
+                                chatMode === "story" || chatMode === "immersive"
+                                    ? String(lastStoryLocation || "").trim()
+                                    : null,
 
                             content: finalResponseText,
                         });
@@ -4289,7 +4675,44 @@ const sessionData =
         // 成功後不要再無條件刪除 cancellationRef。
         // 若取消通知在交易提交後才抵達，
         // 讓它依 expiresAt 自動清理即可。
+        // ==========================================
+        // 🕒📍 同步本輪結束後的故事時間與地點
+        // 此處原本訊息／扣款交易已成功提交後才執行
+        // ==========================================
+        if (chatMode === "story" || chatMode === "immersive") {
+            const storyStateUpdate = {};
+
+            if (finalStoryTime) {
+                storyStateUpdate.lastStoryTime = finalStoryTime;
+            }
+
+            if (finalStoryLocation) {
+                storyStateUpdate.lastStoryLocation = finalStoryLocation;
+            }
+
+            if (Object.keys(storyStateUpdate).length > 0) {
+                try {
+                    await sessionRef.set(
+                        storyStateUpdate,
+                        { merge: true }
+                    );
+
+                    console.log(
+                        "🕒📍 故事狀態已同步：",
+                        storyStateUpdate
+                    );
+                } catch (storyStateError) {
+                    // 故事狀態同步失敗不能把已成功的聊天／扣款誤判成失敗
+                    console.error(
+                        "⚠️ 故事狀態同步失敗：",
+                        storyStateError
+                    );
+                }
+            }
+        }
+
         let successLogMessage = "";
+
 
         if (isTestChat) {
             if (cost > 0) {
@@ -4449,6 +4872,17 @@ const sessionData =
                                        response: finalResponseText,
                                        voiceText: finalVoiceText,
                                        affectionChange: finalAffectionChange,
+
+                                       // 🕒📍 本輪劇情結束後的故事狀態
+                                       storyTime:
+                                           chatMode === "story" || chatMode === "immersive"
+                                               ? finalStoryTime
+                                               : null,
+
+                                       storyLocation:
+                                           chatMode === "story" || chatMode === "immersive"
+                                               ? finalStoryLocation
+                                               : null,
                                    };
 
                                    if (!res.writableEnded && !res.destroyed) {

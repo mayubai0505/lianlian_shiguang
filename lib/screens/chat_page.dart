@@ -2211,6 +2211,8 @@ class _ChatPageState extends State<ChatPage> {
     try {
       // 讀取歷史紀錄
       final List<Map<String, String>> actualChatHistory = [];
+      String regenerateStartTime = _currentStoryTime ?? '';
+      String regenerateStartLocation = _currentStoryLocation ?? '';
 
       if (_messagesCollection != null) {
         final historySnapshot = await _messagesCollection!
@@ -2226,6 +2228,35 @@ class _ChatPageState extends State<ChatPage> {
             throw Exception('讀取歷史紀錄逾時');
           },
         );
+
+        // 🕒📍 重新生成必須從原 AI 回覆的起點重新開始
+        try {
+          final oldAiDoc =
+          await _messagesCollection!.doc(aiMessageId).get();
+
+          final oldAiData =
+          oldAiDoc.data() as Map<String, dynamic>?;
+
+          if (oldAiData != null) {
+            final savedStartTime =
+                oldAiData['storyStartTime']?.toString().trim() ?? '';
+
+            final savedStartLocation =
+                oldAiData['storyStartLocation']?.toString().trim() ?? '';
+
+            if (savedStartTime.isNotEmpty) {
+              regenerateStartTime = savedStartTime;
+            }
+
+            if (savedStartLocation.isNotEmpty) {
+              regenerateStartLocation = savedStartLocation;
+            }
+          }
+        }catch (e) {
+          debugPrint(
+            '⚠️ 讀取重新生成起點失敗，暫時沿用目前故事狀態：$e',
+          );
+        }
 
         final docsList = historySnapshot.docs.reversed.toList();
 
@@ -2379,8 +2410,8 @@ class _ChatPageState extends State<ChatPage> {
         'aboutMeNotes': aboutMeNotes,
         'memos': memos,
         'periodStatus': periodStatus,
-        'lastStoryTime': _currentStoryTime,
-        'lastStoryLocation': _currentStoryLocation,
+        'lastStoryTime': regenerateStartTime,
+        'lastStoryLocation': regenerateStartLocation,
         'characterProfile': {
           'id': _currentCharacter.id,
           'name': _currentCharacter.name,
@@ -2593,8 +2624,22 @@ class _ChatPageState extends State<ChatPage> {
           ? (decoded['affectionChange'] as num).toInt()
           : 0;
 
+      final String regeneratedStoryTime =
+          decoded['storyTime']?.toString().trim() ?? '';
+
+      final String regeneratedStoryLocation =
+          decoded['storyLocation']?.toString().trim() ?? '';
+
       if (mounted) {
         setState(() {
+          // 🕒📍 同步重新生成後的故事狀態
+          if (regeneratedStoryTime.isNotEmpty) {
+            _currentStoryTime = regeneratedStoryTime;
+          }
+
+          if (regeneratedStoryLocation.isNotEmpty) {
+            _currentStoryLocation = regeneratedStoryLocation;
+          }
           if (finalAffectionChange != 0) {
             final int oldScore = _currentFriendship;
 
@@ -4175,6 +4220,12 @@ class _ChatPageState extends State<ChatPage> {
                   ? (responseData['affectionChange'] as num).toInt()
                   : 0;
 
+          final String newStoryTime =
+              responseData['storyTime']?.toString().trim() ?? '';
+
+          final String newStoryLocation =
+              responseData['storyLocation']?.toString().trim() ?? '';
+
           if (aiResponseText.isEmpty) {
             generatingRooms.remove(_roomLockKey);
 
@@ -4270,6 +4321,14 @@ class _ChatPageState extends State<ChatPage> {
 
           if (mounted) {
             setState(() {
+              // 🕒📍 同步本輪結束後的故事狀態
+              if (newStoryTime.isNotEmpty) {
+                _currentStoryTime = newStoryTime;
+              }
+
+              if (newStoryLocation.isNotEmpty) {
+                _currentStoryLocation = newStoryLocation;
+              }
               // 測試聊天室沒有 Firestore 訊息監聽，
               // 所以要自行將 AI 回覆加入本機訊息列表。
               if (widget.isTestMode) {
