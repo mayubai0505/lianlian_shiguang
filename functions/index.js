@@ -2025,14 +2025,12 @@ function parseRoleCommands(userInput, activeCharacters, currentFocusCharacter, c
             ${compactLoresContext}
             ${compactRelationContext}
 
-            【角色核心設定】
-            深層性格：${detailedPersonalityBlock}
+
             【角色核心設定】
             ${detailedPersonalityBlock}
 
             【目前與玩家的關係】
             ${relationship}
-            目前關係：${relationship}
 
             【世界觀設定】
             ${worldSetting}
@@ -2997,7 +2995,7 @@ systemPrompt += `
                                                                            const MAX_RESPONSE_LENGTH =
                                                                                chatMode === "immersive" ? 4500 :
                                                                                chatMode === "story" ? 3500 :
-                                                                               chatMode === "daily" ? 300 :
+                                                                               chatMode === "daily" ? 600 :
                                                                                500;
 
                                                                                // 檢查創作者設定的狀態欄是否真的出現在回覆中。
@@ -3259,7 +3257,13 @@ systemPrompt += `
                                                                            // ==========================================
                                                                            // 🔄 總裁的惡鬼催稿迴圈：防爆 + 防亂碼版
                                                                            // ==========================================
-                                                                           while (finalResponseText.length < TARGET_LENGTH && loopCount < MAX_LOOPS) {
+                                                                           while (
+                                                                               finalResponseText.length < TARGET_LENGTH &&
+                                                                               (
+                                                                                   loopCount < MAX_LOOPS ||
+                                                                                   retryCount < MAX_AI_RETRIES
+                                                                               )
+                                                                           ) {
                                                                                // 🚄 1. 預設走 OpenRouter 中轉站
                                                                                        let apiUrl = "https://openrouter.ai/api/v1/chat/completions";
                                                                                        let apiKey = openRouterApiKey.value();
@@ -3334,6 +3338,28 @@ systemPrompt += `
                                                                                        aiResult.choices?.[0]?.delta?.content ||
                                                                                        "";
 
+                                                                                       const finishReason =
+                                                                                           aiResult.choices?.[0]?.finish_reason || "";
+
+                                                                                       if (finishReason === "length") {
+                                                                                           console.warn(
+                                                                                               "⚠️ AI 回覆因 token 上限被截斷，準備重新生成"
+                                                                                           );
+
+                                                                                           retryCount++;
+
+                                                                                           if (retryCount <= MAX_AI_RETRIES) {
+                                                                                               continue;
+                                                                                           }
+
+                                                                                           return res.status(400).json({
+                                                                                               error: "AI_RESPONSE_TRUNCATED",
+                                                                                               message: "AI 回覆沒有完整生成，請稍後再試。",
+                                                                                               charged: false,
+                                                                                               cost: 0,
+                                                                                           });
+                                                                                       }
+
                                                                                    // 🚨 如果 content 是空的，但明明有花費 tokens，立刻啟動 X光機！
                                                                                    if (!rawContent || rawContent.trim() === "") {
                                                                                        console.warn("⚠️ 警告：抓不到 content！印出完整 choice 結構檢查：", JSON.stringify(aiResult.choices?.[0]));
@@ -3370,29 +3396,31 @@ systemPrompt += `
                                                                                    const triggeredKeyword = safetyKeywords.find(keyword => rawContent.includes(keyword));
 
                                                                                    const isRefused = triggeredKeyword || rawContent.trim() === "";
-
+let retryCount = 0;
+const MAX_AI_RETRIES = 2;
                                                                                   if (isRefused) {
-                                                                                              console.warn(`🛑 [防禦系統] 偵測到 AI 審查擋刀或發呆！(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"})`);
+                                                                                      console.warn(
+                                                                                          `🛑 [防禦系統] 偵測到 AI 審查擋刀或發呆！` +
+                                                                                          `(觸發原因: ${triggeredKeyword ? `關鍵字 [${triggeredKeyword}]` : "回傳為空"})`
+                                                                                      );
 
-                                                                                              // 🌟 核心修改：把直接 return 改成「判斷是否重試」
-                                                                                              // 假設我們允許遇到錯誤時，最多額外重試 2 次 (可以依你的需求調整)
-                                                                                              if (loopCount < MAX_LOOPS + 2) {
-                                                                                                  console.log(`🔄 啟動自動重試機制... (準備進行下一次呼叫)`);
-                                                                                                  loopCount++; // ⚠️ 極度重要：一定要增加次數，不然會變成無限死迴圈！
+                                                                                      if (retryCount < MAX_AI_RETRIES) {
+                                                                                          retryCount++;
 
-                                                                                                  // 建議稍微停頓 1.5 秒再重試，避免瞬間狂打 API 被當成惡意攻擊
-                                                                                                  // await new Promise(resolve => setTimeout(resolve, 1500));
+                                                                                          console.log(
+                                                                                              `🔄 AI 空回覆／拒答，自動重試 ${retryCount}/${MAX_AI_RETRIES}`
+                                                                                          );
 
-                                                                                                  continue; // 🚀 關鍵：跳過下面的程式碼，直接回到 while 迴圈的最上面重新發射！
-                                                                                              }
+                                                                                          continue;
+                                                                                      }
 
-                                                                                              // 🚨 如果已經重試到極限了，才真正放棄並把 400 錯誤丟回給 Flutter
-                                                                                              console.warn("🛑 重試次數已達上限，徹底放棄，攔截寫入與扣款！");
-                                                                                              return res.status(400).json({
-                                                                                                  error: "CENSORED",
-                                                                                                  message: "他目前在忙，請稍後再試一次喔！" // 換成對玩家友善的提示
-                                                                                              });
-                                                                                          }
+                                                                                      console.warn("🛑 AI 重試次數已達上限，攔截寫入與扣款");
+
+                                                                                      return res.status(400).json({
+                                                                                          error: "CENSORED",
+                                                                                          message: "他目前在忙，請稍後再試一次喔！"
+                                                                                      });
+                                                                                  }
 
                                                                                // ==========================================
                                                                                // 🛡️ 三段式 JSON 淨化器
@@ -3457,6 +3485,52 @@ systemPrompt += `
                                                                                currentText = cleanAiResponseText(currentText, safePlayerName);
                                                                                currentText = fixMojibake(currentText);
 
+                                                                               // ==========================================
+                                                                               // 🚨 AI 異常輸出污染偵測
+                                                                               // ==========================================
+                                                                               const suspiciousOutputPatterns = [
+                                                                                   /import\s+[a-zA-Z_]+/i,
+                                                                                   /from\s+[a-zA-Z_.]+\s+import/i,
+                                                                                   /function\s*\(/i,
+                                                                                   /console\.log/i,
+                                                                                   /punctuinc/i,
+                                                                                   /\b\d+\.\d+\.\d+\b/,
+                                                                               ];
+
+                                                                               const isSuspiciousOutput =
+                                                                                   !currentText ||
+                                                                                   suspiciousOutputPatterns.some(
+                                                                                       (pattern) => pattern.test(currentText)
+                                                                                   );
+
+                                                                               if (isSuspiciousOutput) {
+                                                                                   console.warn(
+                                                                                       "🚨 偵測到 AI 異常污染輸出：",
+                                                                                       currentText?.slice(0, 300)
+                                                                                   );
+
+                                                                                   retryCount++;
+
+                                                                                   if (retryCount <= MAX_AI_RETRIES) {
+                                                                                       console.log(
+                                                                                           `🔄 異常輸出，自動重試 ${retryCount}/${MAX_AI_RETRIES}`
+                                                                                       );
+
+                                                                                       continue;
+                                                                                   }
+
+                                                                                   console.warn(
+                                                                                       "🛑 異常輸出重試次數已達上限，停止寫入與扣款"
+                                                                                   );
+
+                                                                                   return res.status(400).json({
+                                                                                       error: "INVALID_AI_OUTPUT",
+                                                                                       message: "AI 回覆生成異常，請稍後再試。",
+                                                                                       charged: false,
+                                                                                       cost: 0,
+                                                                                   });
+                                                                               }
+
                                                                                if (typeof currentText === "string") {
                                                                                    currentText = currentText
                                                                                        .replace(/^"?response"?\s*:\s*"?/i, "")
@@ -3466,7 +3540,10 @@ systemPrompt += `
                                                                                }
 
                                                                                // ✂️ 每一輪先截斷，避免單輪爆到 3000～4000 字
-                                                                               currentText = limitTextLength(currentText, MAX_RESPONSE_LENGTH);
+                                                                               currentText = limitTextLength(
+                                                                                   currentText,
+                                                                                   MAX_RESPONSE_LENGTH
+                                                                               );
 
                                                                                console.log(
                                                                                    "🧪 CURRENT TEXT:",

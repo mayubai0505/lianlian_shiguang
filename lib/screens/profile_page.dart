@@ -1958,9 +1958,8 @@ class _ProfilePageState extends State<ProfilePage>
               ) {
             return [
               SliverAppBar(
-                title: Text(
-                  l10n.title_personal_homepage,
-                ),
+                title: null,
+                toolbarHeight: 54,
                 pinned: true,
                 floating: false,
                 backgroundColor:
@@ -2110,10 +2109,10 @@ class _ProfilePageState extends State<ProfilePage>
                 child: Padding(
                   padding:
                   const EdgeInsets.fromLTRB(
-                    16,
-                    16,
-                    16,
-                    12,
+                    18,
+                    10,
+                    18,
+                    10,
                   ),
                   child:
                   _buildCreatorProfileHeader(),
@@ -2125,23 +2124,59 @@ class _ProfilePageState extends State<ProfilePage>
                 delegate:
                 _ProfileTabBarDelegate(
                   TabBar(
-                    controller:
-                    _profileTabController,
-                    labelColor:
-                    theme.colorScheme.primary,
+                    controller: _profileTabController,
+
+                    // 選中：淡淡的灰紫；未選中：灰色
+                    labelColor: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFFC9BDF0)
+                        : const Color(0xFF9586C7),
                     unselectedLabelColor:
-                    theme
-                        .colorScheme.onSurface
-                        .withValues(
-                      alpha: 0.55,
+                    theme.colorScheme.onSurface.withValues(alpha: 0.42),
+
+                    // 只靠 icon + 文字顏色切換，不加底線、不加膠囊底
+                    indicatorColor: Colors.transparent,
+                    dividerColor: Colors.transparent,
+                    splashFactory: NoSplash.splashFactory,
+                    overlayColor:
+                    const WidgetStatePropertyAll<Color>(Colors.transparent),
+
+                    labelStyle: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
                     ),
-                    indicatorColor:
-                    theme.colorScheme.primary,
-                    indicatorWeight: 3,
+                    unselectedLabelStyle: const TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+
                     tabs: [
-                      Tab(text: l10n.profilePageTabBio),
-                      Tab(text: l10n.profilePageTabCharacters),
-                      Tab(text: l10n.profilePageTabMoments),
+                      Tab(
+                        height: 56,
+                        iconMargin: const EdgeInsets.only(bottom: 4),
+                        icon: const Icon(
+                          Icons.person_outline_rounded,
+                          size: 21,
+                        ),
+                        text: l10n.profilePageTabCharacters,
+                      ),
+                      Tab(
+                        height: 56,
+                        iconMargin: const EdgeInsets.only(bottom: 4),
+                        icon: const Icon(
+                          Icons.description_outlined,
+                          size: 21,
+                        ),
+                        text: l10n.profilePageTabBio,
+                      ),
+                      Tab(
+                        height: 56,
+                        iconMargin: const EdgeInsets.only(bottom: 4),
+                        icon: const Icon(
+                          Icons.auto_awesome_outlined,
+                          size: 21,
+                        ),
+                        text: l10n.profilePageTabMoments,
+                      ),
                     ],
                   ),
                   backgroundColor:
@@ -2155,8 +2190,8 @@ class _ProfilePageState extends State<ProfilePage>
             controller:
             _profileTabController,
             children: [
-              _buildAboutMeTab(),
               _buildCharactersTab(),
+              _buildAboutMeTab(),
               _buildMomentsTab(),
             ],
           ),
@@ -2165,441 +2200,424 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildCheckInButton() {
-    final l10n = AppLocalizations.of(context)!;
+
+  Color _darkenProfileIconColor(
+      Color color, {
+        double amount = 0.12,
+      }) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl
+        .withLightness((hsl.lightness - amount).clamp(0.0, 1.0))
+        .toColor();
+  }
+
+  Widget _buildLayeredProfileIcon({
+    required String baseAsset,
+    required String outlineAsset,
+    required String highlightAsset,
+    required String shadowAsset,
+    required double size,
+    double opacity = 1.0,
+  }) {
     final theme = Theme.of(context);
-    final bool isDefaultTheme = _isDefaultTheme(context);
-    final bool isDarkMode =
-        theme.brightness == Brightness.dark;
+    final baseColor = theme.colorScheme.primary;
+    final outlineColor = _darkenProfileIconColor(baseColor);
 
-// 半透明背景，讓底下的漸層顏色能透出來
-    final Color adaptiveButtonColor = isDarkMode
-        ? theme.colorScheme.surface.withValues(alpha: 0.68)
-        : Colors.white.withValues(alpha: 0.58);
-
-// 邊框使用目前主題色
-    final Color adaptiveButtonBorderColor =
-    theme.colorScheme.primary.withValues(alpha: 0.32);
-
-    // 今天已完成簽到
-    if (_hasCheckedInToday) {
-      return ElevatedButton.icon(
-        icon: const Icon(
-          Icons.check_circle,
-          size: 18,
+    Widget tintedLayer(
+        String asset,
+        Color color,
+        ) {
+      return ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          color,
+          BlendMode.srcIn,
         ),
-        label: Text(
-          l10n.status_signed_in_today,
-        ),
-        onPressed: null,
-        style: ElevatedButton.styleFrom(
-          disabledBackgroundColor: adaptiveButtonColor,
-          disabledForegroundColor: isDefaultTheme
-              ? theme.colorScheme.primary.withValues(alpha: 0.78)
-              : Colors.grey,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: isDefaultTheme
-                ? BorderSide(
-              color: adaptiveButtonBorderColor,
-              width: 0.9,
-            )
-                : BorderSide.none,
-          ),
+        child: Image.asset(
+          asset,
+          width: size,
+          height: size,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
         ),
       );
     }
 
-    // 今天尚未簽到
-    return ElevatedButton.icon(
-      icon: _isClaimingCheckIn
-          ? const SizedBox(
-        width: 20,
-        height: 20,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-        ),
-      )
-          : const Icon(
-        Icons.calendar_today,
-        size: 18,
-      ),
-      label: Text(
-        _isClaimingCheckIn
-            ? l10n.status_signing_in
-            : l10n.status_daily_sign_in,
-      ),
-      onPressed: _isClaimingCheckIn
-          ? null
-          : _performCheckIn,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isDefaultTheme
-            ? adaptiveButtonColor
-            : Colors.white.withValues(alpha: 0.7),
-        foregroundColor: theme.colorScheme.primary,
-        disabledBackgroundColor: adaptiveButtonColor,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: isDefaultTheme
-              ? BorderSide(
-            color: adaptiveButtonBorderColor,
-            width: 0.9,
-          )
-              : BorderSide.none,
+    return Opacity(
+      opacity: opacity,
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Stack(
+          fit: StackFit.expand,
+          alignment: Alignment.center,
+          children: [
+            // 1. 陰影：固定低透明黑，不會跟馬卡龍主題打架
+            tintedLayer(
+              shadowAsset,
+              Colors.black.withValues(alpha: 0.10),
+            ),
+
+            // 2. 主體：直接跟著目前主題色
+            tintedLayer(
+              baseAsset,
+              baseColor,
+            ),
+
+            // 3. 描邊：同色系，但比主體再深一點
+            tintedLayer(
+              outlineAsset,
+              outlineColor,
+            ),
+
+            // 4. 高光：不染色，永遠保留原本白色高光
+            Image.asset(
+              highlightAsset,
+              width: size,
+              height: size,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+            ),
+          ],
         ),
       ),
     );
   }
 
+  Widget _buildCheckInButton() {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final bool isDarkMode = theme.brightness == Brightness.dark;
+
+    return InkWell(
+      onTap: (_isClaimingCheckIn || _hasCheckedInToday)
+          ? null
+          : _performCheckIn,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: isDarkMode
+              ? theme.colorScheme.surface.withValues(alpha: 0.72)
+              : Colors.white.withValues(alpha: 0.94),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.055),
+          ),
+          boxShadow: isDarkMode
+              ? null
+              : [
+            BoxShadow(
+              color:
+              theme.colorScheme.primary.withValues(alpha: 0.045),
+              blurRadius: 14,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 34,
+              height: 34,
+              child: Center(
+                child: _isClaimingCheckIn
+                    ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.8,
+                    color: theme.colorScheme.primary,
+                  ),
+                )
+                    : _buildLayeredProfileIcon(
+                  baseAsset:
+                  'assets/images/profile_icons/checkin_base.png',
+                  outlineAsset:
+                  'assets/images/profile_icons/checkin_outline.png',
+                  highlightAsset:
+                  'assets/images/profile_icons/checkin_highlight.png',
+                  shadowAsset:
+                  'assets/images/profile_icons/checkin_shadow.png',
+                  size: 34,
+                  opacity: _hasCheckedInToday ? 0.58 : 1.0,
+                ),
+              ),
+            ),
+            const SizedBox(width: 9),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  Localizations.localeOf(context).languageCode == 'zh'
+                      ? (_hasCheckedInToday ? '已簽到' : '簽到')
+                      : (_hasCheckedInToday
+                      ? l10n.profilePageAlreadyCheckedIn
+                      : l10n.status_daily_sign_in),
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: _hasCheckedInToday
+                        ? theme.colorScheme.onSurface.withValues(alpha: 0.55)
+                        : theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+            if (!_hasCheckedInToday)
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.32),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
   Widget _buildCreatorProfileHeader() {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
-    final subTextColor =
-    textColor.withValues(alpha: 0.65);
+    final subTextColor = textColor.withValues(alpha: 0.58);
     final l10n = AppLocalizations.of(context)!;
-    final bool isDarkMode =
-        theme.brightness == Brightness.dark;
+    final bool isDarkMode = theme.brightness == Brightness.dark;
     final bool isDefaultTheme = _isDefaultTheme(context);
-    final Color adaptiveButtonColor = isDarkMode
-        ? theme.colorScheme.surface.withValues(alpha: 0.68)
-        : Colors.white.withValues(alpha: 0.58);
 
-    final Color adaptiveButtonBorderColor =
-    primaryColor.withValues(alpha: 0.32);
+    final Color softSurface = isDarkMode
+        ? theme.colorScheme.surface.withValues(alpha: 0.72)
+        : Colors.white.withValues(alpha: 0.94);
+
+    final Color softBorder = isDefaultTheme
+        ? const Color(0xFFE5DFF2)
+        : primaryColor.withValues(alpha: 0.18);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ─────────────────────────────────────────
+        // 1. 個人資訊：頭像只展示，不再作為編輯入口
+        // ─────────────────────────────────────────
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: _editProfile,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: _isBirthdayToday
-                      ? [
-                    BoxShadow(
-                      color: primaryColor.withValues(
-                        alpha: 0.4,
-                      ),
-                      blurRadius: 16,
-                      spreadRadius: 4,
-                    ),
-                  ]
-                      : null,
-                ),
-                child: CircleAvatar(
-                  radius: 46,
-                  backgroundColor:
-                  primaryColor.withValues(alpha: 0.1),
-                  backgroundImage:
-                  getAvatarImageProvider(_avatarPath),
-                ),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: _isBirthdayToday
+                    ? [
+                  BoxShadow(
+                    color: primaryColor.withValues(alpha: 0.28),
+                    blurRadius: 14,
+                    spreadRadius: 2,
+                  ),
+                ]
+                    : null,
+              ),
+              child: CircleAvatar(
+                radius: 43,
+                backgroundColor: primaryColor.withValues(alpha: 0.08),
+                backgroundImage: getAvatarImageProvider(_avatarPath),
+                onBackgroundImageError: (exception, stackTrace) {
+                  debugPrint('⚠️ 個人檔案大頭貼載入失敗，已顯示預設底色');
+                },
               ),
             ),
-
             const SizedBox(width: 16),
-
             Expanded(
-              child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
-                children: [
-                  Row(
+              child: StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser?.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  String displayID = _oldIDFromDB;
+                  String characterName = l10n.profile_fallback_character;
+
+                  if (snapshot.hasData && snapshot.data!.exists) {
+                    final userData =
+                    snapshot.data!.data() as Map<String, dynamic>;
+                    displayID = userData['playerID'] ?? _oldIDFromDB;
+                    characterName = userData['currentCharacter'] ??
+                        l10n.profile_fallback_character;
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Text(
-                          _nickname,
-                          maxLines: 1,
-                          overflow:
-                          TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
-                        ),
-                      ),
-                      if (_isBirthdayToday)
-                        Icon(
-                          Icons.cake_rounded,
-                          size: 20,
-                          color: primaryColor,
-                        ),
-                    ],
-                  ),
-
-                  StreamBuilder<DocumentSnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(FirebaseAuth.instance.currentUser?.uid)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      String displayID = _oldIDFromDB;
-                      String characterName =
-                          l10n.profile_fallback_character;
-
-                      if (snapshot.hasData && snapshot.data!.exists) {
-                        final userData =
-                        snapshot.data!.data() as Map<String, dynamic>;
-
-                        displayID =
-                            userData['playerID'] ?? _oldIDFromDB;
-
-                        characterName =
-                            userData['currentCharacter'] ??
-                                l10n.profile_fallback_character;
-                      }
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  'ID: $displayID',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: subTextColor,
-                                    fontWeight: _hasChangedID
-                                        ? FontWeight.w500
-                                        : FontWeight.normal,
-                                  ),
-                                ),
+                          Flexible(
+                            child: Text(
+                              _nickname,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 23,
+                                height: 1.15,
+                                fontWeight: FontWeight.w700,
+                                color: textColor,
                               ),
-
-                              const SizedBox(width: 6),
-
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(
-                                    ClipboardData(text: displayID),
-                                  );
-
-                                  ToastUtils.showCenterToast(
-                                    context,
-                                    l10n.toast_id_copied,
-                                    customIcon: Icons.copy_rounded,
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.copy_rounded,
-                                  size: 16,
-                                  color: subTextColor,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 7),
-
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  l10n.profile_send_invite_btn,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: subTextColor,
-                                  ),
-                                ),
-                              ),
-
-                              const SizedBox(width: 5),
-
-                              GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (dialogContext) {
-                                      return AlertDialog(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(20),
-                                        ),
-                                        title: Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.info_outline,
-                                              color: Colors.pinkAccent,
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              l10n.profile_referral_rule_title,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        content: Text(
-                                          l10n.profile_referral_rule_receiver,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            height: 1.5,
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(dialogContext).pop(),
-                                            child: Text(
-                                              l10n.common_got_it,
-                                              style: const TextStyle(
-                                                color: Colors.pinkAccent,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.help_outline_rounded,
-                                  size: 15,
-                                  color: Colors.grey.shade400,
-                                ),
-                              ),
-
-                              const SizedBox(width: 10),
-
-                              GestureDetector(
-                                onTap: () async {
-                                  final shareText =
-                                  l10n.profile_share_message(
-                                    characterName,
-                                    displayID,
-                                  );
-
-                                  await SharePlus.instance.share(
-                                    ShareParams(text: shareText),
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.share_rounded,
-                                  size: 17,
-                                  color: primaryColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 10),
-                  InkWell(
-                    onTap: kIsWeb
-                        ? null
-                        : () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const StorePage(),
-                      ),
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDarkMode
-                            ? Colors.grey[800]!.withValues(alpha: 0.6)
-                            : Colors.white.withValues(alpha: 0.85),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: primaryColor.withValues(alpha: 0.3),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(
-                            isDarkMode
-                                ? 'assets/images/flower_gift_dark.png'
-                                : 'assets/images/flower_gift.png',
-                            height: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            _formatPoints(
-                              _flowerPoints < 0 ? 0 : _flowerPoints,
-                            ),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: primaryColor,
-                              fontSize: 14,
                             ),
                           ),
-                          if (!kIsWeb) ...[
-                            const SizedBox(width: 6),
+                          if (_isBirthdayToday) ...[
+                            const SizedBox(width: 7),
                             Icon(
-                              Icons.add_circle_outline,
-                              size: 16,
-                              color: primaryColor.withValues(alpha: 0.7),
+                              Icons.cake_rounded,
+                              size: 18,
+                              color: primaryColor,
                             ),
                           ],
                         ],
                       ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  OutlinedButton.icon(
-                    onPressed: _editProfile,
-                    icon: const Icon(
-                      Icons.edit_outlined,
-                      size: 16,
-                    ),
-                    label: Text(l10n.profilePageEditProfile),
-                    style: OutlinedButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
-                      backgroundColor: isDefaultTheme
-                          ? const Color(0xFFFAF6FC)
-                          : Colors.transparent,
-                      foregroundColor: isDefaultTheme
-                          ? const Color(0xFF76529E)
-                          : primaryColor,
-                      side: isDefaultTheme
-                          ? const BorderSide(
-                        color: Color(0xFFDCCDE5),
-                        width: 0.8,
-                      )
-                          : BorderSide(
-                        color: primaryColor,
+                      const SizedBox(height: 7),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              'ID: $displayID',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: subTextColor,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          InkWell(
+                            onTap: () {
+                              Clipboard.setData(
+                                ClipboardData(text: displayID),
+                              );
+                              ToastUtils.showCenterToast(
+                                context,
+                                l10n.toast_id_copied,
+                                customIcon: Icons.copy_rounded,
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Padding(
+                              padding: const EdgeInsets.all(3),
+                              child: Icon(
+                                Icons.copy_rounded,
+                                size: 15,
+                                color: subTextColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              l10n.profile_send_invite_btn,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: subTextColor,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          InkWell(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (dialogContext) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    title: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline_rounded,
+                                          color: primaryColor,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            l10n.profile_referral_rule_title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    content: Text(
+                                      l10n.profile_referral_rule_receiver,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(dialogContext).pop(),
+                                        child: Text(l10n.common_got_it),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Padding(
+                              padding: const EdgeInsets.all(2),
+                              child: Icon(
+                                Icons.help_outline_rounded,
+                                size: 15,
+                                color: subTextColor,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 9),
+                          InkWell(
+                            onTap: () async {
+                              final shareText = l10n.profile_share_message(
+                                characterName,
+                                displayID,
+                              );
+                              await SharePlus.instance.share(
+                                ShareParams(text: shareText),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Padding(
+                              padding: const EdgeInsets.all(2),
+                              child: Icon(
+                                Icons.share_outlined,
+                                size: 16,
+                                color: primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
             ),
           ],
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 18),
 
+        // ─────────────────────────────────────────
+        // 2. 數據列：不用四張卡，維持輕量排版
+        // ─────────────────────────────────────────
         Row(
           children: [
             Expanded(
@@ -2608,26 +2626,23 @@ class _ProfilePageState extends State<ProfilePage>
                 label: l10n.profilePageFriends,
               ),
             ),
+            _buildStatDivider(theme),
             Expanded(
               child: _buildProfileStatItem(
                 value: _myCharacters.length,
                 label: l10n.profilePageWorks,
               ),
             ),
+            _buildStatDivider(theme),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
-                    .doc(
-                  FirebaseAuth.instance
-                      .currentUser?.uid,
-                )
+                    .doc(FirebaseAuth.instance.currentUser?.uid)
                     .collection('following')
                     .snapshots(),
                 builder: (context, snapshot) {
-                  final int followingCount =
-                      snapshot.data?.docs.length ?? 0;
-
+                  final followingCount = snapshot.data?.docs.length ?? 0;
                   return _buildProfileStatItem(
                     value: followingCount,
                     label: l10n.profilePageFollowing,
@@ -2635,11 +2650,8 @@ class _ProfilePageState extends State<ProfilePage>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                          const CreatorFollowListPage(
-                            type:
-                            CreatorFollowListType
-                                .following,
+                          builder: (_) => const CreatorFollowListPage(
+                            type: CreatorFollowListType.following,
                           ),
                         ),
                       );
@@ -2648,21 +2660,16 @@ class _ProfilePageState extends State<ProfilePage>
                 },
               ),
             ),
-
+            _buildStatDivider(theme),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
-                    .doc(
-                  FirebaseAuth.instance
-                      .currentUser?.uid,
-                )
+                    .doc(FirebaseAuth.instance.currentUser?.uid)
                     .collection('followers')
                     .snapshots(),
                 builder: (context, snapshot) {
-                  final int followersCount =
-                      snapshot.data?.docs.length ?? 0;
-
+                  final followersCount = snapshot.data?.docs.length ?? 0;
                   return _buildProfileStatItem(
                     value: followersCount,
                     label: l10n.profilePageFollowers,
@@ -2670,11 +2677,8 @@ class _ProfilePageState extends State<ProfilePage>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                          const CreatorFollowListPage(
-                            type:
-                            CreatorFollowListType
-                                .followers,
+                          builder: (_) => const CreatorFollowListPage(
+                            type: CreatorFollowListType.followers,
                           ),
                         ),
                       );
@@ -2686,33 +2690,133 @@ class _ProfilePageState extends State<ProfilePage>
           ],
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
 
-        Row(
-          children: [
-            Expanded(
-              child: _buildCheckInButton(),
+        // ─────────────────────────────────────────
+        // 3. 拾光點數：獨立資訊卡
+        // ─────────────────────────────────────────
+        InkWell(
+          onTap: kIsWeb
+              ? null
+              : () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const StorePage(),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _showHeartbeatDiary,
-                icon: const Icon(
-                  Icons.auto_stories_outlined,
+          ),
+          borderRadius: BorderRadius.circular(18),
+          child: Container(
+            width: double.infinity,
+            height: 52,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: softSurface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.06),
+              ),
+              boxShadow: isDarkMode
+                  ? null
+                  : [
+                BoxShadow(
+                  color: const Color(0xFF6F5FA8)
+                      .withValues(alpha: 0.045),
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
                 ),
-                label: Text(l10n.profilePageHeartbeatDiary),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: adaptiveButtonColor,
-                  foregroundColor: primaryColor,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(
-                      color: adaptiveButtonBorderColor,
-                      width: 0.9,
-                    ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Image.asset(
+                  isDarkMode
+                      ? 'assets/images/flower_gift_dark.png'
+                      : 'assets/images/flower_gift.png',
+                  height: 25,
+                  width: 25,
+                ),
+                const SizedBox(width: 11),
+                Text(
+                  _formatPoints(_flowerPoints < 0 ? 0 : _flowerPoints),
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w700,
+                    color: primaryColor,
                   ),
                 ),
+                const Spacer(),
+                if (!kIsWeb)
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: subTextColor,
+                    size: 22,
+                  ),
+              ],
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        // ─────────────────────────────────────────
+        // 4. 編輯個人檔案：獨立、細長、低存在感
+        // ─────────────────────────────────────────
+        SizedBox(
+          width: double.infinity,
+          height: 40,
+          child: OutlinedButton.icon(
+            onPressed: _editProfile,
+            icon: Icon(
+              Icons.edit_outlined,
+              size: 16,
+              color: primaryColor,
+            ),
+            label: Text(
+              l10n.profilePageEditProfile,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: primaryColor,
+              backgroundColor: Colors.transparent,
+              side: BorderSide(
+                color: softBorder,
+                width: 0.9,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        // ─────────────────────────────────────────
+        // 5. 簽到 + 心動日記：只留 icon + 標題，不放副文字
+        // ─────────────────────────────────────────
+        Row(
+          children: [
+            Expanded(child: _buildCheckInButton()),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildProfileShortcut(
+                iconWidget: _buildLayeredProfileIcon(
+                  baseAsset:
+                  'assets/images/profile_icons/diary_base.png',
+                  outlineAsset:
+                  'assets/images/profile_icons/diary_outline.png',
+                  highlightAsset:
+                  'assets/images/profile_icons/diary_highlight.png',
+                  shadowAsset:
+                  'assets/images/profile_icons/diary_shadow.png',
+                  size: 34,
+                ),
+                label: l10n.profilePageHeartbeatDiary,
+                onTap: _showHeartbeatDiary,
               ),
             ),
           ],
@@ -2720,6 +2824,78 @@ class _ProfilePageState extends State<ProfilePage>
       ],
     );
   }
+
+  Widget _buildStatDivider(ThemeData theme) {
+    return Container(
+      width: 1,
+      height: 26,
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
+    );
+  }
+
+  Widget _buildProfileShortcut({
+    required Widget iconWidget,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: theme.brightness == Brightness.dark
+              ? theme.colorScheme.surface.withValues(alpha: 0.72)
+              : Colors.white.withValues(alpha: 0.94),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.055),
+          ),
+          boxShadow: theme.brightness == Brightness.dark
+              ? null
+              : [
+            BoxShadow(
+              color:
+              theme.colorScheme.primary.withValues(alpha: 0.045),
+              blurRadius: 14,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 34,
+              height: 34,
+              child: Center(child: iconWidget),
+            ),
+            const SizedBox(width: 9),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 18,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.32),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 
   void _showMyCharacterActions(
       Character character,
@@ -2914,6 +3090,7 @@ class _ProfilePageState extends State<ProfilePage>
       ),
     );
   }
+
   Widget _buildCharactersTab() {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
@@ -2923,106 +3100,59 @@ class _ProfilePageState extends State<ProfilePage>
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          // ＋ 建立新角色
-          // 建立角色／秘密工作室
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                16,
-                16,
-                16,
-                4,
-              ),
+              padding: const EdgeInsets.fromLTRB(18, 14, 18, 6),
               child: Row(
                 children: [
-                  // 建立角色
-                  Expanded(
-                    child: SizedBox(
-                      height: 46,
-                      child: OutlinedButton.icon(
-                        onPressed: _createCharacter,
-                        icon: Icon(
-                          Icons.add_rounded,
-                          size: 19,
-                          color: theme.colorScheme.primary,
-                        ),
-                        label: Text(
-                          l10n.profilePageCreateCharacter,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                          ),
-                          backgroundColor: theme.colorScheme.primary
-                              .withValues(alpha: 0.08),
-                          side: BorderSide(
-                            color: theme.colorScheme.primary
-                                .withValues(alpha: 0.24),
-                          ),
-                          shape: const StadiumBorder(),
-                        ),
-                      ),
+                  Text(
+                    l10n.profilePageTabCharacters,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
-
-                  const SizedBox(width: 10),
-
-                  // 秘密工作室
-                  Expanded(
-                    child: SizedBox(
-                      height: 46,
-                      child: OutlinedButton.icon(
-                        onPressed: () async {
-                          final result =
-                          await Navigator.push<bool>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                              const CreatorStudioPage(),
-                            ),
-                          );
-
-                          if (!mounted) return;
-
-                          if (result == true) {
-                            await _refreshData();
-                          }
-                        },
-                        icon: Icon(
-                          Icons.auto_awesome_rounded,
-                          size: 18,
-                          color: theme.colorScheme.secondary,
+                  const Spacer(),
+                  TextButton.icon(
+                    onPressed: () async {
+                      final result = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const CreatorStudioPage(),
                         ),
-                        label: Text(
-                          l10n.enter_secret_studio,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: theme.colorScheme.secondary,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                          ),
-                          backgroundColor: theme.colorScheme.secondary
-                              .withValues(alpha: 0.08),
-                          side: BorderSide(
-                            color: theme.colorScheme.secondary
-                                .withValues(alpha: 0.24),
-                          ),
-                          shape: const StadiumBorder(),
-                        ),
+                      );
+                      if (!mounted) return;
+                      if (result == true) {
+                        await _refreshData();
+                      }
+                    },
+                    icon: Icon(
+                      Icons.lock_outline_rounded,
+                      size: 16,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.52),
+                    ),
+                    label: Text(
+                      l10n.enter_secret_studio,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
                       ),
+                    ),
+                    style: TextButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  IconButton(
+                    tooltip: l10n.profilePageCreateCharacter,
+                    onPressed: _createCharacter,
+                    visualDensity: VisualDensity.compact,
+                    icon: Icon(
+                      Icons.add_circle_outline_rounded,
+                      size: 22,
+                      color: theme.colorScheme.primary,
                     ),
                   ),
                 ],
@@ -3039,26 +3169,25 @@ class _ProfilePageState extends State<ProfilePage>
                   children: [
                     Icon(
                       Icons.person_add_alt_1_rounded,
-                      size: 64,
-                      color: theme.colorScheme.primary
-                          .withValues(alpha: 0.45),
+                      size: 56,
+                      color: theme.colorScheme.primary.withValues(alpha: 0.38),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
                     Text(
                       l10n.profilePageNoCharacters,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
+                      style: const TextStyle(
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 7),
                     Text(
                       l10n.profilePageNoCharactersHint,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.55),
+                        fontSize: 13,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -3067,19 +3196,14 @@ class _ProfilePageState extends State<ProfilePage>
             )
           else
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                16,
-                12,
-                16,
-                24,
-              ),
+              padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
               sliver: SliverGrid(
                 gridDelegate:
                 const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 12,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.72,
+                  mainAxisSpacing: 14,
+                  childAspectRatio: 0.76,
                 ),
                 delegate: SliverChildBuilderDelegate(
                       (context, index) {
@@ -3094,6 +3218,7 @@ class _ProfilePageState extends State<ProfilePage>
       ),
     );
   }
+
   Widget _buildMyCharacterCard(Character character) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;

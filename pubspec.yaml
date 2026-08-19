@@ -69,6 +69,7 @@ flutter:
   assets:
     - assets/animations/butterfly_splash.mp4
     - assets/images/
+    - assets/images/profile_icons/
     - assets/images/google_logo.png
     - assets/images/flower_gift.png
     - assets/images/flower_gift_dark.png
@@ -107,6 +108,7 @@ flutter:
     - assets/images/qixi_chat_badge.png
     - assets/images/qixi_progress_off.png
     - assets/images/qixi_progress_on.png
+
   fonts:
     - family: NotoSansTC
       fonts:
