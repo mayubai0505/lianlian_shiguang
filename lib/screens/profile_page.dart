@@ -2221,7 +2221,7 @@ class _ProfilePageState extends State<ProfilePage>
   }) {
     final theme = Theme.of(context);
     final baseColor = theme.colorScheme.primary;
-    final outlineColor = _darkenProfileIconColor(baseColor);
+    //final outlineColor = _darkenProfileIconColor(baseColor);
 
     Widget tintedLayer(
         String asset,
@@ -2263,11 +2263,11 @@ class _ProfilePageState extends State<ProfilePage>
               baseColor,
             ),
 
-            // 3. 描邊：同色系，但比主體再深一點
-            tintedLayer(
-              outlineAsset,
-              outlineColor,
-            ),
+            // 3. 描邊：先關掉測試，避免雙線
+// tintedLayer(
+//   outlineAsset,
+//   outlineColor,
+// ),
 
             // 4. 高光：不染色，永遠保留原本白色高光
             Image.asset(
