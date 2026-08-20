@@ -32,11 +32,11 @@ import 'private_character_profile_page.dart'; // 我們剛剛建好的私人專�
 import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // 🌟 加上這個！
+import 'package:google_fonts/google_fonts.dart';
 import '../models/moment_model.dart';
 import 'moment_card.dart';
 import 'edit_moment_page.dart';
 import 'create_moment_page.dart';
-import '../page/creator_follow_list_page.dart';
 import '../services/daily_task_service.dart';
 //個人主頁
 
@@ -1217,39 +1217,27 @@ class _ProfilePageState extends State<ProfilePage>
         : inviterUid;
 
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 4,
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: theme.colorScheme.onSurface.withValues(
-            alpha: 0.06,
-          ),
-        ),
-      ),
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             l10n.profile_referral_title,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface.withValues(
-                alpha: 0.5,
-              ),
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.8,
+              color: theme.colorScheme.onSurface,
             ),
           ),
-
-          const SizedBox(height: 8),
+          const SizedBox(height: 7),
+          Container(
+            width: 46,
+            height: 1.6,
+            color: theme.colorScheme.primary.withValues(alpha: 0.65),
+          ),
+          const SizedBox(height: 18),
 
           // =====================================
           // 狀態一：已完成並已經領取獎勵
@@ -1830,107 +1818,128 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _buildProfileBio() {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final bioStyle = TextStyle(
+    final bioStyle = GoogleFonts.notoSerifTc(
       color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
-      fontSize: 13,
-      height: 1.6,
+      fontSize: 14,
+      height: 1.85,
+      letterSpacing: 0.35,
     );
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 14,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface
-            .withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.colorScheme.primary
-              .withValues(alpha: 0.12),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.profilePageAboutMe,
-            style: TextStyle(
-              color: theme.colorScheme.primary,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Positioned(
+          right: -28,
+          bottom: -20,
+          width: 150,
+          height: 270,
+          child: IgnorePointer(
+            child: Opacity(
+              opacity: theme.brightness == Brightness.dark ? 0.07 : 0.16,
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  theme.colorScheme.primary,
+                  BlendMode.srcIn,
+                ),
+                child: Image.asset(
+                  'assets/images/profile/about_botanical_mask.png',
+                  fit: BoxFit.contain,
+                  alignment: Alignment.bottomRight,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
             ),
           ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              Localizations.localeOf(context).languageCode == 'zh'
+                  ? '關於我'
+                  : l10n.profilePageAboutMe,
+              style: GoogleFonts.notoSerifTc(
+                color: theme.colorScheme.onSurface,
+                fontSize: 21,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.0,
+              ),
+            ),
+            const SizedBox(height: 7),
+            Container(
+              width: 46,
+              height: 1.6,
+              color: theme.colorScheme.primary.withValues(alpha: 0.65),
+            ),
+            const SizedBox(height: 22),
 
-          const SizedBox(height: 8),
-
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final textPainter = TextPainter(
-                text: TextSpan(
-                  text: _bio,
-                  style: bioStyle,
-                ),
-                maxLines: 4,
-                textDirection: Directionality.of(context),
-                textScaler: MediaQuery.textScalerOf(context),
-              )..layout(maxWidth: constraints.maxWidth);
-
-              final bool hasOverflow =
-                  textPainter.didExceedMaxLines;
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _bio,
-                    maxLines: _isBioExpanded ? null : 4,
-                    overflow: _isBioExpanded
-                        ? TextOverflow.visible
-                        : TextOverflow.ellipsis,
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final textPainter = TextPainter(
+                  text: TextSpan(
+                    text: _bio,
                     style: bioStyle,
                   ),
-                  if (hasOverflow) ...[
-                    const SizedBox(height: 4),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _isBioExpanded = !_isBioExpanded;
-                          });
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor:
-                          theme.colorScheme.primary,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 4,
+                  maxLines: 4,
+                  textDirection: Directionality.of(context),
+                  textScaler: MediaQuery.textScalerOf(context),
+                )..layout(maxWidth: constraints.maxWidth);
+
+                final bool hasOverflow =
+                    textPainter.didExceedMaxLines;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _bio,
+                      maxLines: _isBioExpanded ? null : 4,
+                      overflow: _isBioExpanded
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
+                      style: bioStyle,
+                    ),
+                    if (hasOverflow) ...[
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isBioExpanded = !_isBioExpanded;
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                            theme.colorScheme.primary,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize:
+                            MaterialTapTargetSize.shrinkWrap,
+                            visualDensity: VisualDensity.compact,
                           ),
-                          minimumSize: Size.zero,
-                          tapTargetSize:
-                          MaterialTapTargetSize.shrinkWrap,
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        child: Text(
-                          _isBioExpanded
-                              ? l10n.characterProfileCollapse
-                              : l10n.characterProfileViewMore,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                          child: Text(
+                            _isBioExpanded
+                                ? l10n.characterProfileCollapse
+                                : l10n.characterProfileViewMore,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
-              );
-            },
-          ),
-        ],
-      ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1943,260 +1952,380 @@ class _ProfilePageState extends State<ProfilePage>
     final bool isAdmin = currentUser?.uid == adminUid;
     final theme = Theme.of(context);
 
-    return Container(
-      decoration: themeNotifier.currentBackground,
-      child: _isLoading
-          ? const Center(
-        child: CircularProgressIndicator(),
-      )
-          : RefreshIndicator(
-        onRefresh: _refreshData,
-        child: NestedScrollView(
-          headerSliverBuilder: (
-              context,
-              innerBoxIsScrolled,
-              ) {
-            return [
-              SliverAppBar(
-                title: null,
-                toolbarHeight: 54,
-                pinned: true,
-                floating: false,
-                backgroundColor:
-                Theme.of(context).scaffoldBackgroundColor,
-                forceElevated: innerBoxIsScrolled,
-                actions: [
-                  if (!isAppleReviewMode)
+    final profileTheme = theme.copyWith(
+      textTheme: GoogleFonts.notoSerifTcTextTheme(theme.textTheme),
+      primaryTextTheme:
+      GoogleFonts.notoSerifTcTextTheme(theme.primaryTextTheme),
+    );
+
+    return Theme(
+      data: profileTheme,
+      child: Container(
+        decoration: themeNotifier.currentBackground,
+        child: _isLoading
+            ? const Center(
+          child: CircularProgressIndicator(),
+        )
+            : RefreshIndicator(
+          onRefresh: _refreshData,
+          child: NestedScrollView(
+            headerSliverBuilder: (
+                context,
+                innerBoxIsScrolled,
+                ) {
+              return [
+                SliverAppBar(
+                  title: null,
+                  toolbarHeight: 54,
+                  pinned: true,
+                  floating: false,
+                  backgroundColor:
+                  Theme.of(context).scaffoldBackgroundColor,
+                  forceElevated: innerBoxIsScrolled,
+                  actions: [
                     IconButton(
-                      tooltip: '我的背包',
-                      icon: const Icon(
-                        Icons.card_giftcard,
-                      ),
-                      onPressed: () async {
-                        if (currentUser == null) return;
-
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) =>
-                          const Center(
-                            child:
-                            CircularProgressIndicator(),
-                          ),
-                        );
-
-                        try {
-                          final userDoc =
-                          await FirebaseFirestore
-                              .instance
-                              .collection('users')
-                              .doc(currentUser.uid)
-                              .get();
-
-                          final int totalSpent =
-                              userDoc.data()?[
-                              'totalSpent'] ??
-                                  0;
-
-                          final addressDoc =
-                          await FirebaseFirestore
-                              .instance
-                              .collection(
-                            'shipping_addresses',
-                          )
-                              .doc(currentUser.uid)
-                              .get();
-
-                          final bool
-                          hasSubmittedAddress =
-                              addressDoc.exists;
-
-                          if (mounted) {
-                            Navigator.pop(context);
-                          }
-
-                          if (mounted) {
-                            _showBackpackDialog(
-                              context,
-                              currentUser.uid,
-                              totalSpent,
-                              hasSubmittedAddress,
-                            );
-                          }
-                        } catch (e) {
-                          if (mounted) {
-                            Navigator.pop(context);
-                          }
-
-                          debugPrint(
-                            '讀取背包失敗: $e',
-                          );
-                        }
-                      },
-                    ),
-
-                  IconButton(
-                    tooltip:
-                    l10n.title_time_letters,
-                    icon: Image.asset(
-                      'assets/images/scroll_icon.png',
-                      width: 26,
-                      height: 26,
-                      color: Theme.of(context)
-                          .brightness ==
-                          Brightness.dark
-                          ? Colors.white
-                          : const Color(
-                        0xFF6750A4,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                          const AnnouncementListPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  // 👑 管理後台（只有管理員）
-                  if (isAdmin)
-                    IconButton(
-                      tooltip: '管理後台',
-                      icon: Icon(
-                        Icons.admin_panel_settings_rounded,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white70
-                            : const Color(0xFF6750A4),
-                      ),
+                      tooltip: '公告',
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const AdminAnnouncementPage(),
+                            builder: (_) => const AnnouncementListPage(),
                           ),
                         );
                       },
-                    ),
-
-                  IconButton(
-                    icon: Icon(
-                      Icons.settings_outlined,
-                      color: Theme.of(context)
-                          .brightness ==
-                          Brightness.dark
-                          ? Colors.white70
-                          : Colors.black54,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                          const SettingsPage(),
+                      icon: Transform.translate(
+                        offset: const Offset(15, -3),
+                        child: _buildTintedProfileAsset(
+                          maskAsset:
+                          'assets/images/profile/announcement_mask.png',
+                          size: 40,
+                          color: theme.colorScheme.primary,
+                          opacity: 0.62,
                         ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(width: 8),
-                ],
-              ),
-
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding:
-                  const EdgeInsets.fromLTRB(
-                    18,
-                    10,
-                    18,
-                    10,
-                  ),
-                  child:
-                  _buildCreatorProfileHeader(),
-                ),
-              ),
-
-              SliverPersistentHeader(
-                pinned: true,
-                delegate:
-                _ProfileTabBarDelegate(
-                  TabBar(
-                    controller: _profileTabController,
-
-                    // 選中：淡淡的灰紫；未選中：灰色
-                    labelColor: Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xFFC9BDF0)
-                        : const Color(0xFF9586C7),
-                    unselectedLabelColor:
-                    theme.colorScheme.onSurface.withValues(alpha: 0.42),
-
-                    // 只靠 icon + 文字顏色切換，不加底線、不加膠囊底
-                    indicatorColor: Colors.transparent,
-                    dividerColor: Colors.transparent,
-                    splashFactory: NoSplash.splashFactory,
-                    overlayColor:
-                    const WidgetStatePropertyAll<Color>(Colors.transparent),
-
-                    labelStyle: const TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    unselectedLabelStyle: const TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-
-                    tabs: [
-                      Tab(
-                        height: 56,
-                        iconMargin: const EdgeInsets.only(bottom: 4),
-                        icon: const Icon(
-                          Icons.person_outline_rounded,
-                          size: 21,
-                        ),
-                        text: l10n.profilePageTabCharacters,
                       ),
-                      Tab(
-                        height: 56,
-                        iconMargin: const EdgeInsets.only(bottom: 4),
-                        icon: const Icon(
-                          Icons.description_outlined,
-                          size: 21,
-                        ),
-                        text: l10n.profilePageTabBio,
+                    ),
+                    IconButton(
+                      tooltip: '設定',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SettingsPage(),
+                          ),
+                        );
+                      },
+                      icon: _buildTintedProfileAsset(
+                        maskAsset:
+                        'assets/images/profile/top_settings_mask.png',
+                        size: 40,
+                        color: theme.colorScheme.primary,
+                        opacity: 0.62,
                       ),
-                      Tab(
-                        height: 56,
-                        iconMargin: const EdgeInsets.only(bottom: 4),
-                        icon: const Icon(
-                          Icons.auto_awesome_outlined,
-                          size: 21,
+                    ),
+
+                    // 舊入口保留在程式中，但不顯示在目前版面。
+                    if (false) ...[
+                      if (!isAppleReviewMode)
+                        IconButton(
+                          tooltip: '我的背包',
+                          icon: const Icon(
+                            Icons.card_giftcard,
+                          ),
+                          onPressed: () async {
+                            if (currentUser == null) return;
+
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) =>
+                              const Center(
+                                child:
+                                CircularProgressIndicator(),
+                              ),
+                            );
+
+                            try {
+                              final userDoc =
+                              await FirebaseFirestore
+                                  .instance
+                                  .collection('users')
+                                  .doc(currentUser.uid)
+                                  .get();
+
+                              final int totalSpent =
+                                  userDoc.data()?[
+                                  'totalSpent'] ??
+                                      0;
+
+                              final addressDoc =
+                              await FirebaseFirestore
+                                  .instance
+                                  .collection(
+                                'shipping_addresses',
+                              )
+                                  .doc(currentUser.uid)
+                                  .get();
+
+                              final bool
+                              hasSubmittedAddress =
+                                  addressDoc.exists;
+
+                              if (mounted) {
+                                Navigator.pop(context);
+                              }
+
+                              if (mounted) {
+                                _showBackpackDialog(
+                                  context,
+                                  currentUser.uid,
+                                  totalSpent,
+                                  hasSubmittedAddress,
+                                );
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                Navigator.pop(context);
+                              }
+
+                              debugPrint(
+                                '讀取背包失敗: $e',
+                              );
+                            }
+                          },
                         ),
-                        text: l10n.profilePageTabMoments,
+
+                      IconButton(
+                        tooltip:
+                        l10n.title_time_letters,
+                        icon: Image.asset(
+                          'assets/images/scroll_icon.png',
+                          width: 26,
+                          height: 26,
+                          color: Theme.of(context)
+                              .brightness ==
+                              Brightness.dark
+                              ? Colors.white
+                              : const Color(
+                            0xFF6750A4,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                              const AnnouncementListPage(),
+                            ),
+                          );
+                        },
                       ),
+
+                      // 👑 管理後台（只有管理員）
+                      if (isAdmin)
+                        IconButton(
+                          tooltip: '管理後台',
+                          icon: Icon(
+                            Icons.admin_panel_settings_rounded,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white70
+                                : const Color(0xFF6750A4),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AdminAnnouncementPage(),
+                              ),
+                            );
+                          },
+                        ),
+
+                      IconButton(
+                        icon: Icon(
+                          Icons.settings_outlined,
+                          color: Theme.of(context)
+                              .brightness ==
+                              Brightness.dark
+                              ? Colors.white70
+                              : Colors.black54,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                              const SettingsPage(),
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(width: 8),
                     ],
-                  ),
-                  backgroundColor:
-                  Theme.of(context)
-                      .scaffoldBackgroundColor,
+                  ],
                 ),
-              ),
-            ];
-          },
-          body: TabBarView(
-            controller:
-            _profileTabController,
-            children: [
-              _buildCharactersTab(),
-              _buildAboutMeTab(),
-              _buildMomentsTab(),
-            ],
+
+                SliverToBoxAdapter(
+                  child: _buildEditorialProfileHeader(),
+                ),
+
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate:
+                  _ProfileTabBarDelegate(
+                    TabBar(
+                      controller: _profileTabController,
+
+                      labelColor: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFFC9BDF0)
+                          : const Color(0xFF9586C7),
+                      unselectedLabelColor:
+                      theme.colorScheme.onSurface.withValues(alpha: 0.42),
+
+                      indicatorColor: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFFC9BDF0)
+                          : const Color(0xFF9B86C9),
+                      indicatorSize: TabBarIndicatorSize.label,
+                      indicatorWeight: 1.6,
+                      dividerColor: Colors.transparent,
+                      splashFactory: NoSplash.splashFactory,
+                      overlayColor:
+                      const WidgetStatePropertyAll<Color>(Colors.transparent),
+
+                      labelStyle: GoogleFonts.notoSerifTc(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.8,
+                      ),
+                      unselectedLabelStyle: GoogleFonts.notoSerifTc(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.8,
+                      ),
+
+                      tabs: [
+                        Tab(height: 48, text: l10n.profilePageTabCharacters),
+                        Tab(height: 48, text: l10n.profilePageTabMoments),
+                        Tab(
+                          height: 48,
+                          text: Localizations.localeOf(context).languageCode == 'zh'
+                              ? '自我介紹'
+                              : l10n.profilePageTabBio,
+                        ),
+                      ],
+                    ),
+                    backgroundColor:
+                    Theme.of(context)
+                        .scaffoldBackgroundColor,
+                  ),
+                ),
+              ];
+            },
+            body: TabBarView(
+              controller:
+              _profileTabController,
+              children: [
+                _buildCharactersTab(),
+                _buildMomentsTab(),
+                _buildAboutMeTab(),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _openProfileBackpack(User? currentUser) async {
+    if (currentUser == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      final int totalSpent =
+          (userDoc.data()?['totalSpent'] as num?)?.toInt() ?? 0;
+      final addressDoc = await FirebaseFirestore.instance
+          .collection('shipping_addresses')
+          .doc(currentUser.uid)
+          .get();
+
+      if (!mounted) return;
+      Navigator.pop(context);
+      _showBackpackDialog(
+        context,
+        currentUser.uid,
+        totalSpent,
+        addressDoc.exists,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context);
+      debugPrint('讀取背包失敗: $e');
+    }
+  }
+
+  void _showProfileUtilityMenu({
+    required User? currentUser,
+    required bool isAdmin,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!isAppleReviewMode)
+                ListTile(
+                  leading: const Icon(Icons.card_giftcard_outlined),
+                  title: const Text('我的背包'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _openProfileBackpack(currentUser);
+                  },
+                ),
+              ListTile(
+                leading: const Icon(Icons.mail_outline_rounded),
+                title: Text(l10n.title_time_letters),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AnnouncementListPage(),
+                    ),
+                  );
+                },
+              ),
+              if (isAdmin)
+                ListTile(
+                  leading: const Icon(Icons.admin_panel_settings_outlined),
+                  title: const Text('管理後台'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AdminAnnouncementPage(),
+                      ),
+                    );
+                  },
+                ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -2379,210 +2508,329 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
 
-  Widget _buildCreatorProfileHeader() {
+  Widget _buildTintedProfileAsset({
+    required String maskAsset,
+    double size = 90,
+    Color? color,
+    double opacity = 1,
+    String? overlayMaskAsset,
+    Color? overlayColor,
+  }) {
     final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
-    final textColor = theme.colorScheme.onSurface;
-    final subTextColor = textColor.withValues(alpha: 0.58);
-    final l10n = AppLocalizations.of(context)!;
-    final bool isDarkMode = theme.brightness == Brightness.dark;
-    final bool isDefaultTheme = _isDefaultTheme(context);
 
-    final Color softSurface = isDarkMode
-        ? theme.colorScheme.surface.withValues(alpha: 0.72)
-        : Colors.white.withValues(alpha: 0.94);
+    Widget layer(String asset, Color tint) {
+      return ColorFiltered(
+        colorFilter: ColorFilter.mode(tint, BlendMode.srcIn),
+        child: Image.asset(
+          asset,
+          width: size,
+          height: size,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
+        ),
+      );
+    }
 
-    final Color softBorder = isDefaultTheme
-        ? const Color(0xFFE5DFF2)
-        : primaryColor.withValues(alpha: 0.18);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // ─────────────────────────────────────────
-        // 1. 個人資訊：頭像只展示，不再作為編輯入口
-        // ─────────────────────────────────────────
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+    return Opacity(
+      opacity: opacity,
+      child: SizedBox.square(
+        dimension: size,
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: _isBirthdayToday
-                    ? [
-                  BoxShadow(
-                    color: primaryColor.withValues(alpha: 0.28),
-                    blurRadius: 14,
-                    spreadRadius: 2,
-                  ),
-                ]
-                    : null,
-              ),
-              child: CircleAvatar(
-                radius: 43,
-                backgroundColor: primaryColor.withValues(alpha: 0.08),
-                backgroundImage: getAvatarImageProvider(_avatarPath),
-                onBackgroundImageError: (exception, stackTrace) {
-                  debugPrint('⚠️ 個人檔案大頭貼載入失敗，已顯示預設底色');
-                },
-              ),
+            layer(
+              maskAsset,
+              color ?? theme.colorScheme.primary.withValues(alpha: 0.72),
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance
+            if (overlayMaskAsset != null)
+              layer(
+                overlayMaskAsset,
+                overlayColor ?? theme.colorScheme.primary,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditorialProfileHeader() {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final textColor = theme.colorScheme.onSurface;
+    final secondaryColor = textColor.withValues(alpha: 0.52);
+    final localeIsChinese = Localizations.localeOf(context).languageCode == 'zh';
+    final totalLikes = _myCharacters.fold<int>(
+      0,
+          (total, character) => total + character.likesCount,
+    );
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Positioned.fill(
+          child: IgnorePointer(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final pageWidth = constraints.maxWidth;
+                final pageHeight = constraints.maxHeight;
+
+                // 依每支手機的 Header 實際尺寸自動計算，
+                // 並加上上下限，避免小螢幕過擠、大螢幕過大。
+                final leftWidth =
+                (pageWidth * 0.42).clamp(145.0, 180.0).toDouble();
+                final rightWidth =
+                (pageWidth * 0.44).clamp(150.0, 185.0).toDouble();
+                final leftTop =
+                (-pageHeight * 0.018).clamp(-18.0, -8.0).toDouble();
+                final rightTop =
+                (pageHeight * 0.05).clamp(30.0, 48.0).toDouble();
+                final bottomInset =
+                (pageHeight * 0.014).clamp(8.0, 16.0).toDouble();
+                final leftOverflow = -(pageWidth * 0.004);
+                final rightOverflow = -(pageWidth * 0.034);
+
+                return Stack(
+                  children: [
+                    Positioned(
+                      left: leftOverflow,
+                      top: leftTop,
+                      bottom: bottomInset,
+                      width: leftWidth,
+                      child: Opacity(
+                        opacity: isDarkMode ? 0.07 : 0.13,
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            theme.colorScheme.primary,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            'assets/images/profile/botanical_left_mask.png',
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerLeft,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      right: rightOverflow,
+                      top: rightTop,
+                      bottom: bottomInset,
+                      width: rightWidth,
+                      child: Opacity(
+                        opacity: isDarkMode ? 0.07 : 0.12,
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            theme.colorScheme.primary,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            'assets/images/profile/botanical_right_mask.png',
+                            fit: BoxFit.contain,
+                            alignment: Alignment.centerRight,
+                            filterQuality: FilterQuality.high,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: _isBirthdayToday
+                      ? [
+                    BoxShadow(
+                      color: theme.colorScheme.primary
+                          .withValues(alpha: 0.22),
+                      blurRadius: 16,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                      : null,
+                ),
+                child: CircleAvatar(
+                  radius: 47,
+                  backgroundColor:
+                  theme.colorScheme.primary.withValues(alpha: 0.07),
+                  backgroundImage: getAvatarImageProvider(_avatarPath),
+                  onBackgroundImageError: (exception, stackTrace) {
+                    debugPrint('⚠️ 個人檔案大頭貼載入失敗');
+                  },
+                ),
+              ),
+              const SizedBox(height: 13),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Text(
+                      _nickname,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 23,
+                        height: 1.2,
+                        letterSpacing: 0.7,
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
+                    ),
+                  ),
+                  if (_isBirthdayToday) ...[
+                    const SizedBox(width: 7),
+                    Icon(
+                      Icons.cake_outlined,
+                      size: 17,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 5),
+              StreamBuilder<DocumentSnapshot>(
+                stream: currentUser == null
+                    ? null
+                    : FirebaseFirestore.instance
                     .collection('users')
-                    .doc(FirebaseAuth.instance.currentUser?.uid)
+                    .doc(currentUser.uid)
                     .snapshots(),
                 builder: (context, snapshot) {
                   String displayID = _oldIDFromDB;
                   String characterName = l10n.profile_fallback_character;
-
                   if (snapshot.hasData && snapshot.data!.exists) {
-                    final userData =
+                    final data =
                     snapshot.data!.data() as Map<String, dynamic>;
-                    displayID = userData['playerID'] ?? _oldIDFromDB;
-                    characterName = userData['currentCharacter'] ??
+                    displayID = data['playerID']?.toString() ?? _oldIDFromDB;
+                    characterName = data['currentCharacter']?.toString() ??
                         l10n.profile_fallback_character;
                   }
 
                   return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              _nickname,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 23,
-                                height: 1.15,
-                                fontWeight: FontWeight.w700,
-                                color: textColor,
-                              ),
-                            ),
+                      InkWell(
+                        onTap: () {
+                          Clipboard.setData(ClipboardData(text: displayID));
+                          ToastUtils.showCenterToast(
+                            context,
+                            l10n.toast_id_copied,
+                            customIcon: Icons.copy_rounded,
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(20),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
                           ),
-                          if (_isBirthdayToday) ...[
-                            const SizedBox(width: 7),
-                            Icon(
-                              Icons.cake_rounded,
-                              size: 18,
-                              color: primaryColor,
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 7),
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              'ID: $displayID',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: subTextColor,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '@$displayID',
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 12.5,
+                                  color: secondaryColor,
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          InkWell(
-                            onTap: () {
-                              Clipboard.setData(
-                                ClipboardData(text: displayID),
-                              );
-                              ToastUtils.showCenterToast(
-                                context,
-                                l10n.toast_id_copied,
-                                customIcon: Icons.copy_rounded,
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(20),
-                            child: Padding(
-                              padding: const EdgeInsets.all(3),
-                              child: Icon(
+                              const SizedBox(width: 5),
+                              Icon(
                                 Icons.copy_rounded,
-                                size: 15,
-                                color: subTextColor,
+                                size: 13,
+                                color: secondaryColor.withValues(alpha: 0.72),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 14,
+                        runSpacing: 4,
                         children: [
-                          Flexible(
-                            child: Text(
-                              l10n.profile_send_invite_btn,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                color: subTextColor,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 5),
                           InkWell(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (dialogContext) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    title: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.info_outline_rounded,
-                                          color: primaryColor,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            l10n.profile_referral_rule_title,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    content: Text(
-                                      l10n.profile_referral_rule_receiver,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        height: 1.5,
-                                      ),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(dialogContext).pop(),
-                                        child: Text(l10n.common_got_it),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
+                            onTap: _editProfile,
                             borderRadius: BorderRadius.circular(20),
                             child: Padding(
-                              padding: const EdgeInsets.all(2),
-                              child: Icon(
-                                Icons.help_outline_rounded,
-                                size: 15,
-                                color: subTextColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildTintedProfileAsset(
+                                    maskAsset: 'assets/images/profile/profile_quill_mask.png',
+                                    size: 22,
+                                    color: theme.colorScheme.primary,
+                                    opacity: 0.78,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    l10n.profilePageEditProfile,
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: 12.5,
+                                      color: theme.colorScheme.primary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 9),
+                          InkWell(
+                            onTap: kIsWeb
+                                ? null
+                                : () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const StorePage(),
+                              ),
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    isDarkMode
+                                        ? 'assets/images/flower_gift_dark.png'
+                                        : 'assets/images/flower_gift.png',
+                                    width: 17,
+                                    height: 17,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    _formatPoints(
+                                      _flowerPoints < 0 ? 0 : _flowerPoints,
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      color: secondaryColor,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                           InkWell(
                             onTap: () async {
                               final shareText = l10n.profile_share_message(
@@ -2595,11 +2843,11 @@ class _ProfilePageState extends State<ProfilePage>
                             },
                             borderRadius: BorderRadius.circular(20),
                             child: Padding(
-                              padding: const EdgeInsets.all(2),
+                              padding: const EdgeInsets.all(5),
                               child: Icon(
                                 Icons.share_outlined,
-                                size: 16,
-                                color: primaryColor,
+                                size: 15,
+                                color: secondaryColor,
                               ),
                             ),
                           ),
@@ -2609,219 +2857,150 @@ class _ProfilePageState extends State<ProfilePage>
                   );
                 },
               ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 18),
-
-        // ─────────────────────────────────────────
-        // 2. 數據列：不用四張卡，維持輕量排版
-        // ─────────────────────────────────────────
-        Row(
-          children: [
-            Expanded(
-              child: _buildProfileStatItem(
-                value: _friendsList.length,
-                label: l10n.profilePageFriends,
-              ),
-            ),
-            _buildStatDivider(theme),
-            Expanded(
-              child: _buildProfileStatItem(
-                value: _myCharacters.length,
-                label: l10n.profilePageWorks,
-              ),
-            ),
-            _buildStatDivider(theme),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(FirebaseAuth.instance.currentUser?.uid)
-                    .collection('following')
+              const SizedBox(height: 18),
+              StreamBuilder<QuerySnapshot>(
+                stream: currentUser == null
+                    ? null
+                    : FirebaseFirestore.instance
+                    .collection('artifacts')
+                    .doc(_appId)
+                    .collection('moments')
+                    .where('createdBy', isEqualTo: currentUser.uid)
                     .snapshots(),
                 builder: (context, snapshot) {
-                  final followingCount = snapshot.data?.docs.length ?? 0;
-                  return _buildProfileStatItem(
-                    value: followingCount,
-                    label: l10n.profilePageFollowing,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const CreatorFollowListPage(
-                            type: CreatorFollowListType.following,
-                          ),
+                  final momentsCount = snapshot.data?.docs.length ?? 0;
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: _buildProfileStatItem(
+                          value: _myCharacters.length,
+                          label: l10n.profilePageTabCharacters,
                         ),
-                      );
-                    },
+                      ),
+                      Expanded(
+                        child: _buildProfileStatItem(
+                          value: momentsCount,
+                          label: l10n.profilePageTabMoments,
+                          onTap: () => _profileTabController.animateTo(1),
+                        ),
+                      ),
+                      Expanded(
+                        child: _buildProfileStatItem(
+                          value: totalLikes,
+                          label: localeIsChinese ? '喜歡' : 'Likes',
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),
-            ),
-            _buildStatDivider(theme),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(FirebaseAuth.instance.currentUser?.uid)
-                    .collection('followers')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  final followersCount = snapshot.data?.docs.length ?? 0;
-                  return _buildProfileStatItem(
-                    value: followersCount,
-                    label: l10n.profilePageFollowers,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const CreatorFollowListPage(
-                            type: CreatorFollowListType.followers,
-                          ),
+              const SizedBox(height: 15),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildEditorialShortcut(
+                      onTap: (_isClaimingCheckIn || _hasCheckedInToday)
+                          ? null
+                          : _performCheckIn,
+                      icon: _isClaimingCheckIn
+                          ? SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1.7,
+                          color: theme.colorScheme.primary,
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 16),
-
-        // ─────────────────────────────────────────
-        // 3. 拾光點數：獨立資訊卡
-        // ─────────────────────────────────────────
-        InkWell(
-          onTap: kIsWeb
-              ? null
-              : () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const StorePage(),
-            ),
-          ),
-          borderRadius: BorderRadius.circular(18),
-          child: Container(
-            width: double.infinity,
-            height: 52,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: softSurface,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.06),
-              ),
-              boxShadow: isDarkMode
-                  ? null
-                  : [
-                BoxShadow(
-                  color: const Color(0xFF6F5FA8)
-                      .withValues(alpha: 0.045),
-                  blurRadius: 18,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Image.asset(
-                  isDarkMode
-                      ? 'assets/images/flower_gift_dark.png'
-                      : 'assets/images/flower_gift.png',
-                  height: 25,
-                  width: 25,
-                ),
-                const SizedBox(width: 11),
-                Text(
-                  _formatPoints(_flowerPoints < 0 ? 0 : _flowerPoints),
-                  style: TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.w700,
-                    color: primaryColor,
+                      )
+                          : _buildTintedProfileAsset(
+                        maskAsset:
+                        'assets/images/profile/calendar_base_mask.png',
+                        overlayMaskAsset: _hasCheckedInToday
+                            ? 'assets/images/profile/calendar_check_mask.png'
+                            : null,
+                        size: 82,
+                        opacity: _hasCheckedInToday ? 0.72 : 0.92,
+                      ),
+                      title: localeIsChinese
+                          ? (_hasCheckedInToday ? '已簽到' : '簽到')
+                          : (_hasCheckedInToday
+                          ? l10n.profilePageAlreadyCheckedIn
+                          : l10n.status_daily_sign_in),
+                      subtitle: localeIsChinese
+                          ? (_hasCheckedInToday ? '今天已留下足跡' : '今日尚未簽到')
+                          : null,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                if (!kIsWeb)
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    color: subTextColor,
-                    size: 22,
+                  Container(
+                    width: 1,
+                    height: 82,
+                    color: textColor.withValues(alpha: 0.07),
                   ),
-              ],
-            ),
+                  Expanded(
+                    child: _buildEditorialShortcut(
+                      onTap: _showHeartbeatDiary,
+                      icon: _buildTintedProfileAsset(
+                        maskAsset:
+                        'assets/images/profile/heart_diary_mask.png',
+                        size: 82,
+                        opacity: 0.92,
+                      ),
+                      title: l10n.profilePageHeartbeatDiary,
+                      subtitle: localeIsChinese ? '記下心動瞬間' : null,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ),
-
-        const SizedBox(height: 10),
-
-        // ─────────────────────────────────────────
-        // 4. 編輯個人檔案：獨立、細長、低存在感
-        // ─────────────────────────────────────────
-        SizedBox(
-          width: double.infinity,
-          height: 40,
-          child: OutlinedButton.icon(
-            onPressed: _editProfile,
-            icon: Icon(
-              Icons.edit_outlined,
-              size: 16,
-              color: primaryColor,
-            ),
-            label: Text(
-              l10n.profilePageEditProfile,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: primaryColor,
-              backgroundColor: Colors.transparent,
-              side: BorderSide(
-                color: softBorder,
-                width: 0.9,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        // ─────────────────────────────────────────
-        // 5. 簽到 + 心動日記：只留 icon + 標題，不放副文字
-        // ─────────────────────────────────────────
-        Row(
-          children: [
-            Expanded(child: _buildCheckInButton()),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildProfileShortcut(
-                iconWidget: _buildLayeredProfileIcon(
-                  baseAsset:
-                  'assets/images/profile_icons/diary_base.png',
-                  outlineAsset:
-                  'assets/images/profile_icons/diary_outline.png',
-                  highlightAsset:
-                  'assets/images/profile_icons/diary_highlight.png',
-                  shadowAsset:
-                  'assets/images/profile_icons/diary_shadow.png',
-                  size: 34,
-                ),
-                label: l10n.profilePageHeartbeatDiary,
-                onTap: _showHeartbeatDiary,
-              ),
-            ),
-          ],
         ),
       ],
+    );
+  }
+
+  Widget _buildEditorialShortcut({
+    required Widget icon,
+    required String title,
+    required VoidCallback? onTap,
+    String? subtitle,
+  }) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      splashColor: theme.colorScheme.primary.withValues(alpha: 0.06),
+      highlightColor: theme.colorScheme.primary.withValues(alpha: 0.035),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+        child: Column(
+          children: [
+            SizedBox(height: 82, child: Center(child: icon)),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 3),
+              Text(
+                subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 11,
+                  color:
+                  theme.colorScheme.onSurface.withValues(alpha: 0.43),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 
@@ -2979,7 +3158,7 @@ class _ProfilePageState extends State<ProfilePage>
           children: [
             Text(
               _formatPoints(value),
-              style: TextStyle(
+              style: GoogleFonts.notoSerifTc(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color:
@@ -2989,7 +3168,7 @@ class _ProfilePageState extends State<ProfilePage>
             const SizedBox(height: 3),
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.notoSerifTc(
                 fontSize: 12,
                 color: theme
                     .colorScheme.onSurface
@@ -3007,14 +3186,20 @@ class _ProfilePageState extends State<ProfilePage>
         FirebaseAuth.instance.currentUser;
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
       children: [
         if (_bio.isNotEmpty)
           _buildProfileBio()
         else
           _buildEmptyBioCard(),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
+        Divider(
+          height: 1,
+          thickness: 0.7,
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.14),
+        ),
+        const SizedBox(height: 24),
 
         if (currentUser != null)
           StreamBuilder<DocumentSnapshot>(
@@ -3036,7 +3221,7 @@ class _ProfilePageState extends State<ProfilePage>
             },
           ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
 
         _buildFriendsListSection(),
       ],
@@ -3048,19 +3233,10 @@ class _ProfilePageState extends State<ProfilePage>
 
     return InkWell(
       onTap: _editProfile,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface
-              .withValues(alpha: 0.72),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: theme.colorScheme.primary
-                .withValues(alpha: 0.12),
-          ),
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 18),
         child: Column(
           children: [
             Icon(
@@ -3072,8 +3248,9 @@ class _ProfilePageState extends State<ProfilePage>
             const SizedBox(height: 8),
             Text(
               l10n.profilePageNoBio,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 4),
@@ -3102,18 +3279,10 @@ class _ProfilePageState extends State<ProfilePage>
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 14, 18, 6),
+              padding: const EdgeInsets.fromLTRB(18, 12, 12, 4),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    l10n.profilePageTabCharacters,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const Spacer(),
                   TextButton.icon(
                     onPressed: () async {
                       final result = await Navigator.push<bool>(
@@ -3129,13 +3298,13 @@ class _ProfilePageState extends State<ProfilePage>
                     },
                     icon: Icon(
                       Icons.lock_outline_rounded,
-                      size: 16,
+                      size: 14,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.52),
                     ),
                     label: Text(
                       l10n.enter_secret_studio,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 12.5,
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
                       ),
                     ),
@@ -3150,8 +3319,8 @@ class _ProfilePageState extends State<ProfilePage>
                     onPressed: _createCharacter,
                     visualDensity: VisualDensity.compact,
                     icon: Icon(
-                      Icons.add_circle_outline_rounded,
-                      size: 22,
+                      Icons.add_rounded,
+                      size: 24,
                       color: theme.colorScheme.primary,
                     ),
                   ),
@@ -3201,9 +3370,9 @@ class _ProfilePageState extends State<ProfilePage>
                 gridDelegate:
                 const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 14,
-                  childAspectRatio: 0.76,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.62,
                 ),
                 delegate: SliverChildBuilderDelegate(
                       (context, index) {
@@ -3219,7 +3388,153 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+  Future<void> _openMyCharacterEditor(Character character) async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CharacterEditPage(character: character),
+      ),
+    );
+
+    if (!mounted || result == null) return;
+
+    final changed = result['changed'] == true;
+    final deleted = result['deleted'] == true;
+    final deletedCharacterId = result['characterId']?.toString();
+    final message = result['message']?.toString();
+
+    if (deleted) {
+      final idToRemove = deletedCharacterId ?? character.id;
+      CharacterRepository.invalidate(idToRemove);
+      setState(() {
+        _myCharacters.removeWhere((item) => item.id == idToRemove);
+        _friendsList.removeWhere((item) => item.id == idToRemove);
+      });
+      if (message != null && message.isNotEmpty) {
+        ToastUtils.showCenterToast(
+          context,
+          message,
+          customIcon: Icons.person_remove_rounded,
+        );
+      }
+      return;
+    }
+
+    if (changed) {
+      CharacterRepository.invalidate(character.id);
+      await _refreshData();
+      if (!mounted) return;
+      if (message != null && message.isNotEmpty) {
+        ToastUtils.showCenterToast(
+          context,
+          message,
+          customIcon: Icons.manage_accounts_rounded,
+        );
+      }
+    }
+  }
+
   Widget _buildMyCharacterCard(Character character) {
+    final theme = Theme.of(context);
+    final imagePath = character.avatarPath.trim().isNotEmpty
+        ? character.avatarPath
+        : 'assets/images/avatar1.png';
+
+    return InkWell(
+      onTap: () => _openMyCharacterEditor(character),
+      borderRadius: BorderRadius.circular(13),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(13),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image(
+              image: getAvatarImageProvider(imagePath),
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.high,
+              errorBuilder: (_, __, ___) => Container(
+                color: theme.colorScheme.primary.withValues(alpha: 0.07),
+                child: Icon(
+                  Icons.person_outline_rounded,
+                  size: 52,
+                  color: theme.colorScheme.primary.withValues(alpha: 0.32),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.48),
+                    ],
+                    stops: const [0, 0.62, 1],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 12,
+              right: 40,
+              bottom: 12,
+              child: Row(
+                children: [
+                  Icon(
+                    character.isPublic
+                        ? Icons.public_rounded
+                        : Icons.lock_outline_rounded,
+                    size: 13,
+                    color: Colors.white.withValues(alpha: 0.82),
+                  ),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      character.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                        color: Colors.white,
+                        shadows: const [
+                          Shadow(
+                            color: Colors.black38,
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 5,
+              right: 5,
+              child: IconButton(
+                tooltip: AppLocalizations.of(context)!
+                    .profilePageCharacterActions,
+                visualDensity: VisualDensity.compact,
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.black.withValues(alpha: 0.20),
+                  foregroundColor: Colors.white.withValues(alpha: 0.90),
+                ),
+                icon: const Icon(Icons.more_horiz_rounded, size: 18),
+                onPressed: () => _showMyCharacterActions(character),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegacyMyCharacterCard(Character character) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final primaryColor = theme.colorScheme.primary;
@@ -3714,258 +4029,283 @@ class _ProfilePageState extends State<ProfilePage>
       );
     }
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            8,
-          ),
-
-          child: SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _showProfileAuthorSelectionSheet,
-              icon: const Icon(
-                Icons.add_rounded,
-                size: 21,
-              ),
-              label: Text(
-                l10n.profilePagePublishMoment,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 13,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final content = Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 4),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: _showProfileAuthorSelectionSheet,
+                  icon: _buildTintedProfileAsset(
+                    maskAsset: 'assets/images/profile/profile_quill_mask.png',
+                    size: 22,
+                    color: theme.colorScheme.primary,
+                    opacity: 0.72,
+                  ),
+                  label: Text(
+                    Localizations.localeOf(context).languageCode == 'zh'
+                        ? '寫下此刻'
+                        : l10n.profilePagePublishMoment,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.primary.withValues(alpha: 0.78),
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
 
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            16,
-            0,
-            16,
-            8,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: _buildProfileMomentFilterChip(
-                  label: l10n.profilePageFilterAll,
-                  value: 'all',
-                ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                22,
+                0,
+                22,
+                12,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildProfileMomentFilterChip(
-                  label: l10n.profilePageFilterCreator,
-                  value: 'creator',
-                ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildProfileMomentFilterChip(
+                      label: l10n.profilePageFilterAll,
+                      value: 'all',
+                    ),
+                  ),
+                  const SizedBox(width: 22),
+                  Expanded(
+                    child: _buildProfileMomentFilterChip(
+                      label: l10n.profilePageFilterCreator,
+                      value: 'creator',
+                    ),
+                  ),
+                  const SizedBox(width: 22),
+                  Expanded(
+                    child: _buildProfileMomentFilterChip(
+                      label: l10n.profilePageFilterCharacter,
+                      value: 'character',
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildProfileMomentFilterChip(
-                  label: l10n.profilePageFilterCharacter,
-                  value: 'character',
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
 
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('artifacts')
-                .doc(_appId)
-                .collection('moments')
-                .where(
-              'createdBy',
-              isEqualTo: currentUser.uid,
-            )
-                .orderBy(
-              'createdAt',
-              descending: true,
-            )
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState ==
-                  ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('artifacts')
+                    .doc(_appId)
+                    .collection('moments')
+                    .where(
+                  'createdBy',
+                  isEqualTo: currentUser.uid,
+                )
+                    .orderBy(
+                  'createdAt',
+                  descending: true,
+                )
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
 
-              if (snapshot.hasError) {
-                debugPrint(
-                  '❌ 個人動態讀取失敗：${snapshot.error}',
-                );
+                  if (snapshot.hasError) {
+                    debugPrint(
+                      '❌ 個人動態讀取失敗：${snapshot.error}',
+                    );
 
-                return ListView(
-                  physics:
-                  const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(24),
-                  children: [
-                    const SizedBox(height: 60),
-                    Icon(
-                      Icons.error_outline_rounded,
-                      size: 56,
-                      color: theme.colorScheme.error
-                          .withValues(alpha: 0.6),
+                    return ListView(
+                      physics:
+                      const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(24),
+                      children: [
+                        const SizedBox(height: 60),
+                        Icon(
+                          Icons.error_outline_rounded,
+                          size: 56,
+                          color: theme.colorScheme.error
+                              .withValues(alpha: 0.6),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.profilePageMomentsLoadFailed,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.profilePageTryAgainLater,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.55),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  final docs = snapshot.data?.docs ?? [];
+
+                  final allMoments = docs.map((doc) {
+                    return Moment.fromFirestore(doc);
+                  }).toList();
+
+                  final moments = allMoments.where((moment) {
+                    switch (_profileMomentFilter) {
+                      case 'creator':
+                        return moment.isCreatorPost;
+
+                      case 'character':
+                        return !moment.isCreatorPost;
+
+                      case 'all':
+                      default:
+                        return true;
+                    }
+                  }).toList();
+
+                  if (moments.isEmpty) {
+                    String emptyTitle;
+                    String emptyDescription;
+
+                    switch (_profileMomentFilter) {
+                      case 'creator':
+                        emptyTitle = l10n.profilePageNoCreatorMoments;
+                        emptyDescription = l10n.profilePageNoCreatorMomentsHint;
+                        break;
+
+                      case 'character':
+                        emptyTitle = l10n.profilePageNoCharacterMoments;
+                        emptyDescription = l10n.profilePageNoCharacterMomentsHint;
+                        break;
+
+                      default:
+                        emptyTitle = l10n.profilePageNoMoments;
+                        emptyDescription = l10n.profilePageNoMomentsHint;
+                    }
+
+                    return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(24),
+                      children: [
+                        const SizedBox(height: 40),
+                        Icon(
+                          Icons.dynamic_feed_outlined,
+                          size: 56,
+                          color: theme.colorScheme.primary
+                              .withValues(alpha: 0.4),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          emptyTitle,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          emptyDescription,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 13,
+                            height: 1.5,
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.55),
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return ListView.builder(
+                    physics:
+                    const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(
+                      16,
+                      4,
+                      16,
+                      24,
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.profilePageMomentsLoadFailed,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.profilePageTryAgainLater,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.55),
-                      ),
-                    ),
-                  ],
-                );
-              }
+                    itemCount: moments.length,
+                    itemBuilder: (context, index) {
+                      final moment = moments[index];
 
-              final docs = snapshot.data?.docs ?? [];
+                      return Column(
+                        key: ValueKey(moment.id),
+                        children: [
+                          MomentCard(
+                            moment: moment,
+                            currentUserId: currentUser.uid,
+                            showFeatureTips: false,
 
-              final allMoments = docs.map((doc) {
-                return Moment.fromFirestore(doc);
-              }).toList();
+                            // 個人主頁內仍可正常按讚
+                            onLikeTapped: () async {
+                              await _handleProfileMomentLike(moment);
+                            },
 
-              final moments = allMoments.where((moment) {
-                switch (_profileMomentFilter) {
-                  case 'creator':
-                    return moment.isCreatorPost;
+                            // 編輯自己的動態
+                            onEditTapped: () {
+                              _editProfileMoment(moment);
+                            },
 
-                  case 'character':
-                    return !moment.isCreatorPost;
+                            // 刪除自己的動態
+                            onDeleteTapped: () {
+                              _deleteProfileMoment(moment.id);
+                            },
 
-                  case 'all':
-                  default:
-                    return true;
-                }
-              }).toList();
-
-              if (moments.isEmpty) {
-                String emptyTitle;
-                String emptyDescription;
-
-                switch (_profileMomentFilter) {
-                  case 'creator':
-                    emptyTitle = l10n.profilePageNoCreatorMoments;
-                    emptyDescription = l10n.profilePageNoCreatorMomentsHint;
-                    break;
-
-                  case 'character':
-                    emptyTitle = l10n.profilePageNoCharacterMoments;
-                    emptyDescription = l10n.profilePageNoCharacterMomentsHint;
-                    break;
-
-                  default:
-                    emptyTitle = l10n.profilePageNoMoments;
-                    emptyDescription = l10n.profilePageNoMomentsHint;
-                }
-
-                return ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(24),
-                  children: [
-                    const SizedBox(height: 40),
-                    Icon(
-                      Icons.dynamic_feed_outlined,
-                      size: 56,
-                      color: theme.colorScheme.primary
-                          .withValues(alpha: 0.4),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      emptyTitle,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      emptyDescription,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        height: 1.5,
-                        color: theme.colorScheme.onSurface
-                            .withValues(alpha: 0.55),
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              return ListView.builder(
-                physics:
-                const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.only(
-                  top: 8,
-                  bottom: 24,
-                ),
-                itemCount: moments.length,
-                itemBuilder: (context, index) {
-                  final moment = moments[index];
-
-                  return MomentCard(
-                    key: ValueKey(moment.id),
-                    moment: moment,
-                    currentUserId: currentUser.uid,
-                    showFeatureTips: false,
-
-                    // 個人主頁內仍可正常按讚
-                    onLikeTapped: () async {
-                      await _handleProfileMomentLike(
-                        moment,
+                            // 點角色頭像時先沿用原有角色跳轉
+                            onAvatarTapped: () {
+                              _openProfileMomentAuthor(moment);
+                            },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Divider(
+                              height: 28,
+                              thickness: 0.7,
+                              color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                            ),
+                          ),
+                        ],
                       );
-                    },
-
-                    // 編輯自己的動態
-                    onEditTapped: () {
-                      _editProfileMoment(moment);
-                    },
-
-                    // 刪除自己的動態
-                    onDeleteTapped: () {
-                      _deleteProfileMoment(moment.id);
-                    },
-
-                    // 點角色頭像時先沿用原有角色跳轉
-                    onAvatarTapped: () {
-                      _openProfileMomentAuthor(moment);
                     },
                   );
                 },
-              );
-            },
-          ),
-        ),
-      ],
+              ),
+            ),
+          ],
+        );
+
+        // NestedScrollView 的個人資料區尚未收合時，分頁可用高度可能
+        // 暫時小於工具列本身；改為可捲動，避免 RenderFlex overflow。
+        if (constraints.maxHeight < 120) {
+          return SingleChildScrollView(
+            child: SizedBox(
+              height: 120,
+              child: content,
+            ),
+          );
+        }
+
+        return content;
+      },
     );
   }
   Widget _buildProfileMomentFilterChip({
@@ -3985,37 +4325,31 @@ class _ProfilePageState extends State<ProfilePage>
           _profileMomentFilter = value;
         });
       },
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(6),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(
-          vertical: 9,
-        ),
+        padding: const EdgeInsets.only(bottom: 7),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isSelected
-              ? theme.colorScheme.primary
-              : theme.colorScheme.surface
-              .withValues(alpha: 0.75),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurface
-                .withValues(alpha: 0.10),
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected
+                  ? theme.colorScheme.primary.withValues(alpha: 0.75)
+                  : Colors.transparent,
+              width: 1.7,
+            ),
           ),
         ),
         child: Text(
           label,
-          style: TextStyle(
+          style: GoogleFonts.notoSerifTc(
             fontSize: 13,
             fontWeight: isSelected
                 ? FontWeight.bold
                 : FontWeight.w500,
             color: isSelected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurface
-                .withValues(alpha: 0.65),
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onSurface.withValues(alpha: 0.54),
           ),
         ),
       ),
@@ -4202,249 +4536,6 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  Widget _buildProfileHeader() {
-    final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
-    final textColor = theme.colorScheme.onSurface;
-    final subTextColor = textColor.withValues(alpha:0.7);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final l10n = AppLocalizations.of(context)!;
-
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: _editProfile,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: _isBirthdayToday ? [
-                BoxShadow(
-                    color: primaryColor.withValues(alpha:0.5),
-                    blurRadius: 15,
-                    spreadRadius: 5
-                )
-              ] : null,
-            ),
-            child: CircleAvatar(
-              radius: 50,
-              backgroundColor: primaryColor.withValues(alpha:0.1),
-              backgroundImage: getAvatarImageProvider(_avatarPath),
-              onBackgroundImageError: (exception, stackTrace) {
-                debugPrint('⚠️ 個人檔案大頭貼載入失敗，已自動顯示預設底色');
-              },
-            ),
-          ),
-        ),
-        const SizedBox(width: 20),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      _nickname,
-                      style: TextStyle(
-                          fontSize: 22,
-                          color: textColor,
-                          fontWeight: FontWeight.bold
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (_isBirthdayToday)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Icon(Icons.cake, color: primaryColor, size: 22),
-                    ),
-                ],
-              ),
-              if (_playerID.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).snapshots(),
-                  builder: (context, snapshot) {
-                    String displayID = _oldIDFromDB;
-                    String characterName = l10n.profile_fallback_character;
-
-                    if (snapshot.hasData && snapshot.data!.exists) {
-                      final userData = snapshot.data!.data() as Map<String, dynamic>;
-                      displayID = userData['playerID'] ?? _oldIDFromDB;
-                      characterName = userData['currentCharacter'] ?? l10n.profile_fallback_character;
-                    }
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'ID: $displayID',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: subTextColor,
-                                fontWeight: _hasChangedID ? FontWeight.w500 : FontWeight.normal,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () {
-                                Clipboard.setData(ClipboardData(text: displayID));
-                                ToastUtils.showCenterToast(
-                                  context,
-                                  l10n.toast_id_copied,
-                                  customIcon: Icons.copy_rounded,
-                                );
-                              },
-                              child: Tooltip(
-                                message: _hasChangedID ? l10n.profile_id_locked : l10n.profile_copy_id,
-                                child: Icon(Icons.copy, size: 14, color: subTextColor),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              l10n.profile_send_invite_btn,
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey.shade500,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      title: Row(
-                                        children: [
-                                          Icon(Icons.info_outline, color: Colors.pinkAccent),
-                                          SizedBox(width: 8),
-                                          Text(
-                                            l10n.profile_referral_rule_title,
-                                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                                          ),
-                                        ],
-                                      ),
-                                      content: Text(
-                                        l10n.profile_referral_rule_receiver,
-                                        style: TextStyle(fontSize: 14, height: 1.5),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.of(context).pop(),
-                                          child: Text(
-                                            l10n.common_got_it,
-                                            style: TextStyle(
-                                              color: Colors.pinkAccent,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              child: Icon(
-                                Icons.help_outline_rounded,
-                                size: 13,
-                                color: Colors.grey.shade400,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () async {
-                                final shareText = l10n.profile_share_message(characterName, displayID);
-                                await SharePlus.instance.share(
-                                  ShareParams(text: shareText),
-                                );
-                              },
-                              child: Icon(
-                                Icons.share_rounded,
-                                size: 13,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    );
-                  },
-                ),
-              ],
-              const SizedBox(height: 8),
-              InkWell(
-                onTap: kIsWeb
-                    ? null
-                    : () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const StorePage(),
-                  ),
-                ),
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isDarkMode
-                        ? Colors.grey[800]!.withValues(alpha: 0.6)
-                        : Colors.white.withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: primaryColor.withValues(alpha:0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                          isDarkMode ? 'assets/images/flower_gift_dark.png' : 'assets/images/flower_gift.png',
-                          height: 20
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _formatPoints(_flowerPoints < 0 ? 0 : _flowerPoints),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
-                          fontSize: 14,
-                        ),
-                      ),
-                      if (!kIsWeb) ...[
-                        const SizedBox(width: 6),
-                        Icon(
-                          Icons.add_circle_outline,
-                          size: 16,
-                          color: primaryColor.withValues(alpha: 0.7),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              Text(
-                l10n.hint_click_avatar_to_edit,
-                style: TextStyle(fontSize: 12, color: subTextColor.withValues(alpha:0.8)),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   void _showAllFriends() {
     Navigator.push(
       context,
@@ -4577,9 +4668,10 @@ class _ProfilePageState extends State<ProfilePage>
 
   Widget _buildSectionTitle(String title) {
     return Text(title,
-        style: TextStyle(
+        style: GoogleFonts.notoSerifTc(
             fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.8,
             color: Theme.of(context).colorScheme.onSurface));
   }
 
@@ -4587,6 +4679,7 @@ class _ProfilePageState extends State<ProfilePage>
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -4594,32 +4687,46 @@ class _ProfilePageState extends State<ProfilePage>
             _buildSectionTitle(l10n.title_my_friends),
             TextButton(
               onPressed: _showAllFriends,
-              child: Text(l10n.action_show_all,
-                  style: TextStyle(color: theme.colorScheme.secondary, fontSize: 14)),
+              child: Text(
+                l10n.action_show_all,
+                style: GoogleFonts.notoSerifTc(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.72),
+                  fontSize: 12.5,
+                ),
+              ),
             ),
           ],
         ),
-        SizedBox(height: 10),
+        Container(
+          width: 46,
+          height: 1.6,
+          color: theme.colorScheme.primary.withValues(alpha: 0.65),
+        ),
+        const SizedBox(height: 18),
         _friendsList.isEmpty
             ? Center(
             child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(l10n.noFriendsMessage,
                     style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.7)))))
-            : GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 0.8,
+            : SizedBox(
+          height: 108,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: _friendsList.length > 6 ? 6 : _friendsList.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              final friend = _friendsList[index];
+              return SizedBox(
+                width: 86,
+                child: _buildCharacterGridItem(
+                  friend,
+                  isMyCharacter: false,
+                ),
+              );
+            },
           ),
-          itemCount: _friendsList.length > 6 ? 6 : _friendsList.length,
-          itemBuilder: (context, index) {
-            final friend = _friendsList[index];
-            return _buildCharacterGridItem(friend, isMyCharacter: false);
-          },
         ),
       ],
     );

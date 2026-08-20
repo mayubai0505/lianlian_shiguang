@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart'; // ✨  引入 provider
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,16 +41,14 @@ class _SettingsPageState extends State<SettingsPage> {
   // 輔助函式：建立一個帶有標題的區塊
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 8.0),
+      padding: const EdgeInsets.fromLTRB(6, 34, 6, 14),
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Theme
-              .of(context)
-              .colorScheme
-              .primary, // 讓標題顏色也跟隨主題
+        style: GoogleFonts.notoSerifTc(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.2,
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
     );
@@ -275,46 +274,110 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  // ✨ 1. 這是建立每個設定選項的「食譜」
+  Widget _buildTintedSettingAsset({
+    required String maskAsset,
+    required Color color,
+    double size = 31,
+    double opacity = 0.82,
+  }) {
+    return Opacity(
+      opacity: opacity,
+      child: Image.asset(
+        maskAsset,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        color: color,
+        colorBlendMode: BlendMode.srcIn,
+        filterQuality: FilterQuality.high,
+      ),
+    );
+  }
+
+  // 無卡片設計：以留白與細分隔線取代大量圓角框。
   Widget _buildSettingsTile({
-    required IconData icon,
-    Color? iconColor,
+    required String maskAsset,
     required String title,
     String? subtitle,
     Widget? trailing,
     required VoidCallback onTap,
     required ThemeData theme,
+    bool showDivider = true,
   }) {
-    final isDarkMode = theme.brightness == Brightness.dark;
     final primaryColor = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-      decoration: BoxDecoration(
-        // ✅ 毛玻璃效果：根據主題自動調整透明度
-        color: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: primaryColor.withValues(
-            alpha: isDarkMode ? 0.28 : 0.22,
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 74),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 42,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: _buildTintedSettingAsset(
+                        maskAsset: maskAsset,
+                        color: primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.7,
+                            color: onSurface,
+                          ),
+                        ),
+                        if (subtitle != null) ...[
+                          const SizedBox(height: 3),
+                          Text(
+                            subtitle,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 13,
+                              height: 1.35,
+                              letterSpacing: 0.35,
+                              color: onSurface.withValues(alpha: 0.52),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  trailing ??
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        size: 23,
+                        color: primaryColor.withValues(alpha: 0.55),
+                      ),
+                ],
+              ),
+            ),
           ),
-          width: 0.9,
         ),
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: iconColor ?? primaryColor),
-        title: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
-        ),
-        subtitle: subtitle != null
-            ? Text(subtitle, style: TextStyle(
-            color: theme.colorScheme.onSurface.withValues(alpha:0.6)))
-            : null,
-        trailing: trailing ?? Icon(Icons.chevron_right,
-            color: theme.colorScheme.onSurface.withValues(alpha:0.3)),
-        onTap: onTap,
-      ),
+        if (showDivider)
+          Divider(
+            height: 1,
+            thickness: 0.7,
+            indent: 52,
+            color: primaryColor.withValues(alpha: 0.17),
+          ),
+      ],
     );
   }
 
@@ -326,7 +389,6 @@ class _SettingsPageState extends State<SettingsPage> {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
-    final isDarkMode = theme.brightness == Brightness.dark;
     final String providerId = currentUser?.providerData.first.providerId ??
         "unknown";
     final String authMethod = providerId == 'google.com'
@@ -338,25 +400,51 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent, // ✅ Scaffold 透明
         appBar: AppBar(
-          title: Text(l10n.settingsTitle, style: TextStyle(color: onSurface)),
+          centerTitle: true,
+          title: Text(
+            l10n.settingsTitle,
+            style: GoogleFonts.notoSerifTc(
+              color: onSurface,
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 2.2,
+            ),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
+          surfaceTintColor: Colors.transparent,
           iconTheme: IconThemeData(color: onSurface),
         ),
-        body: Column(
+        body: Stack(
           children: [
-            // --- 上半部：滾動設定清單 ---
-            Expanded(
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: theme.brightness == Brightness.dark ? 0.08 : 0.16,
+                  child: Image.asset(
+                    'assets/images/setting/settings_botanical_overlay_mask.png',
+                    fit: BoxFit.fill,
+                    color: primaryColor,
+                    colorBlendMode: BlendMode.srcIn,
+                    filterQuality: FilterQuality.high,
+                  ),
+                ),
+              ),
+            ),
+            SafeArea(
+              top: false,
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.fromLTRB(22, 2, 22, 34),
+                keyboardDismissBehavior:
+                ScrollViewKeyboardDismissBehavior.onDrag,
                 children: <Widget>[
                   _buildSectionTitle(context, l10n.settingsSectionAppearance),
 
                   // 1. 變更主題
                   _buildSettingsTile(
-                    icon: Icons.palette_outlined,
+                    maskAsset:
+                    'assets/images/setting/settings_theme_palette_mask.png',
                     title: l10n.changeTheme,
-                    trailing: const Icon(Icons.chevron_right),
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(
                             builder: (context) => const ThemeSelectionPage())),
@@ -365,8 +453,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                   // 2. 恢復預設
                   _buildSettingsTile(
-                    icon: Icons.restore,
-                    iconColor: Colors.orangeAccent,
+                    maskAsset:
+                    'assets/images/setting/settings_reset_appearance_mask.png',
                     title: l10n.resetToDefaultAppearance,
                     subtitle: l10n.clearCustomSettings,
                     onTap: () => _showResetDialog(context, themeNotifier),
@@ -374,10 +462,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    icon: Icons.contact_support_outlined,
+                    maskAsset:
+                    'assets/images/setting/settings_contact_mask.png',
                     title: l10n.contactUs,
                     subtitle: l10n.contactDescription,
-                    trailing: const Icon(Icons.chevron_right),
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(
                             builder: (context) => const FeedbackPage())),
@@ -385,23 +473,31 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    icon: Icons.language,
+                    maskAsset:
+                    'assets/images/setting/settings_language_mask.png',
                     title: l10n.changeLanguage,
-                    trailing: const Icon(Icons.chevron_right),
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(builder: (
                             context) => const LanguageSelectionPage())),
                     theme: theme,
+                    showDivider: false,
                   ),
 
                   _buildSectionTitle(context, l10n.settingsSectionAccount),
 
                   _buildSettingsTile(
-                    icon: Icons.account_circle_outlined,
+                    maskAsset:
+                    'assets/images/setting/settings_account_mask.png',
                     title: l10n.accountManagement,
                     subtitle: '${l10n.userId} ${currentUser?.uid ?? "N/A"}',
                     trailing: Text(
-                        authMethod, style: TextStyle(color: primaryColor)),
+                      authMethod,
+                      style: GoogleFonts.notoSerifTc(
+                        color: primaryColor,
+                        fontSize: 13,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                     onTap: () {
                       if (currentUser?.uid != null) {
                         Clipboard.setData(ClipboardData(text: currentUser!
@@ -420,21 +516,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    icon: Icons.block,
+                    maskAsset:
+                    'assets/images/setting/settings_blocked_character_mask.png',
                     title: l10n.characterManagement,
                     subtitle: l10n.viewBlockedCharacters,
-                    trailing: const Icon(Icons.chevron_right),
                     onTap: () =>
                         Navigator.push(context, MaterialPageRoute(builder: (
                             context) => const CharacterManagementPage())),
                     theme: theme,
+                    showDivider: false,
                   ),
 
                   // 🌟 這是合併後的樣子
                   _buildSectionTitle(context, l10n.settingsSectionAbout),
 
                   _buildSettingsTile(
-                    icon: Icons.privacy_tip_outlined,
+                    maskAsset:
+                    'assets/images/setting/settings_privacy_mask.png',
                     title: l10n.privacyPolicy,
                     theme: theme,
                     onTap: () {
@@ -450,7 +548,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    icon: Icons.description_outlined,
+                    maskAsset:
+                    'assets/images/setting/settings_terms_mask.png',
                     title: l10n.termsOfService,
                     theme: theme,
                     onTap: () {
@@ -466,7 +565,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    icon: Icons.palette_outlined,
+                    maskAsset:
+                    'assets/images/profile/profile_quill_mask.png',
                     title: "創作者規範",
                     theme: theme,
                     onTap: () {
@@ -482,7 +582,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
 
                   _buildSettingsTile(
-                    icon: Icons.menu_book_rounded,
+                    maskAsset:
+                    'assets/images/setting/settings_guide_mask.png',
                     title: '遊玩指南',
                     theme: theme,
                     onTap: () {
@@ -496,10 +597,12 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                   ),
                   _buildSettingsTile(
-                    icon: Icons.article_outlined,
+                    maskAsset:
+                    'assets/images/setting/settings_open_source_mask.png',
                     title: l10n.openSourceLicenses,
                     subtitle: l10n.openSourceLicensesDescription,
                     theme: theme,
+                    showDivider: false,
                     onTap: () {
                       showLicensePage(
                         context: context,
@@ -509,53 +612,74 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                     },
                   ),
-                ],
-              ),
-            ),
-            // --- 下半部：登出與刪除按鈕 (放在同一個 Column 下方) ---
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25)),
+                  const SizedBox(height: 34),
+                  Center(
+                    child: TextButton(
+                      onPressed: () =>
+                          _showLogoutDialog(context, l10n, authService),
+                      style: TextButton.styleFrom(
+                        foregroundColor: primaryColor,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 10,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.logoutButton,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 17,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            width: 72,
+                            height: 1,
+                            color: primaryColor.withValues(alpha: 0.55),
+                          ),
+                        ],
+                      ),
                     ),
-                    onPressed: () {
-                      _showLogoutDialog(context, l10n, authService);
-                    },
-                    // ✅ 確保參數對齊
-                    child: Text(l10n.logoutButton),
                   ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () => _showDeleteAccountDialog(context, l10n, authService),
-                    child: Text(l10n.deleteAccountButton, style: const TextStyle(color: Colors.redAccent)),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => _showDeleteAccountDialog(
+                        context,
+                        l10n,
+                        authService,
+                      ),
+                      child: Text(
+                        l10n.deleteAccountButton,
+                        style: GoogleFonts.notoSerifTc(
+                          color: Colors.redAccent,
+                          fontSize: 14,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ),
                   ),
-                ],
-              ),
-            ),
-
-            // --- 底部版本號 ---
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
-              child: Column(
-                children: [
+                  const SizedBox(height: 34),
                   Text(
                     l10n.appDisclaimer,
-                    style: TextStyle(
-                        fontSize: 11, color: onSurface.withValues(alpha:0.4)),
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 11,
+                      height: 1.5,
+                      color: onSurface.withValues(alpha: 0.38),
+                    ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 5),
                   Text(
                     l10n.appVersion('1.0.0'),
-                    style: TextStyle(
-                        fontSize: 11, color: onSurface.withValues(alpha:0.4)),
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 11,
+                      color: onSurface.withValues(alpha: 0.38),
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),

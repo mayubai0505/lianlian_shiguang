@@ -69,7 +69,8 @@ flutter:
   assets:
     - assets/animations/butterfly_splash.mp4
     - assets/images/
-    - assets/images/profile_icons/
+    - assets/images/profile/
+    - assets/images/setting/
     - assets/images/google_logo.png
     - assets/images/flower_gift.png
     - assets/images/flower_gift_dark.png
