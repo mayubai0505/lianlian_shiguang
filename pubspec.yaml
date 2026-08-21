@@ -71,6 +71,11 @@ flutter:
     - assets/images/
     - assets/images/profile/
     - assets/images/setting/
+    - assets/images/theme/
+    - assets/images/contact/
+    - assets/images/language/
+    - assets/images/blocked/
+    - assets/images/guide/
     - assets/images/google_logo.png
     - assets/images/flower_gift.png
     - assets/images/flower_gift_dark.png

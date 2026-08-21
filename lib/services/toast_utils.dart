@@ -170,9 +170,10 @@ class ToastUtils {
                           .shrink();
                     }
 
-                    final style =
-                    _styleOf(
+                    final theme = Theme.of(context);
+                    final style = _styleOf(
                       data.type,
+                      theme,
                     );
 
                     return TweenAnimationBuilder<
@@ -182,24 +183,29 @@ class ToastUtils {
                             '${data.type}-'
                             '${data.customIcon}',
                       ),
-                      tween: Tween<double>(
-                        begin: 0.88,
-                        end: 1,
-                      ),
+                      tween: Tween<double>(begin: 0, end: 1),
                       duration:
                       const Duration(
-                        milliseconds: 220,
+                        milliseconds: 240,
                       ),
-                      curve:
-                      Curves.easeOutBack,
+                      curve: Curves.easeOutCubic,
                       builder: (
                           context,
                           scale,
                           child,
                           ) {
-                        return Transform.scale(
-                          scale: scale,
-                          child: child,
+                        return Opacity(
+                          opacity: scale,
+                          child: Transform.translate(
+                            offset: Offset(
+                              0,
+                              9 * (1 - scale),
+                            ),
+                            child: Transform.scale(
+                              scale: 0.97 + (0.03 * scale),
+                              child: child,
+                            ),
+                          ),
                         );
                       },
                       child: Container(
@@ -222,24 +228,17 @@ class ToastUtils {
                         BoxDecoration(
                           color:
                           style.background,
-                          borderRadius:
-                          BorderRadius
-                              .circular(
-                            22,
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(
+                            color: style.borderColor,
+                            width: 0.9,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors
-                                  .black
-                                  .withOpacity(
-                                0.16,
-                              ),
-                              blurRadius: 18,
-                              offset:
-                              const Offset(
-                                0,
-                                8,
-                              ),
+                              color: style.shadowColor,
+                              blurRadius: 22,
+                              spreadRadius: 0,
+                              offset: const Offset(0, 8),
                             ),
                           ],
                         ),
@@ -264,10 +263,8 @@ class ToastUtils {
                                 textAlign:
                                 TextAlign
                                     .center,
-                                style:
-                                const TextStyle(
-                                  color:
-                                  Colors.white,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: style.textColor,
                                   fontSize: 15.5,
                                   fontWeight:
                                   FontWeight
@@ -357,34 +354,62 @@ class ToastUtils {
 
   static _ToastStyle _styleOf(
       ToastType type,
+      ThemeData theme,
       ) {
+    final isDark = theme.brightness == Brightness.dark;
+    final primary = theme.colorScheme.primary;
+
+    _ToastStyle literaryStyle({
+      required Color accent,
+      required IconData icon,
+    }) {
+      final background = isDark
+          ? Color.lerp(
+        theme.colorScheme.surface,
+        accent,
+        0.16,
+      )!
+          : Color.lerp(
+        Colors.white,
+        accent,
+        0.075,
+      )!;
+
+      return _ToastStyle(
+        background: background.withValues(alpha: isDark ? 0.97 : 0.98),
+        icon: icon,
+        iconColor: accent,
+        textColor: theme.colorScheme.onSurface,
+        borderColor: accent.withValues(alpha: isDark ? 0.48 : 0.30),
+        shadowColor: isDark
+            ? Colors.black.withValues(alpha: 0.28)
+            : accent.withValues(alpha: 0.13),
+      );
+    }
+
     switch (type) {
       case ToastType.success:
-        return const _ToastStyle(
-          background: Color(0xFF59B96A),
+        return literaryStyle(
+          accent: primary,
           icon: Icons.check_circle_rounded,
-          iconColor: Colors.white,
         );
 
       case ToastType.error:
-        return const _ToastStyle(
-          background: Color(0xFFE85B6A),
-          icon: Icons.error_rounded,
-          iconColor: Colors.white,
+        return literaryStyle(
+          accent: const Color(0xFFC96B76),
+          icon: Icons.error_outline_rounded,
         );
 
       case ToastType.warning:
-        return const _ToastStyle(
-          background: Color(0xFFFFB74D),
+        return literaryStyle(
+          accent: const Color(0xFFB48A48),
           icon: Icons.warning_amber_rounded,
-          iconColor: Colors.white,
         );
 
       case ToastType.info:
-        return const _ToastStyle(
-          background: Color(0xFF6C8EF5),
-          icon: Icons.info_rounded,
-          iconColor: Colors.white,
+        return literaryStyle(
+          accent: primary,
+          icon: Icons.info_outline_rounded,
         );
     }
   }
@@ -406,10 +431,16 @@ class _ToastStyle {
   final Color background;
   final IconData icon;
   final Color iconColor;
+  final Color textColor;
+  final Color borderColor;
+  final Color shadowColor;
 
   const _ToastStyle({
     required this.background,
     required this.icon,
     required this.iconColor,
+    required this.textColor,
+    required this.borderColor,
+    required this.shadowColor,
   });
 }

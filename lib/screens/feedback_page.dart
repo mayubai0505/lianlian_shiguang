@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
-import 'package:url_launcher/url_launcher.dart'; // ✨ 1. 引入 url_launcher 套件
 import 'package:flutter/services.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -613,383 +613,713 @@ class _FeedbackPageState
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme =
-    Theme.of(context);
+    final theme = Theme.of(context);
+    final themeNotifier = context.watch<ThemeNotifier>();
+    final l10n = AppLocalizations.of(context)!;
+    final mediaQuery = MediaQuery.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final primary = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onSurface;
+    final double screenWidth = mediaQuery.size.width;
+    final double screenHeight = mediaQuery.size.height;
 
-    final ThemeNotifier themeNotifier =
-    Provider.of<ThemeNotifier>(
-      context,
-    );
-
-    final l10n =
-    AppLocalizations.of(context)!;
+    // 以目前 390px 寬手機上的位置為基準，依裝置尺寸等比例縮放。
+    // clamp 避免小手機裝飾太小，也避免平板上的花草被放得過大。
+    final double layoutScale = (screenWidth / 390).clamp(0.84, 1.20);
+    final double topRightBotanicalWidth =
+    (screenWidth * 0.58).clamp(190.0, 300.0);
+    final double floatingPetalsWidth =
+    (screenWidth * 0.74).clamp(230.0, 520.0);
+    final double bottomLeftBotanicalWidth =
+    (screenWidth * 0.48).clamp(158.0, 250.0);
+    final double bottomRightBotanicalWidth =
+    (screenWidth * 0.43).clamp(142.0, 224.0);
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        // ⭐ 標題搬到下面的 ScrollView
-        title: null,
-        backgroundColor:
-        Colors.transparent,
-        elevation: 0,
-        foregroundColor:
-        theme.colorScheme.onSurface,
-      ),
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.transparent,
       body: GestureDetector(
-        onTap: () {
-          FocusScope.of(context)
-              .unfocus();
-        },
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusScope.of(context).unfocus(),
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration:
-          themeNotifier.currentBackground,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              top: kToolbarHeight +
-                  MediaQuery.of(context)
-                      .padding
-                      .top +
-                  20,
-              left: 24,
-              right: 24,
-              bottom: 40,
-            ),
-            child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
-              children: [
-                // ⭐ 這個「聯絡我們」現在會跟著內容一起滑
-                Text(
-                  l10n.title_contact_us,
-                  style: theme.textTheme.headlineMedium
-                      ?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                Text(
-                  l10n.title_contact_us_heading,
-                  style:
-                  theme.textTheme.headlineSmall,
-                ),
-
-                const SizedBox(height: 8),
-
-                Text(
-                  l10n.desc_contact_us_body,
-                  style: theme
-                      .textTheme.bodyLarge
-                      ?.copyWith(
-                    color: theme
-                        .colorScheme.onSurface
-                        .withValues(
-                      alpha: 0.7,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-
-                Text(
-                  '問題類型',
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                if (widget.lockCategory)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor.withValues(
-                        alpha: 0.55,
-                      ),
-                      borderRadius:
-                      BorderRadius.circular(12),
-                      border: Border.all(
-                        color: theme.colorScheme.outline
-                            .withValues(
-                          alpha: 0.18,
+          decoration: themeNotifier.currentBackground,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Positioned(
+                        top: mediaQuery.padding.top - (18 * layoutScale),
+                        right: -42 * layoutScale,
+                        width: topRightBotanicalWidth,
+                        child: _tintedContactAsset(
+                          theme,
+                          'assets/images/contact/contact_top_right_botanical.png',
+                          opacity: isDarkMode ? 0.11 : 0.25,
                         ),
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.support_agent_rounded,
-                          color:
-                          theme.colorScheme.primary,
+                      Positioned(
+                        top: (screenHeight * 0.18).clamp(118.0, 220.0),
+                        left: screenWidth * 0.18,
+                        width: floatingPetalsWidth,
+                        child: _tintedContactAsset(
+                          theme,
+                          'assets/images/contact/contact_floating_petals.png',
+                          opacity: isDarkMode ? 0.045 : 0.09,
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          _categoryLabel(
-                            _selectedCategory,
-                          ),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
+                      ),
+                      Positioned(
+                        left: -45 * layoutScale,
+                        bottom: -45 * layoutScale,
+                        width: bottomLeftBotanicalWidth,
+                        child: _tintedContactAsset(
+                          theme,
+                          'assets/images/contact/contact_bottom_left_botanical.png',
+                          opacity: isDarkMode ? 0.08 : 0.17,
                         ),
-                      ],
-                    ),
-                  )
-                else
-                  DropdownButtonFormField<
-                      ReportCategory>(
-                    value: _selectedCategory,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius.circular(12),
                       ),
-                      filled: true,
-                      fillColor:
-                      theme.cardColor.withValues(
-                        alpha: 0.5,
+                      Positioned(
+                        right: -40 * layoutScale,
+                        bottom: -42 * layoutScale,
+                        width: bottomRightBotanicalWidth,
+                        child: _tintedContactAsset(
+                          theme,
+                          'assets/images/contact/contact_bottom_right_botanical.png',
+                          opacity: isDarkMode ? 0.08 : 0.17,
+                        ),
                       ),
-                    ),
-                    items: ReportCategory.values
-                        .where(
-                          (category) =>
-                      category !=
-                          ReportCategory
-                              .aiReply &&
-                          category !=
-                              ReportCategory
-                                  .character &&
-                          category !=
-                              ReportCategory
-                                  .moment,
-                    )
-                        .map(
-                          (category) =>
-                          DropdownMenuItem<
-                              ReportCategory>(
-                            value: category,
-                            child: Text(
-                              _categoryLabel(
-                                category,
-                              ),
+                    ],
+                  ),
+                ),
+              ),
+              SafeArea(
+                child: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: EdgeInsets.fromLTRB(
+                    22,
+                    10,
+                    22,
+                    42 + mediaQuery.viewInsets.bottom,
+                  ),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 720),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          IconButton(
+                            tooltip: MaterialLocalizations.of(context)
+                                .backButtonTooltip,
+                            onPressed: () => Navigator.maybePop(context),
+                            padding: EdgeInsets.zero,
+                            alignment: Alignment.centerLeft,
+                            icon: Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: textColor.withValues(alpha: 0.82),
+                              size: 25,
                             ),
                           ),
-                    )
-                        .toList(),
-                    onChanged: _isSubmitting
-                        ? null
-                        : (value) {
-                      if (value == null) return;
-
-                      setState(() {
-                        _selectedCategory =
-                            value;
-                      });
-                    },
-                  ),
-
-                const SizedBox(height: 20),
-
-                if (widget.reportedContent != null &&
-                    widget.reportedContent!
-                        .trim()
-                        .isNotEmpty) ...[
-                  const SizedBox(height: 16),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme
-                          .surfaceContainerHighest
-                          .withValues(
-                        alpha: 0.45,
-                      ),
-                      borderRadius:
-                      BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '被回報的內容',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight:
-                            FontWeight.bold,
-                            color: theme
-                                .colorScheme.primary,
+                          const SizedBox(height: 18),
+                          Text(
+                            l10n.title_contact_us,
+                            style: GoogleFonts.notoSerifTc(
+                              color: textColor,
+                              fontSize: 34,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 3.2,
+                              height: 1.15,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          widget.reportedContent!,
-                          style: const TextStyle(
-                            height: 1.5,
+                          const SizedBox(height: 30),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 26,
+                                height: 26,
+                                child: Opacity(
+                                  opacity: 0.82,
+                                  child: Image.asset(
+                                    'assets/images/contact/contact_section_flower.png',
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) => Icon(
+                                      Icons.local_florist_outlined,
+                                      color: primary.withValues(alpha: 0.78),
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 9),
+                              Expanded(
+                                child: Text(
+                                  l10n.title_contact_us_heading,
+                                  style: GoogleFonts.notoSerifTc(
+                                    color: textColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 1.0,
+                                    height: 1.45,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-
-                TextField(
-                  controller:
-                  _feedbackController,
-                  maxLines: 8,
-                  enabled: !_isSubmitting,
-                  decoration:
-                  InputDecoration(
-                    hintText:
-                    l10n.hint_enter_feedback,
-                    border:
-                    OutlineInputBorder(
-                      borderRadius:
-                      BorderRadius.circular(
-                        12,
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.desc_contact_us_body,
+                            style: GoogleFonts.notoSerifTc(
+                              color: textColor.withValues(alpha: 0.64),
+                              fontSize: 14,
+                              height: 1.75,
+                              letterSpacing: 0.7,
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          _buildContactSectionTitle(
+                            theme,
+                            '問題類型',
+                            'assets/images/contact/contact_section_leaves.png',
+                          ),
+                          const SizedBox(height: 10),
+                          if (widget.lockCategory)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 17,
+                              ),
+                              decoration: _contactFieldBox(theme),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.support_agent_rounded,
+                                    color: primary,
+                                  ),
+                                  const SizedBox(width: 11),
+                                  Text(
+                                    _categoryLabel(_selectedCategory),
+                                    style: GoogleFonts.notoSerifTc(
+                                      color: textColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            DropdownButtonFormField<ReportCategory>(
+                              value: _selectedCategory,
+                              isExpanded: true,
+                              icon: Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: primary,
+                              ),
+                              dropdownColor: theme.colorScheme.surface,
+                              style: GoogleFonts.notoSerifTc(
+                                color: textColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              decoration: _contactInputDecoration(theme),
+                              items: ReportCategory.values
+                                  .where(
+                                    (category) =>
+                                category != ReportCategory.aiReply &&
+                                    category != ReportCategory.character &&
+                                    category != ReportCategory.moment,
+                              )
+                                  .map(
+                                    (category) => DropdownMenuItem(
+                                  value: category,
+                                  child: Text(_categoryLabel(category)),
+                                ),
+                              )
+                                  .toList(),
+                              onChanged: _isSubmitting
+                                  ? null
+                                  : (value) {
+                                if (value == null) return;
+                                setState(() {
+                                  _selectedCategory = value;
+                                });
+                              },
+                            ),
+                          if (widget.reportedContent != null &&
+                              widget.reportedContent!.trim().isNotEmpty) ...[
+                            const SizedBox(height: 18),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: _contactFieldBox(theme),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '被回報的內容',
+                                    style: GoogleFonts.notoSerifTc(
+                                      color: primary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 7),
+                                  Text(
+                                    widget.reportedContent!,
+                                    style: GoogleFonts.notoSerifTc(
+                                      color: textColor.withValues(alpha: 0.78),
+                                      fontSize: 13,
+                                      height: 1.6,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 18),
+                          Stack(
+                            children: [
+                              TextField(
+                                controller: _feedbackController,
+                                minLines: 8,
+                                maxLines: 12,
+                                enabled: !_isSubmitting,
+                                style: GoogleFonts.notoSerifTc(
+                                  color: textColor,
+                                  fontSize: 15,
+                                  height: 1.6,
+                                ),
+                                decoration: _contactInputDecoration(theme)
+                                    .copyWith(
+                                  hintText: l10n.hint_enter_feedback,
+                                  hintStyle: GoogleFonts.notoSerifTc(
+                                    color: textColor.withValues(alpha: 0.42),
+                                    fontSize: 15,
+                                  ),
+                                  contentPadding: const EdgeInsets.fromLTRB(
+                                    20,
+                                    20,
+                                    20,
+                                    28,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                right: 10,
+                                bottom: 8,
+                                width: 105,
+                                child: IgnorePointer(
+                                  child: _tintedContactAsset(
+                                    theme,
+                                    'assets/images/contact/contact_input_sprig.png',
+                                    opacity: isDarkMode ? 0.12 : 0.31,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 28),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.add_photo_alternate_outlined,
+                                color: primary,
+                                size: 27,
+                              ),
+                              const SizedBox(width: 9),
+                              Expanded(
+                                child: Text(
+                                  _requiresScreenshot
+                                      ? '問題截圖（必填）'
+                                      : '附加圖片（選填）',
+                                  style: GoogleFonts.notoSerifTc(
+                                    color: textColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            _requiresScreenshot
+                                ? '請附上問題發生時的畫面截圖，方便官方確認實際狀況。'
+                                : '若有相關畫面，也可以附上截圖協助官方確認。',
+                            style: GoogleFonts.notoSerifTc(
+                              color: textColor.withValues(alpha: 0.58),
+                              fontSize: 13,
+                              height: 1.6,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          if (_selectedImageBytes == null)
+                            _buildContactUploadArea(theme)
+                          else
+                            _buildSelectedImagePreview(theme),
+                          const SizedBox(height: 28),
+                          _buildContactSubmitButton(theme),
+                          const SizedBox(height: 16),
+                          Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.verified_user_outlined,
+                                  size: 14,
+                                  color: primary.withValues(alpha: 0.55),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '您的意見將協助我們持續優化遊戲體驗，謝謝您！',
+                                  style: GoogleFonts.notoSerifTc(
+                                    color: textColor.withValues(alpha: 0.46),
+                                    fontSize: 10.5,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    filled: true,
-                    fillColor: theme.cardColor
-                        .withValues(
-                      alpha: 0.5,
                     ),
                   ),
                 ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-                const SizedBox(height: 20),
+  Widget _tintedContactAsset(
+      ThemeData theme,
+      String asset, {
+        double opacity = 1,
+      }) {
+    return Opacity(
+      opacity: opacity,
+      child: ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          theme.colorScheme.primary,
+          BlendMode.srcIn,
+        ),
+        child: Image.asset(
+          asset,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+        ),
+      ),
+    );
+  }
 
-                Row(
-                  children: [
-                    Icon(
-                      Icons
-                          .add_photo_alternate_outlined,
-                      color: theme
-                          .colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _requiresScreenshot
-                            ? '問題截圖（必填）'
-                            : '附加圖片（選填）',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+  Widget _buildContactSectionTitle(
+      ThemeData theme,
+      String title,
+      String asset,
+      ) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 28,
+          height: 28,
+          child: _tintedContactAsset(theme, asset, opacity: 0.82),
+        ),
+        const SizedBox(width: 9),
+        Text(
+          title,
+          style: GoogleFonts.notoSerifTc(
+            color: theme.colorScheme.onSurface,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.8,
+          ),
+        ),
+      ],
+    );
+  }
 
-                const SizedBox(height: 6),
+  BoxDecoration _contactFieldBox(ThemeData theme) {
+    final isDarkMode = theme.brightness == Brightness.dark;
+    return BoxDecoration(
+      color: theme.colorScheme.surface.withValues(
+        alpha: isDarkMode ? 0.78 : 0.72,
+      ),
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(
+        color: theme.colorScheme.primary.withValues(alpha: 0.25),
+        width: 1,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: theme.colorScheme.primary.withValues(alpha: 0.055),
+          blurRadius: 14,
+          offset: const Offset(0, 5),
+        ),
+      ],
+    );
+  }
 
-                Text(
-                  _requiresScreenshot
-                      ? '請附上問題發生時的畫面截圖，方便官方確認實際狀況。'
-                      : '若有相關畫面，也可以附上截圖協助官方確認。',
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(
-                    color: theme.colorScheme.onSurface
-                        .withValues(
-                      alpha: 0.6,
-                    ),
-                    height: 1.5,
+  InputDecoration _contactInputDecoration(ThemeData theme) {
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(18),
+      borderSide: BorderSide(
+        color: theme.colorScheme.primary.withValues(alpha: 0.27),
+        width: 1,
+      ),
+    );
+
+    return InputDecoration(
+      filled: true,
+      fillColor: theme.colorScheme.surface.withValues(
+        alpha: isDarkMode ? 0.78 : 0.72,
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 17,
+      ),
+      border: border,
+      enabledBorder: border,
+      disabledBorder: border,
+      focusedBorder: border.copyWith(
+        borderSide: BorderSide(
+          color: theme.colorScheme.primary.withValues(alpha: 0.7),
+          width: 1.35,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactUploadArea(ThemeData theme) {
+    final primary = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onSurface;
+    final disabled = _isPickingImage || _isSubmitting;
+
+    return Semantics(
+      button: true,
+      label: '選擇回報圖片',
+      child: InkWell(
+        onTap: disabled ? null : _pickImage,
+        borderRadius: BorderRadius.circular(20),
+        child: CustomPaint(
+          painter: _ContactDashedBorderPainter(
+            color: primary.withValues(alpha: disabled ? 0.22 : 0.52),
+            radius: 20,
+          ),
+          child: Container(
+            width: double.infinity,
+            constraints: const BoxConstraints(minHeight: 150),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 26,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
                   ),
-                ),
-
-                const SizedBox(height: 12),
-
-                if (_selectedImageBytes ==
-                    null)
-                  OutlinedButton.icon(
-                    onPressed:
-                    _isPickingImage ||
-                        _isSubmitting
-                        ? null
-                        : _pickImage,
-                    icon: _isPickingImage
-                        ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child:
-                      CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    )
-                        : const Icon(
-                      Icons
-                          .photo_library_outlined,
-                    ),
-                    label: Text(
-                      _isPickingImage
-                          ? '開啟相簿中...'
-                          : '從相簿選擇圖片',
-                    ),
-                    style:
-                    OutlinedButton.styleFrom(
-                      minimumSize:
-                      const Size(
-                        double.infinity,
-                        50,
-                      ),
-                    ),
-                  )
-                else
-                  _buildSelectedImagePreview(
-                    theme,
-                  ),
-
-                const SizedBox(height: 24),
-
-                ElevatedButton.icon(
-                  onPressed:
-                  _isSubmitting
-                      ? null
-                      : _submitFeedback,
-                  icon: _isSubmitting
-                      ? const SizedBox(
-                    width: 19,
-                    height: 19,
-                    child:
-                    CircularProgressIndicator(
+                  alignment: Alignment.center,
+                  child: _isPickingImage
+                      ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
                       strokeWidth: 2,
+                      color: primary,
                     ),
                   )
-                      : const Icon(
-                    Icons
-                        .send_rounded,
+                      : Icon(
+                    Icons.cloud_upload_outlined,
+                    color: primary,
+                    size: 31,
                   ),
-                  label: Text(
-                    _isSubmitting
-                        ? '送出中...'
-                        : '送出回報',
+                ),
+                const SizedBox(height: 13),
+                Text(
+                  _isPickingImage ? '開啟相簿中…' : '點擊此處選擇圖片上傳',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.notoSerifTc(
+                    color: textColor.withValues(alpha: 0.75),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
-                  style:
-                  ElevatedButton.styleFrom(
-                    minimumSize:
-                    const Size(
-                      double.infinity,
-                      50,
-                    ),
-                    textStyle:
-                    const TextStyle(
-                      fontSize: 16,
-                      fontWeight:
-                      FontWeight.bold,
-                    ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  '支援 jpg、png，單張不超過 10 MB',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.notoSerifTc(
+                    color: textColor.withValues(alpha: 0.44),
+                    fontSize: 11.5,
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactSubmitButton(ThemeData theme) {
+    final primary = theme.colorScheme.primary;
+
+    final lightPrimary = Color.lerp(
+      primary,
+      Colors.white,
+      0.28,
+    )!;
+
+    final darkPrimary = Color.lerp(
+      primary,
+      Colors.black,
+      0.08,
+    )!;
+
+    return Semantics(
+      button: true,
+      enabled: !_isSubmitting,
+      label: _isSubmitting ? '送出中' : '送出回報',
+      child: Opacity(
+        opacity: _isSubmitting ? 0.65 : 1,
+        child: InkWell(
+          onTap: _isSubmitting ? null : _submitFeedback,
+          borderRadius: BorderRadius.circular(27),
+          child: Container(
+            width: double.infinity,
+
+            // 原本是 66
+            height: 54,
+
+            padding: const EdgeInsets.all(1.5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(27),
+              border: Border.all(
+                color: primary.withValues(alpha: 0.48),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: primary.withValues(alpha: 0.16),
+                  blurRadius: 9,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    lightPrimary,
+                    primary,
+                    darkPrimary,
+                  ],
+                  stops: const [0, 0.52, 1],
+                ),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  width: 0.8,
+                ),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    left: 24,
+                    child: Transform.rotate(
+                      angle: -0.12,
+                      child: ColorFiltered(
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                        child: Image.asset(
+                          'assets/images/contact/contact_section_leaves.png',
+
+                          // 原本是 48 × 30
+                          width: 38,
+                          height: 22,
+
+                          fit: BoxFit.contain,
+                          opacity: const AlwaysStoppedAnimation(0.68),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  Positioned(
+                    right: 24,
+                    child: Transform.flip(
+                      flipX: true,
+                      child: Transform.rotate(
+                        angle: -0.12,
+                        child: ColorFiltered(
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                          child: Image.asset(
+                            'assets/images/contact/contact_section_leaves.png',
+                            width: 38,
+                            height: 22,
+                            fit: BoxFit.contain,
+                            opacity:
+                            const AlwaysStoppedAnimation(0.68),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  if (_isSubmitting)
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  else
+                    Text(
+                      '送出',
+                      style: GoogleFonts.notoSerifTc(
+                        color: Colors.white,
+
+                        // 原本是 22
+                        fontSize: 19,
+
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 4,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            offset: const Offset(0, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -1094,5 +1424,56 @@ class _FeedbackPageState
         ],
       ),
     );
+  }
+}
+
+class _ContactDashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double radius;
+
+  const _ContactDashedBorderPainter({
+    required this.color,
+    required this.radius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.25
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Offset.zero & size,
+          Radius.circular(radius),
+        ),
+      );
+
+    for (final metric in path.computeMetrics()) {
+      double distance = 0;
+      const dashLength = 7.0;
+      const gapLength = 6.0;
+
+      while (distance < metric.length) {
+        canvas.drawPath(
+          metric.extractPath(
+            distance,
+            (distance + dashLength)
+                .clamp(0.0, metric.length)
+                .toDouble(),
+          ),
+          paint,
+        );
+        distance += dashLength + gapLength;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ContactDashedBorderPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.radius != radius;
   }
 }

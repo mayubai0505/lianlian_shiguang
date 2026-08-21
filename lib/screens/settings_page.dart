@@ -419,15 +419,40 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             Positioned.fill(
               child: IgnorePointer(
-                child: Opacity(
-                  opacity: theme.brightness == Brightness.dark ? 0.08 : 0.16,
-                  child: Image.asset(
-                    'assets/images/setting/settings_botanical_overlay_mask.png',
-                    fit: BoxFit.fill,
-                    color: primaryColor,
-                    colorBlendMode: BlendMode.srcIn,
-                    filterQuality: FilterQuality.high,
-                  ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final pageWidth = constraints.maxWidth;
+                    final pageHeight = constraints.maxHeight;
+
+                    // 依設定頁「可視區域」的實際寬高自動調整。
+                    // 多留少量邊緣，讓花草像從螢幕外自然探入。
+                    final horizontalOverflow =
+                    (pageWidth * 0.025).clamp(6.0, 12.0).toDouble();
+                    final verticalOverflow =
+                    (pageHeight * 0.015).clamp(8.0, 16.0).toDouble();
+
+                    return OverflowBox(
+                      minWidth: pageWidth + horizontalOverflow * 2,
+                      maxWidth: pageWidth + horizontalOverflow * 2,
+                      minHeight: pageHeight + verticalOverflow * 2,
+                      maxHeight: pageHeight + verticalOverflow * 2,
+                      alignment: Alignment.center,
+                      child: Opacity(
+                        opacity:
+                        theme.brightness == Brightness.dark ? 0.08 : 0.16,
+                        child: Image.asset(
+                          'assets/images/setting/settings_botanical_overlay_mask.png',
+                          width: pageWidth + horizontalOverflow * 2,
+                          height: pageHeight + verticalOverflow * 2,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                          color: primaryColor,
+                          colorBlendMode: BlendMode.srcIn,
+                          filterQuality: FilterQuality.high,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

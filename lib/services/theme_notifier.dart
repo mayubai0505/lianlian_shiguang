@@ -16,237 +16,225 @@ enum AppTheme {
   custom, // ✨ 自定義主題
 }
 
-// --- ✨✨✨ 核心修正 #1: 將所有主題和背景的定義移到 Class 外部 ---
+// 文青淡霧主題：背景以白色為主，只有互動元素與裝飾跟著主題色。
+const Color _literaryText = Color(0xFF302B31);
+const Color _literarySecondaryText = Color(0xFF83777D);
 
-final ThemeData _lightTheme = ThemeData.light().copyWith(
-  scaffoldBackgroundColor: const Color(0xFFFFFBFF),
+ThemeData _buildLiteraryLightTheme({
+  required Color accent,
+  required Color background,
+}) {
+  final softAccent = Color.lerp(Colors.white, accent, 0.16)!;
+  final borderColor = Color.lerp(Colors.white, accent, 0.24)!;
 
-  // 預設主題的卡片增加淡紫灰色細邊框
-  cardTheme: CardThemeData(
-    color: Colors.white,
-    surfaceTintColor: Colors.transparent,
-    elevation: 0.5,
-    shadowColor: Colors.black.withValues(alpha: 0.06),
-    margin: EdgeInsets.zero,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(16),
-      side: const BorderSide(
-        color: Color(0xFFE7DDEA),
-        width: 0.8,
+  final scheme = ColorScheme.light(
+    primary: accent,
+    onPrimary: Colors.white,
+    primaryContainer: softAccent,
+    onPrimaryContainer: _literaryText,
+    secondary: accent,
+    onSecondary: Colors.white,
+    secondaryContainer: softAccent,
+    onSecondaryContainer: _literaryText,
+    surface: background,
+    onSurface: _literaryText,
+    outline: borderColor,
+  );
+
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    primaryColor: accent,
+    scaffoldBackgroundColor: background,
+    colorScheme: scheme,
+    dividerColor: accent.withValues(alpha: 0.12),
+    splashColor: accent.withValues(alpha: 0.09),
+    highlightColor: accent.withValues(alpha: 0.04),
+    disabledColor: _literarySecondaryText.withValues(alpha: 0.38),
+    appBarTheme: AppBarTheme(
+      backgroundColor: background,
+      foregroundColor: _literaryText,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: background,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     ),
-  ),
-
-  // 統一輸入框的淡邊框
-  inputDecorationTheme: InputDecorationTheme(
-    filled: true,
-    fillColor: Colors.white,
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(
-        color: Color(0xFFE7DDEA),
-        width: 0.8,
+    cardTheme: CardThemeData(
+      color: Colors.white.withValues(alpha: 0.94),
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: borderColor, width: 0.8),
       ),
     ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(
-        color: Color(0xFF9C73C7),
-        width: 1.2,
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white.withValues(alpha: 0.92),
+      labelStyle: const TextStyle(color: _literarySecondaryText),
+      hintStyle: TextStyle(
+        color: _literarySecondaryText.withValues(alpha: 0.68),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: borderColor, width: 0.8),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: accent, width: 1.2),
       ),
     ),
-  ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: accent,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: accent,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: accent,
+        side: BorderSide(color: accent.withValues(alpha: 0.72)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(foregroundColor: accent),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: accent,
+      foregroundColor: Colors.white,
+      elevation: 1,
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: background,
+      selectedItemColor: accent,
+      unselectedItemColor: _literarySecondaryText,
+      elevation: 0,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: background,
+      indicatorColor: softAccent,
+      elevation: 0,
+    ),
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+    ),
+    dialogTheme: const DialogThemeData(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: _literaryText,
+      contentTextStyle: const TextStyle(color: Colors.white),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+    ),
+    textTheme: ThemeData.light().textTheme.apply(
+      bodyColor: _literaryText,
+      displayColor: _literaryText,
+    ),
+  );
+}
 
-  // 點擊時的淡淡回饋
-  splashColor: const Color(0xFF9C73C7).withValues(alpha: 0.10),
-  highlightColor: const Color(0xFF9C73C7).withValues(alpha: 0.05),
+final ThemeData _lightTheme = _buildLiteraryLightTheme(
+  accent: const Color(0xFF8D76BE),
+  background: const Color(0xFFFCFAFE),
+);
 
-  bottomSheetTheme: const BottomSheetThemeData(
-    backgroundColor: Colors.white,
-    surfaceTintColor: Colors.transparent,
-  ),
+final ThemeData _pinkGradientTheme = _buildLiteraryLightTheme(
+  accent: const Color(0xFFD890A7),
+  background: const Color(0xFFFFF9FB),
+);
+
+final ThemeData _blueGradientTheme = _buildLiteraryLightTheme(
+  accent: const Color(0xFF7899CC),
+  background: const Color(0xFFF8FAFE),
+);
+
+final ThemeData _orangeGradientTheme = _buildLiteraryLightTheme(
+  accent: const Color(0xFFD88967),
+  background: const Color(0xFFFEFAF7),
+);
+
+final ThemeData _yellowGradientTheme = _buildLiteraryLightTheme(
+  accent: const Color(0xFFB49352),
+  background: const Color(0xFFFEFCF6),
+);
+
+final ThemeData _greenGradientTheme = _buildLiteraryLightTheme(
+  accent: const Color(0xFF78A996),
+  background: const Color(0xFFF8FCFA),
 );
 
 final ThemeData _darkTheme = ThemeData.dark().copyWith(
-  scaffoldBackgroundColor: const Color(0xFF121212),
+  scaffoldBackgroundColor: const Color(0xFF11182B),
+  colorScheme: const ColorScheme.dark(
+    primary: Color(0xFF9EABD8),
+    onPrimary: Color(0xFF11182B),
+    secondary: Color(0xFFB6BCE0),
+    surface: Color(0xFF11182B),
+    onSurface: Color(0xFFF5F2FF),
+    outline: Color(0xFF46506E),
+  ),
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Color(0xFF11182B),
+    foregroundColor: Color(0xFFF5F2FF),
+    elevation: 0,
+    scrolledUnderElevation: 0,
+    surfaceTintColor: Colors.transparent,
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF11182B),
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
+    ),
+  ),
+  cardTheme: CardThemeData(
+    color: const Color(0xFF1B243A),
+    surfaceTintColor: Colors.transparent,
+    elevation: 0,
+    margin: EdgeInsets.zero,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(18),
+      side: const BorderSide(color: Color(0xFF36415F), width: 0.8),
+    ),
+  ),
   bottomSheetTheme: const BottomSheetThemeData(
-    backgroundColor: Color(0xFF1E1E1E),
+    backgroundColor: Color(0xFF1B243A),
     surfaceTintColor: Colors.transparent,
   ),
-);
-
-final ThemeData _pinkGradientTheme = ThemeData(
-  primarySwatch: Colors.pink,
-  scaffoldBackgroundColor: const Color(0xFFFFD5E3),
-  cardColor: Colors.white,
-  bottomSheetTheme: const BottomSheetThemeData(
-    backgroundColor: Colors.white, // 強制白底，絕對不透明！
-    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
+  dialogTheme: const DialogThemeData(
+    backgroundColor: Color(0xFF1B243A),
+    surfaceTintColor: Colors.transparent,
   ),
-  colorScheme: const ColorScheme.light(
-    primary: Color(0xFF82B1FF),
-    primaryContainer: Color(0xFFA892F5),
-    secondary: Color(0xFFF48FB1),
-    secondaryContainer: Color(0xFFF8BBD0),
-    onPrimary: Colors.white,
-    surface: Colors.white,
-    onSurface: Colors.black87,
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Color(0xFFFFD5E3),
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    backgroundColor: Color(0xFF11182B),
+    selectedItemColor: Color(0xFF9EABD8),
+    unselectedItemColor: Color(0xFF9B9DB0),
     elevation: 0,
-    systemOverlayStyle: SystemUiOverlayStyle(
-      statusBarColor: Color(0xFFFFD5E3),
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ),
-  ),
-);
-
-final ThemeData _blueGradientTheme = ThemeData(
-  primarySwatch: Colors.blue,
-  scaffoldBackgroundColor: const Color(0xFFD5E3FF),
-  cardColor: Colors.white,
-  bottomSheetTheme: const BottomSheetThemeData(
-    backgroundColor: Colors.white, // 強制白底，絕對不透明！
-    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
-  ),
-  colorScheme: const ColorScheme.light(
-    primary: Color(0xFF64B5F6),
-    primaryContainer: Color(0xFF9575CD),
-    secondary: Color(0xFF4DB6AC),
-    secondaryContainer: Color(0xFF81C784),
-    onPrimary: Colors.white,
-    onSecondaryContainer: Colors.white,
-    surface: Colors.white,
-    onSurface: Colors.black87,
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Color(0xFFD5E3FF),
-    elevation: 0,
-    systemOverlayStyle: SystemUiOverlayStyle(
-      statusBarColor: Color(0xFFD5E3FF),
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ),
-  ),
-);
-
-final ThemeData _orangeGradientTheme = ThemeData(
-  primarySwatch: Colors.orange,
-  scaffoldBackgroundColor: const Color(0xFFFFE9D5),
-  cardColor: Colors.white,
-  bottomSheetTheme: const BottomSheetThemeData(
-    backgroundColor: Colors.white, // 強制白底，絕對不透明！
-    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
-  ),
-  colorScheme: const ColorScheme.light(
-    primary: Colors.orange,
-    onPrimary: Colors.white,
-    secondary: Colors.deepOrangeAccent,
-    surface: Colors.white,
-    onSurface: Colors.black87,
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Color(0xFFFFE9D5),
-    elevation: 0,
-    systemOverlayStyle: SystemUiOverlayStyle(
-      statusBarColor: Color(0xFFFFE9D5),
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ),
-  ),
-);
-
-final ThemeData _yellowGradientTheme = ThemeData(
-  primarySwatch: Colors.yellow,
-  scaffoldBackgroundColor: const Color(0xFFFFF9D5),
-  cardColor: Colors.white,
-  bottomSheetTheme: const BottomSheetThemeData(
-    backgroundColor: Colors.white, // 強制白底，絕對不透明！
-    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
-  ),
-  colorScheme: const ColorScheme.light(
-    primary: Colors.yellow,
-    onPrimary: Colors.black,
-    secondary: Colors.amber,
-    surface: Colors.white,
-    onSurface: Colors.black87,
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Color(0xFFFFF9D5),
-    elevation: 0,
-    systemOverlayStyle: SystemUiOverlayStyle(
-      statusBarColor: Color(0xFFFFF9D5),
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ),
-  ),
-);
-
-final ThemeData _greenGradientTheme = ThemeData(
-  primarySwatch: Colors.green,
-  scaffoldBackgroundColor: const Color(0xFFD5FFD6),
-  cardColor: Colors.white,
-  bottomSheetTheme: const BottomSheetThemeData(
-    backgroundColor: Colors.white, // 強制白底，絕對不透明！
-    surfaceTintColor: Colors.transparent, // 擋掉系統亂染色
-  ),
-  colorScheme: const ColorScheme.light(
-    primary: Colors.green,
-    onPrimary: Colors.white,
-    secondary: Colors.teal,
-    surface: Colors.white,
-    onSurface: Colors.black87,
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Color(0xFFD5FFD6),
-    elevation: 0,
-    systemOverlayStyle: SystemUiOverlayStyle(
-      statusBarColor: Color(0xFFD5FFD6),
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-    ),
-  ),
-);
-
-const BoxDecoration _pinkGradientBackground = BoxDecoration(
-  gradient: LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFFFFD5E3), Colors.white],
-  ),
-);
-
-const BoxDecoration _blueGradientBackground = BoxDecoration(
-  gradient: LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFFD5E3FF), Color(0xFFE9D5FF)],
-  ),
-);
-
-const BoxDecoration _orangeGradientBackground = BoxDecoration(
-  gradient: LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFFFFE9D5), Color(0xFFFFD5D5)],
-  ),
-);
-
-const BoxDecoration _yellowGradientBackground = BoxDecoration(
-  gradient: LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFFFFF9D5), Colors.white],
-  ),
-);
-
-const BoxDecoration _greenGradientBackground = BoxDecoration(
-  gradient: LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFFD5FFD6), Colors.white],
   ),
 );
 
@@ -255,8 +243,9 @@ BoxDecoration _solidBackground(Color color) => BoxDecoration(color: color);
 
 // --- ✨✨✨ 核心修正 #2: Class 內部現在只負責邏輯，不再定義樣式 ---
 class ThemeNotifier extends ChangeNotifier {
-  AppTheme _currentThemeEnum = AppTheme.blueGradient;
-  Color _customColor = Colors.purple;
+  // 載入 SharedPreferences 前先顯示拾光紫，避免啟動畫面短暫閃成藍色。
+  AppTheme _currentThemeEnum = AppTheme.light;
+  Color _customColor = const Color(0xFF8D76BE);
   String? _backgroundImagePath; // 📸 私藏背景路徑
   String? _activeCharacterBackground;
   AppTheme get currentThemeEnum => _currentThemeEnum;
@@ -265,34 +254,11 @@ class ThemeNotifier extends ChangeNotifier {
   String? get activeCharacterBackground => _activeCharacterBackground;
 
 
-  // ✨ 動態生成自定義 ThemeData (按鈕、AppBar 的顏色)
-  // ✨ 動態生成自定義 ThemeData (按鈕、AppBar 的顏色)
+  // 自定義色彩也遵守同一套文青淡霧規則。
   ThemeData _buildCustomTheme(Color color) {
-    // 讓系統自動算出完美的深淺搭配色
-    final ColorScheme customScheme = ColorScheme.fromSeed(seedColor: color);
-
-    return ThemeData(
-      useMaterial3: true,
-      primaryColor: color,
-      scaffoldBackgroundColor: Color.lerp(Colors.white, color, 0.15),
-      colorScheme: customScheme,
-
-      // ✨✨✨ 總裁看這裡：全域按鈕服裝規定！ ✨✨✨
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: customScheme.primary, // 按鈕背景跟著主題色
-          foregroundColor: customScheme.onPrimary, // 文字顏色自動計算 (深色配白字，淺色配黑字)
-          elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-        ),
-      ),
-
-      appBarTheme: AppBarTheme(
-        backgroundColor: Color.lerp(Colors.white, color, 0.25),
-        elevation: 0,
-        iconTheme: IconThemeData(color: customScheme.onSurface),
-        titleTextStyle: TextStyle(color: customScheme.onSurface, fontSize: 20, fontWeight: FontWeight.bold),
-      ),
+    return _buildLiteraryLightTheme(
+      accent: color,
+      background: Color.lerp(Colors.white, color, 0.055)!,
     );
   }
 
@@ -326,21 +292,27 @@ class ThemeNotifier extends ChangeNotifier {
           ),
         );
       }
-      // ✨✨✨ 優先權 B：沒照片，拔掉漸層！改成乾淨的單色透底！ ✨✨✨
-      return BoxDecoration(
-        color: Color.lerp(Colors.white, _customColor, 0.15),// 只保留一點點淡淡的主題底色
+      return _solidBackground(
+        Color.lerp(Colors.white, _customColor, 0.055)!,
       );
     }
 
     // 2. 如果不是自定義模式，走預設主題
     switch (_currentThemeEnum) {
-      case AppTheme.light: return _solidBackground(Colors.white);
-      case AppTheme.dark: return _solidBackground(const Color(0xFF121212));
-      case AppTheme.pinkGradient: return _pinkGradientBackground;
-      case AppTheme.blueGradient: return _blueGradientBackground;
-      case AppTheme.orangeGradient: return _orangeGradientBackground;
-      case AppTheme.yellowGradient: return _yellowGradientBackground;
-      case AppTheme.greenGradient: return _greenGradientBackground;
+      case AppTheme.light:
+        return _solidBackground(const Color(0xFFFCFAFE));
+      case AppTheme.dark:
+        return _solidBackground(const Color(0xFF11182B));
+      case AppTheme.pinkGradient:
+        return _solidBackground(const Color(0xFFFFF9FB));
+      case AppTheme.blueGradient:
+        return _solidBackground(const Color(0xFFF8FAFE));
+      case AppTheme.orangeGradient:
+        return _solidBackground(const Color(0xFFFEFAF7));
+      case AppTheme.yellowGradient:
+        return _solidBackground(const Color(0xFFFEFCF6));
+      case AppTheme.greenGradient:
+        return _solidBackground(const Color(0xFFF8FCFA));
       default: return _solidBackground(Colors.white);
     }
   }
@@ -452,7 +424,7 @@ class ThemeNotifier extends ChangeNotifier {
     // 1. 恢復預設數值 (切換回我們剛剛強化的 light 主題)
     _currentThemeEnum = AppTheme.light;
     _backgroundImagePath = null;
-    _customColor = Colors.blue;
+    _customColor = const Color(0xFF8D76BE);
 
     // 2. 清除本地儲存紀錄
     final prefs = await SharedPreferences.getInstance();

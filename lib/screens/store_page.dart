@@ -6,8 +6,7 @@ import '../services/purchase_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import '../services/tappay_payment_stub.dart'
-if (dart.library.html) '../services/tappay_payment_web.dart';
+
 
 // 🍎 蘋果審查專用總開關：送審前設為 true (會隱藏VIP頁籤)，審核通過上架後改回 false！
 const bool isAppleReviewMode = true;
@@ -24,16 +23,6 @@ class _StorePageState extends State<StorePage> {
       BuildContext context,
       dynamic productWrapper,
       ) async {
-    final productId =
-    productWrapper.productDetails.id.toString();
-
-    // Flutter Web：使用 TapPay
-    if (kIsWeb) {
-      await _payWithTapPay(
-        productId: productId,
-      );
-      return;
-    }
 
     // Android / iOS：維持原本的商店內購
     final purchaseService =
@@ -45,84 +34,6 @@ class _StorePageState extends State<StorePage> {
     await purchaseService.buyProduct(
       productWrapper.productDetails,
     );
-  }
-
-  Future<void> _payWithTapPay({
-    required String productId,
-  }) async {
-    if (_isTapPayProcessing) return;
-
-    try {
-      setState(() {
-        _isTapPayProcessing = true;
-      });
-
-      final prime = await showTapPayCardDialog();
-
-      // 玩家按取消
-      if (prime == null || prime.isEmpty) {
-        return;
-      }
-
-      final callable = FirebaseFunctions.instanceFor(
-        region: 'asia-east1',
-      ).httpsCallable('payByPrime');
-
-      final result = await callable.call({
-        'prime': prime,
-        'productId': productId,
-        'cardholder': {
-          'name': '戀戀拾光玩家',
-          'email':
-          FirebaseAuth.instance.currentUser?.email ?? '',
-          'phoneNumber': '0900000000',
-        },
-      });
-
-      final data = Map<String, dynamic>.from(
-        result.data as Map,
-      );
-
-      if (!mounted) return;
-
-      final pointsAdded = data['pointsAdded'] ?? 0;
-      final message =
-          data['message']?.toString() ?? '付款成功';
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            pointsAdded > 0
-                ? '$message，共入帳 $pointsAdded 花花'
-                : message,
-          ),
-        ),
-      );
-    } on FirebaseFunctionsException catch (error) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            error.message ?? '付款失敗，請稍後再試。',
-          ),
-        ),
-      );
-    } catch (error) {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('付款發生錯誤：$error'),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isTapPayProcessing = false;
-        });
-      }
-    }
   }
 
   @override
