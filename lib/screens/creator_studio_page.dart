@@ -8,6 +8,7 @@ import 'package:rxdart/rxdart.dart'; // 🌟 記得這個一定要有！
 import 'dart:io'; // 🌟 讀取手機本機檔案必備！
 import 'character_model.dart';
 import '../utils/image_utils.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // 私人工作室
 class CreatorStudioPage extends StatelessWidget {
@@ -136,249 +137,378 @@ class CreatorStudioPage extends StatelessWidget {
       },
     );
 
+    final primary = theme.colorScheme.primary;
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(
-          l10n.my_secret_studio_title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+      IgnorePointer(
+      child: Stack(
+      children: [
+        Positioned(
+        top: 20,
+        right: -25,
+        width: 210,
+        child: Opacity(
+          opacity: 0.17,
+          child: Image.asset(
+            'assets/images/studio/studio_top_right.png',
           ),
         ),
-        backgroundColor: theme.scaffoldBackgroundColor,
-        elevation: 0,
       ),
-      body: StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
-        stream: combinedStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-              ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '工作室讀取失敗：${snapshot.error}',
-              ),
-            );
-          }
-
-          final data = snapshot.data ??
-              {
-                'drafts': <QueryDocumentSnapshot>[],
-                'privates': <QueryDocumentSnapshot>[],
-                'publics': <QueryDocumentSnapshot>[],
-              };
-
-          final drafts =
-              data['drafts'] ?? <QueryDocumentSnapshot>[];
-
-          final privates =
-              data['privates'] ?? <QueryDocumentSnapshot>[];
-
-          final publics =
-              data['publics'] ?? <QueryDocumentSnapshot>[];
-
-          return ListView(
-            physics:
-            const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-              16,
-              16,
-              16,
-              40,
-            ),
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                        const CharacterEditPage(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.add_rounded,
-                  ),
-                  label: Text(
-                    l10n.create_new_character_btn,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                    theme.colorScheme.primary,
-                    foregroundColor:
-                    theme.colorScheme.onPrimary,
-                    elevation: 0,
-                    padding:
-                    const EdgeInsets.symmetric(
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(14),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              _buildStudioSection(
-                context: context,
-                theme: theme,
-                title: '公開角色',
-                icon: Icons.public_rounded,
-                count: publics.length,
-                emptyText: '目前沒有公開角色',
-                documents: publics,
-                status: 'public',
-              ),
-
-              const SizedBox(height: 28),
-
-              _buildStudioSection(
-                context: context,
-                theme: theme,
-                title: '私人角色',
-                icon: Icons.lock_outline_rounded,
-                count: privates.length,
-                emptyText: '目前沒有私人角色',
-                documents: privates,
-                status: 'private',
-              ),
-
-              const SizedBox(height: 28),
-
-              _buildStudioSection(
-                context: context,
-                theme: theme,
-                title: '草稿',
-                icon: Icons.edit_note_rounded,
-                count: drafts.length,
-                emptyText: '目前沒有尚未完成的草稿',
-                documents: drafts,
-                status: 'draft',
-              ),
-            ],
-          );
-        },
+      Positioned(
+        left: -25,
+        bottom: -10,
+        width: 215,
+        child: Opacity(
+          opacity: 0.16,
+          child: Image.asset(
+            'assets/images/studio/studio_bottom_left.png',
+          ),
+        ),
       ),
+      ],
+    ),
+    ),
+    SafeArea(
+    child: Column(
+    children: [
+    Padding(
+    padding: const EdgeInsets.fromLTRB(8, 10, 16, 4),
+    child: Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    IconButton(
+    onPressed: () => Navigator.maybePop(context),
+    icon: const Icon(
+    Icons.arrow_back_ios_new_rounded,
+    size: 22,
+    ),
+    ),
+    Expanded(
+    child: Column(
+    children: [
+    Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+    Flexible(
+    child: Text(
+    l10n.my_secret_studio_title,
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: GoogleFonts.notoSerifTc(
+    color: theme.colorScheme.onSurface,
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 1.8,
+    ),
+    ),
+    ),
+    const SizedBox(width: 7),
+    Image.asset(
+    'assets/images/studio/studio_title_leaf.png',
+    width: 30,
+    height: 30,
+    fit: BoxFit.contain,
+    ),
+    ],
+    ),
+    const SizedBox(height: 5),
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          '收藏靈感，整理角色，慢慢完成你的作品',
+          maxLines: 1,
+          style: GoogleFonts.notoSerifTc(
+            color: primary.withValues(alpha: 0.62),
+            fontSize: 12,
+            letterSpacing: 0.4,
+          ),
+        ),
+      ),
+    ],
+    ),
+    ),
+    const SizedBox(width: 42),
+    ],
+    ),
+    ),
+    Expanded(
+    child: StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
+    stream: combinedStream,
+    builder: (context, snapshot) {
+    if (snapshot.connectionState ==
+    ConnectionState.waiting) {
+    return const Center(
+    child: CircularProgressIndicator(),
+    );
+    }
+
+    if (snapshot.hasError) {
+    return Center(
+    child: Text(
+    '工作室讀取失敗：${snapshot.error}',
+    ),
+    );
+    }
+
+    final data = snapshot.data ??
+    {
+    'drafts': <QueryDocumentSnapshot>[],
+    'privates': <QueryDocumentSnapshot>[],
+    'publics': <QueryDocumentSnapshot>[],
+    };
+
+    final drafts =
+    data['drafts'] ?? <QueryDocumentSnapshot>[];
+
+    final privates =
+    data['privates'] ?? <QueryDocumentSnapshot>[];
+
+    final publics =
+    data['publics'] ?? <QueryDocumentSnapshot>[];
+
+    return ListView(
+    physics:
+    const AlwaysScrollableScrollPhysics(),
+    padding: const EdgeInsets.fromLTRB(
+    18,
+    12,
+    18,
+    64,
+    ),
+    children: [
+    Align(
+    alignment: Alignment.centerRight,
+    child: OutlinedButton.icon(
+    onPressed: () async {
+    await Navigator.push(
+    context,
+    MaterialPageRoute(
+    builder: (_) =>
+    const CharacterEditPage(),
+    ),
+    );
+    },
+    icon: const Icon(
+    Icons.add_rounded,
+    size: 21,
+    ),
+    label: Text(
+    '新增角色',
+    style: GoogleFonts.notoSerifTc(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.5,
+    ),
+    ),
+    style: OutlinedButton.styleFrom(
+    foregroundColor: primary,
+    backgroundColor: theme.colorScheme.surface
+        .withValues(alpha: 0.78),
+    side: BorderSide(
+    color: primary.withValues(alpha: 0.32),
+    ),
+    padding: const EdgeInsets.symmetric(
+    horizontal: 17,
+    vertical: 10,
+    ),
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(24),
+    ),
+    ),
+    ),
+    ),
+
+    const SizedBox(height: 18),
+
+    _buildStudioSection(
+    context: context,
+    theme: theme,
+    title: '公開角色',
+    subtitle: '已上架，可被其他玩家認識',
+    assetPath: 'assets/images/studio/studio_public.png',
+    count: publics.length,
+    emptyText: '目前沒有公開角色',
+    documents: publics,
+    status: 'public',
+    ),
+
+    const SizedBox(height: 28),
+
+    _buildStudioSection(
+    context: context,
+    theme: theme,
+    title: '私人角色',
+    subtitle: '只有你自己看得到',
+    assetPath: 'assets/images/studio/studio_private.png',
+    count: privates.length,
+    emptyText: '目前沒有私人角色',
+    documents: privates,
+    status: 'private',
+    ),
+
+    const SizedBox(height: 28),
+
+    _buildStudioSection(
+    context: context,
+    theme: theme,
+    title: '草稿',
+    subtitle: '尚未完成的創作',
+    assetPath: 'assets/images/studio/studio_draft_quill.png',
+    count: drafts.length,
+    emptyText: '目前沒有尚未完成的草稿',
+    documents: drafts,
+    status: 'draft',
+    ),
+    ],
+    );
+    },
+    ),
+    ),
+    ],
+    ),
+    ),
+    ],
+    ),
     );
   }
   Widget _buildStudioSection({
     required BuildContext context,
     required ThemeData theme,
     required String title,
-    required IconData icon,
+    required String subtitle,
+    required String assetPath,
     required int count,
     required String emptyText,
     required List<QueryDocumentSnapshot> documents,
     required String status,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary
-                    .withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                icon,
-                size: 19,
-                color: theme.colorScheme.primary,
-              ),
-            ),
+    final primary = theme.colorScheme.primary;
 
-            const SizedBox(width: 10),
-
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 9,
-                vertical: 4,
-              ),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '$count',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.55),
-                ),
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 12),
-
-        if (documents.isEmpty)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              vertical: 24,
-              horizontal: 16,
-            ),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface
-                  .withValues(alpha: 0.55),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.07),
-              ),
-            ),
-            child: Text(
-              emptyText,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: theme.colorScheme.onSurface
-                    .withValues(alpha: 0.45),
-              ),
-            ),
-          )
-        else
-          ...documents.map(
-                (doc) => _buildStudioCharacterCard(
-              context: context,
-              theme: theme,
-              doc: doc,
-              status: status,
-            ),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 14, 12, 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.70),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: primary.withValues(alpha: 0.17)),
+        boxShadow: [
+          BoxShadow(
+            color: primary.withValues(alpha: 0.07),
+            blurRadius: 18,
+            offset: const Offset(0, 7),
           ),
-      ],
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                assetPath,
+                width: status == 'draft' ? 48 : 58,
+                height: status == 'draft' ? 48 : 58,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 21,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 12,
+                        color: primary.withValues(alpha: 0.58),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.035),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: primary.withValues(alpha: 0.18)),
+                ),
+                child: Text(
+                  '$count',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: primary.withValues(alpha: 0.82),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          if (documents.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                vertical: 28,
+                horizontal: 16,
+              ),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface.withValues(alpha: 0.58),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: primary.withValues(alpha: 0.11),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    status == 'draft' ? '這裡還沒有草稿' : emptyText,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 15,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.66),
+                    ),
+                  ),
+                  if (status == 'draft') ...[
+                    const SizedBox(height: 7),
+                    Text(
+                      '靈感來了，就先記在這裡吧',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 12,
+                        color: primary.withValues(alpha: 0.50),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            )
+          else
+            ...documents.map(
+                  (doc) => _buildStudioCharacterCard(
+                context: context,
+                theme: theme,
+                doc: doc,
+                status: status,
+              ),
+            ),
+        ],
+      ),
     );
   }
   Widget _buildStudioCharacterCard({
@@ -426,14 +556,13 @@ class CreatorStudioPage extends StatelessWidget {
       color: theme.colorScheme.surface
           .withValues(alpha: 0.82),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(18),
         side: BorderSide(
-          color: theme.colorScheme.onSurface
-              .withValues(alpha: 0.07),
+          color: theme.colorScheme.primary.withValues(alpha: 0.12),
         ),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(18),
         onTap: () async {
           if (status == 'draft') {
             await Navigator.push(
@@ -481,10 +610,10 @@ class CreatorStudioPage extends StatelessWidget {
           child: Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(15),
                 child: SizedBox(
-                  width: 58,
-                  height: 58,
+                  width: 66,
+                  height: 66,
                   child: Image(
                     image: getAvatarImageProvider(
                       avatarPath.isNotEmpty
@@ -523,33 +652,42 @@ class CreatorStudioPage extends StatelessWidget {
                       maxLines: 1,
                       overflow:
                       TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
 
                     const SizedBox(height: 6),
 
-                    Row(
-                      children: [
-                        Icon(
-                          statusIcon,
-                          size: 14,
-                          color: theme
-                              .colorScheme.primary,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.055),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.14),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          statusText,
-                          style: TextStyle(
-                            fontSize: 12,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            statusIcon,
+                            size: 14,
                             color: theme
-                                .colorScheme.onSurface
-                                .withValues(alpha: 0.55),
+                                .colorScheme.primary,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                          Text(
+                            statusText,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 12,
+                              color: theme.colorScheme.primary.withValues(alpha: 0.75),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -583,105 +721,105 @@ class CreatorStudioPage extends StatelessWidget {
     );
   }
 
-Widget _buildCreatorIntroductionCard(
-    BuildContext context,
-    ThemeData theme, {
-      required String nickname,
-      required String bio,
-      required String avatarPath,
-    }) {
-  ImageProvider? avatarProvider;
+  Widget _buildCreatorIntroductionCard(
+      BuildContext context,
+      ThemeData theme, {
+        required String nickname,
+        required String bio,
+        required String avatarPath,
+      }) {
+    ImageProvider? avatarProvider;
 
-  if (avatarPath.startsWith('http://') ||
-      avatarPath.startsWith('https://')) {
-    avatarProvider =
-        NetworkImage(avatarPath);
-  } else if (avatarPath.startsWith('assets/')) {
-    avatarProvider =
-        AssetImage(avatarPath);
-  }
+    if (avatarPath.startsWith('http://') ||
+        avatarPath.startsWith('https://')) {
+      avatarProvider =
+          NetworkImage(avatarPath);
+    } else if (avatarPath.startsWith('assets/')) {
+      avatarProvider =
+          AssetImage(avatarPath);
+    }
 
-  return Card(
-    margin: const EdgeInsets.only(bottom: 20),
-    elevation: 0,
-    color: theme.colorScheme.primary
-        .withValues(alpha: 0.06),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20),
-      side: BorderSide(
-        color: theme.colorScheme.primary
-            .withValues(alpha: 0.12),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 20),
+      elevation: 0,
+      color: theme.colorScheme.primary
+          .withValues(alpha: 0.06),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: theme.colorScheme.primary
+              .withValues(alpha: 0.12),
+        ),
       ),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(18),
-      child: Row(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor:
-            theme.colorScheme.primary
-                .withValues(alpha: 0.12),
-            backgroundImage: avatarProvider,
-            child: avatarProvider == null
-                ? Icon(
-              Icons.person_rounded,
-              color:
-              theme.colorScheme.primary,
-            )
-                : null,
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
-              children: [
-                Text(
-                  nickname.isEmpty
-                      ? '未命名創作者'
-                      : nickname,
-                  style: TextStyle(
-                    color:
-                    theme.colorScheme.onSurface,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (bio.isNotEmpty) ...[
-                  const SizedBox(height: 7),
-                  Text(
-                    bio,
-                    style: TextStyle(
-                      color: theme
-                          .colorScheme.onSurface
-                          .withValues(alpha: 0.7),
-                      fontSize: 13,
-                      height: 1.5,
-                    ),
-                  ),
-                ] else ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    '尚未填寫自我介紹',
-                    style: TextStyle(
-                      color: theme
-                          .colorScheme.onSurface
-                          .withValues(alpha: 0.4),
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ],
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Row(
+          crossAxisAlignment:
+          CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor:
+              theme.colorScheme.primary
+                  .withValues(alpha: 0.12),
+              backgroundImage: avatarProvider,
+              child: avatarProvider == null
+                  ? Icon(
+                Icons.person_rounded,
+                color:
+                theme.colorScheme.primary,
+              )
+                  : null,
             ),
-          ),
-        ],
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    nickname.isEmpty
+                        ? '未命名創作者'
+                        : nickname,
+                    style: TextStyle(
+                      color:
+                      theme.colorScheme.onSurface,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (bio.isNotEmpty) ...[
+                    const SizedBox(height: 7),
+                    Text(
+                      bio,
+                      style: TextStyle(
+                        color: theme
+                            .colorScheme.onSurface
+                            .withValues(alpha: 0.7),
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                    ),
+                  ] else ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      '尚未填寫自我介紹',
+                      style: TextStyle(
+                        color: theme
+                            .colorScheme.onSurface
+                            .withValues(alpha: 0.4),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   // 🏷️ 輔助小元件：草稿標籤
   Widget _buildDraftBadge(BuildContext context) {

@@ -18,7 +18,6 @@ import 'package:firebase_storage/firebase_storage.dart'; // 雲端硬碟總管
 import 'package:http/http.dart' as http;
 
 import '../services/toast_utils.dart';
-import 'main_page.dart'; // 專門用來破解網頁版 blob 網址的工具
 import '../utils/image_utils.dart';
 import 'welcome_guide_page.dart';
 //個人檔案
@@ -558,13 +557,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
           cloudData['hasChangedID'] = hasChangedID;
         }
 
-        await FirebaseFirestore.instance
+        final userRef = FirebaseFirestore.instance
             .collection('users')
-            .doc(user.uid)
-            .set(
+            .doc(user.uid);
+
+        debugPrint('🔥 準備儲存個人檔案');
+        debugPrint('🔥 uid = ${user.uid}');
+        debugPrint('🔥 cloudData = $cloudData');
+
+        final beforeSave = await userRef.get();
+
+        debugPrint('🔥 users 文件存在 = ${beforeSave.exists}');
+        debugPrint('🔥 原始資料 = ${beforeSave.data()}');
+
+        await userRef.set(
           cloudData,
           SetOptions(merge: true),
         );
+
+        debugPrint('✅ 個人檔案 Firestore 儲存成功');
       }
 
       // Firestore 儲存成功後，再同步本機資料。
@@ -740,7 +751,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // --- 修正後的完整儲存函式 (加入舊 ID 徹底移除機制) ---
   Future<void> _performFullSave() async {
     final l10n = AppLocalizations.of(context)!;
-    if (mounted) setState(() => _isSaving = true);
     final newID = _playerIDController.text.trim();
 
     try {
@@ -763,13 +773,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
         // B. 使用 Transaction 確保搬家過程一氣呵成
         await _db.runTransaction((transaction) async {
           final newIdRef = _db.collection('playerIDs').doc(newID);
-          // 1. 在 playerIDs 資料表建立新的門牌號碼
-          transaction.set(newIdRef, {'uid': currentUser.uid});
-          // 2. 如果有舊的 ID，立刻在 playerIDs 裡面把舊門牌拆掉！
+
+          // 先在 transaction 裡再次確認新 ID
+          final newIdSnapshot = await transaction.get(newIdRef);
+
+          if (newIdSnapshot.exists) {
+            throw Exception(l10n.error_id_already_used);
+          }
+
+          DocumentReference<Map<String, dynamic>>? oldIdRef;
+          DocumentSnapshot<Map<String, dynamic>>? oldIdSnapshot;
+
           if (_originalID.isNotEmpty && _originalID != newID) {
-            final oldIdRef = _db.collection('playerIDs').doc(_originalID);
+            oldIdRef = _db.collection('playerIDs').doc(_originalID);
+            oldIdSnapshot = await transaction.get(oldIdRef);
+          }
+
+          // 建立新的玩家 ID 對照
+          transaction.set(
+            newIdRef,
+            {'uid': currentUser.uid},
+          );
+
+          // 舊 ID 文件真的存在，而且確定是自己的，才刪
+          if (oldIdRef != null &&
+              oldIdSnapshot != null &&
+              oldIdSnapshot.exists &&
+              oldIdSnapshot.data()?['uid'] == currentUser.uid) {
             transaction.delete(oldIdRef);
-            print("♻️ 舊 ID 佔位已自動刪除：$_originalID");
           }
         });
         await prefs.setString('playerID', newID);

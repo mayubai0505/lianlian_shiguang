@@ -275,8 +275,8 @@ class _HelpPageState extends State<HelpPage> {
       child: Stack(children: [
         Positioned(
           right: -5,
-          bottom: -18,
-          width: 175,
+          bottom: -20,
+          width: 155,
           child: Opacity(
             opacity: .84,
             child: Image.asset(
@@ -285,26 +285,33 @@ class _HelpPageState extends State<HelpPage> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(22, 23, 150, 23),
+          padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 content.welcomeTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: _serif(
-                  size: 19,
+                  size: 18,
                   color: primary,
                   weight: FontWeight.w600,
-                  spacing: .7,
+                  spacing: .4,
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
-                content.welcomeBody,
-                style: _serif(
-                  size: 12.5,
-                  color: theme.colorScheme.onSurface.withValues(alpha: .7),
-                  height: 1.7,
+
+              // 只有內文替蝴蝶預留空間
+              Padding(
+                padding: const EdgeInsets.only(right: 142),
+                child: Text(
+                  content.welcomeBody,
+                  style: _serif(
+                    size: 12.5,
+                    color: theme.colorScheme.onSurface.withValues(alpha: .7),
+                    height: 1.7,
+                  ),
                 ),
               ),
             ],

@@ -156,20 +156,6 @@ class ProfileService {
         hasChangedID: dataToUpdate['playerID'] != null,
       );
     }
-    // 5. 統一執行資料庫更新與本地同步
-    if (dataToUpdate.isNotEmpty) {
-      await _db.collection('users').doc(currentUser.uid).update(dataToUpdate);
-
-      // 同步到本地
-      await _updateLocalPrefs(
-        nickname: dataToUpdate['nickname'] ?? prefs.getString('nickname'),
-        playerID: dataToUpdate['playerID'] ?? prefs.getString('playerID'),
-        avatarPath: dataToUpdate['avatarPath'] ?? prefs.getString('avatarPath'),
-        gender: dataToUpdate['gender'] ?? prefs.getString('gender'),
-        birthDate: birthDate, // 這裡要根據邏輯判斷，為了簡潔先略過
-        hasChangedID: dataToUpdate['playerID'] != null,
-      );
-    }
   }
 
   // ✨ 完美細節 4：抽離本地同步邏輯

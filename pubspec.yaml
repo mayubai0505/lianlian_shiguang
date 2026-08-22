@@ -76,6 +76,7 @@ flutter:
     - assets/images/language/
     - assets/images/blocked/
     - assets/images/guide/
+    - assets/images/studio/
     - assets/images/google_logo.png
     - assets/images/flower_gift.png
     - assets/images/flower_gift_dark.png
