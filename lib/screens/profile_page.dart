@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
+import 'heartbeat_diary_page.dart';
 import '../repositories/character_repository.dart';
 import '../services/moment_notification_service.dart';
 import '../services/toast_utils.dart';
@@ -33,6 +34,7 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart'; // 🌟 加上這個！
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/moment_model.dart';
 import 'moment_card.dart';
 import 'edit_moment_page.dart';
@@ -52,6 +54,7 @@ class _ProfilePageState extends State<ProfilePage>
   String _nickname = '';
   String _avatarPath = 'assets/images/avatar1.png';
   String _bio = '';
+  List<Map<String, String>> _profileLinks = [];
   bool _isBioExpanded = false;
   String _playerID = '';
   int _flowerPoints = 0;
@@ -63,8 +66,16 @@ class _ProfilePageState extends State<ProfilePage>
   bool _hasChangedID = false;
   String _oldIDFromDB = "";
   String _profileMomentFilter = 'all';
+
+  // --- 個人動態快取 ---
+  // 第一次抓到後保留在 State 裡，切換 Tab / 滑動畫面時不再閃 loading。
+  List<Moment> _cachedProfileMoments = <Moment>[];
+  bool _profileMomentsLoaded = false;
+  Object? _profileMomentsError;
+
   StreamSubscription? _pointsSubscription;
   StreamSubscription? _userDocSubscription;
+  StreamSubscription<QuerySnapshot>? _profileMomentsSubscription;
   // --- Firebase 變數 ---
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   String? _userId;
@@ -118,6 +129,7 @@ class _ProfilePageState extends State<ProfilePage>
           _checkDailyCheckInStatus();
           _loadDailyTaskProgress();
           _listenToUserDocument();
+          _listenToProfileMoments();
           _checkIfBirthday();
 
           // 👇 🔥 第四步：在這裡加上 FB 大頭貼更新器！
@@ -125,7 +137,15 @@ class _ProfilePageState extends State<ProfilePage>
           _refreshFacebookAvatar(user);
         }
       } else if (mounted) {
-        setState(() => _isLoading = false);
+        _profileMomentsSubscription?.cancel();
+        _profileMomentsSubscription = null;
+
+        setState(() {
+          _isLoading = false;
+          _cachedProfileMoments = <Moment>[];
+          _profileMomentsLoaded = false;
+          _profileMomentsError = null;
+        });
       }
     });
   }
@@ -208,6 +228,7 @@ class _ProfilePageState extends State<ProfilePage>
     _inviteCodeController.dispose(); // ✨ 新增：釋放邀請碼控制器的記憶體，避免漏水！
     _pointsSubscription?.cancel();
     _userDocSubscription?.cancel();
+    _profileMomentsSubscription?.cancel();
     _profileTabController.dispose();
     super.dispose();
   }
@@ -295,6 +316,22 @@ class _ProfilePageState extends State<ProfilePage>
         _avatarPath = data['avatarPath'] ?? _avatarPath;
         _flowerPoints = data['flowerPoints'] ?? 0;
         _bio = data['bio']?.toString().trim() ?? '';
+
+        // 個人連結：直接使用玩家儲存在 users/{uid} 的 profileLinks。
+        final rawProfileLinks = data['profileLinks'];
+        _profileLinks = rawProfileLinks is List
+            ? rawProfileLinks
+            .whereType<Map>()
+            .map(
+              (item) => {
+            'name': (item['name'] ?? '').toString().trim(),
+            'url': (item['url'] ?? '').toString().trim(),
+          },
+        )
+            .where((item) => (item['url'] ?? '').isNotEmpty)
+            .toList()
+            : <Map<String, String>>[];
+
         // 🌟 3. 生日偵測：直接從資料庫的時間戳記判斷
         if (data['userBirthday'] != null) {
           final birthDate = (data['userBirthday'] as Timestamp).toDate();
@@ -322,6 +359,19 @@ class _ProfilePageState extends State<ProfilePage>
     }
     if (data.containsKey('avatarPath')) await prefs.setString(
         'avatarPath', data['avatarPath']);
+
+    if (data.containsKey('profileLinks') && data['profileLinks'] is List) {
+      final encoded = (data['profileLinks'] as List)
+          .map((item) {
+        if (item is Map) {
+          return '${(item['name'] ?? '').toString().trim()}\t${(item['url'] ?? '').toString().trim()}';
+        }
+        return '';
+      })
+          .where((item) => item.isNotEmpty)
+          .join('\n');
+      await prefs.setString('profileLinksDisplayCache', encoded);
+    }
   }
 
   Future<void> _performCheckIn() async {
@@ -638,199 +688,143 @@ class _ProfilePageState extends State<ProfilePage>
   // 1. 加入 async 關鍵字
   Future<void> _showHeartbeatDiary() async {
     final l10n = AppLocalizations.of(context)!;
-    // 🌟 關鍵修正：加上 await！
-    // 顯示 Loading 提示或直接等待，確保 _likeProgress 等變數已經被更新
+
+    // 先確保進度是 Firebase 最新資料
     await _loadDailyTaskProgress();
 
-    if (!mounted) return; // 防護罩：避免玩家在等待時已經離開頁面
+    if (!mounted) return;
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setStateInDialog) {
-            return AlertDialog(
-              title: Text(l10n.tab_heartbeat_diary),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildTaskItem(
-                      title: l10n.tab_daily_chit_chat,
-                      subtitle: l10n.task_desc_chat_3_times,
-                      progress: _dailyChatProgress, goal: 3,
-                      isClaimed: _isDailyChatClaimed,
-                      onClaim: () {
-                        if (_isDailyChatClaimed) return;
-                        if (_dailyChatProgress < 3) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => HeartbeatDiaryPage(
+          title: l10n.tab_heartbeat_diary,
 
-                        _claimTaskReward(
-                          l10n.tab_daily_chit_chat,
-                          'dailyChatProgress',
-                          'dailyChatClaimed',
-                          5,
-                              () {
-                            setStateInDialog(() => _isDailyChatClaimed = true);
-                            setState(() => _isDailyChatClaimed = true);
-                          },
-                        );
-                      },
-                    ),
+          // 這句等 UI 確認後，我們再正式補進多語系 ARB
 
-                    _buildTaskItem(
-                      title:l10n.tab_story_progression,
-                      subtitle: l10n.task_desc_story_1_time,
-                      progress: _storyChatProgress, goal: 1,
-                      isClaimed: _isStoryChatClaimed,
-                      onClaim: () {
-                        if (_isStoryChatClaimed) return;
-                        if (_storyChatProgress < 1) return;
+          // 1. 閒話家常
+          dailyChatTitle: l10n.tab_daily_chit_chat,
+          dailyChatSubtitle: l10n.task_desc_chat_3_times,
+          dailyChatProgress: _dailyChatProgress,
+          dailyChatClaimed: _isDailyChatClaimed,
+          onClaimDailyChat: (onSuccess) async {
+            if (_isDailyChatClaimed || _dailyChatProgress < 3) {
+              return;
+            }
 
-                        _claimTaskReward(
-                          l10n.tab_story_progression,
-                          'storyChatProgress',
-                          'storyChatClaimed',
-                          5,
-                              () {
-                            setStateInDialog(() => _isStoryChatClaimed = true);
-                            setState(() => _isStoryChatClaimed = true);
-                          },
-                        );
-                      },
-                    ),
+            await _claimTaskReward(
+              l10n.tab_daily_chit_chat,
+              'dailyChatProgress',
+              'dailyChatClaimed',
+              5,
+                  () {
+                if (mounted) {
+                  setState(() {
+                    _isDailyChatClaimed = true;
+                  });
+                }
 
-                    _buildTaskItem(
-                      title: l10n.tab_social_tour,
-                      subtitle: l10n.task_like_three_moments,
-                      progress: _likeProgress, goal: 3,
-                      isClaimed: _isLikeClaimed,
-                      onClaim: () {
-                        if (_isLikeClaimed) return;
-                        if (_likeProgress < 3) return;
-
-                        _claimTaskReward(
-                          l10n.tab_social_tour,
-                          'likeProgress',
-                          'likeClaimed',
-                          5,
-                              () {
-                            setStateInDialog(() => _isLikeClaimed = true);
-                            setState(() => _isLikeClaimed = true);
-                          },
-                        );
-                      },
-                    ),
-                    // 🏆 4. ✨✨✨ 第四個獨立任務（星之契約特權）- 全多國語系版 ✨✨✨
-                    _buildTaskItem(
-                      title: l10n.task_monthly_title,
-                      // 🌟  subtitle 動態切換翻譯
-                      subtitle: _hasActiveMonthlyCard
-                          ? l10n.task_monthly_subtitle_active
-                          : l10n.task_monthly_subtitle_inactive,
-                      progress: _hasActiveMonthlyCard ? 1 : 0,
-                      goal: 1,
-                      isClaimed: _isMonthlyRewardClaimed,
-                      customIncompleteText: l10n.task_monthly_locked,
-                      onClaim: () {
-                        if (!_hasActiveMonthlyCard || _isMonthlyRewardClaimed) return;
-
-                        _claimTaskReward(
-                          l10n.task_monthly_log_name,
-                          '',
-                          'monthlyCardClaimed',
-                          10,
-                              () {
-                            setStateInDialog(() => _isMonthlyRewardClaimed = true);
-                            setState(() => _isMonthlyRewardClaimed = true);
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              actions: [ TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.common_close)) ],
+                onSuccess();
+              },
             );
           },
-        );
-      },
-    );
-  }
 
-  // ✨ 3. 新增一個輔助 Widget，專門用來建立每一條任務
-  Widget _buildTaskItem({
-    required String title,
-    required String subtitle,
-    required int progress,
-    required int goal,
-    required bool isClaimed,
-    required VoidCallback onClaim,
-    String? customIncompleteText,
-  }) {
-    final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
-    final l10n = AppLocalizations.of(context)!;
+          // 2. 劇情推進
+          storyTitle: l10n.tab_story_progression,
+          storySubtitle: l10n.task_desc_story_1_time,
+          storyProgress: _storyChatProgress,
+          storyClaimed: _isStoryChatClaimed,
+          onClaimStory: (onSuccess) async {
+            if (_isStoryChatClaimed || _storyChatProgress < 1) {
+              return;
+            }
 
-    final int displayedProgress = progress > goal ? goal : progress;
-    final bool isCompleted = progress >= goal;
-    final bool canClaim = isCompleted && !isClaimed;
+            await _claimTaskReward(
+              l10n.tab_story_progression,
+              'storyChatProgress',
+              'storyChatClaimed',
+              5,
+                  () {
+                if (mounted) {
+                  setState(() {
+                    _isStoryChatClaimed = true;
+                  });
+                }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text('$subtitle ($displayedProgress / $goal)'),
-            trailing: isClaimed
-                ? Text(
-              l10n.btn_claimed,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontWeight: FontWeight.bold,
-              ),
-            )
-                : ElevatedButton(
-              onPressed: canClaim ? onClaim : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                canClaim ? primaryColor : Colors.grey[200],
-                foregroundColor:
-                canClaim ? Colors.white : Colors.grey[600],
-                disabledBackgroundColor: Colors.grey[200],
-                disabledForegroundColor: Colors.grey[600],
-                elevation: canClaim ? 3 : 0,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: Text(
-                canClaim
-                    ? l10n.btn_claim
-                    : (customIncompleteText ?? l10n.btn_incomplete),
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
+                onSuccess();
+              },
+            );
+          },
 
-          ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: LinearProgressIndicator(
-              value: goal <= 0 ? 0 : displayedProgress / goal,
-              backgroundColor: primaryColor.withValues(alpha: 0.1),
-              valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-              minHeight: 6,
-            ),
-          ),
-        ],
+          // 3. 社群巡禮
+          socialTitle: l10n.tab_social_tour,
+          socialSubtitle: l10n.task_like_three_moments,
+          socialProgress: _likeProgress,
+          socialClaimed: _isLikeClaimed,
+          onClaimSocial: (onSuccess) async {
+            if (_isLikeClaimed || _likeProgress < 3) {
+              return;
+            }
+
+            await _claimTaskReward(
+              l10n.tab_social_tour,
+              'likeProgress',
+              'likeClaimed',
+              5,
+                  () {
+                if (mounted) {
+                  setState(() {
+                    _isLikeClaimed = true;
+                  });
+                }
+
+                onSuccess();
+              },
+            );
+          },
+
+          // 4. 星之契約
+          monthlyTitle: l10n.task_monthly_title,
+          monthlySubtitle: _hasActiveMonthlyCard
+              ? l10n.task_monthly_subtitle_active
+              : l10n.task_monthly_subtitle_inactive,
+          hasActiveMonthlyCard: _hasActiveMonthlyCard,
+          monthlyClaimed: _isMonthlyRewardClaimed,
+          monthlyLockedText: l10n.task_monthly_locked,
+          onClaimMonthly: (onSuccess) async {
+            if (!_hasActiveMonthlyCard ||
+                _isMonthlyRewardClaimed) {
+              return;
+            }
+
+            await _claimTaskReward(
+              l10n.task_monthly_log_name,
+              '',
+              'monthlyCardClaimed',
+              10,
+                  () {
+                if (mounted) {
+                  setState(() {
+                    _isMonthlyRewardClaimed = true;
+                  });
+                }
+
+                onSuccess();
+              },
+            );
+          },
+
+          claimText: l10n.btn_claim,
+          claimedText: l10n.btn_claimed,
+          incompleteText: l10n.btn_incomplete,
+          closeText: l10n.common_close,
+        ),
       ),
     );
+
+    // 從心動日記回來後，再同步一次最新狀態
+    if (mounted) {
+      await _loadDailyTaskProgress();
+    }
   }
 
 
@@ -856,6 +850,54 @@ class _ProfilePageState extends State<ProfilePage>
     });
   }
 
+
+  void _listenToProfileMoments() {
+    _profileMomentsSubscription?.cancel();
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // 如果是換帳號，先清掉上一個帳號的快取；
+    // 同帳號重建 listener 時則保留舊畫面，不讓 UI 閃圈圈。
+    if (_userId != user.uid) {
+      _cachedProfileMoments = <Moment>[];
+      _profileMomentsLoaded = false;
+      _profileMomentsError = null;
+    }
+
+    _profileMomentsSubscription = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(_appId)
+        .collection('moments')
+        .where('createdBy', isEqualTo: user.uid)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .listen(
+          (snapshot) {
+        final updatedMoments = snapshot.docs
+            .map((doc) => Moment.fromFirestore(doc))
+            .toList();
+
+        if (!mounted) return;
+
+        setState(() {
+          _cachedProfileMoments = updatedMoments;
+          _profileMomentsLoaded = true;
+          _profileMomentsError = null;
+        });
+      },
+      onError: (error) {
+        debugPrint('❌ 個人動態背景同步失敗：$error');
+
+        if (!mounted) return;
+
+        setState(() {
+          _profileMomentsLoaded = true;
+          _profileMomentsError = error;
+        });
+      },
+    );
+  }
 
   void _listenToFlowerPoints() {
     _pointsSubscription?.cancel();
@@ -901,6 +943,20 @@ class _ProfilePageState extends State<ProfilePage>
         _bio = prefs.getString('bio') ?? '';
         _avatarPath = prefs.getString('avatarPath') ?? (currentUser?.photoURL ?? 'assets/images/avatar1.png');
         _playerID = prefs.getString('playerID') ?? '';
+
+        final cachedLinks = prefs.getString('profileLinksDisplayCache') ?? '';
+        _profileLinks = cachedLinks
+            .split('\n')
+            .where((line) => line.trim().isNotEmpty)
+            .map((line) {
+          final parts = line.split('\t');
+          return <String, String>{
+            'name': parts.isNotEmpty ? parts.first.trim() : '',
+            'url': parts.length > 1 ? parts.sublist(1).join('\t').trim() : '',
+          };
+        })
+            .where((item) => (item['url'] ?? '').isNotEmpty)
+            .toList();
       });
     }
   }
@@ -2858,41 +2914,29 @@ class _ProfilePageState extends State<ProfilePage>
                 },
               ),
               const SizedBox(height: 18),
-              StreamBuilder<QuerySnapshot>(
-                stream: currentUser == null
-                    ? null
-                    : FirebaseFirestore.instance
-                    .collection('artifacts')
-                    .doc(_appId)
-                    .collection('moments')
-                    .where('createdBy', isEqualTo: currentUser.uid)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  final momentsCount = snapshot.data?.docs.length ?? 0;
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: _buildProfileStatItem(
-                          value: _myCharacters.length,
-                          label: l10n.profilePageTabCharacters,
-                        ),
-                      ),
-                      Expanded(
-                        child: _buildProfileStatItem(
-                          value: momentsCount,
-                          label: l10n.profilePageTabMoments,
-                          onTap: () => _profileTabController.animateTo(1),
-                        ),
-                      ),
-                      Expanded(
-                        child: _buildProfileStatItem(
-                          value: totalLikes,
-                          label: localeIsChinese ? '喜歡' : 'Likes',
-                        ),
-                      ),
-                    ],
-                  );
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildProfileStatItem(
+                      value: _myCharacters.length,
+                      label: l10n.profilePageTabCharacters,
+                      onTap: () => _profileTabController.animateTo(0),
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildProfileStatItem(
+                      value: _cachedProfileMoments.length,
+                      label: l10n.profilePageTabMoments,
+                      onTap: () => _profileTabController.animateTo(1),
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildProfileStatItem(
+                      value: totalLikes,
+                      label: localeIsChinese ? '喜歡' : 'Likes',
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 15),
               Row(
@@ -3181,9 +3225,148 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
+  Future<void> _openProfileLink(String rawUrl) async {
+    String normalized = rawUrl.trim();
+    if (normalized.isEmpty) return;
+
+    // 玩家若只輸入 instagram.com/xxx 這種網址，自動補 https://
+    if (!normalized.startsWith('http://') &&
+        !normalized.startsWith('https://')) {
+      normalized = 'https://$normalized';
+    }
+
+    final uri = Uri.tryParse(normalized);
+
+    // 個人頁只允許一般網頁連結，避免自訂 scheme / deep link 被濫用。
+    if (uri == null ||
+        !(uri.scheme == 'http' || uri.scheme == 'https') ||
+        uri.host.isEmpty) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '連結格式不正確',
+        isError: true,
+      );
+      return;
+    }
+
+    try {
+      final opened = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!opened && mounted) {
+        ToastUtils.showCenterToast(
+          context,
+          '無法開啟這個連結',
+          isError: true,
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ 開啟個人連結失敗：$e');
+
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '無法開啟這個連結',
+        isError: true,
+      );
+    }
+  }
+
+  Widget _buildProfileLinksSection() {
+    final theme = Theme.of(context);
+
+    final visibleLinks = _profileLinks
+        .where((item) => (item['url'] ?? '').trim().isNotEmpty)
+        .toList();
+
+    if (visibleLinks.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ...visibleLinks.map((item) {
+          final name = (item['name'] ?? '').trim();
+          final url = (item['url'] ?? '').trim();
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  flex: 0,
+                  child: Text(
+                    name.isEmpty ? '我的連結' : name,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 13,
+                      height: 1.55,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+                    ),
+                  ),
+                ),
+                Text(
+                  '：',
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 13,
+                    height: 1.55,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.62),
+                  ),
+                ),
+                Expanded(
+                  child: InkWell(
+                    onTap: () => _openProfileLink(url),
+                    borderRadius: BorderRadius.circular(6),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              url,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.notoSerifTc(
+                                fontSize: 12.5,
+                                height: 1.6,
+                                color: theme.colorScheme.primary.withValues(alpha: 0.82),
+                                decoration: TextDecoration.underline,
+                                decorationColor:
+                                theme.colorScheme.primary.withValues(alpha: 0.34),
+                                decorationThickness: 0.7,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Icon(
+                            Icons.open_in_new_rounded,
+                            size: 13,
+                            color: theme.colorScheme.primary.withValues(alpha: 0.58),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
   Widget _buildAboutMeTab() {
     final currentUser =
         FirebaseAuth.instance.currentUser;
+    final hasProfileLinks = _profileLinks.any(
+          (item) => (item['url'] ?? '').trim().isNotEmpty,
+    );
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
@@ -3193,13 +3376,42 @@ class _ProfilePageState extends State<ProfilePage>
         else
           _buildEmptyBioCard(),
 
-        const SizedBox(height: 24),
-        Divider(
-          height: 1,
-          thickness: 0.7,
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.14),
-        ),
-        const SizedBox(height: 24),
+        if (hasProfileLinks) ...[
+          const SizedBox(height: 22),
+          Divider(
+            height: 1,
+            thickness: 0.7,
+            color: Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.14),
+          ),
+          const SizedBox(height: 18),
+
+          _buildProfileLinksSection(),
+
+          const SizedBox(height: 12),
+          Divider(
+            height: 1,
+            thickness: 0.7,
+            color: Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.14),
+          ),
+          const SizedBox(height: 24),
+        ] else ...[
+          const SizedBox(height: 24),
+          Divider(
+            height: 1,
+            thickness: 0.7,
+            color: Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.14),
+          ),
+          const SizedBox(height: 24),
+        ],
 
         if (currentUser != null)
           StreamBuilder<DocumentSnapshot>(
@@ -4097,31 +4309,23 @@ class _ProfilePageState extends State<ProfilePage>
             ),
 
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('artifacts')
-                    .doc(_appId)
-                    .collection('moments')
-                    .where(
-                  'createdBy',
-                  isEqualTo: currentUser.uid,
-                )
-                    .orderBy(
-                  'createdAt',
-                  descending: true,
-                )
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
+              child: Builder(
+                builder: (context) {
+                  // 只有 App 這次生命週期中「從來沒有拿到過動態資料」時
+                  // 才顯示一次 loading。之後 Tab 重建、左右切換都沿用快取。
+                  if (!_profileMomentsLoaded &&
+                      _cachedProfileMoments.isEmpty) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
 
-                  if (snapshot.hasError) {
+                  // 如果背景同步暫時失敗，但手上還有舊資料，
+                  // 繼續顯示舊資料，不讓玩家突然看到錯誤頁。
+                  if (_profileMomentsError != null &&
+                      _cachedProfileMoments.isEmpty) {
                     debugPrint(
-                      '❌ 個人動態讀取失敗：${snapshot.error}',
+                      '❌ 個人動態讀取失敗：$_profileMomentsError',
                     );
 
                     return ListView(
@@ -4140,7 +4344,7 @@ class _ProfilePageState extends State<ProfilePage>
                         Text(
                           l10n.profilePageMomentsLoadFailed,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
                           ),
@@ -4158,20 +4362,13 @@ class _ProfilePageState extends State<ProfilePage>
                     );
                   }
 
-                  final docs = snapshot.data?.docs ?? [];
-
-                  final allMoments = docs.map((doc) {
-                    return Moment.fromFirestore(doc);
-                  }).toList();
-
-                  final moments = allMoments.where((moment) {
+                  final moments =
+                  _cachedProfileMoments.where((moment) {
                     switch (_profileMomentFilter) {
                       case 'creator':
                         return moment.isCreatorPost;
-
                       case 'character':
                         return !moment.isCreatorPost;
-
                       case 'all':
                       default:
                         return true;
@@ -4184,22 +4381,28 @@ class _ProfilePageState extends State<ProfilePage>
 
                     switch (_profileMomentFilter) {
                       case 'creator':
-                        emptyTitle = l10n.profilePageNoCreatorMoments;
-                        emptyDescription = l10n.profilePageNoCreatorMomentsHint;
+                        emptyTitle =
+                            l10n.profilePageNoCreatorMoments;
+                        emptyDescription =
+                            l10n.profilePageNoCreatorMomentsHint;
                         break;
 
                       case 'character':
-                        emptyTitle = l10n.profilePageNoCharacterMoments;
-                        emptyDescription = l10n.profilePageNoCharacterMomentsHint;
+                        emptyTitle =
+                            l10n.profilePageNoCharacterMoments;
+                        emptyDescription =
+                            l10n.profilePageNoCharacterMomentsHint;
                         break;
 
                       default:
                         emptyTitle = l10n.profilePageNoMoments;
-                        emptyDescription = l10n.profilePageNoMomentsHint;
+                        emptyDescription =
+                            l10n.profilePageNoMomentsHint;
                     }
 
                     return ListView(
-                      physics: const AlwaysScrollableScrollPhysics(),
+                      physics:
+                      const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(24),
                       children: [
                         const SizedBox(height: 40),
@@ -4255,32 +4458,31 @@ class _ProfilePageState extends State<ProfilePage>
                             currentUserId: currentUser.uid,
                             showFeatureTips: false,
 
-                            // 個人主頁內仍可正常按讚
                             onLikeTapped: () async {
                               await _handleProfileMomentLike(moment);
                             },
 
-                            // 編輯自己的動態
                             onEditTapped: () {
                               _editProfileMoment(moment);
                             },
 
-                            // 刪除自己的動態
                             onDeleteTapped: () {
                               _deleteProfileMoment(moment.id);
                             },
 
-                            // 點角色頭像時先沿用原有角色跳轉
                             onAvatarTapped: () {
                               _openProfileMomentAuthor(moment);
                             },
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                            ),
                             child: Divider(
                               height: 28,
                               thickness: 0.7,
-                              color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.12),
                             ),
                           ),
                         ],
@@ -4581,55 +4783,166 @@ class _ProfilePageState extends State<ProfilePage>
 
   Future<void> _fetchAllCharacterData() async {
     if (_userId == null) return;
-    try {
-      final responses = await Future.wait([
-        _db.collection('artifacts').doc(_appId).collection('users').doc(_userId).collection('private_characters').orderBy('createdAt', descending: true).get(),
-        _db.collection('artifacts').doc(_appId).collection('public_characters').orderBy('createdAt', descending: true).get(),
-      ]);
+
+    final userId = _userId!;
+
+    final privateQuery = _db
+        .collection('artifacts')
+        .doc(_appId)
+        .collection('users')
+        .doc(userId)
+        .collection('private_characters')
+        .orderBy('createdAt', descending: true);
+
+    // ✅ 只查「自己建立的公開角色」，
+    // 不再把全平台 public_characters 全部抓回來再過濾。
+    final myPublicQuery = _db
+        .collection('artifacts')
+        .doc(_appId)
+        .collection('public_characters')
+        .where('createdBy', isEqualTo: userId)
+        .orderBy('createdAt', descending: true);
+
+    Future<List<Character>> parseCharacters(
+        QuerySnapshot<Map<String, dynamic>> snapshot,
+        ) async {
+      return Future.wait(
+        snapshot.docs
+            .map((doc) => Character.fromFirestoreAsync(doc))
+            .toList(),
+      );
+    }
+
+    Future<void> applyMyCharacters(
+        QuerySnapshot<Map<String, dynamic>> privateSnapshot,
+        QuerySnapshot<Map<String, dynamic>> publicSnapshot,
+        ) async {
+      final privateCharacters =
+      await parseCharacters(privateSnapshot);
+      final publicCharacters =
+      await parseCharacters(publicSnapshot);
+
+      final combined = <Character>[
+        ...privateCharacters,
+        ...publicCharacters,
+      ]..sort(
+            (a, b) => b.createdAt.compareTo(a.createdAt),
+      );
 
       if (!mounted) return;
 
-      final myPrivateCharacters = await Future.wait(
-          responses[0].docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
-      );
+      setState(() {
+        _myCharacters = combined;
+      });
+    }
 
-      final allPublicCharacters = await Future.wait(
-          responses[1].docs.map((doc) => Character.fromFirestoreAsync(doc)).toList()
-      );
+    // ============================================
+    // ① 先讀 Firestore 本機快取
+    // ============================================
+    // 有快取時幾乎立刻把角色顯示出來，不必等網路。
+    try {
+      final cachedResponses = await Future.wait([
+        privateQuery.get(
+          const GetOptions(source: Source.cache),
+        ),
+        myPublicQuery.get(
+          const GetOptions(source: Source.cache),
+        ),
+      ]);
 
-      final myPublicCharacters = allPublicCharacters
-          .where((char) => char.createdBy == _userId)
-          .toList();
-
-      _myCharacters = [...myPrivateCharacters, ...myPublicCharacters];
-      _myCharacters.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-      final friendsSnapshot = await _db.collection('users').doc(_userId).collection('friends').get();
-      final Set<String> myFriendIds = friendsSnapshot.docs.map((doc) => doc.id).toSet();
-
-      final allInteractableChars = <String, Character>{};
-
-      for (var char in myPrivateCharacters) {
-        allInteractableChars[char.id] = char;
+      if (cachedResponses[0].docs.isNotEmpty ||
+          cachedResponses[1].docs.isNotEmpty) {
+        await applyMyCharacters(
+          cachedResponses[0],
+          cachedResponses[1],
+        );
       }
+    } catch (e) {
+      // 第一次安裝或尚未建立 Firestore cache 時很正常，
+      // 不顯示錯誤，直接進入伺服器抓取。
+      debugPrint('ℹ️ 個人角色本機快取尚未建立：$e');
+    }
 
-      for (var char in myPublicCharacters) {
-        allInteractableChars[char.id] = char;
-      }
+    // ============================================
+    // ② 背景抓最新角色
+    // ============================================
+    try {
+      final serverResponses = await Future.wait([
+        privateQuery.get(),
+        myPublicQuery.get(),
+      ]);
 
-      for (var char in allPublicCharacters) {
-        if (myFriendIds.contains(char.id)) {
-          allInteractableChars.putIfAbsent(char.id, () => char);
+      await applyMyCharacters(
+        serverResponses[0],
+        serverResponses[1],
+      );
+    } catch (e) {
+      debugPrint('❌ 抓取自己的角色資料時發生錯誤: $e');
+    }
+
+    // ============================================
+    // ③ 好友列表另外背景更新
+    // ============================================
+    // 這段不再卡住「我的角色」顯示。
+    try {
+      final friendsSnapshot = await _db
+          .collection('users')
+          .doc(userId)
+          .collection('friends')
+          .get();
+
+      final Set<String> myFriendIds =
+      friendsSnapshot.docs.map((doc) => doc.id).toSet();
+
+      // 自己的角色已經在 _myCharacters 裡，直接先放入。
+      final allInteractableChars = <String, Character>{
+        for (final char in _myCharacters) char.id: char,
+      };
+
+      if (myFriendIds.isNotEmpty) {
+        // Firestore whereIn 單次數量有限制，因此分批查詢。
+        const batchSize = 10;
+        final friendIds = myFriendIds.toList();
+
+        for (int i = 0; i < friendIds.length; i += batchSize) {
+          final end = (i + batchSize < friendIds.length)
+              ? i + batchSize
+              : friendIds.length;
+
+          final batch = friendIds.sublist(i, end);
+
+          final friendPublicSnapshot = await _db
+              .collection('artifacts')
+              .doc(_appId)
+              .collection('public_characters')
+              .where(FieldPath.documentId, whereIn: batch)
+              .get();
+
+          final friendCharacters =
+          await parseCharacters(friendPublicSnapshot);
+
+          for (final char in friendCharacters) {
+            allInteractableChars.putIfAbsent(
+              char.id,
+                  () => char,
+            );
+          }
         }
       }
 
-      _friendsList = allInteractableChars.values.toList();
-      _friendsList.sort((a, b) => b.playCount.compareTo(a.playCount));
+      final updatedFriends =
+      allInteractableChars.values.toList()
+        ..sort(
+              (a, b) => b.playCount.compareTo(a.playCount),
+        );
 
-      setState(() {});
+      if (!mounted) return;
 
+      setState(() {
+        _friendsList = updatedFriends;
+      });
     } catch (e) {
-      print('抓取角色資料時發生錯誤: $e');
+      debugPrint('⚠️ 好友角色背景更新失敗：$e');
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io';
 import 'dart:math'; // ✨ 用來生成隨機亂數
@@ -16,6 +17,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:firebase_storage/firebase_storage.dart'; // 雲端硬碟總管
 import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
 
 import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
@@ -36,6 +38,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _nicknameController = TextEditingController();
   final _playerIDController = TextEditingController();
   final _bioController = TextEditingController();
+
+  // --- 個人連結 ---
+  final List<TextEditingController> _linkNameControllers = [];
+  final List<TextEditingController> _linkUrlControllers = [];
+  List<Map<String, String>> _originalProfileLinks = [];
   // ✨ 請確保您有在 class 的頂部加上這一行 ✨
   // --- 狀態變數 ---
   String _gender = '未選擇';
@@ -69,7 +76,218 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _nicknameController.dispose();
     _playerIDController.dispose();
     _bioController.dispose();
+    for (final controller in _linkNameControllers) {
+      controller.dispose();
+    }
+    for (final controller in _linkUrlControllers) {
+      controller.dispose();
+    }
     super.dispose();
+  }
+
+  // --- 個人連結處理 ---
+  void _setProfileLinks(dynamic rawLinks) {
+    for (final controller in _linkNameControllers) {
+      controller.dispose();
+    }
+    for (final controller in _linkUrlControllers) {
+      controller.dispose();
+    }
+
+    _linkNameControllers.clear();
+    _linkUrlControllers.clear();
+
+    final parsed = <Map<String, String>>[];
+
+    if (rawLinks is List) {
+      for (final item in rawLinks) {
+        if (item is Map) {
+          parsed.add({
+            'name': (item['name'] ?? '').toString().trim(),
+            'url': (item['url'] ?? '').toString().trim(),
+          });
+        }
+      }
+    }
+
+    // 新功能第一次使用時，預設保留 3 格「我的連結」。
+    while (parsed.length < 3) {
+      parsed.add({
+        'name': '我的連結 ${parsed.length + 1}',
+        'url': '',
+      });
+    }
+
+    for (int i = 0; i < parsed.length; i++) {
+      final item = parsed[i];
+      _linkNameControllers.add(
+        TextEditingController(
+          text: item['name']!.isEmpty ? '我的連結 ${i + 1}' : item['name'],
+        ),
+      );
+      _linkUrlControllers.add(
+        TextEditingController(text: item['url'] ?? ''),
+      );
+    }
+
+    _originalProfileLinks = _currentProfileLinks();
+  }
+
+  List<Map<String, String>> _currentProfileLinks() {
+    final result = <Map<String, String>>[];
+
+    for (int i = 0; i < _linkNameControllers.length; i++) {
+      result.add({
+        'name': _linkNameControllers[i].text.trim(),
+        'url': _linkUrlControllers[i].text.trim(),
+      });
+    }
+
+    return result;
+  }
+
+  bool _profileLinksChanged() {
+    final current = _currentProfileLinks();
+
+    if (current.length != _originalProfileLinks.length) {
+      return true;
+    }
+
+    for (int i = 0; i < current.length; i++) {
+      if (current[i]['name'] != _originalProfileLinks[i]['name'] ||
+          current[i]['url'] != _originalProfileLinks[i]['url']) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  void _addProfileLink() {
+    setState(() {
+      final index = _linkNameControllers.length + 1;
+      _linkNameControllers.add(
+        TextEditingController(text: '我的連結 $index'),
+      );
+      _linkUrlControllers.add(TextEditingController());
+    });
+  }
+
+  void _removeProfileLink(int index) {
+    if (index < 0 || index >= _linkNameControllers.length) return;
+
+    setState(() {
+      _linkNameControllers.removeAt(index).dispose();
+      _linkUrlControllers.removeAt(index).dispose();
+
+      // 至少保留 1 格，避免整個區塊變成空的。
+      if (_linkNameControllers.isEmpty) {
+        _linkNameControllers.add(
+          TextEditingController(text: '我的連結 1'),
+        );
+        _linkUrlControllers.add(TextEditingController());
+      }
+
+      // 刪除後重新整理「系統預設名稱」的編號。
+      // 例如刪掉「我的連結 2」後，
+      // 原本的「我的連結 3」會自動變成「我的連結 2」。
+      // 但玩家自行改過的名稱（例如 Instagram、作品集）不會被改掉。
+      for (int i = 0; i < _linkNameControllers.length; i++) {
+        final currentName = _linkNameControllers[i].text.trim();
+        final isDefaultName =
+        RegExp(r'^我的連結\s*\d+$').hasMatch(currentName);
+
+        if (isDefaultName) {
+          _linkNameControllers[i].text = '我的連結 ${i + 1}';
+        }
+      }
+    });
+  }
+
+  String _profileUiText(String key) {
+    final code = Localizations.localeOf(context).languageCode;
+
+    const table = <String, Map<String, String>>{
+      'done': {
+        'zh': '完成',
+        'en': 'Done',
+        'ja': '完了',
+        'ko': '완료',
+        'es': 'Listo',
+        'fr': 'Terminé',
+        'hi': 'पूर्ण',
+        'id': 'Selesai',
+        'ms': 'Selesai',
+        'pt': 'Concluir',
+        'th': 'เสร็จสิ้น',
+        'vi': 'Xong',
+        'ar': 'تم',
+      },
+      'socialLinks': {
+        'zh': '社群與連結',
+        'en': 'Social & Links',
+        'ja': 'SNS・リンク',
+        'ko': '소셜 및 링크',
+        'es': 'Redes y enlaces',
+        'fr': 'Réseaux et liens',
+        'hi': 'सोशल और लिंक',
+        'id': 'Sosial & Tautan',
+        'ms': 'Sosial & Pautan',
+        'pt': 'Redes e links',
+        'th': 'โซเชียลและลิงก์',
+        'vi': 'Mạng xã hội & Liên kết',
+        'ar': 'الاجتماعي والروابط',
+      },
+      'addLink': {
+        'zh': '新增連結',
+        'en': 'Add link',
+        'ja': 'リンクを追加',
+        'ko': '링크 추가',
+        'es': 'Añadir enlace',
+        'fr': 'Ajouter un lien',
+        'hi': 'लिंक जोड़ें',
+        'id': 'Tambah tautan',
+        'ms': 'Tambah pautan',
+        'pt': 'Adicionar link',
+        'th': 'เพิ่มลิงก์',
+        'vi': 'Thêm liên kết',
+        'ar': 'إضافة رابط',
+      },
+      'linkNameHint': {
+        'zh': '連結名稱',
+        'en': 'Link name',
+        'ja': 'リンク名',
+        'ko': '링크 이름',
+        'es': 'Nombre',
+        'fr': 'Nom du lien',
+        'hi': 'लिंक नाम',
+        'id': 'Nama tautan',
+        'ms': 'Nama pautan',
+        'pt': 'Nome do link',
+        'th': 'ชื่อลิงก์',
+        'vi': 'Tên liên kết',
+        'ar': 'اسم الرابط',
+      },
+      'linkUrlHint': {
+        'zh': '輸入連結',
+        'en': 'Enter URL',
+        'ja': 'URLを入力',
+        'ko': '링크 입력',
+        'es': 'Ingresa el enlace',
+        'fr': 'Saisir le lien',
+        'hi': 'लिंक दर्ज करें',
+        'id': 'Masukkan tautan',
+        'ms': 'Masukkan pautan',
+        'pt': 'Digite o link',
+        'th': 'ใส่ลิงก์',
+        'vi': 'Nhập liên kết',
+        'ar': 'أدخل الرابط',
+      },
+    };
+
+    final values = table[key];
+    if (values == null) return key;
+    return values[code] ?? values['en'] ?? key;
   }
 
   // --- 資料處理邏輯 ---
@@ -97,6 +315,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _avatarPath = data['avatarPath'] ?? 'assets/images/avatar1.png';
               _bioController.text =
                   data['bio']?.toString() ?? '';
+              _setProfileLinks(data['profileLinks']);
               final bool isAgeSetCloud = data['isAgeSet'] ?? false;
               _isAgeEditable = !isAgeSetCloud;
 
@@ -140,6 +359,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
         widget.isCreating
             ? ''
             : (prefs.getString('bio') ?? '');
+
+        if (widget.isCreating) {
+          _setProfileLinks(null);
+        } else {
+          final rawLinksJson = prefs.getString('profileLinks');
+          if (rawLinksJson != null && rawLinksJson.trim().isNotEmpty) {
+            try {
+              _setProfileLinks(jsonDecode(rawLinksJson));
+            } catch (_) {
+              _setProfileLinks(null);
+            }
+          } else {
+            _setProfileLinks(null);
+          }
+        }
         _gender = widget.isCreating
             ? '未選擇'
             : (prefs.getString('gender') ?? l10n.genderNotSelected);
@@ -268,7 +502,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         !_isSameDate(
           _birthDate,
           _originalBirthDate,
-        );
+        ) ||
+        _profileLinksChanged();
   }
 
 
@@ -541,6 +776,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           'bio': bio,
           'avatarPath': finalAvatarPath,
           'gender': _gender,
+          'profileLinks': _currentProfileLinks(),
           'updatedAt': FieldValue.serverTimestamp(),
         };
 
@@ -597,6 +833,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       await prefs.setString(
         'gender',
         _gender,
+      );
+
+      await prefs.setString(
+        'profileLinks',
+        jsonEncode(_currentProfileLinks()),
       );
 
       if (newID != null) {
@@ -661,6 +902,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _originalBio = bio;
       _originalGender = _gender;
       _originalBirthDate = _birthDate;
+      _originalProfileLinks = _currentProfileLinks();
 
       if (newID != null) {
         _originalID = newID;
@@ -1124,217 +1366,592 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Widget _buildPageContent() {
-    // ✨ 1. 定義變色龍變數 (隨主題自動變色)
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
-    final isDarkMode = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    // 封裝通用的輸入框樣式 (延續妳喜愛的毛玻璃感)
-    InputDecoration customInputDecoration(String label, {String? helper}) {
+
+    final media = MediaQuery.of(context);
+    final screenWidth = media.size.width;
+    final screenHeight = media.size.height;
+
+    final double horizontalPadding =
+    (screenWidth * 0.065).clamp(20.0, 46.0).toDouble();
+
+    final double labelWidth =
+    (screenWidth * 0.22).clamp(84.0, 126.0).toDouble();
+
+    final double topRightFlowerWidth =
+    (screenWidth * 0.34).clamp(130.0, 230.0).toDouble();
+    final double bottomLeftFlowerWidth =
+    (screenWidth * 0.42).clamp(150.0, 280.0).toDouble();
+
+    final double topRightHorizontalOffset =
+    -(screenWidth * 0.06).clamp(18.0, 44.0).toDouble();
+    final double topRightVerticalOffset =
+    -(screenHeight * 0.012).clamp(8.0, 20.0).toDouble();
+
+    final double bottomLeftHorizontalOffset =
+    -(screenWidth * 0.08).clamp(22.0, 52.0).toDouble();
+    final double bottomLeftVerticalOffset =
+    -(screenHeight * 0.012).clamp(8.0, 22.0).toDouble();
+
+    final fieldTextStyle = GoogleFonts.notoSerifTc(
+      color: onSurface,
+      fontSize: 14,
+      height: 1.5,
+    );
+
+    final labelStyle = GoogleFonts.notoSerifTc(
+      color: Colors.black87,
+      fontSize: 13,
+      fontWeight: FontWeight.w500,
+    );
+
+    InputDecoration lineDecoration({
+      String? hintText,
+      int? maxLength,
+    }) {
       return InputDecoration(
-        labelText: label,
-        helperText: helper,
-        helperStyle: TextStyle(color: onSurface.withValues(alpha:0.5)),
-        filled: true,
-        fillColor: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15.0),
-          borderSide: BorderSide.none,
+        hintText: hintText,
+        hintStyle: GoogleFonts.notoSerifTc(
+          color: onSurface.withValues(alpha: 0.34),
+          fontSize: 12,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15.0),
-          borderSide: BorderSide(color: primaryColor.withValues(alpha:0.1)),
+        counterStyle: GoogleFonts.notoSerifTc(
+          color: onSurface.withValues(alpha: 0.42),
+          fontSize: 10.5,
         ),
-        labelStyle: TextStyle(color: onSurface.withValues(alpha:0.8)),
+        isDense: true,
+        contentPadding: const EdgeInsets.fromLTRB(0, 6, 0, 8),
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: primaryColor.withValues(alpha: 0.22),
+          ),
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: primaryColor.withValues(alpha: 0.22),
+          ),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: primaryColor.withValues(alpha: 0.65),
+            width: 1.2,
+          ),
+        ),
+      );
+    }
+
+    Widget labeledField({
+      required String label,
+      required Widget child,
+      String? helperText,
+    }) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: labelStyle,
+          ),
+          const SizedBox(height: 6),
+          child,
+          if (helperText != null && helperText.trim().isNotEmpty) ...[
+            const SizedBox(height: 5),
+            Text(
+              helperText,
+              style: GoogleFonts.notoSerifTc(
+                color: primaryColor.withValues(alpha: 0.58),
+                fontSize: 10.5,
+              ),
+            ),
+          ],
+        ],
+      );
+    }
+
+    Widget buildProfileLinkRow(int index) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: labelWidth + 54,
+              child: TextField(
+                controller: _linkNameControllers[index],
+                style: GoogleFonts.notoSerifTc(
+                  color: onSurface,
+                  fontSize: 13,
+                ),
+                maxLines: 1,
+                decoration: lineDecoration(
+                  hintText: _profileUiText('linkNameHint'),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextField(
+                controller: _linkUrlControllers[index],
+                keyboardType: TextInputType.url,
+                textInputAction: TextInputAction.next,
+                autocorrect: false,
+                style: GoogleFonts.notoSerifTc(
+                  color: onSurface,
+                  fontSize: 12,
+                ),
+                decoration: lineDecoration(
+                  hintText: _profileUiText('linkUrlHint'),
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            IconButton(
+              tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+              visualDensity: VisualDensity.compact,
+              onPressed: () => _removeProfileLink(index),
+              icon: Icon(
+                Icons.delete_outline_rounded,
+                size: 19,
+                color: primaryColor.withValues(alpha: 0.60),
+              ),
+            ),
+          ],
+        ),
       );
     }
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.isCreating ? l10n.title_create_profile : l10n.title_edit_profile),
-        backgroundColor: Colors.transparent,
+        centerTitle: true,
+        backgroundColor: Colors.white,
         elevation: 0,
-        foregroundColor: onSurface,
+        scrolledUnderElevation: 0,
+        foregroundColor: Colors.black87,
+        iconTheme: const IconThemeData(color: Colors.black87),
+        title: Text(
+          widget.isCreating
+              ? l10n.title_create_profile
+              : l10n.title_edit_profile,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 21,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+            letterSpacing: 1.1,
+          ),
+        ),
+        actions: [
+          if (!widget.isCreating)
+            TextButton(
+              onPressed: _isSaving ? null : _saveProfile,
+              style: TextButton.styleFrom(
+                foregroundColor: primaryColor,
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+              ),
+              child: _isSaving
+                  ? SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: primaryColor,
+                ),
+              )
+                  : Text(
+                _profileUiText('done'),
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 頂部間距 (避開 AppBar)
-            SizedBox(height: kToolbarHeight + MediaQuery.of(context).padding.top + 20),
-
-            // 2. 頭像區
-            Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 55, // 這裡可以調成妳喜歡的大小，55 比原本的 50 再大一點點
-                    backgroundColor: Colors.grey[200],
-                    // ⚡ 這裡請注意：確認妳用的變數是 _avatarPath 還是 _selectedAvatarPath
-                    backgroundImage: _getEditableAvatarProvider(_avatarPath),
+      body: Stack(
+        children: [
+          Positioned(
+            top: topRightVerticalOffset,
+            right: topRightHorizontalOffset,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.18,
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    primaryColor.withValues(alpha: 0.80),
+                    BlendMode.srcIn,
                   ),
-                  // 編輯按鈕 (相機圖示)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: _showAvatarSelectionDialog, // 點擊觸發選單
-                      child: CircleAvatar(
-                        backgroundColor: primaryColor,
-                        radius: 18,
-                        child: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
+                  child: Image.asset(
+                    'assets/images/profile_edit/profile_edit_botanical_top_right.png',
+                    width: topRightFlowerWidth,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: bottomLeftHorizontalOffset,
+            bottom: bottomLeftVerticalOffset,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.20,
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    primaryColor.withValues(alpha: 0.80),
+                    BlendMode.srcIn,
+                  ),
+                  child: Image.asset(
+                    'assets/images/profile_edit/profile_edit_botanical_left.png',
+                    width: bottomLeftFlowerWidth,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                18,
+                horizontalPadding,
+                42,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: primaryColor.withValues(alpha: 0.10),
+                                blurRadius: 20,
+                                offset: const Offset(0, 7),
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor:
+                            primaryColor.withValues(alpha: 0.08),
+                            backgroundImage:
+                            _getEditableAvatarProvider(_avatarPath),
+                          ),
+                        ),
+                        Positioned(
+                          right: -2,
+                          bottom: -2,
+                          child: GestureDetector(
+                            onTap: _showAvatarSelectionDialog,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: primaryColor,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                    primaryColor.withValues(alpha: 0.18),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.edit_rounded,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 34),
+
+                  labeledField(
+                    label: l10n.label_your_nickname,
+                    child: TextField(
+                      controller: _nicknameController,
+                      maxLength: 20,
+                      style: fieldTextStyle,
+                      decoration: lineDecoration(),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+
+                  labeledField(
+                    label: l10n.editProfileBioLabel,
+                    child: TextField(
+                      controller: _bioController,
+                      minLines: 3,
+                      maxLines: 8,
+                      maxLength: 450,
+                      textInputAction: TextInputAction.newline,
+                      style: fieldTextStyle,
+                      decoration: lineDecoration(
+                        hintText: l10n.editProfileBioHint,
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
+                  const SizedBox(height: 18),
 
-            const SizedBox(height: 32),
-
-            // 3. 輸入欄位區
-            TextField(
-              controller: _nicknameController,
-              style: TextStyle(color: onSurface),
-              decoration: customInputDecoration(l10n.label_your_nickname),
-            ),
-            const SizedBox(height: 20),
-
-            TextField(
-              controller: _bioController,
-              style: TextStyle(
-                color: onSurface,
-                height: 1.5,
-              ),
-              minLines: 3,
-              maxLines: 8,
-              maxLength: 450,
-              textInputAction: TextInputAction.newline,
-              decoration: customInputDecoration(
-                l10n.editProfileBioLabel,
-                helper: l10n.editProfileBioHelper,
-              ).copyWith(
-                hintText: l10n.editProfileBioHint,
-                alignLabelWithHint: true,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            TextField(
-              controller: _playerIDController,
-              style: TextStyle(color: onSurface),
-              readOnly: _hasChangedID, // 已改過就鎖定
-              maxLength: 20,
-              decoration: customInputDecoration(
-                l10n.label_player_exclusive_id,
-                helper: _hasChangedID ? l10n.msg_id_locked : l10n.msg_id_change_chance,
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            DropdownButtonFormField<String>(
-              initialValue: _gender,
-              dropdownColor: theme.cardColor,
-              style: TextStyle(color: onSurface),
-              decoration: customInputDecoration(l10n.charGenderLabel),
-              items: [
-                // value 是存進資料庫的固定字串，child 裡面的 Text 才是翻譯後顯示給玩家看的
-                DropdownMenuItem(value: '未選擇', child: Text(l10n.genderNotSelected)), // (如果翻譯包有加這句，也可以換成 l10n.notSelected)
-                DropdownMenuItem(value: '男', child: Text(l10n.genderMale)),
-                DropdownMenuItem(value: '女', child: Text(l10n.genderFemale)),
-                DropdownMenuItem(value: '其他', child: Text(l10n.genderOther)),
-              ],
-              onChanged: (String? newValue) => setState(() => _gender = newValue ?? '未選擇'),
-            ),
-            const SizedBox(height: 20),
-
-            // 4. 生日選擇器
-            InkWell(
-              onTap: _selectDate,
-              borderRadius: BorderRadius.circular(15),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-                decoration: BoxDecoration(
-                  color: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: primaryColor.withValues(alpha:0.1)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.cake_outlined, color: primaryColor),
-                    const SizedBox(width: 12),
-                    Text(
-                      _birthDate == null
-                          ? l10n.action_select_birthdate
-                          : l10n.label_birthdate(DateFormat('yyyy-MM-dd').format(_birthDate!)),
-                      style: TextStyle(color: onSurface, fontSize: 16),
-                    ),
-                    const Spacer(),
-                    Icon(Icons.chevron_right, color: onSurface.withValues(alpha:0.5)),
-                  ],
-                ),
-              ),
-            ),
-
-            if (!_isAgeEditable && !widget.isCreating)
-              Padding(
-                padding: const EdgeInsets.only(top: 8, left: 8),
-                child: Text(l10n.msg_birthdate_immutable, style: TextStyle(color: onSurface.withValues(alpha:0.4), fontSize: 12)),
-              ),
-
-            const SizedBox(height: 48),
-
-            // 5. 按鈕區 (儲存 + 稍後編輯)
-            Center(
-              child: _isSaving
-                  ? CircularProgressIndicator(color: primaryColor)
-                  : Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // 主要儲存按鈕
-                  ElevatedButton(
-                    onPressed: _isSaving ? null : _saveProfile,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      minimumSize: const Size(double.infinity, 56),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-                      elevation: 8,
-                      shadowColor: primaryColor.withValues(alpha:0.5),
-                    ),
-                    child: Text(
-                      widget.isCreating ? l10n.action_start_journey : l10n.save_changes_button,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  labeledField(
+                    label: l10n.label_player_exclusive_id,
+                    helperText: _hasChangedID
+                        ? l10n.msg_id_locked
+                        : l10n.msg_id_change_chance,
+                    child: TextField(
+                      controller: _playerIDController,
+                      readOnly: _hasChangedID,
+                      maxLength: 20,
+                      style: fieldTextStyle,
+                      decoration: lineDecoration(),
                     ),
                   ),
+                  const SizedBox(height: 18),
 
+                  labeledField(
+                    label: l10n.charGenderLabel,
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Radio<String>(
+                          value: '男',
+                          groupValue: _gender,
+                          activeColor: primaryColor,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() => _gender = value);
+                            }
+                          },
+                        ),
+                        Text(
+                          l10n.genderMale,
+                          style: GoogleFonts.notoSerifTc(fontSize: 13),
+                        ),
+                        Radio<String>(
+                          value: '女',
+                          groupValue: _gender,
+                          activeColor: primaryColor,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() => _gender = value);
+                            }
+                          },
+                        ),
+                        Text(
+                          l10n.genderFemale,
+                          style: GoogleFonts.notoSerifTc(fontSize: 13),
+                        ),
+                        Radio<String>(
+                          value: '未選擇',
+                          groupValue: _gender,
+                          activeColor: primaryColor,
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() => _gender = value);
+                            }
+                          },
+                        ),
+                        Text(
+                          l10n.genderNotSelected,
+                          style: GoogleFonts.notoSerifTc(fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  labeledField(
+                    label: l10n.action_select_birthdate,
+                    child: InkWell(
+                      onTap: _selectDate,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.cake_outlined,
+                              size: 22,
+                              color:
+                              primaryColor.withValues(alpha: 0.75),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Text(
+                                _birthDate == null
+                                    ? l10n.action_select_birthdate
+                                    : DateFormat('yyyy-MM-dd')
+                                    .format(_birthDate!),
+                                style: fieldTextStyle,
+                              ),
+                            ),
+                            Icon(
+                              _isAgeEditable
+                                  ? Icons.edit_rounded
+                                  : Icons.lock_outline_rounded,
+                              size: 20,
+                              color:
+                              primaryColor.withValues(alpha: 0.65),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (!_isAgeEditable && !widget.isCreating)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: labelWidth + 12,
+                        top: 4,
+                      ),
+                      child: Text(
+                        l10n.msg_birthdate_immutable,
+                        style: GoogleFonts.notoSerifTc(
+                          color:
+                          primaryColor.withValues(alpha: 0.56),
+                          fontSize: 11.5,
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 22),
+                  Divider(
+                    color: primaryColor.withValues(alpha: 0.16),
+                    height: 1,
+                  ),
+                  const SizedBox(height: 18),
+
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.link_rounded,
+                        size: 19,
+                        color: primaryColor.withValues(alpha: 0.72),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _profileUiText('socialLinks'),
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color:
+                          primaryColor.withValues(alpha: 0.78),
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 12),
 
-                  // 次要按鈕：稍後再編輯 / 取消變更
-                  TextButton(
-                    onPressed: _skipEditing,
-                    style: TextButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    child: Text(
-                      widget.isCreating ? l10n.action_edit_later_short :l10n.action_cancel_changes,
-                      style: TextStyle(
-                        color: onSurface.withValues(alpha:0.6),
-                        fontSize: 15,
-                        letterSpacing: 1.2,
+                  ...List.generate(
+                    _linkNameControllers.length,
+                    buildProfileLinkRow,
+                  ),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 46,
+                    child: OutlinedButton.icon(
+                      onPressed: _addProfileLink,
+                      icon: const Icon(Icons.add_rounded, size: 19),
+                      label: Text(
+                        _profileUiText('addLink'),
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 14,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: primaryColor,
+                        side: BorderSide(
+                          color:
+                          primaryColor.withValues(alpha: 0.40),
+                        ),
+                        shape: const StadiumBorder(),
                       ),
                     ),
                   ),
+
+                  if (widget.isCreating) ...[
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton(
+                        onPressed: _isSaving ? null : _saveProfile,
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: primaryColor,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          shape: const StadiumBorder(),
+                        ),
+                        child: _isSaving
+                            ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                            : Text(
+                          l10n.action_start_journey,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: _skipEditing,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: primaryColor,
+                          side: BorderSide(
+                            color:
+                            primaryColor.withValues(alpha: 0.55),
+                          ),
+                          shape: const StadiumBorder(),
+                        ),
+                        child: Text(
+                          l10n.action_edit_later_short,
+                          style:
+                          GoogleFonts.notoSerifTc(fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 28),
                 ],
               ),
             ),
-            const SizedBox(height: 40), // 底部留白
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
