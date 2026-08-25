@@ -8,6 +8,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:convert';
+import 'character_edit_basic_tab.dart';
+import 'character_edit_voice_tab.dart';
+import 'character_edit_relationship_tab.dart';
 import '../services/toast_utils.dart';
 import 'chat_page.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +47,26 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     'relationship_bickering_couple',
     'relationship_colleagues',
     'relationship_other',
+    'relationship_none',
   ];
+  String _relationshipNoneLabel(AppLocalizations l10n) {
+    final locale = l10n.localeName.toLowerCase();
+    if (locale.startsWith('ar')) return 'لا شيء';
+    if (locale.startsWith('en')) return 'None';
+    if (locale.startsWith('es')) return 'Ninguna';
+    if (locale.startsWith('fr')) return 'Aucune';
+    if (locale.startsWith('hi')) return 'कोई नहीं';
+    if (locale.startsWith('id')) return 'Tidak ada';
+    if (locale.startsWith('ja')) return 'なし';
+    if (locale.startsWith('ko')) return '없음';
+    if (locale.startsWith('ms')) return 'Tiada';
+    if (locale.startsWith('pt')) return 'Nenhuma';
+    if (locale.startsWith('th')) return 'ไม่มี';
+    if (locale.startsWith('vi')) return 'Không có';
+    if (locale.contains('hans') || locale == 'zh_cn') return '无';
+    return '無';
+  }
+
   String _getTranslatedLabel(String key, AppLocalizations l10n) {
     switch (key) {
       case 'relationship_childhood_friend':
@@ -262,13 +284,19 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         );
       }
       String? oldRelation = char.initialRelationship;
-      if (oldRelation.isNotEmpty) {        // 假設妳有一個 relationshipKeys 的常數 List
+      if (oldRelation.isNotEmpty) {
         if (relationshipKeys.contains(oldRelation)) {
           _selectedRelationship = oldRelation;
         } else {
           _selectedRelationship = 'relationship_other';
           _customRelationshipController.text = oldRelation;
         }
+      } else if (_playerIdentityController.text.trim().isNotEmpty) {
+        // 新版把「玩家預設身分」併入初始關係：
+        // 舊角色若只有 playerIdentity，就帶進「其他」避免資料消失。
+        _selectedRelationship = 'relationship_other';
+        _customRelationshipController.text =
+            _playerIdentityController.text.trim();
       }
       // -- 語音與音色設定 (統一整理在這裡) --
       _generatedVoiceId = char.voiceId;
@@ -411,14 +439,22 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         // 如果存的是 "relationship_other" 或者是玩家寫的「中文」
         _selectedRelationship = 'relationship_other';
         if (savedRel == 'relationship_other') {
-          _customRelationshipController.clear(); // 如果只是 "其他" 這個選項，就清空輸入框
+          _customRelationshipController.clear();
         } else {
-          _customRelationshipController.text = savedRel; // 顯示玩家寫的「鄰居」、「前任」等
+          _customRelationshipController.text = savedRel;
         }
       }
 
-      // 2. 【身分設定】
+      // 2. 【舊版身分設定相容】
       _playerIdentityController.text = data['playerIdentity'] ?? '';
+      if ((_selectedRelationship == null ||
+          (_selectedRelationship == 'relationship_other' &&
+              _customRelationshipController.text.trim().isEmpty)) &&
+          _playerIdentityController.text.trim().isNotEmpty) {
+        _selectedRelationship = 'relationship_other';
+        _customRelationshipController.text =
+            _playerIdentityController.text.trim();
+      }
 
       // 3. 【社交圈：與其他角色的關係 (Tab 3)】
       // 總裁，重點來了！妳剛才的 debugPrint 裡「真的沒有」relationships 這個欄位！
@@ -605,7 +641,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           : _occupationController.text.split(RegExp(r'[/,，/／]')).map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
       final String finalRelationship = (_selectedRelationship == 'relationship_other')
           ? _customRelationshipController.text.trim()
-          : (_selectedRelationship ?? '');
+          : (_selectedRelationship == 'relationship_none' ? '' : (_selectedRelationship ?? ''));
 
       // 🌟 2. 確保在草稿模式下，如果還沒上傳，優先抓取本機路徑 (localFile.path)
       _galleryPhotos.sort((a, b) => a.requiredAffection.compareTo(b.requiredAffection));
@@ -732,7 +768,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'stageIntimate': _stageIntimateController.text.trim(),
         'socialInteraction': '',
         'easterEggs': _easterEggs.map((egg) => egg.toMap()).toList(),
-        'playerIdentity': _playerIdentityController.text.trim(),
+        'playerIdentity': finalRelationship,
         'voice_id': finalVoiceIdToSave.isEmpty ? null : finalVoiceIdToSave,
         'voice_preview_url': _finalVoicePreviewUrl,
         'voiceStability': _voiceStability,
@@ -1431,7 +1467,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           : _occupationController.text.split(RegExp(r'[/,，/／]')).map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
       final String finalRelationship = (_selectedRelationship == 'relationship_other')
           ? _customRelationshipController.text.trim() // 抓手寫內容
-          : (_selectedRelationship ?? '');           // 抓選單的 Key
+          : (_selectedRelationship == 'relationship_none' ? '' : (_selectedRelationship ?? '')); // 「無」存成空字串
       final String originalCreatedBy =
       (widget.character?.createdBy ?? '').trim().isNotEmpty
           ? widget.character!.createdBy
@@ -1499,7 +1535,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         'stageIntimate': _stageIntimateController.text.trim(),
         'socialInteraction': '',
         'easterEggs': _easterEggs.map((egg) => egg.toMap()).toList(),
-        'playerIdentity': _playerIdentityController.text.trim(),
+        'playerIdentity': finalRelationship,
         'voice_id': finalVoiceIdToSave.isEmpty ? null : finalVoiceIdToSave,
         'voice_preview_url': _finalVoicePreviewUrl,
         'voiceStability': _voiceStability,
@@ -2700,1330 +2736,616 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     }
   }
 
+  Future<void> _openTestChat() async {
+    final l10n = AppLocalizations.of(context)!;
+    final user = FirebaseAuth.instance.currentUser;
+
+    final String finalRelationship =
+    (_selectedRelationship == 'relationship_other')
+        ? _customRelationshipController.text.trim()
+        : (_selectedRelationship == 'relationship_none' ? '' : (_selectedRelationship ?? ''));
+
+    final List<String> previewGalleryPaths = _galleryPhotos
+        .map((photo) => photo.imageUrl.trim())
+        .where((url) => url.isNotEmpty)
+        .toList();
+
+    final String previewAvatarPath = previewGalleryPaths.isNotEmpty
+        ? previewGalleryPaths.first
+        : 'assets/images/blank_avatar.png';
+
+    final String previewId =
+        widget.character?.id ?? 'preview_${DateTime.now().millisecondsSinceEpoch}';
+
+    Character previewCharacter;
+
+    if (widget.character != null) {
+      previewCharacter = widget.character!.copyWith(
+        initialStory: _storyController.text.trim(),
+        firstLine: _firstLineController.text.trim(),
+        coreCharacterSetting: _coreCharacterSettingController.text.trim(),
+        worldSetting: _worldSettingController.text.trim(),
+        customOutputFormat: _customOutputFormatController.text.trim(),
+      );
+    } else {
+      previewCharacter = Character(
+        id: previewId,
+        name: _nameController.text.trim().isEmpty
+            ? l10n.charNameLabel
+            : _nameController.text.trim(),
+        avatarPath: previewAvatarPath,
+        bannerImagePath: _bannerImagePath,
+        galleryPaths: previewGalleryPaths,
+        gallery: _galleryPhotos,
+        createdBy: user?.uid ?? 'preview',
+        worldSetting: _worldSettingController.text.trim(),
+        createdAt: DateTime.now(),
+        playCount: 0,
+        age: _ageController.text.trim(),
+        occupation: _occupationController.text.trim(),
+        birthday: _birthdayController.text.trim(),
+        height: _heightController.text.trim(),
+        personalityTags:
+        _deduplicateTagsPreservingOrder(_personalityTags),
+        storySummary: _storySummaryController.text.trim(),
+        initialStory: _storyController.text.trim(),
+        firstLine: _firstLineController.text.trim(),
+        background: _backgroundController.text.trim(),
+        appearance: _appearanceController.text.trim(),
+        gender: _gender,
+        isPublic: _isPublic,
+        coreCharacterSetting:
+        _coreCharacterSettingController.text.trim(),
+        detailedPersonality:
+        _coreCharacterSettingController.text.trim(),
+        customOutputFormat:
+        _customOutputFormatController.text.trim(),
+        toneAndStyle: '',
+        likes: _likesController.text.trim(),
+        likesCount: 0,
+        dislikes: _dislikesController.text.trim(),
+        secrets: _secretsController.text.trim(),
+        initialRelationship: finalRelationship,
+        dialogueExamples: _dialogueExamplesController.text.trim(),
+        easterEggs: _easterEggs,
+        extraInfoItems: _extraInfoItems,
+        contentLanguage: l10n.localeName,
+        stageStranger: _stageStrangerController.text.trim(),
+        stageAcquaintance: _stageAcquaintanceController.text.trim(),
+        stageIntimate: _stageIntimateController.text.trim(),
+        socialInteraction: '',
+        playerIdentity: '',
+        voiceId: _generatedVoiceId ?? _selectedVoiceId,
+        voicePreviewUrl: _finalVoicePreviewUrl,
+        voiceStability: _voiceStability,
+        voiceStyle: _voiceStyle,
+        relationships: _relationships,
+        npcCharacters: _npcCharacters,
+      );
+    }
+
+    if (!mounted) return;
+
+    ToastUtils.showCenterToast(
+      context,
+      l10n.test_mode_notice,
+      customIcon: Icons.chat_bubble_outline_rounded,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(
+          character: previewCharacter,
+          characterId: previewId,
+          chatMode: 'daily',
+          selectedLanguage: l10n.traditional_chinese,
+          isTestMode: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomActionBar(
+      ThemeData theme,
+      AppLocalizations l10n,
+      ) {
+    final bool isDark = theme.brightness == Brightness.dark;
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.scaffoldBackgroundColor,
+          border: Border(
+            top: BorderSide(
+              color: theme.dividerColor.withValues(alpha: 0.45),
+            ),
+          ),
+        ),
+        padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Text(
+                  l10n.visibility_label,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  l10n.visibility_private,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: !_isPublic
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                    fontWeight:
+                    !_isPublic ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+                Switch(
+                  value: _isPublic,
+                  activeColor: theme.colorScheme.primary,
+                  onChanged: (value) {
+                    setState(() => _isPublic = value);
+                  },
+                ),
+                Text(
+                  l10n.visibility_public,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: _isPublic
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                    fontWeight:
+                    _isPublic ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  disabledBackgroundColor:
+                  theme.colorScheme.primary.withValues(alpha: 0.35),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: _isSaving ? null : _saveCharacter,
+                child: _isSaving
+                    ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: isDark
+                        ? theme.colorScheme.onPrimary
+                        : Colors.white,
+                  ),
+                )
+                    : Text(
+                  isEditing
+                      ? l10n.save_changes_button
+                      : l10n.createButton,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _cleanSectionLabel(String raw) {
+    String value = raw.trimLeft();
+
+    const prefixes = <String>[
+      '🎭',
+      '🌟',
+      '🎁',
+      '🗣️',
+      '🗣',
+      '🧬',
+      '🎙️',
+      '🎙',
+      '👥',
+      '💡',
+      '✨',
+    ];
+
+    bool removed;
+    do {
+      removed = false;
+      value = value.trimLeft();
+
+      for (final prefix in prefixes) {
+        if (value.startsWith(prefix)) {
+          value = value.substring(prefix.length);
+          removed = true;
+          break;
+        }
+      }
+    } while (removed);
+
+    return value.trim();
+  }
+
+  Widget _buildCleanSection({
+    required ThemeData theme,
+    required String title,
+    required List<Widget> children,
+    IconData? icon,
+  }) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  size: 19,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+              ] else
+                Container(
+                  width: 3,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+              if (icon == null) const SizedBox(width: 9),
+              Expanded(
+                child: Text(
+                  _cleanSectionLabel(title),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...children,
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    // 在 build 裡面
+
     final List<Map<String, String>> genderOptions = [
       {'id': genderIdMale, 'label': l10n.genderMale},
       {'id': genderIdFemale, 'label': l10n.genderFemale},
       {'id': genderIdOther, 'label': l10n.genderOther},
     ];
-    final List<String> relationshipOptions = [
-      l10n.relationship_childhood_friend, l10n.relationship_senior_junior,
-      l10n.relationship_bickering_couple, l10n.relationship_colleagues,
-      l10n.relationship_other,
-    ];
-    final List<String> defaultPersonalityTags = [
-      l10n.tagGentle, l10n.tagCheerful, l10n.tagLively, l10n.tagMischievous,
-      l10n.tagRichYoungLady, l10n.tagRichYoungMaster, l10n.tagWealthyFamily,
-      l10n.tagScheming, l10n.tagPossessive, l10n.tagParanoid, l10n.tagPersistent,
-      l10n.tagUncle, l10n.tagAuntie, l10n.tagSeniorSister, l10n.tagJuniorBrother,
-      l10n.tagHandsome, l10n.tagStunning, l10n.tagContrast, l10n.tagFlirty, l10n.tagAgeGap
-    ];
-    final String? currentValidGender = genderOptions.any((g) => g['id'] == _gender) ? _gender : null;
-    final String? currentValidRelationship = relationshipOptions.contains(_selectedRelationship) ? _selectedRelationship : null;
 
-    // 2. 建立一個方便尋找翻譯的 Map (選用，方便維護)
-    final Map<String, String> relationshipLabels = {
-      'relationship_childhood_friend': l10n.relationship_childhood_friend,
-      'relationship_senior_junior': l10n.relationship_senior_junior,
-      'relationship_bickering_couple': l10n.relationship_bickering_couple,
-      'relationship_colleagues': l10n.relationship_colleagues,
-      'relationship_other': l10n.relationship_other,
-    };
+
+    final List<String> defaultPersonalityTags = [
+      l10n.tagGentle,
+      l10n.tagCheerful,
+      l10n.tagLively,
+      l10n.tagMischievous,
+      l10n.tagRichYoungLady,
+      l10n.tagRichYoungMaster,
+      l10n.tagWealthyFamily,
+      l10n.tagScheming,
+      l10n.tagPossessive,
+      l10n.tagParanoid,
+      l10n.tagPersistent,
+      l10n.tagUncle,
+      l10n.tagAuntie,
+      l10n.tagSeniorSister,
+      l10n.tagJuniorBrother,
+      l10n.tagHandsome,
+      l10n.tagStunning,
+      l10n.tagContrast,
+      l10n.tagFlirty,
+      l10n.tagAgeGap,
+    ];
+
+    final String? currentValidGender =
+    genderOptions.any((g) => g['id'] == _gender) ? _gender : null;
+
+
+    final String firstTabLabel =
+    l10n.localeName.toLowerCase().startsWith('zh')
+        ? '角色設定'
+        : l10n.tab_basic_story;
 
     return GestureDetector(
-      // 點擊任何空白處時觸發這行：取消當前焦點（收起鍵盤）
       onTap: () => FocusScope.of(context).unfocus(),
-
-      // 原本的 PopScope 變成 GestureDetector 的 child
       child: PopScope(
         canPop: _isLeavingPage,
         onPopInvokedWithResult: (didPop, result) async {
-          if (didPop) return;
-          if (_isLeavingPage) return;
-
+          if (didPop || _isLeavingPage) return;
           await _handleExitPressed();
         },
-        // ✨✨✨ 核心升級：加入 DefaultTabController ✨✨✨
         child: DefaultTabController(
-          length: 4, // 三個分頁
+          length: 4,
           child: Scaffold(
+            backgroundColor: theme.scaffoldBackgroundColor,
             appBar: AppBar(
+              backgroundColor: theme.scaffoldBackgroundColor,
+              surfaceTintColor: Colors.transparent,
+              elevation: 0,
+              centerTitle: true,
               title: Text(
                 isEditing
                     ? l10n.edit_character_title(widget.character!.name)
                     : l10n.createCharacterTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-              elevation: 0,
-
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                color: theme.colorScheme.onSurface,
                 onPressed: _handleExitPressed,
               ),
-
               actions: [
+                TextButton.icon(
+                  onPressed: _openTestChat,
+                  icon: Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    size: 18,
+                    color: theme.colorScheme.primary,
+                  ),
+                  label: Text(
+                    l10n.localeName.toLowerCase().startsWith('zh')
+                        ? '測試'
+                        : l10n.test_mode_tooltip,
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: theme.colorScheme.primary,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
                 if (isEditing)
-                  IconButton(
-                    icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
-                    tooltip:l10n.test_mode_tooltip,
-                    onPressed: () {
-                      // 🛡️ 總裁防呆第一關：檢查角色是不是還沒出生的「幽靈」
-                      if (widget.character == null) {
-                        // ✨ 總裁級防禦網：測試模式精準攔截！告別突兀的橘色工程色塊
-                        ToastUtils.showCenterToast(
-                          context,
-                          l10n.test_mode_error,
-                          customIcon: Icons.warning_amber_rounded, // 💡 總裁精選：用優雅的黃色/橘色警告圖示，取代整塊橘色背景
-                          // 如果你覺得這算是嚴重錯誤，也可以直接換成 isError: true
-                        );
-                        return; // 煞車！絕對不准跳轉！
+                  PopupMenuButton<String>(
+                    tooltip: l10n.delete_character_tooltip,
+                    onSelected: (value) {
+                      if (value == 'delete' && !_isDeleting) {
+                        _deleteCharacter();
                       }
-
-// 💡 放行！
-// ✨ 總裁級過場：測試模式啟動的專屬儀式感
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.test_mode_notice,
-                        customIcon: Icons.science_rounded, // 💡 總裁秘技：「實驗室/燒杯」圖示！最適合用在 Test Mode 的放行提示
-                        // 喜歡速度感的話，也可以用 Icons.rocket_launch_rounded (火箭發射) 🚀
-                      );
-                      final Character previewCharacter =
-                      widget.character!.copyWith(
-                        // 初始故事
-                        initialStory:
-                        _storyController.text.trim(),
-
-                        // 角色第一句話
-                        firstLine:
-                        _firstLineController.text.trim(),
-
-                        // 合併後的角色個性、行為與說話風格
-                        coreCharacterSetting:
-                        _coreCharacterSettingController
-                            .text
-                            .trim(),
-
-                        // 世界觀與故事環境
-                        worldSetting:
-                        _worldSettingController.text.trim(),
-
-                        // 劇情／沉浸模式結尾狀態欄
-                        customOutputFormat:
-                        _customOutputFormatController
-                            .text
-                            .trim(),
-                      );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                            character: previewCharacter,
-                            characterId: widget.character!.id,
-                            chatMode: 'daily',
-                            selectedLanguage: l10n.traditional_chinese,
-
-                            // 測試聊天室不讀寫正式聊天室資料
-                            isTestMode: true,
-                          ),
-                        ),
-                      );
                     },
-                  ),
-                if (isEditing)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red),
-                    onPressed: _isDeleting ? null : _deleteCharacter,
-                    tooltip:l10n.delete_character_tooltip,
-                  ),
-              ],
-              // ✨✨✨ 頂部導航分頁列 ✨✨✨
-              bottom: TabBar(
-                labelColor: theme.colorScheme.primary,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: theme.colorScheme.primary,
-                tabs: [
-                  Tab(
-                    icon: const Icon(Icons.menu_book),
-                    text: l10n.tab_basic_story,
-                  ),
-                  Tab(
-                    icon: const Icon(Icons.mic),
-                    text: l10n.tab_voice,
-                  ),
-                  Tab(
-                    icon: const Icon(Icons.hub),
-                    text: l10n.tab_relationship,
-                  ),
-                  Tab(
-                    icon: Icon(Icons.groups_2_outlined),
-                    text: l10n.characterEditSupportingCharacters,
-                  ),
-                ],
-              ),
-            ),
-            body: Container(
-              decoration: themeNotifier.currentBackground,
-              child: Stack(
-                children: [
-                  // ✨✨✨ 根據分頁顯示不同內容 ✨✨✨
-                  TabBarView(
-                    children: [
-                      // --- 抽屜 1：基本與劇情 ---
-                      _buildTab1_BasicAndStory(
-                        theme,
-                        l10n,
-                        currentValidGender,
-                        currentValidRelationship,
-                        genderOptions,
-                        relationshipOptions,
-                        defaultPersonalityTags,
-                      ),
-
-                      // --- 抽屜 2：語音設定 ---
-                      _buildTab2_Voice(theme),
-
-                      // --- 抽屜 3：關係編輯 ---
-                      _buildTab3_Relationships(theme),
-
-                      // --- 抽屜 4：配角管理 ---
-                      CharacterNpcTab(
-                        npcCharacters: _npcCharacters,
-                        onAddNpc: _showAddNpcDialog,
-                        onEditNpc: _showEditNpcDialog,
-                        onDeleteNpc: (index) {
-                          setState(() {
-                            _npcCharacters.removeAt(index);
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-
-                  // --- 懸浮儲存按鈕 (維持在最上層，不管哪個分頁都看得到) ---
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Builder(
-                      builder: (context) {
-                        // 取得目前手機實際的底部安全距離
-                        final double bottomSafeArea =
-                            MediaQuery.viewPaddingOf(context).bottom;
-
-                        // 有系統導覽區就採用系統距離，
-                        // 沒有則保留基本的 10px
-                        final double adaptiveBottomPadding =
-                        bottomSafeArea > 0 ? bottomSafeArea : 10;
-
-                        return Container(
-                          width: double.infinity,
-                          color: theme.scaffoldBackgroundColor.withValues(
-                            alpha: 0.95,
-                          ),
-                          padding: EdgeInsets.fromLTRB(
-                            16, // 左
-                            10, // 上
-                            16, // 右
-                            adaptiveBottomPadding, // 下
-                          ),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                elevation: 4,
-                              ),
-                              onPressed: _isSaving
-                                  ? null
-                                  : () {
-                                debugPrint(
-                                  '🟢 強制儲存按鈕被點擊：'
-                                      'isEditing=$isEditing, '
-                                      'isSaving=$_isSaving, '
-                                      'isPublic=$_isPublic',
-                                );
-
-                                _saveCharacter();
-                              },
-                              child: _isSaving
-                                  ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                                  : Text(
-                                isEditing
-                                    ? l10n.save_changes_button
-                                    : l10n.createButton,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTab1_BasicAndStory(ThemeData theme, AppLocalizations l10n, String? currentValidGender, String? currentValidRelationship, List<Map<String, String>> genderOptions, List<String> relationshipOptions, List<String> defaultPersonalityTags) {    return SingleChildScrollView(
-    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 150.0), // 底部留白給儲存按鈕
-    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildBannerImageSection(),
-        const SizedBox(height: 24),
-
-        Row(
-          children: [
-            Text(
-              l10n.characterEditCharacterImage,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Text(
-              ' *',
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        _buildImageGallery(),        const SizedBox(height: 24),
-        // 💡「卡片 1：🧬 基礎資料
-        Card(
-          elevation: 2,
-          color: _getSectionCardColor(theme),
-          shape: _buildSectionCardShape(theme),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionTitle(l10n.section_basic_info, theme),
-                _buildTextField(
-                  _nameController,
-                  l10n.charNameLabel,
-                  description: l10n.characterEditNameDescription,
-                  hintText: l10n.characterEditNameHint,
-                  maxLength: 20,
-                  isRequired: true,
-                ),
-                _buildTextField(
-                  _ageController,
-                  l10n.charAgeLabel,
-                  description: l10n.characterEditAgeDescription,
-                  hintText: l10n.characterEditAgeHint,
-                  maxLength: 20,
-                ),
-                _buildTextField(
-                  _occupationController,
-                  l10n.charJobLabel,
-                  description: l10n.characterEditOccupationDescription,
-                  hintText: l10n.hint_occupation,
-                  maxLength: 50,
-                ),
-                _buildTextField(
-                  _birthdayController,
-                  l10n.charBirthdayLabel,
-                  description: l10n.characterEditBirthdayDescription,
-                  hintText: l10n.characterEditBirthdayHint,
-                  maxLength: 5,
-                ),
-                _buildTextField(
-                  _heightController,
-                  l10n.charHeightLabel,
-                  description: l10n.characterEditHeightDescription,
-                  hintText: l10n.characterEditHeightHint,
-                  maxLength: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildFieldHeading(
-                        l10n.charGenderLabel,
-                        theme,
-                        description: l10n.characterEditGenderDescription,
-                        isRequired: true,
-                      ),
-
-                      DropdownButtonFormField<String>(
-                        value: currentValidGender,
-                        hint: Text(l10n.genderNotSelected),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: theme.colorScheme.surface.withValues(
-                            alpha: 0.72,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide(
-                              color: theme.dividerColor.withValues(
-                                alpha: 0.75,
-                              ),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide(
-                              color: theme.colorScheme.primary,
-                              width: 1.6,
-                            ),
-                          ),
-                        ),
-                        items: genderOptions.map((g) {
-                          return DropdownMenuItem<String>(
-                            value: g['id'],
-                            child: Text(g['label']!),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          setState(() {
-                            _gender = newValue ?? '';
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                _buildBoxedTextField(
-                  _appearanceController,
-                  l10n.charAppearanceLabel,
-                  description: l10n.characterEditAppearanceDescription,
-                  maxLength: 500,
-                  hintText: l10n.hint_appearance,
-                ),              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        // 💡 「卡片 2：🎭 劇本與你的身分」
-        Card(
-          elevation: 2,
-          color: _getSectionCardColor(theme),
-          shape: _buildSectionCardShape(theme),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionTitle(l10n.section_story_identity, theme),
-                Text(l10n.story_identity_desc, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.6), fontSize: 12)),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer.withValues(alpha:0.4),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: theme.colorScheme.primary.withValues(alpha:0.3)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.auto_awesome, color: theme.colorScheme.primary, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(text: l10n.advanced_writing_tips_title, style: TextStyle(fontWeight: FontWeight.bold)),
-                              TextSpan(text: l10n.advanced_writing_tips_1),
-                              TextSpan(text: l10n.advanced_writing_tips_2, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
-                              TextSpan(text:l10n.advanced_writing_tips_3),
-                              TextSpan(text:l10n.advanced_writing_tips_4),
-                              TextSpan(text: l10n.advanced_writing_tips_5, style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
-                              TextSpan(text:l10n.advanced_writing_tips_6),
-                            ],
-                          ),
-                          style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurfaceVariant),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildBoxedTextField(
-                  _likesController,
-                  l10n.player_identity_label,
-                  maxLength: 200,
-                ),
-                const SizedBox(height: 16),
-
-                DropdownButtonFormField<String>(
-                  // 這裡直接使用類別變數 relationshipKeys
-                  value: relationshipKeys.contains(_selectedRelationship) ? _selectedRelationship : null,
-                  hint: Text(l10n.charInitialRelationshipLabel),
-                  decoration: InputDecoration(
-                    labelText: l10n.charInitialRelationshipLabel,
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: relationshipKeys.map((key) {
-                    return DropdownMenuItem<String>(
-                      value: key,
-                      // 這裡如果報錯，代表 relationshipLabels 沒傳進來
-                      // 妳可以直接在裡面定義一次翻譯 Map，或是從外部傳入
-                      child: Text(key == 'relationship_other' ? l10n.relationship_other : _getTranslatedLabel(key, l10n)),
-                    );
-                  }).toList(),
-                  onChanged: (newValue) {
-                    setState(() {
-                      _selectedRelationship = newValue;
-                      if (newValue != 'relationship_other') {
-                        _customRelationshipController.clear();
-                      }
-                    });
-                  },
-                ),
-                if (_selectedRelationship == 'relationship_other') ...[
-                  const SizedBox(height: 12),
-                  TextField(
-                    scrollPadding: const EdgeInsets.only(bottom: 120),
-                    controller: _customRelationshipController,
-                    decoration: InputDecoration(
-                      hintText: l10n.relationship_other, // 這裡也可以用翻譯
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 16),
-
-                _buildBoxedTextField(
-                  _worldSettingController,
-                  l10n.characterEditWorldview,
-                  description: l10n.characterEditWorldviewDescription,
-                  maxLength: 10000,
-                  hintText: l10n.characterEditWorldviewHint,
-                  isRequired: true,
-                  isCollapsible: true,
-                  isExpanded: _isWorldSettingExpanded,
-                  onToggleExpanded: () {
-                    setState(() {
-                      _isWorldSettingExpanded =
-                      !_isWorldSettingExpanded;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildBoxedTextField(
-                  _storySummaryController,
-                  l10n.story_summary_label,
-                  description: l10n.characterEditStorySummaryDescription,
-                  maxLength: 50,
-                  hintText: l10n.characterEditStorySummaryHint,
-                ),
-                const SizedBox(height: 16),
-                _buildBoxedTextField(
-                  _storyController,
-                  l10n.story_initial_label,
-                  description: l10n.characterEditInitialStoryDescription,
-                  maxLength: 1500,
-                  hintText: l10n.story_initial_hint,
-                ),
-                const SizedBox(height: 16),
-                _buildBoxedTextField(
-                  _firstLineController,
-                  l10n.first_line_label,
-                  description: l10n.characterEditFirstLineDescription,
-                  maxLength: 500,
-                  hintText: l10n.first_line_hint,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        // 💡 「卡片 3：🌟 個性與好感度演變」
-        Card(
-          elevation: 2,
-          color: _getSectionCardColor(theme),
-          shape: _buildSectionCardShape(theme),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionTitle(l10n.section_personality_evo, theme),
-                Text(
-                  l10n.characterEditSelectedTagOrder,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface
-                        .withValues(alpha: 0.58),
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                Builder(
-                  builder: (context) {
-                    // 已選標籤使用創作者排列的順序。
-                    final selectedTags =
-                    List<String>.from(_personalityTags);
-
-                    // 尚未選擇的預設標籤放在後面。
-                    final unselectedDefaultTags =
-                    defaultPersonalityTags
-                        .where(
-                          (tag) =>
-                      !_personalityTags.contains(tag),
-                    )
-                        .toList();
-
-                    return Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ...selectedTags.map(
-                              (tag) => _buildDraggableSelectedTag(
-                            tag,
-                            theme,
-                          ),
-                        ),
-
-                        ...unselectedDefaultTags.map(
-                              (tag) => _buildTagButton(
-                            tag,
-                            false,
-                            theme,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _personalityController,
-                  decoration: InputDecoration(
-                    labelText: l10n.charOtherPersonalityTagsHint,
-                    suffixIcon: IconButton(icon: const Icon(Icons.add), onPressed: _addCustomPersonalityTag),
-                  ),
-                  onFieldSubmitted: (_) => _addCustomPersonalityTag(),
-                ),
-                const SizedBox(height: 16),
-                _buildBoxedTextField(
-                  _coreCharacterSettingController,
-                  l10n.characterEditCoreSetting,
-                  maxLength: 6000,
-                  hintText: l10n.characterEditCoreSettingHint,
-                  isRequired: true,
-                  isCollapsible: true,
-                  isExpanded: _isCoreCharacterSettingExpanded,
-                  onToggleExpanded: () {
-                    setState(() {
-                      _isCoreCharacterSettingExpanded =
-                      !_isCoreCharacterSettingExpanded;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                _buildBoxedTextField(
-                  _customOutputFormatController,
-                  l10n.characterEditCustomStatusBar,
-                  maxLength: 1500,
-                  hintText: l10n.characterEditCustomStatusBar,
-                  description: l10n.characterEditCustomStatusBarDescription,
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        // 💡 「卡片 4：🗣️ 喜好與習慣」
-        Card(
-          elevation: 2,
-          color: _getSectionCardColor(theme),
-          shape: _buildSectionCardShape(theme),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionTitle(l10n.section_habits, theme),
-                _buildBoxedTextField(_likesController, l10n.charLikesLabel, maxLength: 200),
-                const SizedBox(height: 16),
-                _buildBoxedTextField(
-                  _dislikesController,
-                  l10n.charDislikesLabel,
-                  maxLength: 200,
-                ),
-
-                const SizedBox(height: 16),
-
-                _buildBoxedTextField(
-                  _secretsController,
-                  l10n.charSecretsLabel,
-                  maxLength: 200,
-                ),
-                const SizedBox(height: 16),
-                _buildBoxedTextField(_dialogueExamplesController, l10n.charDialogueExampleLabel, maxLength: 500, hintText: l10n.dialogue_example_hint),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        // 💡「卡片 5：🎁 附加設定與彩蛋」
-        Card(
-          elevation: 2,
-          color: _getSectionCardColor(theme),
-          shape: _buildSectionCardShape(theme),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSectionTitle(l10n.section_easter_eggs, theme),
-                if (_easterEggs.isEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(8)),
-                    child: Center(child: Text(l10n.no_easter_eggs)),
-                  ),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _easterEggs.length,
-                  separatorBuilder: (c, i) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final egg = _easterEggs[index];
-                    return Card(
-                      elevation: 1,
-                      color: theme.colorScheme.surfaceVariant.withValues(alpha:0.5),
-                      child: ListTile(
-                        leading: const Icon(Icons.card_giftcard, color: Colors.purple),
-                        title: Text(egg.keyword, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("${egg.title} - ${egg.setScene ?? l10n.no_scene_change}"),
-                        trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.grey), onPressed: () => setState(() => _easterEggs.removeAt(index))),
-                        onTap: () => _openEasterEggEditor(egg: egg, index: index),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton.icon(
-                  onPressed: () => _openEasterEggEditor(),
-                  icon: const Icon(Icons.add),
-                  label:Text(l10n.add_easter_egg_button),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.secondaryContainer,
-                      foregroundColor: theme.colorScheme.onSecondaryContainer
-                  ),
-                ),
-                const Divider(height: 32),
-                Text(l10n.other_extra_info, style: theme.textTheme.titleMedium),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _extraInfoItems.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(_extraInfoItems[index]),
-                      trailing: IconButton(icon: const Icon(Icons.edit_outlined), onPressed: () => _editExtraInfoItem(index)),
-                      onLongPress: () => setState(() => _extraInfoItems.removeAt(index)),
-                    );
-                  },
-                ),
-                TextFormField(
-                  controller: _extraInputController,
-                  decoration: InputDecoration(
-                    labelText: l10n.charExtraInfoHint,
-                    suffixIcon: IconButton(icon: const Icon(Icons.add), onPressed: _addExtraInfoItem),
-                  ),
-                  onFieldSubmitted: (_) => _addExtraInfoItem(),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        _buildPublicPrivateToggle(theme),
-      ],
-    ),
-  );
-  }
-  Widget _buildTab2_Voice(ThemeData theme) {
-    final l10n = AppLocalizations.of(context)!;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 100.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Card(
-            elevation: 2,
-            color: _getSectionCardColor(theme),
-            shape: _buildSectionCardShape(theme),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle(l10n.section_voice_gen, theme),
-                  Text(l10n.voice_gen_desc,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                  const SizedBox(height: 16),
-                  if (_isGeneratingVoice)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Center(
-                        child: Column(
+                    itemBuilder: (context) => [
+                      PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Row(
                           children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 12),
-                            Text(l10n.voice_generating_status, style: TextStyle(color: theme.colorScheme.primary)),
-                          ],
-                        ),
-                      ),
-                    )
-
-                  // 生成完成，顯示三張小卡片供選擇（且目前還沒決定綁定哪一個）
-                  else if (_voiceSamples.isNotEmpty && _generatedVoiceId == null)
-                    Column(
-                      children: [
-                        Text(l10n.voice_select_prompt, style: TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 12),
-                        // 🌟 產生 3 張聲線卡片
-                        ...List.generate(_voiceSamples.length, (index) {
-                          final sample = _voiceSamples[index];
-                          final isSelected = _selectedSampleIndex == index;
-                          bool isPlayingThis = _playingSampleIndex == index;
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedSampleIndex = index;
-                                _selectedVoiceId = sample['voice_id']?.toString();
-                              });
-                            },
-                            child: Card(
-                              elevation: isSelected ? 4 : 1,
-                              color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha:0.3) : null,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                    color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-                                    width: 2
-                                ),
-                              ),
-                              child: ListTile(
-                                leading: Icon(
-                                    isSelected ? Icons.check_circle : Icons.mic_none,
-                                    color: theme.colorScheme.primary
-                                ),
-                                title: Text(l10n.voice_sample_name(index + 1)),
-                                subtitle:Text(l10n.voice_sample_desc),
-                                // 🌟 這裡換成我們強化的 IconButton
-                                trailing: IconButton(
-                                  onPressed: _loadingSampleIndex == index
-                                      ? null
-                                      : () => _previewVoiceSample(index),
-                                  icon: _loadingSampleIndex == index
-                                      ? const SizedBox(
-                                    width: 28,
-                                    height: 28,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                    ),
-                                  )
-                                      : Icon(
-                                    isPlayingThis
-                                        ? Icons.pause_circle_filled
-                                        : Icons.play_circle_fill,
-                                    size: 32,
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ),
+                            const Icon(
+                              Icons.delete_outline_rounded,
+                              color: Colors.redAccent,
                             ),
-                          );
-                        }),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextButton(
-                                onPressed: () => setState(() {
-                                  _voiceSamples = [];
-                                  _selectedSampleIndex = null;
-                                  _playingSampleIndex = null;
-                                  _audioPlayer.stop();
-                                }),
-                                child:Text(l10n.voice_retry),
-                              ),
-                            ),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _selectedSampleIndex == null ? null : _confirmVoiceSelection,
-                                child:Text(l10n.voice_confirm_selection),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
-
-                  // 3. 已經選好了（顯示成功綁定與最後的預覽按鈕）
-                  else if (_generatedVoiceId != null)
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(
-                            alpha: 0.1,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.green.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                  size: 22,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    l10n.voice_bind_success_banner,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    softWrap: true,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Wrap(
-                              alignment: WrapAlignment.end,
-                              crossAxisAlignment:
-                              WrapCrossAlignment.center,
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: [
-                                TextButton.icon(
-                                  style: TextButton.styleFrom(
-                                    padding:
-                                    const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 6,
-                                    ),
-                                    minimumSize: Size.zero,
-                                    tapTargetSize:
-                                    MaterialTapTargetSize
-                                        .shrinkWrap,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _generatedVoiceId = null;
-                                      _selectedVoiceId = null;
-                                      _voiceSamples = [];
-                                      _selectedSampleIndex = null;
-                                      _playingSampleIndex = null;
-                                      _finalAudioBytes = null;
-                                      _finalVoicePreviewUrl = null;
-                                    });
-
-                                    _showVoiceGenerationDialog();
-                                  },
-                                  icon: const Icon(
-                                    Icons.refresh_rounded,
-                                    size: 18,
-                                  ),
-                                  label: Text(
-                                    l10n.voice_remake,
-                                  ),
-                                ),
-
-                                IconButton(
-                                  tooltip: l10n.play_voice_tooltip,
-                                  padding: EdgeInsets.zero,
-                                  constraints:
-                                  const BoxConstraints(
-                                    minWidth: 40,
-                                    minHeight: 40,
-                                  ),
-                                  icon: Icon(
-                                    Icons.play_circle_fill,
-                                    color:
-                                    theme.colorScheme.primary,
-                                    size: 32,
-                                  ),
-                                  onPressed: _isTestingSettings
-                                      ? null
-                                      : _testVoiceSettings,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
-
-// 4. 初始狀態：尚未生成聲音
-                    else
-                      Center(
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding:
-                            const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                          ),
-                          icon: _isGeneratingVoice
-                              ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child:
-                            CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          )
-                              : const Icon(
-                            Icons.auto_awesome,
-                          ),
-                          label: Text(
-                            _isGeneratingVoice
-                                ? l10n.voice_btn_generating
-                                : l10n.voice_btn_generate,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          onPressed: _isGeneratingVoice
-                              ? null
-                              : _showVoiceGenerationDialog,
-                        ),
-                      ),
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha:0.1),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l10n.voice_advanced_tuning, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                        const SizedBox(height: 16),
-
-                        // 🎚️ 滑桿 1：理智線 (Stability)
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                l10n.voice_stability_low,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 6,
-                              ),
-                              child: Text(
-                                l10n.voice_stability_value(
-                                  _voiceStability.toStringAsFixed(2),
-                                ),
-                                style: const TextStyle(
-                                  color: Colors.pinkAccent,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                l10n.voice_stability_high,
-                                textAlign: TextAlign.end,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Slider(
-                          value: _voiceStability,
-                          min: 0.1,
-                          max: 0.9,
-                          activeColor: Colors.pinkAccent,
-                          onChanged: (value) => setState(() => _voiceStability = value),
-                        ),
-                        const SizedBox(height: 8),
-                        // 🎚️ 滑桿 2：戲劇表現 (Style)
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                l10n.voice_style_low,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                              const EdgeInsets.symmetric(
-                                horizontal: 6,
-                              ),
-                              child: Text(
-                                l10n.voice_style_value(
-                                  _voiceStyle.toStringAsFixed(2),
-                                ),
-                                style: const TextStyle(
-                                  color: Colors.pinkAccent,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                l10n.voice_style_high,
-                                textAlign: TextAlign.end,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Slider(
-                          value: _voiceStyle,
-                          min: 0.0,
-                          max: 1.0,
-                          activeColor: Colors.pinkAccent,
-                          onChanged: (value) => setState(() => _voiceStyle = value),
-                        ),
-                        const SizedBox(height: 16),
-                        // 🌟 守護代幣的防護罩按鈕：加上這個才能發送 API！
-                        Center(
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.pinkAccent, // 配合妳的 UI 顏色
-                              foregroundColor: Colors.white,
-                            ),
-                            icon: _isTestingSettings
-                                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                                : const Icon(Icons.headphones),
-                            label: Text(_isTestingSettings ? l10n.voice_test_btn_testing : l10n.voice_test_btn),
-                            // 🔒 呼叫剛剛寫好的 _testVoiceSettings
-                            onPressed: _isTestingSettings ? null : _testVoiceSettings,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ), // 🌟 這裡就是之前漏掉的結尾！
-        ],
-      ),
-    );
-  }
-  Widget _buildTab3_Relationships(ThemeData theme) {
-    final l10n = AppLocalizations.of(context)!;
-
-    if (_isLoadingMyCharacters) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        16.0,
-        16.0,
-        16.0,
-        100.0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildSectionTitle(
-                        l10n.section_social_circle,
-                        theme,
-                      ),
-                      IconButton(
-                        onPressed: _showAddRelationshipDialog,
-                        icon: const Icon(
-                          Icons.group_add,
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    l10n.social_circle_desc,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  if (_relationships.isEmpty)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Text(
-                          l10n.social_no_drama,
-                          style: const TextStyle(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  ..._relationships.entries.map((entry) {
-                    final String targetId = entry.key;
-                    final String attitude = entry.value;
-
-                    Character? targetCharacter;
-
-                    try {
-                      targetCharacter = _myCharacters.firstWhere(
-                            (character) => character.id == targetId,
-                      );
-                    } catch (_) {
-                      targetCharacter = null;
-                    }
-
-                    final String displayName =
-                    targetCharacter?.name.trim().isNotEmpty == true
-                        ? targetCharacter!.name.trim()
-                        : l10n.characterEditUnknownCharacter;
-
-                    final String avatarUrl =
-                        targetCharacter?.avatarPath.trim() ?? '';
-
-                    return Card(
-                      margin: const EdgeInsets.only(top: 8),
-                      color: theme.colorScheme.surfaceVariant.withValues(
-                        alpha: 0.5,
-                      ),
-                      child: ListTile(
-                        leading: avatarUrl.isNotEmpty &&
-                            avatarUrl.startsWith('http')
-                            ? CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            avatarUrl,
-                          ),
-                        )
-                            : const Icon(
-                          Icons.compare_arrows,
-                          color: Colors.pinkAccent,
-                        ),
-                        title: Text(
-                          l10n.social_target(displayName),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Text(
-                          l10n.social_attitude(attitude),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.edit_outlined,
-                                color: Colors.blueGrey,
-                              ),
-                              onPressed: () =>
-                                  _showEditRelationshipDialog(
-                                    targetId,
-                                    displayName,
-                                    attitude,
-                                  ),
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete_outline,
+                            const SizedBox(width: 10),
+                            Text(
+                              l10n.confirm_delete_title,
+                              style: const TextStyle(
                                 color: Colors.redAccent,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _relationships.remove(targetId);
-                                });
-                              },
                             ),
                           ],
                         ),
                       ),
-                    );
-                  }),
+                    ],
+                  ),
+              ],
+              bottom: TabBar(
+                labelColor: theme.colorScheme.primary,
+                unselectedLabelColor:
+                theme.colorScheme.onSurface.withValues(alpha: 0.46),
+                indicatorColor: theme.colorScheme.primary,
+                indicatorWeight: 2.4,
+                labelStyle: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                tabs: [
+                  Tab(text: firstTabLabel),
+                  Tab(text: l10n.tab_voice),
+                  Tab(text: l10n.tab_relationship),
+                  Tab(text: l10n.characterEditSupportingCharacters),
                 ],
               ),
             ),
+            body: ColoredBox(
+              color: theme.scaffoldBackgroundColor,
+              child: TabBarView(
+                children: [
+                  CharacterEditBasicTab(
+                    l10n: l10n,
+                    bannerSection: _buildBannerImageSection(),
+                    imageGallerySection: _buildImageGallery(),
+                    nameController: _nameController,
+                    ageController: _ageController,
+                    occupationController: _occupationController,
+                    birthdayController: _birthdayController,
+                    heightController: _heightController,
+                    appearanceController: _appearanceController,
+                    customRelationshipController: _customRelationshipController,
+                    worldSettingController: _worldSettingController,
+                    storySummaryController: _storySummaryController,
+                    storyController: _storyController,
+                    firstLineController: _firstLineController,
+                    personalityController: _personalityController,
+                    coreCharacterSettingController: _coreCharacterSettingController,
+                    customOutputFormatController: _customOutputFormatController,
+                    likesController: _likesController,
+                    dislikesController: _dislikesController,
+                    secretsController: _secretsController,
+                    dialogueExamplesController: _dialogueExamplesController,
+                    extraInputController: _extraInputController,
+                    currentValidGender: currentValidGender,
+                    genderOptions: genderOptions,
+                    onGenderChanged: (value) {
+                      setState(() {
+                        _gender = value ?? '';
+                      });
+                    },
+                    relationshipKeys: relationshipKeys,
+                    selectedRelationship: _selectedRelationship,
+                    onRelationshipChanged: (value) {
+                      setState(() {
+                        _selectedRelationship = value;
+                        if (value != 'relationship_other') {
+                          _customRelationshipController.clear();
+                        }
+                      });
+                    },
+                    relationshipLabelForKey: (key) {
+                      if (key == 'relationship_other') {
+                        return l10n.relationship_other;
+                      }
+                      if (key == 'relationship_none') {
+                        return _relationshipNoneLabel(l10n);
+                      }
+                      return _getTranslatedLabel(key, l10n);
+                    },
+                    isWorldSettingExpanded: _isWorldSettingExpanded,
+                    onToggleWorldSettingExpanded: () {
+                      setState(() {
+                        _isWorldSettingExpanded = !_isWorldSettingExpanded;
+                      });
+                    },
+                    isCoreCharacterSettingExpanded: _isCoreCharacterSettingExpanded,
+                    onToggleCoreCharacterSettingExpanded: () {
+                      setState(() {
+                        _isCoreCharacterSettingExpanded =
+                        !_isCoreCharacterSettingExpanded;
+                      });
+                    },
+                    personalityTags: _personalityTags,
+                    defaultPersonalityTags: defaultPersonalityTags,
+                    onTogglePersonalityTag: _togglePersonalityTag,
+                    onMovePersonalityTag: _movePersonalityTag,
+                    onAddCustomPersonalityTag: _addCustomPersonalityTag,
+                    easterEggs: _easterEggs,
+                    onOpenEasterEggEditor: _openEasterEggEditor,
+                    onRemoveEasterEgg: (index) {
+                      setState(() {
+                        _easterEggs.removeAt(index);
+                      });
+                    },
+                    extraInfoItems: _extraInfoItems,
+                    onEditExtraInfoItem: _editExtraInfoItem,
+                    onRemoveExtraInfoItem: (index) {
+                      setState(() {
+                        _extraInfoItems.removeAt(index);
+                      });
+                    },
+                    onAddExtraInfoItem: _addExtraInfoItem,
+                  ),
+                  CharacterEditVoiceTab(
+                    voiceSamples: _voiceSamples,
+                    isGeneratingVoice: _isGeneratingVoice,
+                    generatedVoiceId: _generatedVoiceId,
+                    selectedSampleIndex: _selectedSampleIndex,
+                    playingSampleIndex: _playingSampleIndex,
+                    loadingSampleIndex: _loadingSampleIndex,
+                    isTestingSettings: _isTestingSettings,
+                    voiceStability: _voiceStability,
+                    voiceStyle: _voiceStyle,
+                    onSampleSelected: (index, voiceId) {
+                      setState(() {
+                        _selectedSampleIndex = index;
+                        _selectedVoiceId = voiceId;
+                      });
+                    },
+                    onPreviewVoiceSample: _previewVoiceSample,
+                    onRetryVoiceSamples: () {
+                      setState(() {
+                        _voiceSamples = [];
+                        _selectedSampleIndex = null;
+                        _playingSampleIndex = null;
+                      });
+                      _audioPlayer.stop();
+                    },
+                    onConfirmVoiceSelection: _confirmVoiceSelection,
+                    onShowVoiceGenerationDialog: _showVoiceGenerationDialog,
+                    onRemakeVoice: () {
+                      setState(() {
+                        _generatedVoiceId = null;
+                        _selectedVoiceId = null;
+                        _voiceSamples = [];
+                        _selectedSampleIndex = null;
+                        _playingSampleIndex = null;
+                        _finalAudioBytes = null;
+                        _finalVoicePreviewUrl = null;
+                      });
+                      _showVoiceGenerationDialog();
+                    },
+                    onVoiceStabilityChanged: (value) {
+                      setState(() => _voiceStability = value);
+                    },
+                    onVoiceStyleChanged: (value) {
+                      setState(() => _voiceStyle = value);
+                    },
+                    onTestVoiceSettings: _testVoiceSettings,
+                  ),
+                  CharacterEditRelationshipTab(
+                    isLoading: _isLoadingMyCharacters,
+                    myCharacters: _myCharacters,
+                    relationships: _relationships,
+                    onAddRelationship: _showAddRelationshipDialog,
+                    onEditRelationship: _showEditRelationshipDialog,
+                    onDeleteRelationship: (targetId) {
+                      setState(() {
+                        _relationships.remove(targetId);
+                      });
+                    },
+                  ),
+                  CharacterNpcTab(
+                    npcCharacters: _npcCharacters,
+                    onAddNpc: _showAddNpcDialog,
+                    onEditNpc: _showEditNpcDialog,
+                    onDeleteNpc: (index) {
+                      setState(() {
+                        _npcCharacters.removeAt(index);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: _buildBottomActionBar(theme, l10n),
           ),
-        ],
+        ),
       ),
     );
   }
+
   // ✨ 專屬的「編輯社交圈看法」彈窗
   void _showEditRelationshipDialog(String targetId, String targetName, String currentAttitude) {
     final attitudeController = TextEditingController(text: currentAttitude);
@@ -4074,296 +3396,428 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     int? index,
   }) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
     final nameController = TextEditingController(
       text: npc?['name']?.toString() ?? '',
     );
-
     final ageController = TextEditingController(
       text: npc?['age']?.toString() ?? '',
     );
-
     final occupationController = TextEditingController(
       text: npc?['occupation']?.toString() ?? '',
     );
-
     final relationshipController = TextEditingController(
       text: npc?['relationship']?.toString() ?? '',
     );
-
     final descriptionController = TextEditingController(
       text: npc?['description']?.toString() ?? '',
     );
-
     final toneController = TextEditingController(
       text: npc?['toneAndStyle']?.toString() ?? '',
     );
 
-    String selectedGender =
-        npc?['gender']?.toString() ?? '';
+    String selectedGender = npc?['gender']?.toString() ?? '';
+    final bool isEditingNpc = npc != null && index != null;
 
-    final bool isEditingNpc =
-        npc != null && index != null;
-
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(26),
+        ),
+      ),
+      builder: (sheetContext) {
         return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: Text(
-                isEditingNpc
-                    ? l10n.characterEditEditSupportingCharacter
-                    : l10n.characterEditAddSupportingCharacter,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: SizedBox(
-                width: 520,
-                child: SingleChildScrollView(
-                  keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        controller: nameController,
-                        decoration:  InputDecoration(
-                          label: Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(text: l10n.characterEditSupportingCharacterName),
-                                TextSpan(
-                                  text: ' *',
-                                  style: TextStyle(
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+          builder: (context, setSheetState) {
+            final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
-                      DropdownButtonFormField<String>(
-                        initialValue:
-                        selectedGender.isEmpty
-                            ? null
-                            : selectedGender,
-                        decoration:  InputDecoration(
-                          label: Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(text: l10n.characterEditGender),
-                                TextSpan(
-                                  text: ' *',
-                                  style: TextStyle(
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+            return AnimatedPadding(
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
+              padding: EdgeInsets.only(bottom: bottomInset),
+              child: FractionallySizedBox(
+                heightFactor: 0.92,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    Container(
+                      width: 38,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: theme.dividerColor.withValues(alpha: 0.65),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              isEditingNpc
+                                  ? l10n.characterEditEditSupportingCharacter
+                                  : l10n.characterEditAddSupportingCharacter,
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                          border: OutlineInputBorder(),
-                        ),
-                        items:  [
-                          DropdownMenuItem(
-                            value: 'male',
-                            child: Text(l10n.characterEditMale),
-                          ),
-                          DropdownMenuItem(
-                            value: 'female',
-                            child: Text(l10n.characterEditFemale),
-                          ),
-                          DropdownMenuItem(
-                            value: 'other',
-                            child: Text(l10n.characterEditOther),
+                          IconButton(
+                            tooltip: l10n.cancelButton,
+                            onPressed: () => Navigator.of(sheetContext).pop(),
+                            icon: const Icon(Icons.close_rounded),
                           ),
                         ],
-                        onChanged: (value) {
-                          setDialogState(() {
-                            selectedGender = value ?? '';
-                          });
-                        },
                       ),
-                      const SizedBox(height: 16),
+                    ),
 
-                      TextField(
-                        controller: ageController,
-                        decoration: InputDecoration(
-                          labelText: l10n.characterEditAge,
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              '基本資料',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 14),
 
-                      TextField(
-                        controller: occupationController,
-                        decoration:  InputDecoration(
-                          labelText: l10n.characterEditIdentityOccupation,
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextField(
-                        controller: relationshipController,
-                        maxLines: 6,
-                        maxLength: 1500,
-                        decoration:  InputDecoration(
-                          labelText: l10n.characterEditRelationshipWithMain,
-                          hintText:
-                          l10n.characterEditRelationshipHint,
-                          border: OutlineInputBorder(),
-                          alignLabelWithHint: true,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextField(
-                        controller: descriptionController,
-                        maxLines: 6,
-                        maxLength: 1500,
-                        decoration:  InputDecoration(
-                          label: Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(text: l10n.characterEditCharacterProfile),
-                                TextSpan(
-                                  text: ' *',
-                                  style: TextStyle(
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.bold,
+                            TextField(
+                              controller: nameController,
+                              textInputAction: TextInputAction.next,
+                              decoration: _cleanInputDecoration(
+                                theme,
+                                hintText:
+                                l10n.characterEditSupportingCharacterName,
+                              ).copyWith(
+                                label: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: l10n
+                                            .characterEditSupportingCharacterName,
+                                      ),
+                                      const TextSpan(
+                                        text: ' *',
+                                        style: TextStyle(
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+
+                            DropdownButtonFormField<String>(
+                              isExpanded: true,
+                              initialValue:
+                              selectedGender.isEmpty ? null : selectedGender,
+                              decoration: _cleanInputDecoration(
+                                theme,
+                                hintText: l10n.characterEditGender,
+                              ).copyWith(
+                                label: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: l10n.characterEditGender,
+                                      ),
+                                      const TextSpan(
+                                        text: ' *',
+                                        style: TextStyle(
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              items: [
+                                DropdownMenuItem(
+                                  value: 'male',
+                                  child: Text(l10n.characterEditMale),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'female',
+                                  child: Text(l10n.characterEditFemale),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'other',
+                                  child: Text(l10n.characterEditOther),
+                                ),
                               ],
+                              onChanged: (value) {
+                                setSheetState(() {
+                                  selectedGender = value ?? '';
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 14),
+
+                            TextField(
+                              controller: ageController,
+                              textInputAction: TextInputAction.next,
+                              decoration: _cleanInputDecoration(
+                                theme,
+                                hintText: l10n.characterEditAge,
+                              ).copyWith(
+                                labelText: l10n.characterEditAge,
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+
+                            TextField(
+                              controller: occupationController,
+                              textInputAction: TextInputAction.next,
+                              decoration: _cleanInputDecoration(
+                                theme,
+                                hintText:
+                                l10n.characterEditIdentityOccupation,
+                              ).copyWith(
+                                labelText:
+                                l10n.characterEditIdentityOccupation,
+                              ),
+                            ),
+
+                            const SizedBox(height: 26),
+                            Divider(
+                              color: theme.colorScheme.primary
+                                  .withValues(alpha: 0.12),
+                            ),
+                            const SizedBox(height: 20),
+
+                            Text(
+                              '與主角色的設定',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              '描述這名配角與主角色之間的關係，以及他在故事中的位置。',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                height: 1.5,
+                                color: theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.52),
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+
+                            TextField(
+                              controller: relationshipController,
+                              minLines: 3,
+                              maxLines: 6,
+                              maxLength: 1500,
+                              decoration: _cleanInputDecoration(
+                                theme,
+                                hintText:
+                                l10n.characterEditRelationshipHint,
+                              ).copyWith(
+                                labelText:
+                                l10n.characterEditRelationshipWithMain,
+                                alignLabelWithHint: true,
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+
+                            TextField(
+                              controller: descriptionController,
+                              minLines: 4,
+                              maxLines: 7,
+                              maxLength: 1500,
+                              decoration: _cleanInputDecoration(
+                                theme,
+                                hintText:
+                                l10n.characterEditCharacterProfileHint,
+                              ).copyWith(
+                                label: Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                        l10n.characterEditCharacterProfile,
+                                      ),
+                                      const TextSpan(
+                                        text: ' *',
+                                        style: TextStyle(
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                alignLabelWithHint: true,
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+
+                            TextField(
+                              controller: toneController,
+                              minLines: 2,
+                              maxLines: 4,
+                              decoration: _cleanInputDecoration(
+                                theme,
+                                hintText:
+                                l10n.characterEditSpeakingStyleHint,
+                              ).copyWith(
+                                labelText:
+                                l10n.characterEditSpeakingStyle,
+                                alignLabelWithHint: true,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    SafeArea(
+                      top: false,
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 14),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          border: Border(
+                            top: BorderSide(
+                              color: theme.dividerColor
+                                  .withValues(alpha: 0.45),
                             ),
                           ),
-                          hintText:
-                         l10n.characterEditCharacterProfileHint,
-                          border: OutlineInputBorder(),
-                          alignLabelWithHint: true,
                         ),
-                      ),
-                      const SizedBox(height: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () =>
+                                    Navigator.of(sheetContext).pop(),
+                                style: OutlinedButton.styleFrom(
+                                  minimumSize:
+                                  const Size(double.infinity, 48),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                child: Text(l10n.cancelButton),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  final name = nameController.text.trim();
+                                  final relationship =
+                                  relationshipController.text.trim();
+                                  final description =
+                                  descriptionController.text.trim();
 
-                      TextField(
-                        controller: toneController,
-                        maxLines: 3,
-                        decoration: InputDecoration(
-                          labelText:l10n.characterEditSpeakingStyle,
-                          hintText:
-                          l10n.characterEditSpeakingStyleHint,
-                          border: OutlineInputBorder(),
-                          alignLabelWithHint: true,
+                                  if (name.isEmpty) {
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n.characterEditSupportingNameRequired,
+                                      isError: true,
+                                    );
+                                    return;
+                                  }
+
+                                  if (selectedGender.isEmpty) {
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n
+                                          .characterEditSelectSupportingCharacter,
+                                      isError: true,
+                                    );
+                                    return;
+                                  }
+
+                                  if (description.isEmpty) {
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n.characterEditProfileRequired,
+                                      isError: true,
+                                    );
+                                    return;
+                                  }
+
+                                  if (relationship.length > 1500) {
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n
+                                          .characterEditRelationshipTooLong,
+                                      isError: true,
+                                    );
+                                    return;
+                                  }
+
+                                  if (description.length > 1500) {
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n.characterEditProfileTooLong,
+                                      isError: true,
+                                    );
+                                    return;
+                                  }
+
+                                  final updatedNpc = <String, dynamic>{
+                                    'id': npc?['id'] ??
+                                        'npc_${DateTime.now().millisecondsSinceEpoch}',
+                                    'name': name,
+                                    'gender': selectedGender,
+                                    'age': ageController.text.trim(),
+                                    'occupation':
+                                    occupationController.text.trim(),
+                                    'relationship': relationship,
+                                    'description': description,
+                                    'toneAndStyle':
+                                    toneController.text.trim(),
+                                  };
+
+                                  setState(() {
+                                    if (isEditingNpc) {
+                                      _npcCharacters[index] = updatedNpc;
+                                    } else {
+                                      _npcCharacters.add(updatedNpc);
+                                    }
+                                  });
+
+                                  Navigator.of(sheetContext).pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize:
+                                  const Size(double.infinity, 48),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                child: Text(
+                                  isEditingNpc
+                                      ? l10n.characterEditSave
+                                      : l10n.characterEditAdd,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child:  Text(l10n.cancelButton),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    final name =
-                    nameController.text.trim();
-
-                    final relationship =
-                    relationshipController.text.trim();
-
-                    final description =
-                    descriptionController.text.trim();
-
-                    if (name.isEmpty) {
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.characterEditSupportingNameRequired,
-                        isError: true,
-                      );
-                      return;
-                    }
-
-                    if (selectedGender.isEmpty) {
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.characterEditSelectSupportingCharacter,
-                        isError: true,
-                      );
-                      return;
-                    }
-
-                    if (description.isEmpty) {
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.characterEditProfileRequired,
-                        isError: true,
-                      );
-                      return;
-                    }
-
-                    if (relationship.length > 1500) {
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.characterEditRelationshipTooLong,
-                        isError: true,
-                      );
-                      return;
-                    }
-
-                    if (description.length > 1500) {
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.characterEditProfileTooLong,
-                        isError: true,
-                      );
-                      return;
-                    }
-
-                    final updatedNpc =
-                    <String, dynamic>{
-                      'id': npc?['id'] ??
-                          'npc_${DateTime.now().millisecondsSinceEpoch}',
-                      'name': name,
-                      'gender': selectedGender,
-                      'age':
-                      ageController.text.trim(),
-                      'occupation':
-                      occupationController.text.trim(),
-                      'relationship': relationship,
-                      'description': description,
-                      'toneAndStyle':
-                      toneController.text.trim(),
-                    };
-
-                    setState(() {
-                      if (isEditingNpc) {
-                        _npcCharacters[index] =
-                            updatedNpc;
-                      } else {
-                        _npcCharacters.add(
-                          updatedNpc,
-                        );
-                      }
-                    });
-
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: Text(
-                    isEditingNpc ? l10n.characterEditSave : l10n.characterEditAdd,
-                  ),
-                ),
-              ],
             );
           },
         );
@@ -4385,46 +3839,186 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
   void _showAddRelationshipDialog() {
     final l10n = AppLocalizations.of(context)!;
-    final availableChars = _myCharacters.where((c) => c.id != widget.character?.id).toList();
-    showDialog(
+    final theme = Theme.of(context);
+    final availableChars = _myCharacters
+        .where((c) => c.id != widget.character?.id)
+        .toList();
+
+    String? selectedCharId;
+    final thoughtsController = TextEditingController();
+
+    showModalBottomSheet(
       context: context,
-      builder: (context) {
-        String? selectedCharId;
-        final thoughtsController = TextEditingController();
-        return AlertDialog(
-          title:Text(l10n.social_add_title),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DropdownButtonFormField<String>(
-                decoration:InputDecoration(labelText:l10n.social_select_target),
-                items: availableChars.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name))).toList(),
-                onChanged: (v) => selectedCharId = v,
+      isScrollControlled: true,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  18,
+                  20,
+                  18 + MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 38,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: theme.dividerColor.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Text(
+                        l10n.social_add_title,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.social_circle_desc,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          height: 1.45,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        value: selectedCharId,
+                        decoration: _cleanInputDecoration(
+                          theme,
+                          hintText: l10n.social_select_target,
+                        ),
+                        selectedItemBuilder: (context) {
+                          return availableChars.map((c) {
+                            final occupation = c.occupation.trim();
+                            return Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                occupation.isEmpty
+                                    ? c.name
+                                    : '${c.name} · $occupation',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList();
+                        },
+                        items: availableChars.map((c) {
+                          final occupation = c.occupation.trim();
+                          final avatarUrl = c.avatarPath.trim();
+                          return DropdownMenuItem<String>(
+                            value: c.id,
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: theme.colorScheme.primary
+                                      .withValues(alpha: 0.08),
+                                  backgroundImage: avatarUrl.startsWith('http')
+                                      ? NetworkImage(avatarUrl)
+                                      : null,
+                                  child: !avatarUrl.startsWith('http')
+                                      ? Icon(
+                                    Icons.person_outline_rounded,
+                                    size: 17,
+                                    color: theme.colorScheme.primary,
+                                  )
+                                      : null,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        c.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      if (occupation.isNotEmpty)
+                                        Text(
+                                          occupation,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: theme.colorScheme.onSurface
+                                                .withValues(alpha: 0.5),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (v) {
+                          setSheetState(() => selectedCharId = v);
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      TextField(
+                        controller: thoughtsController,
+                        minLines: 3,
+                        maxLines: 5,
+                        decoration: _cleanInputDecoration(
+                          theme,
+                          hintText: l10n.social_thoughts_hint,
+                        ).copyWith(
+                          labelText: l10n.social_thoughts_label,
+                          alignLabelWithHint: true,
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.pop(sheetContext),
+                              child: Text(l10n.cancelButton),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: selectedCharId == null ||
+                                  thoughtsController.text.trim().isEmpty
+                                  ? null
+                                  : () {
+                                setState(() {
+                                  _relationships[selectedCharId!] =
+                                      thoughtsController.text.trim();
+                                });
+                                Navigator.pop(sheetContext);
+                              },
+                              child: Text(l10n.social_add_confirm),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              TextField(
-                scrollPadding: const EdgeInsets.only(bottom: 120),
-                controller: thoughtsController,
-                decoration:  InputDecoration(labelText: l10n.social_thoughts_label, hintText: l10n.social_thoughts_hint),
-                maxLines: 2,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child:  Text(l10n.cancelButton
-            )),
-            ElevatedButton(
-              onPressed: () {
-                if (selectedCharId != null && thoughtsController.text.isNotEmpty) {
-                  setState(() {
-                    _relationships[selectedCharId!] = thoughtsController.text.trim();
-                  });
-                  Navigator.pop(context);
-                }
-              },
-              child:Text(l10n.social_add_confirm),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -4500,124 +4094,192 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
             Expanded(
               child: Text(
                 l10n.characterBannerTitle,
-                style: theme.textTheme.titleLarge,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             IconButton(
               tooltip: l10n.characterBannerDescription,
               onPressed: _showBannerInfoDialog,
-              icon: const Icon(Icons.info_outline_rounded),
+              icon: const Icon(Icons.info_outline_rounded, size: 20),
             ),
           ],
         ),
         const SizedBox(height: 8),
-
         AspectRatio(
           aspectRatio: 16 / 9,
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: theme.dividerColor,
-              ),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: bannerProvider != null
-                ? Stack(
-              fit: StackFit.expand,
-              children: [
-                Image(
-                  image: bannerProvider,
-                  fit: BoxFit.cover,
-                  errorBuilder: (
-                      BuildContext context,
-                      Object error,
-                      StackTrace? stackTrace,
-                      ) {
-                    return const Center(
-                      child: Icon(
-                        Icons.broken_image_outlined,
-                        size: 48,
-                      ),
-                    );
-                  },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Material(
+              color: theme.colorScheme.surface,
+              child: InkWell(
+                onTap: bannerProvider == null
+                    ? _pickBannerImage
+                    : () => _showImagePreview(
+                  bannerProvider!,
+                  title: l10n.characterBannerTitle,
                 ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Material(
-                    color: Colors.black.withValues(alpha: 0.55),
-                    shape: const CircleBorder(),
-                    child: IconButton(
-                      tooltip: l10n.characterBannerRemove,
-                      onPressed: _removeBannerImage,
-                      icon: const Icon(
-                        Icons.close_rounded,
-                        color: Colors.white,
-                      ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: theme.dividerColor.withValues(alpha: 0.55),
                     ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: bannerProvider == null
+                      ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.panorama_outlined,
+                        size: 42,
+                        color: theme.colorScheme.primary
+                            .withValues(alpha: 0.65),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        l10n.characterBannerSelect,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        l10n.characterBannerSpecs,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.45),
+                        ),
+                      ),
+                    ],
+                  )
+                      : Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image(
+                        image: bannerProvider,
+                        fit: BoxFit.cover,
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Row(
+                          children: [
+                            _imageActionButton(
+                              theme,
+                              icon: Icons.edit_outlined,
+                              onTap: _pickBannerImage,
+                            ),
+                            const SizedBox(width: 6),
+                            _imageActionButton(
+                              theme,
+                              icon: Icons.delete_outline_rounded,
+                              onTap: _removeBannerImage,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            )
-                : InkWell(
-              onTap: _pickBannerImage,
-              child:Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.panorama_outlined,
-                    size: 54,
-                    color: Colors.grey,
-                  ),
-                  SizedBox(height: 10),
-                  Text(l10n.characterBannerSelect),
-                  SizedBox(height: 4),
-                  Text(
-                    l10n.characterBannerSpecs,
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
         ),
-        const SizedBox(height: 10),
-
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _pickBannerImage,
-                icon: const Icon(Icons.image_outlined),
-                label: Text(
-                  bannerProvider == null ? l10n.characterBannerSelect : l10n.characterBannerChange,
-                ),
-              ),
-            ),
-            if (bannerProvider != null) ...[
-              const SizedBox(width: 10),
-              OutlinedButton.icon(
-                onPressed: _removeBannerImage,
-                icon: const Icon(Icons.delete_outline_rounded),
-                label:  Text(l10n.characterBannerRemove),
-              ),
-            ],
-          ],
-        ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 7),
         Text(
-          l10n.characterBannerDefaultHint,
+          bannerProvider == null
+              ? l10n.characterBannerDefaultHint
+              : l10n.localeName.toLowerCase().startsWith('zh')
+              ? '點擊圖片可預覽大圖'
+              : l10n.characterBannerDefaultHint,
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _imageActionButton(
+      ThemeData theme, {
+        required IconData icon,
+        required VoidCallback onTap,
+      }) {
+    return Material(
+      color: theme.colorScheme.surface.withValues(alpha: 0.92),
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Icon(
+            icon,
+            size: 18,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showImagePreview(
+      ImageProvider imageProvider, {
+        String? title,
+      }) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.92),
+      builder: (dialogContext) {
+        return Dialog.fullscreen(
+          backgroundColor: Colors.black,
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: InteractiveViewer(
+                    minScale: 0.8,
+                    maxScale: 4,
+                    child: Center(
+                      child: Image(
+                        image: imageProvider,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: IconButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                if (title != null && title.trim().isNotEmpty)
+                  Positioned(
+                    top: 14,
+                    left: 56,
+                    right: 56,
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -4647,114 +4309,233 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    // 🕵️‍♀️ 總裁邏輯：尋找「好感度 0」的照片作為主圖。如果找不到，就拿第一張。
+    int mainPhotoIndex = -1;
     CharacterPhoto? mainPhoto;
+
     if (_galleryPhotos.isNotEmpty) {
-      mainPhoto = _galleryPhotos.firstWhere(
-            (p) => p.requiredAffection == 0,
-        orElse: () => _galleryPhotos.first,
+      mainPhotoIndex = _galleryPhotos.indexWhere(
+            (photo) => photo.requiredAffection == 0,
+      );
+      if (mainPhotoIndex < 0) {
+        mainPhotoIndex = 0;
+      }
+      mainPhoto = _galleryPhotos[mainPhotoIndex];
+    }
+
+    ImageProvider? mainProvider;
+    if (mainPhoto != null) {
+      mainProvider = _getImageProvider(
+        mainPhoto.localFile ??
+            (mainPhoto.imageUrl.isNotEmpty ? mainPhoto.imageUrl : null),
       );
     }
+
+    final otherPhotoIndexes = <int>[
+      for (int i = 0; i < _galleryPhotos.length; i++)
+        if (i != mainPhotoIndex) i,
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.charAlbumTitle, style: theme.textTheme.titleLarge),
-        const SizedBox(height: 10),
-
-        // 🖼️ 上方：智慧大頭貼
-        Container(
-          height: 250,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade300),
+        Text(
+          l10n.charAlbumTitle,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w700,
           ),
-          child: mainPhoto != null && (mainPhoto.imageUrl.isNotEmpty || mainPhoto.localFile != null)
-              ? ClipRRect(
-            borderRadius: BorderRadius.circular(12.0),
-            child: Image(
-              image: _getImageProvider(
-                  mainPhoto.localFile ?? (mainPhoto.imageUrl.isNotEmpty ? mainPhoto.imageUrl : null)
-              ),
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                return Center(child: Text(l10n.gallery_load_failed, style: const TextStyle(color: Colors.red, fontSize: 12)));
-              },
-            ),
-          )
-              : const Center(child: Icon(Icons.photo_camera_back_outlined, size: 60, color: Colors.grey)),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          l10n.localeName.toLowerCase().startsWith('zh')
+              ? '第一張圖片將作為主要頭像'
+              : l10n.characterEditCharacterImage,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.48),
+          ),
         ),
         const SizedBox(height: 10),
 
-        // 🎞️ 下方：橫向縮圖 (點擊可編輯)
-        SizedBox(
-          height: 110, // 稍微加高一點
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: _galleryPhotos.length + 1,
-            itemBuilder: (context, index) {
-              if (index == _galleryPhotos.length) {
-                return _buildAddImageButton();
-              }
-              final photo = _galleryPhotos[index];
-              return Stack(
-                alignment: Alignment.topRight,
+        if (mainProvider == null)
+          InkWell(
+            onTap: _addCharacterImage,
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              height: 210,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: theme.dividerColor.withValues(alpha: 0.55),
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 🚀 包裹 GestureDetector，點擊觸發編輯彈窗
-                  GestureDetector(
-                    onTap: () => _showEditPhotoDialog(index),
-                    child: Container(
-                      width: 80,
-                      margin: const EdgeInsets.only(right: 10, top: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          // 🌟 如果它是大頭貼 (好感度0)，給它一個亮色的邊框標示
-                          color: photo.requiredAffection == 0 ? theme.colorScheme.primary : Colors.grey.shade300,
-                          width: photo.requiredAffection == 0 ? 2 : 1,
-                        ),
+                  Icon(
+                    Icons.add_photo_alternate_outlined,
+                    size: 42,
+                    color: theme.colorScheme.primary.withValues(alpha: 0.65),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.characterEditCharacterImage,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 230,
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Material(
+                    color: theme.colorScheme.surface,
+                    child: InkWell(
+                      onTap: () => _showImagePreview(
+                        mainProvider!,
+                        title: l10n.avatar_label,
                       ),
-                      clipBehavior: Clip.antiAlias,
                       child: Stack(
                         fit: StackFit.expand,
                         children: [
                           Image(
-                            image: _getImageProvider(photo.localFile ?? (photo.imageUrl.isNotEmpty ? photo.imageUrl : null)),
+                            image: mainProvider,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
                           ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              width: double.infinity,
-                              color: Colors.black.withValues(alpha: 0.6),
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              child: Text(
-                                // 顯示描述或好感度
-                                photo.requiredAffection == 0 ? l10n.avatar_label : "LV.${photo.requiredAffection}",
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(color: Colors.white, fontSize: 10),
-                              ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: Row(
+                              children: [
+                                _imageActionButton(
+                                  theme,
+                                  icon: Icons.edit_outlined,
+                                  onTap: () => _showEditPhotoDialog(
+                                    mainPhotoIndex,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                _imageActionButton(
+                                  theme,
+                                  icon: Icons.delete_outline_rounded,
+                                  onTap: () {
+                                    setState(() {
+                                      _galleryPhotos.removeAt(mainPhotoIndex);
+                                    });
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  // 刪除按鈕
-                  GestureDetector(
-                    onTap: () => setState(() => _galleryPhotos.removeAt(index)),
-                    child: Container(
-                      decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
-                      child: const Icon(Icons.close, color: Colors.white, size: 18),
+                ),
+              ),
+            ),
+          ),
+
+        const SizedBox(height: 18),
+        Text(
+          l10n.localeName.toLowerCase().startsWith('zh')
+              ? '其他角色照片'
+              : l10n.charAlbumTitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 9),
+
+        SizedBox(
+          height: 96,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: otherPhotoIndexes.length + 1,
+            separatorBuilder: (context, index) =>
+            const SizedBox(width: 9),
+            itemBuilder: (context, index) {
+              if (index == otherPhotoIndexes.length) {
+                return _buildAddImageButton();
+              }
+
+              final photoIndex = otherPhotoIndexes[index];
+              final photo = _galleryPhotos[photoIndex];
+              final provider = _getImageProvider(
+                photo.localFile ??
+                    (photo.imageUrl.isNotEmpty ? photo.imageUrl : null),
+              );
+
+              return SizedBox(
+                width: 78,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Material(
+                          color: theme.colorScheme.surface,
+                          child: InkWell(
+                            onTap: () => _showImagePreview(
+                              provider,
+                              title: 'LV.${photo.requiredAffection}',
+                            ),
+                            child: Image(
+                              image: provider,
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (context, error, stackTrace) =>
+                              const Icon(
+                                Icons.broken_image_outlined,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Material(
+                        color: theme.colorScheme.surface.withValues(
+                          alpha: 0.92,
+                        ),
+                        shape: const CircleBorder(),
+                        child: InkWell(
+                          customBorder: const CircleBorder(),
+                          onTap: () => _showEditPhotoDialog(photoIndex),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Icon(
+                              Icons.edit_outlined,
+                              size: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.localeName.toLowerCase().startsWith('zh')
+              ? '點擊照片可預覽；鉛筆可編輯照片設定'
+              : l10n.charAlbumTitle,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
           ),
         ),
       ],
@@ -4762,17 +4543,25 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
   }
 
   Widget _buildAddImageButton() {
-    return GestureDetector(
+    final theme = Theme.of(context);
+    return InkWell(
       onTap: _addCharacterImage,
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        width: 80,
-        height: 80,
-        margin: const EdgeInsets.only(top: 10),
+        width: 78,
+        height: 96,
         decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[400]!)),
-        child: const Icon(Icons.add_a_photo_outlined, color: Colors.black54),
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: theme.colorScheme.primary.withValues(alpha: 0.35),
+          ),
+        ),
+        child: Icon(
+          Icons.add_rounded,
+          color: theme.colorScheme.primary,
+          size: 28,
+        ),
       ),
     );
   }
@@ -4809,29 +4598,43 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title:Text(l10n.gallery_photo_setup),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: kIsWeb
-                  ? Image.network(image.path, height: 120, fit: BoxFit.cover)
-                  : Image.file(File(image.path), height: 120, fit: BoxFit.cover),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              scrollPadding: const EdgeInsets.only(bottom: 120),
-              controller: descController,
-              decoration:InputDecoration(labelText: l10n.gallery_photo_desc_label, hintText: l10n.gallery_photo_desc_hint),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              scrollPadding: const EdgeInsets.only(bottom: 120),
-              controller: affController,
-              keyboardType: TextInputType.number,
-              decoration:InputDecoration(labelText: l10n.gallery_photo_req_label, hintText:l10n.gallery_photo_req_hint),
-            ),
-          ],
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: kIsWeb
+                    ? Image.network(
+                  image.path,
+                  height: 120,
+                  fit: BoxFit.cover,
+                )
+                    : Image.file(
+                  File(image.path),
+                  height: 120,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: descController,
+                decoration: InputDecoration(
+                  labelText: l10n.gallery_photo_desc_label,
+                  hintText: l10n.gallery_photo_desc_hint,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: affController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: l10n.gallery_photo_req_label,
+                  hintText: l10n.gallery_photo_req_hint,
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -4884,68 +4687,23 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
   Widget _buildPublicPrivateToggle(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.visibility_label, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              // ✨ 公開按鈕
-              Expanded(
-                child: InkWell(
-                  onTap: () => setState(() => _isPublic = true),
-                  borderRadius: BorderRadius.circular(30),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: _isPublic ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      l10n.visibility_public,
-                      style: TextStyle(
-                        color: _isPublic ? Colors.white : Colors.grey.shade600,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              // 🔒 私人按鈕
-              Expanded(
-                child: InkWell(
-                  onTap: () => setState(() => _isPublic = false),
-                  borderRadius: BorderRadius.circular(30),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: !_isPublic ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      l10n.visibility_private,
-                      style: TextStyle(
-                        color: !_isPublic ? Colors.white : Colors.grey.shade600,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+    return Row(
+      children: [
+        Text(
+          l10n.visibility_label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w700,
           ),
-        ],
-      ),
+        ),
+        const Spacer(),
+        Text(l10n.visibility_private),
+        Switch(
+          value: _isPublic,
+          activeColor: theme.colorScheme.primary,
+          onChanged: (value) => setState(() => _isPublic = value),
+        ),
+        Text(l10n.visibility_public),
+      ],
     );
   }
 
@@ -5016,12 +4774,12 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
   Widget _buildSectionTitle(String title, ThemeData theme) {
     return Padding(
-      padding: const EdgeInsets.only(top: 24.0, bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Text(
-        title,
-        style: theme.textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: theme.colorScheme.primary,
+        _cleanSectionLabel(title),
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: theme.colorScheme.onSurface,
         ),
       ),
     );
@@ -5109,6 +4867,46 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
     );
   }
 
+  InputDecoration _cleanInputDecoration(
+      ThemeData theme, {
+        String? hintText,
+        Widget? suffixIcon,
+      }) {
+    return InputDecoration(
+      hintText: hintText,
+      hintStyle: TextStyle(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.34),
+        fontSize: 14,
+      ),
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: theme.colorScheme.surface,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 15,
+        vertical: 14,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: theme.dividerColor.withValues(alpha: 0.55),
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: theme.dividerColor.withValues(alpha: 0.55),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: theme.colorScheme.primary,
+          width: 1.4,
+        ),
+      ),
+    );
+  }
+
   Widget _buildTextField(
       TextEditingController controller,
       String label, {
@@ -5149,9 +4947,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                 fontSize: 14,
               ),
               filled: true,
-              fillColor: theme.colorScheme.surface.withValues(
-                alpha: 0.72,
-              ),
+              fillColor: theme.colorScheme.surface,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
                 vertical: 14,
@@ -5165,9 +4961,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
-                  color: theme.dividerColor.withValues(
-                    alpha: 0.75,
-                  ),
+                  color: theme.dividerColor.withValues(alpha: 0.55),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -5241,81 +5035,81 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         ),
 
         AnimatedSize(
-            duration: const Duration(milliseconds: 280),
-            curve: Curves.easeInOutCubic,
-            alignment: Alignment.topCenter,
-            child: TextFormField(
-              controller: controller,
-              style: TextStyle(
-                fontSize: inputFontSize,
-                color: theme.textTheme.bodyMedium?.color,
-              ),
-              keyboardType: TextInputType.multiline,
-
-              // 這兩個長欄位至少保留適當的輸入高度
-              minLines: isCollapsible ? 5 : null,
-              maxLines: effectiveMaxLines,
-
-          // 保留字數統計，但不要截斷貼上的內容
-          maxLength: maxLength,
-          maxLengthEnforcement: MaxLengthEnforcement.none,
-
-          onChanged: (_) {
-            setState(() {});
-          },
-
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: TextStyle(
-              color: theme.colorScheme.onSurface.withValues(
-                alpha: 0.4,
-              ),
-              fontSize: 13,
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeInOutCubic,
+          alignment: Alignment.topCenter,
+          child: TextFormField(
+            controller: controller,
+            style: TextStyle(
+              fontSize: inputFontSize,
+              color: theme.textTheme.bodyMedium?.color,
             ),
-            labelStyle: TextStyle(
-              color: theme.colorScheme.onSurface.withValues(
-                alpha: 0.7,
-              ),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: theme.dividerColor,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: theme.dividerColor,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(
-                color: overflow > 0
-                    ? Colors.red
-                    : theme.colorScheme.primary,
-                width: 2,
-              ),
-            ),
+            keyboardType: TextInputType.multiline,
 
-            // 顯示成 2,356 / 2,500
-            counterText:
-            '$formattedCurrentLength / $formattedMaxLength',
+            // 這兩個長欄位至少保留適當的輸入高度
+            minLines: isCollapsible ? 5 : null,
+            maxLines: effectiveMaxLines,
 
-            counterStyle: TextStyle(
-              color: counterColor,
-              fontWeight: overflow > 0
-                  ? FontWeight.bold
-                  : FontWeight.normal,
-            ),
-            alignLabelWithHint: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 16,
+            // 保留字數統計，但不要截斷貼上的內容
+            maxLength: maxLength,
+            maxLengthEnforcement: MaxLengthEnforcement.none,
+
+            onChanged: (_) {
+              setState(() {});
+            },
+
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(
+                  alpha: 0.4,
+                ),
+                fontSize: 13,
+              ),
+              labelStyle: TextStyle(
+                color: theme.colorScheme.onSurface.withValues(
+                  alpha: 0.7,
+                ),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: theme.dividerColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: theme.dividerColor,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: overflow > 0
+                      ? Colors.red
+                      : theme.colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+
+              // 顯示成 2,356 / 2,500
+              counterText:
+              '$formattedCurrentLength / $formattedMaxLength',
+
+              counterStyle: TextStyle(
+                color: counterColor,
+                fontWeight: overflow > 0
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+              ),
+              alignLabelWithHint: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 16,
+              ),
             ),
           ),
-        ),
         ),
 
         if (showExpandButton)

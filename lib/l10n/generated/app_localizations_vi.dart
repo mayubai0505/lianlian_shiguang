@@ -745,7 +745,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get voice_download_success =>
-      '✅ Tải dữ liệu giọng nói thành công, chuẩn bị phát...';
+      'Tải dữ liệu giọng nói thành công, chuẩn bị phát...';
 
   @override
   String get onboarding_invitation => '— Lời Mời Của Thời Gian —';
@@ -1019,12 +1019,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get test_mode_tooltip => 'Thử nghiệm đầy đủ chức năng';
 
   @override
-  String get test_mode_error =>
-      '⚠️ Không tìm thấy tệp nhân vật! Vui lòng nhấn \"Lưu/Công bố\" ở dưới cùng trước khi chơi thử!';
-
-  @override
   String get test_mode_notice =>
-      '💡 Chế độ thử nghiệm sẽ khấu trừ điểm theo giá gốc của từng chế độ và không tính vào ký ức chính thức!';
+      'Chế độ thử nghiệm sẽ khấu trừ điểm theo giá gốc của từng chế độ và không tính vào ký ức chính thức!';
 
   @override
   String get delete_character_tooltip => 'Xóa nhân vật';
@@ -1053,14 +1049,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Ví dụ: Tóc bạc dài, mắt màu hổ phách, luôn mặc áo blouse trắng...';
 
   @override
-  String get section_story_identity => '🎭 Cốt truyện và Danh tính của bạn';
+  String get section_story_identity => 'Cốt truyện và Danh tính của bạn';
 
   @override
   String get story_identity_desc =>
       'Xác định mở đầu câu chuyện và các thiết lập đặc biệt cho \"Bạn\" trong bản lưu này';
 
   @override
-  String get advanced_writing_tips_title => '💡 Kỹ thuật viết nâng cao:\n';
+  String get advanced_writing_tips_title => 'Kỹ thuật viết nâng cao:\n';
 
   @override
   String get advanced_writing_tips_1 => 'Nhập vào câu chuyện hoặc lời thoại ';
@@ -1080,14 +1076,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get advanced_writing_tips_6 => ', sao em lại đến muộn thế?\"';
-
-  @override
-  String get player_identity_label =>
-      'Danh tính người chơi mặc định (Player Identity) - 💡 Tùy chọn';
-
-  @override
-  String get player_identity_hint =>
-      '【Tùy chọn】Nếu để trống, AI sẽ đọc \"Hồ sơ cá nhân\" của bạn để tương tác.\nNếu điền, AI sẽ buộc phải đóng vai danh tính cụ thể (ví dụ: hệ thống lạnh lùng của anh ta, hoặc người vợ bị phản bội).';
 
   @override
   String get background_label => 'Bối cảnh nhân vật và Thế giới quan';
@@ -1114,8 +1102,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Ví dụ: (Tên người chơi), cuối cùng em cũng đến rồi.';
 
   @override
-  String get section_personality_evo =>
-      '🌟 Tiến hóa tính cách và độ thân thiết';
+  String get section_personality_evo => 'Tiến hóa tính cách và độ thân thiết';
 
   @override
   String get detailed_personality_label => 'Tính cách chi tiết';
@@ -1157,7 +1144,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Ví dụ: Đối xử với người qua đường thế nào? Khi gặp thứ mình ghét sẽ phản ứng ra sao?';
 
   @override
-  String get section_habits => '🗣️ Sở thích và thói quen';
+  String get section_habits => 'Sở thích và thói quen';
 
   @override
   String get tone_hint_detail =>
@@ -1168,8 +1155,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Người chơi: Em mệt quá.\nNhân vật: (Xoa đầu) Ngoan, đi nghỉ sớm đi.';
 
   @override
-  String get section_easter_eggs =>
-      '🎁 Trứng Phục sinh ẩn và Cốt truyện đặc biệt';
+  String get section_easter_eggs => 'Trứng Phục sinh ẩn và Cốt truyện đặc biệt';
 
   @override
   String get no_easter_eggs =>
@@ -1194,18 +1180,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get visibility_private => 'Riêng tư';
 
   @override
-  String get section_voice_gen => '🎙️ Tạo giọng nói độc quyền của anh ta';
+  String get section_voice_gen => 'Tạo giọng nói độc quyền của anh ta';
 
   @override
   String get voice_gen_desc =>
-      'Nhập từ khóa gợi ý để anh ta có giọng nói độc nhất vô nhị trên thế giới!\n(💡 Nhắc nhở: Nếu không hài lòng sau khi tạo, bạn có thể đặt làm lại bất cứ lúc nào!)';
+      'Nhập từ khóa gợi ý để anh ta có giọng nói độc nhất vô nhị trên thế giới!\n(Nhắc nhở: Nếu không hài lòng sau khi tạo, bạn có thể đặt làm lại bất cứ lúc nào!)';
 
   @override
   String get voice_generating_status => 'Đang điều phối giọng nói...';
 
   @override
   String get voice_select_prompt =>
-      '✨ Đã chuẩn bị cho bạn ba loại giọng nói, vui lòng chọn:';
+      'Đã chuẩn bị cho bạn ba loại giọng nói, vui lòng chọn:';
 
   @override
   String voice_sample_name(int index) {
@@ -1240,11 +1226,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Nhập từ khóa gợi ý để tạo giọng nói độc quyền';
 
   @override
-  String get voice_advanced_tuning =>
-      '🎛️ Nâng cao: Điều chỉnh cảm xúc khi nói';
+  String get voice_advanced_tuning => 'Nâng cao: Điều chỉnh cảm xúc khi nói';
 
   @override
-  String get voice_stability_low => 'Hoang dã/Thở 🐺';
+  String get voice_stability_low => 'Hoang dã/Thở';
 
   @override
   String voice_stability_value(String value) {
@@ -1252,10 +1237,10 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get voice_stability_high => 'Ổn định/Điềm tĩnh 🤖';
+  String get voice_stability_high => 'Ổn định/Điềm tĩnh';
 
   @override
-  String get voice_style_low => 'Lạnh nhạt/Kìm nén 🧊';
+  String get voice_style_low => 'Lạnh nhạt/Kìm nén';
 
   @override
   String voice_style_value(String value) {
@@ -1263,7 +1248,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get voice_style_high => 'Phô trương/Sâu sắc 🔥';
+  String get voice_style_high => 'Phô trương/Sâu sắc';
 
   @override
   String get voice_test_btn_testing => 'Đang áp dụng cảm xúc...';
@@ -1272,7 +1257,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get voice_test_btn => 'Nghe thử cảm xúc hiện tại';
 
   @override
-  String get section_social_circle => '👥 Vòng xã giao của anh ta';
+  String get section_social_circle => 'Vòng xã giao của anh ta';
 
   @override
   String get social_circle_desc =>
@@ -1294,7 +1279,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String social_edit_title(String name) {
-    return 'Chỉnh sửa cái nhìn về $name 💬';
+    return 'Chỉnh sửa cái nhìn về $name';
   }
 
   @override
@@ -1308,7 +1293,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get social_save_changes => 'Lưu chỉnh sửa';
 
   @override
-  String get social_add_title => 'Thêm quan hệ nhân vật 🤝';
+  String get social_add_title => 'Thêm quan hệ nhân vật';
 
   @override
   String get social_select_target => 'Chọn đối tượng';
@@ -1324,7 +1309,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get gallery_load_failed =>
-      'Tải hình ảnh thất bại 🥲\nVui lòng xác nhận mạng bình thường, nếu là Web vui lòng kiểm tra console.';
+      'Tải hình ảnh thất bại \nVui lòng xác nhận mạng bình thường.';
 
   @override
   String gallery_affection_req(int level) {
@@ -1408,14 +1393,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get like_own_char_warning =>
-      'Không thể nhấn thích nhân vật do chính mình tạo ra! 🤭';
+      'Không thể nhấn thích nhân vật do chính mình tạo ra!';
 
   @override
-  String get like_success_msg =>
-      'Đã gửi lượt thích! Người sáng tạo sẽ rất vui💖';
+  String get like_success_msg => 'Đã gửi lượt thích! Người sáng tạo sẽ rất vui';
 
   @override
-  String get unlike_success_msg => 'Đã rút lại lượt thích 💔';
+  String get unlike_success_msg => 'Đã rút lại lượt thích';
 
   @override
   String get like_label => 'Thích';
@@ -1447,7 +1431,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dislike_submit => 'Gửi âm thầm';
 
   @override
-  String get report_title => '📢 Báo cáo bình luận';
+  String get report_title => 'Báo cáo bình luận';
 
   @override
   String get report_subtitle =>
@@ -1473,14 +1457,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get report_success =>
-      'Báo cáo thành công, đã nhận được thông báo! Sẽ sớm kiểm duyệt nội dung 🛡️';
+      'Báo cáo thành công, đã nhận được thông báo! Sẽ sớm kiểm duyệt nội dung ';
 
   @override
   String get report_failed =>
       'Báo cáo thất bại, vui lòng kiểm tra kết nối mạng.';
 
   @override
-  String get lore_delete_title => '⚠️ Cảnh báo: Xóa ký ức';
+  String get lore_delete_title => 'Cảnh báo: Xóa ký ức';
 
   @override
   String get lore_delete_content =>
@@ -1493,13 +1477,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get lore_delete_confirm => 'Xác nhận xóa';
 
   @override
-  String get lore_delete_success => '🗑️ Mảnh ký ức đã được xóa sạch.';
+  String get lore_delete_success => 'Mảnh ký ức đã được xóa sạch.';
 
   @override
-  String get lore_add_title => 'Viết ký ức mới 🖋️';
+  String get lore_add_title => 'Viết ký ức mới ';
 
   @override
-  String get lore_edit_title => 'Chỉnh sửa mảnh ký ức 🖋️';
+  String get lore_edit_title => 'Chỉnh sửa mảnh ký ức ';
 
   @override
   String get lore_title_label => 'Tiêu đề ký ức';
@@ -1521,7 +1505,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Viết câu chuyện hoặc thiết lập chi tiết tại đây...';
 
   @override
-  String get lore_lock_label => '🔒 Niêm phong ký ức này';
+  String get lore_lock_label => 'Niêm phong ký ức này';
 
   @override
   String get lore_lock_desc =>
@@ -1531,7 +1515,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get lore_empty_error => 'Tiêu đề và nội dung không được để trống!';
 
   @override
-  String get lore_add_success => '✨ Ký ức mới đã được niêm phong thành công!';
+  String get lore_add_success => 'Ký ức mới đã được niêm phong thành công!';
 
   @override
   String get lore_publish => 'Công bố ký ức';
@@ -1551,7 +1535,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get lore_sealed_msg =>
-      '🔒 Ký ức này đã bị niêm phong, hiện không thể xem.';
+      'Ký ức này đã bị niêm phong, hiện không thể xem.';
 
   @override
   String get lore_not_open_msg => 'Ký ức này chưa mở cho công chúng...';
@@ -1566,7 +1550,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get lore_collapse => 'Đóng thư';
 
   @override
-  String get echo_delete_title => '🗑️ Xóa bình luận';
+  String get echo_delete_title => 'Xóa bình luận';
 
   @override
   String get echo_delete_content =>
@@ -1576,17 +1560,17 @@ class AppLocalizationsVi extends AppLocalizations {
   String get echo_keep => 'Giữ lại';
 
   @override
-  String get echo_clear_success => 'Đã dọn dẹp Tiếng vọng thời không 🧹';
+  String get echo_clear_success => 'Đã dọn dẹp Tiếng vọng thời không';
 
   @override
-  String get echo_energy_full_title => '⚠️ Năng lượng vũ trụ đã đạt giới hạn';
+  String get echo_energy_full_title => 'Năng lượng vũ trụ đã đạt giới hạn';
 
   @override
   String get echo_energy_full_content =>
       'Năng lượng thời không của bạn đã đạt giới hạn (tối đa 3 mục), vui lòng xóa kỷ niệm cũ để mở bản ghi vũ trụ mới nhé!';
 
   @override
-  String get echo_write_title => 'Để lại Tiếng vọng thời không của bạn 🌌';
+  String get echo_write_title => 'Để lại Tiếng vọng thời không của bạn';
 
   @override
   String get echo_write_subtitle =>
@@ -1635,15 +1619,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get follow_own_warning =>
-      'Người sáng tạo không thể theo dõi chính mình đâu! 🤭';
+      'Người sáng tạo không thể theo dõi chính mình đâu!';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName đã theo dõi $creatorName!';
+    return ' $playerName đã theo dõi $creatorName!';
   }
 
   @override
-  String get mailbox_follow_title => 'Nhận được người bảo vệ mới 🦋';
+  String get mailbox_follow_title => 'Nhận được người bảo vệ mới';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -1972,7 +1956,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chat_report_success =>
-      '✅ Báo cáo đã được gửi, chúng tôi sẽ sớm điều chỉnh';
+      'Báo cáo đã được gửi, chúng tôi sẽ sớm điều chỉnh';
 
   @override
   String get chat_suggest_title => 'Góp ý cho chúng tôi';
@@ -1982,7 +1966,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chat_suggest_success =>
-      '💖 Cảm ơn góp ý của bạn, chúng tôi sẽ xử lý sớm nhất có thể';
+      'Cảm ơn góp ý của bạn, chúng tôi sẽ xử lý sớm nhất có thể';
 
   @override
   String get chat_del_warn => 'Tin nhắn sau khi xóa sẽ không thể khôi phục.';
@@ -2347,11 +2331,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get comment_report_title => 'Xác nhận báo cáo';
 
   @override
-  String get comment_report_rules_title => '⚖️ Quy định báo cáo bình luận';
+  String get comment_report_rules_title => 'Quy định báo cáo bình luận';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ Vi phạm lần đầu: Hệ thống cảnh cáo và ghi lại một lần vi phạm.\n2️⃣ Vi phạm lần hai: Cấm bình luận trong 1 ngày.\n3️⃣ Tái phạm: Vô hiệu hóa tính năng báo cáo trong 14 ngày và giảm khả năng hiển thị bình luận.\n\n🚨 Đối với hành vi ác ý nghiêm trọng:\nCấm tương tác với nhân vật trong 1 ngày, ID sẽ được thông báo trên bảng tin trong 3 ngày (trong thời gian này không được đổi ID).\n\n💡 Sau khi gửi báo cáo, kết quả xét duyệt cuối cùng sẽ được gửi cho bạn qua [Thư trong trò chơi].\nVui lòng tôn trọng lẫn nhau và báo cáo một cách lý trí.';
+      'Vi phạm lần đầu: Hệ thống cảnh cáo và ghi lại một lần vi phạm.\n2️⃣ Vi phạm lần hai: Cấm bình luận trong 1 ngày.\n3️⃣ Tái phạm: Vô hiệu hóa tính năng báo cáo trong 14 ngày và giảm khả năng hiển thị bình luận.\n\n🚨 Đối với hành vi ác ý nghiêm trọng:\nCấm tương tác với nhân vật trong 1 ngày, ID sẽ được thông báo trên bảng tin trong 3 ngày (trong thời gian này không được đổi ID).\n\n💡 Sau khi gửi báo cáo, kết quả xét duyệt cuối cùng sẽ được gửi cho bạn qua [Thư trong trò chơi].\nVui lòng tôn trọng lẫn nhau và báo cáo một cách lý trí.';
 
   @override
   String get comment_report_understood => 'Tôi đã hiểu';

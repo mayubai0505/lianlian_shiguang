@@ -737,7 +737,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get voice_download_success =>
-      '✅ تم تنزيل البيانات الصوتية بنجاح، جاري التحضير للتشغيل...';
+      ' تم تنزيل البيانات الصوتية بنجاح، جاري التحضير للتشغيل...';
 
   @override
   String get onboarding_invitation => '— دعوة الزمن —';
@@ -1007,12 +1007,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get test_mode_tooltip => 'اختبار الوظائف الكاملة';
 
   @override
-  String get test_mode_error =>
-      '⚠️ تعذر العثور على ملف الشخصية! يرجى النقر على \"حفظ/نشر\" في الأسفل قبل التجربة!';
-
-  @override
   String get test_mode_notice =>
-      '💡 سيتم خصم النقاط في وضع الاختبار وفقاً للسعر الأصلي لكل وضع، ولن يتم احتسابها في الذكريات الرسمية!';
+      ' سيتم خصم النقاط في وضع الاختبار وفقاً للسعر الأصلي لكل وضع، ولن يتم احتسابها في الذكريات الرسمية!';
 
   @override
   String get delete_character_tooltip => 'حذف الشخصية';
@@ -1041,14 +1037,14 @@ class AppLocalizationsAr extends AppLocalizations {
       'مثال: شعر فضي طويل، عيون عسلية، يرتدي دائماً رداءً أبيض...';
 
   @override
-  String get section_story_identity => '🎭 القصة وهويتك';
+  String get section_story_identity => ' القصة وهويتك';
 
   @override
   String get story_identity_desc =>
       'تحديد بداية القصة والإعدادات الخاصة لـ \"أنت\" في هذا الملف';
 
   @override
-  String get advanced_writing_tips_title => '💡 نصائح كتابة متقدمة:\n';
+  String get advanced_writing_tips_title => ' نصائح كتابة متقدمة:\n';
 
   @override
   String get advanced_writing_tips_1 => 'أدخل في القصة أو الحوار ';
@@ -1068,14 +1064,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get advanced_writing_tips_6 => '، لماذا تأخرت كثيراً؟\"';
-
-  @override
-  String get player_identity_label =>
-      'هوية اللاعب الافتراضية (Player Identity) - 💡 اختياري';
-
-  @override
-  String get player_identity_hint =>
-      '【اختياري】إذا تُرِك فارغاً، سيقرأ الذكاء الاصطناعي \"ملفك الشخصي\" للتفاعل.\nإذا مُلِئ، فسيُجبر على لعب هوية محددة (مثال: نظامه البارد، أو الزوجة المتعرضة للخيانة).';
 
   @override
   String get background_label => 'خلفية الشخصية وعالمها ';
@@ -1101,7 +1089,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get first_line_hint => 'مثال: (اسم اللاعب)، لقد أتيت أخيراً.';
 
   @override
-  String get section_personality_evo => '🌟 تطور الشخصية والمودة';
+  String get section_personality_evo => ' تطور الشخصية والمودة';
 
   @override
   String get detailed_personality_label => 'شخصية مفصلة ';
@@ -1143,7 +1131,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'مثال: كيف يعامل المارة؟ كيف يتفاعل عند مواجهة أشياء يكرهها؟';
 
   @override
-  String get section_habits => '🗣️ التفضيلات والعادات';
+  String get section_habits => ' التفضيلات والعادات';
 
   @override
   String get tone_hint_detail =>
@@ -1154,7 +1142,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'اللاعب: أنا متعب جداً.\nالشخصية: (يمسح على الرأس) كن مطيعاً، اذهب وارتح بسرعة.';
 
   @override
-  String get section_easter_eggs => '🎁 مفاجآت مخفية وقصص خاصة';
+  String get section_easter_eggs => ' مفاجآت مخفية وقصص خاصة';
 
   @override
   String get no_easter_eggs =>
@@ -1179,18 +1167,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get visibility_private => 'خاص';
 
   @override
-  String get section_voice_gen => '🎙️ توليد صوته الحصري';
+  String get section_voice_gen => '️ توليد صوته الحصري';
 
   @override
   String get voice_gen_desc =>
-      'أدخل الكلمات الوصفية ليكون له صوت حصري فريد في العالم!\n(💡 تنبيه: إذا لم تكن راضياً بعد التوليد، يمكنك إعادة التخصيص في أي وقت!)';
+      'أدخل الكلمات الوصفية ليكون له صوت حصري فريد في العالم!\n( تنبيه: إذا لم تكن راضياً بعد التوليد، يمكنك إعادة التخصيص في أي وقت!)';
 
   @override
   String get voice_generating_status => 'جاري ضبط النبرة الصوتية...';
 
   @override
   String get voice_select_prompt =>
-      '✨ لقد جهزت لك ثلاثة أنواع من الأصوات، يرجى الاختيار:';
+      ' لقد جهزت لك ثلاثة أنواع من الأصوات، يرجى الاختيار:';
 
   @override
   String voice_sample_name(int index) {
@@ -1223,10 +1211,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get voice_btn_generate => 'أدخل كلمات الوصف لتوليد صوت حصري';
 
   @override
-  String get voice_advanced_tuning => '🎛️ متقدم: ضبط مشاعر الكلام ';
+  String get voice_advanced_tuning => ' متقدم: ضبط مشاعر الكلام ';
 
   @override
-  String get voice_stability_low => 'بري/نفسي 🐺';
+  String get voice_stability_low => 'بري/نفسي ';
 
   @override
   String voice_stability_value(String value) {
@@ -1234,10 +1222,10 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get voice_stability_high => 'مستقر/هادئ 🤖';
+  String get voice_stability_high => 'مستقر/هادئ ';
 
   @override
-  String get voice_style_low => 'بارد/مكبوت 🧊';
+  String get voice_style_low => 'بارد/مكبوت ';
 
   @override
   String voice_style_value(String value) {
@@ -1245,7 +1233,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get voice_style_high => 'مبالغ فيه/عاطفي 🔥';
+  String get voice_style_high => 'مبالغ فيه/عاطفي ';
 
   @override
   String get voice_test_btn_testing => 'جاري تطبيق المشاعر...';
@@ -1254,7 +1242,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get voice_test_btn => 'استماع للمشاعر الحالية';
 
   @override
-  String get section_social_circle => '👥 دائرته الاجتماعية';
+  String get section_social_circle => ' دائرته الاجتماعية';
 
   @override
   String get social_circle_desc =>
@@ -1275,7 +1263,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String social_edit_title(String name) {
-    return 'تعديل الرأي في $name 💬';
+    return 'تعديل الرأي في $name ';
   }
 
   @override
@@ -1289,7 +1277,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get social_save_changes => 'حفظ التعديلات';
 
   @override
-  String get social_add_title => 'إضافة علاقة شخصية 🤝';
+  String get social_add_title => 'إضافة علاقة شخصية ';
 
   @override
   String get social_select_target => 'اختر الهدف';
@@ -1305,7 +1293,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get gallery_load_failed =>
-      'فشل تحميل الصورة 🥲\nيرجى التأكد من استقرار الشبكة، إذا كنت تستخدم الويب يرجى مراجعة console.';
+      'فشل تحميل الصورة \nيرجى التأكد من استقرار الشبكة .';
 
   @override
   String gallery_affection_req(int level) {
@@ -1389,14 +1377,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get like_own_char_warning =>
-      'لا يمكنك الإعجاب بالشخصية التي أنشأتها بنفسك! 🤭';
+      'لا يمكنك الإعجاب بالشخصية التي أنشأتها بنفسك! ';
 
   @override
-  String get like_success_msg =>
-      'تم إرسال الإعجاب! سيسعد المبدع بذلك كثيراً 💖';
+  String get like_success_msg => 'تم إرسال الإعجاب! سيسعد المبدع بذلك كثيراً ';
 
   @override
-  String get unlike_success_msg => 'تم سحب الإعجاب 💔';
+  String get unlike_success_msg => 'تم سحب الإعجاب ';
 
   @override
   String get like_label => 'إعجاب';
@@ -1428,7 +1415,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dislike_submit => 'إرسال سري';
 
   @override
-  String get report_title => '📢 إبلاغ عن تعليق';
+  String get report_title => ' إبلاغ عن تعليق';
 
   @override
   String get report_subtitle =>
@@ -1454,13 +1441,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get report_success =>
-      'تم الإبلاغ بنجاح، تم استلام الإخطار! سنقوم بمراجعة المحتوى في أقرب وقت ممكن 🛡️';
+      'تم الإبلاغ بنجاح، تم استلام الإخطار! سنقوم بمراجعة المحتوى في أقرب وقت ممكن ️';
 
   @override
   String get report_failed => 'فشل الإبلاغ، يرجى التحقق من اتصال الشبكة.';
 
   @override
-  String get lore_delete_title => '⚠️ تحذير: محو الذاكرة';
+  String get lore_delete_title => '️ تحذير: محو الذاكرة';
 
   @override
   String get lore_delete_content =>
@@ -1473,13 +1460,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get lore_delete_confirm => 'تأكيد المحو';
 
   @override
-  String get lore_delete_success => '🗑️ تم محو شظايا الذاكرة تماماً.';
+  String get lore_delete_success => '️ تم محو شظايا الذاكرة تماماً.';
 
   @override
-  String get lore_add_title => 'كتابة ذاكرة جديدة 🖋️';
+  String get lore_add_title => 'كتابة ذاكرة جديدة ️';
 
   @override
-  String get lore_edit_title => 'تعديل شظية الذاكرة 🖋️';
+  String get lore_edit_title => 'تعديل شظية الذاكرة ️';
 
   @override
   String get lore_title_label => 'عنوان الذاكرة';
@@ -1500,7 +1487,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get lore_content_hint => 'اكتب القصة المفصلة أو الإعدادات هنا...';
 
   @override
-  String get lore_lock_label => '🔒 ختم هذه الذاكرة';
+  String get lore_lock_label => ' ختم هذه الذاكرة';
 
   @override
   String get lore_lock_desc =>
@@ -1510,7 +1497,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get lore_empty_error => 'العنوان والمحتوى لا يمكن أن يكونا فارغين!';
 
   @override
-  String get lore_add_success => '✨ تم ختم الذاكرة الجديدة بنجاح!';
+  String get lore_add_success => ' تم ختم الذاكرة الجديدة بنجاح!';
 
   @override
   String get lore_publish => 'نشر الذاكرة';
@@ -1529,7 +1516,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get lore_sealed_msg => '🔒 تم ختم هذه الذاكرة، لا يمكن عرضها حالياً.';
+  String get lore_sealed_msg => ' تم ختم هذه الذاكرة، لا يمكن عرضها حالياً.';
 
   @override
   String get lore_not_open_msg => 'هذه الذاكرة ليست مفتوحة للجمهور بعد...';
@@ -1544,7 +1531,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get lore_collapse => 'طي الرسالة';
 
   @override
-  String get echo_delete_title => '🗑️ حذف التعليق';
+  String get echo_delete_title => '️ حذف التعليق';
 
   @override
   String get echo_delete_content =>
@@ -1554,17 +1541,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get echo_keep => 'احتفاظ';
 
   @override
-  String get echo_clear_success => 'تم مسح صدى الزمان 🧹';
+  String get echo_clear_success => 'تم مسح صدى الزمان ';
 
   @override
-  String get echo_energy_full_title => '⚠️ وصلت طاقة الكون إلى الحد الأقصى';
+  String get echo_energy_full_title => '️ وصلت طاقة الكون إلى الحد الأقصى';
 
   @override
   String get echo_energy_full_content =>
       'وصلت طاقة الزمان الخاصة بك إلى الحد الأقصى (3 كحد أقصى)، يرجى حذف تجاربك الزمانية القديمة لتتمكن من فتح سجلات كونية جديدة!';
 
   @override
-  String get echo_write_title => 'اترك صدى الزمان الخاص بك 🌌';
+  String get echo_write_title => 'اترك صدى الزمان الخاص بك ';
 
   @override
   String get echo_write_subtitle =>
@@ -1612,15 +1599,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get followed_btn => 'تمت المتابعة';
 
   @override
-  String get follow_own_warning => 'لا يمكن للمبدعين متابعة أنفسهم! 🤭';
+  String get follow_own_warning => 'لا يمكن للمبدعين متابعة أنفسهم! ';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName تابع $creatorName！';
+    return ' $playerName تابع $creatorName！';
   }
 
   @override
-  String get mailbox_follow_title => 'حصلت على حارس جديد 🦋';
+  String get mailbox_follow_title => 'حصلت على حارس جديد ';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -1945,7 +1932,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chat_report_success =>
-      '✅ تم إرسال الإبلاغ، سنقوم بالتعديل في أقرب وقت';
+      ' تم إرسال الإبلاغ، سنقوم بالتعديل في أقرب وقت';
 
   @override
   String get chat_suggest_title => 'تقديم ملاحظات';
@@ -1954,8 +1941,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chat_suggest_hint => 'يرجى كتابة آرائك القيمة...';
 
   @override
-  String get chat_suggest_success =>
-      '💖 شكراً لاقتراحك، سنتعامل معه في أقرب وقت';
+  String get chat_suggest_success => ' شكراً لاقتراحك، سنتعامل معه في أقرب وقت';
 
   @override
   String get chat_del_warn => 'لا يمكن استعادة الرسائل بعد حذفها.';

@@ -747,7 +747,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get voice_download_success =>
-      '✅ वॉयस डेटा सफलतापूर्वक डाउनलोड हो गया, प्ले करने की तैयारी...';
+      'वॉयस डेटा सफलतापूर्वक डाउनलोड हो गया, प्ले करने की तैयारी...';
 
   @override
   String get onboarding_invitation => '— समय का निमंत्रण —';
@@ -1020,12 +1020,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get test_mode_tooltip => 'पूर्ण कार्यक्षमता परीक्षण';
 
   @override
-  String get test_mode_error =>
-      '⚠️ पात्र फ़ाइल नहीं मिली! परीक्षण से पहले कृपया नीचे दिए गए \"सहेजें/प्रकाशित करें\" पर क्लिक करें!';
-
-  @override
   String get test_mode_notice =>
-      '💡 परीक्षण मोड में प्रत्येक मोड की मूल कीमत के अनुसार अंक काटे जाएंगे, और यह आधिकारिक यादों में नहीं गिना जाएगा!';
+      'परीक्षण मोड में प्रत्येक मोड की मूल कीमत के अनुसार अंक काटे जाएंगे, और यह आधिकारिक यादों में नहीं गिना जाएगा!';
 
   @override
   String get delete_character_tooltip => 'पात्र हटाएं';
@@ -1054,14 +1050,14 @@ class AppLocalizationsHi extends AppLocalizations {
       'जैसे: लंबे चांदी के बाल, एम्बर आंखें, हमेशा सफेद कोट पहनता है...';
 
   @override
-  String get section_story_identity => '🎭 कहानी और आपकी पहचान';
+  String get section_story_identity => 'कहानी और आपकी पहचान';
 
   @override
   String get story_identity_desc =>
       'कहानी की शुरुआत और इस सेव फ़ाइल में \"आपकी\" विशेष सेटिंग्स परिभाषित करें';
 
   @override
-  String get advanced_writing_tips_title => '💡 उन्नत लेखन युक्तियाँ:\n';
+  String get advanced_writing_tips_title => 'उन्नत लेखन युक्तियाँ:\n';
 
   @override
   String get advanced_writing_tips_1 => 'कहानी या संवाद में ';
@@ -1081,14 +1077,6 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get advanced_writing_tips_6 => ', तुम इतनी देर से क्यों आए?\"';
-
-  @override
-  String get player_identity_label =>
-      'खिलाड़ी की डिफ़ॉल्ट पहचान (Player Identity) - 💡 वैकल्पिक';
-
-  @override
-  String get player_identity_hint =>
-      '【वैकल्पिक】यदि खाली छोड़ा जाता है, तो AI बातचीत के लिए आपकी \"प्रोफ़ाइल\" पढ़ेगा।\nयदि भरा जाता है, तो एक विशिष्ट पहचान निभाने के लिए मजबूर करेगा (जैसे: उसका कठोर सिस्टम, या धोखा खाई हुई पत्नी)।';
 
   @override
   String get background_label => 'पात्र की पृष्ठभूमि और विश्वदृष्टि';
@@ -1114,7 +1102,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get first_line_hint => 'जैसे: (खिलाड़ी का नाम), तुम आखिरकार आ ही गए।';
 
   @override
-  String get section_personality_evo => '🌟 व्यक्तित्व और आत्मीयता का विकास';
+  String get section_personality_evo => 'व्यक्तित्व और आत्मीयता का विकास';
 
   @override
   String get detailed_personality_label => 'विस्तृत व्यक्तित्व';
@@ -1156,7 +1144,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'जैसे: राहगीरों के साथ कैसा व्यवहार करता है? अपनी नापसंद चीजों का सामना करने पर कैसे प्रतिक्रिया देता है?';
 
   @override
-  String get section_habits => '🗣️ पसंद और आदतें';
+  String get section_habits => 'पसंद और आदतें';
 
   @override
   String get tone_hint_detail =>
@@ -1167,7 +1155,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'खिलाड़ी: मैं बहुत थक गया हूँ।\nपात्र: (सिर सहलाते हुए) अच्छे बच्चे बनो, जाओ और आराम करो।';
 
   @override
-  String get section_easter_eggs => '🎁 गुप्त ईस्टर एग्स और विशेष कहानी';
+  String get section_easter_eggs => 'गुप्त ईस्टर एग्स और विशेष कहानी';
 
   @override
   String get no_easter_eggs =>
@@ -1192,18 +1180,18 @@ class AppLocalizationsHi extends AppLocalizations {
   String get visibility_private => 'निजी';
 
   @override
-  String get section_voice_gen => '🎙️ उसकी विशेष आवाज बनाना';
+  String get section_voice_gen => 'उसकी विशेष आवाज बनाना';
 
   @override
   String get voice_gen_desc =>
-      'संकेत शब्द दर्ज करें, ताकि उसके पास दुनिया की सबसे अनोखी आवाज हो!\n(💡 सुझाव: यदि बनाने के बाद पसंद न आए, तो आप किसी भी समय फिर से बना सकते हैं!)';
+      'संकेत शब्द दर्ज करें, ताकि उसके पास दुनिया की सबसे अनोखी आवाज हो!\n(सुझाव: यदि बनाने के बाद पसंद न आए, तो आप किसी भी समय फिर से बना सकते हैं!)';
 
   @override
   String get voice_generating_status => 'आवाज तैयार की जा रही है...';
 
   @override
   String get voice_select_prompt =>
-      '✨ मैंने आपके लिए तीन प्रकार की आवाजें तैयार की हैं, कृपया चुनें:';
+      ' मैंने आपके लिए तीन प्रकार की आवाजें तैयार की हैं, कृपया चुनें:';
 
   @override
   String voice_sample_name(int index) {
@@ -1237,11 +1225,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'विशेष आवाज बनाने के लिए संकेत शब्द दर्ज करें';
 
   @override
-  String get voice_advanced_tuning =>
-      '🎛️ उन्नत: बोलने की भावना को नियंत्रित करें';
+  String get voice_advanced_tuning => 'उन्नत: बोलने की भावना को नियंत्रित करें';
 
   @override
-  String get voice_stability_low => 'जंगली/सांसों की आवाज 🐺';
+  String get voice_stability_low => 'जंगली/सांसों की आवाज';
 
   @override
   String voice_stability_value(String value) {
@@ -1249,10 +1236,10 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get voice_stability_high => 'स्थिर/शांत 🤖';
+  String get voice_stability_high => 'स्थिर/शांत';
 
   @override
-  String get voice_style_low => 'ठंडा/दबा हुआ 🧊';
+  String get voice_style_low => 'ठंडा/दबा हुआ';
 
   @override
   String voice_style_value(String value) {
@@ -1260,7 +1247,7 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
-  String get voice_style_high => 'अतिरंजित/भावुक 🔥';
+  String get voice_style_high => 'अतिरंजित/भावुक';
 
   @override
   String get voice_test_btn_testing => 'भावना लागू की जा रही है...';
@@ -1269,7 +1256,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get voice_test_btn => 'वर्तमान भावना को सुनें';
 
   @override
-  String get section_social_circle => '👥 उसका सामाजिक दायरा';
+  String get section_social_circle => ' उसका सामाजिक दायरा';
 
   @override
   String get social_circle_desc =>
@@ -1291,7 +1278,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String social_edit_title(String name) {
-    return '$name के बारे में विचार संपादित करें 💬';
+    return '$name के बारे में विचार संपादित करें';
   }
 
   @override
@@ -1305,7 +1292,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get social_save_changes => 'परिवर्तन सहेजें';
 
   @override
-  String get social_add_title => 'पात्र संबंध जोड़ें 🤝';
+  String get social_add_title => 'पात्र संबंध जोड़ें';
 
   @override
   String get social_select_target => 'लक्ष्य चुनें';
@@ -1321,7 +1308,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get gallery_load_failed =>
-      'छवि लोड करने में विफल 🥲\nकृपया सुनिश्चित करें कि नेटवर्क सामान्य है। यदि वेब पर है, तो कंसोल देखें।';
+      'छवि लोड करने में विफल \nकृपया सुनिश्चित करें कि नेटवर्क सामान्य है। यदि वेब पर है';
 
   @override
   String gallery_affection_req(int level) {
@@ -1406,13 +1393,13 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get like_own_char_warning =>
-      'आप अपने द्वारा बनाए गए पात्र को लाइक नहीं कर सकते! 🤭';
+      'आप अपने द्वारा बनाए गए पात्र को लाइक नहीं कर सकते!';
 
   @override
-  String get like_success_msg => 'लाइक भेज दिया गया! निर्माता बहुत खुश होगा💖';
+  String get like_success_msg => 'लाइक भेज दिया गया! निर्माता बहुत खुश होगा';
 
   @override
-  String get unlike_success_msg => 'लाइक वापस ले लिया गया 💔';
+  String get unlike_success_msg => 'लाइक वापस ले लिया गया ';
 
   @override
   String get like_label => 'लाइक';
@@ -1445,7 +1432,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get dislike_submit => 'गुप्त रूप से भेजें';
 
   @override
-  String get report_title => '📢 कमेंट की रिपोर्ट करें';
+  String get report_title => 'कमेंट की रिपोर्ट करें';
 
   @override
   String get report_subtitle =>
@@ -1471,14 +1458,14 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get report_success =>
-      'रिपोर्ट सफल रही, सूचना मिल गई है! जल्द ही समीक्षा की जाएगी 🛡️';
+      'रिपोर्ट सफल रही, सूचना मिल गई है! जल्द ही समीक्षा की जाएगी ️';
 
   @override
   String get report_failed =>
       'रिपोर्ट विफल रही, कृपया अपना नेटवर्क कनेक्शन जांचें।';
 
   @override
-  String get lore_delete_title => '⚠️ चेतावनी: यादें मिटाना';
+  String get lore_delete_title => 'चेतावनी: यादें मिटाना';
 
   @override
   String get lore_delete_content =>
@@ -1491,14 +1478,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get lore_delete_confirm => 'मिटाने की पुष्टि करें';
 
   @override
-  String get lore_delete_success =>
-      '🗑️ यादों के टुकड़े पूरी तरह मिटा दिए गए हैं।';
+  String get lore_delete_success => 'यादों के टुकड़े पूरी तरह मिटा दिए गए हैं।';
 
   @override
-  String get lore_add_title => 'नई याद लिखें 🖋️';
+  String get lore_add_title => 'नई याद लिखें ';
 
   @override
-  String get lore_edit_title => 'यादों के टुकड़े को संपादित करें 🖋️';
+  String get lore_edit_title => 'यादों के टुकड़े को संपादित करें ';
 
   @override
   String get lore_title_label => 'यादों का शीर्षक';
@@ -1519,7 +1505,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get lore_content_hint => 'यह विस्तृत कहानी या सेटिंग्स यहाँ लिखें...';
 
   @override
-  String get lore_lock_label => '🔒 इस याद को सील करें';
+  String get lore_lock_label => 'इस याद को सील करें';
 
   @override
   String get lore_lock_desc =>
@@ -1529,7 +1515,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get lore_empty_error => 'शीर्षक और सामग्री खाली नहीं हो सकते!';
 
   @override
-  String get lore_add_success => '✨ नई याद सफलतापूर्वक सील कर दी गई है!';
+  String get lore_add_success => 'नई याद सफलतापूर्वक सील कर दी गई है!';
 
   @override
   String get lore_publish => 'यादें प्रकाशित करें';
@@ -1549,7 +1535,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get lore_sealed_msg =>
-      '🔒 यह याद सील कर दी गई है और वर्तमान में उपलब्ध नहीं है।';
+      'यह याद सील कर दी गई है और वर्तमान में उपलब्ध नहीं है।';
 
   @override
   String get lore_not_open_msg => 'यह याद अभी जनता के लिए खुली नहीं है...';
@@ -1564,7 +1550,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get lore_collapse => 'पत्र समेटें';
 
   @override
-  String get echo_delete_title => '🗑️ कमेंट हटाएं';
+  String get echo_delete_title => ' कमेंट हटाएं';
 
   @override
   String get echo_delete_content =>
@@ -1574,18 +1560,17 @@ class AppLocalizationsHi extends AppLocalizations {
   String get echo_keep => 'रखें';
 
   @override
-  String get echo_clear_success => 'टाइम इको साफ कर दिया गया 🧹';
+  String get echo_clear_success => 'टाइम इको साफ कर दिया गया';
 
   @override
-  String get echo_energy_full_title =>
-      '⚠️ ब्रह्मांडीय ऊर्जा सीमा तक पहुँच गई है';
+  String get echo_energy_full_title => 'ब्रह्मांडीय ऊर्जा सीमा तक पहुँच गई है';
 
   @override
   String get echo_energy_full_content =>
       'आपकी समय ऊर्जा सीमा तक पहुँच गई है (अधिकतम 3), कृपया अपने पुराने अनुभव हटाएं ताकि आप नए ब्रह्मांडीय रिकॉर्ड खोल सकें!';
 
   @override
-  String get echo_write_title => 'अपना टाइम इको छोड़ें 🌌';
+  String get echo_write_title => 'अपना टाइम इको छोड़ें';
 
   @override
   String get echo_write_subtitle =>
@@ -1633,15 +1618,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get followed_btn => 'फॉलो किया गया';
 
   @override
-  String get follow_own_warning => 'निर्माता खुद को फॉलो नहीं कर सकते! 🤭';
+  String get follow_own_warning => 'निर्माता खुद को फॉलो नहीं कर सकते! ';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName ने $creatorName को फॉलो किया!';
+    return '$playerName ने $creatorName को फॉलो किया!';
   }
 
   @override
-  String get mailbox_follow_title => 'नया रक्षक मिला 🦋';
+  String get mailbox_follow_title => 'नया रक्षक मिला';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -1970,7 +1955,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get chat_report_success =>
-      '✅ रिपोर्ट भेज दी गई है, हम जल्द ही इसमें सुधार करेंगे';
+      ' रिपोर्ट भेज दी गई है, हम जल्द ही इसमें सुधार करेंगे';
 
   @override
   String get chat_suggest_title => 'सुझाव दें';
@@ -1980,7 +1965,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get chat_suggest_success =>
-      '💖 आपके सुझाव के लिए धन्यवाद, हम जल्द ही इस पर काम करेंगे';
+      'आपके सुझाव के लिए धन्यवाद, हम जल्द ही इस पर काम करेंगे';
 
   @override
   String get chat_del_warn =>
@@ -2345,11 +2330,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get comment_report_title => 'रिपोर्ट की पुष्टि करें';
 
   @override
-  String get comment_report_rules_title => '⚖️ कमेंट रिपोर्टिंग नियम';
+  String get comment_report_rules_title => ' कमेंट रिपोर्टिंग नियम';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ पहला अपराध: सिस्टम चेतावनी और एक उल्लंघन रिकॉर्ड।\n2️⃣ दूसरा अपराध: 1 दिन के लिए कमेंट करने पर रोक।\n3️⃣ बार-बार अपराध: 14 दिनों के लिए रिपोर्ट सुविधा अक्षम और कमेंट की दृश्यता कम।\n\n🚨 गंभीर दुर्व्यवहार के लिए:\nपात्रों के साथ बातचीत पर 1 दिन की रोक, और आईडी 3 दिनों के लिए बुलेटिन बोर्ड पर पोस्ट की जाएगी (इस दौरान आईडी बदलना प्रतिबंधित है)।\n\n💡 रिपोर्ट सबमिट होने के बाद, अंतिम समीक्षा परिणाम आपको [इन-गेम मेल] के माध्यम से भेजा जाएगा।\nकृपया एक-दूसरे का सम्मान करें और तर्कसंगत रूप से रिपोर्ट करें।';
+      'पहला अपराध: सिस्टम चेतावनी और एक उल्लंघन रिकॉर्ड।\n2️⃣ दूसरा अपराध: 1 दिन के लिए कमेंट करने पर रोक।\n3️⃣ बार-बार अपराध: 14 दिनों के लिए रिपोर्ट सुविधा अक्षम और कमेंट की दृश्यता कम।\n\n🚨 गंभीर दुर्व्यवहार के लिए:\nपात्रों के साथ बातचीत पर 1 दिन की रोक, और आईडी 3 दिनों के लिए बुलेटिन बोर्ड पर पोस्ट की जाएगी (इस दौरान आईडी बदलना प्रतिबंधित है)।\n\n💡 रिपोर्ट सबमिट होने के बाद, अंतिम समीक्षा परिणाम आपको [इन-गेम मेल] के माध्यम से भेजा जाएगा।\nकृपया एक-दूसरे का सम्मान करें और तर्कसंगत रूप से रिपोर्ट करें।';
 
   @override
   String get comment_report_understood => 'मुझे समझ आ गया';

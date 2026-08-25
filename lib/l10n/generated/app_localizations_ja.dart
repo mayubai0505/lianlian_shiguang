@@ -721,7 +721,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get no_exclusive_voice => 'このキャラクターにはまだ専用ボイスが設定されていません！';
 
   @override
-  String get voice_download_success => '✅ 音声データのダウンロードに成功しました。再生を準備しています...';
+  String get voice_download_success => '音声データのダウンロードに成功しました。再生を準備しています...';
 
   @override
   String get onboarding_invitation => '— 時の招待状 —';
@@ -984,12 +984,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get test_mode_tooltip => '全機能テスト';
 
   @override
-  String get test_mode_error =>
-      '⚠️ キャラクターファイルが見つかりません！下の「保存/公開」をクリックしてから、テストプレイしてください。';
-
-  @override
-  String get test_mode_notice =>
-      '💡 テストモードは各モードの通常価格通りにポイントを消費し、正式な思い出には記録されません！';
+  String get test_mode_notice => 'テストモードは各モードの通常価格通りにポイントを消費し、正式な思い出には記録されません！';
 
   @override
   String get delete_character_tooltip => 'キャラクターを削除';
@@ -1016,13 +1011,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hint_appearance => '例：銀色の長髪、琥珀色の瞳、いつも白衣を着ている...';
 
   @override
-  String get section_story_identity => '🎭 ストーリーとあなたの身分';
+  String get section_story_identity => 'ストーリーとあなたの身分';
 
   @override
   String get story_identity_desc => 'ストーリーの始まりと、このセーブデータでの「あなた」の特殊設定を定義します';
 
   @override
-  String get advanced_writing_tips_title => '💡 高度なライティングテクニック：\n';
+  String get advanced_writing_tips_title => '高度なライティングテクニック：\n';
 
   @override
   String get advanced_writing_tips_1 => 'ストーリーやセリフの中に ';
@@ -1042,13 +1037,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get advanced_writing_tips_6 => '、どうしてこんなに遅かったの？」';
-
-  @override
-  String get player_identity_label => 'プレイヤーのデフォルト身分 (Player Identity) - 💡 任意';
-
-  @override
-  String get player_identity_hint =>
-      '【任意】空欄の場合、AIはあなたの「プロフィール」を読み取って交流します。\n入力した場合、特定の身分を強制的に演じます（例：彼の冷徹なシステム、または裏切られた妻）。';
 
   @override
   String get background_label => 'キャラクターの背景と世界観';
@@ -1074,7 +1062,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get first_line_hint => '例：(プレイヤー名)、やっと来たか。';
 
   @override
-  String get section_personality_evo => '🌟 性格と好感度の変化';
+  String get section_personality_evo => '性格と好感度の変化';
 
   @override
   String get detailed_personality_label => '詳細な性格';
@@ -1111,7 +1099,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get social_interaction_hint => '例：通行人にどう接するか？嫌いなものに直面したとき、どう反応するか？';
 
   @override
-  String get section_habits => '🗣️ 好みと習慣';
+  String get section_habits => '好みと習慣';
 
   @override
   String get tone_hint_detail => '必須。例：言葉数は少なく、問い返すのが好き。口癖は「バカ」。翻訳調の使用は禁止。';
@@ -1121,7 +1109,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'プレイヤー：疲れちゃった。\nキャラクター：(頭を撫でる) よしよし、早く休め。';
 
   @override
-  String get section_easter_eggs => '🎁 隠しイースターエッグと特殊ストーリー';
+  String get section_easter_eggs => '隠しイースターエッグと特殊ストーリー';
 
   @override
   String get no_easter_eggs => 'イースターエッグは未設定です。下のボタンから追加してください';
@@ -1145,17 +1133,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get visibility_private => '非公開';
 
   @override
-  String get section_voice_gen => '🎙️ 彼の専用ボイス生成';
+  String get section_voice_gen => '彼の専用ボイス生成';
 
   @override
   String get voice_gen_desc =>
-      'ヒントを入力して、世界に一つだけの専用ボイスを作りましょう！\n（💡 ヒント：生成後に気に入らなくても、いつでも作り直せます！）';
+      'ヒントを入力して、世界に一つだけの専用ボイスを作りましょう！\n（ヒント：生成後に気に入らなくても、いつでも作り直せます！）';
 
   @override
   String get voice_generating_status => 'ボイスを調合中...';
 
   @override
-  String get voice_select_prompt => '✨ 3つのボイスを用意しました。選んでください：';
+  String get voice_select_prompt => '3つのボイスを用意しました。選んでください：';
 
   @override
   String voice_sample_name(int index) {
@@ -1187,10 +1175,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get voice_btn_generate => 'ヒントを入力して専用ボイスを生成';
 
   @override
-  String get voice_advanced_tuning => '🎛️ 詳細設定：話し方の感情を微調整';
+  String get voice_advanced_tuning => '詳細設定：話し方の感情を微調整';
 
   @override
-  String get voice_stability_low => 'ワイルド/吐息 🐺';
+  String get voice_stability_low => 'ワイルド/吐息';
 
   @override
   String voice_stability_value(String value) {
@@ -1198,10 +1186,10 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get voice_stability_high => '安定/冷静 🤖';
+  String get voice_stability_high => '安定/冷静';
 
   @override
-  String get voice_style_low => '冷淡/抑圧 🧊';
+  String get voice_style_low => '冷淡/抑圧';
 
   @override
   String voice_style_value(String value) {
@@ -1209,7 +1197,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get voice_style_high => '大げさ/情熱的 🔥';
+  String get voice_style_high => '大げさ/情熱的';
 
   @override
   String get voice_test_btn_testing => '感情を適用中...';
@@ -1218,7 +1206,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get voice_test_btn => '現在の感情を試聴';
 
   @override
-  String get section_social_circle => '👥 彼の交友関係';
+  String get section_social_circle => '彼の交友関係';
 
   @override
   String get social_circle_desc =>
@@ -1239,7 +1227,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String social_edit_title(String name) {
-    return '$name に対する見解を編集 💬';
+    return '$name に対する見解を編集';
   }
 
   @override
@@ -1252,7 +1240,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get social_save_changes => '変更を保存';
 
   @override
-  String get social_add_title => 'キャラクター関係を追加 🤝';
+  String get social_add_title => 'キャラクター関係を追加';
 
   @override
   String get social_select_target => '対象を選択';
@@ -1267,8 +1255,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get social_add_confirm => '追加を確定';
 
   @override
-  String get gallery_load_failed =>
-      '画像の読み込みに失敗しました 🥲\nネットワークを確認してください。Web版の場合はコンソールを確認してください。';
+  String get gallery_load_failed => '画像の読み込みに失敗しました\nネットワークを確認してください。';
 
   @override
   String gallery_affection_req(int level) {
@@ -1351,13 +1338,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get like_own_char_warning => '自分が作ったキャラクターに「いいね」はできません！🤭';
+  String get like_own_char_warning => '自分が作ったキャラクターに「いいね」はできません！';
 
   @override
-  String get like_success_msg => '「いいね」を送信しました！作者がとても喜びます💖';
+  String get like_success_msg => '「いいね」を送信しました！作者がとても喜びます';
 
   @override
-  String get unlike_success_msg => '「いいね」を取り消しました💔';
+  String get unlike_success_msg => '「いいね」を取り消しました';
 
   @override
   String get like_label => 'いいね';
@@ -1387,7 +1374,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dislike_submit => 'こっそり送信';
 
   @override
-  String get report_title => '📢 コメントを通報';
+  String get report_title => 'コメントを通報';
 
   @override
   String get report_subtitle => '通報の理由を選択してください：\n通報後、速やかに内容を審査いたします。';
@@ -1411,13 +1398,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get report_confirm => '通報を確定';
 
   @override
-  String get report_success => '通報に成功しました、通知を受理しました！速やかに審査いたします🛡️';
+  String get report_success => '通報に成功しました、通知を受理しました！速やかに審査いたします️';
 
   @override
   String get report_failed => '通報に失敗しました。ネットワーク接続を確認してください。';
 
   @override
-  String get lore_delete_title => '⚠️ 警告：記憶の消去';
+  String get lore_delete_title => '警告：記憶の消去';
 
   @override
   String get lore_delete_content => 'この記憶は一度削除すると完全に消えてしまいます。本当に消去しますか？';
@@ -1429,13 +1416,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lore_delete_confirm => '消去を確定';
 
   @override
-  String get lore_delete_success => '🗑️ 記憶の断片を完全に消去しました。';
+  String get lore_delete_success => '記憶の断片を完全に消去しました。';
 
   @override
-  String get lore_add_title => '新しい記憶を書く 🖋️';
+  String get lore_add_title => '新しい記憶を書く';
 
   @override
-  String get lore_edit_title => '記憶の断片を編集 🖋️';
+  String get lore_edit_title => '記憶の断片を編集';
 
   @override
   String get lore_title_label => '記憶のタイトル';
@@ -1456,7 +1443,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lore_content_hint => '詳細な物語や設定をここに書いてください...';
 
   @override
-  String get lore_lock_label => '🔒 この記憶を封印する';
+  String get lore_lock_label => 'この記憶を封印する';
 
   @override
   String get lore_lock_desc => 'チェックを入れると作者のみ閲覧可能になり、プレイヤーは閲覧できなくなります';
@@ -1465,7 +1452,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lore_empty_error => 'タイトルと内容は空にできません！';
 
   @override
-  String get lore_add_success => '✨ 新しい記憶が正常に封印されました！';
+  String get lore_add_success => '新しい記憶が正常に封印されました！';
 
   @override
   String get lore_publish => '記憶を公開';
@@ -1484,7 +1471,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get lore_sealed_msg => '🔒 この記憶は封印されており、現在は閲覧できません。';
+  String get lore_sealed_msg => 'この記憶は封印されており、現在は閲覧できません。';
 
   @override
   String get lore_not_open_msg => 'この記憶はまだ外部に公開されていません...';
@@ -1499,7 +1486,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lore_collapse => '手紙を閉じる';
 
   @override
-  String get echo_delete_title => '🗑️ コメントを削除';
+  String get echo_delete_title => 'コメントを削除';
 
   @override
   String get echo_delete_content => 'この時空のエコーを削除してもよろしいですか？\n削除すると二度と復元できません！';
@@ -1508,17 +1495,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get echo_keep => '残す';
 
   @override
-  String get echo_clear_success => '時空のエコーを削除しました 🧹';
+  String get echo_clear_success => '時空のエコーを削除しました';
 
   @override
-  String get echo_energy_full_title => '⚠️ 宇宙エネルギーが上限に達しました';
+  String get echo_energy_full_title => ' 宇宙エネルギーが上限に達しました';
 
   @override
   String get echo_energy_full_content =>
       '時空エネルギーが上限（最大3件）に達しました。新しい宇宙の記録を開くには、古い時空の経験を削除してください！';
 
   @override
-  String get echo_write_title => '時空のエコーを残す 🌌';
+  String get echo_write_title => '時空のエコーを残す';
 
   @override
   String get echo_write_subtitle => 'ここでの経験や心に響く言葉を書き残しましょう！';
@@ -1563,15 +1550,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get followed_btn => 'フォロー中';
 
   @override
-  String get follow_own_warning => '作者は自分をフォローできません！🤭';
+  String get follow_own_warning => '作者は自分をフォローできません！';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName が $creatorName をフォローしました！';
+    return '$playerName が $creatorName をフォローしました！';
   }
 
   @override
-  String get mailbox_follow_title => '新しい守護者を獲得 🦋';
+  String get mailbox_follow_title => '新しい守護者を獲得';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -1881,7 +1868,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_report_submit => '送信';
 
   @override
-  String get chat_report_success => '✅ 通報を受け付けました。速やかに調整いたします';
+  String get chat_report_success => '通報を受け付けました。速やかに調整いたします';
 
   @override
   String get chat_suggest_title => 'アドバイスを贈る';
@@ -1890,7 +1877,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chat_suggest_hint => '貴重なご意見をお聞かせください...';
 
   @override
-  String get chat_suggest_success => '💖 アドバイスありがとうございます。速やかに対応いたします';
+  String get chat_suggest_success => 'アドバイスありがとうございます。速やかに対応いたします';
 
   @override
   String get chat_del_warn => 'メッセージは削除すると復元できません。';
@@ -2234,11 +2221,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get comment_report_title => '通報の確認';
 
   @override
-  String get comment_report_rules_title => '⚖️ コメント通報規約';
+  String get comment_report_rules_title => 'コメント通報規約';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ 初犯：システム警告および違反1回の記録。\n2️⃣ 二犯：1日間のコメント禁止。\n3️⃣ 累犯：14日間の通報機能停止およびコメント表示優先度の低下。\n\n🚨 重度の悪質なケース：\nキャラクターとのインタラクションを1日間禁止し、IDを掲示板に3日間公開します（期間中のID変更は不可）。\n\n💡 通報送信後、最終的な審査結果は【ゲーム内メール】にて個別にお送りします。\n互いに尊重し、理性的通報をお願いします。';
+      '初犯：システム警告および違反1回の記録。\n2️⃣ 二犯：1日間のコメント禁止。\n3️⃣ 累犯：14日間の通報機能停止およびコメント表示優先度の低下。\n\n🚨 重度の悪質なケース：\nキャラクターとのインタラクションを1日間禁止し、IDを掲示板に3日間公開します（期間中のID変更は不可）。\n\n💡 通報送信後、最終的な審査結果は【ゲーム内メール】にて個別にお送りします。\n互いに尊重し、理性的通報をお願いします。';
 
   @override
   String get comment_report_understood => '了解しました';

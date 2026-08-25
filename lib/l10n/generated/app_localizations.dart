@@ -1463,7 +1463,7 @@ abstract class AppLocalizations {
   /// No description provided for @voice_download_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✅ 語音數據下載成功，準備直接播放...'**
+  /// **'語音數據下載成功，準備直接播放...'**
   String get voice_download_success;
 
   /// No description provided for @onboarding_invitation.
@@ -1922,16 +1922,10 @@ abstract class AppLocalizations {
   /// **'完整功能測試 '**
   String get test_mode_tooltip;
 
-  /// No description provided for @test_mode_error.
-  ///
-  /// In zh_Hant, this message translates to:
-  /// **'⚠️ 找不到角色檔案！請先點擊最下方的「儲存/發布」後，再來試玩喔！'**
-  String get test_mode_error;
-
   /// No description provided for @test_mode_notice.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'💡 測試模式將依照各模式原價扣點，且不計入正式回憶喔！'**
+  /// **'測試模式將依照各模式原價扣點，且不計入正式回憶喔！'**
   String get test_mode_notice;
 
   /// No description provided for @delete_character_tooltip.
@@ -1985,7 +1979,7 @@ abstract class AppLocalizations {
   /// No description provided for @section_story_identity.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🎭 劇情與你的身分'**
+  /// **'劇情與你的身分'**
   String get section_story_identity;
 
   /// No description provided for @story_identity_desc.
@@ -1997,7 +1991,7 @@ abstract class AppLocalizations {
   /// No description provided for @advanced_writing_tips_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'💡 進階寫作技巧：\n'**
+  /// **'進階寫作技巧：\n'**
   String get advanced_writing_tips_title;
 
   /// No description provided for @advanced_writing_tips_1.
@@ -2035,18 +2029,6 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'，妳怎麼這麼晚才來？」'**
   String get advanced_writing_tips_6;
-
-  /// No description provided for @player_identity_label.
-  ///
-  /// In zh_Hant, this message translates to:
-  /// **'玩家預設身分 (Player Identity) - 💡 選填'**
-  String get player_identity_label;
-
-  /// No description provided for @player_identity_hint.
-  ///
-  /// In zh_Hant, this message translates to:
-  /// **'【選填】若留空，AI 將會讀取你的「個人檔案」來互動。\n若填寫，則強制扮演特定身分（例如：綁定他的冷酷系統、或被背叛的妻子）。'**
-  String get player_identity_hint;
 
   /// No description provided for @background_label.
   ///
@@ -2093,7 +2075,7 @@ abstract class AppLocalizations {
   /// No description provided for @section_personality_evo.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🌟 個性與好感度演變'**
+  /// **'個性與好感度演變'**
   String get section_personality_evo;
 
   /// No description provided for @detailed_personality_label.
@@ -2165,7 +2147,7 @@ abstract class AppLocalizations {
   /// No description provided for @section_habits.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🗣️ 喜好與習慣'**
+  /// **'喜好與習慣'**
   String get section_habits;
 
   /// No description provided for @tone_hint_detail.
@@ -2183,7 +2165,7 @@ abstract class AppLocalizations {
   /// No description provided for @section_easter_eggs.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🎁 隱藏彩蛋與特殊劇情'**
+  /// **'隱藏彩蛋與特殊劇情'**
   String get section_easter_eggs;
 
   /// No description provided for @no_easter_eggs.
@@ -2231,13 +2213,13 @@ abstract class AppLocalizations {
   /// No description provided for @section_voice_gen.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🎙️他專屬聲線生成'**
+  /// **'🎙他專屬聲線生成'**
   String get section_voice_gen;
 
   /// No description provided for @voice_gen_desc.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'輸入提示詞，讓他有全世界獨一無二的專屬聲音！\n（💡 貼心提醒：生成後若不滿意，隨時都能重新訂製喔！）'**
+  /// **'輸入提示詞，讓他有全世界獨一無二的專屬聲音！\n（貼心提醒：生成後若不滿意，隨時都能重新訂製喔！）'**
   String get voice_gen_desc;
 
   /// No description provided for @voice_generating_status.
@@ -2249,7 +2231,7 @@ abstract class AppLocalizations {
   /// No description provided for @voice_select_prompt.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 幫你捏好了三種聲線，請挑選：'**
+  /// **'幫你捏好了三種聲線，請挑選：'**
   String get voice_select_prompt;
 
   /// No description provided for @voice_sample_name.
@@ -2309,13 +2291,13 @@ abstract class AppLocalizations {
   /// No description provided for @voice_advanced_tuning.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🎛️ 進階：微調說話情緒 '**
+  /// **'進階：微調說話情緒 '**
   String get voice_advanced_tuning;
 
   /// No description provided for @voice_stability_low.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'野性/氣音 🐺'**
+  /// **'野性/氣音'**
   String get voice_stability_low;
 
   /// No description provided for @voice_stability_value.
@@ -2327,13 +2309,13 @@ abstract class AppLocalizations {
   /// No description provided for @voice_stability_high.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'平穩/冷靜 🤖'**
+  /// **'平穩/冷靜'**
   String get voice_stability_high;
 
   /// No description provided for @voice_style_low.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'冷淡/壓抑 🧊'**
+  /// **'冷淡/壓抑'**
   String get voice_style_low;
 
   /// No description provided for @voice_style_value.
@@ -2345,7 +2327,7 @@ abstract class AppLocalizations {
   /// No description provided for @voice_style_high.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'浮誇/深情 🔥'**
+  /// **'浮誇/深情'**
   String get voice_style_high;
 
   /// No description provided for @voice_test_btn_testing.
@@ -2363,7 +2345,7 @@ abstract class AppLocalizations {
   /// No description provided for @section_social_circle.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'👥 他的社交圈'**
+  /// **'他的社交圈'**
   String get section_social_circle;
 
   /// No description provided for @social_circle_desc.
@@ -2393,7 +2375,7 @@ abstract class AppLocalizations {
   /// No description provided for @social_edit_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'編輯對 {name} 的看法 💬'**
+  /// **'編輯對 {name} 的看法 '**
   String social_edit_title(String name);
 
   /// No description provided for @social_attitude_label.
@@ -2417,7 +2399,7 @@ abstract class AppLocalizations {
   /// No description provided for @social_add_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'新增角色關係 🤝'**
+  /// **'新增角色關係 '**
   String get social_add_title;
 
   /// No description provided for @social_select_target.
@@ -2447,7 +2429,7 @@ abstract class AppLocalizations {
   /// No description provided for @gallery_load_failed.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'圖片載入失敗 🥲\n請確認網路正常，如果是 Web 請查看 console。'**
+  /// **'圖片載入失敗 \n請確認網路正常。'**
   String get gallery_load_failed;
 
   /// No description provided for @gallery_affection_req.
@@ -2597,19 +2579,19 @@ abstract class AppLocalizations {
   /// No description provided for @like_own_char_warning.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'不能按自己創造的角色讚喔！🤭'**
+  /// **'不能按自己創造的角色讚喔！'**
   String get like_own_char_warning;
 
   /// No description provided for @like_success_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已送出喜歡！創作者會很開心的💖'**
+  /// **'已送出喜歡！創作者會很開心的'**
   String get like_success_msg;
 
   /// No description provided for @unlike_success_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'已收回喜歡 💔'**
+  /// **'已收回喜歡'**
   String get unlike_success_msg;
 
   /// No description provided for @like_label.
@@ -2669,7 +2651,7 @@ abstract class AppLocalizations {
   /// No description provided for @report_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'📢 檢舉留言'**
+  /// **'檢舉留言'**
   String get report_title;
 
   /// No description provided for @report_subtitle.
@@ -2717,7 +2699,7 @@ abstract class AppLocalizations {
   /// No description provided for @report_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'檢舉成功，已收到通知！將會盡快審核內容 🛡️'**
+  /// **'檢舉成功，已收到通知！將會盡快審核內容 '**
   String get report_success;
 
   /// No description provided for @report_failed.
@@ -2729,7 +2711,7 @@ abstract class AppLocalizations {
   /// No description provided for @lore_delete_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'⚠️ 警告：消除記憶'**
+  /// **'警告：消除記憶'**
   String get lore_delete_title;
 
   /// No description provided for @lore_delete_content.
@@ -2753,19 +2735,19 @@ abstract class AppLocalizations {
   /// No description provided for @lore_delete_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🗑️ 記憶碎片已徹底消除。'**
+  /// **'記憶碎片已徹底消除。'**
   String get lore_delete_success;
 
   /// No description provided for @lore_add_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'撰寫新記憶 🖋️'**
+  /// **'撰寫新記憶 '**
   String get lore_add_title;
 
   /// No description provided for @lore_edit_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'編輯記憶碎片 🖋️'**
+  /// **'編輯記憶碎片'**
   String get lore_edit_title;
 
   /// No description provided for @lore_title_label.
@@ -2807,7 +2789,7 @@ abstract class AppLocalizations {
   /// No description provided for @lore_lock_label.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🔒 封印這段記憶'**
+  /// **'封印這段記憶'**
   String get lore_lock_label;
 
   /// No description provided for @lore_lock_desc.
@@ -2825,7 +2807,7 @@ abstract class AppLocalizations {
   /// No description provided for @lore_add_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ 新記憶已成功封存！'**
+  /// **'新記憶已成功封存！'**
   String get lore_add_success;
 
   /// No description provided for @lore_publish.
@@ -2855,7 +2837,7 @@ abstract class AppLocalizations {
   /// No description provided for @lore_sealed_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🔒 這段記憶已被封印，目前無法查看。'**
+  /// **'這段記憶已被封印，目前無法查看。'**
   String get lore_sealed_msg;
 
   /// No description provided for @lore_not_open_msg.
@@ -2885,7 +2867,7 @@ abstract class AppLocalizations {
   /// No description provided for @echo_delete_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'🗑️ 刪除留言'**
+  /// **'刪除留言'**
   String get echo_delete_title;
 
   /// No description provided for @echo_delete_content.
@@ -2903,13 +2885,13 @@ abstract class AppLocalizations {
   /// No description provided for @echo_clear_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'時空迴音已清除 🧹'**
+  /// **'時空迴音已清除'**
   String get echo_clear_success;
 
   /// No description provided for @echo_energy_full_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'⚠️ 宇宙能量已達上限'**
+  /// **'宇宙能量已達上限'**
   String get echo_energy_full_title;
 
   /// No description provided for @echo_energy_full_content.
@@ -2921,7 +2903,7 @@ abstract class AppLocalizations {
   /// No description provided for @echo_write_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'留下妳的時空迴音 🌌'**
+  /// **'留下妳的時空迴音'**
   String get echo_write_title;
 
   /// No description provided for @echo_write_subtitle.
@@ -3011,19 +2993,19 @@ abstract class AppLocalizations {
   /// No description provided for @follow_own_warning.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'創作者不能關注自己哦！🤭'**
+  /// **'創作者不能關注自己哦！'**
   String get follow_own_warning;
 
   /// No description provided for @follow_success_msg.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✨ {playerName} 關注了 {creatorName}！'**
+  /// **' {playerName} 關注了 {creatorName}！'**
   String follow_success_msg(String playerName, String creatorName);
 
   /// No description provided for @mailbox_follow_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'獲得新的守護者 🦋'**
+  /// **'獲得新的守護者 '**
   String get mailbox_follow_title;
 
   /// No description provided for @mailbox_follow_body.
@@ -3581,7 +3563,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_report_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'✅ 舉報已送出，我們會盡快調整'**
+  /// **'舉報已送出，我們會盡快調整'**
   String get chat_report_success;
 
   /// No description provided for @chat_suggest_title.
@@ -3599,7 +3581,7 @@ abstract class AppLocalizations {
   /// No description provided for @chat_suggest_success.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'💖 感謝您的建議，我們會盡快處理'**
+  /// **'感謝您的建議，我們會盡快處理'**
   String get chat_suggest_success;
 
   /// No description provided for @chat_del_warn.
@@ -4253,13 +4235,13 @@ abstract class AppLocalizations {
   /// No description provided for @comment_report_rules_title.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'⚖️ 留言檢舉規範'**
+  /// **'留言檢舉規範'**
   String get comment_report_rules_title;
 
   /// No description provided for @comment_report_rules_desc.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'1️⃣ 初犯：系統警告並記錄一次違規。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n🚨 嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n💡 檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。'**
+  /// **'初犯：系統警告並記錄一次違規。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n🚨 嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n💡 檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。'**
   String get comment_report_rules_desc;
 
   /// No description provided for @comment_report_understood.

@@ -718,7 +718,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get no_exclusive_voice => '這隻角色還沒有設定專屬聲音喔！';
 
   @override
-  String get voice_download_success => '✅ 語音數據下載成功，準備直接播放...';
+  String get voice_download_success => '語音數據下載成功，準備直接播放...';
 
   @override
   String get onboarding_invitation => '— 拾光邀請函 —';
@@ -975,10 +975,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get test_mode_tooltip => '完整功能測試 ';
 
   @override
-  String get test_mode_error => '⚠️ 找不到角色檔案！請先點擊最下方的「儲存/發布」後，再來試玩喔！';
-
-  @override
-  String get test_mode_notice => '💡 測試模式將依照各模式原價扣點，且不計入正式回憶喔！';
+  String get test_mode_notice => '測試模式將依照各模式原價扣點，且不計入正式回憶喔！';
 
   @override
   String get delete_character_tooltip => '刪除角色';
@@ -1005,13 +1002,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hint_appearance => '例如：銀色長髮，琥珀色眼睛，總是穿著白袍...';
 
   @override
-  String get section_story_identity => '🎭 劇情與你的身分';
+  String get section_story_identity => '劇情與你的身分';
 
   @override
   String get story_identity_desc => '定義故事開場與「你」在這個存檔裡的特殊設定';
 
   @override
-  String get advanced_writing_tips_title => '💡 進階寫作技巧：\n';
+  String get advanced_writing_tips_title => '進階寫作技巧：\n';
 
   @override
   String get advanced_writing_tips_1 => '在故事或台詞中輸入 ';
@@ -1030,13 +1027,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get advanced_writing_tips_6 => '，妳怎麼這麼晚才來？」';
-
-  @override
-  String get player_identity_label => '玩家預設身分 (Player Identity) - 💡 選填';
-
-  @override
-  String get player_identity_hint =>
-      '【選填】若留空，AI 將會讀取你的「個人檔案」來互動。\n若填寫，則強制扮演特定身分（例如：綁定他的冷酷系統、或被背叛的妻子）。';
 
   @override
   String get background_label => '角色背景與世界觀 ';
@@ -1061,7 +1051,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get first_line_hint => '例如：(玩家名字)，妳終於來了。';
 
   @override
-  String get section_personality_evo => '🌟 個性與好感度演變';
+  String get section_personality_evo => '個性與好感度演變';
 
   @override
   String get detailed_personality_label => '詳細個性 ';
@@ -1097,7 +1087,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get social_interaction_hint => '例如:如何對待路人？遇到討厭的東西(雷點)會怎麼炸毛？';
 
   @override
-  String get section_habits => '🗣️ 喜好與習慣';
+  String get section_habits => '喜好與習慣';
 
   @override
   String get tone_hint_detail => '必填。例如：說話簡短，喜歡反問。口頭禪是「笨蛋」。禁止使用翻譯腔。';
@@ -1106,7 +1096,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dialogue_example_hint => '玩家：我好累。\n角色：(摸頭) 乖，快去休息。';
 
   @override
-  String get section_easter_eggs => '🎁 隱藏彩蛋與特殊劇情';
+  String get section_easter_eggs => '隱藏彩蛋與特殊劇情';
 
   @override
   String get no_easter_eggs => '尚未設定彩蛋，點擊下方按鈕新增';
@@ -1130,17 +1120,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get visibility_private => '私人';
 
   @override
-  String get section_voice_gen => '🎙️他專屬聲線生成';
+  String get section_voice_gen => '他專屬聲線生成';
 
   @override
   String get voice_gen_desc =>
-      '輸入提示詞，讓他有全世界獨一無二的專屬聲音！\n（💡 貼心提醒：生成後若不滿意，隨時都能重新訂製喔！）';
+      '輸入提示詞，讓他有全世界獨一無二的專屬聲音！\n（貼心提醒：生成後若不滿意，隨時都能重新訂製喔！）';
 
   @override
   String get voice_generating_status => '正在調配聲線中...';
 
   @override
-  String get voice_select_prompt => '✨ 幫你捏好了三種聲線，請挑選：';
+  String get voice_select_prompt => '幫你捏好了三種聲線，請挑選：';
 
   @override
   String voice_sample_name(int index) {
@@ -1172,10 +1162,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get voice_btn_generate => '輸入提示詞，生成專屬聲音';
 
   @override
-  String get voice_advanced_tuning => '🎛️ 進階：微調說話情緒 ';
+  String get voice_advanced_tuning => '進階：微調說話情緒 ';
 
   @override
-  String get voice_stability_low => '野性/氣音 🐺';
+  String get voice_stability_low => '野性/氣音';
 
   @override
   String voice_stability_value(String value) {
@@ -1183,10 +1173,10 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get voice_stability_high => '平穩/冷靜 🤖';
+  String get voice_stability_high => '平穩/冷靜';
 
   @override
-  String get voice_style_low => '冷淡/壓抑 🧊';
+  String get voice_style_low => '冷淡/壓抑';
 
   @override
   String voice_style_value(String value) {
@@ -1194,7 +1184,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get voice_style_high => '浮誇/深情 🔥';
+  String get voice_style_high => '浮誇/深情';
 
   @override
   String get voice_test_btn_testing => '正在套用情緒...';
@@ -1203,7 +1193,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get voice_test_btn => '試聽目前情緒';
 
   @override
-  String get section_social_circle => '👥 他的社交圈';
+  String get section_social_circle => '他的社交圈';
 
   @override
   String get social_circle_desc =>
@@ -1224,7 +1214,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String social_edit_title(String name) {
-    return '編輯對 $name 的看法 💬';
+    return '編輯對 $name 的看法';
   }
 
   @override
@@ -1237,7 +1227,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get social_save_changes => '儲存修改';
 
   @override
-  String get social_add_title => '新增角色關係 🤝';
+  String get social_add_title => '新增角色關係';
 
   @override
   String get social_select_target => '選擇對象';
@@ -1252,7 +1242,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get social_add_confirm => '確認新增';
 
   @override
-  String get gallery_load_failed => '圖片載入失敗 🥲\n請確認網路正常，如果是 Web 請查看 console。';
+  String get gallery_load_failed => '圖片載入失敗 \n請確認網路正常。';
 
   @override
   String gallery_affection_req(int level) {
@@ -1334,13 +1324,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get like_own_char_warning => '不能按自己創造的角色讚喔！🤭';
+  String get like_own_char_warning => '不能按自己創造的角色讚喔！';
 
   @override
-  String get like_success_msg => '已送出喜歡！創作者會很開心的💖';
+  String get like_success_msg => '已送出喜歡！創作者會很開心的';
 
   @override
-  String get unlike_success_msg => '已收回喜歡 💔';
+  String get unlike_success_msg => '已收回喜歡';
 
   @override
   String get like_label => '喜歡';
@@ -1370,7 +1360,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dislike_submit => '悄悄送出';
 
   @override
-  String get report_title => '📢 檢舉留言';
+  String get report_title => '檢舉留言';
 
   @override
   String get report_subtitle => '請選擇檢舉原因：\n檢舉後我們將會盡快審核內容。';
@@ -1394,13 +1384,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get report_confirm => '確定檢舉';
 
   @override
-  String get report_success => '檢舉成功，已收到通知！將會盡快審核內容 🛡️';
+  String get report_success => '檢舉成功，已收到通知！將會盡快審核內容 ';
 
   @override
   String get report_failed => '檢舉失敗，請檢查網路連線。';
 
   @override
-  String get lore_delete_title => '⚠️ 警告：消除記憶';
+  String get lore_delete_title => '警告：消除記憶';
 
   @override
   String get lore_delete_content => '這段記憶一旦刪除就徹底消失囉，確定要狠心抹除它嗎？';
@@ -1412,13 +1402,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lore_delete_confirm => '確定抹除';
 
   @override
-  String get lore_delete_success => '🗑️ 記憶碎片已徹底消除。';
+  String get lore_delete_success => '記憶碎片已徹底消除。';
 
   @override
-  String get lore_add_title => '撰寫新記憶 🖋️';
+  String get lore_add_title => '撰寫新記憶 ';
 
   @override
-  String get lore_edit_title => '編輯記憶碎片 🖋️';
+  String get lore_edit_title => '編輯記憶碎片 ';
 
   @override
   String get lore_title_label => '記憶標題';
@@ -1439,7 +1429,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lore_content_hint => '寫下這段詳細的故事或設定...';
 
   @override
-  String get lore_lock_label => '🔒 封印這段記憶';
+  String get lore_lock_label => '封印這段記憶';
 
   @override
   String get lore_lock_desc => '打勾後，只有創作者自己看得到，玩家無法觀看';
@@ -1448,7 +1438,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lore_empty_error => '標題和內容不能是空的喔！';
 
   @override
-  String get lore_add_success => '✨ 新記憶已成功封存！';
+  String get lore_add_success => '新記憶已成功封存！';
 
   @override
   String get lore_publish => '發布記憶';
@@ -1467,7 +1457,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get lore_sealed_msg => '🔒 這段記憶已被封印，目前無法查看。';
+  String get lore_sealed_msg => '這段記憶已被封印，目前無法查看。';
 
   @override
   String get lore_not_open_msg => '這段記憶尚未對外開放喔...';
@@ -1482,7 +1472,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lore_collapse => '收起信件';
 
   @override
-  String get echo_delete_title => '🗑️ 刪除留言';
+  String get echo_delete_title => '刪除留言';
 
   @override
   String get echo_delete_content => '確定要刪除這則時空迴音嗎？\n刪除後就再也找不回來囉！';
@@ -1491,17 +1481,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get echo_keep => '保留';
 
   @override
-  String get echo_clear_success => '時空迴音已清除 🧹';
+  String get echo_clear_success => '時空迴音已清除';
 
   @override
-  String get echo_energy_full_title => '⚠️ 宇宙能量已達上限';
+  String get echo_energy_full_title => '宇宙能量已達上限';
 
   @override
   String get echo_energy_full_content =>
       '妳的時空能量已達上限 (最多 3 則)，請先刪除妳舊的時空經歷，才能開啟新的宇宙紀錄喔！';
 
   @override
-  String get echo_write_title => '留下妳的時空迴音 🌌';
+  String get echo_write_title => '留下妳的時空迴音';
 
   @override
   String get echo_write_subtitle => '寫下妳在這裡的經歷或心動語錄吧！';
@@ -1546,15 +1536,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get followed_btn => '已關注';
 
   @override
-  String get follow_own_warning => '創作者不能關注自己哦！🤭';
+  String get follow_own_warning => '創作者不能關注自己哦!';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName 關注了 $creatorName！';
+    return '$playerName 關注了 $creatorName！';
   }
 
   @override
-  String get mailbox_follow_title => '獲得新的守護者 🦋';
+  String get mailbox_follow_title => '獲得新的守護者';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -1860,7 +1850,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_report_submit => '送出';
 
   @override
-  String get chat_report_success => '✅ 舉報已送出，我們會盡快調整';
+  String get chat_report_success => ' 舉報已送出，我們會盡快調整';
 
   @override
   String get chat_suggest_title => '給予建議';
@@ -1869,7 +1859,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chat_suggest_hint => '請寫下您的寶貴意見...';
 
   @override
-  String get chat_suggest_success => '💖 感謝您的建議，我們會盡快處理';
+  String get chat_suggest_success => '感謝您的建議，我們會盡快處理';
 
   @override
   String get chat_del_warn => '訊息刪除後將無法復原。';
@@ -2211,11 +2201,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get comment_report_title => '確認檢舉';
 
   @override
-  String get comment_report_rules_title => '⚖️ 留言檢舉規範';
+  String get comment_report_rules_title => '留言檢舉規範';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ 初犯：系統警告並記錄一次違規。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n🚨 嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n💡 檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。';
+      '1初犯：系統警告並記錄一次違規。\n二犯：禁止留言 1 天。\n累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n 檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。';
 
   @override
   String get comment_report_understood => '我已了解';
@@ -6730,7 +6720,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get no_exclusive_voice => '这只角色还没有设定专属声音哦！';
 
   @override
-  String get voice_download_success => '✅ 语音数据下载成功，准备直接播放...';
+  String get voice_download_success => '语音数据下载成功，准备直接播放...';
 
   @override
   String get onboarding_invitation => '— 拾光邀请函 —';
@@ -6987,10 +6977,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get test_mode_tooltip => '完整功能测试 ';
 
   @override
-  String get test_mode_error => '⚠️ 找不到角色档案！请先点击最下方的「储存/发布」后，再来试玩喔！';
-
-  @override
-  String get test_mode_notice => '💡 测试模式将依照各模式原价扣点，且不计入正式回忆喔！';
+  String get test_mode_notice => '测试模式将依照各模式原价扣点，且不计入正式回忆喔！';
 
   @override
   String get delete_character_tooltip => '删除角色';
@@ -7017,13 +7004,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get hint_appearance => '例如：银色长发，琥珀色眼睛，总是穿着白袍...';
 
   @override
-  String get section_story_identity => '🎭 剧情与你的身分';
+  String get section_story_identity => '剧情与你的身分';
 
   @override
   String get story_identity_desc => '定义故事开场与「你」在这个存档里的特殊设定';
 
   @override
-  String get advanced_writing_tips_title => '💡 进阶写作技巧：\n';
+  String get advanced_writing_tips_title => '进阶写作技巧：\n';
 
   @override
   String get advanced_writing_tips_1 => '在故事或台词中输入 ';
@@ -7042,13 +7029,6 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get advanced_writing_tips_6 => '，妳怎么这么晚才来？」';
-
-  @override
-  String get player_identity_label => '玩家预设身分 (Player Identity) - 💡 选填';
-
-  @override
-  String get player_identity_hint =>
-      '【选填】若留空，AI 将会读取你的「个人档案」来互动。\n若填写，则强制扮演特定身分（例如：绑定他的冷酷系统、或被背叛的妻子）。';
 
   @override
   String get background_label => '角色背景与世界观 ';
@@ -7073,7 +7053,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get first_line_hint => '例如：(玩家名字)，妳终于来了。';
 
   @override
-  String get section_personality_evo => '🌟 个性与好感度演变';
+  String get section_personality_evo => '个性与好感度演变';
 
   @override
   String get detailed_personality_label => '详细个性 ';
@@ -7109,7 +7089,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get social_interaction_hint => '例如:如何对待路人？遇到讨厌的东西(雷点)会怎么炸毛？';
 
   @override
-  String get section_habits => '🗣️ 喜好与习惯';
+  String get section_habits => '喜好与习惯';
 
   @override
   String get tone_hint_detail => '必填。例如：说话简短，喜欢反问。口头禅是「笨蛋」。禁止使用翻译腔。';
@@ -7118,7 +7098,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get dialogue_example_hint => '玩家：我好累。\n角色：(摸头) 乖，快去休息。';
 
   @override
-  String get section_easter_eggs => '🎁 隐藏彩蛋与特殊剧情';
+  String get section_easter_eggs => '隐藏彩蛋与特殊剧情';
 
   @override
   String get no_easter_eggs => '尚未设定彩蛋，点击下方按钮新增';
@@ -7142,17 +7122,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get visibility_private => '私人';
 
   @override
-  String get section_voice_gen => '🎙️他专属声线生成';
+  String get section_voice_gen => '他专属声线生成';
 
   @override
   String get voice_gen_desc =>
-      '输入提示词，让他有全世界独一无二的专属声音！\n（💡 贴心提醒：生成后若不满意，随时都能重新订制喔！）';
+      '输入提示词，让他有全世界独一无二的专属声音！\n（ 贴心提醒：生成后若不满意，随时都能重新订制喔！）';
 
   @override
   String get voice_generating_status => '正在调配声线中...';
 
   @override
-  String get voice_select_prompt => '✨ 帮你捏好了三种声线，请挑选：';
+  String get voice_select_prompt => '帮你捏好了三种声线，请挑选：';
 
   @override
   String voice_sample_name(int index) {
@@ -7184,10 +7164,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get voice_btn_generate => '输入提示词，生成专属声音';
 
   @override
-  String get voice_advanced_tuning => '🎛️ 进阶：微调说话情绪 ';
+  String get voice_advanced_tuning => '进阶：微调说话情绪 ';
 
   @override
-  String get voice_stability_low => '野性/气音 🐺';
+  String get voice_stability_low => '野性/气音';
 
   @override
   String voice_stability_value(String value) {
@@ -7195,10 +7175,10 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get voice_stability_high => '平稳/冷静 🤖';
+  String get voice_stability_high => '平稳/冷静';
 
   @override
-  String get voice_style_low => '冷淡/压抑 🧊';
+  String get voice_style_low => '冷淡/压抑';
 
   @override
   String voice_style_value(String value) {
@@ -7206,7 +7186,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get voice_style_high => '浮夸/深情 🔥';
+  String get voice_style_high => '浮夸/深情';
 
   @override
   String get voice_test_btn_testing => '正在套用情绪...';
@@ -7215,7 +7195,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get voice_test_btn => '试听目前情绪';
 
   @override
-  String get section_social_circle => '👥 他的社交圈';
+  String get section_social_circle => '他的社交圈';
 
   @override
   String get social_circle_desc =>
@@ -7236,7 +7216,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String social_edit_title(String name) {
-    return '编辑对 $name 的看法 💬';
+    return '编辑对 $name 的看法';
   }
 
   @override
@@ -7249,7 +7229,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get social_save_changes => '储存修改';
 
   @override
-  String get social_add_title => '新增角色关系 🤝';
+  String get social_add_title => '新增角色关系';
 
   @override
   String get social_select_target => '选择对象';
@@ -7264,7 +7244,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get social_add_confirm => '确认新增';
 
   @override
-  String get gallery_load_failed => '图片载入失败 🥲\n请确认网络正常，如果是 Web 请查看 console。';
+  String get gallery_load_failed => '图片载入失败\n请确认网络正常。';
 
   @override
   String gallery_affection_req(int level) {
@@ -7346,13 +7326,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get like_own_char_warning => '不能给自创的角色点赞哦！🤭';
+  String get like_own_char_warning => '不能给自创的角色点赞哦！';
 
   @override
-  String get like_success_msg => '已送出喜欢！创作者会很开心的💖';
+  String get like_success_msg => '已送出喜欢！创作者会很开心的';
 
   @override
-  String get unlike_success_msg => '已收回喜欢 💔';
+  String get unlike_success_msg => '已收回喜欢';
 
   @override
   String get like_label => '喜欢';
@@ -7382,7 +7362,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get dislike_submit => '悄悄送出';
 
   @override
-  String get report_title => '📢 检举留言';
+  String get report_title => '检举留言';
 
   @override
   String get report_subtitle => '请选择检举原因：\n检举后我们将尽快审核内容。';
@@ -7406,13 +7386,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get report_confirm => '确定检举';
 
   @override
-  String get report_success => '检举成功，已收到通知！将尽快审核内容 🛡️';
+  String get report_success => '检举成功，已收到通知！将尽快审核内容 🛡';
 
   @override
   String get report_failed => '检举失败，请检查网络连接。';
 
   @override
-  String get lore_delete_title => '⚠️ 警告：消除记忆';
+  String get lore_delete_title => '警告：消除记忆';
 
   @override
   String get lore_delete_content => '这段记忆一旦删除就彻底消失啰，确定要狠心抹除它吗？';
@@ -7424,13 +7404,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get lore_delete_confirm => '确定抹除';
 
   @override
-  String get lore_delete_success => '🗑️ 记忆碎片已彻底消除。';
+  String get lore_delete_success => '记忆碎片已彻底消除。';
 
   @override
-  String get lore_add_title => '撰写新记忆 🖋️';
+  String get lore_add_title => '撰写新记忆 ️';
 
   @override
-  String get lore_edit_title => '编辑记忆碎片 🖋️';
+  String get lore_edit_title => '编辑记忆碎片';
 
   @override
   String get lore_title_label => '记忆标题';
@@ -7451,7 +7431,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get lore_content_hint => '写下这段详细的故事或设定...';
 
   @override
-  String get lore_lock_label => '🔒 封印这段记忆';
+  String get lore_lock_label => ' 封印这段记忆';
 
   @override
   String get lore_lock_desc => '勾选后，只有创作者自己看得到，玩家无法观看';
@@ -7460,7 +7440,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get lore_empty_error => '标题和内容不能是空的喔！';
 
   @override
-  String get lore_add_success => '✨ 新记忆已成功封存！';
+  String get lore_add_success => '新记忆已成功封存！';
 
   @override
   String get lore_publish => '发布记忆';
@@ -7479,7 +7459,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get lore_sealed_msg => '🔒 这段记忆已被封印，目前无法查看。';
+  String get lore_sealed_msg => '这段记忆已被封印，目前无法查看。';
 
   @override
   String get lore_not_open_msg => '这段记忆尚未对外开放喔...';
@@ -7494,7 +7474,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get lore_collapse => '收起信件';
 
   @override
-  String get echo_delete_title => '🗑️ 删除留言';
+  String get echo_delete_title => '删除留言';
 
   @override
   String get echo_delete_content => '确定要删除这条时空回音吗？\n删除后就再也找不回来啰！';
@@ -7503,17 +7483,17 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get echo_keep => '保留';
 
   @override
-  String get echo_clear_success => '时空回音已清除 🧹';
+  String get echo_clear_success => '时空回音已清除';
 
   @override
-  String get echo_energy_full_title => '⚠️ 宇宙能量已达上限';
+  String get echo_energy_full_title => '宇宙能量已达上限';
 
   @override
   String get echo_energy_full_content =>
       '妳的时空能量已达上限 (最多 3 条)，请先删除妳旧的时空经历，才能开启新的宇宙记录喔！';
 
   @override
-  String get echo_write_title => '留下妳的时空回音 🌌';
+  String get echo_write_title => '留下妳的时空回音';
 
   @override
   String get echo_write_subtitle => '写下妳在这里的经历或心动语录吧！';
@@ -7558,15 +7538,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get followed_btn => '已关注';
 
   @override
-  String get follow_own_warning => '创作者不能关注自己哦！🤭';
+  String get follow_own_warning => '创作者不能关注自己哦！';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName 关注了 $creatorName！';
+    return '$playerName 关注了 $creatorName！';
   }
 
   @override
-  String get mailbox_follow_title => '获得新的守护者 🦋';
+  String get mailbox_follow_title => '获得新的守护者';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -7872,7 +7852,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_report_submit => '送出';
 
   @override
-  String get chat_report_success => '✅ 举报已送出，我们会尽快调整';
+  String get chat_report_success => ' 举报已送出，我们会尽快调整';
 
   @override
   String get chat_suggest_title => '给予建议';
@@ -7881,7 +7861,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get chat_suggest_hint => '请写下您的宝贵意见...';
 
   @override
-  String get chat_suggest_success => '💖 感谢您的建议，我们会尽快处理';
+  String get chat_suggest_success => '感谢您的建议，我们会尽快处理';
 
   @override
   String get chat_del_warn => '讯息删除后将无法复原。';
@@ -8223,11 +8203,11 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get comment_report_title => '确认检举';
 
   @override
-  String get comment_report_rules_title => '⚖️ 留言检举规范';
+  String get comment_report_rules_title => '留言检举规范';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ 初犯：系统警告并记录一次违规。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用检舉功能 14 天，并降低留言能见度。\n\n🚨 严重恶意者：\n禁止与角色互动 1 天，ID 将公告于公布栏 3 天（期间禁止更改 ID）。\n\n💡 检举送出后，最终审核结果将通过【游戏内信箱】单独发送给您。\n请互相尊重，理性检举。';
+      '初犯：系统警告并记录一次违规。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用检舉功能 14 天，并降低留言能见度。\n\n🚨 严重恶意者：\n禁止与角色互动 1 天，ID 将公告于公布栏 3 天（期间禁止更改 ID）。\n\n💡 检举送出后，最终审核结果将通过【游戏内信箱】单独发送给您。\n请互相尊重，理性检举。';
 
   @override
   String get comment_report_understood => '我已了解';
@@ -12742,7 +12722,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get no_exclusive_voice => '這隻角色還沒有設定專屬聲音喔！';
 
   @override
-  String get voice_download_success => '✅ 語音數據下載成功，準備直接播放...';
+  String get voice_download_success => '語音數據下載成功，準備直接播放...';
 
   @override
   String get onboarding_invitation => '— 拾光邀請函 —';
@@ -12999,10 +12979,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get test_mode_tooltip => '完整功能測試 ';
 
   @override
-  String get test_mode_error => '⚠️ 找不到角色檔案！請先點擊最下方的「儲存/發布」後，再來試玩喔！';
-
-  @override
-  String get test_mode_notice => '💡 測試模式將依照各模式原價扣點，且不計入正式回憶喔！';
+  String get test_mode_notice => '測試模式將依照各模式原價扣點，且不計入正式回憶喔！';
 
   @override
   String get delete_character_tooltip => '刪除角色';
@@ -13029,13 +13006,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get hint_appearance => '例如：銀色長髮，琥珀色眼睛，總是穿著白袍...';
 
   @override
-  String get section_story_identity => '🎭 劇情與你的身分';
+  String get section_story_identity => '劇情與你的身分';
 
   @override
   String get story_identity_desc => '定義故事開場與「你」在這個存檔裡的特殊設定';
 
   @override
-  String get advanced_writing_tips_title => '💡 進階寫作技巧：\n';
+  String get advanced_writing_tips_title => '進階寫作技巧：\n';
 
   @override
   String get advanced_writing_tips_1 => '在故事或台詞中輸入 ';
@@ -13054,13 +13031,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get advanced_writing_tips_6 => '，妳怎麼這麼晚才來？」';
-
-  @override
-  String get player_identity_label => '玩家預設身分 (Player Identity) - 💡 選填';
-
-  @override
-  String get player_identity_hint =>
-      '【選填】若留空，AI 將會讀取你的「個人檔案」來互動。\n若填寫，則強制扮演特定身分（例如：綁定他的冷酷系統、或被背叛的妻子）。';
 
   @override
   String get background_label => '角色背景與世界觀 ';
@@ -13085,7 +13055,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get first_line_hint => '例如：(玩家名字)，妳終於來了。';
 
   @override
-  String get section_personality_evo => '🌟 個性與好感度演變';
+  String get section_personality_evo => '個性與好感度演變';
 
   @override
   String get detailed_personality_label => '詳細個性 ';
@@ -13121,7 +13091,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get social_interaction_hint => '例如:如何對待路人？遇到討厭的東西(雷點)會怎麼炸毛？';
 
   @override
-  String get section_habits => '🗣️ 喜好與習慣';
+  String get section_habits => '喜好與習慣';
 
   @override
   String get tone_hint_detail => '必填。例如：說話簡短，喜歡反問。口頭禪是「笨蛋」。禁止使用翻譯腔。';
@@ -13130,7 +13100,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get dialogue_example_hint => '玩家：我好累。\n角色：(摸頭) 乖，快去休息。';
 
   @override
-  String get section_easter_eggs => '🎁 隱藏彩蛋與特殊劇情';
+  String get section_easter_eggs => '隱藏彩蛋與特殊劇情';
 
   @override
   String get no_easter_eggs => '尚未設定彩蛋，點擊下方按鈕新增';
@@ -13154,17 +13124,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get visibility_private => '私人';
 
   @override
-  String get section_voice_gen => '🎙️他專屬聲線生成';
+  String get section_voice_gen => '🎙他專屬聲線生成';
 
   @override
   String get voice_gen_desc =>
-      '輸入提示詞，讓他有全世界獨一無二的專屬聲音！\n（💡 貼心提醒：生成後若不滿意，隨時都能重新訂製喔！）';
+      '輸入提示詞，讓他有全世界獨一無二的專屬聲音！\n（貼心提醒：生成後若不滿意，隨時都能重新訂製喔！）';
 
   @override
   String get voice_generating_status => '正在調配聲線中...';
 
   @override
-  String get voice_select_prompt => '✨ 幫你捏好了三種聲線，請挑選：';
+  String get voice_select_prompt => '幫你捏好了三種聲線，請挑選：';
 
   @override
   String voice_sample_name(int index) {
@@ -13196,10 +13166,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get voice_btn_generate => '輸入提示詞，生成專屬聲音';
 
   @override
-  String get voice_advanced_tuning => '🎛️ 進階：微調說話情緒 ';
+  String get voice_advanced_tuning => '進階：微調說話情緒 ';
 
   @override
-  String get voice_stability_low => '野性/氣音 🐺';
+  String get voice_stability_low => '野性/氣音';
 
   @override
   String voice_stability_value(String value) {
@@ -13207,10 +13177,10 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get voice_stability_high => '平穩/冷靜 🤖';
+  String get voice_stability_high => '平穩/冷靜';
 
   @override
-  String get voice_style_low => '冷淡/壓抑 🧊';
+  String get voice_style_low => '冷淡/壓抑';
 
   @override
   String voice_style_value(String value) {
@@ -13218,7 +13188,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get voice_style_high => '浮誇/深情 🔥';
+  String get voice_style_high => '浮誇/深情';
 
   @override
   String get voice_test_btn_testing => '正在套用情緒...';
@@ -13227,7 +13197,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get voice_test_btn => '試聽目前情緒';
 
   @override
-  String get section_social_circle => '👥 他的社交圈';
+  String get section_social_circle => '他的社交圈';
 
   @override
   String get social_circle_desc =>
@@ -13248,7 +13218,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String social_edit_title(String name) {
-    return '編輯對 $name 的看法 💬';
+    return '編輯對 $name 的看法 ';
   }
 
   @override
@@ -13261,7 +13231,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get social_save_changes => '儲存修改';
 
   @override
-  String get social_add_title => '新增角色關係 🤝';
+  String get social_add_title => '新增角色關係 ';
 
   @override
   String get social_select_target => '選擇對象';
@@ -13276,7 +13246,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get social_add_confirm => '確認新增';
 
   @override
-  String get gallery_load_failed => '圖片載入失敗 🥲\n請確認網路正常，如果是 Web 請查看 console。';
+  String get gallery_load_failed => '圖片載入失敗 \n請確認網路正常。';
 
   @override
   String gallery_affection_req(int level) {
@@ -13358,13 +13328,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get like_own_char_warning => '不能按自己創造的角色讚喔！🤭';
+  String get like_own_char_warning => '不能按自己創造的角色讚喔！';
 
   @override
-  String get like_success_msg => '已送出喜歡！創作者會很開心的💖';
+  String get like_success_msg => '已送出喜歡！創作者會很開心的';
 
   @override
-  String get unlike_success_msg => '已收回喜歡 💔';
+  String get unlike_success_msg => '已收回喜歡';
 
   @override
   String get like_label => '喜歡';
@@ -13394,7 +13364,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get dislike_submit => '悄悄送出';
 
   @override
-  String get report_title => '📢 檢舉留言';
+  String get report_title => '檢舉留言';
 
   @override
   String get report_subtitle => '請選擇檢舉原因：\n檢舉後我們將會盡快審核內容。';
@@ -13418,13 +13388,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get report_confirm => '確定檢舉';
 
   @override
-  String get report_success => '檢舉成功，已收到通知！將會盡快審核內容 🛡️';
+  String get report_success => '檢舉成功，已收到通知！將會盡快審核內容 ';
 
   @override
   String get report_failed => '檢舉失敗，請檢查網路連線。';
 
   @override
-  String get lore_delete_title => '⚠️ 警告：消除記憶';
+  String get lore_delete_title => '警告：消除記憶';
 
   @override
   String get lore_delete_content => '這段記憶一旦刪除就徹底消失囉，確定要狠心抹除它嗎？';
@@ -13436,13 +13406,13 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get lore_delete_confirm => '確定抹除';
 
   @override
-  String get lore_delete_success => '🗑️ 記憶碎片已徹底消除。';
+  String get lore_delete_success => '記憶碎片已徹底消除。';
 
   @override
-  String get lore_add_title => '撰寫新記憶 🖋️';
+  String get lore_add_title => '撰寫新記憶 ';
 
   @override
-  String get lore_edit_title => '編輯記憶碎片 🖋️';
+  String get lore_edit_title => '編輯記憶碎片';
 
   @override
   String get lore_title_label => '記憶標題';
@@ -13463,7 +13433,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get lore_content_hint => '寫下這段詳細的故事或設定...';
 
   @override
-  String get lore_lock_label => '🔒 封印這段記憶';
+  String get lore_lock_label => '封印這段記憶';
 
   @override
   String get lore_lock_desc => '打勾後，只有創作者自己看得到，玩家無法觀看';
@@ -13472,7 +13442,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get lore_empty_error => '標題和內容不能是空的喔！';
 
   @override
-  String get lore_add_success => '✨ 新記憶已成功封存！';
+  String get lore_add_success => '新記憶已成功封存！';
 
   @override
   String get lore_publish => '發布記憶';
@@ -13491,7 +13461,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get lore_sealed_msg => '🔒 這段記憶已被封印，目前無法查看。';
+  String get lore_sealed_msg => '這段記憶已被封印，目前無法查看。';
 
   @override
   String get lore_not_open_msg => '這段記憶尚未對外開放喔...';
@@ -13506,7 +13476,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get lore_collapse => '收起信件';
 
   @override
-  String get echo_delete_title => '🗑️ 刪除留言';
+  String get echo_delete_title => '刪除留言';
 
   @override
   String get echo_delete_content => '確定要刪除這則時空迴音嗎？\n刪除後就再也找不回來囉！';
@@ -13515,17 +13485,17 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get echo_keep => '保留';
 
   @override
-  String get echo_clear_success => '時空迴音已清除 🧹';
+  String get echo_clear_success => '時空迴音已清除';
 
   @override
-  String get echo_energy_full_title => '⚠️ 宇宙能量已達上限';
+  String get echo_energy_full_title => '宇宙能量已達上限';
 
   @override
   String get echo_energy_full_content =>
       '妳的時空能量已達上限 (最多 3 則)，請先刪除妳舊的時空經歷，才能開啟新的宇宙紀錄喔！';
 
   @override
-  String get echo_write_title => '留下妳的時空迴音 🌌';
+  String get echo_write_title => '留下妳的時空迴音';
 
   @override
   String get echo_write_subtitle => '寫下妳在這裡的經歷或心動語錄吧！';
@@ -13570,15 +13540,15 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get followed_btn => '已關注';
 
   @override
-  String get follow_own_warning => '創作者不能關注自己哦！🤭';
+  String get follow_own_warning => '創作者不能關注自己哦！';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName 關注了 $creatorName！';
+    return ' $playerName 關注了 $creatorName！';
   }
 
   @override
-  String get mailbox_follow_title => '獲得新的守護者 🦋';
+  String get mailbox_follow_title => '獲得新的守護者 ';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -13884,7 +13854,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_report_submit => '送出';
 
   @override
-  String get chat_report_success => '✅ 舉報已送出，我們會盡快調整';
+  String get chat_report_success => '舉報已送出，我們會盡快調整';
 
   @override
   String get chat_suggest_title => '給予建議';
@@ -13893,7 +13863,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get chat_suggest_hint => '請寫下您的寶貴意見...';
 
   @override
-  String get chat_suggest_success => '💖 感謝您的建議，我們會盡快處理';
+  String get chat_suggest_success => '感謝您的建議，我們會盡快處理';
 
   @override
   String get chat_del_warn => '訊息刪除後將無法復原。';
@@ -14235,11 +14205,11 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get comment_report_title => '確認檢舉';
 
   @override
-  String get comment_report_rules_title => '⚖️ 留言檢舉規範';
+  String get comment_report_rules_title => '留言檢舉規範';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ 初犯：系統警告並記錄一次違規。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n🚨 嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n💡 檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。';
+      '初犯：系統警告並記錄一次違規。\n2️⃣ 二犯：禁止留言 1 天。\n3️⃣ 累犯：禁用檢舉功能 14 天，並降低留言能見度。\n\n🚨 嚴重惡意者：\n禁止與角色互動 1 天，ID 將公告於公佈欄 3 天（期間禁止更改 ID）。\n\n💡 檢舉送出後，最終審核結果將透過【遊戲內信箱】單獨發送給您。\n請互相尊重，理性檢舉。';
 
   @override
   String get comment_report_understood => '我已了解';

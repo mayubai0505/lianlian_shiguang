@@ -722,7 +722,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get no_exclusive_voice => '이 캐릭터는 아직 전용 음성이 설정되지 않았어요!';
 
   @override
-  String get voice_download_success => '✅ 음성 데이터 다운로드 성공, 재생을 준비합니다...';
+  String get voice_download_success => '음성 데이터 다운로드 성공, 재생을 준비합니다...';
 
   @override
   String get onboarding_invitation => '— 시간의 초대장 —';
@@ -986,12 +986,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get test_mode_tooltip => '전체 기능 테스트';
 
   @override
-  String get test_mode_error =>
-      '⚠️ 캐릭터 파일을 찾을 수 없습니다! 하단의 \'저장/게시\'를 먼저 클릭한 후 테스트해 주세요.';
-
-  @override
   String get test_mode_notice =>
-      '💡 테스트 모드는 각 모드의 원래 가격에 따라 포인트가 차감되며, 공식 추억에는 기록되지 않습니다!';
+      '테스트 모드는 각 모드의 원래 가격에 따라 포인트가 차감되며, 공식 추억에는 기록되지 않습니다!';
 
   @override
   String get delete_character_tooltip => '캐릭터 삭제';
@@ -1018,14 +1014,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hint_appearance => '예: 은색 긴 머리, 호박색 눈동자, 항상 가운을 입고 있음...';
 
   @override
-  String get section_story_identity => '🎭 스토리와 당신의 신분';
+  String get section_story_identity => '스토리와 당신의 신분';
 
   @override
   String get story_identity_desc =>
       '스토리 시작과 이 세이브 데이터에서의 \'당신\'에 대한 특수 설정을 정의합니다';
 
   @override
-  String get advanced_writing_tips_title => '💡 고급 작성 팁:\n';
+  String get advanced_writing_tips_title => '고급 작성 팁:\n';
 
   @override
   String get advanced_writing_tips_1 => '스토리나 대사에 ';
@@ -1045,13 +1041,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get advanced_writing_tips_6 => ', 왜 이렇게 늦게 왔어?\"';
-
-  @override
-  String get player_identity_label => '플레이어 기본 신분 (Player Identity) - 💡 선택 사항';
-
-  @override
-  String get player_identity_hint =>
-      '【선택 사항】비워두면 AI가 당신의 \'프로필\'을 읽고 소통합니다.\n입력하면 특정 신분을 강제로 연기하게 됩니다 (예: 그의 냉혈한 시스템, 혹은 배신당한 아내).';
 
   @override
   String get background_label => '캐릭터 배경 및 세계관';
@@ -1077,7 +1066,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get first_line_hint => '예: (플레이어 이름), 드디어 왔네.';
 
   @override
-  String get section_personality_evo => '🌟 성격과 호감도 변화';
+  String get section_personality_evo => '성격과 호감도 변화';
 
   @override
   String get detailed_personality_label => '상세 성격';
@@ -1116,7 +1105,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '예: 행인을 어떻게 대하는지? 싫어하는 것(지뢰)을 마주했을 때 어떻게 반응하는지?';
 
   @override
-  String get section_habits => '🗣️ 취향과 습관';
+  String get section_habits => '취향과 습관';
 
   @override
   String get tone_hint_detail =>
@@ -1127,7 +1116,7 @@ class AppLocalizationsKo extends AppLocalizations {
       '플레이어: 너무 힘들어.\n캐릭터: (머리를 쓰다듬으며) 착하지, 어서 가서 쉬어.';
 
   @override
-  String get section_easter_eggs => '🎁 숨겨진 이스터 에그와 특수 스토리';
+  String get section_easter_eggs => '숨겨진 이스터 에그와 특수 스토리';
 
   @override
   String get no_easter_eggs => '설정된 이스터 에그가 없습니다. 아래 버튼을 눌러 추가하세요';
@@ -1151,17 +1140,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get visibility_private => '비공개';
 
   @override
-  String get section_voice_gen => '🎙️ 그의 전용 보이스 생성';
+  String get section_voice_gen => '그의 전용 보이스 생성';
 
   @override
   String get voice_gen_desc =>
-      '제시어를 입력하여 세상에 단 하나뿐인 전용 보이스를 만들어 보세요!\n(💡 팁: 생성 후 마음에 들지 않으면 언제든 다시 제작할 수 있습니다!)';
+      '제시어를 입력하여 세상에 단 하나뿐인 전용 보이스를 만들어 보세요!\n(팁: 생성 후 마음에 들지 않으면 언제든 다시 제작할 수 있습니다!)';
 
   @override
   String get voice_generating_status => '보이스를 조합하는 중...';
 
   @override
-  String get voice_select_prompt => '✨ 세 가지 보이스를 준비했습니다. 선택해 주세요:';
+  String get voice_select_prompt => '세 가지 보이스를 준비했습니다. 선택해 주세요:';
 
   @override
   String voice_sample_name(int index) {
@@ -1193,10 +1182,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get voice_btn_generate => '제시어를 입력하여 전용 보이스 생성';
 
   @override
-  String get voice_advanced_tuning => '🎛️ 고급: 말하는 감정 미세 조정';
+  String get voice_advanced_tuning => '고급: 말하는 감정 미세 조정';
 
   @override
-  String get voice_stability_low => '와일드/숨소리 🐺';
+  String get voice_stability_low => '와일드/숨소리 ';
 
   @override
   String voice_stability_value(String value) {
@@ -1204,10 +1193,10 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get voice_stability_high => '안정/침착 🤖';
+  String get voice_stability_high => '안정/침착 ';
 
   @override
-  String get voice_style_low => '냉담/억제 🧊';
+  String get voice_style_low => '냉담/억제 ';
 
   @override
   String voice_style_value(String value) {
@@ -1215,7 +1204,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get voice_style_high => '과장/다정 🔥';
+  String get voice_style_high => '과장/다정';
 
   @override
   String get voice_test_btn_testing => '감정 적용 중...';
@@ -1224,7 +1213,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get voice_test_btn => '현재 감정 미리듣기';
 
   @override
-  String get section_social_circle => '👥 그의 인맥';
+  String get section_social_circle => '그의 인맥';
 
   @override
   String get social_circle_desc =>
@@ -1245,7 +1234,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String social_edit_title(String name) {
-    return '$name에 대한 생각 편집 💬';
+    return '$name에 대한 생각 편집';
   }
 
   @override
@@ -1258,7 +1247,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get social_save_changes => '변경 사항 저장';
 
   @override
-  String get social_add_title => '캐릭터 관계 추가 🤝';
+  String get social_add_title => '캐릭터 관계 추가';
 
   @override
   String get social_select_target => '대상 선택';
@@ -1273,8 +1262,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get social_add_confirm => '추가 확인';
 
   @override
-  String get gallery_load_failed =>
-      '이미지 로드 실패 🥲\n네트워크를 확인해 주세요. 웹 버전이라면 콘솔을 확인해 보세요.';
+  String get gallery_load_failed => '이미지 로드 실패 \n네트워크를 확인해 주세요.';
 
   @override
   String gallery_affection_req(int level) {
@@ -1357,13 +1345,13 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get like_own_char_warning => '자신이 만든 캐릭터에는 \'좋아요\'를 누를 수 없어요! 🤭';
+  String get like_own_char_warning => '자신이 만든 캐릭터에는 \'좋아요\'를 누를 수 없어요!';
 
   @override
-  String get like_success_msg => '좋아요를 보냈습니다! 제작자가 매우 기뻐할 거예요 💖';
+  String get like_success_msg => '좋아요를 보냈습니다! 제작자가 매우 기뻐할 거예요';
 
   @override
-  String get unlike_success_msg => '좋아요를 취소했습니다 💔';
+  String get unlike_success_msg => '좋아요를 취소했습니다';
 
   @override
   String get like_label => '좋아요';
@@ -1393,7 +1381,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get dislike_submit => '비밀리에 전송';
 
   @override
-  String get report_title => '📢 댓글 신고';
+  String get report_title => '댓글 신고';
 
   @override
   String get report_subtitle => '신고 이유를 선택해 주세요:\n신고 후 신속하게 내용을 검토하겠습니다.';
@@ -1417,13 +1405,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get report_confirm => '신고 확정';
 
   @override
-  String get report_success => '신고 성공, 알림을 수신했습니다! 신속하게 검토하겠습니다 🛡️';
+  String get report_success => '신고 성공, 알림을 수신했습니다! 신속하게 검토하겠습니다️';
 
   @override
   String get report_failed => '신고 실패, 네트워크 연결을 확인해 주세요.';
 
   @override
-  String get lore_delete_title => '⚠️ 경고: 기억 삭제';
+  String get lore_delete_title => '경고: 기억 삭제';
 
   @override
   String get lore_delete_content => '이 기억은 삭제하면 완전히 사라집니다. 정말로 지우시겠습니까?';
@@ -1435,13 +1423,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lore_delete_confirm => '삭제 확정';
 
   @override
-  String get lore_delete_success => '🗑️ 기억의 파편이 완전히 삭제되었습니다.';
+  String get lore_delete_success => '기억의 파편이 완전히 삭제되었습니다.';
 
   @override
-  String get lore_add_title => '새 기억 쓰기 🖋️';
+  String get lore_add_title => '새 기억 쓰기';
 
   @override
-  String get lore_edit_title => '기억의 파편 편집 🖋️';
+  String get lore_edit_title => '기억의 파편 편집';
 
   @override
   String get lore_title_label => '기억 제목';
@@ -1462,7 +1450,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lore_content_hint => '상세한 이야기나 설정을 적어주세요...';
 
   @override
-  String get lore_lock_label => '🔒 이 기억 봉인하기';
+  String get lore_lock_label => ' 이 기억 봉인하기';
 
   @override
   String get lore_lock_desc => '체크하면 제작자 본인만 볼 수 있으며, 플레이어는 볼 수 없습니다';
@@ -1471,7 +1459,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lore_empty_error => '제목과 내용은 비워둘 수 없어요!';
 
   @override
-  String get lore_add_success => '✨ 새 기억이 성공적으로 봉인되었습니다!';
+  String get lore_add_success => '새 기억이 성공적으로 봉인되었습니다!';
 
   @override
   String get lore_publish => '기억 게시';
@@ -1490,7 +1478,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get lore_sealed_msg => '🔒 이 기억은 봉인되어 현재 볼 수 없습니다.';
+  String get lore_sealed_msg => '이 기억은 봉인되어 현재 볼 수 없습니다.';
 
   @override
   String get lore_not_open_msg => '이 기억은 아직 공개되지 않았습니다...';
@@ -1505,7 +1493,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lore_collapse => '편지 접기';
 
   @override
-  String get echo_delete_title => '🗑️ 댓글 삭제';
+  String get echo_delete_title => '댓글 삭제';
 
   @override
   String get echo_delete_content =>
@@ -1515,17 +1503,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get echo_keep => '유지';
 
   @override
-  String get echo_clear_success => '시공의 메아리가 삭제되었습니다 🧹';
+  String get echo_clear_success => '시공의 메아리가 삭제되었습니다';
 
   @override
-  String get echo_energy_full_title => '⚠️ 우주 에너지가 한계에 도달함';
+  String get echo_energy_full_title => '우주 에너지가 한계에 도달함';
 
   @override
   String get echo_energy_full_content =>
       '시공 에너지가 한계(최대 3개)에 도달했습니다. 새로운 우주 기록을 남기려면 기존의 시공 기록을 삭제해 주세요!';
 
   @override
-  String get echo_write_title => '시공의 메아리 남기기 🌌';
+  String get echo_write_title => '시공의 메아리 남기기 ';
 
   @override
   String get echo_write_subtitle => '이곳에서의 경험이나 설레는 문구를 남겨보세요!';
@@ -1570,15 +1558,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get followed_btn => '팔로우 중';
 
   @override
-  String get follow_own_warning => '제작자 본인은 팔로우할 수 없어요! 🤭';
+  String get follow_own_warning => '제작자 본인은 팔로우할 수 없어요! ';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName 님이 $creatorName 님을 팔로우했습니다!';
+    return '$playerName 님이 $creatorName 님을 팔로우했습니다!';
   }
 
   @override
-  String get mailbox_follow_title => '새로운 수호자 획득 🦋';
+  String get mailbox_follow_title => '새로운 수호자 획득';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -1889,7 +1877,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chat_report_submit => '보내기';
 
   @override
-  String get chat_report_success => '✅ 신고가 접수되었습니다. 신속히 조정하겠습니다';
+  String get chat_report_success => '신고가 접수되었습니다. 신속히 조정하겠습니다';
 
   @override
   String get chat_suggest_title => '의견 보내기';
@@ -1898,7 +1886,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chat_suggest_hint => '소중한 의견을 남겨주세요...';
 
   @override
-  String get chat_suggest_success => '💖 제안 감사합니다. 신속히 처리하겠습니다';
+  String get chat_suggest_success => '제안 감사합니다. 신속히 처리하겠습니다';
 
   @override
   String get chat_del_warn => '메시지는 삭제 후 복구할 수 없습니다.';
@@ -2246,11 +2234,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get comment_report_title => '신고 확인';
 
   @override
-  String get comment_report_rules_title => '⚖️ 댓글 신고 규정';
+  String get comment_report_rules_title => '댓글 신고 규정';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ 첫 번째 위반: 시스템 경고 및 위반 1회 기록.\n2️⃣ 두 번째 위반: 1일간 댓글 작성 금지.\n3️⃣ 반복 위반: 14일간 신고 기능 제한 및 댓글 노출 우선순위 하락.\n\n🚨 심각한 악성 위반자:\n캐릭터와의 상호작용 1일간 금지 및 ID 3일간 게시판 공지 (해당 기간 ID 변경 불가).\n\n💡 신고 접수 후, 최종 심사 결과는 [게임 내 메일]을 통해 개별 발송됩니다.\n서로를 존중하며 이성적으로 신고해 주세요.';
+      '첫 번째 위반: 시스템 경고 및 위반 1회 기록.\n2️⃣ 두 번째 위반: 1일간 댓글 작성 금지.\n3️⃣ 반복 위반: 14일간 신고 기능 제한 및 댓글 노출 우선순위 하락.\n\n🚨 심각한 악성 위반자:\n캐릭터와의 상호작용 1일간 금지 및 ID 3일간 게시판 공지 (해당 기간 ID 변경 불가).\n\n💡 신고 접수 후, 최종 심사 결과는 [게임 내 메일]을 통해 개별 발송됩니다.\n서로를 존중하며 이성적으로 신고해 주세요.';
 
   @override
   String get comment_report_understood => '확인했습니다';

@@ -745,7 +745,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get voice_download_success =>
-      '✅ Data suara berhasil diunduh, bersiap untuk memutar...';
+      'Data suara berhasil diunduh, bersiap untuk memutar...';
 
   @override
   String get onboarding_invitation => '— Undangan Waktu —';
@@ -1020,12 +1020,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get test_mode_tooltip => 'Tes Fungsi Lengkap';
 
   @override
-  String get test_mode_error =>
-      '⚠️ File karakter tidak ditemukan! Silakan klik \"Simpan/Publikasikan\" di bagian bawah sebelum mencoba tes!';
-
-  @override
   String get test_mode_notice =>
-      '💡 Mode tes akan memotong poin sesuai harga asli setiap mode, dan tidak akan dihitung dalam ingatan resmi!';
+      'Mode tes akan memotong poin sesuai harga asli setiap mode, dan tidak akan dihitung dalam ingatan resmi!';
 
   @override
   String get delete_character_tooltip => 'Hapus Karakter';
@@ -1054,14 +1050,14 @@ class AppLocalizationsId extends AppLocalizations {
       'Contoh: Rambut perak panjang, mata amber, selalu memakai jas putih...';
 
   @override
-  String get section_story_identity => '🎭 Cerita dan Identitas Anda';
+  String get section_story_identity => 'Cerita dan Identitas Anda';
 
   @override
   String get story_identity_desc =>
       'Tentukan pembukaan cerita dan pengaturan khusus untuk \"Anda\" di simpanan ini';
 
   @override
-  String get advanced_writing_tips_title => '💡 Tips Menulis Lanjutan:\n';
+  String get advanced_writing_tips_title => 'Tips Menulis Lanjutan:\n';
 
   @override
   String get advanced_writing_tips_1 => 'Masukkan dalam cerita atau dialog ';
@@ -1081,14 +1077,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get advanced_writing_tips_6 => ', kenapa kamu baru datang sekarang?\"';
-
-  @override
-  String get player_identity_label =>
-      'Identitas Default Pemain (Player Identity) - 💡 Opsional';
-
-  @override
-  String get player_identity_hint =>
-      '【Opsional】Jika dikosongkan, AI akan membaca \"Profil\" Anda untuk berinteraksi.\nJika diisi, akan memaksa peran identitas tertentu (Contoh: sistemnya yang dingin, atau istri yang dikhianati).';
 
   @override
   String get background_label => 'Latar Belakang & Pandangan Dunia Karakter';
@@ -1115,7 +1103,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Contoh: (Nama Pemain), akhirnya kamu datang juga.';
 
   @override
-  String get section_personality_evo => '🌟 Evolusi Kepribadian & Afeksi';
+  String get section_personality_evo => 'Evolusi Kepribadian & Afeksi';
 
   @override
   String get detailed_personality_label => 'Kepribadian Detail';
@@ -1157,7 +1145,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Contoh: Bagaimana dia memperlakukan orang asing? Bagaimana reaksinya saat menghadapi hal yang dia benci?';
 
   @override
-  String get section_habits => '🗣️ Kesukaan & Kebiasaan';
+  String get section_habits => 'Kesukaan & Kebiasaan';
 
   @override
   String get tone_hint_detail =>
@@ -1168,7 +1156,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Pemain: Aku lelah sekali.\nKarakter: (Mengelus kepala) Anak pintar, cepat istirahat.';
 
   @override
-  String get section_easter_eggs => '🎁 Easter Egg & Cerita Spesial';
+  String get section_easter_eggs => 'Easter Egg & Cerita Spesial';
 
   @override
   String get no_easter_eggs =>
@@ -1193,18 +1181,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get visibility_private => 'Pribadi';
 
   @override
-  String get section_voice_gen => '🎙️ Pembuatan Suara Eksklusif';
+  String get section_voice_gen => 'Pembuatan Suara Eksklusif';
 
   @override
   String get voice_gen_desc =>
-      'Masukkan kata perintah untuk memberinya suara yang unik di dunia!\n(💡 Tips: Jika tidak puas setelah dihasilkan, Anda dapat membuatnya ulang kapan saja!)';
+      'Masukkan kata perintah untuk memberinya suara yang unik di dunia!\n(Tips: Jika tidak puas setelah dihasilkan, Anda dapat membuatnya ulang kapan saja!)';
 
   @override
   String get voice_generating_status => 'Sedang meramu suara...';
 
   @override
   String get voice_select_prompt =>
-      '✨ Telah disiapkan tiga jenis suara untukmu, silakan pilih:';
+      'Telah disiapkan tiga jenis suara untukmu, silakan pilih:';
 
   @override
   String voice_sample_name(int index) {
@@ -1239,10 +1227,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Masukkan kata perintah untuk menghasilkan suara';
 
   @override
-  String get voice_advanced_tuning => '🎛️ Lanjutan: Penyesuaian Emosi Bicara';
+  String get voice_advanced_tuning => 'Lanjutan: Penyesuaian Emosi Bicara';
 
   @override
-  String get voice_stability_low => 'Liar/Napas 🐺';
+  String get voice_stability_low => 'Liar/Napas';
 
   @override
   String voice_stability_value(String value) {
@@ -1250,10 +1238,10 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get voice_stability_high => 'Stabil/Tenang 🤖';
+  String get voice_stability_high => 'Stabil/Tenang';
 
   @override
-  String get voice_style_low => 'Dingin/Tertekan 🧊';
+  String get voice_style_low => 'Dingin/Tertekan';
 
   @override
   String voice_style_value(String value) {
@@ -1261,7 +1249,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get voice_style_high => 'Lebay/Penuh Perasaan 🔥';
+  String get voice_style_high => 'Lebay/Penuh Perasaan';
 
   @override
   String get voice_test_btn_testing => 'Menerapkan emosi...';
@@ -1270,7 +1258,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get voice_test_btn => 'Dengar emosi saat ini';
 
   @override
-  String get section_social_circle => '👥 Lingkaran Sosialnya';
+  String get section_social_circle => 'Lingkaran Sosialnya';
 
   @override
   String get social_circle_desc =>
@@ -1292,7 +1280,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String social_edit_title(String name) {
-    return 'Edit pandangan terhadap $name 💬';
+    return 'Edit pandangan terhadap $name';
   }
 
   @override
@@ -1306,7 +1294,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get social_save_changes => 'Simpan perubahan';
 
   @override
-  String get social_add_title => 'Tambah Hubungan Karakter 🤝';
+  String get social_add_title => 'Tambah Hubungan Karakter';
 
   @override
   String get social_select_target => 'Pilih target';
@@ -1323,7 +1311,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get gallery_load_failed =>
-      'Gagal memuat gambar 🥲\nPastikan jaringan normal, jika menggunakan Web silakan cek console.';
+      'Gagal memuat gambar \nPastikan jaringan normal.';
 
   @override
   String gallery_affection_req(int level) {
@@ -1408,14 +1396,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get like_own_char_warning =>
-      'Tidak bisa menyukai karakter buatan sendiri! 🤭';
+      'Tidak bisa menyukai karakter buatan sendiri!';
 
   @override
   String get like_success_msg =>
-      'Suka telah dikirim! Kreator akan sangat senang 💖';
+      'Suka telah dikirim! Kreator akan sangat senang';
 
   @override
-  String get unlike_success_msg => 'Batal menyukai 💔';
+  String get unlike_success_msg => 'Batal menyukai';
 
   @override
   String get like_label => 'Suka';
@@ -1447,7 +1435,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get dislike_submit => 'Kirim Rahasia';
 
   @override
-  String get report_title => '📢 Laporkan Komentar';
+  String get report_title => 'Laporkan Komentar';
 
   @override
   String get report_subtitle =>
@@ -1473,14 +1461,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get report_success =>
-      'Laporan berhasil, notifikasi telah diterima! Konten akan segera ditinjau 🛡️';
+      'Laporan berhasil, notifikasi telah diterima! Konten akan segera ditinjau ';
 
   @override
   String get report_failed =>
       'Laporan gagal, silakan periksa koneksi internet.';
 
   @override
-  String get lore_delete_title => '⚠️ Peringatan: Hapus Memori';
+  String get lore_delete_title => 'Peringatan: Hapus Memori';
 
   @override
   String get lore_delete_content =>
@@ -1493,14 +1481,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get lore_delete_confirm => 'Konfirmasi Hapus';
 
   @override
-  String get lore_delete_success =>
-      '🗑️ Fragmen memori telah dihapus sepenuhnya.';
+  String get lore_delete_success => 'Fragmen memori telah dihapus sepenuhnya.';
 
   @override
-  String get lore_add_title => 'Tulis Memori Baru 🖋️';
+  String get lore_add_title => 'Tulis Memori Baru ';
 
   @override
-  String get lore_edit_title => 'Edit Fragmen Memori 🖋️';
+  String get lore_edit_title => 'Edit Fragmen Memori ';
 
   @override
   String get lore_title_label => 'Judul Memori';
@@ -1522,7 +1509,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Tuliskan cerita detail atau pengaturan di sini...';
 
   @override
-  String get lore_lock_label => '🔒 Segel Memori Ini';
+  String get lore_lock_label => ' Segel Memori Ini';
 
   @override
   String get lore_lock_desc =>
@@ -1532,7 +1519,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get lore_empty_error => 'Judul dan isi tidak boleh kosong!';
 
   @override
-  String get lore_add_success => '✨ Memori baru telah berhasil disegel!';
+  String get lore_add_success => 'Memori baru telah berhasil disegel!';
 
   @override
   String get lore_publish => 'Publikasikan Memori';
@@ -1552,7 +1539,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get lore_sealed_msg =>
-      '🔒 Memori ini telah disegel, saat ini tidak dapat dilihat.';
+      'Memori ini telah disegel, saat ini tidak dapat dilihat.';
 
   @override
   String get lore_not_open_msg => 'Memori ini belum dibuka untuk umum...';
@@ -1567,7 +1554,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get lore_collapse => 'Tutup Surat';
 
   @override
-  String get echo_delete_title => '🗑️ Hapus Komentar';
+  String get echo_delete_title => 'Hapus Komentar';
 
   @override
   String get echo_delete_content =>
@@ -1577,17 +1564,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get echo_keep => 'Simpan';
 
   @override
-  String get echo_clear_success => 'Gema waktu telah dibersihkan 🧹';
+  String get echo_clear_success => 'Gema waktu telah dibersihkan';
 
   @override
-  String get echo_energy_full_title => '⚠️ Energi Alam Semesta Mencapai Batas';
+  String get echo_energy_full_title => 'Energi Alam Semesta Mencapai Batas';
 
   @override
   String get echo_energy_full_content =>
       'Energi waktu Anda telah mencapai batas (Maksimal 3), hapus pengalaman lama Anda untuk membuka catatan alam semesta yang baru!';
 
   @override
-  String get echo_write_title => 'Tinggalkan Gema Waktumu 🌌';
+  String get echo_write_title => 'Tinggalkan Gema Waktumu';
 
   @override
   String get echo_write_subtitle =>
@@ -1636,15 +1623,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get follow_own_warning =>
-      'Kreator tidak bisa mengikuti diri sendiri! 🤭';
+      'Kreator tidak bisa mengikuti diri sendiri! ';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ $playerName mengikuti $creatorName!';
+    return '$playerName mengikuti $creatorName!';
   }
 
   @override
-  String get mailbox_follow_title => 'Mendapatkan Penjaga Baru 🦋';
+  String get mailbox_follow_title => 'Mendapatkan Penjaga Baru';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -1972,7 +1959,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get chat_report_success =>
-      '✅ Laporan telah dikirim, kami akan segera melakukan penyesuaian';
+      ' Laporan telah dikirim, kami akan segera melakukan penyesuaian';
 
   @override
   String get chat_suggest_title => 'Beri saran';
@@ -1982,7 +1969,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get chat_suggest_success =>
-      '💖 Terima kasih atas sarannya, kami akan segera memprosesnya';
+      'Terima kasih atas sarannya, kami akan segera memprosesnya';
 
   @override
   String get chat_del_warn =>
@@ -2347,11 +2334,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get comment_report_title => 'Konfirmasi Laporan';
 
   @override
-  String get comment_report_rules_title => '⚖️ Aturan Pelaporan Komentar';
+  String get comment_report_rules_title => 'Aturan Pelaporan Komentar';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ Pelanggaran 1: Peringatan sistem dan satu catatan pelanggaran.\n2️⃣ Pelanggaran 2: Dilarang berkomentar selama 1 hari.\n3️⃣ Pelanggaran Berulang: Fitur laporan dinonaktifkan selama 14 hari dan visibilitas komentar dikurangi.\n\n🚨 Untuk tindakan jahat yang parah:\nInteraksi dengan karakter dilarang selama 1 hari, dan ID akan dipajang di papan pengumuman selama 3 hari (dilarang mengganti ID selama periode ini).\n\n💡 Setelah laporan dikirim, hasil tinjauan akhir akan dikirimkan melalui [Email dalam game].\nHarap saling menghormati dan melaporlah dengan bijak.';
+      'Pelanggaran 1: Peringatan sistem dan satu catatan pelanggaran.\n2️⃣ Pelanggaran 2: Dilarang berkomentar selama 1 hari.\n3️⃣ Pelanggaran Berulang: Fitur laporan dinonaktifkan selama 14 hari dan visibilitas komentar dikurangi.\n\n🚨 Untuk tindakan jahat yang parah:\nInteraksi dengan karakter dilarang selama 1 hari, dan ID akan dipajang di papan pengumuman selama 3 hari (dilarang mengganti ID selama periode ini).\n\n💡 Setelah laporan dikirim, hasil tinjauan akhir akan dikirimkan melalui [Email dalam game].\nHarap saling menghormati dan melaporlah dengan bijak.';
 
   @override
   String get comment_report_understood => 'Saya mengerti';

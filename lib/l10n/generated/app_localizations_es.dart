@@ -750,7 +750,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get voice_download_success =>
-      '✅ Datos de voz descargados con éxito, preparándose para reproducir...';
+      'Datos de voz descargados con éxito, preparándose para reproducir...';
 
   @override
   String get onboarding_invitation => '— Invitación del Tiempo —';
@@ -1026,12 +1026,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get test_mode_tooltip => 'Prueba de funciones completa';
 
   @override
-  String get test_mode_error =>
-      '⚠️ ¡No se encuentra el archivo del personaje! Haz clic en \"Guardar/Publicar\" al final antes de probarlo.';
-
-  @override
   String get test_mode_notice =>
-      '💡 El modo de prueba consumirá puntos según el precio original de cada modo y no contará para los recuerdos formales.';
+      'El modo de prueba consumirá puntos según el precio original de cada modo y no contará para los recuerdos formales.';
 
   @override
   String get delete_character_tooltip => 'Eliminar personaje';
@@ -1060,15 +1056,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ej.: Pelo largo plateado, ojos ambarinos, siempre lleva bata blanca...';
 
   @override
-  String get section_story_identity => '🎭 Trama y tu identidad';
+  String get section_story_identity => 'Trama y tu identidad';
 
   @override
   String get story_identity_desc =>
       'Define el inicio de la historia y tu configuración especial en este archivo';
 
   @override
-  String get advanced_writing_tips_title =>
-      '💡 Consejos de escritura avanzada:\n';
+  String get advanced_writing_tips_title => 'Consejos de escritura avanzada:\n';
 
   @override
   String get advanced_writing_tips_1 => 'En la historia o diálogos escribe ';
@@ -1088,14 +1083,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get advanced_writing_tips_6 => ', ¿por qué llegas tan tarde?\"';
-
-  @override
-  String get player_identity_label =>
-      'Identidad predeterminada del jugador (Player Identity) - 💡 Opcional';
-
-  @override
-  String get player_identity_hint =>
-      '【Opcional】Si se deja vacío, la IA leerá tu \"Perfil\" para interactuar.\nSi se rellena, forzará una identidad específica (ej.: su sistema frío, o una esposa traicionada).';
 
   @override
   String get background_label => 'Trasfondo y mundo del personaje';
@@ -1122,7 +1109,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ej.: (Nombre del jugador), por fin has llegado.';
 
   @override
-  String get section_personality_evo => '🌟 Evolución de personalidad y afecto';
+  String get section_personality_evo => 'Evolución de personalidad y afecto';
 
   @override
   String get detailed_personality_label => 'Personalidad detallada';
@@ -1164,7 +1151,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ej.: ¿Cómo trata a los extraños? ¿Cómo reacciona ante lo que detesta?';
 
   @override
-  String get section_habits => '🗣️ Gustos y hábitos';
+  String get section_habits => 'Gustos y hábitos';
 
   @override
   String get tone_hint_detail =>
@@ -1175,7 +1162,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Jugador: Estoy muy cansado.\nPersonaje: (Acaricia la cabeza) Sé bueno, ve a descansar pronto.';
 
   @override
-  String get section_easter_eggs => '🎁 Huevos de pascua y tramas especiales';
+  String get section_easter_eggs => 'Huevos de pascua y tramas especiales';
 
   @override
   String get no_easter_eggs =>
@@ -1200,18 +1187,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get visibility_private => 'Privado';
 
   @override
-  String get section_voice_gen => '🎙️ Generación de voz exclusiva';
+  String get section_voice_gen => 'Generación de voz exclusiva';
 
   @override
   String get voice_gen_desc =>
-      '¡Escribe palabras clave para que tenga una voz única en el mundo!\n(💡 Recordatorio: si no te gusta el resultado, ¡puedes personalizarla de nuevo cuando quieras!)';
+      '¡Escribe palabras clave para que tenga una voz única en el mundo!\n(Recordatorio: si no te gusta el resultado, ¡puedes personalizarla de nuevo cuando quieras!)';
 
   @override
   String get voice_generating_status => 'Ajustando la voz...';
 
   @override
   String get voice_select_prompt =>
-      '✨ He preparado tres tipos de voz, elige una:';
+      'He preparado tres tipos de voz, elige una:';
 
   @override
   String voice_sample_name(int index) {
@@ -1244,11 +1231,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get voice_btn_generate => 'Escribe palabras clave para generar voz';
 
   @override
-  String get voice_advanced_tuning =>
-      '🎛️ Avanzado: Ajustar emociones al hablar';
+  String get voice_advanced_tuning => 'Avanzado: Ajustar emociones al hablar';
 
   @override
-  String get voice_stability_low => 'Salvaje/Susurro 🐺';
+  String get voice_stability_low => 'Salvaje/Susurro ';
 
   @override
   String voice_stability_value(String value) {
@@ -1256,10 +1242,10 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get voice_stability_high => 'Estable/Calma 🤖';
+  String get voice_stability_high => 'Estable/Calma';
 
   @override
-  String get voice_style_low => 'Distante/Reprimido 🧊';
+  String get voice_style_low => 'Distante/Reprimido';
 
   @override
   String voice_style_value(String value) {
@@ -1267,7 +1253,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get voice_style_high => 'Exagerado/Apasionado 🔥';
+  String get voice_style_high => 'Exagerado/Apasionado';
 
   @override
   String get voice_test_btn_testing => 'Aplicando emoción...';
@@ -1276,7 +1262,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get voice_test_btn => 'Probar emoción actual';
 
   @override
-  String get section_social_circle => '👥 Su círculo social';
+  String get section_social_circle => 'Su círculo social';
 
   @override
   String get social_circle_desc =>
@@ -1298,7 +1284,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String social_edit_title(String name) {
-    return 'Editar opinión sobre $name 💬';
+    return 'Editar opinión sobre $name';
   }
 
   @override
@@ -1312,7 +1298,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get social_save_changes => 'Guardar cambios';
 
   @override
-  String get social_add_title => 'Añadir relación entre personajes 🤝';
+  String get social_add_title => 'Añadir relación entre personajes';
 
   @override
   String get social_select_target => 'Elegir objetivo';
@@ -1329,7 +1315,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get gallery_load_failed =>
-      'Error al cargar imágenes 🥲\nComprueba la red; si es Web, mira la consola.';
+      'Error al cargar imágenes \nComprueba la red.';
 
   @override
   String gallery_affection_req(int level) {
@@ -1413,14 +1399,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get like_own_char_warning =>
-      '¡No puedes darle me gusta a un personaje que tú mismo creaste! 🤭';
+      '¡No puedes darle me gusta a un personaje que tú mismo creaste!';
 
   @override
   String get like_success_msg =>
-      '¡Me gusta enviado! El creador se alegrará mucho 💖';
+      '¡Me gusta enviado! El creador se alegrará mucho';
 
   @override
-  String get unlike_success_msg => 'Me gusta retirado 💔';
+  String get unlike_success_msg => 'Me gusta retirado';
 
   @override
   String get like_label => 'Me gusta';
@@ -1452,7 +1438,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get dislike_submit => 'Enviar en secreto';
 
   @override
-  String get report_title => '📢 Reportar comentario';
+  String get report_title => ' Reportar comentario';
 
   @override
   String get report_subtitle =>
@@ -1478,14 +1464,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get report_success =>
-      '¡Reportado con éxito, notificación recibida! Revisaremos el contenido pronto 🛡️';
+      '¡Reportado con éxito, notificación recibida! Revisaremos el contenido pronto️';
 
   @override
   String get report_failed =>
       'Error al reportar, por favor comprueba tu conexión.';
 
   @override
-  String get lore_delete_title => '⚠️ Advertencia: Borrar memoria';
+  String get lore_delete_title => 'Advertencia: Borrar memoria';
 
   @override
   String get lore_delete_content =>
@@ -1499,13 +1485,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get lore_delete_success =>
-      '🗑️ Fragmento de memoria borrado por completo.';
+      'Fragmento de memoria borrado por completo.';
 
   @override
-  String get lore_add_title => 'Escribir nueva memoria 🖋️';
+  String get lore_add_title => 'Escribir nueva memoria';
 
   @override
-  String get lore_edit_title => 'Editar fragmento de memoria 🖋️';
+  String get lore_edit_title => 'Editar fragmento de memoria ';
 
   @override
   String get lore_title_label => 'Título de la memoria';
@@ -1528,7 +1514,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Escribe aquí la historia detallada o configuración...';
 
   @override
-  String get lore_lock_label => '🔒 Sellar esta memoria';
+  String get lore_lock_label => 'Sellar esta memoria';
 
   @override
   String get lore_lock_desc =>
@@ -1539,7 +1525,7 @@ class AppLocalizationsEs extends AppLocalizations {
       '¡El título y el contenido no pueden estar vacíos!';
 
   @override
-  String get lore_add_success => '✨ ¡Nueva memoria sellada con éxito!';
+  String get lore_add_success => ' ¡Nueva memoria sellada con éxito!';
 
   @override
   String get lore_publish => 'Publicar memoria';
@@ -1559,7 +1545,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get lore_sealed_msg =>
-      '🔒 Esta memoria está sellada y no está disponible actualmente.';
+      'Esta memoria está sellada y no está disponible actualmente.';
 
   @override
   String get lore_not_open_msg =>
@@ -1576,7 +1562,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get lore_collapse => 'Cerrar carta';
 
   @override
-  String get echo_delete_title => '🗑️ Eliminar comentario';
+  String get echo_delete_title => 'Eliminar comentario';
 
   @override
   String get echo_delete_content =>
@@ -1586,17 +1572,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get echo_keep => 'Mantener';
 
   @override
-  String get echo_clear_success => 'Eco temporal eliminado 🧹';
+  String get echo_clear_success => 'Eco temporal eliminado';
 
   @override
-  String get echo_energy_full_title => '⚠️ Energía cósmica al límite';
+  String get echo_energy_full_title => 'Energía cósmica al límite';
 
   @override
   String get echo_energy_full_content =>
       'Tu energía temporal ha llegado al límite (máx. 3). ¡Borra experiencias antiguas para abrir nuevos registros cósmicos!';
 
   @override
-  String get echo_write_title => 'Deja tu Eco Temporal 🌌';
+  String get echo_write_title => 'Deja tu Eco Temporal ';
 
   @override
   String get echo_write_subtitle =>
@@ -1645,15 +1631,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get follow_own_warning =>
-      '¡Los creadores no pueden seguirse a sí mismos! 🤭';
+      '¡Los creadores no pueden seguirse a sí mismos! ';
 
   @override
   String follow_success_msg(String playerName, String creatorName) {
-    return '✨ ¡$playerName ha seguido a $creatorName!';
+    return '¡$playerName ha seguido a $creatorName!';
   }
 
   @override
-  String get mailbox_follow_title => 'Nuevo guardián obtenido 🦋';
+  String get mailbox_follow_title => 'Nuevo guardián obtenido';
 
   @override
   String mailbox_follow_body(String playerName) {
@@ -1983,7 +1969,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get chat_report_success =>
-      '✅ Reporte enviado, lo ajustaremos lo antes posible';
+      'Reporte enviado, lo ajustaremos lo antes posible';
 
   @override
   String get chat_suggest_title => 'Dar sugerencias';
@@ -2357,12 +2343,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get comment_report_title => 'Confirmar denuncia';
 
   @override
-  String get comment_report_rules_title =>
-      '⚖️ Normas de denuncia de comentarios';
+  String get comment_report_rules_title => ' Normas de denuncia de comentarios';
 
   @override
   String get comment_report_rules_desc =>
-      '1️⃣ 1ª infracción: Advertencia del sistema y un registro de infracción.\n2️⃣ 2ª infracción: Prohibición de comentar por 1 día.\n3️⃣ Reincidencia: Función de denuncia desactivada por 14 días y visibilidad reducida.\n\n🚨 Para casos graves de malicia:\nProhibición de interactuar con personajes por 1 día e ID publicado en el tablón por 3 días (prohibido cambiar el ID durante este tiempo).\n\n💡 Una vez enviada la denuncia, el resultado final se te notificará por [Correo del juego].\nPor favor, respeta a los demás y denuncia con sensatez.';
+      ' 1ª infracción: Advertencia del sistema y un registro de infracción.\n2️⃣ 2ª infracción: Prohibición de comentar por 1 día.\n3️⃣ Reincidencia: Función de denuncia desactivada por 14 días y visibilidad reducida.\n\n🚨 Para casos graves de malicia:\nProhibición de interactuar con personajes por 1 día e ID publicado en el tablón por 3 días (prohibido cambiar el ID durante este tiempo).\n\n💡 Una vez enviada la denuncia, el resultado final se te notificará por [Correo del juego].\nPor favor, respeta a los demás y denuncia con sensatez.';
 
   @override
   String get comment_report_understood => 'Lo he entendido';
