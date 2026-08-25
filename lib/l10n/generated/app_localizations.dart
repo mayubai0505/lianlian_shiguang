@@ -1919,7 +1919,7 @@ abstract class AppLocalizations {
   /// No description provided for @test_mode_tooltip.
   ///
   /// In zh_Hant, this message translates to:
-  /// **'完整功能測試 '**
+  /// **'測試 '**
   String get test_mode_tooltip;
 
   /// No description provided for @test_mode_notice.

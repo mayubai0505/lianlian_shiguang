@@ -47,6 +47,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'feedback_page.dart';
+import 'chat_header.dart';
+import 'chat_side_menu.dart';
+import 'chat_input_bar.dart';
 
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive, gemini }
@@ -114,7 +117,7 @@ class ChatPage extends StatefulWidget {
     this.forceNewRoom = false,
     required this.characterId,
   }) : assert(chatMode != null || sessionId != null,
-            'Either chatMode or sessionId must be provided');
+  'Either chatMode or sessionId must be provided');
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -363,100 +366,100 @@ class _ChatPageState extends State<ChatPage> {
             curve: Curves.easeInOut,
             child: _isQixiProgressExpanded
                 ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        l10n.chatQixiProgressRule,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF806779),
-                          fontSize: 11,
-                          height: 1.4,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: todayCompleted || completedCount >= 3
-                              ? const Color(0xFFFFD6E5)
-                              : const Color(0xFFE4DDEA),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          progressMessage,
-                          style: TextStyle(
-                            color: todayCompleted || completedCount >= 3
-                                ? const Color(0xFF9B4269)
-                                : const Color(0xFF766B78),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                Text(
+                  l10n.chatQixiProgressRule,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF806779),
+                    fontSize: 11,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: todayCompleted || completedCount >= 3
+                        ? const Color(0xFFFFD6E5)
+                        : const Color(0xFFE4DDEA),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    progressMessage,
+                    style: TextStyle(
+                      color: todayCompleted || completedCount >= 3
+                          ? const Color(0xFF9B4269)
+                          : const Color(0xFF766B78),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 9),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(3, (index) {
+                    final bool isCompleted = index < completedCount;
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedSwitcher(
+                          duration: const Duration(
+                            milliseconds: 300,
+                          ),
+                          child: Image.asset(
+                            isCompleted
+                                ? 'assets/images/qixi_progress_on.png'
+                                : 'assets/images/qixi_progress_off.png',
+                            key: ValueKey(
+                              'qixi_${index}_$isCompleted',
+                            ),
+                            width: 46,
+                            height: 46,
+                            fit: BoxFit.contain,
+                            errorBuilder: (
+                                context,
+                                error,
+                                stackTrace,
+                                ) {
+                              return Icon(
+                                isCompleted
+                                    ? Icons.favorite_rounded
+                                    : Icons.favorite_border_rounded,
+                                size: 32,
+                                color: isCompleted
+                                    ? const Color(0xFFE87AA5)
+                                    : const Color(0xFF9A8EA2),
+                              );
+                            },
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 9),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(3, (index) {
-                          final bool isCompleted = index < completedCount;
-
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AnimatedSwitcher(
-                                duration: const Duration(
-                                  milliseconds: 300,
-                                ),
-                                child: Image.asset(
-                                  isCompleted
-                                      ? 'assets/images/qixi_progress_on.png'
-                                      : 'assets/images/qixi_progress_off.png',
-                                  key: ValueKey(
-                                    'qixi_${index}_$isCompleted',
-                                  ),
-                                  width: 46,
-                                  height: 46,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (
-                                    context,
-                                    error,
-                                    stackTrace,
-                                  ) {
-                                    return Icon(
-                                      isCompleted
-                                          ? Icons.favorite_rounded
-                                          : Icons.favorite_border_rounded,
-                                      size: 32,
-                                      color: isCompleted
-                                          ? const Color(0xFFE87AA5)
-                                          : const Color(0xFF9A8EA2),
-                                    );
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 1),
-                              Text(
-                                l10n.chatQixiDayNumber(index + 1),
-                                style: TextStyle(
-                                  color: isCompleted
-                                      ? const Color(0xFF9B4269)
-                                      : const Color(0xFF817684),
-                                  fontSize: 10,
-                                  fontWeight: isCompleted
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            ],
-                          );
-                        }),
-                      ),
-                    ],
-                  )
+                        const SizedBox(height: 1),
+                        Text(
+                          l10n.chatQixiDayNumber(index + 1),
+                          style: TextStyle(
+                            color: isCompleted
+                                ? const Color(0xFF9B4269)
+                                : const Color(0xFF817684),
+                            fontSize: 10,
+                            fontWeight: isCompleted
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+              ],
+            )
                 : const SizedBox.shrink(),
           ),
         ],
@@ -498,7 +501,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     _testSessionId =
-        'TEST_${FirebaseAuth.instance.currentUser?.uid ?? 'anonymous'}_'
+    'TEST_${FirebaseAuth.instance.currentUser?.uid ?? 'anonymous'}_'
         '${widget.character.id}_'
         '${DateTime.now().millisecondsSinceEpoch}';
 
@@ -533,24 +536,24 @@ class _ChatPageState extends State<ChatPage> {
 
       final String initialStory = (_currentCharacter.initialStory ?? '')
           .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+        '{{玩家名字}}',
+        _playerNickname,
+      )
           .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          )
+        '(玩家名字)',
+        _playerNickname,
+      )
           .trim();
 
       final String firstLine = (_currentCharacter.firstLine ?? '')
           .replaceAll(
-            '{{玩家名字}}',
-            _playerNickname,
-          )
+        '{{玩家名字}}',
+        _playerNickname,
+      )
           .replaceAll(
-            '(玩家名字)',
-            _playerNickname,
-          )
+        '(玩家名字)',
+        _playerNickname,
+      )
           .trim();
 
       // 訊息列表採用「最新在前」的順序：
@@ -709,10 +712,10 @@ class _ChatPageState extends State<ChatPage> {
     final String sessionId = widget.sessionId!.trim();
 
     final roomRef =
-        FirebaseFirestore.instance.collection('rooms').doc(sessionId).get();
+    FirebaseFirestore.instance.collection('rooms').doc(sessionId).get();
 
     final userRef =
-        FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
     final results = await Future.wait([
       roomRef,
@@ -768,8 +771,8 @@ class _ChatPageState extends State<ChatPage> {
         FirebaseFirestore.instance
             .collection('users')
             .doc(
-              FirebaseAuth.instance.currentUser!.uid,
-            )
+          FirebaseAuth.instance.currentUser!.uid,
+        )
             .set({
           // 全帳號已處理過第一次拾光檔案提示
           'hasHandledProfileIntro': true,
@@ -994,8 +997,8 @@ class _ChatPageState extends State<ChatPage> {
         // 在 content 裡面：
         content: Text(
           '${l10n.dailyLimitReachedPrefix}'
-          '${_hasMonthlyPass ? l10n.monthlyPassExhausted : l10n.subscribeMonthlyPassPrompt}'
-          '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
+              '${_hasMonthlyPass ? l10n.monthlyPassExhausted : l10n.subscribeMonthlyPassPrompt}'
+              '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
           style: const TextStyle(fontSize: 16),
         ),
         actions: [
@@ -1033,7 +1036,7 @@ class _ChatPageState extends State<ChatPage> {
     if (_userId == null) return;
 
     final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(_userId).get();
+    await FirebaseFirestore.instance.collection('users').doc(_userId).get();
     if (!userDoc.exists || !mounted) return;
 
     final data = userDoc.data() ?? {};
@@ -1075,7 +1078,7 @@ class _ChatPageState extends State<ChatPage> {
             onPressed: () => Navigator.pop(context),
             child: Text(l10n.shop_purchase_awesome,
                 style:
-                    const TextStyle(fontWeight: FontWeight.bold)), // 🌟 換成翻譯變數
+                const TextStyle(fontWeight: FontWeight.bold)), // 🌟 換成翻譯變數
           )
         ],
       ),
@@ -1192,7 +1195,7 @@ class _ChatPageState extends State<ChatPage> {
       // ✨ 5. 給玩家視覺回饋：在畫面上方跳出 SnackBar (比原本的灰色質感更升級！)
       _showCenterToast(l10n.chat_jump_success,
           customIcon:
-              Icons.auto_awesome); // 🕵️‍♀️ 6. 時效設定：2 秒後自動「關燈」，把光芒消失，恢復正常
+          Icons.auto_awesome); // 🕵️‍♀️ 6. 時效設定：2 秒後自動「關燈」，把光芒消失，恢復正常
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           if (mounted)
@@ -1250,7 +1253,7 @@ class _ChatPageState extends State<ChatPage> {
         final existingSession = await FirebaseFirestore.instance
             .collection('artifacts')
             .doc(const String.fromEnvironment('APP_ID',
-                defaultValue: 'lianlianshiguang')) // 確保找到對的 App
+            defaultValue: 'lianlianshiguang')) // 確保找到對的 App
             .collection('chat_sessions')
             .where('userId', isEqualTo: user.uid)
             .where('characterId', isEqualTo: widget.character.id)
@@ -1277,8 +1280,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _listenToQixiProgress(
-    DocumentReference sessionDocRef,
-  ) {
+      DocumentReference sessionDocRef,
+      ) {
     _qixiProgressSubscription?.cancel();
 
     _qixiProgressSubscription = sessionDocRef.snapshots().listen((snapshot) {
@@ -1291,12 +1294,12 @@ class _ChatPageState extends State<ChatPage> {
       }
 
       final interactionDates =
-          (data['qixiInteractionDates'] as List<dynamic>? ?? const <dynamic>[])
-              .map((date) => date.toString())
-              .where((date) => date.trim().isNotEmpty)
-              .toSet()
-              .toList()
-            ..sort();
+      (data['qixiInteractionDates'] as List<dynamic>? ?? const <dynamic>[])
+          .map((date) => date.toString())
+          .where((date) => date.trim().isNotEmpty)
+          .toSet()
+          .toList()
+        ..sort();
 
       final letterSent = data['qixiLetterSent'] == true;
 
@@ -1309,8 +1312,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _triggerQixiOpeningIfNeeded(
-    Map<String, dynamic> sessionData,
-  ) async {
+      Map<String, dynamic> sessionData,
+      ) async {
     if (widget.isTestMode ||
         sessionData['isQixiRoom'] != true ||
         sessionData['eventId'] != 'qixi_2026' ||
@@ -1395,8 +1398,8 @@ class _ChatPageState extends State<ChatPage> {
         final bool isQixiRoom = data['isQixiRoom'] == true;
 
         final List<String> qixiInteractionDates = (data['qixiInteractionDates']
-                    as List<dynamic>? ??
-                const <dynamic>[])
+        as List<dynamic>? ??
+            const <dynamic>[])
             .map((date) => date.toString())
             .where((date) => date.trim().isNotEmpty)
             .toSet()
@@ -1520,7 +1523,7 @@ class _ChatPageState extends State<ChatPage> {
 
         String rawInitialStory = _currentCharacter.initialStory ?? '';
         String initialStoryText =
-            rawInitialStory.replaceAll('{{玩家名字}}', _playerNickname);
+        rawInitialStory.replaceAll('{{玩家名字}}', _playerNickname);
 
         final DateTime now = DateTime.now();
 
@@ -1545,7 +1548,7 @@ class _ChatPageState extends State<ChatPage> {
           'type': 'text',
           'path': '',
           'timestamp':
-              Timestamp.fromDate(now.add(const Duration(milliseconds: 1))),
+          Timestamp.fromDate(now.add(const Duration(milliseconds: 1))),
           'orderIndex': 1,
         });
       }
@@ -1575,10 +1578,10 @@ class _ChatPageState extends State<ChatPage> {
 
   // ✨ 總裁專屬：聊天室跳轉角色檔案 (已對齊 widget.character 結構)
   Future<void> _navigateToProfileFromChat(
-    String charId,
-    String charName,
-    String avatarUrl,
-  ) async {
+      String charId,
+      String charName,
+      String avatarUrl,
+      ) async {
     await CharacterNavigator.open(
       context,
       characterId: charId,
@@ -1679,7 +1682,7 @@ class _ChatPageState extends State<ChatPage> {
       final metadata = SettableMetadata(
         contentType: contentType,
         cacheControl:
-            fileType == 'image' ? 'public,max-age=31536000,immutable' : null,
+        fileType == 'image' ? 'public,max-age=31536000,immutable' : null,
       );
 
       if (kIsWeb) {
@@ -1705,10 +1708,10 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _showCenterToast(
-    String message, {
-    bool isError = false,
-    IconData? customIcon,
-  }) {
+      String message, {
+        bool isError = false,
+        IconData? customIcon,
+      }) {
     if (!mounted) return;
 
     showDialog<void>(
@@ -1719,7 +1722,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (dialogContext) {
         Future.delayed(
           const Duration(milliseconds: 1500),
-          () {
+              () {
             if (!dialogContext.mounted) return;
 
             Navigator.of(
@@ -1905,7 +1908,7 @@ class _ChatPageState extends State<ChatPage> {
 
       unawaited(
         SharedPreferences.getInstance().then(
-          (prefs) => prefs.remove(
+              (prefs) => prefs.remove(
             'chat_draft_${widget.sessionId}',
           ),
         ),
@@ -2045,7 +2048,7 @@ class _ChatPageState extends State<ChatPage> {
       final periodSnapshot = results[0] as QuerySnapshot<Map<String, dynamic>>;
 
       final dailyLogSnapshot =
-          results[1] as DocumentSnapshot<Map<String, dynamic>>;
+      results[1] as DocumentSnapshot<Map<String, dynamic>>;
 
       final contextLines = <String>[];
 
@@ -2085,7 +2088,7 @@ class _ChatPageState extends State<ChatPage> {
           if (isOngoing) {
             contextLines.add(
               '生理期狀態：目前正在生理期，'
-              '本次開始日為 ${DateFormat('M 月 d 日').format(startDate)}。',
+                  '本次開始日為 ${DateFormat('M 月 d 日').format(startDate)}。',
             );
           } else {
             final isTodayInPeriod =
@@ -2157,9 +2160,9 @@ class _ChatPageState extends State<ChatPage> {
 
       contextLines.add(
         '以上是玩家主動記錄的當日背景資訊。'
-        '角色可以依人設自然理解、關心或調整互動，'
-        '但不必每則回覆都主動提起生理期、心情或症狀，'
-        '也不要使用醫療診斷、心理諮商或教科書式口吻。',
+            '角色可以依人設自然理解、關心或調整互動，'
+            '但不必每則回覆都主動提起生理期、心情或症狀，'
+            '也不要使用醫療診斷、心理諮商或教科書式口吻。',
       );
 
       return contextLines.join('\n');
@@ -2177,16 +2180,16 @@ class _ChatPageState extends State<ChatPage> {
 
     setState(() {
       _pendingMediaMessages.removeWhere(
-        (item) => item['id'] == pendingMediaId,
+            (item) => item['id'] == pendingMediaId,
       );
     });
   }
 
   // ✨ VIP 無痕重新生成通道
   Future<bool> _regenerateAIResponse(
-    String aiMessageId,
-    String lastUserText,
-  ) async {
+      String aiMessageId,
+      String lastUserText,
+      ) async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser == null || _isGenerating || _sessionId == null) {
@@ -2217,9 +2220,9 @@ class _ChatPageState extends State<ChatPage> {
       if (_messagesCollection != null) {
         final historySnapshot = await _messagesCollection!
             .orderBy(
-              'timestamp',
-              descending: true,
-            )
+          'timestamp',
+          descending: true,
+        )
             .limit(16)
             .get()
             .timeout(
@@ -2300,7 +2303,7 @@ class _ChatPageState extends State<ChatPage> {
         final recentTests = _testMessages
             .where(
               (message) => message.id != aiMessageId,
-            )
+        )
             .take(8)
             .toList()
             .reversed
@@ -2334,10 +2337,10 @@ class _ChatPageState extends State<ChatPage> {
       final aboutMeNotes = aboutMeSnapshot.docs
           .map(
             (doc) => doc.data()['text']?.toString() ?? '',
-          )
+      )
           .where(
             (text) => text.trim().isNotEmpty,
-          )
+      )
           .toList();
 
       // 讀取備忘錄
@@ -2355,10 +2358,10 @@ class _ChatPageState extends State<ChatPage> {
         memos = memosSnapshot.docs
             .map(
               (doc) => doc.data()['content']?.toString() ?? '',
-            )
+        )
             .where(
               (text) => text.trim().isNotEmpty,
-            )
+        )
             .toList();
       }
 
@@ -2419,110 +2422,110 @@ class _ChatPageState extends State<ChatPage> {
           // 新版角色核心設定
           'coreCharacterSetting': _currentCharacter.coreCharacterSetting
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           'customOutputFormat': _currentCharacter.customOutputFormat
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           // 舊版角色相容欄位
           'toneAndStyle': _currentCharacter.toneAndStyle
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           'detailedPersonality': _currentCharacter.detailedPersonality
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           'socialInteraction': _currentCharacter.socialInteraction
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           'background': _currentCharacter.background
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           'worldSetting': _currentCharacter.worldSetting
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           'likes': _currentCharacter.likes
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           'secrets': _currentCharacter.secrets
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           'gender': _currentCharacter.gender,
           'relationship': dynamicRelationship,
 
           'socialRelationships': _currentCharacter.relationships != null
               ? jsonEncode(
-                  _currentCharacter.relationships,
-                )
-                  .replaceAll(
-                    '{{玩家名字}}',
-                    _playerNickname,
-                  )
-                  .replaceAll(
-                    '(玩家名字)',
-                    _playerNickname,
-                  )
+            _currentCharacter.relationships,
+          )
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          )
               : '',
 
           'npcCharacters': _currentCharacter.npcCharacters,
@@ -2535,20 +2538,20 @@ class _ChatPageState extends State<ChatPage> {
 
       final response = await _httpClient!
           .post(
-            Uri.parse(
-              'https://asia-east1-'
+        Uri.parse(
+          'https://asia-east1-'
               'lianlianshiguang.cloudfunctions.net/'
               'getAiResponse',
-            ),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $idToken',
-            },
-            body: jsonEncode(requestBody),
-          )
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode(requestBody),
+      )
           .timeout(
-            const Duration(seconds: 45),
-          );
+        const Duration(seconds: 45),
+      );
 
       // 玩家已停止，安靜結束，不扣除次數
       if (_activeAiRequestId != clientRequestId) {
@@ -2595,13 +2598,13 @@ class _ChatPageState extends State<ChatPage> {
 
       // 取得真正的新 AI 回覆
       final String regeneratedText =
-          (decoded['response'] ?? '').toString().trim();
+      (decoded['response'] ?? '').toString().trim();
 
       // 空回覆不算成功，也不扣除次數
       if (regeneratedText.isEmpty) {
         debugPrint(
           '⚠️ 重新生成回傳成功，'
-          '但 response 是空字串：$decodedBody',
+              '但 response 是空字串：$decodedBody',
         );
 
         _handleGenerationError(
@@ -2709,125 +2712,96 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _handleContinueButton() async {
     final prefs = await SharedPreferences.getInstance();
-    final todayStr =
-        DateTime.now().toIso8601String().substring(0, 10); // 取得今天日期 YYYY-MM-DD
-    final hideDate = prefs.getString('hide_continue_warning_date');
-    // 🌟 提前取得 l10n，這樣隱形指令也能用到
     final l10n = AppLocalizations.of(context)!;
+    final skipWarning = prefs.getBool('hide_continue_warning') ?? false;
 
-    // 1. 如果玩家今天已經勾選過「不再提示」，就直接發送！
-    if (hideDate == todayStr) {
-      // 🚀 改用字典檔的隱形指令
+    Future<void> continueNow() async {
       await _sendMessage(
         text: l10n.hiddenPromptContinue,
         showInChat: false,
         isContinue: true,
       );
+    }
+
+    if (skipWarning) {
+      await continueNow();
       return;
     }
 
-    // 2. 計算本次「繼續」需要花費多少點數
-    int cost = AppConfig.costDailyChat; // 預設日常聊天
+    int cost = AppConfig.costDailyChat;
     if (_currentMode == ChatMode.story) cost = AppConfig.costStoryChat;
-    if (_currentMode == ChatMode.immersive) cost = AppConfig.costImmersiveChat;
+    if (_currentMode == ChatMode.immersive) {
+      cost = AppConfig.costImmersiveChat;
+    }
     if (_currentMode == ChatMode.gemini) cost = AppConfig.costGeminiChat;
 
-    // 3. 彈出確認視窗
     bool dontShowAgain = false;
 
     if (!mounted) return;
-    await showDialog(
+
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) {
-        // 🌟 在這裡再取一次對話框的 l10n
-        final dialogL10n = AppLocalizations.of(context)!;
+      builder: (dialogContext) {
+        final dialogL10n = AppLocalizations.of(dialogContext)!;
+        final theme = Theme.of(dialogContext);
 
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              // 💡 拿掉 Row 前面的 const
-              title: Row(
-                children: [
-                  const Icon(Icons.info_outline, color: Colors.pinkAccent),
-                  const SizedBox(width: 8),
-                  Text(dialogL10n.continueChatTitle,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                ],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Text(
+                dialogL10n.continueChatTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 🚀 傳入 cost 變數給翻譯字串！
                   Text(
                     dialogL10n.continueChatCostWarning(cost),
-                    style: const TextStyle(fontSize: 16, height: 1.5),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      height: 1.5,
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  InkWell(
-                    onTap: () {
+                  const SizedBox(height: 14),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    activeColor: theme.colorScheme.primary,
+                    value: dontShowAgain,
+                    title: const Text('不再顯示此提示'),
+                    onChanged: (value) {
                       setDialogState(() {
-                        dontShowAgain = !dontShowAgain;
+                        dontShowAgain = value ?? false;
                       });
                     },
-                    borderRadius: BorderRadius.circular(8),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: Checkbox(
-                            value: dontShowAgain,
-                            activeColor: Colors.pinkAccent,
-                            onChanged: (bool? value) {
-                              setDialogState(() {
-                                dontShowAgain = value ?? false;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        // 💡 拿掉 Text 前面的 const
-                        Text(l10n.dontShowAgainToday,
-                            style: const TextStyle(color: Colors.grey)),
-                      ],
-                    ),
                   ),
                 ],
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  // 💡 拿掉 Text 前面的 const
-                  child: Text(dialogL10n.cancelButton,
-                      style: const TextStyle(color: Colors.grey)),
+                  onPressed: () =>
+                      Navigator.of(dialogContext).pop(false),
+                  child: Text(dialogL10n.cancelButton),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.pinkAccent,
-                    foregroundColor: Colors.white,
-                    shape: const StadiumBorder(),
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                   ),
                   onPressed: () async {
-                    // 如果有打勾，就把今天日期存起來，今天就不會再吵他了！
                     if (dontShowAgain) {
-                      await prefs.setString(
-                          'hide_continue_warning_date', todayStr);
+                      await prefs.setBool(
+                        'hide_continue_warning',
+                        true,
+                      );
                     }
 
-                    if (!context.mounted) return;
-
-                    Navigator.pop(context); // 關閉彈窗
-
-                    // 🚀 改用字典檔的隱形指令
-                    await _sendMessage(
-                      text: l10n.hiddenPromptContinue,
-                      showInChat: false,
-                      isContinue: true,
-                    );
+                    if (!dialogContext.mounted) return;
+                    Navigator.of(dialogContext).pop(true);
                   },
                   child: Text(l10n.confirmContinue),
                 ),
@@ -2837,6 +2811,10 @@ class _ChatPageState extends State<ChatPage> {
         );
       },
     );
+
+    if (confirmed == true) {
+      await continueNow();
+    }
   }
 
   Future<void> _triggerReferralCounter() async {
@@ -2848,7 +2826,7 @@ class _ChatPageState extends State<ChatPage> {
 
     debugPrint(
       '🗣️ 新人說話了！當前累計：'
-      '$_currentReferralChatCount / 15 句',
+          '$_currentReferralChatCount / 15 句',
     );
 
     try {
@@ -2898,7 +2876,7 @@ class _ChatPageState extends State<ChatPage> {
     } on FirebaseFunctionsException catch (e) {
       debugPrint(
         '❌ 星之邀約 Function 失敗：'
-        '${e.code} / ${e.message}',
+            '${e.code} / ${e.message}',
       );
 
       if (mounted) {
@@ -3088,7 +3066,7 @@ class _ChatPageState extends State<ChatPage> {
         context: context,
         builder: (BuildContext dialogContext) => AlertDialog(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
               const Icon(Icons.lock_person_outlined, color: Colors.blueAccent),
@@ -3142,7 +3120,7 @@ class _ChatPageState extends State<ChatPage> {
 
     try {
       final userRef =
-          FirebaseFirestore.instance.collection('users').doc(user.uid);
+      FirebaseFirestore.instance.collection('users').doc(user.uid);
       final doc = await userRef.get();
 
       if (context.mounted) Navigator.pop(context); // 關閉載入圈圈
@@ -3220,20 +3198,20 @@ class _ChatPageState extends State<ChatPage> {
                   duration: const Duration(milliseconds: 300),
                   child: currentPage == 0
                       ? _buildDialogPage1(
-                          theme, () => setModalState(() => currentPage = 1))
+                      theme, () => setModalState(() => currentPage = 1))
                       : _buildDialogPage2(
-                          theme,
-                          selectedLanguage,
-                          shouldSave, // ✨ 傳入保存狀態
-                          languages,
+                      theme,
+                      selectedLanguage,
+                      shouldSave, // ✨ 傳入保存狀態
+                      languages,
                           (val) => setModalState(() => selectedLanguage = val),
                           (val) =>
-                              setModalState(() => shouldSave = val), // ✨ 傳入變更邏輯
+                          setModalState(() => shouldSave = val), // ✨ 傳入變更邏輯
                           () => setModalState(() => currentPage = 0), () {
-                          Navigator.pop(context);
-                          // 🚀 執行撥打，同時傳入語言與保存意願！
-                          _executeCallSequence(selectedLanguage, shouldSave);
-                        }),
+                    Navigator.pop(context);
+                    // 🚀 執行撥打，同時傳入語言與保存意願！
+                    _executeCallSequence(selectedLanguage, shouldSave);
+                  }),
                 ),
               ),
             );
@@ -3263,7 +3241,7 @@ class _ChatPageState extends State<ChatPage> {
               child: Text(
                 l10n.chat_call_confirm_title(_currentCharacter.name),
                 style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -3284,7 +3262,7 @@ class _ChatPageState extends State<ChatPage> {
               child: Text(l10n.chat_call_btn_cancel,
                   style: TextStyle(
                       color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5))),
+                      theme.colorScheme.onSurface.withValues(alpha: 0.5))),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
@@ -3328,7 +3306,7 @@ class _ChatPageState extends State<ChatPage> {
             Expanded(
                 child: Text(l10n.chat_call_pref_title,
                     style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
           ],
         ),
         const SizedBox(height: 20),
@@ -3370,14 +3348,14 @@ class _ChatPageState extends State<ChatPage> {
               child: Text(l10n.cancelButton,
                   style: TextStyle(
                       color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.5))),
+                      theme.colorScheme.onSurface.withValues(alpha: 0.5))),
             ),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
               ),
@@ -3401,7 +3379,7 @@ class _ChatPageState extends State<ChatPage> {
         color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(16),
         border:
-            Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
+        Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -3409,7 +3387,7 @@ class _ChatPageState extends State<ChatPage> {
           isExpanded: true,
           items: langs
               .map((String lang) =>
-                  DropdownMenuItem(value: lang, child: Text(lang)))
+              DropdownMenuItem(value: lang, child: Text(lang)))
               .toList(),
           onChanged: (val) => onLangChanged(val!),
         ),
@@ -3454,7 +3432,7 @@ class _ChatPageState extends State<ChatPage> {
     // 1. 扣除 20 花花邏輯
     try {
       final userRef =
-          FirebaseFirestore.instance.collection('users').doc(user.uid);
+      FirebaseFirestore.instance.collection('users').doc(user.uid);
 
       // 🌟 只讓雲端扣點，不要在 setState 裡自己寫減法！
       await userRef.update({'flowerPoints': FieldValue.increment(-20)});
@@ -3488,76 +3466,76 @@ class _ChatPageState extends State<ChatPage> {
         context,
         MaterialPageRoute(
             builder: (context) => CallOverlay(
-                  character: widget.character,
-                  characterId: widget.character.id,
-                  // ✨✨✨ 關鍵替換：如果有 customBgUrl 就用它，沒有的話才用預設大頭貼
-                  selectedBackgroundUrl:
-                      customBgUrl ?? widget.character.avatarPath,
-                  selectedLanguage: selectedLanguage,
-                  shouldSave: shouldSave,
-                  sessionId: _sessionId ?? '',
-                  onCallEnded: (duration, messages) async {
-                    Navigator.pop(context);
-                    final minutes = (duration / 60).floor();
-                    final seconds = duration % 60;
-                    final timeString = minutes > 0
-                        ? l10n.chatPageMinutesSeconds(minutes, seconds)
-                        : l10n.chatPageSeconds(seconds);
-                    await _addSystemMessage(l10n.chat_call_ended(
-                        widget.character.name, timeString));
-                    if (shouldSave) {
-                      try {
-                        final user = FirebaseAuth.instance.currentUser;
-                        if (user != null) {
-                          final memoryRef = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .collection('call_memories');
+              character: widget.character,
+              characterId: widget.character.id,
+              // ✨✨✨ 關鍵替換：如果有 customBgUrl 就用它，沒有的話才用預設大頭貼
+              selectedBackgroundUrl:
+              customBgUrl ?? widget.character.avatarPath,
+              selectedLanguage: selectedLanguage,
+              shouldSave: shouldSave,
+              sessionId: _sessionId ?? '',
+              onCallEnded: (duration, messages) async {
+                Navigator.pop(context);
+                final minutes = (duration / 60).floor();
+                final seconds = duration % 60;
+                final timeString = minutes > 0
+                    ? l10n.chatPageMinutesSeconds(minutes, seconds)
+                    : l10n.chatPageSeconds(seconds);
+                await _addSystemMessage(l10n.chat_call_ended(
+                    widget.character.name, timeString));
+                if (shouldSave) {
+                  try {
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user != null) {
+                      final memoryRef = FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .collection('call_memories');
 
-                          // ✨ 過濾掉系統訊息，只存玩家跟男神的對話！
-                          final cleanMessages = messages
-                              .where((msg) => msg['isSystem'] != true)
-                              .toList();
+                      // ✨ 過濾掉系統訊息，只存玩家跟男神的對話！
+                      final cleanMessages = messages
+                          .where((msg) => msg['isSystem'] != true)
+                          .toList();
 
-                          String? firstAudioUrl;
-                          for (var msg in cleanMessages) {
-                            if (msg['audioUrl'] != null &&
-                                msg['audioUrl'].toString().isNotEmpty) {
-                              firstAudioUrl = msg['audioUrl'];
-                              break; // 找到第一個網址就停下來
-                            }
-                          }
-
-                          await memoryRef.add({
-                            'characterId': widget.character.id,
-                            'characterName': widget.character.name,
-                            'characterAvatar': widget.character.avatarPath,
-                            'voiceId':
-                                widget.character.voiceId, // ✨ 把聲音 ID 也存起來備用
-                            'voiceStability': widget.character.voiceStability,
-                            'voiceStyle': widget.character.voiceStyle,
-                            'duration': duration,
-                            'timestamp': FieldValue.serverTimestamp(),
-                            'messages': cleanMessages, // 🌟 成功把整場對話存進去！
-                            'audioUrl': firstAudioUrl,
-                          });
-
-                          // 🧹 總裁省錢魔法：超過 10 筆就刪掉舊的
-                          final snapshot = await memoryRef
-                              .orderBy('timestamp', descending: true)
-                              .get();
-                          if (snapshot.docs.length > 10) {
-                            for (int i = 10; i < snapshot.docs.length; i++) {
-                              await snapshot.docs[i].reference.delete();
-                            }
-                          }
+                      String? firstAudioUrl;
+                      for (var msg in cleanMessages) {
+                        if (msg['audioUrl'] != null &&
+                            msg['audioUrl'].toString().isNotEmpty) {
+                          firstAudioUrl = msg['audioUrl'];
+                          break; // 找到第一個網址就停下來
                         }
-                      } catch (e) {
-                        print("保存回憶失敗: $e");
+                      }
+
+                      await memoryRef.add({
+                        'characterId': widget.character.id,
+                        'characterName': widget.character.name,
+                        'characterAvatar': widget.character.avatarPath,
+                        'voiceId':
+                        widget.character.voiceId, // ✨ 把聲音 ID 也存起來備用
+                        'voiceStability': widget.character.voiceStability,
+                        'voiceStyle': widget.character.voiceStyle,
+                        'duration': duration,
+                        'timestamp': FieldValue.serverTimestamp(),
+                        'messages': cleanMessages, // 🌟 成功把整場對話存進去！
+                        'audioUrl': firstAudioUrl,
+                      });
+
+                      // 🧹 總裁省錢魔法：超過 10 筆就刪掉舊的
+                      final snapshot = await memoryRef
+                          .orderBy('timestamp', descending: true)
+                          .get();
+                      if (snapshot.docs.length > 10) {
+                        for (int i = 10; i < snapshot.docs.length; i++) {
+                          await snapshot.docs[i].reference.delete();
+                        }
                       }
                     }
-                  },
-                )),
+                  } catch (e) {
+                    print("保存回憶失敗: $e");
+                  }
+                }
+              },
+            )),
       );
     }
   }
@@ -3628,8 +3606,8 @@ class _ChatPageState extends State<ChatPage> {
           showDialog(
             context: context,
             builder: (
-              BuildContext dialogContext,
-            ) {
+                BuildContext dialogContext,
+                ) {
               return AlertDialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -3653,8 +3631,8 @@ class _ChatPageState extends State<ChatPage> {
                   '${l10n.chat_points_shortage(
                     myActualFlowers.toString(),
                   )}\n\n'
-                  '${l10n.chat_points_not_enough_desc}'
-                  '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
+                      '${l10n.chat_points_not_enough_desc}'
+                      '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
                   style: const TextStyle(
                     fontSize: 16,
                   ),
@@ -3719,8 +3697,8 @@ class _ChatPageState extends State<ChatPage> {
         if (_messagesCollection == null) {
           debugPrint(
             '❌ 錯誤：等了 0.5 秒 '
-            '_messagesCollection 還是 Null，'
-            '無法寫入正式聊天室訊息！',
+                '_messagesCollection 還是 Null，'
+                '無法寫入正式聊天室訊息！',
           );
 
           _removePendingMediaMessage(
@@ -3755,7 +3733,7 @@ class _ChatPageState extends State<ChatPage> {
                 .ref()
                 .child('artifacts/lianlianshiguang/chat_audios')
                 .child(
-                    'web_audio_${DateTime.now().millisecondsSinceEpoch}.webm');
+                'web_audio_${DateTime.now().millisecondsSinceEpoch}.webm');
             final uploadTask = await storageRef.putData(
                 audioBytes, SettableMetadata(contentType: 'audio/webm'));
             storagePath = await uploadTask.ref.getDownloadURL();
@@ -3979,8 +3957,8 @@ class _ChatPageState extends State<ChatPage> {
       final String effectiveUserMessage = isContinue
           ? l10n.hiddenPromptContinue
           : secretPrompt?.trim().isNotEmpty == true
-              ? secretPrompt!.trim()
-              : userText.trim();
+          ? secretPrompt!.trim()
+          : userText.trim();
 
       final String playerGenderForAi = _normalizePlayerGenderForAi(
         _currentAiProfile['gender']?.toString(),
@@ -3991,7 +3969,7 @@ class _ChatPageState extends State<ChatPage> {
       final bool hasAudio = audioPath != null && audioPath.isNotEmpty;
 
       final String playerPronounGuide =
-          _buildPlayerPronounGuide(playerGenderForAi);
+      _buildPlayerPronounGuide(playerGenderForAi);
       final Map<String, dynamic> requestBody = {
         "clientRequestId": clientRequestId,
         "userMessageId": userMessageId ?? "",
@@ -4025,95 +4003,95 @@ class _ChatPageState extends State<ChatPage> {
           // 新版合併後的角色核心設定
           "coreCharacterSetting": _currentCharacter.coreCharacterSetting
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           "customOutputFormat": _currentCharacter.customOutputFormat
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           // 舊版相容欄位，暫時保留
           "toneAndStyle": _currentCharacter.toneAndStyle
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           "detailedPersonality": _currentCharacter.detailedPersonality
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           // 舊角色的社交／環境互動相容資料
           "socialInteraction": _currentCharacter.socialInteraction
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           "background": _currentCharacter.background
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           "worldSetting": _currentCharacter.worldSetting
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           "likes": _currentCharacter.likes
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           "secrets": _currentCharacter.secrets
               .replaceAll(
-                '{{玩家名字}}',
-                _playerNickname,
-              )
+            '{{玩家名字}}',
+            _playerNickname,
+          )
               .replaceAll(
-                '(玩家名字)',
-                _playerNickname,
-              ),
+            '(玩家名字)',
+            _playerNickname,
+          ),
 
           "gender": _currentCharacter.gender,
           "relationship": dynamicRelationship,
@@ -4121,16 +4099,16 @@ class _ChatPageState extends State<ChatPage> {
           // 這是角色與其他角色的關係，不是 socialInteraction
           "socialRelationships": _currentCharacter.relationships != null
               ? jsonEncode(
-                  _currentCharacter.relationships,
-                )
-                  .replaceAll(
-                    '{{玩家名字}}',
-                    _playerNickname,
-                  )
-                  .replaceAll(
-                    '(玩家名字)',
-                    _playerNickname,
-                  )
+            _currentCharacter.relationships,
+          )
+              .replaceAll(
+            '{{玩家名字}}',
+            _playerNickname,
+          )
+              .replaceAll(
+            '(玩家名字)',
+            _playerNickname,
+          )
               : "",
 
           "npcCharacters": _currentCharacter.npcCharacters,
@@ -4216,9 +4194,9 @@ class _ChatPageState extends State<ChatPage> {
               responseData['voiceText']?.toString().trim() ?? '';
 
           final int finalAffectionChange =
-              responseData['affectionChange'] is num
-                  ? (responseData['affectionChange'] as num).toInt()
-                  : 0;
+          responseData['affectionChange'] is num
+              ? (responseData['affectionChange'] as num).toInt()
+              : 0;
 
           final String newStoryTime =
               responseData['storyTime']?.toString().trim() ?? '';
@@ -4294,11 +4272,11 @@ class _ChatPageState extends State<ChatPage> {
                 await FirebaseFirestore.instance
                     .collection('artifacts')
                     .doc(
-                      const String.fromEnvironment(
-                        'APP_ID',
-                        defaultValue: 'lianlianshiguang',
-                      ),
-                    )
+                  const String.fromEnvironment(
+                    'APP_ID',
+                    defaultValue: 'lianlianshiguang',
+                  ),
+                )
                     .collection('users')
                     .doc(userId)
                     .collection('private_characters')
@@ -4662,17 +4640,17 @@ class _ChatPageState extends State<ChatPage> {
     _pointsSubscription?.cancel(); // 先取消舊的監聽，避免重複
     _pointsSubscription =
         _db.collection('users').doc(userId).snapshots().listen((snapshot) {
-      if (snapshot.exists && snapshot.data()!.containsKey('flowerPoints')) {
-        if (mounted) {
-          if (mounted)
-            setState(() {
-              _flowerPoints = snapshot.data()!['flowerPoints'];
-            });
-        }
-      }
-    }, onError: (error) {
-      print('在聊天室監聽花花點數失敗: $error');
-    });
+          if (snapshot.exists && snapshot.data()!.containsKey('flowerPoints')) {
+            if (mounted) {
+              if (mounted)
+                setState(() {
+                  _flowerPoints = snapshot.data()!['flowerPoints'];
+                });
+            }
+          }
+        }, onError: (error) {
+          print('在聊天室監聽花花點數失敗: $error');
+        });
   }
 
   // ✨ 進化版煞車系統
@@ -4715,28 +4693,28 @@ class _ChatPageState extends State<ChatPage> {
 
       final response = await http
           .post(
-            Uri.parse(
-              'https://asia-east1-'
+        Uri.parse(
+          'https://asia-east1-'
               'lianlianshiguang.cloudfunctions.net/'
               'cancelAiResponse',
-            ),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $idToken',
-            },
-            body: jsonEncode({
-              'clientRequestId': requestId,
-              'sessionId': _sessionId ?? widget.sessionId ?? '',
-            }),
-          )
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode({
+          'clientRequestId': requestId,
+          'sessionId': _sessionId ?? widget.sessionId ?? '',
+        }),
+      )
           .timeout(
-            const Duration(seconds: 10),
-          );
+        const Duration(seconds: 10),
+      );
 
       debugPrint(
         '🛑 AI 取消通知結果：'
-        '${response.statusCode} '
-        '${response.body}',
+            '${response.statusCode} '
+            '${response.body}',
       );
     } catch (e) {
       // 取消通知失敗不重新開啟生成畫面。
@@ -4848,7 +4826,7 @@ class _ChatPageState extends State<ChatPage> {
         _hasPromptedProfileSetup = true;
 
         WidgetsBinding.instance.addPostFrameCallback(
-          (_) {
+              (_) {
             if (!mounted) return;
             _showWelcomeProfilePopup();
           },
@@ -4869,7 +4847,7 @@ class _ChatPageState extends State<ChatPage> {
           // ✨ 總裁級魔法：用 where().firstOrNull 取代笨重的 try-catch
           activeProfile = allProfiles
               .where((p) =>
-                  p['id'] == targetProfileId && p['characterId'] == characterId)
+          p['id'] == targetProfileId && p['characterId'] == characterId)
               .firstOrNull;
         }
         // ✨ 虛擬組裝：沒有指定人設的房間，一律用最原始的名字跟生日！
@@ -4887,9 +4865,9 @@ class _ChatPageState extends State<ChatPage> {
           setState(() {
             // 🌟🌟🌟 總裁級修復：同步更新玩家暱稱變數，讓男主內心設定也能無縫替換！
             _playerNickname =
-                activeProfile!['name']?.toString().trim().isNotEmpty == true
-                    ? activeProfile!['name']
-                    : nickname;
+            activeProfile!['name']?.toString().trim().isNotEmpty == true
+                ? activeProfile!['name']
+                : nickname;
 
             _currentAiProfile = {
               // 如果是基礎檔案就走軌道 B，否則走軌道 A (高級人設)
@@ -4933,11 +4911,11 @@ class _ChatPageState extends State<ChatPage> {
 
     // 本次摘要所屬的聊天室
     final String? summarySessionId =
-        (_sessionId != null && _sessionId!.trim().isNotEmpty)
-            ? _sessionId!.trim()
-            : (widget.sessionId != null && widget.sessionId!.trim().isNotEmpty)
-                ? widget.sessionId!.trim()
-                : null;
+    (_sessionId != null && _sessionId!.trim().isNotEmpty)
+        ? _sessionId!.trim()
+        : (widget.sessionId != null && widget.sessionId!.trim().isNotEmpty)
+        ? widget.sessionId!.trim()
+        : null;
 
     // 沒有真實聊天室 ID 時不建立摘要，避免不同房間混在一起
     if (summarySessionId == null) {
@@ -4951,9 +4929,9 @@ class _ChatPageState extends State<ChatPage> {
       // 只讀取目前聊天室的最後 10 則訊息
       final querySnapshot = await _messagesCollection!
           .orderBy(
-            'timestamp',
-            descending: true,
-          )
+        'timestamp',
+        descending: true,
+      )
           .limit(10)
           .get();
 
@@ -5035,13 +5013,13 @@ class _ChatPageState extends State<ChatPage> {
         if (response.statusCode >= 200 && response.statusCode < 300) {
           debugPrint(
             '📖 劇情摘要任務完成：'
-            '$summarySessionId',
+                '$summarySessionId',
           );
         } else {
           debugPrint(
             '⚠️ 劇情摘要任務失敗：'
-            '${response.statusCode} '
-            '${response.body}',
+                '${response.statusCode} '
+                '${response.body}',
           );
         }
       }).catchError((error) {
@@ -5058,101 +5036,148 @@ class _ChatPageState extends State<ChatPage> {
 
   void _showMessageOptions(ChatMessage message) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return SafeArea(
-            child: Wrap(
-          children: <Widget>[
-            // 📸 🌟 總裁推薦：新增「截圖分享」選項
-            ListTile(
-              leading:
-                  const Icon(Icons.camera_alt_outlined, color: Colors.purple),
-              title: Text(l10n.screenshotShare),
-              onTap: () {
-                Navigator.pop(context);
-
-                if (mounted)
-                  setState(() {
-                    _isScreenshotMode = true;
-                    _selectedMessageIds.clear();
-                    _selectedMessageIds.add(message.id);
-                  });
-
-                HapticFeedback.mediumImpact();
-              },
-            ),
-            const Divider(),
-
-            ListTile(
-              leading: const Icon(Icons.copy),
-              title: Text(l10n.chat_msg_copy),
-              onTap: () {
-                Navigator.pop(context); // 1. 先關閉長按選單
-                Clipboard.setData(
-                    ClipboardData(text: message.text)); // 2. 複製文字到剪貼簿
-
-                if (mounted) {
-                  // ✨ 總裁級：用極致簡約的小彈窗告訴玩家「複製好了！」
-                  _showCenterToast(l10n.chat_msg_copied);
-                }
-              },
-            ),
-
-            if (message.type == 'text')
+          child: Wrap(
+            children: <Widget>[
+              // 截圖分享
               ListTile(
-                leading: const Icon(Icons.edit),
-                title: Text(l10n.edit_btn),
+                leading: Image.asset(
+                  'assets/images/chat/chat_msg_screenshot_mask.png',
+                  width: 36,
+                  height: 36,
+                  color: theme.colorScheme.primary,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+                title: Text(l10n.screenshotShare),
                 onTap: () {
                   Navigator.pop(context);
-                  _editMessage(message);
+
+                  if (mounted) {
+                    setState(() {
+                      _isScreenshotMode = true;
+                      _selectedMessageIds.clear();
+                      _selectedMessageIds.add(message.id);
+                    });
+                  }
+
+                  HapticFeedback.mediumImpact();
                 },
               ),
-            // 🗑️ 總裁進化版：按下刪除直接進入「多選選取模式」
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: Colors.red),
-              title: Text(l10n.delete_btn,
-                  style: const TextStyle(color: Colors.red)), // 顯示「刪除」
-              onTap: () {
-                Navigator.pop(context); // 先關掉選單
 
-                // 🚩 啟動多選模式，並自動把玩家長按的這句話打勾
-                if (mounted) {
-                  setState(() {
-                    _isMultiSelectMode = true;
-                    _selectedMessageIds.clear(); // 先清空舊的紀錄
-                    _selectedMessageIds.add(message.id); // 把目前長按的這句勾起來
-                  });
-                }
+              const Divider(),
 
-                HapticFeedback.mediumImpact(); // 給個震動回饋，質感提升
-              },
-            ),
+              // 複製內容
+              ListTile(
+                leading: Image.asset(
+                  'assets/images/chat/chat_msg_copy_mask.png',
+                  width: 36,
+                  height: 36,
+                  color: theme.colorScheme.primary,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+                title: Text(l10n.chat_msg_copy),
+                onTap: () {
+                  Navigator.pop(context);
 
-            // 🚩 舉報按鈕
-            ListTile(
-              leading: const Icon(Icons.flag_outlined),
-              title: Text(l10n.chat_report_title),
-              onTap: () {
-                Navigator.pop(context);
+                  Clipboard.setData(
+                    ClipboardData(text: message.text),
+                  );
 
-                _openChatReportPage(
-                  reportedMessage: message.text,
-                );
-              },
-            ),
+                  if (mounted) {
+                    _showCenterToast(l10n.chat_msg_copied);
+                  }
+                },
+              ),
 
-            // 💡 建議按鈕
-            ListTile(
-              leading: const Icon(Icons.lightbulb_outline),
-              title: Text(l10n.chat_msg_suggest),
-              onTap: () {
-                Navigator.pop(context);
-                _showSuggestionDialog(context);
-              },
-            ),
-          ],
-        ));
+              // 編輯
+              if (message.type == 'text')
+                ListTile(
+                  leading: Image.asset(
+                    'assets/images/chat/chat_msg_edit_mask.png',
+                    width: 36,
+                    height: 36,
+                    color: theme.colorScheme.primary,
+                    colorBlendMode: BlendMode.srcIn,
+                  ),
+                  title: Text(l10n.edit_btn),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _editMessage(message);
+                  },
+                ),
+
+              // 刪除
+              ListTile(
+                leading: Image.asset(
+                  'assets/images/chat/chat_msg_delete_mask.png',
+                  width: 36,
+                  height: 36,
+                  color: Colors.redAccent,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+                title: Text(
+                  l10n.delete_btn,
+                  style: const TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+
+                  if (mounted) {
+                    setState(() {
+                      _isMultiSelectMode = true;
+                      _selectedMessageIds.clear();
+                      _selectedMessageIds.add(message.id);
+                    });
+                  }
+
+                  HapticFeedback.mediumImpact();
+                },
+              ),
+
+              // 舉報
+              ListTile(
+                leading: Image.asset(
+                  'assets/images/chat/chat_msg_report_mask.png',
+                  width: 40,
+                  height: 40,
+                  color: theme.colorScheme.primary,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+                title: Text(l10n.chat_report_title),
+                onTap: () {
+                  Navigator.pop(context);
+
+                  _openChatReportPage(
+                    reportedMessage: message.text,
+                  );
+                },
+              ),
+
+              // 給建議
+              ListTile(
+                leading: Image.asset(
+                  'assets/images/chat/chat_msg_feedback_mask.png',
+                  width: 36,
+                  height: 36,
+                  color: theme.colorScheme.primary,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+                title: Text(l10n.chat_msg_suggest),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showSuggestionDialog(context);
+                },
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -5235,7 +5260,7 @@ class _ChatPageState extends State<ChatPage> {
                 }
               },
               style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
+              ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
               child: Text(l10n.chat_report_submit,
                   style: TextStyle(color: Colors.white)),
             ),
@@ -5338,7 +5363,7 @@ class _ChatPageState extends State<ChatPage> {
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
             child:
-                Text(l10n.cancelButton, style: TextStyle(color: Colors.grey)),
+            Text(l10n.cancelButton, style: TextStyle(color: Colors.grey)),
           ),
           // 選項二：僅對話
           TextButton(
@@ -5396,10 +5421,10 @@ class _ChatPageState extends State<ChatPage> {
       if (_currentMode != ChatMode.gemini) {
         String firstLine = _currentCharacter.firstLine.isNotEmpty
             ? _currentCharacter.firstLine.replaceAll(
-                '{{玩家名字}}',
-                _userProfileText.contains('名字:')
-                    ? _userProfileText.split('名字:')[1].split('，')[0]
-                    : l10n.chat_default_player_name)
+            '{{玩家名字}}',
+            _userProfileText.contains('名字:')
+                ? _userProfileText.split('名字:')[1].split('，')[0]
+                : l10n.chat_default_player_name)
             : l10n.chat_default_greeting;
 
         String initialStoryText = _currentCharacter.initialStory.replaceAll(
@@ -5714,17 +5739,17 @@ class _ChatPageState extends State<ChatPage> {
               borderRadius: BorderRadius.circular(12),
               child: kIsWeb
                   ? Image.network(
-                      imagePath,
-                      width: 96,
-                      height: 96,
-                      fit: BoxFit.cover,
-                    )
+                imagePath,
+                width: 96,
+                height: 96,
+                fit: BoxFit.cover,
+              )
                   : Image.file(
-                      File(imagePath),
-                      width: 96,
-                      height: 96,
-                      fit: BoxFit.cover,
-                    ),
+                File(imagePath),
+                width: 96,
+                height: 96,
+                fit: BoxFit.cover,
+              ),
             ),
             Positioned(
               top: -8,
@@ -5798,10 +5823,10 @@ class _ChatPageState extends State<ChatPage> {
         fit: BoxFit.cover,
         filterQuality: FilterQuality.medium,
         loadingBuilder: (
-          context,
-          child,
-          loadingProgress,
-        ) {
+            context,
+            child,
+            loadingProgress,
+            ) {
           if (loadingProgress == null) {
             return child;
           }
@@ -5809,10 +5834,10 @@ class _ChatPageState extends State<ChatPage> {
           return _buildChatImageLoading();
         },
         errorBuilder: (
-          context,
-          error,
-          stackTrace,
-        ) {
+            context,
+            error,
+            stackTrace,
+            ) {
           return _buildChatImageError();
         },
       );
@@ -5846,10 +5871,10 @@ class _ChatPageState extends State<ChatPage> {
               return _buildChatImageLoading();
             },
             errorWidget: (
-              context,
-              url,
-              error,
-            ) {
+                context,
+                url,
+                error,
+                ) {
               return _buildChatImageError();
             },
           );
@@ -5882,10 +5907,10 @@ class _ChatPageState extends State<ChatPage> {
       cacheWidth: 1080,
 
       errorBuilder: (
-        context,
-        error,
-        stackTrace,
-      ) {
+          context,
+          error,
+          stackTrace,
+          ) {
         return _buildChatImageError();
       },
     );
@@ -6046,7 +6071,7 @@ class _ChatPageState extends State<ChatPage> {
 
                 final tempDir = await getTemporaryDirectory();
                 recordingPath =
-                    '${tempDir.path}/flutter_sound_${DateTime.now().millisecondsSinceEpoch}.aac';
+                '${tempDir.path}/flutter_sound_${DateTime.now().millisecondsSinceEpoch}.aac';
 
                 await _recorder!.setSubscriptionDuration(
                   const Duration(milliseconds: 80),
@@ -6097,9 +6122,9 @@ class _ChatPageState extends State<ChatPage> {
                 recorderSub = null;
 
                 final String? path =
-                    stoppedPath != null && stoppedPath.isNotEmpty
-                        ? stoppedPath
-                        : recordingPath;
+                stoppedPath != null && stoppedPath.isNotEmpty
+                    ? stoppedPath
+                    : recordingPath;
 
                 debugPrint('✅ 錄音結束，檔案位置: $path');
 
@@ -6226,395 +6251,395 @@ class _ChatPageState extends State<ChatPage> {
               // 🌟 如果 showRecordingUI 是 true，就顯示【錄音介面】
               child: showRecordingUI
                   ? Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            children: [
-                              IconButton(
-                                tooltip: l10n.profilePageCancel,
-                                onPressed: isCurrentlyRecording
-                                    ? null
-                                    : () {
-                                        sheetSetState(() {
-                                          showRecordingUI = false;
-                                        });
-                                      },
-                                icon: const Icon(
-                                  Icons.arrow_back_ios_new_rounded,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  isCurrentlyRecording
-                                      ? l10n.chat_record_recording
-                                      : finalAudioPath == null
-                                          ? l10n.chat_tool_record
-                                          : l10n.chat_record_done,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ],
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          tooltip: l10n.profilePageCancel,
+                          onPressed: isCurrentlyRecording
+                              ? null
+                              : () {
+                            sheetSetState(() {
+                              showRecordingUI = false;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 20,
                           ),
-                          const SizedBox(height: 16),
-                          if (isCurrentlyRecording) ...[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.fiber_manual_record,
-                                  color: Colors.redAccent,
-                                  size: 14,
-                                ),
-                                const SizedBox(width: 8),
-                                _buildRecordingWave(recordDb),
-                                const SizedBox(width: 12),
-                                Text(
-                                  _formatRecordDuration(recordDuration),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            isCurrentlyRecording
+                                ? l10n.chat_record_recording
+                                : finalAudioPath == null
+                                ? l10n.chat_tool_record
+                                : l10n.chat_record_done,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
                             ),
-                            const SizedBox(height: 28),
-                            InkWell(
-                              onTap: stopRecording,
-                              child: Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .errorContainer,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.stop_rounded,
-                                  color: Theme.of(context).colorScheme.error,
-                                  size: 42,
-                                ),
-                              ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (isCurrentlyRecording) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.fiber_manual_record,
+                            color: Colors.redAccent,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildRecordingWave(recordDb),
+                          const SizedBox(width: 12),
+                          Text(
+                            _formatRecordDuration(recordDuration),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
-                          ] else if (finalAudioPath != null) ...[
-                            Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 24),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer
-                                    .withValues(alpha: 0.55),
-                                borderRadius: BorderRadius.circular(99),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 28),
+                      InkWell(
+                        onTap: stopRecording,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .errorContainer,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.stop_rounded,
+                            color: Theme.of(context).colorScheme.error,
+                            size: 42,
+                          ),
+                        ),
+                      ),
+                    ] else if (finalAudioPath != null) ...[
+                      Container(
+                        margin:
+                        const EdgeInsets.symmetric(horizontal: 24),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer
+                              .withValues(alpha: 0.55),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                isPreviewPlaying
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
                               ),
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      isPreviewPlaying
-                                          ? Icons.pause_rounded
-                                          : Icons.play_arrow_rounded,
-                                    ),
-                                    onPressed: playRecordedAudio,
-                                  ),
-                                  Expanded(
-                                    child: _buildRecordingWave(-25),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _formatRecordDuration(recordDuration),
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              onPressed: playRecordedAudio,
                             ),
-                            const SizedBox(height: 24),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.delete_outline),
-                                  color: Colors.redAccent,
-                                  iconSize: 32,
-                                  onPressed: () async {
-                                    await _audioPlayer?.stop();
-
-                                    final pathToDelete = finalAudioPath;
-
-                                    if (pathToDelete != null &&
-                                        pathToDelete.isNotEmpty &&
-                                        !kIsWeb) {
-                                      final file = File(pathToDelete);
-                                      if (await file.exists()) {
-                                        await file.delete();
-                                      }
-                                    }
-
-                                    sheetSetState(() {
-                                      finalAudioPath = null;
-                                      recordingPath = null;
-                                      isPreviewPlaying = false;
-                                      recordDuration = Duration.zero;
-                                      recordDb = -60.0;
-                                    });
-
-                                    debugPrint('🗑️ 已刪除錄音預覽，不會送出');
-                                  },
-                                ),
-                                const SizedBox(width: 28),
-                                _isGenerating
-                                    ? IconButton(
-                                        icon: const Icon(
-                                          Icons.stop_circle_outlined,
-                                          color: Colors.red,
-                                          size: 36,
-                                        ),
-                                        onPressed: _stopGenerating,
-                                      )
-                                    : IconButton(
-                                        icon: Icon(
-                                          Icons.send_rounded,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          size: 36,
-                                        ),
-                                        onPressed: isSendingVoice
-                                            ? null
-                                            : () async {
-                                                final path = finalAudioPath;
-
-                                                if (path == null ||
-                                                    path.isEmpty) {
-                                                  ToastUtils.showCenterToast(
-                                                    context,
-                                                    l10n.chatPageNoRecordingToSend,
-                                                    isError: true,
-                                                  );
-                                                  return;
-                                                }
-
-                                                sheetSetState(() {
-                                                  isSendingVoice = true;
-                                                });
-
-                                                await _audioPlayer?.stop();
-
-                                                debugPrint(
-                                                    '📤 準備送出語音 path=$path');
-
-                                                Navigator.pop(context);
-
-                                                await _sendMessage(
-                                                  text: '[語音訊息]',
-                                                  audioPath: path,
-                                                  showInChat: true,
-                                                );
-                                              },
-                                      ),
-                              ],
+                            Expanded(
+                              child: _buildRecordingWave(-25),
                             ),
-                          ] else ...[
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 24,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primaryContainer
-                                    .withValues(alpha: 0.28),
-                                borderRadius: BorderRadius.circular(24),
-                                border: Border.all(
-                                  color: theme.colorScheme.primary
-                                      .withValues(alpha: 0.18),
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Material(
-                                    color: theme.colorScheme.primary,
-                                    shape: const CircleBorder(),
-                                    elevation: 3,
-                                    shadowColor: theme.colorScheme.primary
-                                        .withValues(alpha: 0.35),
-                                    child: InkWell(
-                                      customBorder: const CircleBorder(),
-                                      onTap: startRecording,
-                                      child: SizedBox(
-                                        width: 76,
-                                        height: 76,
-                                        child: Icon(
-                                          Icons.mic_rounded,
-                                          color: theme.colorScheme.onPrimary,
-                                          size: 38,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    l10n.chat_record_start,
-                                    textAlign: TextAlign.center,
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+                            const SizedBox(width: 8),
+                            Text(
+                              _formatRecordDuration(recordDuration),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
-                        ],
+                        ),
                       ),
-                    )
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            color: Colors.redAccent,
+                            iconSize: 32,
+                            onPressed: () async {
+                              await _audioPlayer?.stop();
 
-                  // ✨✨✨ 破案關鍵在這裡：加上這個冒號 (:) 代表「否則」，然後接上妳的【百寶箱九宮格】 ✨✨✨
-                  : Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: GridView.count(
-                        crossAxisCount: 3,
-                        shrinkWrap: true,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        children: <Widget>[
-                          // 🎒 1. 背包
-                          _buildToolItem(
-                              Icons.backpack_outlined, l10n.chat_tool_backpack,
-                              () {
-                            Navigator.pop(context); // 關閉下方工具選單
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => BackpackPage(
-                                          character: _currentCharacter,
-                                          onUseEgg: (eggData) {
-                                            if (eggData['setScene'] != null &&
-                                                eggData['setScene']
-                                                    .toString()
-                                                    .isNotEmpty) {
-                                              if (mounted)
-                                                setState(() {
-                                                  _currentStoryLocation =
-                                                      eggData['setScene'];
-                                                });
-                                            }
-                                            // 背包彩蛋屬於獨立的 AI 請求，
-// 必須建立自己的取消識別碼。
-                                            final String specialRequestId =
-                                                _createAiRequestId();
+                              final pathToDelete = finalAudioPath;
 
-                                            _activeAiRequestId =
-                                                specialRequestId;
+                              if (pathToDelete != null &&
+                                  pathToDelete.isNotEmpty &&
+                                  !kIsWeb) {
+                                final file = File(pathToDelete);
+                                if (await file.exists()) {
+                                  await file.delete();
+                                }
+                              }
 
-                                            _executeMessageSending(
-                                              userText: l10n
-                                                  .chat_special_story_trigger(
-                                                eggData['title'],
-                                              ),
-                                              clientRequestId: specialRequestId,
-                                              overridePrompt: eggData['prompt'],
-                                            );
-                                          },
-                                        )));
-                          }),
+                              sheetSetState(() {
+                                finalAudioPath = null;
+                                recordingPath = null;
+                                isPreviewPlaying = false;
+                                recordDuration = Duration.zero;
+                                recordDb = -60.0;
+                              });
 
-                          // 📖 2. 劇情摘要
-                          _buildToolItem(
-                            Icons.article_outlined,
-                            l10n.chat_tool_story,
-                            () async {
-                              final String? currentSessionId = _sessionId !=
-                                          null &&
-                                      _sessionId!.trim().isNotEmpty
-                                  ? _sessionId!.trim()
-                                  : widget.sessionId != null &&
-                                          widget.sessionId!.trim().isNotEmpty
-                                      ? widget.sessionId!.trim()
-                                      : null;
+                              debugPrint('🗑️ 已刪除錄音預覽，不會送出');
+                            },
+                          ),
+                          const SizedBox(width: 28),
+                          _isGenerating
+                              ? IconButton(
+                            icon: const Icon(
+                              Icons.stop_circle_outlined,
+                              color: Colors.red,
+                              size: 36,
+                            ),
+                            onPressed: _stopGenerating,
+                          )
+                              : IconButton(
+                            icon: Icon(
+                              Icons.send_rounded,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary,
+                              size: 36,
+                            ),
+                            onPressed: isSendingVoice
+                                ? null
+                                : () async {
+                              final path = finalAudioPath;
 
-                              if (currentSessionId == null) {
+                              if (path == null ||
+                                  path.isEmpty) {
                                 ToastUtils.showCenterToast(
                                   context,
-                                  l10n.chatRoomNotReady,
+                                  l10n.chatPageNoRecordingToSend,
                                   isError: true,
                                 );
                                 return;
                               }
 
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => StorySummaryPage(
-                                    character: _currentCharacter,
+                              sheetSetState(() {
+                                isSendingVoice = true;
+                              });
 
-                                    // 目前真正開啟的聊天室 ID
-                                    sessionId: currentSessionId,
-                                  ),
-                                ),
+                              await _audioPlayer?.stop();
+
+                              debugPrint(
+                                  '📤 準備送出語音 path=$path');
+
+                              Navigator.pop(context);
+
+                              await _sendMessage(
+                                text: '[語音訊息]',
+                                audioPath: path,
+                                showInChat: true,
                               );
                             },
                           ),
-
-                          // 🖼️ 3. 照片
-                          _buildToolItem(Icons.photo_library_outlined,
-                              l10n.chat_tool_photo, () {
-                            Navigator.pop(context);
-                            _pickImage();
-                          }),
-
-                          // 🎙️ 4. 錄音切換鍵 (按下去就會把 showRecordingUI 變成 true)
-                          _buildToolItem(Icons.mic_none, l10n.chat_tool_record,
-                              () {
-                            sheetSetState(() => showRecordingUI = true);
-                          }),
-
-                          // 🪪 5. 拾光檔案
-                          _buildToolItem(
-                              Icons.badge_outlined, l10n.chat_tool_profile, () {
-                            final safeContext = this.context;
-                            Navigator.pop(context); // 關閉工具列
-
-                            // 🌟 總裁級魔法：如果還沒有 sessionId，發放一張專屬的「臨時身分證」
-                            final String safeRoomId = widget.sessionId ??
-                                'draft_${widget.characterId}';
-
-                            // ✨ 直接放行開啟視窗，不再阻擋玩家！
-                            UserProfilePopup.show(
-                              safeContext,
-                              roomId: safeRoomId, // 傳入保證安全的房間 ID
-                              characterId: widget.characterId,
-                              onSaved: () async {
-                                // 這裡同步使用 safeRoomId 去重撈大腦記憶
-                                await _checkProfileCompletion(
-                                    safeRoomId, widget.characterId);
-
-                                if (mounted) {
-                                  // ✨ 成功也換成優雅的置中彈窗！
-                                  ToastUtils.showCenterToast(
-                                      safeContext, l10n.profileUpdatedSuccess);
-                                }
-                              },
-                            );
-                          }),
-                          // 👆 6. 互動玩法
-                          _buildToolItem(
-                              Icons.touch_app_outlined, l10n.chat_tool_interact,
-                              () {
-                            Navigator.pop(context);
-                            _showInteractionMenu(context);
-                          }),
                         ],
                       ),
+                    ] else ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 24,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer
+                              .withValues(alpha: 0.28),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.18),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Material(
+                              color: theme.colorScheme.primary,
+                              shape: const CircleBorder(),
+                              elevation: 3,
+                              shadowColor: theme.colorScheme.primary
+                                  .withValues(alpha: 0.35),
+                              child: InkWell(
+                                customBorder: const CircleBorder(),
+                                onTap: startRecording,
+                                child: SizedBox(
+                                  width: 76,
+                                  height: 76,
+                                  child: Icon(
+                                    Icons.mic_rounded,
+                                    color: theme.colorScheme.onPrimary,
+                                    size: 38,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              l10n.chat_record_start,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              )
+
+              // ✨✨✨ 破案關鍵在這裡：加上這個冒號 (:) 代表「否則」，然後接上妳的【百寶箱九宮格】 ✨✨✨
+                  : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GridView.count(
+                  crossAxisCount: 3,
+                  shrinkWrap: true,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  children: <Widget>[
+                    // 🎒 1. 背包
+                    _buildToolItem(
+                        Icons.backpack_outlined, l10n.chat_tool_backpack,
+                            () {
+                          Navigator.pop(context); // 關閉下方工具選單
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BackpackPage(
+                                    character: _currentCharacter,
+                                    onUseEgg: (eggData) {
+                                      if (eggData['setScene'] != null &&
+                                          eggData['setScene']
+                                              .toString()
+                                              .isNotEmpty) {
+                                        if (mounted)
+                                          setState(() {
+                                            _currentStoryLocation =
+                                            eggData['setScene'];
+                                          });
+                                      }
+                                      // 背包彩蛋屬於獨立的 AI 請求，
+// 必須建立自己的取消識別碼。
+                                      final String specialRequestId =
+                                      _createAiRequestId();
+
+                                      _activeAiRequestId =
+                                          specialRequestId;
+
+                                      _executeMessageSending(
+                                        userText: l10n
+                                            .chat_special_story_trigger(
+                                          eggData['title'],
+                                        ),
+                                        clientRequestId: specialRequestId,
+                                        overridePrompt: eggData['prompt'],
+                                      );
+                                    },
+                                  )));
+                        }),
+
+                    // 📖 2. 劇情摘要
+                    _buildToolItem(
+                      Icons.article_outlined,
+                      l10n.chat_tool_story,
+                          () async {
+                        final String? currentSessionId = _sessionId !=
+                            null &&
+                            _sessionId!.trim().isNotEmpty
+                            ? _sessionId!.trim()
+                            : widget.sessionId != null &&
+                            widget.sessionId!.trim().isNotEmpty
+                            ? widget.sessionId!.trim()
+                            : null;
+
+                        if (currentSessionId == null) {
+                          ToastUtils.showCenterToast(
+                            context,
+                            l10n.chatRoomNotReady,
+                            isError: true,
+                          );
+                          return;
+                        }
+
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => StorySummaryPage(
+                              character: _currentCharacter,
+
+                              // 目前真正開啟的聊天室 ID
+                              sessionId: currentSessionId,
+                            ),
+                          ),
+                        );
+                      },
                     ),
+
+                    // 🖼️ 3. 照片
+                    _buildToolItem(Icons.photo_library_outlined,
+                        l10n.chat_tool_photo, () {
+                          Navigator.pop(context);
+                          _pickImage();
+                        }),
+
+                    // 🎙️ 4. 錄音切換鍵 (按下去就會把 showRecordingUI 變成 true)
+                    _buildToolItem(Icons.mic_none, l10n.chat_tool_record,
+                            () {
+                          sheetSetState(() => showRecordingUI = true);
+                        }),
+
+                    // 🪪 5. 拾光檔案
+                    _buildToolItem(
+                        Icons.badge_outlined, l10n.chat_tool_profile, () {
+                      final safeContext = this.context;
+                      Navigator.pop(context); // 關閉工具列
+
+                      // 🌟 總裁級魔法：如果還沒有 sessionId，發放一張專屬的「臨時身分證」
+                      final String safeRoomId = widget.sessionId ??
+                          'draft_${widget.characterId}';
+
+                      // ✨ 直接放行開啟視窗，不再阻擋玩家！
+                      UserProfilePopup.show(
+                        safeContext,
+                        roomId: safeRoomId, // 傳入保證安全的房間 ID
+                        characterId: widget.characterId,
+                        onSaved: () async {
+                          // 這裡同步使用 safeRoomId 去重撈大腦記憶
+                          await _checkProfileCompletion(
+                              safeRoomId, widget.characterId);
+
+                          if (mounted) {
+                            // ✨ 成功也換成優雅的置中彈窗！
+                            ToastUtils.showCenterToast(
+                                safeContext, l10n.profileUpdatedSuccess);
+                          }
+                        },
+                      );
+                    }),
+                    // 👆 6. 互動玩法
+                    _buildToolItem(
+                        Icons.touch_app_outlined, l10n.chat_tool_interact,
+                            () {
+                          Navigator.pop(context);
+                          _showInteractionMenu(context);
+                        }),
+                  ],
+                ),
+              ),
             );
           },
         );
@@ -6721,7 +6746,7 @@ class _ChatPageState extends State<ChatPage> {
               l10n.chat_typing_indicator,
               style: TextStyle(
                   color:
-                      theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                   fontStyle: FontStyle.italic),
             ),
           ),
@@ -6752,11 +6777,11 @@ class _ChatPageState extends State<ChatPage> {
 
   int _getNextStageThreshold(int currentScore) => _flowerStages
       .firstWhere((stage) => currentScore < stage.threshold,
-          orElse: () => _flowerStages.last)
+      orElse: () => _flowerStages.last)
       .threshold;
   FlowerStage _getCurrentStage(int currentScore) {
     return _flowerStages.lastWhere(
-      (stage) => currentScore >= stage.threshold,
+          (stage) => currentScore >= stage.threshold,
       // 🌟 找不到（例如負數）時，強制回傳列表中的第一個（通常是陌生/初識）
       orElse: () => _flowerStages.first,
     );
@@ -6886,6 +6911,39 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Future<void> _switchChatModeFromDropdown(String modeName) async {
+    final mode = ChatMode.values.firstWhere(
+          (item) => item.name == modeName,
+      orElse: () => _currentMode ?? ChatMode.daily,
+    );
+
+    if (_currentMode == mode) return;
+
+    if (mounted) {
+      setState(() {
+        _currentMode = mode;
+      });
+    }
+
+    if (widget.isTestMode) return;
+
+    final sessionId = _sessionId;
+    if (sessionId == null || sessionId.trim().isEmpty) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(_appId)
+          .collection('chat_sessions')
+          .doc(sessionId)
+          .update({
+        'chatMode': mode.name,
+      });
+    } catch (e) {
+      debugPrint('⚠️ 更新聊天室模式失敗：$e');
+    }
+  }
+
   // ✨✨✨ 彈出模式選擇視窗 ✨✨✨
   Future<void> _showModeSelectionDialog() async {
     final l10n = AppLocalizations.of(context)!;
@@ -6928,7 +6986,7 @@ class _ChatPageState extends State<ChatPage> {
         return SimpleDialog(
           title: Text(l10n.chat_switch_mode_title, textAlign: TextAlign.center),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           backgroundColor: theme.cardColor.withValues(alpha: 0.95),
           children: <Widget>[
             ...modeDetails.map((info) {
@@ -6936,7 +6994,7 @@ class _ChatPageState extends State<ChatPage> {
               final isSelected = _currentMode == mode;
               return SimpleDialogOption(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
                 onPressed: () async {
                   if (mounted)
                     setState(() {
@@ -7016,7 +7074,7 @@ class _ChatPageState extends State<ChatPage> {
 
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
               child: Divider(color: theme.dividerColor.withValues(alpha: 0.5)),
             ),
 
@@ -7044,7 +7102,7 @@ class _ChatPageState extends State<ChatPage> {
                           Text(l10n.no_voice_available,
                               style: TextStyle(
                                   color:
-                                      Theme.of(context).colorScheme.onSurface)),
+                                  Theme.of(context).colorScheme.onSurface)),
                         ],
                       ),
                       // 這裡放入你原本的沒語音提示文字
@@ -7236,7 +7294,7 @@ class _ChatPageState extends State<ChatPage> {
         context: context,
         builder: (BuildContext dialogContext) => AlertDialog(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Row(
             children: [
               const Icon(Icons.local_florist, color: Colors.pinkAccent), // 花朵圖示
@@ -7250,8 +7308,8 @@ class _ChatPageState extends State<ChatPage> {
           // ✨ 替換：接上新的提示問句
           content: Text(
             '${l10n.chat_gift_points_needed(gift['cost'].toString())}\n\n'
-            '${l10n.gift_insufficient_prompt}'
-            '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
+                '${l10n.gift_insufficient_prompt}'
+                '${kIsWeb ? '\n\n$_webPurchaseUnavailableMessage' : ''}',
             style: const TextStyle(fontSize: 16),
           ),
           actions: [
@@ -7276,7 +7334,7 @@ class _ChatPageState extends State<ChatPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            const StorePage()), // 或 TaskPage()
+                        const StorePage()), // 或 TaskPage()
                   );
                 },
                 // ✨ 替換：前往獲取
@@ -7290,7 +7348,7 @@ class _ChatPageState extends State<ChatPage> {
 
     int oldScore = _currentFriendship; // 👈 埋入偵測點 A：紀錄舊分數
     int affectionChange =
-        _calculateGiftAffection(_currentCharacter, gift['name']);
+    _calculateGiftAffection(_currentCharacter, gift['name']);
     int newScore = oldScore + affectionChange; // 👈 計算新分數
 
     // 3. 🛡️ 啟動雲端同步！
@@ -7332,7 +7390,7 @@ class _ChatPageState extends State<ChatPage> {
     _sendMessage(
         text: displayText, // 👈 畫面上顯示這個
         secretPrompt: aiSecretPrompt // 👈 AI 腦袋裡看這個
-        );
+    );
   }
 
   // 🕵️‍♀️ 稱號升級偵測器
@@ -7368,8 +7426,8 @@ class _ChatPageState extends State<ChatPage> {
               border: isSoulmate
                   ? Border.all(color: Colors.amberAccent, width: 3) // 靈魂伴侶專屬金邊
                   : Border.all(
-                      color: newScore.titleColor.withValues(alpha: 0.3),
-                      width: 1),
+                  color: newScore.titleColor.withValues(alpha: 0.3),
+                  width: 1),
               boxShadow: [
                 // 基礎陰影
                 BoxShadow(
@@ -7392,7 +7450,7 @@ class _ChatPageState extends State<ChatPage> {
                 Icon(isSoulmate ? Icons.favorite : Icons.auto_awesome,
                     color: isSoulmate ? Colors.redAccent : newScore.titleColor,
                     size: 80 // 縮放一點點更有視覺衝擊
-                    ),
+                ),
                 const SizedBox(height: 16),
                 Text(
                   isSoulmate
@@ -7408,18 +7466,18 @@ class _ChatPageState extends State<ChatPage> {
                 // 稱號顯示盒
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isSoulmate
                           ? [
-                              Colors.amber.withValues(alpha: 0.4),
-                              Colors.orangeAccent.withValues(alpha: 0.2)
-                            ]
+                        Colors.amber.withValues(alpha: 0.4),
+                        Colors.orangeAccent.withValues(alpha: 0.2)
+                      ]
                           : [
-                              newScore.titleColor.withValues(alpha: 0.2),
-                              newScore.titleColor.withValues(alpha: 0.05)
-                            ],
+                        newScore.titleColor.withValues(alpha: 0.2),
+                        newScore.titleColor.withValues(alpha: 0.05)
+                      ],
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -7471,7 +7529,7 @@ class _ChatPageState extends State<ChatPage> {
                         final user = FirebaseAuth.instance.currentUser;
                         if (user == null) return;
                         final displayCode =
-                            user.uid.substring(0, 8).toUpperCase();
+                        user.uid.substring(0, 8).toUpperCase();
                         // 🪄 自動抓取當前聊天室內互動的角色名字
                         final characterName = _currentCharacter.name;
                         // 🪄 動態組裝千人千面的行銷文案
@@ -7535,15 +7593,15 @@ class _ChatPageState extends State<ChatPage> {
                   l10n.chat_loc_3,
                   l10n.chat_loc_4
                 ].map((loc) => ListTile(
-                      title: Text(loc),
-                      trailing:
-                          const Icon(Icons.send, size: 18, color: Colors.blue),
-                      contentPadding: EdgeInsets.zero,
-                      onTap: () {
-                        Navigator.pop(context); // 關閉視窗
-                        _sendMessage(text: l10n.chat_player_sent_location(loc));
-                      },
-                    )),
+                  title: Text(loc),
+                  trailing:
+                  const Icon(Icons.send, size: 18, color: Colors.blue),
+                  contentPadding: EdgeInsets.zero,
+                  onTap: () {
+                    Navigator.pop(context); // 關閉視窗
+                    _sendMessage(text: l10n.chat_player_sent_location(loc));
+                  },
+                )),
 
                 const Divider(height: 20), // 分隔線
                 // ✨ 玩家自訂地點輸入框
@@ -7552,7 +7610,7 @@ class _ChatPageState extends State<ChatPage> {
                   decoration: InputDecoration(
                     hintText: l10n.chat_loc_hint,
                     hintStyle:
-                        const TextStyle(fontSize: 14, color: Colors.grey),
+                    const TextStyle(fontSize: 14, color: Colors.grey),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -7613,7 +7671,7 @@ class _ChatPageState extends State<ChatPage> {
       context: context,
       barrierDismissible: false, // 必須等動畫完，不能點旁邊關閉
       barrierColor:
-          Colors.black.withValues(alpha: 0.5), // ✨ 把名字換成 barrierColor！
+      Colors.black.withValues(alpha: 0.5), // ✨ 把名字換成 barrierColor！
       builder: (context) {
         return DiceDuelOverlay(
           playerName: playerName,
@@ -7632,7 +7690,7 @@ class _ChatPageState extends State<ChatPage> {
       resultText = "$playerName贏了！";
       // 如果學長輸了，要他耍賴或是無奈
       aiActionPrompt =
-          "對方贏了！系統秘密指令：請根據你的傲嬌性格，表現出願賭服輸的無奈，或者是雖然輸了但嘴硬傲嬌耍賴的反應。請將這個反應融入對話中，並自然的開啟新話題。";
+      "對方贏了！系統秘密指令：請根據你的傲嬌性格，表現出願賭服輸的無奈，或者是雖然輸了但嘴硬傲嬌耍賴的反應。請將這個反應融入對話中，並自然的開啟新話題。";
     } else if (aiRoll > playerRoll) {
       resultText = "${aiName}贏了！";
       // 如果學長贏了，要他得意
@@ -7672,7 +7730,7 @@ class _ChatPageState extends State<ChatPage> {
               decoration: BoxDecoration(
                 color: theme.cardColor,
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(24)),
+                const BorderRadius.vertical(top: Radius.circular(24)),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
@@ -7729,7 +7787,7 @@ class _ChatPageState extends State<ChatPage> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 2.8,
                           mainAxisSpacing: 10,
@@ -7840,7 +7898,7 @@ class _ChatPageState extends State<ChatPage> {
                     borderRadius: BorderRadius.circular(20)),
               ),
               onPressed:
-                  _selectedMessageIds.isEmpty ? null : _deleteSelectedMessages,
+              _selectedMessageIds.isEmpty ? null : _deleteSelectedMessages,
             ),
           ],
         ),
@@ -7903,13 +7961,13 @@ class _ChatPageState extends State<ChatPage> {
               label: Text(l10n.screenshotShare),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    _selectedMessageIds.isEmpty ? Colors.grey : Colors.purple,
+                _selectedMessageIds.isEmpty ? Colors.grey : Colors.purple,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
               ),
               onPressed:
-                  _selectedMessageIds.isEmpty ? null : _generateAndShareImage,
+              _selectedMessageIds.isEmpty ? null : _generateAndShareImage,
             ),
           ],
         ),
@@ -7979,11 +8037,11 @@ class _ChatPageState extends State<ChatPage> {
                     shadows: _watermarkStyle == 2
                         ? null
                         : const [
-                            BoxShadow(
-                                color: Colors.black45,
-                                blurRadius: 4,
-                                offset: Offset(0, 2))
-                          ],
+                      BoxShadow(
+                          color: Colors.black45,
+                          blurRadius: 4,
+                          offset: Offset(0, 2))
+                    ],
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -8180,8 +8238,8 @@ class _ChatPageState extends State<ChatPage> {
                         color: _watermarkStyle == 0
                             ? theme.colorScheme.primary.withValues(alpha: 0.2)
                             : (_watermarkStyle == 1
-                                ? Colors.white.withValues(alpha: 0.2)
-                                : Colors.black.withValues(alpha: 0.2)),
+                            ? Colors.white.withValues(alpha: 0.2)
+                            : Colors.black.withValues(alpha: 0.2)),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -8234,76 +8292,76 @@ class _ChatPageState extends State<ChatPage> {
               opacity: 0.55,
               child: type == 'image'
                   ? Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: _buildChatImage(path),
-                          ),
-                          if (text.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              child: Text(
-                                text,
-                                style: TextStyle(
-                                  color: theme.colorScheme.onPrimary,
-                                  fontSize: 14,
-                                  height: 1.35,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    )
-                  : Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.play_arrow_rounded),
-                              const SizedBox(width: 8),
-                              _buildStaticAudioWave(),
-                              const SizedBox(width: 8),
-                              Text(l10n.chatPageVoiceUploading),
-                            ],
-                          ),
-                          if (text.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              text,
-                              style: TextStyle(
-                                color: theme.colorScheme.onPrimaryContainer,
-                                fontSize: 14,
-                                height: 1.35,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: _buildChatImage(path),
                     ),
+                    if (text.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        child: Text(
+                          text,
+                          style: TextStyle(
+                            color: theme.colorScheme.onPrimary,
+                            fontSize: 14,
+                            height: 1.35,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              )
+                  : Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.play_arrow_rounded),
+                        const SizedBox(width: 8),
+                        _buildStaticAudioWave(),
+                        const SizedBox(width: 8),
+                        Text(l10n.chatPageVoiceUploading),
+                      ],
+                    ),
+                    if (text.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontSize: 14,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
             const SizedBox(
               width: 26,
@@ -8349,10 +8407,10 @@ class _ChatPageState extends State<ChatPage> {
       final msgsToExport = _localMessages
           .where(
             (m) => _selectedMessageIds.contains(m.id),
-          )
+      )
           .toList()
         ..sort(
-          (a, b) => a.timestamp.compareTo(b.timestamp),
+              (a, b) => a.timestamp.compareTo(b.timestamp),
         );
 
       try {
@@ -8430,32 +8488,32 @@ class _ChatPageState extends State<ChatPage> {
                         onPressed: isRecapturing
                             ? null
                             : () async {
-                                setDialogState(() {
-                                  isRecapturing = true;
-                                });
+                          setDialogState(() {
+                            isRecapturing = true;
+                          });
 
-                                try {
-                                  setState(() {
-                                    _watermarkStyle = (_watermarkStyle + 1) % 3;
-                                  });
+                          try {
+                            setState(() {
+                              _watermarkStyle = (_watermarkStyle + 1) % 3;
+                            });
 
-                                  final newBytes = await takePicture();
+                            final newBytes = await takePicture();
 
-                                  if (!innerContext.mounted) return;
+                            if (!innerContext.mounted) return;
 
-                                  setDialogState(() {
-                                    imageBytes = newBytes;
-                                  });
-                                } catch (e) {
-                                  debugPrint('重新產生截圖失敗：$e');
-                                } finally {
-                                  if (innerContext.mounted) {
-                                    setDialogState(() {
-                                      isRecapturing = false;
-                                    });
-                                  }
-                                }
-                              },
+                            setDialogState(() {
+                              imageBytes = newBytes;
+                            });
+                          } catch (e) {
+                            debugPrint('重新產生截圖失敗：$e');
+                          } finally {
+                            if (innerContext.mounted) {
+                              setDialogState(() {
+                                isRecapturing = false;
+                              });
+                            }
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -8463,20 +8521,20 @@ class _ChatPageState extends State<ChatPage> {
                     width: 400,
                     child: isRecapturing
                         ? const SizedBox(
-                            height: 200,
-                            child: Center(
-                                child: CircularProgressIndicator())) // 重拍時顯示轉圈圈
+                        height: 200,
+                        child: Center(
+                            child: CircularProgressIndicator())) // 重拍時顯示轉圈圈
                         : SingleChildScrollView(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.memory(
-                                imageBytes,
-                                fit: BoxFit.contain,
-                                filterQuality: FilterQuality.medium,
-                                cacheWidth: 800,
-                              ), // 顯示拍好的照片
-                            ),
-                          ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.memory(
+                          imageBytes,
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.medium,
+                          cacheWidth: 800,
+                        ), // 顯示拍好的照片
+                      ),
+                    ),
                   ),
                   actions: [
                     TextButton(
@@ -8523,11 +8581,364 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+
+  Future<void> _showChatSideMenu() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    Future<void> closeThen(Future<void> Function() action) async {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+      if (!mounted) return;
+      await action();
+    }
+
+    await ChatSideMenu.show(
+      context,
+      menu: ChatSideMenu(
+        searchLabel: l10n.chat_menu_search,
+        saveTranscriptLabel: '保存對話紀錄',
+        galleryLabel: l10n.chat_menu_gallery,
+        aboutMeLabel: l10n.chat_menu_aboutme,
+        aboutUsLabel: l10n.chat_menu_aboutus,
+        memoLabel: l10n.chat_menu_memo,
+        periodLabel: l10n.chat_menu_period,
+        resetLabel: l10n.chat_menu_reset,
+
+        modelLabel: '回覆模型',
+        dailyLabel: l10n.chatModeDaily,
+        storyLabel: l10n.chatModeStory,
+        immersiveLabel: l10n.chatModeImmersive,
+        callLabel: l10n.chat_voice_call,
+        currentModeId: (_currentMode ?? ChatMode.daily).name,
+
+        onSearch: () {
+          closeThen(() async {
+            final String? selectedMessageId = await showSearch<String>(
+              context: context,
+              delegate: ChatHistorySearchDelegate(_localMessages),
+            );
+            if (selectedMessageId != null) {
+              _jumpToMessage(selectedMessageId);
+            }
+          });
+        },
+
+        onSaveTranscript: () {
+          closeThen(_saveChatTranscript);
+        },
+
+        onGallery: () {
+          closeThen(() async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BackgroundSettingsPage(
+                  character: _currentCharacter,
+                  characterId: _currentCharacter.id,
+                ),
+              ),
+            );
+          });
+        },
+
+        onAboutMe: () {
+          closeThen(() async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AboutMePage(
+                  character: _currentCharacter,
+                ),
+              ),
+            );
+          });
+        },
+
+        onAboutUs: () {
+          closeThen(() async {
+            final user = FirebaseAuth.instance.currentUser;
+            if (user == null) return;
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AboutUsPage(
+                  currentUserId: user.uid,
+                  characterId: _currentCharacter.id,
+                ),
+              ),
+            );
+          });
+        },
+
+        onMemo: () {
+          closeThen(() async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MemoPage(
+                  character: _currentCharacter,
+                ),
+              ),
+            );
+          });
+        },
+
+        onPeriod: () {
+          closeThen(() async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PeriodTrackerPage(
+                  character: _currentCharacter,
+                ),
+              ),
+            );
+          });
+        },
+
+        // 直接 await 原本模式切換邏輯。
+        // 側邊選單自己也會立即更新 selected，不會再永遠卡在「日常」。
+        onModeSelected: (modeId) async {
+          await _switchChatModeFromDropdown(modeId);
+        },
+
+        onCall: () {
+          closeThen(() async {
+            await _handleCallPress(context);
+          });
+        },
+
+        onReset: () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+          Future<void>.delayed(const Duration(milliseconds: 120), () {
+            if (mounted) _resetChat();
+          });
+        },
+      ),
+    );
+  }
+
+
+  Future<void> _saveChatTranscript() async {
+    final messages = widget.isTestMode
+        ? List<ChatMessage>.from(_testMessages)
+        : List<ChatMessage>.from(_localMessages);
+
+    if (messages.isEmpty) {
+      _showCenterToast(
+        AppLocalizations.of(context)!.chat_empty_msg,
+        isError: true,
+      );
+      return;
+    }
+
+    final chronological = messages.reversed.toList();
+    final buffer = StringBuffer();
+    buffer.writeln('《戀戀拾光》');
+    buffer.writeln('${_currentCharacter.name} · 對話紀錄');
+    buffer.writeln('--------------------------------');
+
+    for (final message in chronological) {
+      final senderName = message.sender == 'ai'
+          ? _currentCharacter.name
+          : message.sender == 'user'
+          ? _playerNickname
+          : 'System';
+      final time = DateFormat('yyyy/MM/dd HH:mm').format(
+        message.timestamp.toDate(),
+      );
+
+      buffer.writeln();
+      buffer.writeln('[$time] $senderName');
+      if (message.text.trim().isNotEmpty) {
+        buffer.writeln(message.text.trim());
+      }
+      if (message.type != 'text' && message.path.trim().isNotEmpty) {
+        buffer.writeln('[${message.type}] ${message.path}');
+      }
+    }
+
+    final data = Uint8List.fromList(
+      utf8.encode(buffer.toString()),
+    );
+
+    final file = XFile.fromData(
+      data,
+      mimeType: 'text/plain',
+      name: 'lianlian_${_currentCharacter.name}_chat.txt',
+    );
+
+    await Share.shareXFiles(
+      [file],
+      text: '${_currentCharacter.name} · 對話紀錄',
+    );
+  }
+
+  Future<void> _handleRegenerateButton() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    try {
+      if (_freeRegenerateCount <= 0) {
+        _showSubscriptionDialog();
+        return;
+      }
+
+      if (_messagesCollection == null) {
+        _showCenterToast(
+          l10n.systemPreparingWait,
+          isError: true,
+        );
+        return;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final skipWarning = prefs.getBool('hide_regenerate_warning') ?? false;
+
+      if (!skipWarning) {
+        bool dontShowAgain = false;
+        final confirmed = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) {
+            final theme = Theme.of(dialogContext);
+
+            return StatefulBuilder(
+              builder: (context, setDialogState) {
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  title: Text(
+                    l10n.regenerateButtonLabel(
+                      _freeRegenerateCount,
+                      _maxRegenerateCount,
+                    ),
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '將重新產生角色上一則回覆。',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.72),
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        activeColor: theme.colorScheme.primary,
+                        value: dontShowAgain,
+                        title: const Text('不再顯示此提示'),
+                        onChanged: (value) {
+                          setDialogState(() {
+                            dontShowAgain = value ?? false;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.of(dialogContext).pop(false),
+                      child: Text(l10n.cancelButton),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                      ),
+                      onPressed: () async {
+                        if (dontShowAgain) {
+                          await prefs.setBool(
+                            'hide_regenerate_warning',
+                            true,
+                          );
+                        }
+                        if (!dialogContext.mounted) return;
+                        Navigator.of(dialogContext).pop(true);
+                      },
+                      child: Text(l10n.confirm_button),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+
+        if (confirmed != true) return;
+      }
+
+      final querySnapshot = await _messagesCollection!
+          .orderBy('timestamp', descending: true)
+          .limit(2)
+          .get();
+
+      if (!mounted) return;
+
+      if (querySnapshot.docs.length < 2) {
+        _showCenterToast(
+          l10n.noMessagesToRegenerate,
+          isError: true,
+        );
+        return;
+      }
+
+      final aiMessageId = querySnapshot.docs[0].id;
+      final userMessageText =
+      ((querySnapshot.docs[1].data() as Map<String, dynamic>)['text'] ?? '')
+          .toString()
+          .trim();
+
+      if (userMessageText.isEmpty) {
+        _showCenterToast(
+          l10n.noMessagesToRegenerate,
+          isError: true,
+        );
+        return;
+      }
+
+      final regenerateSucceeded = await _regenerateAIResponse(
+        aiMessageId,
+        userMessageText,
+      );
+
+      if (!regenerateSucceeded) return;
+
+      final consumed = await _consumeRegenerateCount();
+      if (!consumed) {
+        await _loadRegenerateCount();
+        debugPrint(
+          '⚠️ 重新生成成功，但扣除重新生成次數失敗',
+        );
+      }
+    } catch (e, stackTrace) {
+      debugPrint('❌ 重新生成按鈕流程失敗：$e');
+      debugPrint('$stackTrace');
+
+      if (!mounted) return;
+
+      _showCenterToast(
+        l10n.chatPageRegenerateFailed,
+        isError: true,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final roomLockKey =
-        (_sessionId ?? widget.sessionId ?? widget.character.id).trim();
+    (_sessionId ?? widget.sessionId ?? widget.character.id).trim();
     // 🚨 只有極端情況才給全螢幕載入
     if (widget.character.name == l10n.chat_loading_status) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -8550,739 +8961,316 @@ class _ChatPageState extends State<ChatPage> {
       child: Container(
         decoration: themeNotifier.characterChatBackground,
         child: Stack(
-          children: [
-            // 🌟 總裁補丁 2：替換這裡！讓漸層色可以透出來
-            Positioned.fill(
-              child: Container(
-                color: hasPhotoBackground
-                    ? theme.colorScheme.surface
-                        .withValues(alpha: 0.6) // 有照片：蓋半透明底色
-                    : Colors.transparent, // ✨ 沒照片：完全透明！讓櫻花粉、湛藍海完美透出！
-              ),
-            ),
-            Scaffold(
-              backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
-              appBar: AppBar(
-                toolbarHeight: 52,
-                title: Text(_currentCharacter.name),
-                backgroundColor: theme.appBarTheme.backgroundColor
-                    ?.withValues(alpha: 0.5), // 半透明 AppBar
-                elevation: 0,
-                foregroundColor: theme.colorScheme.onBackground,
-                actions: [
-                  PopupMenuButton<String>(
-                      icon: Icon(Icons.menu,
-                          color: Theme.of(context).colorScheme.onSurface),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      offset: const Offset(0, 50),
-                      color: theme.cardColor.withValues(alpha: 0.95),
-                      onSelected: (value) async {
-                        switch (value) {
-                          case 'search':
-                            final String? selectedMessageId =
-                                await showSearch<String>(
-                              context: context,
-                              delegate:
-                                  ChatHistorySearchDelegate(_localMessages),
-                            );
-                            if (selectedMessageId != null) {
-                              _jumpToMessage(selectedMessageId);
-                            }
-                            break;
-                          case 'gallery':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BackgroundSettingsPage(
-                                  character: _currentCharacter,
-                                  characterId: _currentCharacter.id,
-                                ),
-                              ),
-                            );
-                            break;
-                          case 'about_me':
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AboutMePage(
-                                        character: _currentCharacter)));
-                            break;
-                          case 'about_us':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AboutUsPage(
-                                  // 帶入目前的玩家 ID
-                                  currentUserId:
-                                      FirebaseAuth.instance.currentUser!.uid,
-                                  // ✨ 這裡要加上底線，改成 _currentCharacter.id 喔！
-                                  characterId: _currentCharacter.id,
-                                ),
-                              ),
-                            );
-                            break;
-                          case 'memo':
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MemoPage(
-                                        character: _currentCharacter)));
-                            break;
-                          case 'period':
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PeriodTrackerPage(
-                                        character: _currentCharacter)));
-                            break;
-                          case 'reset':
-                            _resetChat();
-                            break;
-                        }
-                      },
-                      itemBuilder: (BuildContext context) =>
-                          <PopupMenuEntry<String>>[
-                            PopupMenuItem<String>(
-                              value: 'search',
-                              child: ListTile(
-                                leading: const Icon(Icons.search),
-                                title: Text(l10n.chat_menu_search),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            const PopupMenuDivider(),
-                            PopupMenuItem<String>(
-                              value: 'gallery',
-                              child: ListTile(
-                                leading: const Icon(Icons.wallpaper,
-                                    color: Colors.purple),
-                                title: Text(l10n.chat_menu_gallery),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            const PopupMenuDivider(),
-                            PopupMenuItem<String>(
-                              value: 'about_me',
-                              child: ListTile(
-                                leading: const Icon(
-                                    Icons.face_retouching_natural,
-                                    color: Colors.pinkAccent),
-                                title: Text(l10n.chat_menu_aboutme),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            // ✨ 新增在這裡：關於我們 (專屬回憶與劇情設定)
-                            PopupMenuItem<String>(
-                              value: 'about_us',
-                              child: ListTile(
-                                // ✨ 這裡換成了愛心圖示，並配上浪漫的淡藍色！
-                                leading: const Icon(Icons.favorite,
-                                    color: Color(0xFF7BD1FF)),
-                                title: Text(l10n.chat_menu_aboutus),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            PopupMenuItem<String>(
-                              value: 'memo',
-                              child: ListTile(
-                                leading: const Icon(Icons.note_alt_outlined,
-                                    color: Colors.orange),
-                                title: Text(l10n.chat_menu_memo),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            PopupMenuItem<String>(
-                              value: 'period',
-                              child: ListTile(
-                                leading: const Icon(Icons.water_drop_outlined,
-                                    color: Colors.redAccent),
-                                title: Text(l10n.chat_menu_period),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            const PopupMenuDivider(),
-                            PopupMenuItem<String>(
-                              value: 'reset',
-                              child: ListTile(
-                                leading: const Icon(Icons.restart_alt_rounded,
-                                    color: Colors.red),
-                                title: Text(l10n.chat_menu_reset,
-                                    style: const TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold)),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                          ]),
-                ],
-              ),
-              // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
-              body: Column(
-                children: [
-                  // ✨ 1. 精簡頂部狀態欄
-                  Container(
-                    height: 42,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor.withValues(alpha: 0.5),
-                      border: Border(
-                        bottom: BorderSide(
-                          color: theme.dividerColor,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        // 模式選擇
-                        if (_currentMode == null)
-                          const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          )
-                        else if (_currentMode == ChatMode.gemini)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surface
-                                  .withValues(alpha: 0.5),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: Colors.grey.withValues(alpha: 0.3),
-                              ),
-                            ),
-                            child: Text(
-                              _getModeName(_currentMode!),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.7),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          )
-                        else
-                          InkWell(
-                            onTap: _showModeSelectionDialog,
-                            borderRadius: BorderRadius.circular(16),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surface
-                                    .withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: theme.colorScheme.primary
-                                      .withValues(alpha: 0.45),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    _getModeName(_currentMode!),
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.onSurface,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 2),
-                                  Icon(
-                                    Icons.arrow_drop_down,
-                                    size: 15,
-                                    color: theme.colorScheme.onSurface,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                        const SizedBox(width: 8),
-
-                        // 好感度、關係與花花點數
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerRight,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(
-                                    _getCurrentStage(
-                                      _currentFriendship.clamp(0, 9999),
-                                    ).imagePath,
-                                    width: 22,
-                                    height: 22,
-                                    fit: BoxFit.contain,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '$_currentFriendship / $nextStageThreshold',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: theme.colorScheme.onSurface
-                                          .withValues(alpha: 0.8),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    _currentFriendship.relationshipTitle(l10n),
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w800,
-                                      color: _currentFriendship.titleColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-
-                                  // 花花點數
-                                  InkWell(
-                                    onTap: kIsWeb
-                                        ? null
-                                        : () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const StorePage(),
-                                              ),
-                                            ),
-                                    borderRadius: BorderRadius.circular(14),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 3,
-                                        vertical: 2,
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Image.asset(
-                                            theme.brightness == Brightness.dark
-                                                ? 'assets/images/flower_gift_dark.png'
-                                                : 'assets/images/flower_gift.png',
-                                            width: 18,
-                                            height: 18,
-                                          ),
-                                          const SizedBox(width: 3),
-                                          Text(
-                                            _formatPoints(_flowerPoints),
-                                            style: theme.textTheme.labelMedium
-                                                ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: theme.colorScheme.primary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (_isQixiRoom) _buildQixiProgressCard(theme),
-                  // ✨ 2. 中間訊息列表
-                  Expanded(
-                    child: _isLoading
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-
-                        // 測試模式必須先判斷，因為它本來就沒有正式 session
-                        : widget.isTestMode
-                            ? (_testMessages.isEmpty && !_isGenerating
-                                ? Center(
-                                    child: Text(
-                                      l10n.chat_test_mode_msg,
-                                    ),
-                                  )
-                                : _buildMessageList(
-                                    _testMessages,
-                                  ))
-
-                            // 只有正式聊天室才檢查這兩個資料
-                            : (_sessionId == null ||
-                                    _messagesCollection == null)
-                                ? Center(
-                                    child: Text(
-                                      l10n.chat_loading_failed,
-                                    ),
-                                  )
-                                : StreamBuilder<QuerySnapshot>(
-                                    stream: _messagesCollection!
-                                        .orderBy('timestamp', descending: true)
-                                        .snapshots(),
-                                    builder: (context, snapshot) {
-                                      if (!snapshot.hasData)
-                                        return const Center(
-                                            child: CircularProgressIndicator());
-                                      if (snapshot.hasError)
-                                        return Center(
-                                            child: Text(
-                                                l10n.chat_error_load_msg(
-                                                    snapshot.error
-                                                        .toString())));
-
-                                      final messages = snapshot.data!.docs
-                                          .map((doc) =>
-                                              ChatMessage.fromFirestore(doc))
-                                          .toList();
-                                      _localMessages = messages;
-
-                                      // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
-                                      if (messages.isNotEmpty) {
-                                        final latestMessage = messages.first;
-
-                                        if (_isGenerating &&
-                                            _waitingForNewAiReply &&
-                                            latestMessage.sender == 'ai') {
-                                          final lastUserSendTime =
-                                              _lastUserSendTime;
-                                          final DateTime? aiMessageTime =
-                                              latestMessage.timestamp?.toDate();
-
-                                          final bool isNewAiReply =
-                                              lastUserSendTime != null &&
-                                                  aiMessageTime != null &&
-                                                  aiMessageTime.isAfter(
-                                                      lastUserSendTime);
-
-                                          if (isNewAiReply) {
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback((_) {
-                                              if (!mounted) return;
-
-                                              setState(() {
-                                                _isGenerating = false;
-                                                _isLoading = false;
-                                                _waitingForNewAiReply = false;
-                                              });
-
-                                              generatingRooms
-                                                  .remove(_roomLockKey);
-
-                                              debugPrint(
-                                                  "✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
-                                            });
-                                          }
-                                        }
-                                      }
-                                      // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
-                                      if (messages.isEmpty && !_isGenerating) {
-                                        return Center(
-                                            child: Text(l10n.chat_empty_msg));
-                                      }
-                                      return Column(
-                                        children: [
-                                          Expanded(
-                                            child: _buildMessageList(messages),
-                                          ),
-                                          if (_isRegenerating)
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                16,
-                                                8,
-                                                16,
-                                                12,
-                                              ),
-                                              child: Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 14,
-                                                    vertical: 10,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .surfaceContainerHighest
-                                                        .withValues(
-                                                            alpha: 0.75),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            18),
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      SizedBox(
-                                                        width: 15,
-                                                        height: 15,
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          strokeWidth: 2,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 10),
-                                                      Text(
-                                                        l10n.chatPageRegenerating,
-                                                        style: TextStyle(
-                                                          fontSize: 13,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSurface
-                                                                  .withValues(
-                                                                      alpha:
-                                                                          0.72),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                  ),
-                  if (_isScreenshotMode)
-                    // 如果是截圖模式，就顯示專屬操作列
-                    _buildScreenshotBottomBar()
-                  else ...[
-                    // ✨ 3. 底部（）快捷鍵區
-                    showInputExtras
-                        ? Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            color: theme.cardColor.withValues(alpha: 0.5),
-                            child: Row(
-                              children: [
-                                OutlinedButton(
-                                  onPressed: (_isGenerating || _isLoading)
-                                      ? null
-                                      : () {
-                                          final text = _textController.text;
-
-                                          final selection =
-                                              _textController.selection;
-
-                                          int cursorPosition =
-                                              selection.baseOffset;
-
-                                          if (cursorPosition < 0 ||
-                                              cursorPosition > text.length) {
-                                            cursorPosition = text.length;
-                                          }
-
-                                          final newText = text.substring(
-                                                0,
-                                                cursorPosition,
-                                              ) +
-                                              '（）' +
-                                              text.substring(
-                                                cursorPosition,
-                                              );
-
-                                          _textController.value =
-                                              TextEditingValue(
-                                            text: newText,
-                                            selection: TextSelection.collapsed(
-                                              offset: cursorPosition + 1,
-                                            ),
-                                          );
-
-                                          _focusNode.requestFocus();
-                                        },
-                                  style: OutlinedButton.styleFrom(
-                                    minimumSize: const Size(42, 30),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                    ),
-                                    visualDensity: VisualDensity.compact,
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                  ),
-                                  child: const Text('（）'),
-                                ),
-                              ],
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-
-                    // 🌟 多選模式 / 平常輸入框
-                    if (_isMultiSelectMode)
-                      _buildMultiSelectBottomBar()
-                    else
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 4.0),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          boxShadow: const [
-                            BoxShadow(
-                              blurRadius: 2,
-                              offset: Offset(0, -1),
-                              color: Colors.black12,
-                            ),
-                          ],
-                        ),
-                        child: SafeArea(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (_selectedChatImagePath != null)
-                                _buildSelectedChatImagePreview(),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.cloud_outlined),
-                                    onPressed: (_isGenerating || _isLoading)
-                                        ? null
-                                        : _showToolbox,
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        showInputExtras
-                                            ? ValueListenableBuilder<
-                                                TextEditingValue>(
-                                                valueListenable:
-                                                    _textController,
-                                                builder:
-                                                    (context, value, child) {
-                                                  return Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                      right: 12,
-                                                      top: 2,
-                                                    ),
-                                                    child: Text(
-                                                      '${value.text.length}/900',
-                                                      style: TextStyle(
-                                                        fontSize: 10,
-                                                        color:
-                                                            value.text.length >=
-                                                                    900
-                                                                ? Colors.red
-                                                                : Colors.grey,
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              )
-                                            : const SizedBox.shrink(),
-                                        TextField(
-                                          controller: _textController,
-                                          focusNode: _focusNode,
-                                          onChanged: (text) {
-                                            _saveDraft(text);
-                                          },
-                                          readOnly:
-                                              (_isGenerating || _isLoading),
-                                          minLines: 1,
-                                          maxLines: 4,
-                                          maxLength: 900,
-                                          keyboardType: TextInputType.multiline,
-                                          decoration: InputDecoration(
-                                            hintText: _isGenerating
-                                                ? AppLocalizations.of(context)
-                                                        ?.chat_ai_typing ??
-                                                    l10n.chatTypingIndicator
-                                                : AppLocalizations.of(context)
-                                                        ?.chat_input_hint_default ??
-                                                l10n.chatInputHint,
-                                            border: InputBorder.none,
-                                            counterText: "",
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                              vertical: 8.0,
-                                              horizontal: 12.0,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: _isGenerating
-                                        ? const Icon(
-                                            Icons.stop_circle_outlined,
-                                            color: Colors.red,
-                                          )
-                                        : Icon(
-                                            Icons.send,
-                                            color: _isLoading
-                                                ? Colors.grey
-                                                : Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                          ),
-                                    onPressed: _isGenerating
-                                        ? _stopGenerating
-                                        : (_isLoading
-                                            ? null
-                                            : () async {
-                                                final text =
-                                                    _textController.text.trim();
-                                                final imagePath =
-                                                    _selectedChatImagePath;
-
-                                                // 文字跟圖片都沒有，才不送
-                                                if (text.isEmpty &&
-                                                    (imagePath == null ||
-                                                        imagePath.isEmpty)) {
-                                                  return;
-                                                }
-
-                                                // 先抓出圖片，再清掉畫面預覽
-                                                setState(() {
-                                                  _selectedChatImagePath = null;
-                                                });
-
-                                                await _sendMessage(
-                                                  text: text,
-                                                  imagePath: imagePath,
-                                                  showInChat: true,
-                                                );
-                                              }),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
+            children: [
+        // 🌟 總裁補丁 2：替換這裡！讓漸層色可以透出來
+        Positioned.fill(
+        child: Container(
+        color: hasPhotoBackground
+        ? theme.colorScheme.surface
+            .withValues(alpha: 0.6) // 有照片：蓋半透明底色
+            : Colors.transparent, // ✨ 沒照片：完全透明！讓櫻花粉、湛藍海完美透出！
       ),
+    ),
+    Scaffold(
+    backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
+    appBar: ChatHeader(
+    characterName: _currentCharacter.name,
+    friendship: _currentFriendship,
+    nextThreshold: nextStageThreshold,
+    flowerPoints: _flowerPoints,
+    onBack: () => Navigator.maybePop(context),
+    onMenuTap: _showChatSideMenu,
+    ),
+    // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
+    body: Column(
+    children: [
+    // 頂部資訊已移至 ChatHeader
+    if (_isQixiRoom) _buildQixiProgressCard(theme),
+    // ✨ 2. 中間訊息列表
+    Expanded(
+    child: _isLoading
+    ? const Center(
+    child: CircularProgressIndicator(),
+    )
+
+    // 測試模式必須先判斷，因為它本來就沒有正式 session
+        : widget.isTestMode
+    ? (_testMessages.isEmpty && !_isGenerating
+    ? Center(
+    child: Text(
+    l10n.chat_test_mode_msg,
+    ),
+    )
+        : _buildMessageList(
+    _testMessages,
+    ))
+
+    // 只有正式聊天室才檢查這兩個資料
+        : (_sessionId == null ||
+    _messagesCollection == null)
+    ? Center(
+    child: Text(
+    l10n.chat_loading_failed,
+    ),
+    )
+        : StreamBuilder<QuerySnapshot>(
+    stream: _messagesCollection!
+        .orderBy('timestamp', descending: true)
+        .snapshots(),
+    builder: (context, snapshot) {
+    if (!snapshot.hasData)
+    return const Center(
+    child: CircularProgressIndicator());
+    if (snapshot.hasError)
+    return Center(
+    child: Text(
+    l10n.chat_error_load_msg(
+    snapshot.error
+        .toString())));
+
+    final messages = snapshot.data!.docs
+        .map((doc) =>
+    ChatMessage.fromFirestore(doc))
+        .toList();
+    _localMessages = messages;
+
+    // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
+    if (messages.isNotEmpty) {
+    final latestMessage = messages.first;
+
+    if (_isGenerating &&
+    _waitingForNewAiReply &&
+    latestMessage.sender == 'ai') {
+    final lastUserSendTime =
+    _lastUserSendTime;
+    final DateTime? aiMessageTime =
+    latestMessage.timestamp?.toDate();
+
+    final bool isNewAiReply =
+    lastUserSendTime != null &&
+    aiMessageTime != null &&
+    aiMessageTime.isAfter(
+    lastUserSendTime);
+
+    if (isNewAiReply) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) {
+    if (!mounted) return;
+
+    setState(() {
+    _isGenerating = false;
+    _isLoading = false;
+    _waitingForNewAiReply = false;
+    });
+
+    generatingRooms
+        .remove(_roomLockKey);
+
+    debugPrint(
+    "✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
+    });
+    }
+    }
+    }
+    // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
+    if (messages.isEmpty && !_isGenerating) {
+    return Center(
+    child: Text(l10n.chat_empty_msg));
+    }
+    return Column(
+    children: [
+    Expanded(
+    child: _buildMessageList(messages),
+    ),
+    if (_isRegenerating)
+    Padding(
+    padding:
+    const EdgeInsets.fromLTRB(
+    16,
+    8,
+    16,
+    12,
+    ),
+    child: Align(
+    alignment: Alignment.centerLeft,
+    child: Container(
+    padding: const EdgeInsets
+        .symmetric(
+    horizontal: 14,
+    vertical: 10,
+    ),
+    decoration: BoxDecoration(
+    color: Theme.of(context)
+        .colorScheme
+        .surfaceContainerHighest
+        .withValues(
+    alpha: 0.75),
+    borderRadius:
+    BorderRadius.circular(
+    18),
+    ),
+    child: Row(
+    mainAxisSize:
+    MainAxisSize.min,
+    children: [
+    SizedBox(
+    width: 15,
+    height: 15,
+    child:
+    CircularProgressIndicator(
+    strokeWidth: 2,
+    color:
+    Theme.of(context)
+        .colorScheme
+        .primary,
+    ),
+    ),
+    const SizedBox(width: 10),
+    Text(
+    l10n.chatPageRegenerating,
+    style: TextStyle(
+    fontSize: 13,
+    color:
+    Theme.of(context)
+        .colorScheme
+        .onSurface
+        .withValues(
+    alpha:
+    0.72),
+    ),
+    ),
+    ],
+    ),
+    ),
+    ),
+    ),
+    ],
     );
-  }
+    },
+    ),
+    ),
+    if (_isScreenshotMode)
+    // 如果是截圖模式，就顯示專屬操作列
+    _buildScreenshotBottomBar()
+    else ...[
+    // ✨ 3. 底部（）快捷鍵區
+    showInputExtras
+    ? Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(
+    horizontal: 8,
+    vertical: 3,
+    ),
+    color: theme.cardColor.withValues(alpha: 0.5),
+    child: Row(
+    children: [
+    OutlinedButton(
+    onPressed: (_isGenerating || _isLoading)
+    ? null
+        : () {
+    final text = _textController.text;
+
+    final selection =
+    _textController.selection;
+
+    int cursorPosition =
+    selection.baseOffset;
+
+    if (cursorPosition < 0 ||
+    cursorPosition > text.length) {
+    cursorPosition = text.length;
+    }
+
+    final newText = text.substring(
+    0,
+    cursorPosition,
+    ) +
+    '（）' +
+    text.substring(
+    cursorPosition,
+    );
+
+    _textController.value =
+    TextEditingValue(
+    text: newText,
+    selection: TextSelection.collapsed(
+    offset: cursorPosition + 1,
+    ),
+    );
+
+    _focusNode.requestFocus();
+    },
+    style: OutlinedButton.styleFrom(
+    minimumSize: const Size(42, 30),
+    padding: const EdgeInsets.symmetric(
+    horizontal: 10,
+    ),
+    visualDensity: VisualDensity.compact,
+    tapTargetSize:
+    MaterialTapTargetSize.shrinkWrap,
+    ),
+    child: const Text('（）'),
+    ),
+    ],
+    ),
+    )
+        : const SizedBox.shrink(),
+
+    // 🌟 多選模式 / 平常輸入框
+    if (_isMultiSelectMode)
+    _buildMultiSelectBottomBar()
+    else
+    ChatInputBar(
+    controller: _textController,
+    focusNode: _focusNode,
+    isGenerating: _isGenerating,
+    isLoading: _isLoading,
+    showCounter: showInputExtras,
+    hintText: _isGenerating
+    ? (AppLocalizations.of(context)?.chat_ai_typing ??
+    l10n.chatTypingIndicator)
+        : (AppLocalizations.of(context)
+        ?.chat_input_hint_default ??
+    l10n.chatInputHint),
+    regeneratingTooltip: l10n.regenerateButtonLabel(
+    _freeRegenerateCount,
+    _maxRegenerateCount,
+    ),
+    continueTooltip: l10n.continueButton,
+    onChanged: _saveDraft,
+    onToolbox: _showToolbox,
+    onRegenerate: _handleRegenerateButton,
+    onContinue: _handleContinueButton,
+    onStop: _stopGenerating,
+    onSend: () async {
+    final text = _textController.text.trim();
+    final imagePath = _selectedChatImagePath;
+
+    if (text.isEmpty &&
+    (imagePath == null || imagePath.isEmpty)) {
+    return;
+    }
+
+    setState(() {
+    _selectedChatImagePath = null;
+    });
+
+    await _sendMessage(
+    text: text,
+    imagePath: imagePath,
+    showInChat: true,
+    );
+    },
+    ),
+    ],
+    ],
+    ),
+    ),
+    ],
+    ),
+    ),
+    );
+    }
 
 // 🗓️ 小工具 1：判斷是不是同一天 (支援 Firebase 版)
   bool _isSameDay(Timestamp ts1, Timestamp ts2) {
@@ -9375,15 +9363,15 @@ class _ChatPageState extends State<ChatPage> {
         if (sender == 'system') {
           finalMessageWidget = Container(
             padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             margin:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 48.0),
+            const EdgeInsets.symmetric(vertical: 10.0, horizontal: 48.0),
             decoration: BoxDecoration(
               color: theme.cardColor.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(12),
               border: _highlightedMessageId == message.id
                   ? Border.all(
-                      color: Colors.yellowAccent, width: 2.5) // 🌟 這裡加上邊框發光！
+                  color: Colors.yellowAccent, width: 2.5) // 🌟 這裡加上邊框發光！
                   : null,
             ),
             child: Text(
@@ -9395,102 +9383,193 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
           );
+          // ===============================
+// 聊天泡泡文青版：替換 _buildMessageList() 內
+// `} else { final isUserMessage = sender == 'user'; ... }`
+// 到 selection mode 前的整段。
+// 不更動訊息資料、長按、多選、圖片/語音功能。
+// ===============================
+
         } else {
-          final isUserMessage = sender == 'user';
-          final avatar = CircleAvatar(
-            backgroundImage: _getAvatarProvider(_currentCharacter.avatarPath),
-            onBackgroundImageError: (_, __) {},
-            backgroundColor: Colors.grey[300],
+          final bool isUserMessage = sender == 'user';
+          final Color primary = theme.colorScheme.primary;
+          final Color onSurface = theme.colorScheme.onSurface;
+
+          // AI 頭像：縮一點，外面加很淡的主題色細框。
+          final Widget avatar = Container(
+            width: 38,
+            height: 38,
+            padding: const EdgeInsets.all(1.4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: primary.withValues(alpha: 0.22),
+                width: 1,
+              ),
+            ),
+            child: CircleAvatar(
+              radius: 17,
+              backgroundImage:
+              _getAvatarProvider(_currentCharacter.avatarPath),
+              onBackgroundImageError: (_, __) {},
+              backgroundColor:
+              theme.colorScheme.surfaceContainerHighest,
+            ),
           );
 
           Widget messageContent;
 
-          // 💬 根據型態畫出對話氣泡
           if (type == 'text') {
+            // 玩家改成「淡主題色泡泡＋深色文字」，
+            // AI 則保留白/淡 surface，對話文字使用主題色。
             final normalStyle = TextStyle(
               color: isUserMessage
-                  ? theme.colorScheme.onPrimary
-                  : theme.colorScheme.primary,
-              height: 1.55,
+                  ? onSurface.withValues(alpha: 0.90)
+                  : primary,
+              fontSize: 15,
+              height: 1.62,
             );
+
             final actionStyle = TextStyle(
-                color: (isUserMessage
-                        ? theme.colorScheme.onPrimary
-                        : theme.colorScheme.onSurfaceVariant)
-                    .withValues(alpha: 0.7));
+              color: onSurface.withValues(
+                alpha: isUserMessage ? 0.68 : 0.70,
+              ),
+              fontSize: 15,
+              height: 1.62,
+            );
 
-            // ✨✨✨ 總裁修正處：在這裡把殼脫掉！ ✨✨✨
-// 先拿到原始文字或脫殼後的文字
-            String rawDisplayText =
-                isUserMessage ? message.text : _getCleanAiMessage(message.text);
+            String rawDisplayText = isUserMessage
+                ? message.text
+                : _getCleanAiMessage(message.text);
 
-// 🌟 總裁無敵淨水器：不管 AI 講了什麼括號，全部強迫替換成玩家的名字！
+            // 下面玩家名字替換請保留你原檔目前正常的三個 replaceAll。
+            // 如果你的原檔文字是正常中文，請沿用原來那三行，不要照 PowerShell 亂碼貼回去。
             final displayText = rawDisplayText
                 .replaceAll('(玩家名字)', _playerNickname)
                 .replaceAll('{{玩家名字}}', _playerNickname)
-                .replaceAll('【玩家名字】', _playerNickname); // 多加一個括號防禦以防萬一
+                .replaceAll('玩家名字', _playerNickname);
 
-            messageContent = Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: isUserMessage
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(16),
-                border: _highlightedMessageId == message.id
-                    ? Border.all(color: Colors.yellowAccent, width: 2.5)
-                    : null,
+            messageContent = ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.sizeOf(context).width * 0.88,
               ),
-              // 🌟 玩家的泡泡維持原樣，AI 的泡泡送進我們的專屬上色機！
-              child: isUserMessage
-                  ? _buildRichTextMessage(displayText,
-                      normalStyle: normalStyle, actionStyle: actionStyle)
-                  : _buildStyledAiMessage(
-                      context,
-                      displayText,
-                      normalStyle,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 11,
+                ),
+                decoration: BoxDecoration(
+                  color: isUserMessage
+                      ? Color.alphaBlend(
+                    primary.withValues(alpha: 0.18),
+                    theme.colorScheme.surface.withValues(alpha: 0.94),
+                  )
+                      : theme.colorScheme.surface.withValues(alpha: 0.90),
+                  borderRadius: isUserMessage
+                      ? const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(6),
+                    bottomLeft: Radius.circular(18),
+                    bottomRight: Radius.circular(18),
+                  )
+                      : const BorderRadius.only(
+                    topLeft: Radius.circular(6),
+                    topRight: Radius.circular(18),
+                    bottomLeft: Radius.circular(18),
+                    bottomRight: Radius.circular(18),
+                  ),
+                  border: Border.all(
+                    color: _highlightedMessageId == message.id
+                        ? Colors.yellowAccent
+                        : primary.withValues(
+                      alpha: isUserMessage ? 0.28 : 0.20,
                     ),
+                    width: _highlightedMessageId == message.id ? 2.5 : 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: onSurface.withValues(alpha: 0.035),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: isUserMessage
+                    ? _buildRichTextMessage(
+                  displayText,
+                  normalStyle: normalStyle,
+                  actionStyle: actionStyle,
+                )
+                    : _buildStyledAiMessage(
+                  context,
+                  displayText,
+                  normalStyle,
+                ),
+              ),
             );
           } else if (type == 'image') {
             final imageText = message.text.trim();
             final imagePath =
-                (message.path != null && message.path!.trim().isNotEmpty)
-                    ? message.path!.trim()
-                    : message.path.trim();
+            (message.path != null && message.path!.trim().isNotEmpty)
+                ? message.path!.trim()
+                : message.path.trim();
 
             messageContent = ConstrainedBox(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.65,
+                maxWidth: MediaQuery.sizeOf(context).width * 0.80,
               ),
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: isUserMessage
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.surfaceVariant,
-                  borderRadius: BorderRadius.circular(16),
-                  border: _highlightedMessageId == message.id
-                      ? Border.all(color: Colors.yellowAccent, width: 2.5)
-                      : null,
+                      ? primary.withValues(alpha: 0.10)
+                      : theme.colorScheme.surface.withValues(alpha: 0.90),
+                  borderRadius: isUserMessage
+                      ? const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(6),
+                    bottomLeft: Radius.circular(18),
+                    bottomRight: Radius.circular(18),
+                  )
+                      : const BorderRadius.only(
+                    topLeft: Radius.circular(6),
+                    topRight: Radius.circular(18),
+                    bottomLeft: Radius.circular(18),
+                    bottomRight: Radius.circular(18),
+                  ),
+                  border: Border.all(
+                    color: _highlightedMessageId == message.id
+                        ? Colors.yellowAccent
+                        : primary.withValues(alpha: 0.18),
+                    width: _highlightedMessageId == message.id ? 2.5 : 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: onSurface.withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(12.0),
+                      borderRadius: BorderRadius.circular(13),
                       child: _buildChatImage(imagePath),
                     ),
                     if (imageText.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      Text(
-                        imageText,
-                        style: TextStyle(
-                          color: isUserMessage
-                              ? theme.colorScheme.onPrimary
-                              : theme.colorScheme.onSurfaceVariant,
-                          fontSize: 14,
-                          height: 1.35,
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(7, 0, 7, 5),
+                        child: Text(
+                          imageText,
+                          style: TextStyle(
+                            color: onSurface.withValues(alpha: 0.86),
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
                         ),
                       ),
                     ],
@@ -9499,243 +9578,85 @@ class _ChatPageState extends State<ChatPage> {
               ),
             );
           } else {
-            final Color iconColor = isUserMessage
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurfaceVariant;
-            final Color textColor = isUserMessage
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurfaceVariant;
+            // 語音訊息同樣套用新的淡色泡泡。
+            final Color iconColor =
+            isUserMessage ? primary : primary;
+            final Color textColor =
+            onSurface.withValues(alpha: 0.82);
+
             messageContent = Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 10,
+              ),
               decoration: BoxDecoration(
                 color: isUserMessage
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(20),
+                    ? primary.withValues(alpha: 0.10)
+                    : theme.colorScheme.surface.withValues(alpha: 0.88),
+                borderRadius: isUserMessage
+                    ? const BorderRadius.only(
+                  topLeft: Radius.circular(18),
+                  topRight: Radius.circular(6),
+                  bottomLeft: Radius.circular(18),
+                  bottomRight: Radius.circular(18),
+                )
+                    : const BorderRadius.only(
+                  topLeft: Radius.circular(6),
+                  topRight: Radius.circular(18),
+                  bottomLeft: Radius.circular(18),
+                  bottomRight: Radius.circular(18),
+                ),
+                border: Border.all(
+                  color: primary.withValues(alpha: 0.18),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   InkWell(
-                      onTap: () => _playAudio(message.path),
-                      child: Icon(Icons.play_arrow, color: iconColor)),
-                  const SizedBox(width: 8),
-                  Text(l10n.chat_voice_msg_label,
-                      style: TextStyle(color: textColor))
+                    onTap: () => _playAudio(message.path),
+                    borderRadius: BorderRadius.circular(99),
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: Icon(
+                        Icons.play_arrow_rounded,
+                        color: iconColor,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 7),
+                  Text(
+                    l10n.chat_voice_msg_label,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 14,
+                    ),
+                  ),
                 ],
               ),
             );
           }
-// ✨✨✨ 貼在這裡！ ✨✨✨
-// (⚠️ 請注意：_messages 和 index 需要換成妳 ListView.builder 裡實際使用的變數名稱)
-          // ✨ 總裁看這裡：條件改成 messageIndex == 0 (因為 reverse: true，0 就是最新的一句)
-          // ✨✨✨ 按鈕完美接在這裡！ ✨✨✨
-          if (!isUserMessage && messageIndex == 0 && !_isGenerating) {
-            messageContent = Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                messageContent, // 上面的對話氣泡
-                const SizedBox(height: 4),
 
-                // 🕵️‍♂️ 總裁隱身術：只有在「非多選模式」下，才畫出下面這組按鈕
-                if (!_isMultiSelectMode)
-                  Wrap(
-                    // 🛡️ 總裁防護罩：將 Row 改成 Wrap，徹底消滅 25 像素溢出黃黑線！
-                    spacing: 8.0, // 按鈕之間的左右間距 (取代了原本的 SizedBox)
-                    runSpacing: 8.0, // 如果螢幕太小換行時的上下間距
-                    children: [
-                      // 🔄 重新生成按鈕 (升級橢圓明顯版)
-                      // 假設您在 build 函數開頭已經有：
-// final l10n = AppLocalizations.of(context)!;
-
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: (_freeRegenerateCount > 0)
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withValues(alpha: 0.15)
-                              : Colors.grey.withValues(alpha: 0.12),
-                          foregroundColor: (_freeRegenerateCount > 0)
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey,
-                          elevation: 0,
-                          shape: const StadiumBorder(),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        icon: const Icon(
-                          Icons.refresh,
-                          size: 16,
-                        ),
-                        label: Text(
-                          l10n.regenerateButtonLabel(
-                            _freeRegenerateCount,
-                            _maxRegenerateCount,
-                          ),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onPressed: () async {
-                          try {
-                            // 1. 擋下機制
-                            if (_freeRegenerateCount <= 0) {
-                              _showSubscriptionDialog();
-                              return;
-                            }
-
-                            // 2. 檢查訊息集合是否就緒
-                            if (_messagesCollection == null) {
-                              _showCenterToast(
-                                l10n.systemPreparingWait,
-                                isError: true,
-                              );
-                              return;
-                            }
-
-                            // 3. 取得最後兩筆訊息
-                            final querySnapshot = await _messagesCollection!
-                                .orderBy(
-                                  'timestamp',
-                                  descending: true,
-                                )
-                                .limit(2)
-                                .get();
-
-                            if (!mounted) return;
-
-                            if (querySnapshot.docs.length < 2) {
-                              _showCenterToast(
-                                l10n.noMessagesToRegenerate,
-                                isError: true,
-                              );
-                              return;
-                            }
-
-                            // 4. 取得 AI 訊息 ID 與上一則玩家訊息
-                            final aiMessageId = querySnapshot.docs[0].id;
-
-                            final userMessageText =
-                                ((querySnapshot.docs[1].data()
-                                            as Map<String, dynamic>)['text'] ??
-                                        '')
-                                    .toString()
-                                    .trim();
-
-                            if (userMessageText.isEmpty) {
-                              _showCenterToast(
-                                l10n.noMessagesToRegenerate,
-                                isError: true,
-                              );
-                              return;
-                            }
-
-                            // 5. 先執行重新生成
-                            // 5. 先執行重新生成，並接住成功或失敗結果
-                            final regenerateSucceeded =
-                                await _regenerateAIResponse(
-                              aiMessageId,
-                              userMessageText,
-                            );
-
-// 重新生成失敗或被取消時，直接停止。
-// 不扣免費次數，也不扣花花。
-                            if (!regenerateSucceeded) {
-                              return;
-                            }
-
-// 6. 只有真正成功後，才扣除一次免費重新生成次數
-                            final consumed = await _consumeRegenerateCount();
-
-                            if (!consumed) {
-                              await _loadRegenerateCount();
-
-                              debugPrint(
-                                '⚠️ 重新生成成功，但扣除重新生成次數失敗',
-                              );
-                            }
-                          } catch (e, stackTrace) {
-                            debugPrint('❌ 重新生成按鈕流程失敗：$e');
-                            debugPrint('$stackTrace');
-
-                            if (!mounted) return;
-
-                            _showCenterToast(
-                              l10n.chatPageRegenerateFailed,
-                              isError: true,
-                            );
-                          }
-                        },
-                      ),
-
-                      // ▶️ 繼續按鈕 (也順便幫妳改成一樣的橢圓風格)
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withValues(alpha: 0.18),
-                          foregroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          disabledBackgroundColor:
-                              Colors.grey.withValues(alpha: 0.12),
-                          disabledForegroundColor: Colors.grey,
-                          elevation: 0,
-                          shape: const StadiumBorder(),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        icon: _isGenerating || _isLoading
-                            ? const SizedBox(
-                                width: 14,
-                                height: 14,
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Icon(Icons.play_arrow, size: 16),
-                        label: Text(
-                          l10n.continueButton,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onPressed: (_isGenerating || _isLoading)
-                            ? null
-                            : () async {
-                                await _handleContinueButton();
-                              },
-                      ),
-                    ],
-                  ),
-              ],
-            );
-          }
-
-          // ⏰ 把「時間」貼到氣泡旁邊
-          Widget timeWidget = Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          // 時間：更淡、更小，避免搶走訊息內容。
+          final Widget timeWidget = Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 3,
+            ),
             child: Text(
               _getTimeString(message.timestamp),
               style: TextStyle(
-                  fontSize: 10,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                fontSize: 9.5,
+                letterSpacing: 0.2,
+                color: onSurface.withValues(alpha: 0.40),
+              ),
             ),
           );
 
           if (isUserMessage) {
-            // 🚩 這裡拿掉了原本的 GestureDetector，移到最外層統一管理
             finalMessageWidget = Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+              padding: const EdgeInsets.fromLTRB(18, 5, 8, 5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -9746,22 +9667,22 @@ class _ChatPageState extends State<ChatPage> {
               ),
             );
           } else {
-            // 🚩 這裡也拿掉了原本的 GestureDetector，移到最外層統一管理
             finalMessageWidget = Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+              padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 頭像點擊功能保留
                   GestureDetector(
                     onTap: () {
-                      _navigateToProfileFromChat(widget.character.id,
-                          widget.character.name, widget.character.avatarPath);
+                      _navigateToProfileFromChat(
+                        widget.character.id,
+                        widget.character.name,
+                        widget.character.avatarPath,
+                      );
                     },
                     child: avatar,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 9),
                   Expanded(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -9807,8 +9728,8 @@ class _ChatPageState extends State<ChatPage> {
             // ✨ 視覺優化：刪除模式給淡淡的紅色遮罩，截圖模式維持原本的主題色
             color: (isSelectionMode && isSelected)
                 ? (_isMultiSelectMode
-                    ? Colors.red.withValues(alpha: 0.15)
-                    : theme.colorScheme.primary.withValues(alpha: 0.15))
+                ? Colors.red.withValues(alpha: 0.15)
+                : theme.colorScheme.primary.withValues(alpha: 0.15))
                 : Colors.transparent,
             child: Row(
               children: [
@@ -9823,8 +9744,8 @@ class _ChatPageState extends State<ChatPage> {
                       // ✨ 視覺優化：如果是刪除模式，打勾就變成警告的紅色！
                       color: isSelected
                           ? (_isMultiSelectMode
-                              ? Colors.red
-                              : theme.colorScheme.primary)
+                          ? Colors.red
+                          : theme.colorScheme.primary)
                           : Colors.grey,
                       size: 22,
                     ),
@@ -9842,29 +9763,35 @@ class _ChatPageState extends State<ChatPage> {
           ),
         );
 
-        // ✨ 最終大組合：把日期和對話組合起來
+        // 日期分界線也改成淡淡的主題色，不再使用黑色膠囊。
         if (showDateHeader) {
           return Column(
             children: [
-              // 灰色日期標籤
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 child: Center(
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.2),
+                      color: theme.colorScheme.surface.withValues(alpha: 0.72),
                       borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                      ),
                     ),
                     child: Text(
                       _getDateString(message.timestamp),
-                      style: const TextStyle(fontSize: 12, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.48),
+                      ),
                     ),
                   ),
                 ),
               ),
-              // 下面接著畫剛才包裝好的對話
               wrappedMessage,
             ],
           );
@@ -9893,7 +9820,7 @@ Future<void> _deleteMessagesFromDB(
     final db = FirebaseFirestore.instance;
     // 鎖定目標房間：/users/玩家ID/chatMessages/
     final chatRef =
-        db.collection('users').doc(actualUserId).collection('chatMessages');
+    db.collection('users').doc(actualUserId).collection('chatMessages');
 
     // 殺掉 AI 的訊息
     await chatRef.doc(aiMessageId).delete();
@@ -9912,10 +9839,10 @@ Future<void> _deleteMessagesFromDB(
 // 2. （動作）使用主要文字色，並隱藏外層括號
 // 3. 狀態欄與其他普通文字維持主要文字色
 Widget _buildStyledAiMessage(
-  BuildContext context,
-  String message,
-  TextStyle dialogueStyle,
-) {
+    BuildContext context,
+    String message,
+    TextStyle dialogueStyle,
+    ) {
   if (message.trim().isEmpty) {
     return const SizedBox.shrink();
   }
@@ -9971,9 +9898,9 @@ Widget _buildStyledAiMessage(
       // 只移除最外層括號，不修改資料庫中的原始訊息。
       final String actionText = matchedText.length >= 2
           ? matchedText.substring(
-              1,
-              matchedText.length - 1,
-            )
+        1,
+        matchedText.length - 1,
+      )
           : matchedText;
 
       spans.add(
@@ -10014,7 +9941,7 @@ Widget _buildStyledAiMessage(
 String _getCleanAiMessage(String rawText) {
   // 🌟 1. 先把可能存在的 Markdown 標籤拿掉，防止干擾
   String processedText =
-      rawText.replaceAll('```json', '').replaceAll('```', '').trim();
+  rawText.replaceAll('```json', '').replaceAll('```', '').trim();
 
   // 🌟 2. 檢查有沒有包含 JSON 關鍵字
   if (processedText.contains('"response":')) {
@@ -10084,7 +10011,7 @@ class ChatHistorySearchDelegate extends SearchDelegate<String> {
     if (query.isEmpty) {
       return Center(
         child:
-            Text(l10n.chat_search_hint, style: TextStyle(color: Colors.grey)),
+        Text(l10n.chat_search_hint, style: TextStyle(color: Colors.grey)),
       );
     }
 

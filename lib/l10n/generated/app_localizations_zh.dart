@@ -972,7 +972,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get test_mode_tooltip => '完整功能測試 ';
+  String get test_mode_tooltip => '測試 ';
 
   @override
   String get test_mode_notice => '測試模式將依照各模式原價扣點，且不計入正式回憶喔！';
@@ -6974,7 +6974,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   }
 
   @override
-  String get test_mode_tooltip => '完整功能测试 ';
+  String get test_mode_tooltip => '测试 ';
 
   @override
   String get test_mode_notice => '测试模式将依照各模式原价扣点，且不计入正式回忆喔！';
@@ -12976,7 +12976,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get test_mode_tooltip => '完整功能測試 ';
+  String get test_mode_tooltip => '測試 ';
 
   @override
   String get test_mode_notice => '測試模式將依照各模式原價扣點，且不計入正式回憶喔！';
