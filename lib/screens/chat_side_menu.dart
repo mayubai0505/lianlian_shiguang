@@ -391,8 +391,8 @@ class _MenuTile extends StatelessWidget {
               child: Center(
                 child: Image.asset(
                   asset,
-                  width: 34,
-                  height: 34,
+                  width: 38,
+                  height: 38,
                   fit: BoxFit.contain,
                   color: color.withValues(alpha: danger ? 0.92 : 0.86),
                   colorBlendMode: BlendMode.srcIn,
@@ -473,8 +473,8 @@ class _ModeTile extends StatelessWidget {
           children: [
             Image.asset(
               asset,
-              width: 29,
-              height: 29,
+              width: 33,
+              height: 33,
               fit: BoxFit.contain,
               color: primary.withValues(
                 alpha: disabled
