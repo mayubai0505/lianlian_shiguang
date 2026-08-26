@@ -167,7 +167,7 @@ class _HelpPageState extends State<HelpPage> {
         child: Opacity(
           opacity: .20,
           child: Image.asset(
-            'assets/images/guide/guide_top_right_botanical.png',
+            'assets/images/studio/studio_top_right.png',
           ),
         ),
       ),
@@ -178,7 +178,7 @@ class _HelpPageState extends State<HelpPage> {
         child: Opacity(
           opacity: .17,
           child: Image.asset(
-            'assets/images/guide/guide_bottom_left_botanical.png',
+            'assets/images/studio/studio_bottom_left.png',
           ),
         ),
       ),

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/toast_utils.dart';
 import 'character_model.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 //劇情摘要
-// (StorySummary class 的定義保持不變)
+
 class StorySummary {
   final String id;
   final String content;
@@ -109,7 +110,14 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
     return Scaffold(
       // 🔹 修正：既然 body 已經有顏色，這裡就不需要透明和 extendBody
       appBar: AppBar(
-        title:Text(l10n.story_summary_title),
+        title: Text(
+          l10n.story_summary_title,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 22,
+            fontWeight: FontWeight.w500,
+            color: colorScheme.onSurface,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Container(
@@ -294,112 +302,116 @@ class _StorySummaryPageState extends State<StorySummaryPage> {
       position: slideAnimation,
       child: FadeTransition(
         opacity: animation,
-          // 3. 核心內容：時間線 + 卡片
-          child: IntrinsicHeight(
-            child: Row(
-              children: [
-                // 🔹 左側時間線視覺
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                            color: colorScheme.primary, shape: BoxShape.circle),
-                      ),
-                      Expanded(child: Container(
-                          width: 2, color: colorScheme.outlineVariant)),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // 🔹 右側故事卡片
-                Expanded(
-                  child: Card(
-                    elevation: 0,
-                    margin: const EdgeInsets.only(bottom: 24),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(
-                          color: colorScheme.outlineVariant.withValues(alpha:0.5)),
+        // 3. 核心內容：時間線 + 卡片
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              // 🔹 左側時間線視覺
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                          color: colorScheme.primary, shape: BoxShape.circle),
                     ),
-                    color: colorScheme.surfaceContainerHighest.withValues(alpha:0.3),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                DateFormat('yyyy/MM/dd').format(
-                                    summary.createdAt),
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  color: colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                    Expanded(
+                      child: Container(
+                        width: 2,
+                        color: colorScheme.primary.withValues(alpha: 0.28),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              // 🔹 右側故事卡片
+              Expanded(
+                child: Card(
+                  elevation: 0,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(
+                        color: colorScheme.primary.withValues(alpha: 0.16)),
+                  ),
+                  color: colorScheme.surfaceContainerHighest.withValues(alpha:0.3),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              DateFormat('yyyy/MM/dd').format(
+                                  summary.createdAt),
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.bold,
                               ),
-                              PopupMenuButton<String>(
-                                icon: Icon(
-                                  Icons.edit_note,
-                                  size: 20,
-                                  color: colorScheme.outline,
-                                ),
-                                onSelected: (value) async {
-                                  if (value == 'edit') {
-                                    await _openEditSummaryPage(summary);
-                                  } else if (value == 'delete') {
-                                    await _confirmDeleteSummary(summary, index);
-                                  }
-                                },
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: 'edit',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.edit_outlined, size: 18),
-                                        SizedBox(width: 8),
-                                        Text(l10n.edit_btn),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 'delete',
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          l10n.delete_btn,
-                                          style: TextStyle(color: Colors.redAccent),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const Divider(height: 24),
-                          Text(
-                            summary.content,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              height: 1.6, // ✨ 小說般的閱讀行高
-                              color: colorScheme.onSurfaceVariant,
                             ),
+                            PopupMenuButton<String>(
+                              icon: Icon(
+                                Icons.edit_note,
+                                size: 20,
+                                color: colorScheme.outline,
+                              ),
+                              onSelected: (value) async {
+                                if (value == 'edit') {
+                                  await _openEditSummaryPage(summary);
+                                } else if (value == 'delete') {
+                                  await _confirmDeleteSummary(summary, index);
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.edit_outlined, size: 18),
+                                      SizedBox(width: 8),
+                                      Text(l10n.edit_btn),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        l10n.delete_btn,
+                                        style: TextStyle(color: Colors.redAccent),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Divider(height: 24),
+                        Text(
+                          summary.content,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            height: 1.6, // ✨ 小說般的閱讀行高
+                            color: colorScheme.onSurfaceVariant,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/reminder_notification_service.dart';
 import '../services/toast_utils.dart';
 import 'character_model.dart';
+import 'memo_editor_page.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 //備忘錄
@@ -77,11 +79,14 @@ class _MemoPageState extends State<MemoPage> {
         toFirestore: (memo, _) => memo.toJson(),
       );
     }
-    // 🚀 改成這個路徑，這樣所有角色進來看到的都會是一樣的備忘錄！
+    // 每個角色使用自己的備忘錄集合：
+    // users/{uid}/characters/{characterId}/memos
     return FirebaseFirestore.instance
         .collection('users')
         .doc(_userId)
-        .collection('universal_memos') // 統一名稱，不再跟隨 characterId
+        .collection('characters')
+        .doc(widget.character.id)
+        .collection('memos')
         .withConverter<Memo>(
       fromFirestore: (snapshot, _) => Memo.fromFirestore(snapshot),
       toFirestore: (memo, _) => memo.toJson(),
@@ -106,7 +111,7 @@ class _MemoPageState extends State<MemoPage> {
       );
     }
 
-    // 💌 找出最近聊天最多的角色。
+    // 💌 使用目前聊天室角色作為提醒角色。
     final MemoReminderCharacter
     reminderCharacter =
     await _findMostChattedCharacter();
@@ -178,7 +183,8 @@ class _MemoPageState extends State<MemoPage> {
   _findMostChattedCharacter() async {
     final String? userId = _userId;
 
-    // 找不到玩家時，使用目前所在角色保底。
+    // 備忘錄現在是角色專屬：
+    // 在哪個角色聊天室新增，就由哪個角色負責提醒。
     if (userId == null) {
       return MemoReminderCharacter(
         id: widget.character.id,
@@ -187,129 +193,27 @@ class _MemoPageState extends State<MemoPage> {
       );
     }
 
+    String personalityType = '';
+
     try {
-      final snapshot =
-      await FirebaseFirestore.instance
-          .collection('artifacts')
-          .doc(
-        const String.fromEnvironment(
-          'APP_ID',
-          defaultValue:
-          'lianlianshiguang',
-        ),
-      )
-          .collection('chat_sessions')
-          .where(
-        'userId',
-        isEqualTo: userId,
-      )
-          .orderBy(
-        'updatedAt',
-        descending: true,
-      )
-          .limit(30)
-          .get();
-
-      // 沒有聊天資料時，使用目前角色。
-      if (snapshot.docs.isEmpty) {
-        return MemoReminderCharacter(
-          id: widget.character.id,
-          name: widget.character.name,
-          personalityType: '',
-        );
-      }
-
-      final Map<String, int>
-      scoreByCharacter = <String, int>{};
-
-      final Map<String, String>
-      nameByCharacter = <String, String>{};
-
-      for (final doc in snapshot.docs) {
-        final data = doc.data();
-
-        final String characterId =
-            data['characterId']
-                ?.toString()
-                .trim() ??
-                '';
-
-        if (characterId.isEmpty) {
-          continue;
-        }
-
-        final String characterName =
-            data['characterName']
-                ?.toString()
-                .trim() ??
-                '';
-
-        final int messageCount =
-            (data['messageCount'] as num?)
-                ?.toInt() ??
-                1;
-
-        scoreByCharacter[characterId] =
-            (scoreByCharacter[characterId] ??
-                0) +
-                messageCount;
-
-        if (characterName.isNotEmpty) {
-          nameByCharacter[characterId] =
-              characterName;
-        }
-      }
-
-      if (scoreByCharacter.isEmpty) {
-        return MemoReminderCharacter(
-          id: widget.character.id,
-          name: widget.character.name,
-          personalityType: '',
-        );
-      }
-
-      final sortedEntries =
-      scoreByCharacter.entries.toList()
-        ..sort(
-              (a, b) =>
-              b.value.compareTo(a.value),
-        );
-
-      final String topCharacterId =
-          sortedEntries.first.key;
-
-      String topCharacterName =
-          nameByCharacter[topCharacterId] ??
-              '';
-
-      String personalityType = '';
-
-      // 不論聊天室裡有沒有名字，
-      // 都讀取角色文件取得個性資料。
+      // 優先讀公開角色資料，保留原本依角色個性產生提醒文案的能力。
       final publicCharacterDoc =
       await FirebaseFirestore.instance
           .collection('artifacts')
           .doc(
         const String.fromEnvironment(
           'APP_ID',
-          defaultValue:
-          'lianlianshiguang',
+          defaultValue: 'lianlianshiguang',
         ),
       )
-          .collection(
-        'public_characters',
-      )
-          .doc(topCharacterId)
+          .collection('public_characters')
+          .doc(widget.character.id)
           .get();
 
       Map<String, dynamic> characterData =
-          publicCharacterDoc.data() ??
-              <String, dynamic>{};
+          publicCharacterDoc.data() ?? <String, dynamic>{};
 
-      /*
-     * 如果公開角色集合找不到，
-     * 再嘗試讀取玩家自己的私人角色。
-     */
+      // 公開角色找不到時，再讀玩家自己的私人角色。
       if (characterData.isEmpty) {
         final privateCharacterDoc =
         await FirebaseFirestore.instance
@@ -317,35 +221,20 @@ class _MemoPageState extends State<MemoPage> {
             .doc(
           const String.fromEnvironment(
             'APP_ID',
-            defaultValue:
-            'lianlianshiguang',
+            defaultValue: 'lianlianshiguang',
           ),
         )
             .collection('users')
             .doc(userId)
-            .collection(
-          'private_characters',
-        )
-            .doc(topCharacterId)
+            .collection('private_characters')
+            .doc(widget.character.id)
             .get();
 
         characterData =
-            privateCharacterDoc.data() ??
-                <String, dynamic>{};
+            privateCharacterDoc.data() ?? <String, dynamic>{};
       }
 
-      // chat_sessions 沒有名字時，
-      // 改從角色文件取得。
-      if (topCharacterName.isEmpty) {
-        topCharacterName =
-            characterData['name']
-                ?.toString()
-                .trim() ??
-                '';
-      }
-
-      final List<String> personalityParts =
-      <String>[];
+      final List<String> personalityParts = <String>[];
 
       final String detailedPersonality =
           characterData['detailedPersonality']
@@ -366,21 +255,15 @@ class _MemoPageState extends State<MemoPage> {
               '';
 
       if (detailedPersonality.isNotEmpty) {
-        personalityParts.add(
-          detailedPersonality,
-        );
+        personalityParts.add(detailedPersonality);
       }
 
       if (toneAndStyle.isNotEmpty) {
-        personalityParts.add(
-          toneAndStyle,
-        );
+        personalityParts.add(toneAndStyle);
       }
 
       if (personality.isNotEmpty) {
-        personalityParts.add(
-          personality,
-        );
+        personalityParts.add(personality);
       }
 
       final dynamic rawTags =
@@ -389,45 +272,28 @@ class _MemoPageState extends State<MemoPage> {
       if (rawTags is List) {
         personalityParts.addAll(
           rawTags
-              .map(
-                (tag) =>
-                tag.toString().trim(),
-          )
-              .where(
-                (tag) => tag.isNotEmpty,
-          ),
+              .map((tag) => tag.toString().trim())
+              .where((tag) => tag.isNotEmpty),
         );
       }
 
-      personalityType =
-          personalityParts.join(' ');
-
-      return MemoReminderCharacter(
-        id: topCharacterId,
-        name: topCharacterName.isEmpty
-            ? widget.character.name
-            : topCharacterName,
-        personalityType:
-        personalityType,
-      );
+      personalityType = personalityParts.join(' ');
     } catch (error, stackTrace) {
       debugPrint(
-        '尋找最常聊天角色失敗：$error',
+        '讀取目前角色提醒個性失敗：$error',
       );
-
       debugPrintStack(
         stackTrace: stackTrace,
       );
-
-      // 發生錯誤時使用目前角色，
-      // 不讓備忘錄儲存失敗。
-      return MemoReminderCharacter(
-        id: widget.character.id,
-        name: widget.character.name,
-        personalityType: '',
-      );
     }
+
+    return MemoReminderCharacter(
+      id: widget.character.id,
+      name: widget.character.name,
+      personalityType: personalityType,
+    );
   }
+
 
   Future<void> _updateMemo(
       Memo memo,
@@ -525,258 +391,302 @@ class _MemoPageState extends State<MemoPage> {
     }
   }
 
-  // --- 優化後的彈窗函數 ---
-  Future<void> _showAddEditMemoDialog({Memo? existingMemo}) async {
-    final TextEditingController textController =
-    TextEditingController(text: existingMemo?.content);
-    DateTime selectedDate = existingMemo?.reminderDate ?? DateTime.now();
-    final theme = Theme.of(context); // ✨ 抓取主題
-    final l10n = AppLocalizations.of(context)!;
-
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setStateInDialog) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), // ✨ 圓角對齊
-              title: Text(
-                existingMemo == null ?l10n.memo_add_title : l10n.memo_edit_title,
-                style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
-              ),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    TextField(
-                      controller: textController,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: l10n.memo_hint_text(widget.character.name),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                        // ✨ 聚焦時的邊框顏色連動
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
-                        ),
-                      ),
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.memo_label_reminder_date,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            icon: const Icon(
-                              Icons.calendar_today,
-                              size: 18,
-                            ),
-                            onPressed: () async {
-                              final DateTime? pickedDate =
-                              await showDatePicker(
-                                context: context,
-                                initialDate: selectedDate,
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime(2101),
-                              );
-
-                              if (pickedDate == null) return;
-
-                              final TimeOfDay? pickedTime =
-                              await showTimePicker(
-                                context: context,
-                                initialTime:
-                                TimeOfDay.fromDateTime(
-                                  selectedDate,
-                                ),
-                              );
-
-                              if (pickedTime == null) return;
-
-                              setStateInDialog(() {
-                                selectedDate = DateTime(
-                                  pickedDate.year,
-                                  pickedDate.month,
-                                  pickedDate.day,
-                                  pickedTime.hour,
-                                  pickedTime.minute,
-                                );
-                              });
-                            },
-                            label: Text(
-                              DateFormat(
-                                'yyyy/MM/dd HH:mm',
-                              ).format(selectedDate),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor:
-                              theme.colorScheme.primary,
-                              alignment: Alignment.centerLeft,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 14,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child:Text(l10n.cancel, style: TextStyle(color: Colors.grey)),
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  ),
-                  child: Text(l10n.memo_action_save),
-                  onPressed: () async {
-                    final content =
-                    textController.text.trim();
-
-                    if (content.isEmpty) {
-                      ToastUtils.showCenterToast(
-                        context,
-                        l10n.memo_error_empty_content,
-                        isError: true,
-                      );
-                      return;
-                    }
-
-                    if (existingMemo == null) {
-                      await _addMemo(
-                        content,
-                        selectedDate,
-                      );
-                    } else {
-                      await _updateMemo(
-                        existingMemo,
-                        content,
-                        selectedDate,
-                      );
-                    }
-
-                    if (!dialogContext.mounted) return;
-
-                    Navigator.of(dialogContext).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
+  Future<void> _openMemoEditor({Memo? existingMemo}) async {
+    final MemoEditorResult? result =
+    await Navigator.push<MemoEditorResult>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MemoEditorPage(
+          characterName: widget.character.name,
+          initialContent: existingMemo?.content ?? '',
+          initialReminderDate:
+          existingMemo?.reminderDate ?? DateTime.now(),
+          isEditing: existingMemo != null,
+        ),
+      ),
     );
+
+    if (result == null || !mounted) return;
+
+    if (existingMemo == null) {
+      await _addMemo(
+        result.content,
+        result.reminderDate,
+      );
+    } else {
+      await _updateMemo(
+        existingMemo,
+        result.content,
+        result.reminderDate,
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(l10n.memo_list_title(widget.character.name)),
-        backgroundColor: theme.appBarTheme.backgroundColor?.withOpacity(0.8),
         elevation: 0,
-        foregroundColor: theme.colorScheme.onBackground,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
+        titleSpacing: 0,
+        title: Text(
+          l10n.memo_list_title(widget.character.name),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            color: onSurface,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed: () => _showAddEditMemoDialog(),
+            tooltip: l10n.memo_add_title,
+            icon: Icon(
+              Icons.add_circle_outline_rounded,
+              color: primary,
+              size: 30,
+            ),
+            onPressed: () => _openMemoEditor(),
           ),
+          const SizedBox(width: 6),
         ],
       ),
-      body: Container(
-        color: theme.scaffoldBackgroundColor,
-        // ✨ 5. 使用 StreamBuilder 來即時監聽 Firestore 的資料變化
-        child: StreamBuilder<QuerySnapshot<Memo>>(
-          stream: _memosCollection.orderBy('createdAt', descending: true).snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return Center(child: Text('讀取資料時發生錯誤: ${snapshot.error}'));
-            }
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(
-                child: Text(
-                  l10n.memo_empty_state,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+      body: Stack(
+        children: [
+          Positioned(
+            right: -22,
+            bottom: -16,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.09,
+                child: Image.asset(
+                  'assets/images/chat/chat_tool_floral_right_bottom_mask.png',
+                  width: 185,
+                  fit: BoxFit.contain,
+                  color: primary,
+                  colorBlendMode: BlendMode.srcIn,
+                  errorBuilder: (_, __, ___) =>
+                  const SizedBox.shrink(),
                 ),
-              );
-            }
-
-            final memos = snapshot.data!.docs.map((doc) => doc.data()).toList();
-
-            return ListView.builder(
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + kToolbarHeight + 16,
-                left: 16,
-                right: 16,
               ),
-              itemCount: memos.length,
-              itemBuilder: (context, index) {
-                final memo = memos[index];
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 8.0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  color: theme.cardColor.withOpacity(0.9),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                    title: Text(
-                      memo.content,
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        l10n.memo_reminder_date_display(DateFormat('yyyy/MM/dd HH:mm').format(memo.reminderDate)),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.7),
-                        ),
+            ),
+          ),
+          StreamBuilder<QuerySnapshot<Memo>>(
+            stream: _memosCollection
+                .orderBy('createdAt', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState ==
+                  ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: primary,
+                  ),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      '讀取資料時發生錯誤: ${snapshot.error}',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.notoSerifTc(
+                        color: onSurface.withValues(alpha: 0.60),
                       ),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.edit_note, color: theme.colorScheme.secondary),
-                          onPressed: () => _showAddEditMemoDialog(existingMemo: memo),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
-                          onPressed: () => _deleteMemo(memo.id),
-                        ),
-                      ],
                     ),
                   ),
                 );
-              },
-            );
-          },
+              }
+
+              if (!snapshot.hasData ||
+                  snapshot.data!.docs.isEmpty) {
+                return _buildEmptyState(
+                  context,
+                  l10n,
+                );
+              }
+
+              final memos = snapshot.data!.docs
+                  .map((doc) => doc.data())
+                  .toList();
+
+              return ListView.builder(
+                padding: const EdgeInsets.fromLTRB(
+                  18,
+                  14,
+                  18,
+                  36,
+                ),
+                physics: const BouncingScrollPhysics(),
+                itemCount: memos.length,
+                itemBuilder: (context, index) {
+                  final memo = memos[index];
+                  return _buildMemoCard(
+                    context,
+                    memo,
+                    l10n,
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(
+      BuildContext context,
+      AppLocalizations l10n,
+      ) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(32, 20, 32, 80),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Opacity(
+              opacity: 0.22,
+              child: Image.asset(
+                'assets/images/chat/chat_menu_memo_mask.png',
+                width: 112,
+                height: 112,
+                fit: BoxFit.contain,
+                color: primary,
+                colorBlendMode: BlendMode.srcIn,
+                errorBuilder: (_, __, ___) => Icon(
+                  Icons.menu_book_outlined,
+                  size: 82,
+                  color: primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 26),
+            Text(
+              l10n.memo_empty_state,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.notoSerifTc(
+                color: onSurface.withValues(alpha: 0.54),
+                fontSize: 15.5,
+                height: 1.75,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMemoCard(
+      BuildContext context,
+      Memo memo,
+      AppLocalizations l10n,
+      ) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.97),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: primary.withValues(alpha: 0.11),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.035),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () => _openMemoEditor(
+          existingMemo: memo,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 17, 12, 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                memo.content,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 15.5,
+                  height: 1.65,
+                  color: onSurface.withValues(alpha: 0.86),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Icon(
+                    Icons.notifications_none_rounded,
+                    size: 16,
+                    color: primary.withValues(alpha: 0.68),
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      l10n.memo_reminder_date_display(
+                        DateFormat('yyyy/MM/dd HH:mm')
+                            .format(memo.reminderDate),
+                      ),
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 11.8,
+                        color: onSurface.withValues(alpha: 0.46),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: l10n.memo_edit_title,
+                    onPressed: () => _openMemoEditor(
+                      existingMemo: memo,
+                    ),
+                    icon: Image.asset(
+                      'assets/images/chat/chat_msg_edit_mask.png',
+                      width: 28,
+                      height: 28,
+                      color: primary,
+                      colorBlendMode: BlendMode.srcIn,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: l10n.delete_btn,
+                    onPressed: () => _deleteMemo(memo.id),
+                    icon: Image.asset(
+                      'assets/images/chat/chat_msg_delete_mask.png',
+                      width: 28,
+                      height: 28,
+                      color: theme.colorScheme.error,
+                      colorBlendMode: BlendMode.srcIn,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

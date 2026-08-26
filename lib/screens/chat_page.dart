@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'chat_search_page.dart';
+import 'chat_transcript_book_page.dart';
 import 'dart:math';
+import 'interaction_play_page.dart';
 import 'dart:convert'; // ✨✨✨ 加上這行！專門處理 JSON 和 utf8 的內建工具箱
 import 'dart:ui' show ImageFilter;
 import 'package:flutter_svg/flutter_svg.dart';
@@ -49,6 +52,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'feedback_page.dart';
 import 'chat_header.dart';
 import 'chat_side_menu.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'chat_input_bar.dart';
 
 //聊天頁面ˋ
@@ -4846,8 +4850,7 @@ class _ChatPageState extends State<ChatPage> {
         if (targetProfileId != null) {
           // ✨ 總裁級魔法：用 where().firstOrNull 取代笨重的 try-catch
           activeProfile = allProfiles
-              .where((p) =>
-          p['id'] == targetProfileId && p['characterId'] == characterId)
+              .where((p) => p['id'] == targetProfileId)
               .firstOrNull;
         }
         // ✨ 虛擬組裝：沒有指定人設的房間，一律用最原始的名字跟生日！
@@ -6240,12 +6243,13 @@ class _ChatPageState extends State<ChatPage> {
             }
 
             return Container(
-              height: 350,
+              height: 370,
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+                color: theme.colorScheme.surface.withValues(alpha: 0.98),
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  topRight: Radius.circular(20.0),
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
               ),
               // 🌟 如果 showRecordingUI 是 true，就顯示【錄音介面】
@@ -6503,142 +6507,229 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               )
 
-              // ✨✨✨ 破案關鍵在這裡：加上這個冒號 (:) 代表「否則」，然後接上妳的【百寶箱九宮格】 ✨✨✨
-                  : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  shrinkWrap: true,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  children: <Widget>[
-                    // 🎒 1. 背包
-                    _buildToolItem(
-                        Icons.backpack_outlined, l10n.chat_tool_backpack,
-                            () {
-                          Navigator.pop(context); // 關閉下方工具選單
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => BackpackPage(
-                                    character: _currentCharacter,
-                                    onUseEgg: (eggData) {
-                                      if (eggData['setScene'] != null &&
-                                          eggData['setScene']
-                                              .toString()
-                                              .isNotEmpty) {
-                                        if (mounted)
-                                          setState(() {
-                                            _currentStoryLocation =
-                                            eggData['setScene'];
-                                          });
-                                      }
-                                      // 背包彩蛋屬於獨立的 AI 請求，
-// 必須建立自己的取消識別碼。
-                                      final String specialRequestId =
-                                      _createAiRequestId();
-
-                                      _activeAiRequestId =
-                                          specialRequestId;
-
-                                      _executeMessageSending(
-                                        userText: l10n
-                                            .chat_special_story_trigger(
-                                          eggData['title'],
-                                        ),
-                                        clientRequestId: specialRequestId,
-                                        overridePrompt: eggData['prompt'],
-                                      );
-                                    },
-                                  )));
-                        }),
-
-                    // 📖 2. 劇情摘要
-                    _buildToolItem(
-                      Icons.article_outlined,
-                      l10n.chat_tool_story,
-                          () async {
-                        final String? currentSessionId = _sessionId !=
-                            null &&
-                            _sessionId!.trim().isNotEmpty
-                            ? _sessionId!.trim()
-                            : widget.sessionId != null &&
-                            widget.sessionId!.trim().isNotEmpty
-                            ? widget.sessionId!.trim()
-                            : null;
-
-                        if (currentSessionId == null) {
-                          ToastUtils.showCenterToast(
-                            context,
-                            l10n.chatRoomNotReady,
-                            isError: true,
-                          );
-                          return;
-                        }
-
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => StorySummaryPage(
-                              character: _currentCharacter,
-
-                              // 目前真正開啟的聊天室 ID
-                              sessionId: currentSessionId,
-                            ),
-                          ),
-                        );
-                      },
+              // 工具面板：高度固定；未來功能增加時只讓內容區上下滑動。
+                  : Stack(
+                fit: StackFit.expand,
+                children: [
+                  // 左側中間偏下花草
+                  Positioned(
+                    left: -18,
+                    top: 105,
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: 0.06,
+                        child: Image.asset(
+                          'assets/images/chat/chat_tool_floral_left_middle_mask.png',
+                          width: 120,
+                          fit: BoxFit.contain,
+                          color: theme.colorScheme.primary,
+                          colorBlendMode: BlendMode.srcIn,
+                        ),
+                      ),
                     ),
+                  ),
 
-                    // 🖼️ 3. 照片
-                    _buildToolItem(Icons.photo_library_outlined,
-                        l10n.chat_tool_photo, () {
-                          Navigator.pop(context);
-                          _pickImage();
-                        }),
+                  // 右下角花草
+                  Positioned(
+                    right: -10,
+                    bottom: -8,
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: 0.08,
+                        child: Image.asset(
+                          'assets/images/chat/chat_tool_floral_right_bottom_mask.png',
+                          width: 150,
+                          fit: BoxFit.contain,
+                          color: theme.colorScheme.primary,
+                          colorBlendMode: BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  ),
 
-                    // 🎙️ 4. 錄音切換鍵 (按下去就會把 showRecordingUI 變成 true)
-                    _buildToolItem(Icons.mic_none, l10n.chat_tool_record,
-                            () {
-                          sheetSetState(() => showRecordingUI = true);
-                        }),
+                  SafeArea(
+                    top: false,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 12),
 
-                    // 🪪 5. 拾光檔案
-                    _buildToolItem(
-                        Icons.badge_outlined, l10n.chat_tool_profile, () {
-                      final safeContext = this.context;
-                      Navigator.pop(context); // 關閉工具列
+                        // 上方拖曳提示條
+                        Container(
+                          width: 42,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary
+                                .withValues(alpha: 0.28),
+                            borderRadius: BorderRadius.circular(99),
+                          ),
+                        ),
 
-                      // 🌟 總裁級魔法：如果還沒有 sessionId，發放一張專屬的「臨時身分證」
-                      final String safeRoomId = widget.sessionId ??
-                          'draft_${widget.characterId}';
+                        const SizedBox(height: 8),
 
-                      // ✨ 直接放行開啟視窗，不再阻擋玩家！
-                      UserProfilePopup.show(
-                        safeContext,
-                        roomId: safeRoomId, // 傳入保證安全的房間 ID
-                        characterId: widget.characterId,
-                        onSaved: () async {
-                          // 這裡同步使用 safeRoomId 去重撈大腦記憶
-                          await _checkProfileCompletion(
-                              safeRoomId, widget.characterId);
+                        Expanded(
+                          child: GridView.count(
+                            padding:
+                            const EdgeInsets.fromLTRB(18, 8, 18, 22),
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 1.05,
+                            physics: const BouncingScrollPhysics(),
+                            children: <Widget>[
+                              // 1. 背包
+                              _buildToolItem(
+                                'assets/images/chat/chat_tool_bag_mask.png',
+                                l10n.chat_tool_backpack,
+                                    () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BackpackPage(
+                                        character: _currentCharacter,
+                                        onUseEgg: (eggData) {
+                                          if (eggData['setScene'] != null &&
+                                              eggData['setScene']
+                                                  .toString()
+                                                  .isNotEmpty) {
+                                            if (mounted) {
+                                              setState(() {
+                                                _currentStoryLocation =
+                                                eggData['setScene'];
+                                              });
+                                            }
+                                          }
 
-                          if (mounted) {
-                            // ✨ 成功也換成優雅的置中彈窗！
-                            ToastUtils.showCenterToast(
-                                safeContext, l10n.profileUpdatedSuccess);
-                          }
-                        },
-                      );
-                    }),
-                    // 👆 6. 互動玩法
-                    _buildToolItem(
-                        Icons.touch_app_outlined, l10n.chat_tool_interact,
-                            () {
-                          Navigator.pop(context);
-                          _showInteractionMenu(context);
-                        }),
-                  ],
-                ),
+                                          // 背包彩蛋屬於獨立的 AI 請求，
+                                          // 必須建立自己的取消識別碼。
+                                          final String specialRequestId =
+                                          _createAiRequestId();
+
+                                          _activeAiRequestId = specialRequestId;
+
+                                          _executeMessageSending(
+                                            userText:
+                                            l10n.chat_special_story_trigger(
+                                              eggData['title'],
+                                            ),
+                                            clientRequestId: specialRequestId,
+                                            overridePrompt: eggData['prompt'],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                              // 2. 劇情摘要
+                              _buildToolItem(
+                                'assets/images/chat/chat_tool_story_mask.png',
+                                l10n.chat_tool_story,
+                                    () async {
+                                  final String? currentSessionId =
+                                  _sessionId != null &&
+                                      _sessionId!.trim().isNotEmpty
+                                      ? _sessionId!.trim()
+                                      : widget.sessionId != null &&
+                                      widget.sessionId!
+                                          .trim()
+                                          .isNotEmpty
+                                      ? widget.sessionId!.trim()
+                                      : null;
+
+                                  if (currentSessionId == null) {
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n.chatRoomNotReady,
+                                      isError: true,
+                                    );
+                                    return;
+                                  }
+
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => StorySummaryPage(
+                                        character: _currentCharacter,
+                                        sessionId: currentSessionId,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+
+                              // 3. 照片
+                              _buildToolItem(
+                                'assets/images/chat/chat_tool_photo_mask.png',
+                                l10n.chat_tool_photo,
+                                    () {
+                                  Navigator.pop(context);
+                                  _pickImage();
+                                },
+                              ),
+
+                              // 4. 錄音
+                              _buildToolItem(
+                                'assets/images/chat/chat_tool_record_mask.png',
+                                l10n.chat_tool_record,
+                                    () {
+                                  sheetSetState(() => showRecordingUI = true);
+                                },
+                              ),
+
+                              // 5. 拾光檔案
+                              _buildToolItem(
+                                'assets/images/chat/chat_tool_archive_mask.png',
+                                l10n.chat_tool_profile,
+                                    () {
+                                  final safeContext = this.context;
+                                  Navigator.pop(context);
+
+                                  final String safeRoomId = widget.sessionId ??
+                                      'draft_${widget.characterId}';
+
+                                  UserProfilePopup.show(
+                                    safeContext,
+                                    roomId: safeRoomId,
+                                    characterId: widget.characterId,
+                                    onSaved: () async {
+                                      await _checkProfileCompletion(
+                                        safeRoomId,
+                                        widget.characterId,
+                                      );
+
+                                      if (mounted) {
+                                        ToastUtils.showCenterToast(
+                                          safeContext,
+                                          l10n.profileUpdatedSuccess,
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+
+                              // 6. 互動玩法
+                              _buildToolItem(
+                                'assets/images/chat/chat_tool_interaction_mask.png',
+                                l10n.chat_tool_interact,
+                                    () {
+                                  Navigator.pop(context);
+                                  _showInteractionMenu(context);
+                                },
+                              ),
+
+                              // 之後新增第 7、8、9... 個功能，
+                              // 直接繼續加 _buildToolItem() 即可。
+                              // BottomSheet 高度仍維持 370，
+                              // 超出的內容會在這個 GridView 裡上下滑動。
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
           },
@@ -6647,21 +6738,56 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Widget _buildToolItem(IconData icon, String label, VoidCallback onTap) {
+
+
+  Widget _buildToolItem(
+      String assetPath,
+      String label,
+      VoidCallback onTap,
+      ) {
     final theme = Theme.of(context);
+
+    final Color iconColor = theme.colorScheme.primary.withValues(alpha: 0.88);
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(icon, size: 32, color: theme.colorScheme.secondary),
-          const SizedBox(height: 8),
-          Text(label, style: theme.textTheme.bodySmall),
-        ],
+      borderRadius: BorderRadius.circular(18),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              width: 46,
+              height: 46,
+              child: Image.asset(
+                assetPath,
+                width: 46,
+                height: 46,
+                fit: BoxFit.contain,
+                color: iconColor,
+                colorBlendMode: BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(height: 7),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w500,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.82),
+                height: 1.2,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 
   Widget _buildRichTextMessage(String text,
       {required TextStyle normalStyle, required TextStyle actionStyle}) {
@@ -7713,134 +7839,29 @@ class _ChatPageState extends State<ChatPage> {
   // 🎁 專屬互動抽屜 (連線成功版！)
   void _showInteractionMenu(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        final theme = Theme.of(context);
-        final currentGiftList = _getGiftList(l10n);
-        return DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          // ✨ 1. 這裡會產生一個專屬的 scrollController
-          builder: (_, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(24)),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SingleChildScrollView(
-                // 🐛 2. 修復 Bug：必須用上面傳下來的 scrollController，底板才能跟著手指滑動伸縮！
-                controller: scrollController,
-                // ✨ 3. 加入隱形感應網，捕捉「空白處」的點擊
-                child: GestureDetector(
-                  behavior: HitTestBehavior
-                      .translucent, // 🌟 關鍵魔法：讓點擊事件可以穿透捕捉到「沒有元件的空白處」
-                  onTap: () {
-                    Navigator.pop(context); // 點擊空白處就收起選單！
-                  },
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 頂部小橫條
-                      Center(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 12),
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(2)),
-                        ),
-                      ),
-                      Text(l10n.chat_interact_title,
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
-                      // 🏃‍♀️ 玩法 1：肢體互動
-                      Text(l10n.chat_interact_action,
-                          style: TextStyle(color: Colors.grey, fontSize: 13)),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 4,
-                        children: [
-                          _buildActionChip(context, '👉', l10n.chat_action_poke,
-                              l10n.chat_action_poke_prompt),
-                          _buildActionChip(context, '🫂', l10n.chat_action_hug,
-                              l10n.chat_action_hug_prompt),
-                          _buildActionChip(context, '🤝', l10n.chat_action_hand,
-                              l10n.chat_action_hand_prompt),
-                        ],
-                      ),
-                      const Divider(height: 30),
-                      // 🎁 玩法 2：送小禮物
-                      Text(l10n.chat_interact_gift,
-                          style: TextStyle(color: Colors.grey, fontSize: 13)),
-                      const SizedBox(height: 12),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 2.8,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                        ),
-                        itemCount: currentGiftList.length,
-                        itemBuilder: (context, index) {
-                          final gift = currentGiftList[index];
-                          return ActionChip(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            avatar: Icon(gift['icon'] as IconData,
-                                color: gift['color'] as Color, size: 18),
-                            label: Text(
-                              '${gift['name']} (${gift['cost']})',
-                              style: const TextStyle(fontSize: 11),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            backgroundColor: theme.scaffoldBackgroundColor
-                                .withValues(alpha: 0.5),
-                            side: BorderSide(
-                                color: Colors.grey.withValues(alpha: 0.1)),
-                            onPressed: () => _handleSendGift(gift),
-                          );
-                        },
-                      ),
-                      const Divider(height: 30),
-                      // 📍 其他功能
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.location_on,
-                            color: Colors.blue, size: 22),
-                        title: Text(l10n.chat_menu_send_location,
-                            style: TextStyle(fontSize: 14)),
-                        onTap: () => _handleLocationSend(),
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.casino,
-                            color: Colors.orange, size: 22),
-                        title: Text(l10n.chat_dice_btn,
-                            style: TextStyle(fontSize: 14)),
-                        onTap: () => _handleDiceRoll(),
-                      ),
-                      // ✨ 讓底部有更多空白，玩家點這裡也能關閉
-                      const SizedBox(height: 150),
-                    ],
-                  ),
-                ),
-              ),
-            );
+    final currentGiftList = _getGiftList(l10n);
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => InteractionPlayPage(
+          gifts: currentGiftList,
+
+          // 親密互動：新頁面會先 pop 回聊天室，再呼叫這裡。
+          onAction: (message) {
+            _sendMessage(text: message);
           },
-        );
-      },
+
+          // 送禮：新頁面會先 pop 回聊天室，再沿用原本送禮完整邏輯。
+          onGiftTap: (gift) {
+            _handleSendGift(gift);
+          },
+
+          // 注意：這兩個原函式本身就有 Navigator.pop(context)，
+          // 所以新頁面不要先 pop；讓舊函式自己關閉 InteractionPlayPage。
+          onLocationTap: _handleLocationSend,
+          onDiceTap: _handleDiceRoll,
+        ),
+      ),
     );
   }
 
@@ -8615,11 +8636,25 @@ class _ChatPageState extends State<ChatPage> {
 
         onSearch: () {
           closeThen(() async {
-            final String? selectedMessageId = await showSearch<String>(
-              context: context,
-              delegate: ChatHistorySearchDelegate(_localMessages),
+            final String? selectedMessageId =
+            await Navigator.push<String>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatSearchPage(
+                  messages: _localMessages,
+                  characterName: _currentCharacter.name,
+                  characterAvatar:
+                  _getAvatarProvider(_currentCharacter.avatarPath),
+                  searchHint: l10n.chat_search_hint,
+                  emptyLabel: l10n.chat_search_empty,
+                  youLabel: l10n.chat_search_you,
+                  himLabel: l10n.chat_search_him,
+                ),
+              ),
             );
-            if (selectedMessageId != null) {
+
+            if (selectedMessageId != null &&
+                selectedMessageId.isNotEmpty) {
               _jumpToMessage(selectedMessageId);
             }
           });
@@ -8737,45 +8772,44 @@ class _ChatPageState extends State<ChatPage> {
       return;
     }
 
-    final chronological = messages.reversed.toList();
-    final buffer = StringBuffer();
-    buffer.writeln('《戀戀拾光》');
-    buffer.writeln('${_currentCharacter.name} · 對話紀錄');
-    buffer.writeln('--------------------------------');
+    // 先整理角色可以拿來當封面的照片
+    final characterPhotos = <String>[
+      // 目前角色主頭像一定可以使用
+      if (_currentCharacter.avatarPath.trim().isNotEmpty)
+        _currentCharacter.avatarPath,
 
-    for (final message in chronological) {
-      final senderName = message.sender == 'ai'
-          ? _currentCharacter.name
-          : message.sender == 'user'
-          ? _playerNickname
-          : 'System';
-      final time = DateFormat('yyyy/MM/dd HH:mm').format(
-        message.timestamp.toDate(),
-      );
+      // 只加入目前好感度已經解鎖的相簿照片
+      ...(_currentCharacter.gallery
+          ?.where(
+            (photo) =>
+        photo.requiredAffection <= _currentFriendship &&
+            photo.imageUrl.trim().isNotEmpty,
+      )
+          .map((photo) => photo.imageUrl)
+          .toList() ??
+          <String>[]),
+    ].toSet().toList();
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatTranscriptBookPage(
+          characterName: _currentCharacter.name,
 
-      buffer.writeln();
-      buffer.writeln('[$time] $senderName');
-      if (message.text.trim().isNotEmpty) {
-        buffer.writeln(message.text.trim());
-      }
-      if (message.type != 'text' && message.path.trim().isNotEmpty) {
-        buffer.writeln('[${message.type}] ${message.path}');
-      }
-    }
+          // 角色平常顯示用頭像
+          characterAvatarPath: _currentCharacter.avatarPath,
 
-    final data = Uint8List.fromList(
-      utf8.encode(buffer.toString()),
-    );
+          // 這個就是剛剛整理好的所有角色照片
+          characterPhotoPaths: characterPhotos,
 
-    final file = XFile.fromData(
-      data,
-      mimeType: 'text/plain',
-      name: 'lianlian_${_currentCharacter.name}_chat.txt',
-    );
+          playerName: _playerNickname,
 
-    await Share.shareXFiles(
-      [file],
-      text: '${_currentCharacter.name} · 對話紀錄',
+          // 初始故事
+          initialStory: _currentCharacter.initialStory,
+
+          // 聊天要改成時間正序
+          messages: messages.reversed.toList(),
+        ),
+      ),
     );
   }
 
@@ -8973,14 +9007,31 @@ class _ChatPageState extends State<ChatPage> {
     ),
     Scaffold(
     backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
-    appBar: ChatHeader(
-    characterName: _currentCharacter.name,
-    friendship: _currentFriendship,
-    nextThreshold: nextStageThreshold,
-    flowerPoints: _flowerPoints,
-    onBack: () => Navigator.maybePop(context),
-    onMenuTap: _showChatSideMenu,
-    ),
+      appBar: ChatHeader(
+        characterName: _currentCharacter.name,
+        friendship: _currentFriendship,
+        nextThreshold: nextStageThreshold,
+        flowerPoints: _flowerPoints,
+        onBack: () => Navigator.maybePop(context),
+
+        onFlowerTap: () {
+          if (kIsWeb) {
+            _showCenterToast(
+              _webPurchaseUnavailableMessage,
+            );
+            return;
+          }
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const StorePage(),
+            ),
+          );
+        },
+
+        onMenuTap: _showChatSideMenu,
+      ),
     // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
     body: Column(
     children: [
@@ -9967,92 +10018,6 @@ String _getCleanAiMessage(String rawText) {
   return processedText;
 }
 
-// 🔍 這是 Flutter 內建的搜尋委託器，超好用！
-class ChatHistorySearchDelegate extends SearchDelegate<String> {
-  final List<dynamic> chatHistory; // 接收妳目前的歷史對話清單
-
-  ChatHistorySearchDelegate(this.chatHistory);
-
-  // 1. 搜尋列右邊的按鈕 (通常是 X，用來清除輸入)
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = ''; // 清空輸入框
-        },
-      ),
-    ];
-  }
-
-  // 2. 搜尋列左邊的按鈕 (通常是返回鍵)
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, ''); // 關閉搜尋畫面
-      },
-    );
-  }
-
-  // 3. 玩家按下 Enter 後顯示的結果 (這裡我們跟即時建議用同一個畫面就好)
-  @override
-  Widget buildResults(BuildContext context) {
-    return buildSuggestions(context);
-  }
-
-  // 4. 玩家邊打字邊顯示的「即時搜尋結果」
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    // 如果玩家還沒打字，給一個溫馨提示
-    if (query.isEmpty) {
-      return Center(
-        child:
-        Text(l10n.chat_search_hint, style: TextStyle(color: Colors.grey)),
-      );
-    }
-
-    // 🕵️ 篩選邏輯：把包含「關鍵字(query)」的對話抓出來！
-    // 注意：這裡假設妳的對話物件裡面有 text 這個屬性，如果妳的叫 message 或是 content，請記得改！
-    final matchQuery = chatHistory.where((msg) {
-      return msg.text.toLowerCase().contains(query.toLowerCase());
-    }).toList();
-
-    // 如果找不到
-    if (matchQuery.isEmpty) {
-      return Center(child: Text(l10n.chat_search_empty));
-    }
-
-    // 畫出搜尋結果清單
-    return ListView.builder(
-      itemCount: matchQuery.length,
-      itemBuilder: (context, index) {
-        var match = matchQuery[index];
-        bool isPlayer = !match.isAI; // 判斷是不是玩家說的話 (請依妳的變數名稱調整)
-
-        return ListTile(
-          leading: Icon(
-            isPlayer ? Icons.face : Icons.favorite,
-            color: isPlayer ? Colors.blue : Colors.purple,
-          ),
-          title: Text(match.text,
-              maxLines: 2, overflow: TextOverflow.ellipsis), // 只顯示兩行預覽
-          subtitle: Text(isPlayer ? l10n.chat_search_you : l10n.chat_search_him,
-              style: const TextStyle(fontSize: 12)),
-          // 在 ChatHistorySearchDelegate 的 buildSuggestions 裡面修改 onTap
-          onTap: () {
-            // 🌟 關鍵：我們不只傳文字，而是把整個訊息 ID 或是物件傳回去
-            // 這樣 ChatPage 才知道要找哪一個「座標」
-            close(context, match.id);
-          },
-        );
-      },
-    );
-  }
-}
 
 extension AffectionLevelExtension on int {
   // ✨ 把 get 拿掉，改成需要傳入翻譯官 (l10n) 的方法

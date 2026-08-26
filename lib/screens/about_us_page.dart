@@ -1,9 +1,12 @@
-import 'package:flutter/material.dart';
+//關於我們
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 import '../services/toast_utils.dart';
-
+import 'add_shared_memory_page.dart';
+import 'edit_shared_memory_page.dart';
 
 class SharedMemory {
   final String id;
@@ -27,7 +30,8 @@ class SharedMemory {
       title: data['title'] ?? '',
       subtitle: data['subtitle'] ?? '',
       content: data['content'] ?? '',
-      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      timestamp:
+      (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 }
@@ -49,7 +53,6 @@ class AboutUsPage extends StatefulWidget {
 class _AboutUsPageState extends State<AboutUsPage> {
   List<SharedMemory> _memories = [];
   bool _isLoading = true;
-  final Color themeColor = const Color(0xFF7BD1FF);
 
   CollectionReference get _memoriesRef {
     return FirebaseFirestore.instance
@@ -68,9 +71,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
   Future<void> _fetchMemories() async {
     try {
-      final snapshot = await _memoriesRef
-          .orderBy('timestamp', descending: true)
-          .get();
+      final snapshot =
+      await _memoriesRef.orderBy('timestamp', descending: true).get();
 
       if (!mounted) return;
 
@@ -84,38 +86,57 @@ class _AboutUsPageState extends State<AboutUsPage> {
       debugPrint('讀取回憶失敗: $e');
 
       if (!mounted) return;
-
       setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _addMemoryToFirebase(
-      String title,
-      String subtitle,
-      String content,
-      ) async {
-    try {
-      await _memoriesRef.add({
-        'title': title.trim(),
-        'subtitle': subtitle.trim(),
-        'content': content.trim(),
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+  Future<void> _openAddMemoryPage() async {
+    final l10n = AppLocalizations.of(context)!;
 
-      _fetchMemories();
-    } catch (e) {
-      debugPrint('新增回憶失敗: $e');
+    if (_memories.length >= 10) {
+      ToastUtils.showCenterToast(
+        context,
+        l10n.about_us_limit_error,
+      );
+      return;
     }
+
+    final bool? added = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddSharedMemoryPage(
+          currentUserId: widget.currentUserId,
+          characterId: widget.characterId,
+        ),
+      ),
+    );
+
+    if (added != true || !mounted) return;
+
+    await _fetchMemories();
+
+    if (!mounted) return;
+    ToastUtils.showCenterToast(
+      context,
+      l10n.about_us_add_button,
+    );
   }
 
-  Future<void> _deleteMemory(String memoryId, AppLocalizations l10n) async {
+  Future<void> _deleteMemory(
+      String memoryId,
+      AppLocalizations l10n,
+      ) async {
     try {
       await _memoriesRef.doc(memoryId).delete();
-      _fetchMemories();
-      if (mounted) Navigator.pop(context); // 關閉閱讀視窗
-      ToastUtils.showCenterToast(
-          context,l10n.about_us_delete_success // ✨ 多國語言化
-      );
+      await _fetchMemories();
+
+      if (mounted) {
+        Navigator.pop(context);
+        ToastUtils.showCenterToast(
+          context,
+          l10n.about_us_delete_success,
+        );
+      }
     } catch (e) {
       debugPrint('刪除回憶失敗: $e');
     }
@@ -134,6 +155,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
         'content': content.trim(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
+
       final l10n = AppLocalizations.of(context)!;
       await _fetchMemories();
 
@@ -156,234 +178,16 @@ class _AboutUsPageState extends State<AboutUsPage> {
     }
   }
 
-  void _showAddMemoryDialog(AppLocalizations l10n) {
-    if (_memories.length >= 10) {
-      ToastUtils.showCenterToast(
-          context,l10n.about_us_limit_error // ✨ 多國語言化
-      );
-      return;
-    }
-    final TextEditingController titleController = TextEditingController();
-    final TextEditingController subtitleController = TextEditingController();
-    final TextEditingController controllerContent = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
-            children: [
-              Icon(Icons.favorite, color: themeColor),
-              const SizedBox(width: 8),
-              Text(l10n.about_us_add_title, style: const TextStyle(fontWeight: FontWeight.bold)), // ✨ 多國語言化
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleController,
-                  maxLength: 20,
-                  decoration: InputDecoration(
-                    labelText: l10n.about_us_field_title, // ✨ 多國語言化
-                    hintText: l10n.about_us_hint_title, // ✨ 多國語言化
-                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor)),
-                  ),
-                ),
-                TextField(
-                  controller: subtitleController,
-                  maxLength: 10,
-                  decoration: InputDecoration(
-                    labelText: l10n.about_us_field_subtitle, // ✨ 多國語言化
-                    hintText: l10n.about_us_hint_subtitle, // ✨ 多國語言化
-                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: themeColor)),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: controllerContent,
-                  maxLength: 500,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    labelText: l10n.about_us_field_content, // ✨ 多國語言化
-                    hintText: l10n.about_us_hint_content, // ✨ 多國語言化
-                    alignLabelWithHint: true,
-                    border: const OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: themeColor)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: themeColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onPressed: () {
-                final title = titleController.text.trim();
-                final subtitle = subtitleController.text.trim();
-                final content = controllerContent.text.trim();
-
-                if (title.isEmpty || content.isEmpty) {
-                  ToastUtils.showCenterToast(
-                      context,l10n.lore_empty_error
-                  );
-                  return;
-                }
-
-                _addMemoryToFirebase(
-                  title,
-                  subtitle,
-                  content,
-                );
-
-                Navigator.pop(context);
-              },
-              child: Text(l10n.about_us_add_button, style: const TextStyle(fontWeight: FontWeight.bold)), // ✨ 多國語言化
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<Map<String, String>?> _showEditMemoryDialog(
+  void _showMemoryDetail(
       SharedMemory memory,
       AppLocalizations l10n,
-      ) async {
-    final TextEditingController titleController =
-    TextEditingController(text: memory.title);
-    final TextEditingController subtitleController =
-    TextEditingController(text: memory.subtitle);
-    final TextEditingController contentController =
-    TextEditingController(text: memory.content);
+      ) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
 
-    return showDialog<Map<String, String>>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
-            children: [
-              Icon(Icons.edit_rounded, color: themeColor),
-              const SizedBox(width: 8),
-              // ✨ 1. 這裡替換成 l10n.about_us_edit_title
-              Text(
-                l10n.about_us_edit_title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleController,
-                  maxLength: 20,
-                  decoration: InputDecoration(
-                    labelText: l10n.about_us_field_title,
-                    hintText: l10n.about_us_hint_title,
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: themeColor),
-                    ),
-                  ),
-                ),
-                TextField(
-                  controller: subtitleController,
-                  maxLength: 10,
-                  decoration: InputDecoration(
-                    labelText: l10n.about_us_field_subtitle,
-                    hintText: l10n.about_us_hint_subtitle,
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: themeColor),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: contentController,
-                  maxLength: 500,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    labelText: l10n.about_us_field_content,
-                    hintText: l10n.about_us_hint_content,
-                    alignLabelWithHint: true,
-                    border: const OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: themeColor),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: themeColor,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () async {
-                final title = titleController.text.trim();
-                final subtitle = subtitleController.text.trim();
-                final content = contentController.text.trim();
-
-                if (title.isEmpty || content.isEmpty) {
-                  ToastUtils.showCenterToast(
-                      context,l10n.lore_empty_error
-                  );
-                  return;
-                }
-
-                await _updateMemoryInFirebase(
-                  memory.id,
-                  title,
-                  subtitle,
-                  content,
-                );
-
-                if (!mounted) return;
-
-                Navigator.pop(dialogContext, {
-                  'title': title,
-                  'subtitle': subtitle,
-                  'content': content,
-                });
-              },
-              // ✨ 2. 這裡替換成 l10n.about_us_edit_confirm
-              // (如果您想單純顯示 "儲存"，可以直接改成 l10n.save)
-              child: Text(
-                l10n.about_us_edit_confirm,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showMemoryDetail(SharedMemory memory, AppLocalizations l10n) {
-    String currentTitle = memory.title;
-    String currentSubtitle = memory.subtitle;
-    String currentContent = memory.content;
+    final currentTitle = memory.title;
+    final currentSubtitle = memory.subtitle;
+    final currentContent = memory.content;
 
     showModalBottomSheet(
       context: context,
@@ -391,34 +195,31 @@ class _AboutUsPageState extends State<AboutUsPage> {
       backgroundColor: Colors.transparent,
       builder: (bottomSheetContext) {
         return StatefulBuilder(
-          builder: (context, setStateInSheet) {
+          builder: (context, _) {
             return Container(
-              height: MediaQuery.of(context).size.height * 0.7,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              height: MediaQuery.of(context).size.height * 0.72,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
               ),
-              padding: const EdgeInsets.only(
-                top: 12,
-                left: 24,
-                right: 24,
-                bottom: 24,
-              ),
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
                     child: Container(
                       width: 40,
-                      height: 5,
+                      height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: theme.colorScheme.onSurface
+                            .withValues(alpha: 0.14),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -428,19 +229,18 @@ class _AboutUsPageState extends State<AboutUsPage> {
                           children: [
                             Text(
                               currentTitle,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                              style: GoogleFonts.notoSerifTc(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             if (currentSubtitle.isNotEmpty) ...[
                               const SizedBox(height: 6),
                               Text(
                                 currentSubtitle,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: themeColor,
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 14,
+                                  color: primary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -448,61 +248,81 @@ class _AboutUsPageState extends State<AboutUsPage> {
                           ],
                         ),
                       ),
-
-                      // ✏️ 新增：修改按鈕
                       IconButton(
-                        icon: Icon(Icons.edit_outlined, color: themeColor),
-                        tooltip: l10n.save,
+                        tooltip: l10n.about_us_edit_title,
                         onPressed: () async {
-                          final editedData = await _showEditMemoryDialog(
-                            SharedMemory(
-                              id: memory.id,
-                              title: currentTitle,
-                              subtitle: currentSubtitle,
-                              content: currentContent,
-                              timestamp: memory.timestamp,
+                          // 先關閉詳細內容 BottomSheet，再進獨立編輯頁。
+                          Navigator.pop(bottomSheetContext);
+
+                          final bool? updated =
+                          await Navigator.push<bool>(
+                            this.context,
+                            MaterialPageRoute(
+                              builder: (_) => EditSharedMemoryPage(
+                                currentUserId: widget.currentUserId,
+                                characterId: widget.characterId,
+                                memoryId: memory.id,
+                                initialTitle: currentTitle,
+                                initialSubtitle: currentSubtitle,
+                                initialContent: currentContent,
+                              ),
                             ),
-                            l10n,
                           );
 
-                          if (editedData == null) return;
-
-                          setStateInSheet(() {
-                            currentTitle = editedData['title'] ?? currentTitle;
-                            currentSubtitle =
-                                editedData['subtitle'] ?? currentSubtitle;
-                            currentContent =
-                                editedData['content'] ?? currentContent;
-                          });
+                          if (updated == true && mounted) {
+                            await _fetchMemories();
+                          }
                         },
+                        icon: Image.asset(
+                          'assets/images/chat/chat_msg_edit_mask.png',
+                          width: 32,
+                          height: 32,
+                          color: primary,
+                          colorBlendMode: BlendMode.srcIn,
+                        ),
                       ),
-
-                      // 🗑️ 原本的刪除按鈕
                       IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
+                        icon: Image.asset(
+                          'assets/images/chat/chat_msg_delete_mask.png',
+                          width: 32,
+                          height: 32,
                           color: Colors.redAccent,
+                          colorBlendMode: BlendMode.srcIn,
                         ),
                         tooltip: l10n.about_us_delete_tooltip,
                         onPressed: () {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: Text(l10n.about_us_delete_title),
-                              content: Text(l10n.about_us_delete_confirm),
+                              title: Text(
+                                l10n.about_us_delete_title,
+                                style: GoogleFonts.notoSerifTc(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              content: Text(
+                                l10n.about_us_delete_confirm,
+                                style: GoogleFonts.notoSerifTc(),
+                              ),
                               actions: [
                                 TextButton(
-                                  onPressed: () => Navigator.pop(context),
+                                  onPressed: () =>
+                                      Navigator.pop(context),
                                   child: Text(l10n.cancel),
                                 ),
                                 TextButton(
                                   onPressed: () {
                                     Navigator.pop(context);
-                                    _deleteMemory(memory.id, l10n);
+                                    _deleteMemory(
+                                      memory.id,
+                                      l10n,
+                                    );
                                   },
                                   child: Text(
                                     l10n.action_confirm_delete,
-                                    style: const TextStyle(color: Colors.red),
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -510,26 +330,32 @@ class _AboutUsPageState extends State<AboutUsPage> {
                           );
                         },
                       ),
-
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.grey),
-                        onPressed: () => Navigator.pop(bottomSheetContext),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.45),
+                        ),
+                        onPressed: () =>
+                            Navigator.pop(bottomSheetContext),
                       ),
                     ],
                   ),
-
-                  const Divider(height: 32, thickness: 1),
-
+                  const SizedBox(height: 10),
+                  Divider(
+                    color: primary.withValues(alpha: 0.12),
+                  ),
+                  const SizedBox(height: 8),
                   Expanded(
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       child: Text(
                         currentContent,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          height: 1.8,
-                          color: Colors.black87,
-                          letterSpacing: 0.5,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 15.5,
+                          height: 1.85,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.82),
                         ),
                       ),
                     ),
@@ -545,44 +371,95 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; // ✨ 在最前面宣告一次，傳遞給下方使用
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(l10n.chat_menu_aboutus, style: const TextStyle(fontWeight: FontWeight.bold)), // ✨ 多國語言化
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
         elevation: 0,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
+        titleSpacing: 0,
+        title: Text(
+          l10n.chat_menu_aboutus,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add_box_rounded, color: themeColor, size: 28),
-            onPressed: () => _showAddMemoryDialog(l10n), // ✨ 傳入 l10n
+            tooltip: l10n.about_us_add_title,
+            icon: Icon(
+              Icons.add_rounded,
+              color: primary,
+              size: 28,
+            ),
+            onPressed: _openAddMemoryPage,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
         ],
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: themeColor))
-          : _memories.isEmpty
-          ? _buildEmptyState(l10n) // ✨ 傳入 l10n
-          : _buildMemoriesList(l10n), // ✨ 傳入 l10n
+      body: Stack(
+        children: [
+          Positioned(
+            left: -18,
+            bottom: -14,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.10,
+                child: Image.asset(
+                  'assets/images/contact/contact_bottom_left_botanical.png',
+                  width: 175,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) =>
+                  const SizedBox.shrink(),
+                ),
+              ),
+            ),
+          ),
+          _isLoading
+              ? Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: primary,
+            ),
+          )
+              : _memories.isEmpty
+              ? _buildEmptyState(l10n)
+              : _buildMemoriesList(l10n),
+        ],
+      ),
     );
   }
 
   Widget _buildEmptyState(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(32),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.drafts_outlined, size: 80, color: Colors.grey[300]),
+            Icon(
+              Icons.menu_book_outlined,
+              size: 62,
+              color: primary.withValues(alpha: 0.20),
+            ),
             const SizedBox(height: 16),
             Text(
-              l10n.about_us_empty_hint, // ✨ 多國語言化
+              l10n.about_us_empty_hint,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey[500], height: 1.5),
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 15,
+                height: 1.6,
+                color: theme.colorScheme.onSurface
+                    .withValues(alpha: 0.50),
+              ),
             ),
           ],
         ),
@@ -591,38 +468,75 @@ class _AboutUsPageState extends State<AboutUsPage> {
   }
 
   Widget _buildMemoriesList(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(18, 14, 18, 36),
       itemCount: _memories.length,
       itemBuilder: (context, index) {
         final memory = _memories[index];
+
         String displayContent = memory.content;
-        if (displayContent.length > 20) {
-          displayContent = '${displayContent.substring(0, 20)}...';
+        if (displayContent.length > 40) {
+          displayContent =
+          '${displayContent.substring(0, 40)}...';
         }
 
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+        return Container(
+          margin: const EdgeInsets.only(bottom: 14),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface
+                .withValues(alpha: 0.97),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: primary.withValues(alpha: 0.11),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.035),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          color: Colors.white,
           child: InkWell(
-            onTap: () => _showMemoryDetail(memory, l10n), // ✨ 傳入 l10n
-            borderRadius: BorderRadius.circular(12),
+            onTap: () => _showMemoryDetail(memory, l10n),
+            borderRadius: BorderRadius.circular(18),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(memory.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                  const SizedBox(height: 4),
-                  if (memory.subtitle.isNotEmpty)
-                    Text(memory.subtitle, style: TextStyle(fontSize: 13, color: themeColor, fontWeight: FontWeight.w600)),
+                  Text(
+                    memory.title,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: onSurface.withValues(alpha: 0.90),
+                    ),
+                  ),
+                  if (memory.subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 5),
+                    Text(
+                      memory.subtitle,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 13,
+                        color: primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 12),
-                  Text(displayContent, style: TextStyle(fontSize: 15, color: Colors.grey[600])),
+                  Text(
+                    displayContent,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 14.5,
+                      height: 1.65,
+                      color: onSurface.withValues(alpha: 0.58),
+                    ),
+                  ),
                 ],
               ),
             ),

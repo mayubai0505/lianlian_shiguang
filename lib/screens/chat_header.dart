@@ -7,6 +7,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
   final int nextThreshold;
   final int flowerPoints;
   final VoidCallback onBack;
+  final VoidCallback onFlowerTap;
   final VoidCallback onMenuTap;
 
   const ChatHeader({
@@ -16,6 +17,7 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
     required this.nextThreshold,
     required this.flowerPoints,
     required this.onBack,
+    required this.onFlowerTap,
     required this.onMenuTap,
   });
 
@@ -141,30 +143,46 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                     const Spacer(),
 
                     // 花花點數
-                    SizedBox(
-                      width: 17,
-                      height: 17,
-                      child: Image.asset(
-                        _giftFlowerAsset(context),
-                        fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Icon(
-                          Icons.local_florist_rounded,
-                          size: 16,
-                          color: primary.withValues(alpha: 0.82),
+                    // 花花點數
+                    InkWell(
+                      onTap: onFlowerTap,
+                      borderRadius: BorderRadius.circular(14),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 5,
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 3),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 56),
-                      child: Text(
-                        '$flowerPoints',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.notoSerifTc(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w600,
-                          color: onSurface.withValues(alpha: 0.76),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 17,
+                              height: 17,
+                              child: Image.asset(
+                                _giftFlowerAsset(context),
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.local_florist_rounded,
+                                  size: 16,
+                                  color: primary.withValues(alpha: 0.82),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 3),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 56),
+                              child: Text(
+                                '$flowerPoints',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: onSurface.withValues(alpha: 0.76),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

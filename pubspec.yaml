@@ -54,6 +54,9 @@ dependencies:
   audioplayers: ^6.7.0
   showcaseview: ^5.1.0
   webview_flutter: ^4.14.1
+  pdf: ^3.12.0
+  printing: ^5.14.3
+
 
 
 dev_dependencies:
@@ -75,12 +78,11 @@ flutter:
     - assets/images/contact/
     - assets/images/language/
     - assets/images/blocked/
+    - assets/images/brand/
     - assets/images/guide/
-    - assets/images/studio/
     - assets/images/announcement/
     - assets/images/heartbeat_diary/
     - assets/images/store/
-    - assets/images/profile_edit/
     - assets/images/character_create/
     - assets/images/affection/
     - assets/images/chat/

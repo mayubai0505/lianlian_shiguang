@@ -1,491 +1,873 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 import '../services/toast_utils.dart';
+//拾光檔案
 class UserProfilePopup {
-  // ✨ 總裁級升級：正式引入 roomId 與 characterId 雙鑰匙架構！
+  /// 保留原本呼叫介面，chat_page.dart 不需要改呼叫方式。
+  /// 但實際呈現已從 BottomSheet 改成獨立頁面。
   static Future<void> show(
       BuildContext context, {
-        required String roomId,        // 🔑 鑰匙 A：當前房間 ID（用來綁定獨立記憶體）
-        required String characterId,   // 🔑 鑰匙 B：當前角色 ID（用來隔離專屬衣櫥）
-        required VoidCallback onSaved, // 儲存成功後的回呼
+        required String roomId,
+        required String characterId,
+        required VoidCallback onSaved,
       }) {
-    // 檔案欄位控制器
-    final profileNameController = TextEditingController();
-    final nameController = TextEditingController();
-    final heightController = TextEditingController();
-    final appearanceController = TextEditingController();
-    final occupationController = TextEditingController();
-    final personalityController = TextEditingController();
+    return Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _UserProfilePage(
+          roomId: roomId,
+          characterId: characterId,
+          onSaved: onSaved,
+        ),
+      ),
+    );
+  }
+}
 
-    // 追蹤狀態
-    bool isSaving = false;
-    bool isLoading = true;
-    bool hasFetched = false;
+class _UserProfilePage extends StatefulWidget {
+  const _UserProfilePage({
+    required this.roomId,
+    required this.characterId,
+    required this.onSaved,
+  });
 
-    // 多身分系統的狀態變數
-    bool isEditingView = false; // 控制目前是在看「列表」還是「編輯中」
-    List<Map<String, dynamic>> profiles = []; // 存放全宇宙所有的檔案
-    String? currentRoomProfileId; // 當前房間綁定的檔案 ID
-    String? editingProfileId; // 目前正在編輯的檔案 ID (為 null 代表新建)
+  final String roomId;
 
-    return showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
-        // 💡 請確保本地化資源呼叫名稱與你專案相符
-         final l10n = AppLocalizations.of(context)!;
+  /// 暫時保留參數，避免既有 chat_page 呼叫介面改動。
+  /// 身分清單現在已不再依 characterId 過濾。
+  final String characterId;
+  final VoidCallback onSaved;
 
-        return StatefulBuilder(
-            builder: (context, setModalState) {
-              final l10n = AppLocalizations.of(context)!;
-              // ✨ 魔法對接：去資料庫撈取資料
-              if (!hasFetched) {
-                hasFetched = true;
-                final user = FirebaseAuth.instance.currentUser;
-                if (user != null) {
-                  FirebaseFirestore.instance.collection('users').doc(user.uid).get().then((doc) {
-                    final data = doc.data() ?? {};
+  @override
+  State<_UserProfilePage> createState() => _UserProfilePageState();
+}
 
-                    // 1. 讀取共用衣服總匯
-                    if (data.containsKey('profiles')) {
-                      profiles = List<Map<String, dynamic>>.from(data['profiles']);
-                    } else if (data.containsKey('profile')) {
-                      // 過渡期舊名片無痛轉移
-                      final oldProfile = data['profile'];
-                      final defaultId = DateTime.now().millisecondsSinceEpoch.toString();
-                      profiles = [{
-                        'id': defaultId,
-                        'characterId': characterId, // 舊資料自動歸給當前男主
-                        'profileName': '預設檔案',
-                        'name': data['nickname'] ?? '',
-                        'height': oldProfile['height'] ?? '',
-                        'appearance': oldProfile['appearance'] ?? '',
-                        'occupation': oldProfile['occupation'] ?? '',
-                        'intro': oldProfile['intro'] ?? '',
-                      }];
-                    }
+class _UserProfilePageState extends State<_UserProfilePage> {
+  final TextEditingController _profileNameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _appearanceController = TextEditingController();
+  final TextEditingController _occupationController = TextEditingController();
+  final TextEditingController _personalityController = TextEditingController();
 
-                    // 2. 讀取「房間記憶體」：只抓當前這個房間套用了哪個身分
-                    if (data.containsKey('roomProfiles')) {
-                      final roomProfiles = data['roomProfiles'] as Map<String, dynamic>;
-                      currentRoomProfileId = roomProfiles[roomId];
-                    }
+  bool _isSaving = false;
+  bool _isLoading = true;
+  bool _isEditingView = false;
 
-                    // 🌟 總裁級守門員先驗：即時過濾出只屬於「當前角色」的身分清單
-                    final characterSpecificProfiles = profiles
-                        .where((p) => p['characterId'] == characterId)
-                        .toList();
+  List<Map<String, dynamic>> _profiles = [];
+  String? _currentRoomProfileId;
+  String? _editingProfileId;
 
-                    // 如果這個角色連一個專屬身分都沒有，直接跳進編輯頁面引導建立第一個！
-                    if (characterSpecificProfiles.isEmpty) {
-                      isEditingView = true;
-                    }
+  @override
+  void initState() {
+    super.initState();
+    _loadProfiles();
+  }
 
-                    if (context.mounted) {
-                      setModalState(() => isLoading = false);
-                    }
-                  }).catchError((e) {
-                    debugPrint("讀取舊檔案失敗: $e");
-                    if (context.mounted) setModalState(() => isLoading = false);
-                  });
-                } else {
-                  isLoading = false;
-                }
-              }
+  @override
+  void dispose() {
+    _profileNameController.dispose();
+    _nameController.dispose();
+    _heightController.dispose();
+    _appearanceController.dispose();
+    _occupationController.dispose();
+    _personalityController.dispose();
+    super.dispose();
+  }
 
-              // ==========================================
-              // 🛡️ 總裁級守門員：在每次 build 渲染前，重新過濾當前角色的專屬身分！
-              // ==========================================
-              final characterSpecificProfiles = profiles
-                  .where((p) => p['characterId'] == characterId)
-                  .toList();
+  Future<void> _loadProfiles() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
 
-              // ==========================================
-              // 🛡️ 總裁級結界：PopScope 物理防禦
-              // ==========================================
-              return PopScope(
-                // ✨ 核心魔法：當 isSaving 為 true 時，禁止系統退出 (canPop = false)
-                canPop: !isSaving,
-                onPopInvoked: (didPop) {
-                  if (didPop) return; // 如果已經成功退出就不理會
-                  ToastUtils.showCenterToast(
-                    context,
-                    l10n.pleaseWait,
-                    isError: false,
-                  );
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                  child: Container(
-                    padding: const EdgeInsets.all(24.0),
-                    decoration: BoxDecoration(
-                      color: theme.scaffoldBackgroundColor,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                    ),
-                    child: isLoading
-                        ? const SizedBox(
-                      height: 200,
-                      child: Center(child: CircularProgressIndicator(color: Colors.pinkAccent)),
-                    )
-                        : SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Container(
-                              width: 40, height: 4,
-                              margin: const EdgeInsets.only(bottom: 20),
-                              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
-                            ),
-                          ),
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      final data = doc.data() ?? <String, dynamic>{};
 
-                          // ==========================================
-                          // 🎭 畫面 A：編輯 / 新增檔案畫面
-                          // ==========================================
-                          if (isEditingView) ...[
-                            Row(
-                              children: [
-                                // 只有當這個角色有其他檔案時，才允許按返回鍵回到列表
-                                if (characterSpecificProfiles.isNotEmpty)
-                                  IconButton(
-                                    icon: const Icon(Icons.arrow_back),
-                                    onPressed: isSaving ? null : () => setModalState(() {
-                                      isEditingView = false;
-                                    }),
-                                  ),
-                                Expanded(
-                                  child: Text(
-                                      editingProfileId == null ? l10n.createNewProfileTitle : l10n.editProfileTitle,
-                                      style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary)
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(l10n.profileEditDescription, style: TextStyle(color: theme.hintColor, fontSize: 13)),
-                            const SizedBox(height: 24),
+      List<Map<String, dynamic>> loadedProfiles = [];
 
-                            _buildTextField(
-                              controller: profileNameController,
-                              label: l10n.profileNameLabel,
-                              hint: l10n.profileNameHint,
-                              icon: Icons.bookmark_border,
-                            ),
-                            _buildTextField(
-                                controller: nameController,
-                                label: l10n.profileNicknameLabel,
-                                hint: l10n.profileNicknameHint,
-                                icon: Icons.person_outline
-                            ),
-                            // 若有 l10n 請自行替換回 l10n.charHeightLabel 等
-                            _buildTextField(controller: heightController, label: l10n.profileHeightLabel, hint: l10n.profileHeightHint, icon: Icons.height),
-                            _buildTextField(controller: appearanceController, label: l10n.profileAppearanceLabel, hint: l10n.profileAppearanceHint, icon: Icons.face_retouching_natural),
-                            _buildTextField(controller: occupationController, label: l10n.profileOccupationLabel, hint: l10n.profileOccupationHint, icon: Icons.work_outline),
-                            _buildTextField(controller: personalityController, label: l10n.profileIntroLabel, hint: l10n.profileIntroHint, icon: Icons.assignment_ind_outlined, maxLines: 3),
-                            const SizedBox(height: 24),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: colorScheme.primary,
-                                  foregroundColor: colorScheme.onPrimary,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                ),
-                                onPressed: isSaving ? null : () async {
-                                  // 1. 基本防呆
-                                  if (profileNameController.text.trim().isEmpty) {
-                                    ToastUtils.showCenterToast(
-                                      context,
-                                      l10n.profileNameEmptyWarning,
-                                      isError: true,
-                                    );
-                                    return;
-                                  }
+      bool needsProfileMigration = false;
 
-                                  // 2. 開始讀取狀態，觸發 PopScope 防護
-                                  setModalState(() => isSaving = true);
+      if (data.containsKey('profiles')) {
+        loadedProfiles = List<Map<String, dynamic>>.from(data['profiles'])
+            .map((profile) {
+          final normalized = Map<String, dynamic>.from(profile);
 
-                                  try {
-                                    final newProfile = {
-                                      'id': editingProfileId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-                                      'characterId': characterId,
-                                      'profileName': profileNameController.text.trim(),
-                                      'name': nameController.text.trim(),
-                                      'height': heightController.text.trim(),
-                                      'appearance': appearanceController.text.trim(),
-                                      'occupation': occupationController.text.trim(),
-                                      'intro': personalityController.text.trim(),
-                                      'updatedAt': DateTime.now().toIso8601String(),
-                                    };
+          // 舊版是以 characterId 區隔角色專屬身分。
+          // 新版改為全帳號共用，因此移除舊的角色歸屬欄位。
+          if (normalized.containsKey('characterId')) {
+            normalized.remove('characterId');
+            needsProfileMigration = true;
+          }
 
-                                    String selectedProfileId = newProfile['id'] as String;
+          return normalized;
+        }).toList();
+      } else if (data.containsKey('profile')) {
+        // 舊版單一名片相容：轉入全帳號共用 profiles。
+        final oldProfile = Map<String, dynamic>.from(data['profile'] ?? {});
+        final defaultId = DateTime.now().millisecondsSinceEpoch.toString();
+        loadedProfiles = [
+          {
+            'id': defaultId,
+            'profileName': '預設檔案',
+            'name': data['nickname'] ?? '',
+            'height': oldProfile['height'] ?? '',
+            'appearance': oldProfile['appearance'] ?? '',
+            'occupation': oldProfile['occupation'] ?? '',
+            'intro': oldProfile['intro'] ?? '',
+          },
+        ];
+        needsProfileMigration = true;
+      }
 
-                                    // 3. 更新本地列表
-                                    if (editingProfileId != null) {
-                                      final index = profiles.indexWhere((p) => p['id'] == editingProfileId);
-                                      if (index != -1) profiles[index] = newProfile;
-                                    } else {
-                                      profiles.add(newProfile);
-                                    }
+      // 安全遷移：
+      // 1. 不刪除任何既有身分，避免舊玩家資料遺失。
+      // 2. 若舊版累積超過 10 份，全部先保留，但禁止再建立新檔案。
+      // 3. 之後任何新增/編輯儲存，都只使用全帳號共用 schema。
+      if (needsProfileMigration) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set({
+          'profiles': loadedProfiles,
+          'profileSchemaVersion': 2,
+        }, SetOptions(merge: true));
+      }
 
-                                    // 4. Firebase 儲存 (關鍵：這裡可能會等待很久)
-                                    final user = FirebaseAuth.instance.currentUser!;
-                                    // 1. 取得使用者參考
-                                    final userRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      String? selectedId;
+      if (data.containsKey('roomProfiles')) {
+        final roomProfiles = Map<String, dynamic>.from(data['roomProfiles']);
+        selectedId = roomProfiles[widget.roomId]?.toString();
+      }
 
-// 2. 執行資料合併儲存 (更新個人檔案列表)
-                                    await userRef.set({
-                                      'profiles': profiles,
+      if (!mounted) return;
+      setState(() {
+        _profiles = loadedProfiles;
+        _currentRoomProfileId = selectedId;
+        _isLoading = false;
+        // 全帳號完全沒有檔案時，直接引導建立第一份。
+        _isEditingView = loadedProfiles.isEmpty;
+      });
+    } catch (e) {
+      debugPrint('讀取拾光檔案失敗: $e');
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
-                                      // 不論玩家選擇儲存或稍後，都代表已處理第一次提示
-                                      'hasHandledProfileIntro': true,
+  void _startCreate() {
+    _editingProfileId = null;
+    _profileNameController.clear();
+    _nameController.clear();
+    _heightController.clear();
+    _appearanceController.clear();
+    _occupationController.clear();
+    _personalityController.clear();
+    setState(() => _isEditingView = true);
+  }
 
-                                      // 舊版本相容
-                                      'hasSkippedProfile': true,
-                                    }, SetOptions(merge: true));
+  void _startEdit(Map<String, dynamic> profile) {
+    _editingProfileId = profile['id']?.toString();
+    _profileNameController.text = profile['profileName'] ?? '';
+    _nameController.text = profile['name'] ?? '';
+    _heightController.text = profile['height'] ?? '';
+    _appearanceController.text = profile['appearance'] ?? '';
+    _occupationController.text = profile['occupation'] ?? '';
+    _personalityController.text = profile['intro'] ?? '';
+    setState(() => _isEditingView = true);
+  }
 
-// 3. 執行指標更新 (加上總裁級防撞裝甲！)
-                                    try {
-                                      // 先嘗試精準更新（如果字典已經存在的話）
-                                      await userRef.update({
-                                        'roomProfiles.$roomId': selectedProfileId,
-                                      });
-                                    } catch (_) {
-                                      // 如果字典不存在導致報錯，就用 set 合併初始化它！
-                                      await userRef.set({
-                                        'roomProfiles': { roomId: selectedProfileId }
-                                      }, SetOptions(merge: true));
-                                    }
-                                    // 🌟 核心防護：執行 UI 更新前，檢查頁面是否還在
-                                    if (!context.mounted) return;
-                                    setModalState(() {
-                                      isEditingView = false;
-                                      isSaving = false;
-                                    });
-                                    onSaved(); // 觸發成功後的操作
-                                  } catch (e) {
-                                    // 🌟 核心防護：發生錯誤時，同樣檢查頁面是否還在
-                                    if (!context.mounted) return;
+  Future<void> _saveProfile() async {
+    final l10n = AppLocalizations.of(context)!;
 
-                                    // 🚀 替換錯誤提示，並帶入參數 e
-                                    ToastUtils.showCenterToast(context, l10n.profileSaveError(e.toString()), isError: true);
+    if (_profileNameController.text.trim().isEmpty) {
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profileNameEmptyWarning,
+        isError: true,
+      );
+      return;
+    }
 
-                                    setModalState(() => isSaving = false);
-                                  }
-                                },
-                                child: isSaving
-                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                                    : Text(l10n.saveProfileButton), // 🚀 替換
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Center(
-                              child: TextButton(
-                                onPressed: isSaving
-                                    ? null
-                                    : () async {
-                                  final user =
-                                      FirebaseAuth.instance.currentUser;
+    if (_editingProfileId == null && _profiles.length >= 10) return;
 
-                                  if (user != null) {
-                                    try {
-                                      await FirebaseFirestore.instance
-                                          .collection('users')
-                                          .doc(user.uid)
-                                          .set({
-                                        // 全帳號只自動顯示一次
-                                        'hasHandledProfileIntro': true,
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
 
-                                        // 暫時保留舊欄位相容
-                                        'hasSkippedProfile': true,
-                                      }, SetOptions(merge: true));
-                                    } catch (e) {
-                                      debugPrint(
-                                        '❌ 記錄拾光檔案稍後填寫失敗：$e',
-                                      );
-                                    }
-                                  }
+    setState(() => _isSaving = true);
 
-                                  if (!context.mounted) return;
-                                  Navigator.pop(context);
-                                },
-                                child: Text(
-                                  l10n.fillLaterButton,
-                                  style: TextStyle(
-                                    color: isSaving
-                                        ? Colors.grey.shade300
-                                        : Colors.grey,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ]
+    try {
+      final newProfile = <String, dynamic>{
+        'id': _editingProfileId ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
+        // 不再寫入 characterId：拾光檔案改為所有角色共用。
+        'profileName': _profileNameController.text.trim(),
+        'name': _nameController.text.trim(),
+        'height': _heightController.text.trim(),
+        'appearance': _appearanceController.text.trim(),
+        'occupation': _occupationController.text.trim(),
+        'intro': _personalityController.text.trim(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
 
-                          // ==========================================
-                          // 📂 畫面 B：多身分列表畫面 (已注入角色專屬過濾防禦)
-                          // ==========================================
-                          else ...[
-                            // 🚀 替換標題與說明
-                            Text(l10n.exclusiveProfileTitle, style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary)),
-                            const SizedBox(height: 8),
-                            Text(l10n.profileSelectionDescription, style: TextStyle(color: theme.hintColor, fontSize: 13)),
-                            const SizedBox(height: 16),
-                            // 身分列表：全面換用經過「男主過濾」後的 characterSpecificProfiles 跑渲染！
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: characterSpecificProfiles.length,
-                              itemBuilder: (context, index) {
-                                final profile = characterSpecificProfiles[index];
-                                // 💡 根據當前房間記憶體中的 ID 來判定是否勾選
-                                final isSelected = profile['id'] == currentRoomProfileId;
+      final selectedProfileId = newProfile['id'] as String;
+      final updatedProfiles = _profiles
+          .map((p) => Map<String, dynamic>.from(p))
+          .toList();
 
-                                return Card(
-                                  elevation: isSelected ? 2 : 0,
-                                  color: isSelected ? colorScheme.primaryContainer.withOpacity(0.3) : theme.cardColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    side: BorderSide(color: isSelected ? colorScheme.primary : Colors.grey.shade300),
-                                  ),
-                                  child: ListTile(
-                                    leading: Radio<String>(
-                                      value: profile['id'],
-                                      groupValue: currentRoomProfileId,
-                                      activeColor: colorScheme.primary,
-                                      onChanged: isSaving ? null : (val) async {
-                                        if (val == null) return;
-                                        final user = FirebaseAuth.instance.currentUser;
-                                        if (user == null) return; // 再補個防呆，確保使用者沒登出
-                                        setModalState(() {
-                                          currentRoomProfileId = val;
-                                          isSaving = true;
-                                        });
+      if (_editingProfileId != null) {
+        final index = updatedProfiles
+            .indexWhere((p) => p['id']?.toString() == _editingProfileId);
+        if (index != -1) {
+          updatedProfiles[index] = newProfile;
+        }
+      } else {
+        updatedProfiles.add(newProfile);
+      }
 
-                                        try {
-                                          final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final userRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid);
 
-                                          // ✨ 總裁級精準更新：使用 update 搭配點表示法！
-                                          // 這樣保證只會更新當前房間的指標，絕對不會動到其他房間，也不會動到外層的 profile 列表。
-                                          try {
-                                            await userDoc.update({
-                                              'roomProfiles.$roomId': val,
-                                            });
-                                          } catch (_) {
-                                            // 🛡️ 防呆：如果這個使用者是全新的，連 roomProfiles 字典都還沒有，
-                                            // update 會報錯，這時我們才用 set 來幫他初始化第一筆字典資料。
-                                            await userDoc.set({
-                                              'roomProfiles': { roomId: val }
-                                            }, SetOptions(merge: true));
-                                          }
+      await userRef.set({
+        'profiles': updatedProfiles,
+        'profileSchemaVersion': 2,
+        'hasHandledProfileIntro': true,
+        'hasSkippedProfile': true,
+      }, SetOptions(merge: true));
 
-                                          if (context.mounted) {
-                                            setModalState(() => isSaving = false);
-                                            onSaved();
-                                          }
-                                        } catch (e) {
-                                          if (context.mounted) {
-                                            setModalState(() => isSaving = false);
-                                            // 🚀 替換切換失敗提示
-                                            ToastUtils.showCenterToast(
-                                              context,
-                                              l10n.profileSwitchError(e.toString()),
-                                              isError: true,
-                                            );                                          }
-                                        }
-                                      },
-                                    ),
-                                    title: Text(profile['profileName'] ?? l10n.unnamedProfile, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                    subtitle: Text(profile['occupation'] ?? l10n.noOccupationYet, maxLines: 1, overflow: TextOverflow.ellipsis),trailing: IconButton(
-                                      icon: const Icon(Icons.edit_outlined, color: Colors.blue),
-                                      onPressed: isSaving ? null : () {
-                                        // 倒填資料進入控制器準備編輯
-                                        editingProfileId = profile['id'];
-                                        profileNameController.text = profile['profileName'] ?? '';
-                                        nameController.text = profile['name'] ?? '';
-                                        heightController.text = profile['height'] ?? '';
-                                        appearanceController.text = profile['appearance'] ?? '';
-                                        occupationController.text = profile['occupation'] ?? '';
-                                        personalityController.text = profile['intro'] ?? '';
-                                        setModalState(() => isEditingView = true); // 切入編輯
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+      // 儲存/建立後，沿用原本行為：當前聊天室直接套用這份身分。
+      try {
+        await userRef.update({
+          'roomProfiles.${widget.roomId}': selectedProfileId,
+        });
+      } catch (_) {
+        await userRef.set({
+          'roomProfiles': {widget.roomId: selectedProfileId},
+        }, SetOptions(merge: true));
+      }
 
-                            const SizedBox(height: 16),
-                            // ➕ 建立新身分按鈕：基於全域 profiles 長度判定上限
-                            if (profiles.length < 10)
-                              SizedBox(
-                                width: double.infinity,
-                                child: OutlinedButton.icon(
-                                  icon: const Icon(Icons.add),
-                                  label: Text(l10n.createNewProfileButton),                                  onPressed: isSaving ? null : () {
-                                    editingProfileId = null;
-                                    profileNameController.clear();
-                                    nameController.clear();
-                                    heightController.clear();
-                                    appearanceController.clear();
-                                    occupationController.clear();
-                                    personalityController.clear();
-                                    setModalState(() => isEditingView = true);
-                                  },
-                                ),
-                              ),
+      if (!mounted) return;
+      setState(() {
+        _profiles = updatedProfiles;
+        _currentRoomProfileId = selectedProfileId;
+        _editingProfileId = null;
+        _isEditingView = false; // 儲存後回到拾光檔案列表頁
+        _isSaving = false;
+      });
 
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              child: TextButton(
-                                // 🔒 UI 防禦：存檔中禁用「關閉」按鈕
-                                onPressed: isSaving ? null : () => Navigator.pop(context),
-                                child: Text(l10n.common_close, style: TextStyle(color: isSaving ? Colors.grey.shade300 : Colors.grey)),
-                              ),
-                            )
-                          ]
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }
+      widget.onSaved();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profileSaveError(e.toString()),
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _selectProfile(String profileId) async {
+    final l10n = AppLocalizations.of(context)!;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || _isSaving) return;
+
+    // 再次點擊目前已選中的檔案 = 取消套用個人檔案
+    final bool isDeselecting = _currentRoomProfileId == profileId;
+    final String? previousProfileId = _currentRoomProfileId;
+
+    setState(() {
+      _currentRoomProfileId = isDeselecting ? null : profileId;
+      _isSaving = true;
+    });
+
+    try {
+      final userDoc = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid);
+
+      if (isDeselecting) {
+        // 取消時移除目前聊天室的 profile 綁定，
+        // 不刪除 profile 本身，之後仍可再次選取。
+        await userDoc.update({
+          'roomProfiles.${widget.roomId}': FieldValue.delete(),
+        });
+      } else {
+        try {
+          await userDoc.update({
+            'roomProfiles.${widget.roomId}': profileId,
+          });
+        } catch (_) {
+          await userDoc.set({
+            'roomProfiles': {widget.roomId: profileId},
+          }, SetOptions(merge: true));
+        }
+      }
+
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      widget.onSaved();
+    } catch (e) {
+      if (!mounted) return;
+
+      // 儲存失敗就還原畫面上的原始選取狀態
+      setState(() {
+        _currentRoomProfileId = previousProfileId;
+        _isSaving = false;
+      });
+
+      ToastUtils.showCenterToast(
+        context,
+        l10n.profileSwitchError(e.toString()),
+        isError: true,
+      );
+    }
+  }
+
+  Future<void> _fillLater() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .set({
+          'hasHandledProfileIntro': true,
+          'hasSkippedProfile': true,
+        }, SetOptions(merge: true));
+      } catch (e) {
+        debugPrint('❌ 記錄拾光檔案稍後填寫失敗：$e');
+      }
+    }
+
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
+
+    return PopScope(
+      canPop: !_isSaving,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        ToastUtils.showCenterToast(
+          context,
+          l10n.pleaseWait,
+          isError: false,
         );
       },
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          titleSpacing: 0,
+          title: Text(
+            _isEditingView
+                ? (_editingProfileId == null
+                ? l10n.createNewProfileTitle
+                : l10n.editProfileTitle)
+                : l10n.exclusiveProfileTitle,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _isSaving
+                ? null
+                : () {
+              if (_isEditingView && _profiles.isNotEmpty) {
+                setState(() {
+                  _editingProfileId = null;
+                  _isEditingView = false;
+                });
+              } else {
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ),
+        body: Stack(
+          children: [
+            Positioned(
+              top: -16,
+              right: -26,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.10,
+                  child: Image.asset(
+                    'assets/images/contact/contact_top_right_botanical.png',
+                    width: 190,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+            if (_isLoading)
+              Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: primary.withValues(alpha: 0.7),
+                ),
+              )
+            else if (_isEditingView)
+              _buildEditPage(context)
+            else
+              _buildListPage(context),
+          ],
+        ),
+      ),
     );
   }
 
-  // 封裝輸入框，維持美觀不變
-  static Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    int maxLines = 1,
-    TextInputType keyboardType = TextInputType.text,
+  Widget _buildListPage(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(24, 18, 24, 48),
+      children: [
+        Text(
+          l10n.profileSelectionDescription,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 14,
+            height: 1.7,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.58),
+          ),
+        ),
+        const SizedBox(height: 24),
+        ..._profiles.map((profile) {
+          final profileId = profile['id']?.toString() ?? '';
+          final isSelected = profileId == _currentRoomProfileId;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildProfileCard(
+              context: context,
+              profile: profile,
+              isSelected: isSelected,
+              onTap: () => _selectProfile(profileId),
+              onEdit: () => _startEdit(profile),
+            ),
+          );
+        }),
+        if (_profiles.length < 10) ...[
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 54,
+            child: OutlinedButton(
+              onPressed: _isSaving ? null : _startCreate,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: primary,
+                backgroundColor: primary.withValues(alpha: 0.025),
+                side: BorderSide(
+                  color: primary.withValues(alpha: 0.30),
+                  width: 1,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+              ),
+              child: Text(
+                '＋  ${l10n.createNewProfileButton}',
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+        const SizedBox(height: 14),
+        Center(
+          child: Text(
+            '${_profiles.length} / 10',
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 12,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.38),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProfileCard({
+    required BuildContext context,
+    required Map<String, dynamic> profile,
+    required bool isSelected,
+    required VoidCallback onTap,
+    required VoidCallback onEdit,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, size: 20),
-          labelText: label,
-          hintText: hint,
-          alignLabelWithHint: true,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
+
+    final name = (profile['name'] ?? '').toString().trim();
+    final occupation = (profile['occupation'] ?? '').toString().trim();
+    final intro = (profile['intro'] ?? '').toString().trim();
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: _isSaving ? null : onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.fromLTRB(16, 16, 10, 16),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? primary.withValues(alpha: 0.055)
+                : theme.colorScheme.surface.withValues(alpha: 0.94),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected
+                  ? primary.withValues(alpha: 0.42)
+                  : primary.withValues(alpha: 0.10),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: primary.withValues(alpha: isSelected ? 0.055 : 0.025),
+                blurRadius: 16,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 25,
+                height: 25,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isSelected ? primary : Colors.transparent,
+                  border: Border.all(
+                    color: isSelected
+                        ? primary
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.24),
+                    width: 1.5,
+                  ),
+                ),
+                child: isSelected
+                    ? Icon(
+                  Icons.check_rounded,
+                  size: 16,
+                  color: theme.colorScheme.onPrimary,
+                )
+                    : null,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            profile['profileName'] ?? l10n.unnamedProfile,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.90),
+                            ),
+                          ),
+                        ),
+                        if (isSelected) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: primary.withValues(alpha: 0.09),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Icon(
+                              Icons.check_rounded,
+                              size: 13,
+                              color: primary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    if (name.isNotEmpty || occupation.isNotEmpty) ...[
+                      const SizedBox(height: 5),
+                      Text(
+                        [name, occupation]
+                            .where((e) => e.isNotEmpty)
+                            .join('  ·  '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 13,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.60),
+                        ),
+                      ),
+                    ],
+                    if (intro.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        intro,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 13,
+                          height: 1.55,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.48),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              IconButton(
+                tooltip: l10n.edit_btn,
+                onPressed: _isSaving ? null : onEdit,
+                icon: Icon(
+                  Icons.edit_outlined,
+                  size: 21,
+                  color: primary.withValues(alpha: 0.72),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditPage(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(
+        24,
+        18,
+        24,
+        MediaQuery.of(context).viewInsets.bottom + 42,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.profileEditDescription,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 14,
+              height: 1.7,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.56),
+            ),
+          ),
+          const SizedBox(height: 26),
+          _buildFieldLabel(context, l10n.profileNameLabel),
+          const SizedBox(height: 8),
+          _buildTextField(
+            context: context,
+            controller: _profileNameController,
+            hint: l10n.profileNameHint,
+          ),
+          const SizedBox(height: 28),
+          _buildSectionTitle(context, '基本資料'),
+          const SizedBox(height: 20),
+          _buildFieldLabel(context, l10n.profileNicknameLabel),
+          const SizedBox(height: 8),
+          _buildTextField(
+            context: context,
+            controller: _nameController,
+            hint: l10n.profileNicknameHint,
+          ),
+          const SizedBox(height: 16),
+          _buildFieldLabel(context, l10n.profileHeightLabel),
+          const SizedBox(height: 8),
+          _buildTextField(
+            context: context,
+            controller: _heightController,
+            hint: l10n.profileHeightHint,
+          ),
+          const SizedBox(height: 16),
+          _buildFieldLabel(context, l10n.profileAppearanceLabel),
+          const SizedBox(height: 8),
+          _buildTextField(
+            context: context,
+            controller: _appearanceController,
+            hint: l10n.profileAppearanceHint,
+          ),
+          const SizedBox(height: 16),
+          _buildFieldLabel(context, l10n.profileOccupationLabel),
+          const SizedBox(height: 8),
+          _buildTextField(
+            context: context,
+            controller: _occupationController,
+            hint: l10n.profileOccupationHint,
+          ),
+          const SizedBox(height: 30),
+          _buildSectionTitle(context, '關於這個我'),
+          const SizedBox(height: 20),
+          _buildFieldLabel(context, l10n.profileIntroLabel),
+          const SizedBox(height: 8),
+          _buildTextField(
+            context: context,
+            controller: _personalityController,
+            hint: l10n.profileIntroHint,
+            maxLines: 5,
+          ),
+          const SizedBox(height: 28),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: FilledButton(
+              onPressed: _isSaving ? null : _saveProfile,
+              style: FilledButton.styleFrom(
+                backgroundColor: primary.withValues(alpha: 0.12),
+                foregroundColor: primary,
+                disabledBackgroundColor: primary.withValues(alpha: 0.06),
+                disabledForegroundColor: primary.withValues(alpha: 0.35),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  side: BorderSide(
+                    color: primary.withValues(alpha: 0.25),
+                    width: 1,
+                  ),
+                ),
+              ),
+              child: _isSaving
+                  ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: primary,
+                ),
+              )
+                  : Text(
+                l10n.saveProfileButton,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          if (_profiles.isEmpty) ...[
+            const SizedBox(height: 10),
+            Center(
+              child: TextButton(
+                onPressed: _isSaving ? null : _fillLater,
+                child: Text(
+                  l10n.fillLaterButton,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 14,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Text(
+        '—— $title ——',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.notoSerifTc(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.1,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFieldLabel(BuildContext context, String label) {
+    final theme = Theme.of(context);
+    return Text(
+      label,
+      style: GoogleFonts.notoSerifTc(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.74),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required BuildContext context,
+    required TextEditingController controller,
+    required String hint,
+    int maxLines = 1,
+  }) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      style: GoogleFonts.notoSerifTc(
+        fontSize: 15,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.86),
+      ),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: GoogleFonts.notoSerifTc(
+          fontSize: 14,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.32),
+        ),
+        filled: true,
+        fillColor: theme.colorScheme.surface.withValues(alpha: 0.82),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: maxLines > 1 ? 15 : 14,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: primary.withValues(alpha: 0.18),
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: primary.withValues(alpha: 0.52),
+            width: 1.2,
+          ),
         ),
       ),
     );

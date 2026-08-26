@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -470,20 +471,25 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primaryContainer.withValues(alpha: 0.85),
-            theme.colorScheme.surface.withValues(alpha: 0.85),
-          ],
-        ),
+        color: theme.colorScheme.surface.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.10),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.025),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.water_drop_rounded, color: Colors.redAccent),
+              Icon(Icons.water_drop_outlined, color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -535,14 +541,27 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     );
   }
 
-  Widget _statChip(String label, String value) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(
-      color: Colors.white.withValues(alpha: 0.55),
-      borderRadius: BorderRadius.circular(14),
-    ),
-    child: Text('$label　$value'),
-  );
+  Widget _statChip(String label, String value) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: primary.withValues(alpha: 0.045),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: primary.withValues(alpha: 0.08),
+        ),
+      ),
+      child: Text(
+        '$label　$value',
+        style: GoogleFonts.notoSerifTc(
+          fontSize: 12.5,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
+        ),
+      ),
+    );
+  }
 
   Widget _buildActionSelector(
       ThemeData theme,
@@ -685,18 +704,31 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     String? subtitle,
   }) =>
       Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
+        padding: const EdgeInsets.all(17),
         decoration: BoxDecoration(
-          color: theme.cardColor.withValues(alpha: 0.78),
+          color: theme.colorScheme.surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: theme.colorScheme.primary.withValues(alpha: 0.09),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 4),
@@ -719,323 +751,420 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final localeName = Localizations.localeOf(context).toString();
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
     final primaryColor = theme.colorScheme.primary;
 
-    return Container(
-      decoration: themeNotifier.currentBackground,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: Text(l10n.periodDiaryTitle(widget.character.name)),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: Text(
+          l10n.periodDiaryTitle(widget.character.name),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 21,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        body: StreamBuilder<QuerySnapshot<PeriodRecord>>(
-          stream: _recordsCollection
-              .orderBy('startDate', descending: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(child: Text(l10n.periodLoadFailed));
-            }
+        backgroundColor: theme.scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Stack(
+        children: [
+          Positioned(
+            right: -24,
+            bottom: -18,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.085,
+                child: Image.asset(
+                  'assets/images/chat/chat_tool_floral_right_bottom_mask.png',
+                  width: 190,
+                  fit: BoxFit.contain,
+                  color: primaryColor,
+                  colorBlendMode: BlendMode.srcIn,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
+              ),
+            ),
+          ),
+          StreamBuilder<QuerySnapshot<PeriodRecord>>(
+            stream: _recordsCollection
+                .orderBy('startDate', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(child: Text(l10n.periodLoadFailed));
+              }
 
-            final records = snapshot.data?.docs
-                .map((document) => document.data())
-                .toList() ??
-                <PeriodRecord>[];
-            _calculateStatistics(records);
+              final records = snapshot.data?.docs
+                  .map((document) => document.data())
+                  .toList() ??
+                  <PeriodRecord>[];
+              _calculateStatistics(records);
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 36),
-              child: Column(
-                children: [
-                  _buildOverviewCard(theme, records),
-                  Container(
-                    margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor.withValues(alpha: 0.78),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: TableCalendar(
-                      locale: localeName,
-                      firstDay: DateTime.utc(2020, 1, 1),
-                      lastDay: DateTime.utc(2035, 12, 31),
-                      focusedDay: _focusedDay,
-                      availableGestures: AvailableGestures.horizontalSwipe,
-                      selectedDayPredicate: (day) =>
-                          isSameDay(day, _selectedDay),
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedDay = _dateOnly(selectedDay);
-                          _focusedDay = focusedDay;
-                        });
-                        _loadDayLog(selectedDay);
-                      },
-                      headerStyle: const HeaderStyle(
-                        formatButtonVisible: false,
-                        titleCentered: true,
-                      ),
-                      daysOfWeekHeight: 32,
-                      daysOfWeekStyle: DaysOfWeekStyle(
-                        weekdayStyle: TextStyle(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: 12,
-                          height: 1.2,
+              return SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 36),
+                child: Column(
+                  children: [
+                    _buildOverviewCard(theme, records),
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(18, 8, 18, 12),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface.withValues(alpha: 0.96),
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(
+                          color: primaryColor.withValues(alpha: 0.09),
                         ),
-                        weekendStyle: const TextStyle(
-                          color: Color(0xFFD47A91),
-                          fontSize: 12,
-                          height: 1.2,
-                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      calendarBuilders: CalendarBuilders(
-                        dowBuilder: (context, day) {
-                          final labels = <String>[
-                            l10n.periodWeekdaySun,
-                            l10n.periodWeekdayMon,
-                            l10n.periodWeekdayTue,
-                            l10n.periodWeekdayWed,
-                            l10n.periodWeekdayThu,
-                            l10n.periodWeekdayFri,
-                            l10n.periodWeekdaySat,
-                          ];
-                          final isWeekend = day.weekday == DateTime.saturday ||
-                              day.weekday == DateTime.sunday;
-                          return Center(
-                            child: Text(
-                              labels[day.weekday % 7],
-                              style: TextStyle(
-                                color: isWeekend
-                                    ? const Color(0xFFD47A91)
-                                    : theme.colorScheme.onSurfaceVariant,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          );
+                      child: TableCalendar(
+                        locale: localeName,
+                        firstDay: DateTime.utc(2020, 1, 1),
+                        lastDay: DateTime.utc(2035, 12, 31),
+                        focusedDay: _focusedDay,
+                        availableGestures: AvailableGestures.horizontalSwipe,
+                        selectedDayPredicate: (day) =>
+                            isSameDay(day, _selectedDay),
+                        onDaySelected: (selectedDay, focusedDay) {
+                          setState(() {
+                            _selectedDay = _dateOnly(selectedDay);
+                            _focusedDay = focusedDay;
+                          });
+                          _loadDayLog(selectedDay);
                         },
-                        prioritizedBuilder: (context, date, focusedDay) {
-                          final isActualPeriod = records.any(
-                                (record) =>
-                            !date.isBefore(_dateOnly(record.startDate)) &&
-                                !date.isAfter(_dateOnly(record.endDate)),
-                          );
+                        headerStyle: HeaderStyle(
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                          leftChevronIcon: Icon(
+                            Icons.chevron_left_rounded,
+                            color: primaryColor,
+                          ),
+                          rightChevronIcon: Icon(
+                            Icons.chevron_right_rounded,
+                            color: primaryColor,
+                          ),
+                          titleTextStyle: GoogleFonts.notoSerifTc(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        daysOfWeekHeight: 32,
+                        daysOfWeekStyle: DaysOfWeekStyle(
+                          weekdayStyle: TextStyle(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontSize: 12,
+                            height: 1.2,
+                          ),
+                          weekendStyle: const TextStyle(
+                            color: Color(0xFFD47A91),
+                            fontSize: 12,
+                            height: 1.2,
+                          ),
+                        ),
+                        calendarBuilders: CalendarBuilders(
+                          dowBuilder: (context, day) {
+                            final labels = <String>[
+                              l10n.periodWeekdaySun,
+                              l10n.periodWeekdayMon,
+                              l10n.periodWeekdayTue,
+                              l10n.periodWeekdayWed,
+                              l10n.periodWeekdayThu,
+                              l10n.periodWeekdayFri,
+                              l10n.periodWeekdaySat,
+                            ];
+                            final isWeekend = day.weekday == DateTime.saturday ||
+                                day.weekday == DateTime.sunday;
+                            return Center(
+                              child: Text(
+                                labels[day.weekday % 7],
+                                style: TextStyle(
+                                  color: isWeekend
+                                      ? primaryColor.withValues(alpha: 0.55)
+                                      : theme.colorScheme.onSurfaceVariant,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            );
+                          },
+                          prioritizedBuilder: (context, date, focusedDay) {
+                            final isActualPeriod = records.any(
+                                  (record) =>
+                              !date.isBefore(_dateOnly(record.startDate)) &&
+                                  !date.isAfter(_dateOnly(record.endDate)),
+                            );
 
-                          final isCurrentForecast = [
-                            ..._currentPeriodForecastDays,
-                            ..._previewForecastDays,
-                          ].any((day) => isSameDay(day, date));
+                            final isCurrentForecast = [
+                              ..._currentPeriodForecastDays,
+                              ..._previewForecastDays,
+                            ].any((day) => isSameDay(day, date));
 
-                          final isNextPrediction = _predictedDays
-                              .any((day) => isSameDay(day, date));
+                            final isNextPrediction = _predictedDays
+                                .any((day) => isSameDay(day, date));
 
-                          if (!isActualPeriod &&
-                              !isCurrentForecast &&
-                              !isNextPrediction) {
-                            return null;
-                          }
+                            if (!isActualPeriod &&
+                                !isCurrentForecast &&
+                                !isNextPrediction) {
+                              return null;
+                            }
 
-                          final isSelected = isSameDay(date, _selectedDay);
-                          final isPeriodRelated =
-                              isActualPeriod || isCurrentForecast;
-                          final backgroundColor = isPeriodRelated
-                              ? Colors.transparent
-                              : primaryColor.withValues(alpha: 0.16);
-                          final textColor = isPeriodRelated
-                              ? const Color(0xFFB85C74)
-                              : primaryColor;
+                            final isSelected = isSameDay(date, _selectedDay);
+                            final isPeriodRelated =
+                                isActualPeriod || isCurrentForecast;
 
-                          return Container(
-                            margin: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: backgroundColor,
-                              shape: BoxShape.circle,
-                              border: isSelected
-                                  ? Border.all(
-                                color: primaryColor,
-                                width: 2,
-                              )
-                                  : null,
-                            ),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                if (isPeriodRelated)
-                                  Icon(
-                                    Icons.local_florist_rounded,
-                                    size: 39,
-                                    color: isActualPeriod
-                                        ? const Color(0xFFF29AAF)
-                                        .withValues(alpha: 0.68)
-                                        : const Color(0xFFFFB8C8)
-                                        .withValues(alpha: 0.48),
-                                  ),
-                                Text(
+                            return Container(
+                              margin: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: isPeriodRelated
+                                    ? primaryColor.withValues(
+                                  alpha: isActualPeriod ? 0.11 : 0.055,
+                                )
+                                    : primaryColor.withValues(alpha: 0.045),
+                                shape: BoxShape.circle,
+                                border: isSelected
+                                    ? Border.all(
+                                  color: primaryColor,
+                                  width: 1.5,
+                                )
+                                    : null,
+                              ),
+                              child: Center(
+                                child: Text(
                                   '${date.day}',
-                                  style: TextStyle(
-                                    color: textColor,
+                                  style: GoogleFonts.notoSerifTc(
+                                    color: isPeriodRelated
+                                        ? primaryColor
+                                        : theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.74),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      calendarStyle: CalendarStyle(
-                        selectedDecoration: BoxDecoration(
-                          color: primaryColor,
-                          shape: BoxShape.circle,
+                              ),
+                            );
+                          },
                         ),
-                        selectedTextStyle: TextStyle(
-                          color: theme.colorScheme.onPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        todayDecoration: BoxDecoration(
-                          color: Colors.transparent,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: primaryColor),
-                        ),
-                        todayTextStyle: TextStyle(
-                          color: theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  _sectionCard(
-                    theme: theme,
-                    title: DateFormat.yMMMMd(localeName).format(_selectedDay),
-                    subtitle: l10n.periodSaveInstruction,
-                    child: _buildActionSelector(theme, records),
-                  ),
-                  _sectionCard(
-                    theme: theme,
-                    title: l10n.periodTodayMood,
-                    subtitle: l10n.periodMoodDescription,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildMoodSelector(),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _customMoodController,
-                          maxLength: 30,
-                          decoration: InputDecoration(
-                            labelText: l10n.periodOtherMood,
-                            hintText: l10n.periodOtherMoodHint,
-                            prefixIcon: const Icon(Icons.add_reaction_outlined),
-                            border: const OutlineInputBorder(),
+                        calendarStyle: CalendarStyle(
+                          selectedDecoration: BoxDecoration(
+                            color: primaryColor,
+                            shape: BoxShape.circle,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  _sectionCard(
-                    theme: theme,
-                    title: l10n.periodTodaySymptoms,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSymptomSelector(),
-                        const SizedBox(height: 12),
-                        TextField(
-                          controller: _customSymptomController,
-                          maxLength: 30,
-                          decoration: InputDecoration(
-                            labelText: l10n.periodOtherSymptom,
-                            hintText: l10n.periodOtherSymptomHint,
-                            prefixIcon: const Icon(Icons.edit_note_rounded),
-                            border: const OutlineInputBorder(),
+                          selectedTextStyle: GoogleFonts.notoSerifTc(
+                            color: theme.colorScheme.onPrimary,
+                            fontWeight: FontWeight.w700,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  _sectionCard(
-                    theme: theme,
-                    title: l10n.periodNoteForCharacter(widget.character.name),
-                    child: TextField(
-                      controller: _noteController,
-                      minLines: 2,
-                      maxLines: 4,
-                      maxLength: 120,
-                      decoration: InputDecoration(
-                        hintText: l10n.periodNoteHint,
-                        border: const OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-                    child: FilledButton.icon(
-                      onPressed: (_isSaving || _isLoadingDay)
-                          ? null
-                          : _saveDayLog,
-                      icon: _isSaving
-                          ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                          : const Icon(Icons.favorite_outline_rounded),
-                      label: Text(_isSaving ? l10n.periodSaving : l10n.periodSaveToday),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 54),
-                      ),
-                    ),
-                  ),
-                  if (records.isNotEmpty) ...[
-                    const Divider(indent: 24, endIndent: 24),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          l10n.periodHistory,
-                          style: theme.textTheme.titleMedium?.copyWith(
+                          todayDecoration: BoxDecoration(
+                            color: Colors.transparent,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: primaryColor),
+                          ),
+                          todayTextStyle: TextStyle(
+                            color: theme.colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
-                    ...records.map(
-                          (record) => Card(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
-                        ),
-                        child: ListTile(
-                          leading: const Icon(
-                            Icons.water_drop_rounded,
-                            color: Colors.redAccent,
-                          ),
-                          title: Text(
-                            '${DateFormat('yyyy/MM/dd').format(record.startDate)}－${DateFormat('MM/dd').format(record.endDate)}',
-                          ),
-                          subtitle: Text(
-                            record.isOngoing
-                                ? l10n.periodOngoing
-                                : l10n.periodTotalDays(
-                              record.endDate.difference(_dateOnly(record.startDate)).inDays + 1,
+                    _sectionCard(
+                      theme: theme,
+                      title: DateFormat.yMMMMd(localeName).format(_selectedDay),
+                      subtitle: l10n.periodSaveInstruction,
+                      child: _buildActionSelector(theme, records),
+                    ),
+                    _sectionCard(
+                      theme: theme,
+                      title: l10n.periodTodayMood,
+                      subtitle: l10n.periodMoodDescription,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildMoodSelector(),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _customMoodController,
+                            maxLength: 30,
+                            decoration: InputDecoration(
+                              labelText: l10n.periodOtherMood,
+                              hintText: l10n.periodOtherMoodHint,
+                              prefixIcon: const Icon(Icons.add_reaction_outlined),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(
+                                  color: primaryColor.withValues(alpha: 0.14),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(
+                                  color: primaryColor.withValues(alpha: 0.12),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(
+                                  color: primaryColor.withValues(alpha: 0.45),
+                                  width: 1.2,
+                                ),
+                              ),
                             ),
                           ),
-                          trailing: IconButton(
-                            tooltip: l10n.periodDeleteRecord,
-                            onPressed: () => _deleteRecord(record.id),
-                            icon: const Icon(Icons.delete_outline_rounded),
+                        ],
+                      ),
+                    ),
+                    _sectionCard(
+                      theme: theme,
+                      title: l10n.periodTodaySymptoms,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSymptomSelector(),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _customSymptomController,
+                            maxLength: 30,
+                            decoration: InputDecoration(
+                              labelText: l10n.periodOtherSymptom,
+                              hintText: l10n.periodOtherSymptomHint,
+                              prefixIcon: const Icon(Icons.edit_note_rounded),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(
+                                  color: primaryColor.withValues(alpha: 0.14),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(
+                                  color: primaryColor.withValues(alpha: 0.12),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(
+                                  color: primaryColor.withValues(alpha: 0.45),
+                                  width: 1.2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _sectionCard(
+                      theme: theme,
+                      title: l10n.periodNoteForCharacter(widget.character.name),
+                      child: TextField(
+                        controller: _noteController,
+                        minLines: 2,
+                        maxLines: 4,
+                        maxLength: 120,
+                        decoration: InputDecoration(
+                          hintText: l10n.periodNoteHint,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide(
+                              color: primaryColor.withValues(alpha: 0.14),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide(
+                              color: primaryColor.withValues(alpha: 0.12),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide(
+                              color: primaryColor.withValues(alpha: 0.45),
+                              width: 1.2,
+                            ),
                           ),
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+                      child: FilledButton.icon(
+                        onPressed: (_isSaving || _isLoadingDay)
+                            ? null
+                            : _saveDayLog,
+                        icon: _isSaving
+                            ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                            : const Icon(Icons.favorite_outline_rounded),
+                        label: Text(_isSaving ? l10n.periodSaving : l10n.periodSaveToday),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 52),
+                          backgroundColor: primaryColor,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (records.isNotEmpty) ...[
+                      const Divider(indent: 24, endIndent: 24),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            l10n.periodHistory,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      ...records.map(
+                            (record) => Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.water_drop_outlined,
+                              color: primaryColor,
+                            ),
+                            title: Text(
+                              '${DateFormat('yyyy/MM/dd').format(record.startDate)}－${DateFormat('MM/dd').format(record.endDate)}',
+                            ),
+                            subtitle: Text(
+                              record.isOngoing
+                                  ? l10n.periodOngoing
+                                  : l10n.periodTotalDays(
+                                record.endDate.difference(_dateOnly(record.startDate)).inDays + 1,
+                              ),
+                            ),
+                            trailing: IconButton(
+                              tooltip: l10n.periodDeleteRecord,
+                              onPressed: () => _deleteRecord(record.id),
+                              icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.error),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

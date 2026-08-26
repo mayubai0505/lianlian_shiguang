@@ -1584,7 +1584,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     BlendMode.srcIn,
                   ),
                   child: Image.asset(
-                    'assets/images/profile_edit/profile_edit_botanical_top_right.png',
+                    'assets/images/studio/studio_top_right.png',
                     width: topRightFlowerWidth,
                     fit: BoxFit.contain,
                   ),
@@ -1604,7 +1604,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     BlendMode.srcIn,
                   ),
                   child: Image.asset(
-                    'assets/images/profile_edit/profile_edit_botanical_left.png',
+                    'assets/images/heartbeat_diary/botanical_left.png',
                     width: bottomLeftFlowerWidth,
                     fit: BoxFit.contain,
                   ),
