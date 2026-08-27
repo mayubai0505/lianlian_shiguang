@@ -14,6 +14,7 @@ import '../models/moment_model.dart';
 import 'moment_card.dart';
 import 'edit_moment_page.dart';
 import '../services/toast_utils.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 //創作者公開頁面
 class CreatorProfilePage extends StatelessWidget {
@@ -127,7 +128,7 @@ class CreatorProfilePage extends StatelessWidget {
             finalPath.isNotEmpty) {
           if (finalPath.startsWith('http')) {
             imageProvider =
-                NetworkImage(finalPath);
+                CachedNetworkImageProvider(finalPath);
           } else {
             imageProvider =
                 AssetImage(finalPath);
@@ -227,107 +228,187 @@ class CreatorProfilePage extends StatelessWidget {
                 );
 
                 return Scaffold(
-                  backgroundColor:
-                  theme
-                      .scaffoldBackgroundColor,
+                  backgroundColor: theme.scaffoldBackgroundColor,
                   appBar: AppBar(
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                    surfaceTintColor: Colors.transparent,
+                    elevation: 0,
                     title: Text(
-                      l10n.portfolio_title(
-                        displayNickname,
+                      l10n.portfolio_title(displayNickname),
+                      style: GoogleFonts.notoSerifTc(
+                        color: theme.colorScheme.onSurface,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    elevation: 0,
-                  ),
-                  body:
-                  DefaultTabController(
-                    length: 3,
-                    child: Column(
-                      children: [
-                        _buildCreatorHeader(
-                          context,
-                          theme,
-                          creatorId:
-                          creatorId,
-                          displayNickname:
-                          displayNickname,
-                          displayPlayerID:
-                          displayPlayerID,
-                          creatorBio:
-                          creatorBio,
-                          imageProvider:
-                          imageProvider,
-                          isOwner:
-                          isOwner,
-                          workCount:
-                          characters.length,
-                          totalLikes:
-                          totalLikes,
-                        ),
-
-                        TabBar(
-                          labelColor:
-                          theme
-                              .colorScheme
-                              .primary,
-                          unselectedLabelColor:
-                          theme
-                              .colorScheme
-                              .onSurface
-                              .withValues(
-                            alpha: 0.55,
+                    actions: [
+                      if (!isOwner)
+                        PopupMenuButton<String>(
+                          tooltip: '更多',
+                          icon: Icon(
+                            Icons.more_vert_rounded,
+                            color: theme.colorScheme.onSurface,
                           ),
-                          indicatorColor:
-                          theme
-                              .colorScheme
-                              .primary,
-                          indicatorWeight:
-                          3,
-                          tabs:  [
-                            Tab(
-                              text:
-                              l10n.profilePageTabBio,
+                          onSelected: (value) async {
+                            switch (value) {
+                              case 'report':
+                                await _reportCreator(
+                                  context: context,
+                                  creatorId: creatorId,
+                                  creatorName: displayNickname,
+                                );
+                                break;
+                              case 'block':
+                                final blocked = await _blockCreator(
+                                  context: context,
+                                  creatorId: creatorId,
+                                  creatorName: displayNickname,
+                                  characters: characters,
+                                );
+                                if (blocked && context.mounted) {
+                                  Navigator.of(context).pop(true);
+                                }
+                                break;
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            PopupMenuItem<String>(
+                              value: 'report',
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.flag_outlined,
+                                    color: Colors.orange,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    '檢舉創作者',
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: 13.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            Tab(
-                              text:
-                              l10n.profilePageTabCharacters,
-                            ),
-                            Tab(
-                              text:
-                              l10n.profilePageTabMoments,
+                            PopupMenuItem<String>(
+                              value: 'block',
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.block_rounded,
+                                    color: Colors.redAccent,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    '封鎖創作者',
+                                    style: GoogleFonts.notoSerifTc(
+                                      fontSize: 13.5,
+                                      color: Colors.redAccent,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-
-                        Expanded(
-                          child:
-                          TabBarView(
-                            children: [
-                              _buildCreatorAboutTab(
-                                context,
-                                theme,
-                                creatorBio,
-                              ),
-
-                              _buildCreatorWorks(
-                                context,
-                                theme,
-                                l10n,
-                                characters,
-                                isOwner,
-                                characterSnapshot,
-                              ),
-
-                              _buildCreatorMomentsTab(
-                                context,
-                                theme,
-                                creatorId,
-                                characters,
-                              ),
-                            ],
+                    ],
+                  ),
+                  body: Stack(
+                    children: [
+                      Positioned(
+                        left: -18,
+                        top: -18,
+                        child: IgnorePointer(
+                          child: Opacity(
+                            opacity: 0.30,
+                            child: Image.asset(
+                              'assets/images/creator_public/creator_public_top_left_wash.png',
+                              width: 180,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Positioned(
+                        right: -24,
+                        top: 24,
+                        child: IgnorePointer(
+                          child: Opacity(
+                            opacity: 0.18,
+                            child: Image.asset(
+                              'assets/images/creator_public/creator_public_top_right_botanical.png',
+                              width: 170,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: -26,
+                        bottom: 12,
+                        child: IgnorePointer(
+                          child: Opacity(
+                            opacity: 0.12,
+                            child: Image.asset(
+                              'assets/images/creator_public/creator_public_bottom_left_botanical.png',
+                              width: 170,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
+                      DefaultTabController(
+                        length: 3,
+                        child: Column(
+                          children: [
+                            _buildCreatorHeader(
+                              context,
+                              theme,
+                              creatorId: creatorId,
+                              displayNickname: displayNickname,
+                              displayPlayerID: displayPlayerID,
+                              creatorBio: creatorBio,
+                              imageProvider: imageProvider,
+                              isOwner: isOwner,
+                              workCount: characters.length,
+                              totalLikes: totalLikes,
+                            ),
+                            _buildCreatorMainTabBar(
+                              context,
+                              theme,
+                              l10n,
+                            ),
+                            Expanded(
+                              child: TabBarView(
+                                children: [
+                                  _buildCreatorAboutTab(
+                                    context,
+                                    theme,
+                                    creatorBio,
+                                  ),
+                                  _buildCreatorWorks(
+                                    context,
+                                    theme,
+                                    l10n,
+                                    characters,
+                                    isOwner,
+                                    characterSnapshot,
+                                  ),
+                                  _buildCreatorMomentsTab(
+                                    context,
+                                    theme,
+                                    creatorId,
+                                    characters,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -337,42 +418,395 @@ class CreatorProfilePage extends StatelessWidget {
       },
     );
   }
+  Future<void> _reportCreator({
+    required BuildContext context,
+    required String creatorId,
+    required String creatorName,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      ToastUtils.showCenterToast(
+        context,
+        '請先登入後再檢舉創作者',
+        isError: true,
+      );
+      return;
+    }
+
+    if (user.uid == creatorId) {
+      ToastUtils.showCenterToast(
+        context,
+        '無法檢舉自己的創作者頁面',
+        isError: true,
+      );
+      return;
+    }
+
+    final String? reason = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        final theme = Theme.of(dialogContext);
+
+        Widget reasonTile(String value, String label) {
+          return ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              label,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 13.5,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            onTap: () => Navigator.pop(dialogContext, value),
+          );
+        }
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          title: Text(
+            '檢舉創作者',
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '請選擇檢舉「$creatorName」的原因：',
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.68),
+                ),
+              ),
+              const SizedBox(height: 10),
+              reasonTile('inappropriate_content', '不當或違規內容'),
+              reasonTile('harassment', '騷擾、攻擊或仇恨內容'),
+              reasonTile('impersonation', '冒充他人或偽造身分'),
+              reasonTile('spam', '垃圾內容或惡意宣傳'),
+              reasonTile('other', '其他'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                '取消',
+                style: GoogleFonts.notoSerifTc(),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (reason == null) return;
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('reports')
+          .add({
+        'type': 'creator',
+        'targetType': 'creator',
+        'targetId': creatorId,
+        'creatorId': creatorId,
+        'creatorName': creatorName,
+        'reporterId': user.uid,
+        'reason': reason,
+        'source': 'creator_profile',
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      if (!context.mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '已收到檢舉，感謝你的回報',
+        customIcon: Icons.flag_outlined,
+      );
+    } catch (e) {
+      debugPrint('❌ 檢舉創作者失敗：$e');
+
+      if (!context.mounted) return;
+
+      ToastUtils.showCenterToast(
+        context,
+        '檢舉送出失敗，請稍後再試',
+        isError: true,
+      );
+    }
+  }
+
+  Future<bool> _blockCreator({
+    required BuildContext context,
+    required String creatorId,
+    required String creatorName,
+    required List<Character> characters,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      ToastUtils.showCenterToast(
+        context,
+        '請先登入後再封鎖創作者',
+        isError: true,
+      );
+      return false;
+    }
+
+    if (user.uid == creatorId) {
+      ToastUtils.showCenterToast(
+        context,
+        '無法封鎖自己',
+        isError: true,
+      );
+      return false;
+    }
+
+    final bool confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          title: Row(
+            children: [
+              const Icon(
+                Icons.block_rounded,
+                color: Colors.redAccent,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '封鎖創作者',
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            '確定要封鎖「$creatorName」嗎？\n\n'
+                '封鎖後，你將不會再看到這位創作者的公開頁面，'
+                '目前由他建立的公開角色也會一併加入封鎖名單。',
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 13.5,
+              height: 1.65,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                '取消',
+                style: GoogleFonts.notoSerifTc(),
+              ),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+              ),
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                '確認封鎖',
+                style: GoogleFonts.notoSerifTc(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    ) ??
+        false;
+
+    if (!confirmed) return false;
+
+    try {
+      final db = FirebaseFirestore.instance;
+      final batch = db.batch();
+
+      final blockedCreatorRef = db
+          .collection('users')
+          .doc(user.uid)
+          .collection('blockedCreators')
+          .doc(creatorId);
+
+      batch.set(
+        blockedCreatorRef,
+        {
+          'creatorId': creatorId,
+          'creatorName': creatorName,
+          'blockedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+
+      // 先讀取目前已經手動封鎖的角色。
+      // 若玩家之前單獨封鎖過某角色，不覆蓋其 source，
+      // 這樣日後「解除封鎖創作者」時不會誤解封該角色。
+      final existingBlockedSnapshot = await db
+          .collection('users')
+          .doc(user.uid)
+          .collection('blockedCharacters')
+          .get();
+
+      final existingBlockedIds =
+      existingBlockedSnapshot.docs.map((doc) => doc.id).toSet();
+
+      // 封鎖創作者時，將「尚未被單獨封鎖」的現有公開角色
+      // 加入 creator_block；之後新建立的角色則由 blockedCreators
+      // 在邂逅 / 搜尋頁直接依 createdBy 過濾。
+      for (final character in characters) {
+        if (existingBlockedIds.contains(character.id)) {
+          continue;
+        }
+
+        final blockedCharacterRef = db
+            .collection('users')
+            .doc(user.uid)
+            .collection('blockedCharacters')
+            .doc(character.id);
+
+        batch.set(
+          blockedCharacterRef,
+          {
+            'characterId': character.id,
+            'characterName': character.name,
+            'name': character.name,
+            'avatarPath': character.avatarPath,
+            'creatorId': creatorId,
+            'blockedAt': FieldValue.serverTimestamp(),
+            'source': 'creator_block',
+          },
+        );
+      }
+
+      await batch.commit();
+
+      if (!context.mounted) return true;
+
+      ToastUtils.showCenterToast(
+        context,
+        '已封鎖「$creatorName」',
+        customIcon: Icons.block_rounded,
+      );
+
+      return true;
+    } catch (e) {
+      debugPrint('❌ 封鎖創作者失敗：$e');
+
+      if (!context.mounted) return false;
+
+      ToastUtils.showCenterToast(
+        context,
+        '封鎖失敗，請稍後再試',
+        isError: true,
+      );
+
+      return false;
+    }
+  }
+
+  Widget _buildCreatorMainTabBar(
+      BuildContext context,
+      ThemeData theme,
+      AppLocalizations l10n,
+      ) {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        TabBar(
+          labelColor: theme.colorScheme.primary,
+          unselectedLabelColor:
+          theme.colorScheme.onSurface.withValues(alpha: 0.48),
+          indicatorColor: Colors.transparent,
+          dividerColor: Colors.transparent,
+          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+          labelStyle: GoogleFonts.notoSerifTc(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: GoogleFonts.notoSerifTc(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w500,
+          ),
+          tabs: [
+            Tab(text: l10n.profilePageTabBio),
+            Tab(text: l10n.profilePageTabCharacters),
+            Tab(text: l10n.profilePageTabMoments),
+          ],
+        ),
+        Positioned(
+          bottom: 0,
+          child: IgnorePointer(
+            child: Opacity(
+              opacity: 0.72,
+              child: Image.asset(
+                'assets/images/creator_public/creator_public_tab_ornament.png',
+                width: 92,
+                height: 12,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildCreatorAboutTab(
       BuildContext context,
       ThemeData theme,
       String creatorBio,
       ) {
     final l10n = AppLocalizations.of(context)!;
+    final primary = theme.colorScheme.primary;
+    final textColor = theme.colorScheme.onSurface;
+
     if (creatorBio.trim().isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.fromLTRB(24, 34, 24, 40),
         children: [
-          const SizedBox(height: 60),
-          Icon(
-            Icons.person_outline_rounded,
-            size: 60,
-            color: theme.colorScheme.primary
-                .withValues(alpha: 0.4),
+          const SizedBox(height: 34),
+          Center(
+            child: Image.asset(
+              'assets/images/creator_public/creator_public_avatar_branch.png',
+              width: 72,
+              fit: BoxFit.contain,
+              opacity: const AlwaysStoppedAnimation(0.42),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             l10n.creatorProfileNoBio,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: GoogleFonts.notoSerifTc(
               fontSize: 17,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+              color: textColor,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.creatorProfileNoBioHint,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: GoogleFonts.notoSerifTc(
               fontSize: 13,
-              color: theme.colorScheme.onSurface
-                  .withValues(alpha: 0.55),
+              height: 1.6,
+              color: textColor.withValues(alpha: 0.50),
             ),
           ),
         ],
@@ -381,42 +815,65 @@ class CreatorProfilePage extends StatelessWidget {
 
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(18, 22, 18, 42),
       children: [
         Container(
           width: double.infinity,
-          padding:  EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
+          padding: const EdgeInsets.fromLTRB(22, 22, 22, 26),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface
-                .withValues(alpha: 0.72),
-            borderRadius: BorderRadius.circular(16),
+            color: theme.scaffoldBackgroundColor.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: theme.colorScheme.primary
-                  .withValues(alpha: 0.12),
+              color: primary.withValues(alpha: 0.14),
+              width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: primary.withValues(alpha: 0.045),
+                blurRadius: 18,
+                offset: const Offset(0, 7),
+              ),
+            ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              Text(
-                l10n.profilePageAboutMe,
-                style: TextStyle(
-                  color: theme.colorScheme.primary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+              Positioned(
+                right: -2,
+                bottom: -8,
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: 0.20,
+                    child: Image.asset(
+                      'assets/images/creator_public/creator_public_bottom_right_ink.png',
+                      width: 105,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                creatorBio,
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface
-                      .withValues(alpha: 0.78),
-                  fontSize: 13,
-                  height: 1.6,
+              Padding(
+                padding: const EdgeInsets.only(right: 34),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.profilePageAboutMe,
+                      style: GoogleFonts.notoSerifTc(
+                        color: primary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      creatorBio,
+                      style: GoogleFonts.notoSerifTc(
+                        color: textColor.withValues(alpha: 0.78),
+                        fontSize: 13.5,
+                        height: 1.85,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -425,6 +882,7 @@ class CreatorProfilePage extends StatelessWidget {
       ],
     );
   }
+
   Widget _buildCreatorMomentsTab(
       BuildContext context,
       ThemeData theme,
@@ -592,20 +1050,20 @@ class CreatorProfilePage extends StatelessWidget {
                       case 'creator':
                         title = l10n.creatorProfileNoCreatorMoments;
                         description =
-                        l10n.creatorProfileNoCreatorMomentsHint;
+                            l10n.creatorProfileNoCreatorMomentsHint;
                         break;
 
                       case 'character':
                         title = l10n.creatorProfileNoCharacterMoments;
                         description =
-                        l10n.creatorProfileNoCharacterMomentsHint;
+                            l10n.creatorProfileNoCharacterMomentsHint;
                         break;
 
                       case 'all':
                       default:
                         title = l10n.creatorProfileNoPublicMoments;
                         description =
-                        l10n.creatorProfileNoPublicMomentsHint;
+                            l10n.creatorProfileNoPublicMomentsHint;
                     }
 
                     return _buildCreatorMomentEmptyState(
@@ -719,29 +1177,23 @@ class CreatorProfilePage extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isSelected
-              ? theme.colorScheme.primary
-              : theme.colorScheme.surface
-              .withValues(alpha: 0.75),
-          borderRadius:
-          BorderRadius.circular(20),
+              ? theme.colorScheme.primary.withValues(alpha: 0.10)
+              : theme.scaffoldBackgroundColor.withValues(alpha: 0.84),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurface
-                .withValues(alpha: 0.10),
+            color: theme.colorScheme.primary.withValues(
+              alpha: isSelected ? 0.32 : 0.12,
+            ),
           ),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isSelected
-                ? FontWeight.bold
-                : FontWeight.w500,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 12.5,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             color: isSelected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.onSurface
-                .withValues(alpha: 0.65),
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurface.withValues(alpha: 0.62),
           ),
         ),
       ),
@@ -928,130 +1380,141 @@ class CreatorProfilePage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final primaryColor = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
-    final subTextColor =
-    textColor.withValues(alpha: 0.58);
+    final subTextColor = textColor.withValues(alpha: 0.52);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        14,
-      ),
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
       child: Column(
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                radius: 46,
-                backgroundColor:
-                primaryColor.withValues(alpha: 0.10),
-                backgroundImage: imageProvider,
-                child: imageProvider == null
-                    ? Icon(
-                  Icons.person_rounded,
-                  size: 46,
-                  color: primaryColor.withValues(
-                    alpha: 0.38,
-                  ),
-                )
-                    : null,
+              SizedBox(
+                width: 104,
+                height: 104,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: primaryColor.withValues(alpha: 0.22),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withValues(alpha: 0.08),
+                              blurRadius: 14,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(3),
+                        child: CircleAvatar(
+                          backgroundColor:
+                          primaryColor.withValues(alpha: 0.08),
+                          backgroundImage: imageProvider,
+                          child: imageProvider == null
+                              ? Icon(
+                            Icons.person_rounded,
+                            size: 44,
+                            color: primaryColor.withValues(alpha: 0.32),
+                          )
+                              : null,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: -14,
+                      bottom: -4,
+                      child: IgnorePointer(
+                        child: Opacity(
+                          opacity: 0.66,
+                          child: Image.asset(
+                            'assets/images/creator_public/creator_public_avatar_branch.png',
+                            width: 58,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-
-              const SizedBox(width: 16),
-
+              const SizedBox(width: 18),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       displayNickname,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 23,
+                        fontWeight: FontWeight.w700,
                         color: textColor,
+                        letterSpacing: 0.2,
                       ),
                     ),
-
-                    const SizedBox(height: 6),
-
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            'ID: $displayPlayerID',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: subTextColor,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 6),
-
-                        Icon(
-                          Icons.auto_awesome_rounded,
-                          size: 15,
-                          color: primaryColor.withValues(
-                            alpha: 0.75,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 5),
+                    Text(
+                      'ID: $displayPlayerID',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 12.5,
+                        color: subTextColor,
+                      ),
                     ),
-
                     const SizedBox(height: 8),
-
                     Text(
                       creatorBio.isNotEmpty
                           ? creatorBio
                           : l10n.creatorProfileNoBioHint,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12,
-                        height: 1.4,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 12.2,
+                        height: 1.55,
                         color: textColor.withValues(
-                          alpha: creatorBio.isNotEmpty
-                              ? 0.62
-                              : 0.38,
+                          alpha: creatorBio.isNotEmpty ? 0.60 : 0.36,
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 10),
-
+                    const SizedBox(height: 11),
                     if (isOwner)
                       OutlinedButton.icon(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                              const CreatorStudioPage(),
+                              builder: (_) => const CreatorStudioPage(),
                             ),
                           );
                         },
                         icon: const Icon(
                           Icons.brush_outlined,
-                          size: 16,
+                          size: 15,
                         ),
                         label: Text(
                           l10n.enter_secret_studio,
+                          style: GoogleFonts.notoSerifTc(fontSize: 12.5),
                         ),
                         style: OutlinedButton.styleFrom(
+                          foregroundColor: primaryColor,
                           visualDensity: VisualDensity.compact,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
+                            horizontal: 13,
                             vertical: 8,
                           ),
+                          side: BorderSide(
+                            color: primaryColor.withValues(alpha: 0.30),
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(22),
                           ),
                         ),
                       )
@@ -1066,62 +1529,64 @@ class CreatorProfilePage extends StatelessWidget {
               ),
             ],
           ),
-
-          const SizedBox(height: 20),
-
-          Row(
-            children: [
-              Expanded(
-                child: _buildCreatorStat(
-                  theme,
-                  value: '$workCount',
-                  label: l10n.creatorProfilePublicWorks,
+          const SizedBox(height: 22),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 14,
+            ),
+            decoration: BoxDecoration(
+              color: theme.scaffoldBackgroundColor.withValues(alpha: 0.86),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: primaryColor.withValues(alpha: 0.10),
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildCreatorStat(
+                    theme,
+                    value: '$workCount',
+                    label: l10n.creatorProfilePublicWorks,
+                  ),
                 ),
-              ),
-
-              _buildCreatorStatDivider(
-                theme,
-              ),
-
-              Expanded(
-                child: _buildCreatorStat(
-                  theme,
-                  value: '$totalLikes',
-                  label: l10n.creatorProfileLikesReceived,
+                _buildCreatorStatDivider(theme),
+                Expanded(
+                  child: _buildCreatorStat(
+                    theme,
+                    value: '$totalLikes',
+                    label: l10n.creatorProfileLikesReceived,
+                  ),
                 ),
-              ),
+                _buildCreatorStatDivider(theme),
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(creatorId)
+                        .collection('followers')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      final int followerCount =
+                          snapshot.data?.docs.length ?? 0;
 
-              _buildCreatorStatDivider(
-                theme,
-              ),
-
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(creatorId)
-                      .collection('followers')
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    final int followerCount =
-                        snapshot.data?.docs.length ?? 0;
-
-                    return _buildCreatorStat(
-                      theme,
-                      value: _formatCreatorCount(
-                        followerCount,
-                      ),
-                      label: l10n.profilePageFollowers,
-                    );
-                  },
+                      return _buildCreatorStat(
+                        theme,
+                        value: _formatCreatorCount(followerCount),
+                        label: l10n.profilePageFollowers,
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
     );
   }
+
   Widget _buildCreatorStatDivider(
       ThemeData theme,
       ) {
@@ -1199,6 +1664,7 @@ class CreatorProfilePage extends StatelessWidget {
           ),
           label: Text(
             isFollowing ? l10n.creatorProfileFollowing : l10n.creatorProfileFollow,
+            style: GoogleFonts.notoSerifTc(fontSize: 12.5),
           ),
           style: OutlinedButton.styleFrom(
             visualDensity:
@@ -1313,7 +1779,7 @@ class CreatorProfilePage extends StatelessWidget {
 
       ToastUtils.showCenterToast(
         context,
-       l10n.creatorProfileOperationFailed,
+        l10n.creatorProfileOperationFailed,
         isError: true,
       );
     }
@@ -1328,22 +1794,18 @@ class CreatorProfilePage extends StatelessWidget {
       children: [
         Text(
           value,
-          style: TextStyle(
-            color:
-            theme.colorScheme.onSurface,
+          style: GoogleFonts.notoSerifTc(
+            color: theme.colorScheme.onSurface,
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 3),
         Text(
           label,
-          style: TextStyle(
-            color: theme
-                .colorScheme
-                .onSurface
-                .withValues(alpha: 0.52),
-            fontSize: 12,
+          style: GoogleFonts.notoSerifTc(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.50),
+            fontSize: 11.5,
           ),
         ),
       ],
@@ -1440,7 +1902,7 @@ class CreatorProfilePage extends StatelessWidget {
             height: cardHeight,
             decoration: BoxDecoration(
               borderRadius:
-              BorderRadius.circular(24),
+              BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black
@@ -1498,12 +1960,10 @@ class CreatorProfilePage extends StatelessWidget {
                         maxLines: 1,
                         overflow:
                         TextOverflow.ellipsis,
-                        style:
-                        const TextStyle(
+                        style: GoogleFonts.notoSerifTc(
                           color: Colors.white,
-                          fontSize: 18,
-                          fontWeight:
-                          FontWeight.bold,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -1515,11 +1975,9 @@ class CreatorProfilePage extends StatelessWidget {
                         maxLines: 1,
                         overflow:
                         TextOverflow.ellipsis,
-                        style:
-                        const TextStyle(
-                          color:
-                          Colors.white70,
-                          fontSize: 12,
+                        style: GoogleFonts.notoSerifTc(
+                          color: Colors.white70,
+                          fontSize: 11.5,
                         ),
                       ),
                     ],

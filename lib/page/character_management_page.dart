@@ -69,61 +69,427 @@ class CharacterManagementPage extends StatelessWidget {
             ),
           ),
           SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(context, theme),
-                Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(uid)
-                        .collection('blockedCharacters')
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Center(child: Text(l10n.connection_error));
-                      }
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      final docs = snapshot.data!.docs;
-
-                      if (docs.isEmpty) {
-                        return _buildEmptyState(context, theme);
-                      }
-
-                      return ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 42),
-                        itemCount: docs.length,
-                        itemBuilder: (context, index) {
-                          final charData = docs[index].data() as Map<String, dynamic>;
-                          final String charId = docs[index].id;
-                          final String avatarPath =
-                              charData['avatarPath']?.toString().trim() ?? '';
-                          const bool isBlocked = true;
-
-                          return _buildCharacterCard(
-                            context: context,
-                            theme: theme,
-                            l10n: l10n,
-                            uid: uid,
-                            charId: charId,
-                            charData: charData,
-                            avatarPath: avatarPath,
-                            isBlocked: isBlocked,
-                          );
-                        },
-                      );
-                    },
+            child: DefaultTabController(
+              length: 2,
+              child: Column(
+                children: [
+                  _buildHeader(context, theme),
+                  _buildManagementTabs(theme),
+                  const SizedBox(height: 4),
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        _buildBlockedCharactersTab(
+                          context: context,
+                          theme: theme,
+                          l10n: l10n,
+                          uid: uid,
+                        ),
+                        _buildBlockedCreatorsTab(
+                          context: context,
+                          theme: theme,
+                          uid: uid,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+
+  Widget _buildManagementTabs(ThemeData theme) {
+    final primary = theme.colorScheme.primary;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: primary.withValues(alpha: 0.055),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: primary.withValues(alpha: 0.10),
+          ),
+        ),
+        child: TabBar(
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: Colors.transparent,
+          indicator: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: primary.withValues(alpha: 0.16),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: primary.withValues(alpha: 0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          labelColor: primary,
+          unselectedLabelColor:
+          theme.colorScheme.onSurface.withValues(alpha: 0.48),
+          labelStyle: GoogleFonts.notoSerifTc(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: GoogleFonts.notoSerifTc(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+          tabs: const [
+            Tab(text: '角色'),
+            Tab(text: '創作者'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBlockedCharactersTab({
+    required BuildContext context,
+    required ThemeData theme,
+    required AppLocalizations l10n,
+    required String uid,
+  }) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('blockedCharacters')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text(l10n.connection_error));
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final docs = snapshot.data?.docs ?? [];
+
+        if (docs.isEmpty) {
+          return _buildEmptyState(
+            context,
+            theme,
+            message: '若你暫停與角色聯繫，會顯示在這裡。',
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 42),
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final charData =
+            docs[index].data() as Map<String, dynamic>;
+            final String charId = docs[index].id;
+            final String avatarPath =
+                charData['avatarPath']?.toString().trim() ??
+                    charData['avatar']?.toString().trim() ??
+                    '';
+
+            return _buildCharacterCard(
+              context: context,
+              theme: theme,
+              l10n: l10n,
+              uid: uid,
+              charId: charId,
+              charData: charData,
+              avatarPath: avatarPath,
+              isBlocked: true,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildBlockedCreatorsTab({
+    required BuildContext context,
+    required ThemeData theme,
+    required String uid,
+  }) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('blockedCreators')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              '讀取封鎖創作者失敗',
+              style: GoogleFonts.notoSerifTc(),
+            ),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final docs = snapshot.data?.docs ?? [];
+
+        if (docs.isEmpty) {
+          return _buildEmptyState(
+            context,
+            theme,
+            message: '若你封鎖創作者，會顯示在這裡。',
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 42),
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final data =
+            docs[index].data() as Map<String, dynamic>;
+            final creatorId = docs[index].id;
+            final creatorName =
+            data['creatorName']?.toString().trim().isNotEmpty == true
+                ? data['creatorName'].toString().trim()
+                : '創作者';
+
+            return _buildCreatorCard(
+              context: context,
+              theme: theme,
+              uid: uid,
+              creatorId: creatorId,
+              creatorName: creatorName,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildCreatorCard({
+    required BuildContext context,
+    required ThemeData theme,
+    required String uid,
+    required String creatorId,
+    required String creatorName,
+  }) {
+    final primary = theme.colorScheme.primary;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(alpha: 0.88),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(
+          color: primary.withValues(alpha: 0.16),
+          width: 0.9,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: primary.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 18, 16, 18),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 34,
+              backgroundColor: primary.withValues(alpha: 0.09),
+              child: Icon(
+                Icons.person_outline_rounded,
+                color: primary.withValues(alpha: 0.72),
+                size: 30,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    creatorName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.notoSerifTc(
+                      color: theme.colorScheme.onSurface,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.6,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '已封鎖創作者',
+                    style: GoogleFonts.notoSerifTc(
+                      color: primary.withValues(alpha: 0.72),
+                      fontSize: 12.5,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    '其公開角色與後續新增角色不會出現在推薦中。',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.notoSerifTc(
+                      color: theme.colorScheme.onSurface
+                          .withValues(alpha: 0.48),
+                      fontSize: 11.5,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: primary,
+                side: BorderSide(
+                  color: primary.withValues(alpha: 0.55),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                minimumSize: const Size(0, 38),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: const StadiumBorder(),
+              ),
+              onPressed: () => _confirmUnblockCreator(
+                context: context,
+                uid: uid,
+                creatorId: creatorId,
+                creatorName: creatorName,
+              ),
+              child: Text(
+                '解除封鎖',
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmUnblockCreator({
+    required BuildContext context,
+    required String uid,
+    required String creatorId,
+    required String creatorName,
+  }) async {
+    final bool confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+        ),
+        title: Text(
+          '解除封鎖創作者',
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          '確定要解除封鎖「$creatorName」嗎？\n\n'
+              '解除後，這位創作者與其角色可能會再次出現在推薦內容中。'
+              '你先前「單獨封鎖」的角色仍會維持封鎖。',
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 13.5,
+            height: 1.65,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(
+              '取消',
+              style: GoogleFonts.notoSerifTc(),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(
+              '解除封鎖',
+              style: GoogleFonts.notoSerifTc(
+                color: Theme.of(dialogContext).colorScheme.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+
+    if (!confirmed) return;
+
+    try {
+      final db = FirebaseFirestore.instance;
+      final blockedCreatorRef = db
+          .collection('users')
+          .doc(uid)
+          .collection('blockedCreators')
+          .doc(creatorId);
+
+      // 只找這位創作者相關的封鎖角色，再於 client 端確認 source，
+      // 避免誤刪玩家原本手動封鎖的角色。
+      final relatedCharacters = await db
+          .collection('users')
+          .doc(uid)
+          .collection('blockedCharacters')
+          .where('creatorId', isEqualTo: creatorId)
+          .get();
+
+      final batch = db.batch();
+      batch.delete(blockedCreatorRef);
+
+      for (final doc in relatedCharacters.docs) {
+        final data = doc.data();
+        if (data['source'] == 'creator_block') {
+          batch.delete(doc.reference);
+        }
+      }
+
+      await batch.commit();
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '已解除封鎖「$creatorName」',
+            style: GoogleFonts.notoSerifTc(),
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint('❌ 解除封鎖創作者失敗：$e');
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '解除封鎖失敗，請稍後再試',
+            style: GoogleFonts.notoSerifTc(),
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildHeader(BuildContext context, ThemeData theme) {
@@ -148,9 +514,9 @@ class CharacterManagementPage extends StatelessWidget {
                   '角色管理',
                   style: GoogleFonts.notoSerifTc(
                     color: theme.colorScheme.onSurface,
-                    fontSize: 27,
+                    fontSize: 22,
                     fontWeight: FontWeight.w600,
-                    letterSpacing: 2.5,
+                    letterSpacing: 1.8,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -170,7 +536,11 @@ class CharacterManagementPage extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, ThemeData theme) {
+  Widget _buildEmptyState(
+      BuildContext context,
+      ThemeData theme, {
+        required String message,
+      }) {
     final screenHeight = MediaQuery.sizeOf(context).height;
     final imageSize = (screenHeight * 0.27).clamp(190.0, 270.0);
 
@@ -190,7 +560,7 @@ class CharacterManagementPage extends StatelessWidget {
             ),
             const SizedBox(height: 28),
             Text(
-              '若你暫停與角色聯繫，會顯示在這裡。',
+              message,
               textAlign: TextAlign.center,
               style: GoogleFonts.notoSerifTc(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.72),
@@ -216,9 +586,11 @@ class CharacterManagementPage extends StatelessWidget {
     required bool isBlocked,
   }) {
     final primary = theme.colorScheme.primary;
-    final name = charData['name']?.toString().trim().isNotEmpty == true
+    final String rawName =
+    charData['name']?.toString().trim().isNotEmpty == true
         ? charData['name'].toString().trim()
-        : '角色';
+        : (charData['characterName']?.toString().trim() ?? '');
+    final name = rawName.isNotEmpty ? rawName : '角色';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -402,7 +774,9 @@ class CharacterManagementPage extends StatelessWidget {
               ),
               // 2. 名字
               Text(
-                  data['name'],
+                  data['name']?.toString().trim().isNotEmpty == true
+                      ? data['name'].toString().trim()
+                      : (data['characterName']?.toString() ?? '角色'),
                   style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold)
               ),

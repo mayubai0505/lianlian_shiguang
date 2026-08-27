@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart'; // ✅ 確保導入您的 AuthService
 import '../services/toast_utils.dart';
@@ -11,7 +12,6 @@ import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 //登入介面
 
@@ -35,10 +35,10 @@ class _LoginPageState extends State<LoginPage> {
 
   // ⚠️ 換成你公開發布後的 Notion 網址
   static const String _termsNotionUrl =
-      'https://adaptable-roof-829.notion.site/3ab919a5415180e89545dce77d552a6c?source=copy_link';
+      'https://adaptable-roof-829.notion.site/3ab919a5415180e89545dce77d552a6c';
 
   static const String _privacyNotionUrl =
-      'https://adaptable-roof-829.notion.site/3ab919a541518035ad5ec56427a427ec?source=copy_link';
+      'https://adaptable-roof-829.notion.site/3ab919a541518035ad5ec56427a427ec';
 
   final AuthService _authService = AuthService();
   BuildContext? _dialogContext; // 🎯 專門用來記住轉圈圈的 ID
@@ -240,17 +240,15 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     }
 
-                    final bool opened = await launchUrl(
-                      uri,
-                      mode: kIsWeb
-                          ? LaunchMode.platformDefault
-                          : LaunchMode.externalApplication,
-                      webOnlyWindowName: '_blank',
+                    // 與設定頁相同：直接在 App 內用 WebView 開啟。
+                    await Navigator.of(dialogContext).push(
+                      MaterialPageRoute(
+                        builder: (_) => _PolicyWebViewPage(
+                          title: title,
+                          url: url,
+                        ),
+                      ),
                     );
-
-                    if (!opened) {
-                      throw Exception('無法開啟條款網址');
-                    }
 
                     if (!dialogContext.mounted) return;
 
@@ -925,6 +923,151 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PolicyWebViewPage extends StatefulWidget {
+  final String title;
+  final String url;
+
+  const _PolicyWebViewPage({
+    required this.title,
+    required this.url,
+  });
+
+  @override
+  State<_PolicyWebViewPage> createState() =>
+      _PolicyWebViewPageState();
+}
+
+class _PolicyWebViewPageState extends State<_PolicyWebViewPage> {
+  late final WebViewController _controller;
+
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.white)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) {
+            if (!mounted) return;
+            setState(() {
+              _isLoading = true;
+              _hasError = false;
+            });
+          },
+          onPageFinished: (_) {
+            if (!mounted) return;
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          onWebResourceError: (error) {
+            if (error.isForMainFrame != true) return;
+            if (!mounted) return;
+
+            setState(() {
+              _hasError = true;
+              _isLoading = false;
+            });
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+            tooltip: '重新整理',
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () {
+              setState(() {
+                _hasError = false;
+                _isLoading = true;
+              });
+              _controller.reload();
+            },
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          if (!_hasError)
+            WebViewWidget(
+              controller: _controller,
+            ),
+          if (_isLoading)
+            Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+                strokeWidth: 2.2,
+              ),
+            ),
+          if (_hasError)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline_rounded,
+                      size: 58,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      '頁面載入失敗',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      '請確認網路連線後再試一次。',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 22),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _hasError = false;
+                          _isLoading = true;
+                        });
+
+                        _controller.loadRequest(
+                          Uri.parse(widget.url),
+                        );
+                      },
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text('重新載入'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

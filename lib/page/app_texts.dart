@@ -1,8 +1,9 @@
 // lib/app_texts.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../generated/app_localizations.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 enum LegalPageType {
   privacy,
@@ -49,13 +50,13 @@ class _LegalDocumentPageState
   String get _url {
     switch (widget.type) {
       case LegalPageType.privacy:
-        return "https://adaptable-roof-829.notion.site/3ab919a541518035ad5ec56427a427ec?source=copy_link";
+        return "https://adaptable-roof-829.notion.site/3ab919a541518035ad5ec56427a427ec";
 
       case LegalPageType.terms:
-        return "https://app.notion.com/p/3ab919a5415180e89545dce77d552a6c?source=copy_link";
+        return "https://adaptable-roof-829.notion.site/3ab919a5415180e89545dce77d552a6c";
 
       case LegalPageType.creator:
-        return "https://adaptable-roof-829.notion.site/3ab919a541518004990ec5ad79b80129?source=copy_link";
+        return "https://adaptable-roof-829.notion.site/3ab919a541518004990ec5ad79b80129";
     }
   }
 
@@ -102,7 +103,13 @@ class _LegalDocumentPageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_pageTitle),
+        title: Text(
+          _pageTitle,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -138,17 +145,20 @@ class _LegalDocumentPageState
                       color: Colors.redAccent,
                     ),
                     const SizedBox(height: 20),
-                    const Text(
+                    Text(
                       "頁面載入失敗",
-                      style: TextStyle(
+                      style: GoogleFonts.notoSerifTc(
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       "請確認網路連線後再試一次。",
                       textAlign: TextAlign.center,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton.icon(
@@ -163,7 +173,12 @@ class _LegalDocumentPageState
                         );
                       },
                       icon: const Icon(Icons.refresh),
-                      label: const Text("重新載入"),
+                      label: Text(
+                        "重新載入",
+                        style: GoogleFonts.notoSerifTc(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),

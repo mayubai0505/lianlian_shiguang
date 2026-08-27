@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'feedback_page.dart';
 import 'dart:io' show Platform;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../utils/image_utils.dart';
 import '../utils/character_navigator.dart';
 
@@ -392,8 +393,10 @@ class _MomentCardState extends State<MomentCard> {
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      showDragHandle: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (BuildContext context) {
         return SafeArea(
@@ -405,8 +408,12 @@ class _MomentCardState extends State<MomentCard> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: Text(
-                    l10n.moment_forward_title, // 💡 改個標題更有感覺
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    l10n.moment_forward_title,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.8,
+                    ),
                   ),
                 ),
                 const Divider(),
@@ -417,7 +424,11 @@ class _MomentCardState extends State<MomentCard> {
                     future: fetchCharactersFromDatabase(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator(color: Colors.pinkAccent));
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        );
                       }
 
                       if (snapshot.hasError) {
@@ -429,9 +440,17 @@ class _MomentCardState extends State<MomentCard> {
                         return Center(
                           child: Padding(
                             padding: EdgeInsets.all(20.0),
-                            child: Text(l10n.moment_forward_empty_state,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.grey)
+                            child: Text(
+                              l10n.moment_forward_empty_state,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.notoSerifTc(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.46),
+                                fontSize: 13.5,
+                                height: 1.6,
+                              ),
                             ),
                           ),
                         );
@@ -451,7 +470,13 @@ class _MomentCardState extends State<MomentCard> {
                               backgroundColor:
                               Theme.of(context).colorScheme.secondaryContainer,
                             ),
-                            title: Text(char.name),
+                            title: Text(
+                              char.name,
+                              style: GoogleFonts.notoSerifTc(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14.5,
+                              ),
+                            ),
                             trailing: ElevatedButton(
                               onPressed: () async {
                                 // 1. 先關閉選單，避免 UI 衝突
@@ -662,12 +687,23 @@ class _MomentCardState extends State<MomentCard> {
                                 }
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.pinkAccent,
+                                backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                                 foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                shape: const StadiumBorder(),
                                 elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 9,
+                                ),
                               ),
-                              child: Text(l10n.action_send),
+                              child: Text(
+                                l10n.action_send,
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -713,69 +749,116 @@ class _MomentCardState extends State<MomentCard> {
 
   Future<void> _showMoreOptions() async {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
     await showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(28),
+        ),
+      ),
       builder: (context) {
-        return SafeArea(
-          child: Wrap(
-            children: <Widget>[
-              // ✨ 只有本人 (或該動態的親媽) 才能編輯與刪除
-              if (widget.moment.createdBy == widget.currentUserId) ...[
-                ListTile(
-                  leading: const Icon(Icons.edit_note_outlined),
-                  title: Text(l10n.moment_edit_title),
-                  onTap: () {
-                    Navigator.pop(context); // 關掉三個點選單
-                    widget.onEditTapped?.call(); // 交給外層處理跳頁
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.delete_forever_outlined, color: Colors.red),
-                  title: Text(
-                    l10n.moment_action_delete,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    widget.onDeleteTapped?.call();
-                  },
-                ),
-              ] else ...[
-                // 🛡️ 檢舉此動態
-                ListTile(
-                  leading: const Icon(Icons.report_problem_outlined),
-                  title: Text(l10n.moment_action_report),
-                  onTap: () {
-                    Navigator.pop(context); // 先關閉底部選單
-                    _submitReport();        // 🚀 呼叫我們剛剛寫的真實檢舉函式！
-                  },
-                ),
-// 👁️ 只隱藏這一篇
-                // 👁️ 只隱藏這一篇
-                ListTile(
-                  leading: const Icon(Icons.visibility_off_outlined),
-                  title: Text(l10n.hide_moment_title), // ✨ 換成多國語系變數，並移除 const
-                  onTap: () {
-                    Navigator.pop(context);
-                    widget.onHideMomentTapped?.call();
-                  },
-                ),
+        Widget actionTile({
+          required IconData icon,
+          required String title,
+          required VoidCallback onTap,
+          bool destructive = false,
+        }) {
+          final color = destructive
+              ? theme.colorScheme.error
+              : primary.withValues(alpha: 0.82);
 
-// 🚫 封鎖此角色
-                ListTile(
-                  leading: const Icon(Icons.block_rounded, color: Colors.redAccent),
-                  title: Text(
-                    l10n.block_char,
-                    style: const TextStyle(color: Colors.redAccent),
+          return ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 2,
+            ),
+            leading: Container(
+              width: 36,
+              height: 36,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.075),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                size: 20,
+                color: color,
+              ),
+            ),
+            title: Text(
+              title,
+              style: GoogleFonts.notoSerifTc(
+                color: destructive
+                    ? theme.colorScheme.error
+                    : onSurface.withValues(alpha: 0.86),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            onTap: onTap,
+          );
+        }
+
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.moment.createdBy == widget.currentUserId) ...[
+                  actionTile(
+                    icon: Icons.edit_note_rounded,
+                    title: l10n.moment_edit_title,
+                    onTap: () {
+                      Navigator.pop(context);
+                      widget.onEditTapped?.call();
+                    },
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    widget.onBlockCharacterTapped?.call();
-                  },
-                ),
+                  actionTile(
+                    icon: Icons.delete_outline_rounded,
+                    title: l10n.moment_action_delete,
+                    destructive: true,
+                    onTap: () {
+                      Navigator.pop(context);
+                      widget.onDeleteTapped?.call();
+                    },
+                  ),
+                ] else ...[
+                  actionTile(
+                    icon: Icons.flag_outlined,
+                    title: l10n.moment_action_report,
+                    onTap: () {
+                      Navigator.pop(context);
+                      _submitReport();
+                    },
+                  ),
+                  actionTile(
+                    icon: Icons.visibility_off_outlined,
+                    title: l10n.hide_moment_title,
+                    onTap: () {
+                      Navigator.pop(context);
+                      widget.onHideMomentTapped?.call();
+                    },
+                  ),
+                  actionTile(
+                    icon: Icons.block_rounded,
+                    title: l10n.block_char,
+                    destructive: true,
+                    onTap: () {
+                      Navigator.pop(context);
+                      widget.onBlockCharacterTapped?.call();
+                    },
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         );
       },
@@ -865,8 +948,10 @@ class _MomentCardState extends State<MomentCard> {
 
     await showModalBottomSheet(
       context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      showDragHandle: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) {
         return SafeArea(
@@ -877,27 +962,39 @@ class _MomentCardState extends State<MomentCard> {
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   l10n.moment_action_share,
-                  style: const TextStyle(
+                  style: GoogleFonts.notoSerifTc(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.8,
                   ),
                 ),
               ),
 
               // 第一個按鈕：App 內轉發 / 私訊
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.send_outlined,
-                  color: Colors.pinkAccent,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.82),
                 ),
                 title: Text(
                   l10n.moment_forward_hint,
-                  style: const TextStyle(
+                  style: GoogleFonts.notoSerifTc(
                     fontWeight: FontWeight.w500,
+                    fontSize: 14,
                   ),
                 ),
                 subtitle: Text(
                   l10n.momentSelectShareCharacter,
+                  style: GoogleFonts.notoSerifTc(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.46),
+                    fontSize: 12,
+                  ),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -912,8 +1009,20 @@ class _MomentCardState extends State<MomentCard> {
 
               // 第二個按鈕：分享到外部 App
               ListTile(
-                leading: const Icon(Icons.share, color: Colors.blue),
-                title: Text(l10n.moment_share_to_apps),
+                leading: Icon(
+                  Icons.ios_share_rounded,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.82),
+                ),
+                title: Text(
+                  l10n.moment_share_to_apps,
+                  style: GoogleFonts.notoSerifTc(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
                 // 👇 注意這裡加上了 async
                 onTap: () async {
 
@@ -999,10 +1108,11 @@ class _MomentCardState extends State<MomentCard> {
       String text,
       ThemeData theme,
       ) {
-    // 一般文章文字統一跟隨觀看者的主題色
-    final normalTextStyle = TextStyle(
-      color: theme.colorScheme.primary,
+    final normalTextStyle = GoogleFonts.notoSerifTc(
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
       fontSize: 15,
+      height: 1.75,
+      letterSpacing: 0.2,
     );
 
     // 尋找 @ 加上非空白字元
@@ -1041,10 +1151,11 @@ class _MomentCardState extends State<MomentCard> {
       spans.add(
         TextSpan(
           text: mention,
-          style: const TextStyle(
-            color: Colors.pinkAccent,
+          style: GoogleFonts.notoSerifTc(
+            color: theme.colorScheme.primary,
             fontSize: 15,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
+            height: 1.75,
           ),
           recognizer: TapGestureRecognizer()
             ..onTap = () {
@@ -1080,174 +1191,279 @@ class _MomentCardState extends State<MomentCard> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
 
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
-      // ✅ 毛玻璃透明感：連動玩家自訂的主題
-      color: theme.cardColor.withOpacity(isDarkMode ? 0.6 : 0.4),
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. 使用者資訊區
-          ListTile(
-            // ✨ 用 GestureDetector 把頭像包起來
-            leading: GestureDetector(
-              onTap: () {
-                _hideTipsThenRun(() async {
-                  widget.onAvatarTapped?.call();
-                });
-              },
-              child: CircleAvatar(
-                backgroundImage: getAvatarImageProvider(widget.moment.authorAvatar),
-              ),
-            ),
-            title: Text(
-              widget.moment.authorName,
-              style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
-            ),
-            subtitle: Text(
-              DateFormat.MMMd(
-                Localizations.localeOf(context).toString(),
-              ).add_Hm().format(
-                widget.moment.createdAt.toDate(),
-              ),
-              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.more_horiz),
-              onPressed: () {
-                _hideTipsThenRun(() => _showMoreOptions());
-              },
-            ),
+    final actionColor = onSurface.withValues(
+      alpha: isDarkMode ? 0.72 : 0.66,
+    );
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface.withValues(
+          alpha: isDarkMode ? 0.72 : 0.92,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: primary.withValues(
+            alpha: isDarkMode ? 0.12 : 0.10,
           ),
-
-          // 2. 內容文字區
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: _buildContentWithMentions(widget.moment.content, theme),
+          width: 0.8,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: primary.withValues(
+              alpha: isDarkMode ? 0.025 : 0.045,
+            ),
+            blurRadius: 18,
+            offset: const Offset(0, 7),
           ),
-
-          // 🖼️ 3. 照片顯示區
-          if (widget.moment.imageUrl != null &&
-              widget.moment.imageUrl!.trim().isNotEmpty)
-            Container(
-              width: double.infinity,
-              color: Colors.black.withValues(alpha: 0.04),
-              constraints: const BoxConstraints(
-                maxHeight: 520,
-              ),
-              child: CachedNetworkImage(
-                imageUrl: widget.moment.imageUrl!.trim(),
-                fit: BoxFit.contain,
-                width: double.infinity,
-
-                // 限制記憶體解碼尺寸，避免大圖完整塞入 RAM。
-                memCacheWidth: 1080,
-
-                placeholder: (context, url) {
-                  return Container(
-                    height: 200,
-                    color: Colors.grey[200],
-                    alignment: Alignment.center,
-                    child: const SizedBox(
-                      width: 26,
-                      height: 26,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  );
-                },
-
-                errorWidget: (context, url, error) {
-                  return Container(
-                    height: 200,
-                    color: Colors.grey[200],
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.broken_image_outlined,
-                    ),
-                  );
-                },
-              ),
-            ),
-
-          // 🕹️ 4. 底部操作區
-          if (!widget.isDetailView) ...[
-            Row(
-              children: [
-                // 🍃 1. 按讚 (有氣泡)
-                Showcase(
-                  key: _likeKey,
-                  description: l10n.tip_post_like,
-                  child: IconButton(
-                    icon: Icon(
-                      _isLiked ? Icons.eco : Icons.eco_outlined,
-                      color: _isLiked ? const Color(0xFFAED581) : theme.iconTheme.color,
-                    ),
-                    onPressed: () {
-                      _hideTipsThenRun(() async => await _toggleLike());
-                    },
-                  ),
-                ),
-
-                // 💬 2. 留言按鈕 (保持不變)
-                IconButton(
-                  icon: const Icon(Icons.chat_bubble_outline),
-                  onPressed: () {
-                    _hideTipsThenRun(() async {
-                      CommentBottomSheet.show(context, widget.moment);
-                    });
-                  },
-                ),
-                Text('${widget.moment.commentCount}'),
-
-                // 📤 3. 分享按鈕 (保持不變)
-                IconButton(
-                  icon: const Icon(Icons.send_outlined),
-                  onPressed: () {
-                    _hideTipsThenRun(() => _onSharePressed());
-                  },
-                ),
-
-                const Spacer(),
-
-                // 🌳 4. 收藏 (有氣泡)
-                Showcase(
-                  key: _bookmarkKey,
-                  description: l10n.tip_post_bookmark,
-                  child: IconButton(
-                    icon: Icon(
-                      _isBookmarked ? Icons.park : Icons.park_outlined,
-                      color: _isBookmarked ? const Color(0xFFA1887F) : theme.iconTheme.color,
-                    ),
-                    onPressed: () {
-                      _hideTipsThenRun(() async => await _toggleBookmark());
-                    },
-                  ),
-                ),
-              ],
-            ),
-            // 📊 5. 數據與文字區
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(16, 15, 10, 5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (_likeCount > 0)
-                    Text(l10n.moment_likes_label(_likeCount.toString()), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-                  const SizedBox(height: 12), // 給底部留點呼吸空間
+                  GestureDetector(
+                    onTap: () {
+                      _hideTipsThenRun(() async {
+                        widget.onAvatarTapped?.call();
+                      });
+                    },
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundImage: getAvatarImageProvider(
+                        widget.moment.authorAvatar,
+                      ),
+                      backgroundColor:
+                      primary.withValues(alpha: 0.08),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.moment.authorName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.notoSerifTc(
+                            color: onSurface,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            height: 1.35,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          DateFormat.MMMd(
+                            Localizations.localeOf(context).toString(),
+                          ).add_Hm().format(
+                            widget.moment.createdAt.toDate(),
+                          ),
+                          style: GoogleFonts.notoSerifTc(
+                            color: onSurface.withValues(alpha: 0.42),
+                            fontSize: 12,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    icon: Icon(
+                      Icons.more_horiz_rounded,
+                      size: 21,
+                      color: actionColor,
+                    ),
+                    onPressed: () {
+                      _hideTipsThenRun(() => _showMoreOptions());
+                    },
+                  ),
                 ],
               ),
             ),
-          ],
 
-          // 分隔細線
-          Container(height: 1, color: theme.dividerColor.withOpacity(0.1)),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 14),
+              child: _buildContentWithMentions(
+                widget.moment.content,
+                theme,
+              ),
+            ),
+
+            if (widget.moment.imageUrl != null &&
+                widget.moment.imageUrl!.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Container(
+                    width: double.infinity,
+                    color: onSurface.withValues(alpha: 0.035),
+                    constraints: const BoxConstraints(
+                      maxHeight: 520,
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.moment.imageUrl!.trim(),
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                      memCacheWidth: 1080,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
+                      placeholderFadeInDuration: Duration.zero,
+                      placeholder: (context, url) {
+                        return Container(
+                          height: 200,
+                          alignment: Alignment.center,
+                          color: onSurface.withValues(alpha: 0.025),
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 1.8,
+                              color: primary.withValues(alpha: 0.55),
+                            ),
+                          ),
+                        );
+                      },
+                      errorWidget: (context, url, error) {
+                        return Container(
+                          height: 200,
+                          alignment: Alignment.center,
+                          color: onSurface.withValues(alpha: 0.025),
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            color: onSurface.withValues(alpha: 0.28),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+
+            if (!widget.isDetailView) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 2),
+                child: Row(
+                  children: [
+                    Showcase(
+                      key: _likeKey,
+                      description: l10n.tip_post_like,
+                      child: IconButton(
+                        visualDensity: VisualDensity.compact,
+                        icon: Icon(
+                          _isLiked
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          size: 21,
+                          color: _isLiked ? primary : actionColor,
+                        ),
+                        onPressed: () {
+                          _hideTipsThenRun(
+                                () async => await _toggleLike(),
+                          );
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        size: 20,
+                        color: actionColor,
+                      ),
+                      onPressed: () {
+                        _hideTipsThenRun(() async {
+                          CommentBottomSheet.show(
+                            context,
+                            widget.moment,
+                          );
+                        });
+                      },
+                    ),
+                    Text(
+                      '${widget.moment.commentCount}',
+                      style: GoogleFonts.notoSerifTc(
+                        color: onSurface.withValues(alpha: 0.54),
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(
+                        Icons.send_outlined,
+                        size: 21,
+                        color: actionColor,
+                      ),
+                      onPressed: () {
+                        _hideTipsThenRun(() => _onSharePressed());
+                      },
+                    ),
+                    const Spacer(),
+                    Showcase(
+                      key: _bookmarkKey,
+                      description: l10n.tip_post_bookmark,
+                      child: IconButton(
+                        visualDensity: VisualDensity.compact,
+                        icon: Icon(
+                          _isBookmarked
+                              ? Icons.bookmark_rounded
+                              : Icons.bookmark_border_rounded,
+                          size: 22,
+                          color: _isBookmarked
+                              ? primary
+                              : actionColor,
+                        ),
+                        onPressed: () {
+                          _hideTipsThenRun(
+                                () async => await _toggleBookmark(),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (_likeCount > 0)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    18,
+                    2,
+                    18,
+                    14,
+                  ),
+                  child: Text(
+                    l10n.moment_likes_label(
+                      _likeCount.toString(),
+                    ),
+                    style: GoogleFonts.notoSerifTc(
+                      color: primary.withValues(alpha: 0.82),
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                )
+              else
+                const SizedBox(height: 8),
+            ] else
+              const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
+
 }

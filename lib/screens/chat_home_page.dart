@@ -29,7 +29,6 @@ class ChatHomePage extends StatefulWidget {
 class _ChatHomePageState extends State<ChatHomePage> {
   final User? _currentUser = FirebaseAuth.instance.currentUser;
   Stream<QuerySnapshot>? _sessionsStream;
-  bool _isOpeningChat = false;
   bool _isNavigatingToChat = false;
   bool _isOpeningTopAction = false;
   final String _appId = AppConfig.appId;
@@ -648,73 +647,58 @@ class _ChatHomePageState extends State<ChatHomePage> {
       String characterId,
       String avatarUrl,
       ) async {
-    if (_isOpeningChat || _isNavigatingToChat || !mounted) return;
+    if (_isNavigatingToChat || !mounted) return;
 
     setState(() {
       _isNavigatingToChat = true;
     });
 
-    await Future.delayed(const Duration(milliseconds: 80));
-
-    if (!mounted) return;
-
     final l10n = AppLocalizations.of(context)!;
-    Character? character;
 
-    // 先從記憶體快取取得角色資料
-    if (_characterCache.containsKey(characterId)) {
-      character = _characterCache[characterId];
-    } else {
-      setState(() {
-        _isOpeningChat = true;
-      });
-
-      character = await _getCharacterById(characterId);
-
-      if (character != null) {
-        _characterCache[characterId] = character;
-      }
-
-      if (!mounted) return;
-
-      setState(() {
-        _isOpeningChat = false;
-      });
-    }
-
-    if (character == null) {
-      if (!mounted) return;
-
-      setState(() {
-        _isNavigatingToChat = false;
-        _isOpeningChat = false;
-      });
-
-      ToastUtils.showCenterToast(
-        context,
-        l10n.character_not_found,
-        isError: true,
-      );
-
-      return;
-    }
-
-    // 背景預載聊天室頭像，不阻擋頁面跳轉
+    // 頭像預載改成背景執行，不阻擋進入聊天室。
     if (avatarUrl.trim().isNotEmpty) {
       unawaited(_precacheCharacterImage(avatarUrl));
     }
 
-    if (!mounted) return;
+    // 已經有快取時，直接進 ChatPage。
+    final cachedCharacter = _characterCache[characterId];
+    if (cachedCharacter != null) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatPage(
+            character: cachedCharacter,
+            sessionId: sessionId,
+            chatMode: 'daily',
+            selectedLanguage: l10n.ai_chat_language,
+            characterId: cachedCharacter.id,
+          ),
+        ),
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _isNavigatingToChat = false;
+      });
+      return;
+    }
+
+    // 沒有快取也不要停在聊天室列表等。
+    // 立刻切換頁面，角色資料在新頁面內抓取；
+    // 抓取期間只顯示聊天室內的 loading。
+    final characterFuture = _getCharacterById(characterId);
 
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatPage(
-          character: character!,
+        builder: (context) => _ChatEntryLoader(
+          characterFuture: characterFuture,
           sessionId: sessionId,
-          chatMode: 'daily',
+          characterId: characterId,
           selectedLanguage: l10n.ai_chat_language,
-          characterId: character.id,
+          onCharacterLoaded: (character) {
+            _characterCache[character.id] = character;
+          },
         ),
       ),
     );
@@ -1326,35 +1310,108 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   ],
                 ),
 
-                // 🌟 6. 載入遮罩層 (維持不變)
-                if (_isOpeningChat)
-                  Container(
-                    color: Colors.black.withOpacity(0.5),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const CircularProgressIndicator(color: Colors.pinkAccent),
-                          const SizedBox(height: 20),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(24)
-                            ),
-                            child: Text(
-                                l10n.preparing_chat_room,
-                                style: const TextStyle(color: Colors.white, fontSize: 14, letterSpacing: 1.5)
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+
               ],
             ),
           );
         }
+    );
+  }
+}
+
+class _ChatEntryLoader extends StatelessWidget {
+  final Future<Character?> characterFuture;
+  final String sessionId;
+  final String characterId;
+  final String selectedLanguage;
+  final ValueChanged<Character> onCharacterLoaded;
+
+  const _ChatEntryLoader({
+    required this.characterFuture,
+    required this.sessionId,
+    required this.characterId,
+    required this.selectedLanguage,
+    required this.onCharacterLoaded,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
+    return FutureBuilder<Character?>(
+      future: characterFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            decoration: themeNotifier.currentBackground,
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                foregroundColor: theme.colorScheme.onSurface,
+              ),
+              body: Center(
+                child: SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.4,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
+        final character = snapshot.data;
+
+        if (snapshot.hasError || character == null) {
+          return Container(
+            decoration: themeNotifier.currentBackground,
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                foregroundColor: theme.colorScheme.onSurface,
+              ),
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(28),
+                  child: Text(
+                    l10n.character_not_found,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 14,
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.58,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          onCharacterLoaded(character);
+        });
+
+        return ChatPage(
+          character: character,
+          sessionId: sessionId,
+          chatMode: 'daily',
+          selectedLanguage: selectedLanguage,
+          characterId: character.id,
+        );
+      },
     );
   }
 }

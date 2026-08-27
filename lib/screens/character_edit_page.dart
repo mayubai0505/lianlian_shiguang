@@ -13,8 +13,6 @@ import 'character_edit_voice_tab.dart';
 import 'character_edit_relationship_tab.dart';
 import '../services/toast_utils.dart';
 import 'chat_page.dart';
-import 'package:provider/provider.dart';
-import '../services/theme_notifier.dart';
 import 'character_npc_tab.dart';
 import 'character_model.dart';
 import 'package:http/http.dart' as http; // ✨ 負責跟後端連線
@@ -24,8 +22,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:typed_data';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'main_page.dart';
-import 'profile_page.dart';
 import 'package:flutter/services.dart';
 import 'package:characters/characters.dart';
 import 'package:intl/intl.dart';
@@ -1034,6 +1030,16 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           .doc(characterId);
 
       Future<void> deleteDocAndPhotos(DocumentReference ref) async {
+        // 先確認角色文件真的存在。
+        // Firestore Rules 的 ownerExisting() 依賴 resource.data；
+        // 若對「不存在」的角色文件直接 delete，會被判定 permission-denied。
+        final parentSnapshot = await ref.get();
+
+        if (!parentSnapshot.exists) {
+          debugPrint('ℹ️ 跳過不存在的角色路徑：${ref.path}');
+          return;
+        }
+
         final photosSnapshot = await ref.collection('photos').get();
 
         for (final doc in photosSnapshot.docs) {

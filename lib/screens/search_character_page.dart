@@ -32,7 +32,9 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
   Timer? _searchSaveDebounce;
   late final Stream<QuerySnapshot> charactersStream;
   Set<String> _blockedCharacterIds = {};
+  Set<String> _blockedCreatorIds = {};
   StreamSubscription<QuerySnapshot>? _blockedCharactersSub;
+  StreamSubscription<QuerySnapshot>? _blockedCreatorsSub;
   @override
   void initState() {
     super.initState();
@@ -49,6 +51,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
     _loadRecentSearches();
     _listenBlockedCharacters();
+    _listenBlockedCreators();
   }
 
   int _parseLikesCount(dynamic value) {
@@ -107,6 +110,31 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
             );
           },
         );
+  }
+
+  void _listenBlockedCreators() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    _blockedCreatorsSub = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('blockedCreators')
+        .snapshots()
+        .listen(
+          (snapshot) {
+        if (!mounted) return;
+
+        setState(() {
+          _blockedCreatorIds =
+              snapshot.docs.map((doc) => doc.id).toSet();
+        });
+      },
+      onError: (e) {
+        debugPrint('❌ 搜尋頁讀取封鎖創作者失敗：$e');
+      },
+    );
   }
 
   Future<void> _saveRecentSearch(String query) async {
@@ -179,6 +207,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
   @override
   void dispose() {
     _blockedCharactersSub?.cancel();
+    _blockedCreatorsSub?.cancel();
     _searchSaveDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
@@ -308,7 +337,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                   '最近搜尋',
                   style: GoogleFonts.notoSerifTc(
                     color: onSurface,
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.2,
                   ),
@@ -338,12 +367,12 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
           ),
           const SizedBox(height: 1),
           SizedBox(
-            height: 29,
+            height: 27,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
               itemCount: _recentSearches.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 8),
+              separatorBuilder: (context, index) => const SizedBox(width: 5),
               itemBuilder: (context, index) {
                 final query = _recentSearches[index];
 
@@ -367,14 +396,14 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                             behavior: HitTestBehavior.opaque,
                             onTap: () => _applyRecentSearch(query),
                             child: Transform.translate(
-                              offset: const Offset(0, 0.5),
+                              offset: const Offset(0, 1),
                               child: Text(
                                 query,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.notoSerifTc(
                                   color: onSurface.withValues(alpha: 0.70),
-                                  fontSize: 13.5,
+                                  fontSize: 11.5,
                                   fontWeight: FontWeight.w400,
                                   height: 1.0,
                                 ),
@@ -390,7 +419,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                             padding: const EdgeInsets.all(1),
                             child: Icon(
                               Icons.close_rounded,
-                              size: 14,
+                              size: 12,
                               color: onSurface.withValues(alpha: 0.38),
                             ),
                           ),
@@ -444,14 +473,18 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
         }
 
         final List<QueryDocumentSnapshot> allDocs =
-        snapshot.data!.docs
-            .where(
-              (doc) =>
-          !_blockedCharacterIds.contains(
-            doc.id,
-          ),
-        )
-            .toList();
+        snapshot.data!.docs.where((doc) {
+          if (_blockedCharacterIds.contains(doc.id)) {
+            return false;
+          }
+
+          final data = doc.data() as Map<String, dynamic>;
+          final creatorId =
+              data['createdBy']?.toString().trim() ?? '';
+
+          return creatorId.isEmpty ||
+              !_blockedCreatorIds.contains(creatorId);
+        }).toList();
 
         final String keyword =
         _searchQuery.trim().toLowerCase();

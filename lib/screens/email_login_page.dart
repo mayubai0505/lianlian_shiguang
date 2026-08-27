@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../services/auth_service.dart';
 import '../services/toast_utils.dart';
@@ -34,10 +35,10 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
   // ⚠️ 必須換成「Publish to web」後的公開網址
   // ============================================================
   static const String _termsNotionUrl =
-      'https://你的服務條款公開網址.notion.site';
+      'https://adaptable-roof-829.notion.site/3ab919a5415180e89545dce77d552a6c';
 
   static const String _privacyNotionUrl =
-      'https://你的隱私權政策公開網址.notion.site';
+      'https://adaptable-roof-829.notion.site/3ab919a541518035ad5ec56427a427ec';
 
   final TextEditingController _emailController =
   TextEditingController();
@@ -106,17 +107,15 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                       );
                     }
 
-                    final bool opened = await launchUrl(
-                      uri,
-                      mode: kIsWeb
-                          ? LaunchMode.platformDefault
-                          : LaunchMode.externalApplication,
-                      webOnlyWindowName: '_blank',
+                    // 與設定頁一致：在 App 內直接用 WebView 開啟。
+                    await Navigator.of(dialogContext).push(
+                      MaterialPageRoute(
+                        builder: (_) => _EmailPolicyWebViewPage(
+                          title: title,
+                          url: url,
+                        ),
+                      ),
                     );
-
-                    if (!opened) {
-                      throw Exception('無法開啟條款網址');
-                    }
 
                     if (!dialogContext.mounted) return;
 
@@ -160,8 +159,9 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                         Expanded(
                           child: Text(
                             title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
+                            style: GoogleFonts.notoSerifTc(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ),
@@ -174,7 +174,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                           '請先開啟並閱讀完整$title。'
                               '閱讀後回到《戀戀拾光》，即可按下'
                               '「我已閱讀並同意」。',
-                          style: const TextStyle(
+                          style: GoogleFonts.notoSerifTc(
                             fontSize: 14,
                             height: 1.6,
                           ),
@@ -258,7 +258,10 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                             dialogContext,
                           ).pop(false);
                         },
-                        child: const Text('取消登入'),
+                        child: Text(
+                          '取消登入',
+                          style: GoogleFonts.notoSerifTc(),
+                        ),
                       ),
                       ElevatedButton(
                         onPressed: hasOpenedPolicy
@@ -274,7 +277,12 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                           foregroundColor: Colors.white,
                         ),
                         child:
-                        const Text('我已閱讀並同意'),
+                        Text(
+                          '我已閱讀並同意',
+                          style: GoogleFonts.notoSerifTc(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -719,10 +727,10 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                           : l10n
                           .title_register_account,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: GoogleFonts.notoSerifTc(
                         fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF4A148C),
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF4A148C),
                       ),
                     ),
 
@@ -748,8 +756,8 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                         hintText:
                         'name@example.com',
                         labelStyle:
-                        const TextStyle(
-                          color: Color(0xFF7B1FA2),
+                        GoogleFonts.notoSerifTc(
+                          color: const Color(0xFF7B1FA2),
                         ),
                         prefixIcon: const Icon(
                           Icons.email_outlined,
@@ -802,8 +810,8 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                         labelText:
                         l10n.label_password,
                         labelStyle:
-                        const TextStyle(
-                          color: Color(0xFF7B1FA2),
+                        GoogleFonts.notoSerifTc(
+                          color: const Color(0xFF7B1FA2),
                         ),
                         prefixIcon: const Icon(
                           Icons.lock_outline,
@@ -859,11 +867,9 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                               : _resetPassword,
                           child: Text(
                             l10n.forgot_password,
-                            style: const TextStyle(
-                              color:
-                              Color(0xFF7B1FA2),
-                              fontWeight:
-                              FontWeight.w600,
+                            style: GoogleFonts.notoSerifTc(
+                              color: const Color(0xFF7B1FA2),
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -909,10 +915,9 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                             ? l10n.action_login
                             : l10n
                             .action_register,
-                        style: const TextStyle(
+                        style: GoogleFonts.notoSerifTc(
                           fontSize: 18,
-                          fontWeight:
-                          FontWeight.bold,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -923,7 +928,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                       '首次登入或條款更新時，'
                           '系統將請您閱讀並同意服務條款及隱私權政策。',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: GoogleFonts.notoSerifTc(
                         fontSize: 12,
                         height: 1.5,
                         color: Colors.grey.shade600,
@@ -952,9 +957,9 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                             .prompt_no_account
                             : l10n
                             .prompt_has_account,
-                        style: const TextStyle(
-                          color: Color(0xFF7B1FA2),
-                          fontWeight: FontWeight.bold,
+                        style: GoogleFonts.notoSerifTc(
+                          color: const Color(0xFF7B1FA2),
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -964,6 +969,166 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _EmailPolicyWebViewPage extends StatefulWidget {
+  final String title;
+  final String url;
+
+  const _EmailPolicyWebViewPage({
+    required this.title,
+    required this.url,
+  });
+
+  @override
+  State<_EmailPolicyWebViewPage> createState() =>
+      _EmailPolicyWebViewPageState();
+}
+
+class _EmailPolicyWebViewPageState
+    extends State<_EmailPolicyWebViewPage> {
+  late final WebViewController _controller;
+
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.white)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) {
+            if (!mounted) return;
+            setState(() {
+              _isLoading = true;
+              _hasError = false;
+            });
+          },
+          onPageFinished: (_) {
+            if (!mounted) return;
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          onWebResourceError: (error) {
+            if (error.isForMainFrame != true) return;
+            if (!mounted) return;
+
+            setState(() {
+              _hasError = true;
+              _isLoading = false;
+            });
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          widget.title,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        actions: [
+          IconButton(
+            tooltip: '重新整理',
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () {
+              setState(() {
+                _hasError = false;
+                _isLoading = true;
+              });
+              _controller.reload();
+            },
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          if (!_hasError)
+            WebViewWidget(
+              controller: _controller,
+            ),
+          if (_isLoading)
+            Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+                strokeWidth: 2.2,
+              ),
+            ),
+          if (_hasError)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline_rounded,
+                      size: 58,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      '頁面載入失敗',
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '請確認網路連線後再試一次。',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _hasError = false;
+                          _isLoading = true;
+                        });
+
+                        _controller.loadRequest(
+                          Uri.parse(widget.url),
+                        );
+                      },
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: Text(
+                        '重新載入',
+                        style: GoogleFonts.notoSerifTc(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

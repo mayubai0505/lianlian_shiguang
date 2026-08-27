@@ -9,6 +9,7 @@ import '../services/theme_notifier.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../services/toast_utils.dart';
 import 'character_model.dart';
@@ -265,8 +266,8 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
             height: MediaQuery.of(sheetContext).size.height * 0.62,
             child: Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
                     20,
                     4,
                     20,
@@ -276,21 +277,31 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                     children: [
                       Icon(
                         Icons.alternate_email_rounded,
-                        color: Colors.pinkAccent,
+                        color: Theme.of(sheetContext)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.82),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         '標記我的角色',
-                        style: TextStyle(
+                        style: GoogleFonts.notoSerifTc(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.8,
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                const Divider(height: 1),
+                Divider(
+                  height: 1,
+                  color: Theme.of(sheetContext)
+                      .colorScheme
+                      .outlineVariant
+                      .withValues(alpha: 0.22),
+                ),
 
                 Expanded(
                   child: ListView.separated(
@@ -316,16 +327,30 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                         title: Text(
                           character.name,
                           maxLines: 1,
-                          overflow:
-                          TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.notoSerifTc(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.5,
+                          ),
                         ),
                         subtitle: Text(
                           character.isPublic
                               ? '公開角色'
                               : '私人角色',
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 11.5,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.46),
+                          ),
                         ),
-                        trailing: const Icon(
+                        trailing: Icon(
                           Icons.add_circle_outline_rounded,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: 0.72),
                         ),
                         onTap: () {
                           Navigator.pop(sheetContext);
@@ -922,150 +947,490 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final themeNotifier = Provider.of<ThemeNotifier>(context); // 如果妳沒有用 Provider，這行跟 body 的 decoration 可能要調整
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     final l10n = AppLocalizations.of(context)!;
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(l10n.moment_create_title),
+        backgroundColor: theme.scaffoldBackgroundColor,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        toolbarHeight: 68,
+        leadingWidth: 54,
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: Icon(
+            Icons.close_rounded,
+            size: 23,
+            color: onSurface.withValues(alpha: 0.82),
+          ),
           onPressed: () => Navigator.pop(context),
+        ),
+        titleSpacing: 0,
+        title: Text(
+          l10n.moment_create_title,
+          style: GoogleFonts.notoSerifTc(
+            color: onSurface,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.0,
+          ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
+            padding: const EdgeInsets.fromLTRB(8, 11, 14, 11),
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: primary,
                 foregroundColor: theme.colorScheme.onPrimary,
+                disabledBackgroundColor:
+                primary.withValues(alpha: 0.26),
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                minimumSize: const Size(78, 42),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
               ),
               onPressed: _isPosting ? null : _postMoment,
               child: _isPosting
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text(l10n.moment_create_post_btn, style: TextStyle(fontWeight: FontWeight.bold)),
+                  ? const SizedBox(
+                width: 19,
+                height: 19,
+                child: CircularProgressIndicator(
+                  strokeWidth: 1.8,
+                  color: Colors.white,
+                ),
+              )
+                  : Text(
+                l10n.moment_create_post_btn,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+              ),
             ),
-          )
+          ),
         ],
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Container(
-          // 確保背景顏色有吃到主題，如果報錯可以改成 color: theme.scaffoldBackgroundColor
           decoration: themeNotifier.currentBackground,
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
+          child: SafeArea(
+            top: false,
+            child: Column(
               children: [
-                // 乾淨的 UI：只顯示傳進來的發文者頭像與名字
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundImage: _getAvatarProvider(widget.authorAvatar),
-                      backgroundColor: Colors.grey[200],
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      widget.authorName,
-                      style: theme.textTheme.titleLarge,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
                 Expanded(
                   child: SingleChildScrollView(
+                    keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: const EdgeInsets.fromLTRB(
+                      20,
+                      10,
+                      20,
+                      22,
+                    ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TextField(
-                          controller: _contentController,
-                          maxLines: null,
-                          keyboardType: TextInputType.multiline,
-                          decoration: InputDecoration(
-                            hintText: l10n.moment_create_hint,
-                            border: InputBorder.none,
-                          ),
-                        ),
-
-// 🏷️ 玩家輸入 @ 時出現
-                        _buildMentionSuggestions(theme),
-
-                        const SizedBox(height: 16),
-                        // 顯示已選擇的圖片預覽
-                        if (_pickedImage != null)
-                          Stack(
-                            alignment: Alignment.topRight,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.file(File(_pickedImage!.path)),
-                              ),
-                              IconButton(
-                                icon: const CircleAvatar(
-                                  backgroundColor: Colors.black54,
-                                  child: Icon(Icons.close, color: Colors.white, size: 16),
+                        Row(
+                          children: [
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                CircleAvatar(
+                                  radius: 28,
+                                  backgroundImage:
+                                  _getAvatarProvider(widget.authorAvatar),
+                                  backgroundColor:
+                                  primary.withValues(alpha: 0.08),
                                 ),
-                                onPressed: () => setState(() => _pickedImage = null),
-                              )
+                                Positioned(
+                                  right: -2,
+                                  bottom: -2,
+                                  child: Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      color: primary,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: theme.scaffoldBackgroundColor,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.edit_rounded,
+                                      size: 11,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.authorName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.notoSerifTc(
+                                      color: onSurface,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        _isPublic
+                                            ? Icons.public_rounded
+                                            : Icons.lock_outline_rounded,
+                                        size: 14,
+                                        color:
+                                        primary.withValues(alpha: 0.62),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Flexible(
+                                        child: Text(
+                                          _isPublic
+                                              ? l10n
+                                              .moment_create_visibility_public
+                                              : l10n
+                                              .moment_create_visibility_private,
+                                          maxLines: 1,
+                                          overflow:
+                                          TextOverflow.ellipsis,
+                                          style:
+                                          GoogleFonts.notoSerifTc(
+                                            color: onSurface.withValues(
+                                              alpha: 0.46,
+                                            ),
+                                            fontSize: 11.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 22),
+
+                        Container(
+                          width: double.infinity,
+                          constraints: const BoxConstraints(
+                            minHeight: 260,
+                          ),
+                          padding: const EdgeInsets.fromLTRB(
+                            18,
+                            14,
+                            18,
+                            14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface.withValues(
+                              alpha: 0.84,
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: primary.withValues(alpha: 0.24),
+                              width: 0.9,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: primary.withValues(alpha: 0.035),
+                                blurRadius: 18,
+                                offset: const Offset(0, 6),
+                              ),
                             ],
                           ),
+                          child: Column(
+                            children: [
+                              TextField(
+                                controller: _contentController,
+                                minLines: 8,
+                                maxLines: null,
+                                keyboardType: TextInputType.multiline,
+                                style: GoogleFonts.notoSerifTc(
+                                  color: onSurface.withValues(alpha: 0.82),
+                                  fontSize: 15,
+                                  height: 1.75,
+                                ),
+                                decoration: InputDecoration(
+                                  hintText: l10n.moment_create_hint,
+                                  hintStyle: GoogleFonts.notoSerifTc(
+                                    color: onSurface.withValues(
+                                      alpha: 0.30,
+                                    ),
+                                    fontSize: 15,
+                                  ),
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+
+                              _buildMentionSuggestions(theme),
+
+                              if (_pickedImage != null) ...[
+                                const SizedBox(height: 14),
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius:
+                                      BorderRadius.circular(18),
+                                      child: Image.file(
+                                        File(_pickedImage!.path),
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: InkWell(
+                                        borderRadius:
+                                        BorderRadius.circular(999),
+                                        onTap: () => setState(
+                                              () => _pickedImage = null,
+                                        ),
+                                        child: Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black
+                                                .withValues(alpha: 0.46),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.close_rounded,
+                                            color: Colors.white,
+                                            size: 17,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  '${_contentController.text.length}/2000',
+                                  style: GoogleFonts.notoSerifTc(
+                                    color: onSurface.withValues(alpha: 0.30),
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(
+                            16,
+                            12,
+                            12,
+                            12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.045),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: primary.withValues(alpha: 0.10),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 34,
+                                height: 34,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: primary.withValues(alpha: 0.10),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  _isPublic
+                                      ? Icons.public_rounded
+                                      : Icons.lock_outline_rounded,
+                                  size: 18,
+                                  color: primary.withValues(alpha: 0.82),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _isPublic
+                                          ? l10n
+                                          .moment_create_visibility_public
+                                          : l10n
+                                          .moment_create_visibility_private,
+                                      style: GoogleFonts.notoSerifTc(
+                                        color: onSurface.withValues(
+                                          alpha: 0.82,
+                                        ),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      _isPublic
+                                          ? '動態將顯示在拾光牆上'
+                                          : '只有專屬範圍內可見',
+                                      style: GoogleFonts.notoSerifTc(
+                                        color: onSurface.withValues(
+                                          alpha: 0.40,
+                                        ),
+                                        fontSize: 11.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Switch(
+                                value: _isPublic,
+                                activeThumbColor: Colors.white,
+                                activeTrackColor: primary,
+                                inactiveThumbColor:
+                                onSurface.withValues(alpha: 0.36),
+                                inactiveTrackColor:
+                                onSurface.withValues(alpha: 0.10),
+                                onChanged: (val) =>
+                                    setState(() => _isPublic = val),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          _isPublic ? Icons.public : Icons.lock_outline,
-                          color: _isPublic ? Colors.lightBlueAccent : Colors.grey,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(_isPublic ? l10n.moment_create_visibility_public : l10n.moment_create_visibility_private,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: _isPublic ? Colors.lightBlueAccent : Colors.grey
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    border: Border(
+                      top: BorderSide(
+                        color: theme.colorScheme.outlineVariant
+                            .withValues(alpha: 0.16),
+                      ),
+                    ),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(
+                    22,
+                    10,
+                    22,
+                    14,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(18),
+                          onTap: _pickImage,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.image_outlined,
+                                  size: 23,
+                                  color:
+                                  primary.withValues(alpha: 0.78),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  '添加圖片',
+                                  style: GoogleFonts.notoSerifTc(
+                                    color: onSurface.withValues(
+                                      alpha: 0.66,
+                                    ),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                    Switch(
-                      value: _isPublic,
-                      activeColor: Colors.lightBlueAccent,
-                      onChanged: (val) => setState(() => _isPublic = val),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                Row(
-                  children: [
-                    IconButton(
-                      tooltip: '新增圖片',
-                      icon: Icon(
-                        Icons.photo_library_outlined,
-                        color: theme.colorScheme.primary,
                       ),
-                      onPressed: _pickImage,
-                    ),
-
-                    IconButton(
-                      tooltip: '標記角色',
-                      icon: Icon(
-                        Icons.alternate_email_rounded,
-                        color: theme.colorScheme.primary,
+                      Container(
+                        width: 1,
+                        height: 42,
+                        color: theme.colorScheme.outlineVariant
+                            .withValues(alpha: 0.18),
                       ),
-                      onPressed: _showMentionCharacterSheet,
-                    ),
-                  ],
+                      Expanded(
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(18),
+                          onTap: _showMentionCharacterSheet,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.alternate_email_rounded,
+                                  size: 23,
+                                  color:
+                                  primary.withValues(alpha: 0.78),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  '提及角色',
+                                  style: GoogleFonts.notoSerifTc(
+                                    color: onSurface.withValues(
+                                      alpha: 0.66,
+                                    ),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ]
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'edit_profile_page.dart';
 import 'main_page.dart';
 import 'package:provider/provider.dart'; // ✅ 修正：解決 Undefined name 'Provider'
@@ -33,7 +34,7 @@ class OnboardingPage extends StatelessWidget {
                 children: [
                   // ✨ 1. 增加一點神祕感的頂部裝飾
                   Icon(Icons.auto_awesome, color: primaryColor.withOpacity(0.6), size: 40),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
 
                   // ✨ 2. 像邀請函一樣的卡片設計
                   Container(
@@ -54,26 +55,29 @@ class OnboardingPage extends StatelessWidget {
                       children: [
                         Text(
                           l10n.onboarding_invitation,
-                          style: TextStyle(
-                              fontSize: 14,
-                              letterSpacing: 4,
-                              color: primaryColor.withOpacity(0.7),
-                              fontWeight: FontWeight.w300
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 14,
+                            letterSpacing: 4,
+                            color: primaryColor.withOpacity(0.7),
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
                         const SizedBox(height: 24),
                         Text(
                           l10n.onboarding_welcome,
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: onSurface
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: onSurface,
                           ),
                         ),
                         const SizedBox(height: 12),
                         Text(
                           l10n.onboarding_quote,
-                          style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                          style: GoogleFonts.notoSerifTc(
+                            fontStyle: FontStyle.italic,
+                            color: Colors.grey,
+                          ),
                         ),
                         const SizedBox(height: 32),
 
@@ -97,21 +101,24 @@ class OnboardingPage extends StatelessWidget {
                         const SizedBox(height: 24),
                         Text(
                           l10n.onboarding_gift_title,
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: primaryColor,
-                              fontWeight: FontWeight.w600
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 18,
+                            color: primaryColor,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           l10n.onboarding_gift_subtitle,
-                          style: TextStyle(fontSize: 13, color: onSurface.withOpacity(0.5)),
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 13,
+                            color: onSurface.withOpacity(0.5),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 36),
                   // ✨ 4. 進入遊戲按鈕
                   ElevatedButton(
                     onPressed: () {
@@ -139,7 +146,13 @@ class OnboardingPage extends StatelessWidget {
                       elevation: 8,
                       shadowColor: primaryColor.withOpacity(0.5),
                     ),
-                    child: Text(l10n.onboarding_start_button, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      l10n.onboarding_start_button,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
 
                   const SizedBox(height: 16),
@@ -149,7 +162,10 @@ class OnboardingPage extends StatelessWidget {
                     children: [
                       Text(
                         l10n.legal_agreement_prefix, // ✨ 換成翻譯變數
-                        style: TextStyle(fontSize: 12, color: onSurface.withOpacity(0.5)),
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 12,
+                          color: onSurface.withOpacity(0.5),
+                        ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -173,7 +189,7 @@ class OnboardingPage extends StatelessWidget {
                             ),
                             child: Text(
                               l10n.legal_terms_button,
-                              style: TextStyle(
+                              style: GoogleFonts.notoSerifTc(
                                 fontSize: 12,
                                 color: primaryColor,
                               ),
@@ -182,7 +198,7 @@ class OnboardingPage extends StatelessWidget {
 
                           Text(
                             l10n.legal_and,
-                            style: TextStyle(
+                            style: GoogleFonts.notoSerifTc(
                               fontSize: 12,
                               color: onSurface.withOpacity(0.5),
                             ),
@@ -207,7 +223,7 @@ class OnboardingPage extends StatelessWidget {
                             ),
                             child: Text(
                               l10n.privacyPolicy,
-                              style: TextStyle(
+                              style: GoogleFonts.notoSerifTc(
                                 fontSize: 12,
                                 color: primaryColor,
                               ),

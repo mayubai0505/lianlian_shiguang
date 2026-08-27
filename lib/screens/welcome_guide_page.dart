@@ -3,8 +3,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'main_page.dart';
 import 'help_page.dart';
+import 'preference_selection_page.dart';
 
 class WelcomeGuidePage extends StatefulWidget {
   const WelcomeGuidePage({super.key});
@@ -44,48 +46,19 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
     });
 
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      if (!mounted) return;
 
-      if (user != null) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .set({
-          'welcomeGuideCompleted': true,
-          'welcomeGuideCompletedAt': FieldValue.serverTimestamp(),
-        }, SetOptions(merge: true));
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const PreferenceSelectionPage(),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFinishing = false;
+        });
       }
-
-      if (!mounted) return;
-
-      Navigator.of(
-        context,
-        rootNavigator: true,
-      ).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => const MainPage(
-            initialIndex: 0,
-          ),
-        ),
-            (route) => false,
-      );
-    } catch (e) {
-      debugPrint('❌ 完成歡迎導覽失敗：$e');
-
-      if (!mounted) return;
-
-      // 即使旗標寫入暫時失敗，也不要把玩家困在導覽頁。
-      Navigator.of(
-        context,
-        rootNavigator: true,
-      ).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => const MainPage(
-            initialIndex: 0,
-          ),
-        ),
-            (route) => false,
-      );
     }
   }
 
@@ -98,17 +71,7 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
       canPop: false,
       child: Scaffold(
         body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                colorScheme.primary.withValues(alpha: 0.16),
-                colorScheme.secondary.withValues(alpha: 0.10),
-                colorScheme.surface,
-              ],
-            ),
-          ),
+          color: colorScheme.surface,
           child: SafeArea(
             child: Column(
               children: [
@@ -146,7 +109,7 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
                       Expanded(
                         child: SizedBox(
                           height: 52,
-                          child: OutlinedButton.icon(
+                          child: OutlinedButton(
                             onPressed: _isFinishing
                                 ? null
                                 : () async {
@@ -156,19 +119,16 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
                                 ),
                               );
                             },
-                            icon: const Icon(
-                              Icons.menu_book_rounded,
-                            ),
-                            label: const Text(
-                              '遊玩指南',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
                             style: OutlinedButton.styleFrom(
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: Text(
+                              '遊玩指南',
+                              style: GoogleFonts.notoSerifTc(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -182,8 +142,11 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
                             onPressed:
                             _isFinishing ? null : _finishGuide,
                             style: FilledButton.styleFrom(
+                              backgroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.onPrimary,
+                              elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(22),
                               ),
                             ),
                             child: _isFinishing
@@ -194,9 +157,9 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
                                 strokeWidth: 2.5,
                               ),
                             )
-                                : const Text(
+                                : Text(
                               '開始旅程',
-                              style: TextStyle(
+                              style: GoogleFonts.notoSerifTc(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -213,14 +176,17 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
                       onPressed:
                       _isFinishing ? null : _goToNextPage,
                       style: FilledButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
+                        elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(22),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         '下一步',
-                        style: TextStyle(
-                          fontSize: 16,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -246,8 +212,8 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
           return AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             margin: const EdgeInsets.symmetric(horizontal: 4),
-            width: isSelected ? 24 : 8,
-            height: 8,
+            width: isSelected ? 20 : 7,
+            height: 7,
             decoration: BoxDecoration(
               color: isSelected
                   ? colorScheme.primary
@@ -262,12 +228,12 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
 }
 
 class _GuidePageLayout extends StatelessWidget {
-  final IconData icon;
+  final Widget illustration;
   final String title;
   final Widget content;
 
   const _GuidePageLayout({
-    required this.icon,
+    required this.illustration,
     required this.title,
     required this.content,
   });
@@ -280,38 +246,29 @@ class _GuidePageLayout extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
         28,
-        42,
+        36,
         28,
         24,
       ),
       child: Column(
         children: [
-          Container(
-            width: 92,
-            height: 92,
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: 46,
-              color: colorScheme.primary,
-            ),
+          SizedBox(
+            width: 118,
+            height: 118,
+            child: Center(child: illustration),
           ),
-
-          const SizedBox(height: 28),
-
+          const SizedBox(height: 24),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
+            style: GoogleFonts.notoSerifTc(
+              color: colorScheme.onSurface,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
             ),
           ),
-
-          const SizedBox(height: 24),
-
+          const SizedBox(height: 20),
           content,
         ],
       ),
@@ -325,18 +282,26 @@ class _WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return _GuidePageLayout(
-      icon: Icons.favorite_rounded,
+      illustration: Image.asset(
+        'assets/images/brand/lianlian_butterfly_logo.png',
+        width: 92,
+        height: 92,
+        fit: BoxFit.contain,
+      ),
       title: '歡迎來到《戀戀拾光》',
       content: Text(
-        '在這裡，每一次相遇，\n'
-            '都可能成為一段難忘的故事。\n\n'
-            '希望《戀戀拾光》能陪伴你，\n'
-            '創造屬於你們的美好回憶。',
+        '在這裡，每一次相遇，'
+        '都可能成為一段難忘的故事。'
+        '希望《戀戀拾光》能陪伴你，'
+        '創造屬於你們的美好回憶。',
         textAlign: TextAlign.center,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          height: 1.8,
+        style: GoogleFonts.notoSerifTc(
+          color: colorScheme.onSurface.withValues(alpha: 0.70),
+          fontSize: 15,
+          height: 1.9,
         ),
       ),
     );
@@ -348,53 +313,62 @@ class _ChatModePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return _GuidePageLayout(
-      icon: Icons.chat_bubble_rounded,
+      illustration: Container(
+        width: 96,
+        height: 96,
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withValues(alpha: 0.08),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.chat_bubble_outline_rounded,
+          size: 42,
+          color: colorScheme.primary,
+        ),
+      ),
       title: '聊天模式',
-      content: const Column(
+      content: Column(
         children: [
           Text(
-            '《戀戀拾光》提供多種聊天模式，\n'
-                '每種模式都有不同的互動體驗。',
+            '《戀戀拾光》提供多種聊天模式，'
+            '每種模式都有不同的互動體驗。',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              height: 1.6,
+            style: GoogleFonts.notoSerifTc(
+              color: colorScheme.onSurface.withValues(alpha: 0.68),
+              fontSize: 14.5,
+              height: 1.75,
             ),
           ),
-
-          SizedBox(height: 24),
-
-          _ModeCard(
-            icon: Icons.favorite_outline_rounded,
-            title: '閒聊模式',
+          const SizedBox(height: 22),
+          const _ModeCard(
+            iconAsset: 'assets/images/chat/chat_mode_daily_mask.png',
+            title: '日常模式',
             description: '陪伴彼此、分享生活，享受輕鬆自在的聊天時光。',
           ),
-
-          SizedBox(height: 12),
-
-          _ModeCard(
-            icon: Icons.auto_stories_rounded,
+          const SizedBox(height: 12),
+          const _ModeCard(
+            iconAsset: 'assets/images/chat/chat_mode_story_mask.png',
             title: '劇情模式',
             description: '推進角色故事，解鎖更多專屬劇情與互動。',
           ),
-
-          SizedBox(height: 12),
-
-          _ModeCard(
-            icon: Icons.theater_comedy_rounded,
+          const SizedBox(height: 12),
+          const _ModeCard(
+            iconAsset: 'assets/images/chat/chat_mode_immersive_mask.png',
             title: '沉浸模式',
             description: '體驗更投入、更有臨場感的對話。',
           ),
-
-          SizedBox(height: 18),
-
+          const SizedBox(height: 18),
           Text(
             '更多聊天模式介紹，可於「遊戲說明」查看。',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.5,
+            style: GoogleFonts.notoSerifTc(
+              color: colorScheme.onSurface.withValues(alpha: 0.42),
+              fontSize: 12.5,
+              height: 1.6,
             ),
           ),
         ],
@@ -409,52 +383,66 @@ class _EncounterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return _GuidePageLayout(
-      icon: Icons.local_florist_rounded,
+      illustration: Container(
+        width: 96,
+        height: 96,
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withValues(alpha: 0.08),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.local_florist_outlined,
+          size: 42,
+          color: colorScheme.primary,
+        ),
+      ),
       title: '邂逅',
       content: Column(
         children: [
           Text(
-            '每位角色都擁有獨特的個性、故事與聲音。\n\n'
-                '遇見喜歡的角色後，可以加入好友，'
+            '每位角色都擁有獨特的個性、故事與聲音。'
+            '遇見喜歡的角色後，可以加入好友，'
                 '與他聊天互動、分享生活，'
                 '一起創造屬於你們的回憶。',
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge?.copyWith(
+            style: GoogleFonts.notoSerifTc(
+              color: colorScheme.onSurface.withValues(alpha: 0.68),
+              fontSize: 14.5,
               height: 1.8,
             ),
           ),
-
-          const SizedBox(height: 26),
-
+          const SizedBox(height: 24),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withValues(alpha: 0.72),
-              borderRadius: BorderRadius.circular(18),
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                color: colorScheme.primary.withValues(alpha: 0.12),
               ),
             ),
-            child: const Column(
+            child: Column(
               children: [
                 Text(
                   '更多內容',
-                  style: TextStyle(
-                    fontSize: 16,
+                  style: GoogleFonts.notoSerifTc(
+                    color: colorScheme.onSurface,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-
-                SizedBox(height: 8),
-
+                const SizedBox(height: 8),
                 Text(
                   '還有收藏、創作者、商城等豐富功能，'
                       '歡迎前往「遊戲說明」了解更多。',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: GoogleFonts.notoSerifTc(
+                    color: colorScheme.onSurface.withValues(alpha: 0.58),
+                    fontSize: 13,
                     height: 1.6,
                   ),
                 ),
@@ -468,12 +456,12 @@ class _EncounterPage extends StatelessWidget {
 }
 
 class _ModeCard extends StatelessWidget {
-  final IconData icon;
+  final String iconAsset;
   final String title;
   final String description;
 
   const _ModeCard({
-    required this.icon,
+    required this.iconAsset,
     required this.title,
     required this.description,
   });
@@ -484,10 +472,10 @@ class _ModeCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface.withValues(alpha: 0.74),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: theme.colorScheme.primary.withValues(alpha: 0.12),
         ),
@@ -495,9 +483,19 @@ class _ModeCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            color: theme.colorScheme.primary,
+          SizedBox(
+            width: 28,
+            height: 28,
+            child: ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                theme.colorScheme.primary,
+                BlendMode.srcIn,
+              ),
+              child: Image.asset(
+                iconAsset,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
 
           const SizedBox(width: 14),
@@ -508,8 +506,9 @@ class _ModeCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: GoogleFonts.notoSerifTc(
+                    color: theme.colorScheme.onSurface,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -518,8 +517,10 @@ class _ModeCard extends StatelessWidget {
 
                 Text(
                   description,
-                  style: const TextStyle(
-                    height: 1.5,
+                  style: GoogleFonts.notoSerifTc(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.62),
+                    fontSize: 13,
+                    height: 1.65,
                   ),
                 ),
               ],

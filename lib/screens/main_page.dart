@@ -10,6 +10,7 @@ import 'chat_home_page.dart';
 import 'select_chat_page.dart';
 import 'moments_page.dart';
 import 'profile_page.dart';
+import 'recommendation_page.dart';
 import 'dart:async'; // ✨ 加上這一行，超時功能就能用了！
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
@@ -36,15 +37,17 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   bool _isShowingCheckInDialog = false;
   // ✨ 效能優化：紀錄最後一次檢查日期，避免頻繁讀取資料庫
   String _lastCheckedDateString = "";
+  final GlobalKey<RecommendationPageState> _recommendationKey = GlobalKey<RecommendationPageState>();
   final GlobalKey<SelectChatPageState> _encounterKey = GlobalKey<SelectChatPageState>();
   final GlobalKey<MomentsPageState> _momentsKey =
   GlobalKey<MomentsPageState>();
   // ✨ 2. 加上 late，並把鑰匙裝進 SelectChatPage
   late final List<Widget> _pages = [
-    const ChatHomePage(), // 0
-    SelectChatPage(key: _encounterKey), // 1 👈 鑰匙插在這裡！(注意 const 要拿掉)
-    MomentsPage(key: _momentsKey), // 2
-    const ProfilePage(), // 3
+    RecommendationPage(key: _recommendationKey), // 0 推薦
+    SelectChatPage(key: _encounterKey), // 1 邂逅
+    const ChatHomePage(), // 2 聊天
+    MomentsPage(key: _momentsKey), // 3 瞬間
+    const ProfilePage(), // 4 個人主頁
   ];
 
   @override
@@ -501,7 +504,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   void _onItemTapped(int index) {
     // 從「瞬間」切往其他頁面時，
     // 主動關閉 Showcase 的提示氣泡。
-    if (_selectedIndex == 2 && index != 2) {
+    if (_selectedIndex == 3 && index != 3) {
       _momentsKey.currentState?.dismissFeatureTips();
     }
 
@@ -509,6 +512,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     Tooltip.dismissAllToolTips();
 
     if (_selectedIndex == index) {
+      // 已經在推薦頁，再次點擊推薦時換一批。
+      if (index == 0) {
+        _recommendationKey.currentState?.refreshRecommendations();
+      }
+
       // 已經在邂逅頁，又再次點擊邂逅時刷新角色。
       if (index == 1) {
         _encounterKey.currentState?.refreshEncounters();
@@ -554,35 +562,47 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
               selectedItemColor: theme.colorScheme.primary,
               unselectedItemColor: theme.colorScheme.onSurface.withValues(alpha:0.6),
               items: [
-                // 1. 聊天
-                 BottomNavigationBarItem(
-                  icon: ImageIcon(
-                    AssetImage('assets/images/chat_icon.png'),
-                    size: 24,
+                // 1. 推薦
+                BottomNavigationBarItem(
+                  icon: const ImageIcon(
+                    AssetImage('assets/images/nav_recommend_mask.png'),
+                    size: 26,
                   ),
-                  label: l10n.mode_chat,
+                  label: '推薦',
                 ),
+
                 // 2. 邂逅
                 BottomNavigationBarItem(
                   icon: const ImageIcon(
-                    AssetImage('assets/images/select_chat_icon.png'),
-                    size: 24,
+                    AssetImage('assets/images/nav_encounter_mask.png'),
+                    size: 26,
                   ),
-                  label: l10n.nav_encounter, // ✨ 換成多國語言
+                  label: l10n.nav_encounter,
                 ),
-                // 3. 瞬間
+
+                // 3. 聊天
                 BottomNavigationBarItem(
                   icon: const ImageIcon(
-                    AssetImage('assets/images/moment_outline.png'),
-                    size: 24,
+                    AssetImage('assets/images/nav_chat_mask.png'),
+                    size: 26,
                   ),
-                  label: l10n.nav_moments, // ✨ 換成多國語言
+                  label: l10n.mode_chat,
                 ),
-                // 4. 個人主頁
+
+                // 4. 瞬間
                 BottomNavigationBarItem(
-                  icon: ImageIcon(
-                    AssetImage('assets/images/profile_icon.png'),
-                    size: 24,
+                  icon: const ImageIcon(
+                    AssetImage('assets/images/nav_moments_mask.png'),
+                    size: 26,
+                  ),
+                  label: l10n.nav_moments,
+                ),
+
+                // 5. 個人主頁
+                BottomNavigationBarItem(
+                  icon: const ImageIcon(
+                    AssetImage('assets/images/nav_profile_mask.png'),
+                    size: 26,
                   ),
                   label: l10n.title_personal_homepage,
                 ),

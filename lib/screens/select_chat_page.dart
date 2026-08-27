@@ -13,7 +13,7 @@ import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb, listEquals;
 import '../services/character_report_service.dart';
 import '../services/character_block_service.dart';
 import 'dart:async';
@@ -34,6 +34,7 @@ class SelectChatPageState extends State<SelectChatPage> {
   String? _lastFirstCharacterId;
   Set<String> _friendIds = {};
   Set<String> _blockedCharacterIds = {};
+  Set<String> _blockedCreatorIds = {};
   final Set<String> _preloadedImageUrls = {};
   StreamSubscription<User?>? _authStateSub;
 
@@ -72,12 +73,14 @@ class SelectChatPageState extends State<SelectChatPage> {
     if (_userId == null) {
       _friendIds.clear();
       _blockedCharacterIds.clear();
+      _blockedCreatorIds.clear();
       return _loadCharacters();
     }
 
     await Future.wait([
       _loadFriendIds(),
       _loadBlockedCharacterIds(),
+      _loadBlockedCreatorIds(),
     ]);
 
     return _loadCharacters();
@@ -95,28 +98,48 @@ class SelectChatPageState extends State<SelectChatPage> {
     await future;
   }
 
+  String _profileHeaderImageUrl(Character character) {
+    final gallery = character.gallery;
+
+    if (gallery != null && gallery.isNotEmpty) {
+      final url = gallery.first.imageUrl.trim();
+      if (url.isNotEmpty) return url;
+    }
+
+    if (character.galleryPaths.isNotEmpty) {
+      final url = character.galleryPaths.first.trim();
+      if (url.isNotEmpty) return url;
+    }
+
+    return (character.avatarPath ?? '').trim();
+  }
+
   void _precacheCharacterImages(
       BuildContext context,
       List<Character> characters,
       ) {
-    for (final character in characters.take(5)) {
-      if (character.galleryPaths.isEmpty) continue;
+    for (final character in characters.take(8)) {
+      final urls = <String>{
+        _profileHeaderImageUrl(character),
+        character.bannerImagePath.trim(),
+      }..removeWhere((url) => url.isEmpty);
 
-      final imageUrl = character.galleryPaths.first;
+      for (final imageUrl in urls) {
+        final cacheKey = '720::$imageUrl';
+        if (_preloadedImageUrls.contains(cacheKey)) continue;
 
-      if (_preloadedImageUrls.contains(imageUrl)) {
-        continue;
+        _preloadedImageUrls.add(cacheKey);
+
+        final provider = ResizeImage(
+          CachedNetworkImageProvider(imageUrl),
+          width: 720,
+        );
+
+        precacheImage(provider, context).catchError((error) {
+          _preloadedImageUrls.remove(cacheKey);
+          debugPrint('預載邂逅角色圖片失敗：$error');
+        });
       }
-
-      _preloadedImageUrls.add(imageUrl);
-
-      precacheImage(
-        CachedNetworkImageProvider(imageUrl),
-        context,
-      ).catchError((error) {
-        _preloadedImageUrls.remove(imageUrl);
-        debugPrint('預載邂逅角色圖片失敗：$error');
-      });
     }
   }
 
@@ -154,6 +177,28 @@ class SelectChatPageState extends State<SelectChatPage> {
     }
   }
 
+  Future<void> _loadBlockedCreatorIds() async {
+    if (_userId == null) return;
+
+    try {
+      final snapshot = await _db
+          .collection('users')
+          .doc(_userId!)
+          .collection('blockedCreators')
+          .get();
+
+      if (mounted) {
+        setState(() {
+          _blockedCreatorIds =
+              snapshot.docs.map((doc) => doc.id).toSet();
+        });
+      }
+    } catch (e) {
+      debugPrint('❌ 讀取封鎖創作者列表失敗: $e');
+    }
+  }
+
+
   Future<List<Character>> _loadCharacters() async {
     try {
       final querySnapshot = await _db
@@ -172,10 +217,12 @@ class SelectChatPageState extends State<SelectChatPage> {
             .toList(),
       );
 
-      // 排除已封鎖角色。
+      // 排除「單獨封鎖的角色」以及「被封鎖創作者建立的角色」。
+      // 因為檢查 createdBy，所以創作者日後新增角色也不會重新出現。
       characters.removeWhere(
             (character) =>
-            _blockedCharacterIds.contains(character.id),
+        _blockedCharacterIds.contains(character.id) ||
+            _blockedCreatorIds.contains(character.createdBy),
       );
 
       if (characters.isEmpty) {
@@ -759,6 +806,12 @@ class _LatestTabState extends State<_LatestTab> {
         .toList();
   }
   late List<Character> _shuffledBannerCharacters;
+  late List<Character> _shuffledGridCharacters;
+
+  void _rebuildGridCharacters() {
+    _shuffledGridCharacters =
+    List<Character>.from(_visibleAllCharacters)..shuffle();
+  }
 
   void _rebuildBannerCharacters() {
     final random = Random();
@@ -790,6 +843,7 @@ class _LatestTabState extends State<_LatestTab> {
   @override
   void initState() {
     super.initState();
+    _rebuildGridCharacters();
     _rebuildBannerCharacters();
   }
 
@@ -799,7 +853,15 @@ class _LatestTabState extends State<_LatestTab> {
       ) {
     super.didUpdateWidget(oldWidget);
 
-    _rebuildBannerCharacters();
+    // 父層因 Theme、Navigator 返回等原因 rebuild 時，
+    // 不重新洗牌。只有角色清單真的改變時才重新產生隨機順序。
+    final oldIds = oldWidget.allCharacters.map((e) => e.id).toList();
+    final newIds = widget.allCharacters.map((e) => e.id).toList();
+
+    if (!listEquals(oldIds, newIds)) {
+      _rebuildGridCharacters();
+      _rebuildBannerCharacters();
+    }
   }
 
   String _normalizeCategoryText(String value) {
@@ -838,13 +900,16 @@ class _LatestTabState extends State<_LatestTab> {
   }
 
   List<Character> get _filteredCharacters {
-    final list = _visibleAllCharacters
-        .where((character) => _matchesCategory(character, _selectedCategory))
+    // 下方角色改成隨機順序。
+    // 切換分類時只從同一份隨機清單裡篩選，
+    // 不會因 setState 每次重新洗牌，避免畫面一直跳。
+    return _shuffledGridCharacters
+        .where(
+          (character) =>
+      !widget.blockedCharacterIds.contains(character.id) &&
+          _matchesCategory(character, _selectedCategory),
+    )
         .toList();
-
-    // 同一分類固定以人氣排序，避免 setState 後角色位置不停跳。
-    list.sort((a, b) => b.playCount.compareTo(a.playCount));
-    return list;
   }
 
   Widget _buildCategoryStrip(
@@ -1564,7 +1629,10 @@ class _LatestTabState extends State<_LatestTab> {
       // 稍微往上取景，優先保留人物臉部。
       alignment: const Alignment(0, -0.18),
 
-      memCacheWidth: 1080,
+      memCacheWidth: 720,
+      fadeInDuration: Duration.zero,
+      fadeOutDuration: Duration.zero,
+      useOldImageOnUrlChange: true,
       filterQuality: FilterQuality.medium,
       placeholder: (context, url) => Container(
         color: Colors.black12,
@@ -1598,6 +1666,9 @@ class _LatestTabState extends State<_LatestTab> {
         fit: BoxFit.cover,
         alignment: Alignment.center,
         memCacheWidth: 1600,
+        fadeInDuration: Duration.zero,
+        fadeOutDuration: Duration.zero,
+        useOldImageOnUrlChange: true,
         placeholder: (context, url) => Container(
           color: Colors.black12,
         ),
@@ -1625,6 +1696,9 @@ class _LatestTabState extends State<_LatestTab> {
           fit: BoxFit.contain,
           alignment: Alignment.center,
           memCacheWidth: 1400,
+          fadeInDuration: Duration.zero,
+          fadeOutDuration: Duration.zero,
+          useOldImageOnUrlChange: true,
           placeholder: (context, url) =>
           const SizedBox.shrink(),
           errorWidget: (context, url, error) =>
@@ -1786,6 +1860,9 @@ class _LatestTabState extends State<_LatestTab> {
                     Alignment.topCenter,
                     memCacheWidth:
                     isDesktop ? 900 : 720,
+                    fadeInDuration: Duration.zero,
+                    fadeOutDuration: Duration.zero,
+                    useOldImageOnUrlChange: true,
                     placeholder:
                         (context, url) =>
                         Container(
@@ -2631,7 +2708,7 @@ class _CharacterCardState extends State<CharacterCard> {
       imageUrl: imageUrl,
       fit: BoxFit.cover,
       alignment: Alignment.topCenter,
-      memCacheWidth: 1080,
+      memCacheWidth: 720,
       placeholder: (context, url) => Container(
         color: Theme.of(context)
             .colorScheme
