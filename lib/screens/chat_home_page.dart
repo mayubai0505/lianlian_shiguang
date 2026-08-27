@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -257,6 +258,11 @@ class _ChatHomePageState extends State<ChatHomePage> {
     }
   }
 
+  String _formatFullTimestamp(Timestamp? timestamp) {
+    if (timestamp == null) return '';
+    return DateFormat('yyyy/M/d HH:mm').format(timestamp.toDate());
+  }
+
   // ✨ 將英文的 chatMode 轉換為多國語言標籤
   String _getModeLabel(String? mode, AppLocalizations l10n) {
     switch (mode) {
@@ -424,54 +430,164 @@ class _ChatHomePageState extends State<ChatHomePage> {
     }
   }
 
+  Future<void> _togglePinChatRoom({
+    required String sessionId,
+    required bool isPinned,
+  }) async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    final sessionsRef = FirebaseFirestore.instance
+        .collection('artifacts')
+        .doc(_appId)
+        .collection('chat_sessions');
+
+    try {
+      if (!isPinned) {
+        // 置頂名額最多 3 個；活動聊天室的 qixiPinnedUntil 不計入玩家名額。
+        final snapshot = await sessionsRef
+            .where('userId', isEqualTo: user.uid)
+            .get();
+
+        final pinnedCount = snapshot.docs.where((doc) {
+          final data = doc.data();
+          return data['isPinned'] == true;
+        }).length;
+
+        if (pinnedCount >= 3) {
+          if (!mounted) return;
+          ToastUtils.showCenterToast(
+            context,
+            '最多可置頂 3 個聊天室，請先取消其他置頂聊天室。',
+          );
+          return;
+        }
+
+        await sessionsRef.doc(sessionId).update({
+          'isPinned': true,
+          'pinnedAt': FieldValue.serverTimestamp(),
+        });
+
+        if (!mounted) return;
+        ToastUtils.showCenterToast(context, '已置頂聊天室');
+      } else {
+        await sessionsRef.doc(sessionId).update({
+          'isPinned': false,
+          'pinnedAt': FieldValue.delete(),
+        });
+
+        if (!mounted) return;
+        ToastUtils.showCenterToast(context, '已取消置頂');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ToastUtils.showCenterToast(
+        context,
+        '更新置頂狀態失敗：$e',
+        isError: true,
+      );
+    }
+  }
+
   Future<void> _showChatRoomOptions({
     required String sessionId,
     required String displayRoomName,
     required String characterName,
+    required bool isPinned,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
 
     await showModalBottomSheet(
       context: context,
+      backgroundColor: theme.scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
       ),
       builder: (sheetContext) {
+        Widget optionIcon(
+            String assetPath, {
+              required Color color,
+              double size = 32,
+            }) {
+          return Image.asset(
+            assetPath,
+            width: size,
+            height: size,
+            fit: BoxFit.contain,
+            color: color,
+            colorBlendMode: BlendMode.srcIn,
+          );
+        }
+
+        TextStyle optionTextStyle({
+          Color? color,
+        }) {
+          return GoogleFonts.notoSerifTc(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: color ?? theme.colorScheme.onSurface,
+          );
+        }
+
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.fromLTRB(10, 12, 10, 18),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   width: 42,
-                  height: 5,
+                  height: 4,
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(99),
                   ),
                 ),
                 ListTile(
-                  leading: Icon(
-                    Icons.edit_note_rounded,
-                    color: theme.colorScheme.primary,
+                  minLeadingWidth: 34,
+                  leading: optionIcon(
+                    'assets/images/chat/chat_pin_bookmark.png',
+                    color: primary,
                   ),
-                  title: Text(l10n.rename_chat_title),
+                  title: Text(
+                    isPinned ? '取消置頂' : '置頂聊天室',
+                    style: optionTextStyle(color: primary),
+                  ),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _togglePinChatRoom(
+                      sessionId: sessionId,
+                      isPinned: isPinned,
+                    );
+                  },
+                ),
+                ListTile(
+                  minLeadingWidth: 34,
+                  leading: optionIcon(
+                    'assets/images/profile/profile_quill.png',
+                    color: primary,
+                  ),
+                  title: Text(
+                    l10n.rename_chat_title,
+                    style: optionTextStyle(),
+                  ),
                   onTap: () {
                     Navigator.of(sheetContext).pop();
                     _renameChatRoom(sessionId, displayRoomName);
                   },
                 ),
                 ListTile(
-                  leading: const Icon(
-                    Icons.delete_outline_rounded,
+                  minLeadingWidth: 34,
+                  leading: optionIcon(
+                    'assets/images/chat/chat_msg_delete_mask.png',
                     color: Colors.redAccent,
                   ),
                   title: Text(
                     l10n.delete_btn,
-                    style: const TextStyle(color: Colors.redAccent),
+                    style: optionTextStyle(color: Colors.redAccent),
                   ),
                   onTap: () {
                     Navigator.of(sheetContext).pop();
@@ -732,7 +848,14 @@ class _ChatHomePageState extends State<ChatHomePage> {
                   slivers: [
                     // ✨ 3. 會跟著滑動隱藏的 SliverAppBar
                     SliverAppBar(
-                      title: Text(l10n.chat_home_title),
+                      title: Text(
+                        l10n.chat_home_title,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onBackground,
+                        ),
+                      ),
                       // 💡 關鍵：給 AppBar 一個微透明或實體底色，卡片往上滑才不會透字重疊！
                       backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.95),
                       elevation: 0.0,
@@ -746,7 +869,14 @@ class _ChatHomePageState extends State<ChatHomePage> {
                           description: l10n.tip_call_memory,
                           child: IconButton(
                             tooltip: l10n.call_memory_tooltip,
-                            icon: const Icon(Icons.headphones_outlined, size: 26),
+                            icon: Image.asset(
+                              'assets/images/chat/chat_header_headphones.png',
+                              width: 36,
+                              height: 36,
+                              fit: BoxFit.contain,
+                              color: theme.colorScheme.primary,
+                              colorBlendMode: BlendMode.srcIn,
+                            ),
                             onPressed: () {
                               _openTopActionPage(const CallMemoryPage());
                             },
@@ -782,14 +912,13 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                   key: _mailboxKey,
                                   description: l10n.tip_chat_notifications,
                                   child: Transform.scale(
-                                    scale: 1.6,
+                                    scale: 1.0,
                                     child: Image.asset(
-                                      'assets/images/love_plane_icon.png',
+                                      'assets/images/chat/chat_header_paper_plane.png',
                                       width: 36,
                                       height: 36,
-                                      color: Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.white
-                                          : theme.colorScheme.onBackground,
+                                      color: theme.colorScheme.primary,
+                                      colorBlendMode: BlendMode.srcIn,
                                       fit: BoxFit.contain,
                                     ),
                                   ),
@@ -839,11 +968,18 @@ class _ChatHomePageState extends State<ChatHomePage> {
                         final sessionDocs =
                         List<QueryDocumentSnapshot>.from(snapshot.data!.docs);
 
-// 七夕聊天室在 qixiPinnedUntil 前置頂；
-// 同一區域內仍依最後活動時間排序。
+// 玩家手動置頂優先（最多 3 個），接著才是活動置頂；
+                        // 同一區域內仍依最後活動時間排序。
                         sessionDocs.sort((a, b) {
                           final aData = a.data() as Map<String, dynamic>;
                           final bData = b.data() as Map<String, dynamic>;
+
+                          final bool aIsPinned = aData['isPinned'] == true;
+                          final bool bIsPinned = bData['isPinned'] == true;
+
+                          if (aIsPinned != bIsPinned) {
+                            return aIsPinned ? -1 : 1;
+                          }
 
                           final now = DateTime.now();
 
@@ -862,13 +998,10 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                   bPinnedUntil != null &&
                                   now.isBefore(bPinnedUntil.toDate());
 
-                          // 其中一個是活動中的七夕房間時，七夕房間排前面。
                           if (aIsQixiPinned != bIsQixiPinned) {
                             return aIsQixiPinned ? -1 : 1;
                           }
 
-                          // 同為七夕房間或同為普通房間時，
-                          // 再依原本的最後活動時間排序。
                           final aLastActivity =
                           aData['lastActivity'] as Timestamp?;
                           final bLastActivity =
@@ -877,7 +1010,6 @@ class _ChatHomePageState extends State<ChatHomePage> {
                           if (aLastActivity == null && bLastActivity == null) {
                             return 0;
                           }
-
                           if (aLastActivity == null) return 1;
                           if (bLastActivity == null) return -1;
 
@@ -906,152 +1038,38 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                 final avatarUrl = sessionData['characterAvatarPath'] as String? ?? '';
                                 final bool isQixiRoom =
                                     sessionData['isQixiRoom'] == true;
+                                final bool isPinned =
+                                    sessionData['isPinned'] == true;
 
                                 return Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 6,
+                                  ),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: BorderRadius.circular(20),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 2),
+                                        color: Colors.black.withValues(alpha: 0.035),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                                   ),
                                   child: Material(
-                                    // 只有預設主題提高卡片不透明度
                                     color: isDefaultTheme
-                                        ? Colors.white.withValues(alpha: 0.96)
-                                        : theme.cardColor.withValues(alpha: 0.8),
-
-                                    // 只有預設主題增加淡紫灰色細邊框
+                                        ? Colors.white.withValues(alpha: 0.98)
+                                        : theme.cardColor.withValues(alpha: 0.88),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                      side: isDefaultTheme
-                                          ? const BorderSide(
-                                        color: Color(0xFFE7DDEA),
-                                        width: 0.8,
-                                      )
-                                          : BorderSide.none,
+                                      borderRadius: BorderRadius.circular(20),
+                                      side: BorderSide(
+                                        color: theme.colorScheme.primary
+                                            .withValues(alpha: 0.13),
+                                        width: 0.9,
+                                      ),
                                     ),
-
                                     clipBehavior: Clip.antiAlias,
-                                    child: ListTile(
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                      leading: Stack(
-                                        children: [
-                                          _buildCharacterAvatar(
-                                            imageUrl: avatarUrl,
-                                            theme: theme,
-                                          ),
-                                          if (unreadCount > 0)
-                                            Positioned(
-                                              right: 0,
-                                              top: 0,
-                                              child: Container(
-                                                padding: const EdgeInsets.all(4),
-                                                decoration: const BoxDecoration(
-                                                  color: Colors.red,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Text(
-                                                  '$unreadCount',
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                      title: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              displayRoomName,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: theme.colorScheme.onSurface,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          if (isQixiRoom) ...[
-                                            const SizedBox(width: 5),
-                                            Image.asset(
-                                              'assets/images/qixi_chat_badge.png',
-                                              width: 23,
-                                              height: 23,
-                                              fit: BoxFit.contain,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return const Icon(
-                                                  Icons.favorite_rounded,
-                                                  size: 18,
-                                                  color: Color(0xFFE889AD),
-                                                );
-                                              },
-                                            ),
-                                            const SizedBox(width: 6),
-                                          ],
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: theme.colorScheme.primaryContainer,
-                                              borderRadius: BorderRadius.circular(4),
-                                            ),
-                                            child: Text(
-                                              _getModeLabel(chatMode, l10n),
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: theme.colorScheme.onPrimaryContainer,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      subtitle: Padding(
-                                        padding: const EdgeInsets.only(top: 4.0),
-                                        child: Text(
-                                          sessionData['lastMessage'] ?? '',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: unreadCount > 0
-                                                ? theme.colorScheme.onSurface
-                                                : Colors.grey,
-                                          ),
-                                        ),
-                                      ),
-                                      trailing: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            _formatTimestamp(sessionData['lastActivity'] as Timestamp?),
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: unreadCount > 0
-                                                  ? theme.colorScheme.primary
-                                                  : Colors.grey,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          if (sessionData['friendshipScore'] != null)
-                                            Text(
-                                              l10n.affection_score_short(
-                                                sessionData['friendshipScore'].toString(),
-                                              ),
-                                              style: const TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.pinkAccent,
-                                              ),
-                                            ),
-                                        ],
-                                      ),
+                                    child: InkWell(
                                       onTap: () => _navigateToChat(
                                         sessionId,
                                         sessionData['characterId'] as String? ?? '',
@@ -1061,6 +1079,238 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                         sessionId: sessionId,
                                         displayRoomName: displayRoomName,
                                         characterName: characterName,
+                                        isPinned: isPinned,
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          if (isPinned)
+                                            Positioned(
+                                              left: 10,
+                                              top: 0,
+                                              child: Image.asset(
+                                                'assets/images/chat/chat_pin_bookmark.png',
+                                                width: 28,
+                                                height: 36,
+                                                fit: BoxFit.contain,
+                                                color: theme.colorScheme.primary
+                                                    .withValues(alpha: 0.82),
+                                                colorBlendMode: BlendMode.srcIn,
+                                              ),
+                                            ),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                              20,
+                                              18,
+                                              18,
+                                              18,
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                              children: [
+                                                Stack(
+                                                  children: [
+                                                    _buildCharacterAvatar(
+                                                      imageUrl: avatarUrl,
+                                                      theme: theme,
+                                                    ),
+                                                    if (unreadCount > 0)
+                                                      Positioned(
+                                                        right: 0,
+                                                        top: 0,
+                                                        child: Container(
+                                                          constraints:
+                                                          const BoxConstraints(
+                                                            minWidth: 18,
+                                                            minHeight: 18,
+                                                          ),
+                                                          padding:
+                                                          const EdgeInsets.all(3),
+                                                          decoration:
+                                                          BoxDecoration(
+                                                            color: theme
+                                                                .colorScheme.primary,
+                                                            shape: BoxShape.circle,
+                                                          ),
+                                                          alignment:
+                                                          Alignment.center,
+                                                          child: Text(
+                                                            '$unreadCount',
+                                                            style: GoogleFonts
+                                                                .notoSerifTc(
+                                                              color: theme
+                                                                  .colorScheme
+                                                                  .onPrimary,
+                                                              fontSize: 9,
+                                                              fontWeight:
+                                                              FontWeight.w600,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Flexible(
+                                                            child: Text(
+                                                              displayRoomName,
+                                                              maxLines: 1,
+                                                              overflow:
+                                                              TextOverflow.ellipsis,
+                                                              style: GoogleFonts
+                                                                  .notoSerifTc(
+                                                                fontSize: 18,
+                                                                fontWeight:
+                                                                FontWeight.w600,
+                                                                color: theme
+                                                                    .colorScheme
+                                                                    .onSurface,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          if (isQixiRoom) ...[
+                                                            const SizedBox(width: 6),
+                                                            Image.asset(
+                                                              'assets/images/qixi_chat_badge.png',
+                                                              width: 20,
+                                                              height: 20,
+                                                              fit: BoxFit.contain,
+                                                              errorBuilder: (
+                                                                  context,
+                                                                  error,
+                                                                  stackTrace,
+                                                                  ) {
+                                                                return const SizedBox
+                                                                    .shrink();
+                                                              },
+                                                            ),
+                                                          ],
+                                                          const SizedBox(width: 8),
+                                                          Container(
+                                                            padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                              horizontal: 9,
+                                                              vertical: 4,
+                                                            ),
+                                                            decoration:
+                                                            BoxDecoration(
+                                                              color: theme
+                                                                  .colorScheme.primary
+                                                                  .withValues(
+                                                                  alpha: 0.08),
+                                                              borderRadius:
+                                                              BorderRadius
+                                                                  .circular(9),
+                                                            ),
+                                                            child: Text(
+                                                              _getModeLabel(
+                                                                chatMode,
+                                                                l10n,
+                                                              ),
+                                                              style: GoogleFonts
+                                                                  .notoSerifTc(
+                                                                fontSize: 11,
+                                                                color: theme
+                                                                    .colorScheme
+                                                                    .primary,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Text(
+                                                        '時間：${_formatFullTimestamp(sessionData['lastActivity'] as Timestamp?)}',
+                                                        maxLines: 1,
+                                                        overflow:
+                                                        TextOverflow.ellipsis,
+                                                        style: GoogleFonts
+                                                            .notoSerifTc(
+                                                          fontSize: 13,
+                                                          color: theme
+                                                              .colorScheme.onSurface
+                                                              .withValues(alpha: 0.48),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        sessionData['lastMessage']
+                                                            ?.toString() ??
+                                                            '',
+                                                        maxLines: 1,
+                                                        overflow:
+                                                        TextOverflow.ellipsis,
+                                                        style: GoogleFonts
+                                                            .notoSerifTc(
+                                                          fontSize: 13.5,
+                                                          color: unreadCount > 0
+                                                              ? theme.colorScheme
+                                                              .onSurface
+                                                              .withValues(
+                                                              alpha: 0.72)
+                                                              : theme.colorScheme
+                                                              .onSurface
+                                                              .withValues(
+                                                              alpha: 0.48),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      _formatTimestamp(
+                                                        sessionData['lastActivity']
+                                                        as Timestamp?,
+                                                      ),
+                                                      style:
+                                                      GoogleFonts.notoSerifTc(
+                                                        fontSize: 13,
+                                                        color: theme
+                                                            .colorScheme.onSurface
+                                                            .withValues(alpha: 0.48),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 12),
+                                                    if (sessionData[
+                                                    'friendshipScore'] !=
+                                                        null)
+                                                      Text(
+                                                        l10n
+                                                            .affection_score_short(
+                                                          sessionData[
+                                                          'friendshipScore']
+                                                              .toString(),
+                                                        ),
+                                                        style: GoogleFonts
+                                                            .notoSerifTc(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                          FontWeight.w600,
+                                                          color: theme
+                                                              .colorScheme.primary,
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),

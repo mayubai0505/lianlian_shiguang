@@ -892,7 +892,13 @@ class _CallOverlayState extends State<CallOverlay> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(Icons.send, color: theme.colorScheme.primary),
+                  icon: Image.asset(
+                    'assets/images/chat/chat_send_plane_mask.png',
+                    width: 38,
+                    height: 38,
+                    color: theme.colorScheme.primary,
+                    colorBlendMode: BlendMode.srcIn,
+                  ),
                   onPressed: _sendMessage,
                 ),
               ],

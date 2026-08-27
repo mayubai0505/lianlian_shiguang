@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'dart:typed_data';
@@ -285,84 +286,194 @@ class _CallMemoryDetailPageState extends State<CallMemoryDetailPage> {
     super.dispose();
   }
 
-  // 🎨 畫出 VIP 包廂的裝潢設計圖
+  // 🎨 通話回憶詳情：保留原本播放邏輯，只調整視覺。
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final messages = List<Map<String, dynamic>>.from(widget.memoryData['messages'] ?? []);
-    final characterName = widget.memoryData['characterName'] ?? l10n.unknown_contact;
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+    final messages =
+    List<Map<String, dynamic>>.from(widget.memoryData['messages'] ?? []);
+    final characterName =
+        widget.memoryData['characterName'] ?? l10n.unknown_contact;
 
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: Text(l10n.call_memory_with(characterName), // ✨ 把名字放進括號裡！
-          style: const TextStyle(fontSize: 16),
-        ),        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: theme.colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
+        title: Text(
+          l10n.call_memory_with(characterName),
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 17,
+            fontWeight: FontWeight.w500,
+            color: onSurface,
+          ),
+        ),
       ),
-      body: messages.isEmpty
-          ?  Center(child: Text(l10n.no_call_record))
-          : ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: messages.length,
-        itemBuilder: (context, index) {
-          final msg = messages[index];
-          final isMe = msg['isMe'] == true;
-          final text = msg['text'] ?? '';
-          final isPlaying = _currentlyPlayingText == text;
-
-          debugPrint("🎧 msg keys: ${msg.keys.toList()}");
-          debugPrint("🎧 msg data: $msg");
-          debugPrint("🎧 memoryData keys: ${widget.memoryData.keys.toList()}");
-
-          return Align(
-            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isMe ? theme.colorScheme.surfaceContainerHighest.withValues(alpha:0.5) : theme.colorScheme.primary.withValues(alpha:0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: isPlaying ? Border.all(color: theme.colorScheme.primary, width: 2) : null,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isMe ? l10n.me : characterName,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isMe ? Colors.grey : theme.colorScheme.primary),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(text, style: const TextStyle(fontSize: 15)),
-
-                  // 🌟 總裁專屬設定：只有男神的話，下面才會出現「播放按鈕」！
-                  if (!isMe) ...[
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: InkWell(
-                        onTap: isPlaying ? null : () => _playVoice(text), // 呼叫上面的播放功能
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(20)),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(isPlaying ? Icons.multitrack_audio : Icons.play_arrow_rounded, color: Colors.white, size: 16),
-                              const SizedBox(width: 4),
-                              Text(isPlaying ? l10n.playing : l10n.listen, style: const TextStyle(color: Colors.white, fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  ]
-                ],
+      body: Stack(
+        children: [
+          Positioned(
+            top: -18,
+            right: -26,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.16,
+                child: Image.asset(
+                  'assets/images/chat/chat_side_menu_corner_floral_mask.png',
+                  width: 190,
+                  fit: BoxFit.contain,
+                  color: primary,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
               ),
             ),
-          );
-        },
+          ),
+          Positioned.fill(
+            child: messages.isEmpty
+                ? Center(
+              child: Text(
+                l10n.no_call_record,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  color: onSurface.withValues(alpha: 0.55),
+                ),
+              ),
+            )
+                : ListView.builder(
+              padding: const EdgeInsets.fromLTRB(18, 20, 18, 36),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final msg = messages[index];
+                final isMe = msg['isMe'] == true;
+                final text = msg['text'] ?? '';
+                final isPlaying = _currentlyPlayingText == text;
+
+                debugPrint("🎧 msg keys: ${msg.keys.toList()}");
+                debugPrint("🎧 msg data: $msg");
+                debugPrint(
+                    "🎧 memoryData keys: ${widget.memoryData.keys.toList()}");
+
+                return Align(
+                  alignment: isMe
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 14),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.sizeOf(context).width * 0.82,
+                    ),
+                    padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                    decoration: BoxDecoration(
+                      color: isMe
+                          ? theme.colorScheme.surfaceContainerHighest
+                          .withValues(alpha: 0.34)
+                          : Color.alphaBlend(
+                        primary.withValues(alpha: 0.075),
+                        theme.colorScheme.surface,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isPlaying
+                            ? primary.withValues(alpha: 0.62)
+                            : primary.withValues(
+                          alpha: isMe ? 0.10 : 0.16,
+                        ),
+                        width: isPlaying ? 1.4 : 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: onSurface.withValues(alpha: 0.035),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isMe ? l10n.me : characterName,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isMe
+                                ? onSurface.withValues(alpha: 0.48)
+                                : primary,
+                          ),
+                        ),
+                        const SizedBox(height: 7),
+                        Text(
+                          text,
+                          style: GoogleFonts.notoSerifTc(
+                            fontSize: 15,
+                            height: 1.65,
+                            color: onSurface.withValues(alpha: 0.86),
+                          ),
+                        ),
+                        if (!isMe) ...[
+                          const SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(22),
+                              onTap:
+                              isPlaying ? null : () => _playVoice(text),
+                              child: AnimatedContainer(
+                                duration:
+                                const Duration(milliseconds: 180),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 7,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isPlaying
+                                      ? primary.withValues(alpha: 0.12)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(22),
+                                  border: Border.all(
+                                    color:
+                                    primary.withValues(alpha: 0.48),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      isPlaying
+                                          ? Icons.graphic_eq_rounded
+                                          : Icons.play_arrow_rounded,
+                                      color: primary,
+                                      size: 17,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      isPlaying
+                                          ? l10n.playing
+                                          : l10n.listen,
+                                      style: GoogleFonts.notoSerifTc(
+                                        color: primary,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

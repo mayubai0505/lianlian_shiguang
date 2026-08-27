@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:card_swiper/card_swiper.dart';
-import 'package:provider/provider.dart';
-import '../services/theme_notifier.dart';
 import 'dart:ui';
 import 'dart:math';
 import 'character_model.dart';
@@ -14,11 +12,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import '../services/character_report_service.dart';
 import '../services/character_block_service.dart';
 import 'dart:async';
-import 'qixi_event_page.dart';
 
 // 邂逅頁面
 class SelectChatPage extends StatefulWidget {
@@ -28,7 +26,7 @@ class SelectChatPage extends StatefulWidget {
   SelectChatPageState createState() => SelectChatPageState();
 }
 
-class SelectChatPageState extends State<SelectChatPage> with TickerProviderStateMixin {
+class SelectChatPageState extends State<SelectChatPage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final String APP_ID = AppConfig.appId;
   String? _userId;
@@ -37,55 +35,64 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
   Set<String> _friendIds = {};
   Set<String> _blockedCharacterIds = {};
   final Set<String> _preloadedImageUrls = {};
-  late TabController _mainTabController;
+  StreamSubscription<User?>? _authStateSub;
 
   @override
   void initState() {
     super.initState();
-    _mainTabController = TabController(length: 2, vsync: this);
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (mounted) {
-        setState(() {
-          _userId = user?.uid;
-        });
-        _refreshAllData();
-      }
-    });
-  }
 
-  @override
-  void dispose() {
-    _mainTabController.dispose();
-    super.dispose();
+    _userId = FirebaseAuth.instance.currentUser?.uid;
+    _charactersFuture = _prepareCharacters();
+
+    _authStateSub =
+        FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          final nextUserId = user?.uid;
+
+          // Firebase 啟動時常會再次送出目前使用者；
+          // UID 沒變就不要重新載入，避免 loading 閃兩次。
+          if (nextUserId == _userId) return;
+          if (!mounted) return;
+
+          setState(() {
+            _userId = nextUserId;
+            _charactersFuture = _prepareCharacters();
+          });
+        });
   }
 
   void refreshEncounters() {
+    if (!mounted) return;
+
     setState(() {
-      _charactersFuture = null;
+      _charactersFuture = _prepareCharacters();
     });
-    _refreshAllData();
   }
 
-  Future<void> _refreshAllData() async {
+  Future<List<Character>> _prepareCharacters() async {
     if (_userId == null) {
-      if (mounted) {
-        setState(() {
-          _friendIds.clear();
-          _blockedCharacterIds.clear();
-          _charactersFuture = _loadCharacters();
-        });
-      }
-      return;
+      _friendIds.clear();
+      _blockedCharacterIds.clear();
+      return _loadCharacters();
     }
+
     await Future.wait([
       _loadFriendIds(),
       _loadBlockedCharacterIds(),
     ]);
-    if (mounted) {
-      setState(() {
-        _charactersFuture = _loadCharacters();
-      });
-    }
+
+    return _loadCharacters();
+  }
+
+  Future<void> _refreshAllData() async {
+    if (!mounted) return;
+
+    final future = _prepareCharacters();
+
+    setState(() {
+      _charactersFuture = future;
+    });
+
+    await future;
   }
 
   void _precacheCharacterImages(
@@ -501,38 +508,9 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
     );
   }
 
-  // 🌟 小橢圓膠囊按鈕建構器
-  Widget _buildSmallPillButton({
-    required String text,
-    required bool isSelected,
-    required VoidCallback onTap,
-    required ThemeData theme,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceVariant.withValues(alpha: 0.6),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: isSelected ? Colors.white : theme.colorScheme.onSurface,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -541,50 +519,17 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        // 🌟 修正：讓標題文字具備彈性縮放與防溢位機制
-        title: Row(
-          children: [
-            Flexible(
-              child: Text(
-                l10n.title_meet_him,
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface,
-                  fontSize: 16, // 字體稍微精簡，更契合手機 AppBar
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis, // 空間不足時自動顯示 ...
-              ),
-            ),
-            const SizedBox(width: 8), // 縮小間距
-            AnimatedBuilder(
-              animation: _mainTabController,
-              builder: (context, child) {
-                final currentIndex = _mainTabController.index;
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildSmallPillButton(
-                      text: l10n.daily_encounter,
-                      isSelected: currentIndex == 0,
-                      onTap: () => _mainTabController.animateTo(0),
-                      theme: theme,
-                    ),
-                    const SizedBox(width: 4), // 縮小按鈕間距
-                    _buildSmallPillButton(
-                      text: l10n.discovery_hall,
-                      isSelected: currentIndex == 1,
-                      onTap: () => _mainTabController.animateTo(1),
-                      theme: theme,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
+        title: Text(
+          l10n.title_meet_him,
+          style: GoogleFonts.notoSerifTc(
+            color: theme.colorScheme.onSurface,
+            fontSize: 19,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search_rounded),
             onPressed: _navigateToSearch,
           ),
         ],
@@ -592,170 +537,63 @@ class SelectChatPageState extends State<SelectChatPage> with TickerProviderState
       body: FutureBuilder<List<Character>>(
         future: _charactersFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: _buildEndCard(theme, themeNotifier));
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
 
-          final characters = snapshot.data!;
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                '邂逅資料載入失敗，請稍後再試。',
+                style: GoogleFonts.notoSerifTc(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
+                  fontSize: 14,
+                ),
+              ),
+            );
+          }
+
+          final characters = snapshot.data ?? const <Character>[];
+
+          if (characters.isEmpty) {
+            return Center(
+              child: Text(
+                '目前還沒有可以邂逅的角色',
+                style: GoogleFonts.notoSerifTc(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+                  fontSize: 14,
+                ),
+              ),
+            );
+          }
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             _precacheCharacterImages(context, characters);
           });
 
-          // 🌟 直接渲染 TabBarView，頂部空間已完全釋放！
-          return TabBarView(
-            controller: _mainTabController,
-            children: [
-              // ------------------------------------
-              // 1. 滑卡模式主頁
-              // ------------------------------------
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          l10n.text_character_count(characters.length),
-                          style: TextStyle(color: theme.colorScheme.onSurface),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Swiper(
-                      itemCount: characters.length + 1,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == characters.length) {
-                          return _buildEndCard(theme, themeNotifier);
-                        }
-                        final character = characters[index];
-                        final bool isFriend = _friendIds.contains(character.id);
-
-                        return CharacterCard(
-                          character: character,
-                          isFriend: isFriend,
-                          onAddFriend: () => _addFriend(character),
-                          onShowOptions: (char, isFriend) => _showMoreOptions(char, isFriend),
-                        );
-                      },
-                      scrollDirection: Axis.vertical,
-                      layout: SwiperLayout.STACK,
-                      itemWidth: MediaQuery.of(context).size.width * 0.9,
-                      itemHeight: MediaQuery.of(context).size.height * 0.70,
-                      loop: false,
-                      onTap: (index) async {
-                        if (index < characters.length) {
-                          final result =
-                          await Navigator.push<bool>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  CharacterProfilePage(
-                                    character:
-                                    characters[index],
-                                    characterId:
-                                    characters[index].id,
-                                  ),
-                            ),
-                          );
-
-                          if (!mounted) return;
-
-                          if (result == true) {
-                            // 從角色頁封鎖成功
-                            await _refreshAllData();
-                          } else {
-                            await _loadFriendIds();
-                          }
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-
-              // ------------------------------------
-              // 2. 探索大廳 (三子分頁)
-              // ------------------------------------
-              _DiscoveryHallView(
-                allCharacters: characters,
-                friendIds: _friendIds,
-
-                blockedCharacterIds:
-                _blockedCharacterIds,
-
-                onAddFriend: _addFriend,
-                onShowOptions: _showMoreOptions,
-                onRefresh: _refreshAllData,
-              ),
-            ],
+          return _DiscoveryHallView(
+            allCharacters: characters,
+            friendIds: _friendIds,
+            blockedCharacterIds: _blockedCharacterIds,
+            onAddFriend: _addFriend,
+            onShowOptions: _showMoreOptions,
+            onRefresh: _refreshAllData,
           );
         },
       ),
     );
   }
 
-  Widget _buildEndCard(ThemeData theme, ThemeNotifier themeNotifier) {
-    final l10n = AppLocalizations.of(context)!;
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.9,
-      height: MediaQuery.of(context).size.height * 0.70,
-      child: Card(
-        color: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        elevation: 8,
-        clipBehavior: Clip.antiAlias,
-        child: Container(
-          decoration: themeNotifier.currentBackground,
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.card_giftcard, size: 60,
-                    color: theme.colorScheme.primary),
-                const SizedBox(height: 24),
-                Text(
-                  l10n.msg_no_more_encounters_today,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  l10n.msg_check_new_encounters,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7)
-                  ),
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton.icon(
-                  onPressed: refreshEncounters,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(l10n.action_refresh, style: const TextStyle(fontSize: 16)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.8),
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+
+  @override
+  void dispose() {
+    _authStateSub?.cancel();
+    super.dispose();
   }
+
 }
 
 Widget buildCachedCharacterAvatar(
@@ -866,46 +704,49 @@ class _LatestTab extends StatefulWidget {
 }
 
 class _LatestTabState extends State<_LatestTab> {
-  // 2026 七夕限定活動：台灣時間 8/18 00:00～8/21 00:00。
-  // 使用 UTC 邊界，避免玩家位於不同時區時提早出現或延後消失。
-  // 台灣時間：2026/8/19 00:00～2026/8/26 23:59。
-// 使用 UTC 邊界，確保所有玩家看到相同的活動時間。
-  static final DateTime _qixiStartUtc =
-  DateTime.utc(2026, 8, 18, 16);
+  String _selectedCategory = '全部';
 
-  static final DateTime _qixiEndUtc =
-  DateTime.utc(2026, 8, 26, 16);
-  Timer? _qixiBoundaryTimer;
+  // 邂逅首頁固定使用的大分類。
+  // 「其他」一定放最後；首頁為單排橫向滑動。
+  static const List<String> _discoveryCategories = <String>[
+    '全部',
+    '霸總',
+    '年上',
+    '年下',
+    '校園',
+    '職場',
+    '古風',
+    '仙俠',
+    '病嬌',
+    '忠犬',
+    '高冷',
+    '青梅竹馬',
+    '師徒',
+    '甜寵',
+    '非人',
+    '其他',
+  ];
 
-  bool get _isQixiEventActive {
-    final nowUtc = DateTime.now().toUtc();
-    return !nowUtc.isBefore(_qixiStartUtc) && nowUtc.isBefore(_qixiEndUtc);
-  }
-
-  // Debug 版先顯示，方便活動開始前確認版面；正式版只顯示三天。
-  bool get _shouldShowQixiBanner => kDebugMode || _isQixiEventActive;
-
-  void _scheduleQixiBoundaryRefresh() {
-    _qixiBoundaryTimer?.cancel();
-
-    final nowUtc = DateTime.now().toUtc();
-    final DateTime? nextBoundary = nowUtc.isBefore(_qixiStartUtc)
-        ? _qixiStartUtc
-        : nowUtc.isBefore(_qixiEndUtc)
-        ? _qixiEndUtc
-        : null;
-
-    if (nextBoundary == null) return;
-
-    _qixiBoundaryTimer = Timer(
-      nextBoundary.difference(nowUtc) + const Duration(seconds: 1),
-          () {
-        if (!mounted) return;
-        setState(() {});
-        _scheduleQixiBoundaryRefresh();
-      },
-    );
-  }
+  // 舊角色仍可能使用較細的 personalityTags，
+  // 先用常見同義詞做相容；之後若角色建立頁新增 discoveryTags，
+  // 可以再直接改成讀取 discoveryTags。
+  static const Map<String, List<String>> _categoryKeywords =
+  <String, List<String>>{
+    '霸總': <String>['霸總', '霸道總裁', '總裁', '財閥', 'CEO', 'ceo'],
+    '年上': <String>['年上', '成熟', '叔系'],
+    '年下': <String>['年下', '弟弟', '弟系'],
+    '校園': <String>['校園', '學生', '學長', '學弟', '同學', '老師'],
+    '職場': <String>['職場', '上司', '老闆', '秘書', '總監', '經理', '辦公室'],
+    '古風': <String>['古風', '古代', '王爺', '皇帝', '太子', '將軍', '江湖', '武俠'],
+    '仙俠': <String>['仙俠', '修仙', '仙門', '宗主', '師尊', '仙尊', '魔尊'],
+    '病嬌': <String>['病嬌', '偏執', '瘋批', '黑化'],
+    '忠犬': <String>['忠犬', '黏人', '專一', '守護', '忠誠'],
+    '高冷': <String>['高冷', '冷淡', '寡言', '禁慾', '疏離'],
+    '青梅竹馬': <String>['青梅竹馬', '竹馬', '幼馴染'],
+    '師徒': <String>['師徒', '師父', '師尊', '徒弟'],
+    '甜寵': <String>['甜寵', '寵溺', '溫柔', '治癒', '甜'],
+    '非人': <String>['非人', '吸血鬼', '狼人', '妖', '魔', '神明', '精靈', '獸人', '人魚'],
+  };
 
   List<Character> get _visibleAllCharacters {
     return widget.allCharacters
@@ -917,28 +758,7 @@ class _LatestTabState extends State<_LatestTab> {
     )
         .toList();
   }
-  List<String> get _dailyOpeningLines {
-    final l10n = AppLocalizations.of(context)!;
-
-    return [
-      l10n.encounterDailyQuote1,
-      l10n.encounterDailyQuote2,
-      l10n.encounterDailyQuote3,
-      l10n.encounterDailyQuote4,
-      l10n.encounterDailyQuote5,
-      l10n.encounterDailyQuote6,
-      l10n.encounterDailyQuote7,
-      l10n.encounterDailyQuote8,
-      l10n.encounterDailyQuote9,
-      l10n.encounterDailyQuote10,
-      l10n.encounterDailyQuote11,
-      l10n.encounterDailyQuote12,
-    ];
-  }
-
-  late String _openingLine;
-  late List<Character>
-  _shuffledBannerCharacters;
+  late List<Character> _shuffledBannerCharacters;
 
   void _rebuildBannerCharacters() {
     final random = Random();
@@ -971,28 +791,6 @@ class _LatestTabState extends State<_LatestTab> {
   void initState() {
     super.initState();
     _rebuildBannerCharacters();
-    _scheduleQixiBoundaryRefresh();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    final now = DateTime.now();
-    final dayKey = DateTime(now.year, now.month, now.day)
-        .millisecondsSinceEpoch ~/
-        Duration.millisecondsPerDay;
-
-    final openingLines = _dailyOpeningLines;
-
-    // 同一天固定顯示同一句；切換語言時也會重新取得翻譯。
-    _openingLine =
-    openingLines[dayKey % openingLines.length];
-  }
-  @override
-  void dispose() {
-    _qixiBoundaryTimer?.cancel();
-    super.dispose();
   }
 
   @override
@@ -1004,216 +802,213 @@ class _LatestTabState extends State<_LatestTab> {
     _rebuildBannerCharacters();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final l10n = AppLocalizations.of(context)!;
-    // 網頁或寬螢幕使用桌面版配置。
-    final bool useDesktopLayout =
-        kIsWeb && screenWidth >= 800;
+  String _normalizeCategoryText(String value) {
+    return value
+        .trim()
+        .replaceAll(RegExp(r'^#+'), '')
+        .replaceAll(' ', '')
+        .toLowerCase();
+  }
 
-    final double pageHorizontalPadding =
-    useDesktopLayout ? 32 : 16;
+  bool _matchesCategory(Character character, String category) {
+    if (category == '全部') return true;
+    if (category == '其他') {
+      return !_discoveryCategories
+          .where((item) => item != '全部' && item != '其他')
+          .any((item) => _matchesCategory(character, item));
+    }
 
-    final double maxContentWidth =
-    useDesktopLayout ? 1280 : double.infinity;
+    final keywords = _categoryKeywords[category] ?? <String>[category];
 
-    final List<Character> bannerList =
-        _shuffledBannerCharacters;
+    final searchableValues = <String>[
+      ...character.personalityTags,
+      character.occupation,
+    ].map(_normalizeCategoryText).where((value) => value.isNotEmpty).toList();
 
-    // 首頁只預覽最近 6 位角色，避免角色增加後首頁無限延伸。
-    // _loadCharacters() 進入頁面時已經洗牌，
-// 直接取前 6 位即可保持本次瀏覽的隨機結果。
-// 不要在 build() 裡再次 shuffle，否則畫面重建時角色會一直跳動。
-    final List<Character> latestPreview =
-    _visibleAllCharacters
-        .take(6)
+    for (final keyword in keywords) {
+      final normalizedKeyword = _normalizeCategoryText(keyword);
+      if (searchableValues.any(
+            (value) => value == normalizedKeyword || value.contains(normalizedKeyword),
+      )) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  List<Character> get _filteredCharacters {
+    final list = _visibleAllCharacters
+        .where((character) => _matchesCategory(character, _selectedCategory))
         .toList();
 
-    return Align(
-      alignment: const Alignment(0, -0.35),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: maxContentWidth,
-        ),
-        child: ListView(
-          padding: EdgeInsets.symmetric(
-            horizontal: pageHorizontalPadding,
-            vertical: 16,
-          ),
-          children: [
-            if (_shouldShowQixiBanner) ...[
-              _buildQixiEventBanner(context, useDesktopLayout),
-              SizedBox(height: useDesktopLayout ? 20 : 14),
-            ],
-            _buildDailyOpening(context, useDesktopLayout),
-            SizedBox(height: useDesktopLayout ? 28 : 20),
+    // 同一分類固定以人氣排序，避免 setState 後角色位置不停跳。
+    list.sort((a, b) => b.playCount.compareTo(a.playCount));
+    return list;
+  }
 
-            if (bannerList.isNotEmpty) ...[
-              Text(
-                l10n.encounterJoinedToday,
-                style: TextStyle(
-                  fontSize: useDesktopLayout ? 22 : 18,
-                  fontWeight: FontWeight.bold,
+  Widget _buildCategoryStrip(
+      BuildContext context,
+      bool useDesktopLayout,
+      ) {
+    final theme = Theme.of(context);
+
+    return SizedBox(
+      height: useDesktopLayout ? 46 : 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        itemCount: _discoveryCategories.length,
+        separatorBuilder: (_, __) => SizedBox(
+          width: useDesktopLayout ? 10 : 8,
+        ),
+        itemBuilder: (context, index) {
+          final category = _discoveryCategories[index];
+          final isSelected = category == _selectedCategory;
+
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(22),
+              onTap: () {
+                if (category == _selectedCategory) return;
+                setState(() {
+                  _selectedCategory = category;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: EdgeInsets.symmetric(
+                  horizontal: useDesktopLayout ? 18 : 15,
+                  vertical: useDesktopLayout ? 9 : 7,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.primary.withValues(alpha: 0.20),
+                    width: 1,
+                  ),
+                  boxShadow: isSelected
+                      ? [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                      : null,
+                ),
+                child: Center(
+                  child: Text(
+                    category,
+                    style: GoogleFonts.notoSerifTc(
+                      color: isSelected
+                          ? theme.colorScheme.onPrimary
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.78),
+                      fontSize: useDesktopLayout ? 14 : 13,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
-
-              _buildRecommendationBanner(
-                context,
-                bannerList,
-                useDesktopLayout: useDesktopLayout,
-              ),
-
-              SizedBox(
-                height: useDesktopLayout ? 36 : 24,
-              ),
-            ],
-
-            _buildSectionTitle(
-              l10n.encounterPopularChats,
-              useDesktopLayout,
             ),
-            const SizedBox(height: 12),
-            _buildPopularCharactersSection(
-              context,
-              useDesktopLayout,
-            ),
-            SizedBox(height: useDesktopLayout ? 36 : 28),
+          );
+        },
+      ),
+    );
+  }
 
-            _buildTagsSectionHeader(
-              context,
-              useDesktopLayout,
-            ),
-            const SizedBox(height: 14),
-            _buildTagsSection(context),
-            SizedBox(height: useDesktopLayout ? 40 : 30),
+  Widget _buildEmptyCategory(
+      BuildContext context,
+      ) {
+    final theme = Theme.of(context);
 
-            _buildLatestSectionHeader(
-              context,
-              useDesktopLayout,
-              showMore: _visibleAllCharacters.length > 6,
-            ),
-            const SizedBox(height: 12),
-
-            if (useDesktopLayout)
-              _buildDesktopCharacterGrid(
-                context,
-                latestPreview,
-              )
-            else
-              _buildMobileStaggeredGrid(
-                context,
-                latestPreview,
-              ),
-
-            SizedBox(height: useDesktopLayout ? 40 : 28),
-          ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 52),
+      child: Center(
+        child: Text(
+          '這個分類目前還沒有角色',
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 14,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.48),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildQixiEventBanner(
-      BuildContext context,
-      bool useDesktopLayout,
-      ) {
-    final theme = Theme.of(context);
-    final bool isActive = _isQixiEventActive;
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
     final l10n = AppLocalizations.of(context)!;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const QixiEventPage(),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          height: useDesktopLayout ? 76 : 68,
-          padding: EdgeInsets.symmetric(
-            horizontal: useDesktopLayout ? 20 : 15,
+    final bool useDesktopLayout = kIsWeb && screenWidth >= 800;
+
+    final double pageHorizontalPadding = useDesktopLayout ? 32 : 16;
+    final double maxContentWidth = useDesktopLayout ? 1280 : double.infinity;
+
+    final List<Character> bannerList = _shuffledBannerCharacters;
+    final List<Character> filteredCharacters = _filteredCharacters;
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxContentWidth),
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            pageHorizontalPadding,
+            useDesktopLayout ? 20 : 10,
+            pageHorizontalPadding,
+            useDesktopLayout ? 40 : 28,
           ),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFFFFE4EE),
-                Color(0xFFEDE3FF),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE8B8D0).withValues(alpha: 0.65),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFB989AD).withValues(alpha: 0.12),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+          children: [
+            // 活動橫幅之後改由後端活動系統控制。
+            // 七夕活動已結束，因此本次邂逅改版不再固定顯示 Qixi banner。
+
+            if (bannerList.isNotEmpty) ...[
+              Text(
+                l10n.encounterJoinedToday,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: useDesktopLayout ? 22 : 18,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
+              const SizedBox(height: 12),
+              _buildRecommendationBanner(
+                context,
+                bannerList,
+                useDesktopLayout: useDesktopLayout,
+              ),
+              SizedBox(height: useDesktopLayout ? 18 : 14),
             ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: useDesktopLayout ? 44 : 38,
-                height: useDesktopLayout ? 44 : 38,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.78),
-                  shape: BoxShape.circle,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(2),
-                  child: Image.asset(
-                    'assets/images/love.png',
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.favorite_rounded,
-                        color: Color(0xFFE889AD),
-                        size: 22,
-                      );
-                    },
-                  ),
-                ),
+
+            // 16 個大分類：單排、左右滑、點擊後直接更新下方角色。
+            _buildCategoryStrip(
+              context,
+              useDesktopLayout,
+            ),
+            SizedBox(height: useDesktopLayout ? 26 : 20),
+
+            if (filteredCharacters.isEmpty)
+              _buildEmptyCategory(context)
+            else if (useDesktopLayout)
+              _buildDesktopCharacterGrid(
+                context,
+                filteredCharacters,
+              )
+            else
+              _buildMobileStaggeredGrid(
+                context,
+                filteredCharacters,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.qixiEventHeroTitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: const Color(0xFF6D3F62),
-                        fontSize: useDesktopLayout ? 16 : 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      isActive
-                          ? l10n.qixiBannerActiveUntil
-                          : l10n.qixiBannerStartsAt,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: const Color(0xFF765E72)
-                            .withValues(alpha: 0.88),
-                        fontSize: useDesktopLayout ? 13 : 11,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+
+            SizedBox(height: useDesktopLayout ? 40 : 28),
+          ],
         ),
       ),
     );
@@ -1587,30 +1382,6 @@ class _LatestTabState extends State<_LatestTab> {
     );
   }
 
-  Widget _buildDailyOpening(
-      BuildContext context,
-      bool useDesktopLayout,
-      ) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: EdgeInsets.only(
-        top: useDesktopLayout ? 8 : 2,
-      ),
-      child: Text(
-        _openingLine,
-        textAlign: TextAlign.left,
-        style: TextStyle(
-          color: theme.colorScheme.onSurface,
-          fontSize: useDesktopLayout ? 28 : 22,
-          height: 1.45,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.2,
-        ),
-      ),
-    );
-  }
-
   // =========================================================
   // 強檔推薦 Banner
   // =========================================================
@@ -1625,6 +1396,15 @@ class _LatestTabState extends State<_LatestTab> {
         itemCount: bannerList.length,
         autoplay: bannerList.length > 1,
         autoplayDelay: 4500,
+        pagination: SwiperPagination(
+          margin: const EdgeInsets.only(bottom: 8),
+          builder: DotSwiperPaginationBuilder(
+            activeColor: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.18),
+            size: 6,
+            activeSize: 7,
+          ),
+        ),
         viewportFraction: useDesktopLayout ? 0.82 : 1.0,
         scale: useDesktopLayout ? 0.92 : 1.0,
         itemBuilder: (context, index) {
@@ -2192,7 +1972,7 @@ class _AllLatestCharactersPageState
     return Scaffold(
       appBar: AppBar(
         title:
-         Text(l10n.encounterRecentlyArrivedPlain),
+        Text(l10n.encounterRecentlyArrivedPlain),
       ),
       body: _visibleCharacters.isEmpty
           ? Center(

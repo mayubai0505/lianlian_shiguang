@@ -13,6 +13,7 @@ import 'dart:typed_data';
 
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:google_fonts/google_fonts.dart';
 // 信件內容
 class NotificationListPage extends StatefulWidget {
   const NotificationListPage({super.key});
@@ -264,6 +265,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
     required String body,
     required String caseNumber,
     required String timeText,
+    String originalQuestion = '',
     String fromName = '',
     bool isCollectible = false,
     bool isCollected = false,
@@ -287,6 +289,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
           body: body,
           caseNumber: caseNumber,
           timeText: timeText,
+          originalQuestion: originalQuestion,
           fromName: fromName,
           isCollectible: isCollectible,
           initiallyCollected: isCollected,
@@ -347,6 +350,77 @@ class _NotificationListPageState extends State<NotificationListPage> {
     return DateTime.tryParse(value?.toString() ?? '')?.toLocal();
   }
 
+
+  Widget _buildMailboxBadge(
+      String assetPath, {
+        double size = 44,
+      }) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Image.asset(
+        assetPath,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Theme.of(context)
+                .colorScheme
+                .primary
+                .withValues(alpha: 0.08),
+          ),
+          child: Icon(
+            Icons.notifications_none_rounded,
+            size: 21,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMailboxFilterTab({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected
+                ? primary.withValues(alpha: 0.10)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Text(
+            label,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 13,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              color: selected
+                  ? primary
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.58),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -366,13 +440,22 @@ class _NotificationListPageState extends State<NotificationListPage> {
           _isSelectionMode
               ? l10n.mailSelectedCount(_selectedMailIds.length)
               : l10n.mailbox_title,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
         ),
+        centerTitle: true,
         elevation: 0,
         actions: [
           if (!_isSelectionMode)
             PopupMenuButton<String>(
               tooltip: l10n.moreOptions,
               icon: const Icon(Icons.more_vert_rounded),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              color: theme.colorScheme.surface,
               onSelected: (value) {
                 if (value == 'delete') {
                   _enterSelectionMode();
@@ -383,9 +466,21 @@ class _NotificationListPageState extends State<NotificationListPage> {
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete_outline_rounded),
-                      SizedBox(width: 10),
-                      Text(l10n.mailDeleteTitle),
+                      Image.asset(
+                        'assets/images/chat/chat_msg_delete_mask.png',
+                        width: 22,
+                        height: 22,
+                        color: Colors.redAccent,
+                        colorBlendMode: BlendMode.srcIn,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        l10n.mailDeleteTitle,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 13,
+                          color: Colors.redAccent,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -399,14 +494,33 @@ class _NotificationListPageState extends State<NotificationListPage> {
           ? SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: FilledButton.icon(
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              padding: const EdgeInsets.symmetric(vertical: 14),
+          child: OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              backgroundColor: Colors.redAccent.withValues(alpha: 0.05),
+              foregroundColor: Colors.redAccent,
+              side: BorderSide(
+                color: Colors.redAccent.withValues(alpha: 0.45),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 13),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
             ),
             onPressed: () => _deleteSelectedMails(userId),
-            icon: const Icon(Icons.delete_outline_rounded),
-            label: Text(l10n.mailDeleteSelected(_selectedMailIds.length)),
+            icon: Image.asset(
+              'assets/images/chat/chat_msg_delete_mask.png',
+              width: 21,
+              height: 21,
+              color: Colors.redAccent,
+              colorBlendMode: BlendMode.srcIn,
+            ),
+            label: Text(
+              l10n.mailDeleteSelected(_selectedMailIds.length),
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ),
       )
@@ -418,34 +532,39 @@ class _NotificationListPageState extends State<NotificationListPage> {
           if (!_isSelectionMode)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-              child:
-              SegmentedButton<bool>(
-                showSelectedIcon: false,
-                segments:  [
-                  ButtonSegment<bool>(
-                    value: false,
-                    icon: Icon(
-                      Icons.mail_outline_rounded,
-                      size: 18,
-                    ),
-                    label: Text(l10n.mailFilterAll),
+              child: Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surface,
+                  borderRadius: BorderRadius.circular(21),
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.16),
                   ),
-                  ButtonSegment<bool>(
-                    value: true,
-                    icon: Icon(
-                      Icons.favorite_border_rounded,
-                      size: 18,
+                ),
+                child: Row(
+                  children: [
+                    _buildMailboxFilterTab(
+                      label: l10n.mailFilterAll,
+                      selected: !_showCollectedOnly,
+                      onTap: () {
+                        setState(() {
+                          _showCollectedOnly = false;
+                          _selectedMailIds.clear();
+                        });
+                      },
                     ),
-                    label: Text(l10n.mailFilterCollected),
-                  ),
-                ],
-                selected: {_showCollectedOnly},
-                onSelectionChanged: (selection) {
-                  setState(() {
-                    _showCollectedOnly = selection.first;
-                    _selectedMailIds.clear();
-                  });
-                },
+                    _buildMailboxFilterTab(
+                      label: l10n.mailFilterCollected,
+                      selected: _showCollectedOnly,
+                      onTap: () {
+                        setState(() {
+                          _showCollectedOnly = true;
+                          _selectedMailIds.clear();
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           Expanded(
@@ -502,7 +621,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                           color: theme.colorScheme.primary.withValues(alpha: 0.45),
                         ),
                         const SizedBox(height: 12),
-                         Text(
+                        Text(
                           l10n.mailCollectedEmptyTitle,
                           style: TextStyle(
                             fontSize: 15,
@@ -523,7 +642,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.fromLTRB(12, 2, 12, 14),
                   itemCount: mailbox.length,
                   itemBuilder: (context, index) {
                     final doc = mailbox[index];
@@ -544,6 +663,19 @@ class _NotificationListPageState extends State<NotificationListPage> {
 
                     final String caseNumber =
                         data['caseNumber']?.toString().trim() ?? '';
+
+                    final String originalQuestion = [
+                      data['originalQuestion'],
+                      data['question'],
+                      data['originalMessage'],
+                      data['inquiry'],
+                      data['customerQuestion'],
+                    ]
+                        .map((value) => value?.toString().trim() ?? '')
+                        .firstWhere(
+                          (value) => value.isNotEmpty,
+                      orElse: () => '',
+                    );
 
                     final String storedFromName =
                         data['fromName']?.toString().trim() ?? '';
@@ -574,22 +706,15 @@ class _NotificationListPageState extends State<NotificationListPage> {
 
                     if (isQixiLetter) {
                       leadingIcon = Container(
-                        width: 50,
-                        height: 50,
+                        width: 48,
+                        height: 48,
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.88),
+                          color: Colors.white.withValues(alpha: 0.90),
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: const Color(0xFFE9B4CA),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFE38CAF)
-                                  .withValues(alpha: 0.18),
-                              blurRadius: 8,
-                            ),
-                          ],
                         ),
                         child: Image.asset(
                           'assets/images/love.png',
@@ -603,68 +728,30 @@ class _NotificationListPageState extends State<NotificationListPage> {
                         ),
                       );
                     } else if (type == 'like') {
-                      leadingIcon = const CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.favorite,
-                          color: Colors.pinkAccent,
-                        ),
+                      leadingIcon = _buildMailboxBadge(
+                        'assets/images/chat/chat_mail_like_badge.png',
+                      );
+                    } else if (type == 'follow') {
+                      leadingIcon = _buildMailboxBadge(
+                        'assets/images/chat/chat_mail_follow_badge.png',
                       );
                     } else if (type == 'comment') {
-                      leadingIcon = const CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.chat_bubble_rounded,
-                          color: Colors.blueAccent,
-                        ),
+                      leadingIcon = _buildMailboxBadge(
+                        'assets/images/chat/chat_mail_comment_badge.png',
                       );
-                    } else if (type == 'affection') {
-                      leadingIcon = const CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.auto_awesome,
-                          color: Colors.orangeAccent,
-                        ),
+                    } else if (type == 'cs_reply' || type == 'cs_received') {
+                      leadingIcon = _buildMailboxBadge(
+                        'assets/images/chat/chat_mail_support_badge.png',
                       );
-                    } else if (type == 'cs_reply') {
-                      leadingIcon = const CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.mark_email_read_rounded,
-                          color: Colors.pinkAccent,
-                        ),
-                      );
-                    } else if (type == 'cs_received') {
-                      leadingIcon = const CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.inbox_rounded,
-                          color: Colors.pinkAccent,
-                        ),
-                      );
-                    } else if (type == 'reward_campaign') {
-                      leadingIcon = CircleAvatar(
-                        backgroundColor: Colors.pink.shade50,
-                        child: const Icon(
-                          Icons.redeem_rounded,
-                          color: Colors.pinkAccent,
-                        ),
-                      );
-                    } else if (type == 'admin_mail') {
-                      leadingIcon = CircleAvatar(
-                        backgroundColor: Colors.blue.shade50,
-                        child: const Icon(
-                          Icons.mark_email_read_outlined,
-                          color: Colors.blueAccent,
-                        ),
+                    } else if (type == 'admin_mail' ||
+                        type == 'reward_campaign' ||
+                        type == 'affection') {
+                      leadingIcon = _buildMailboxBadge(
+                        'assets/images/chat/chat_mail_announcement_badge.png',
                       );
                     } else {
-                      leadingIcon = const CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.notifications,
-                          color: Colors.grey,
-                        ),
+                      leadingIcon = _buildMailboxBadge(
+                        'assets/images/chat/chat_mail_notification_badge.png',
                       );
                     }
 
@@ -672,6 +759,10 @@ class _NotificationListPageState extends State<NotificationListPage> {
                       if (_isSelectionMode) {
                         return Checkbox(
                           value: isSelected,
+                          activeColor: theme.colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
                           onChanged: (_) => _toggleMailSelection(doc.id),
                         );
                       }
@@ -686,9 +777,13 @@ class _NotificationListPageState extends State<NotificationListPage> {
                               child: Container(
                                 width: 10,
                                 height: 10,
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary,
                                   shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: theme.colorScheme.surface,
+                                    width: 1.5,
+                                  ),
                                 ),
                               ),
                             ),
@@ -809,6 +904,7 @@ class _NotificationListPageState extends State<NotificationListPage> {
                               body: body,
                               caseNumber: caseNumber,
                               timeText: timeText,
+                              originalQuestion: originalQuestion,
                               fromName: fromName,
                               isCollectible: data['isCollectible'] == true,
                               isCollected: data['isCollected'] == true,
@@ -824,90 +920,27 @@ class _NotificationListPageState extends State<NotificationListPage> {
                       );
                     }
 
-                    // 一般信件／通知
+                    // 一般信件／通知：緊湊文青卡片
                     return Container(
-                      color: isRead
-                          ? Colors.transparent
-                          : theme.colorScheme.primaryContainer
-                          .withValues(alpha: 0.15),
-                      child: ListTile(
-                        leading: buildSelectionLeading(),
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: isQixiLetter
-                                      ? const Color(0xFF68425F)
-                                      : null,
-                                  fontWeight: isQixiLetter || !isRead
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            ),
-                            if (isQixiLetter) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFFFFD8E7),
-                                      Color(0xFFE7DBFF),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: const Color(0xFFE5ABC4),
-                                  ),
-                                ),
-                                child: Text(
-                                  l10n.mailQixiLimitedBadge,
-                                  style: TextStyle(
-                                    color: Color(0xFF984A6B),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: isRead
+                            ? theme.colorScheme.surface
+                            : Color.alphaBlend(
+                          theme.colorScheme.primary
+                              .withValues(alpha: 0.055),
+                          theme.colorScheme.surface,
                         ),
-                        subtitle: Text(
-                          body,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                        borderRadius: BorderRadius.circular(17),
+                        border: Border.all(
+                          color: isQixiLetter
+                              ? const Color(0xFFE8C6D5)
+                              : theme.colorScheme.primary
+                              .withValues(alpha: isRead ? 0.10 : 0.18),
                         ),
-                        trailing: _isSelectionMode
-                            ? null
-                            : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              timeText,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            if (isCollected) ...[
-                              const SizedBox(height: 4),
-                              const Icon(
-                                Icons.bookmark_rounded,
-                                size: 18,
-                                color: Color(0xFFD96391),
-                              ),
-                            ],
-                          ],
-                        ),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(17),
                         onTap: () async {
                           if (_isSelectionMode) {
                             _toggleMailSelection(doc.id);
@@ -952,17 +985,121 @@ class _NotificationListPageState extends State<NotificationListPage> {
                             body: body,
                             caseNumber: caseNumber,
                             timeText: timeText,
+                            originalQuestion: originalQuestion,
                             fromName: fromName,
                             isCollectible: data['isCollectible'] == true,
                             isCollected: data['isCollected'] == true,
                             mailTheme: data['theme']?.toString().trim() ?? '',
                             characterAvatarPath:
-                            data['characterAvatarPath']?.toString().trim() ?? '',
+                            data['characterAvatarPath']?.toString().trim() ??
+                                '',
                             interactionDates: List<String>.from(
                               data['interactionDates'] ?? const <String>[],
                             ),
                           );
                         },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 10, 11, 10),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildSelectionLeading(),
+                              const SizedBox(width: 11),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            title,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.notoSerifTc(
+                                              fontSize: 14,
+                                              fontWeight: isQixiLetter || !isRead
+                                                  ? FontWeight.w700
+                                                  : FontWeight.w600,
+                                              color: isQixiLetter
+                                                  ? const Color(0xFF68425F)
+                                                  : theme
+                                                  .colorScheme.onSurface,
+                                            ),
+                                          ),
+                                        ),
+                                        if (!_isSelectionMode) ...[
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            timeText,
+                                            style: GoogleFonts.notoSerifTc(
+                                              fontSize: 10.5,
+                                              color: theme.colorScheme.onSurface
+                                                  .withValues(alpha: 0.40),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                    if (isQixiLetter) ...[
+                                      const SizedBox(height: 4),
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 7,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFFFEFF5),
+                                            borderRadius:
+                                            BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: const Color(0xFFE5ABC4),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            l10n.mailQixiLimitedBadge,
+                                            style: GoogleFonts.notoSerifTc(
+                                              color: const Color(0xFF984A6B),
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      body,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.notoSerifTc(
+                                        fontSize: 12.5,
+                                        height: 1.45,
+                                        color: theme.colorScheme.onSurface
+                                            .withValues(alpha: 0.62),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (!_isSelectionMode && isCollected) ...[
+                                const SizedBox(width: 6),
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 20),
+                                  child: Icon(
+                                    Icons.bookmark_rounded,
+                                    size: 17,
+                                    color: Color(0xFFD96391),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -1143,8 +1280,10 @@ class _RewardCampaignDetailPageState
               const SizedBox(height: 22),
               Text(
                 widget.title,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               if (widget.timeText.isNotEmpty) ...[
@@ -1269,6 +1408,7 @@ class _MailDetailPage extends StatefulWidget {
   final String body;
   final String caseNumber;
   final String timeText;
+  final String originalQuestion;
   final String fromName;
   final bool isCollectible;
   final bool initiallyCollected;
@@ -1283,6 +1423,7 @@ class _MailDetailPage extends StatefulWidget {
     required this.body,
     required this.caseNumber,
     required this.timeText,
+    required this.originalQuestion,
     required this.fromName,
     required this.isCollectible,
     required this.initiallyCollected,
@@ -1713,7 +1854,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
       });
 
       _showMailCenterToast(
-       l10n.mailCollectedUpdateFailed,
+        l10n.mailCollectedUpdateFailed,
         isError: true,
       );
     } finally {
@@ -1832,7 +1973,13 @@ class _MailDetailPageState extends State<_MailDetailPage> {
       ) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.mailDetailTitle),
+        title: Text(
+          l10n.mailDetailTitle,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 17,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         elevation: 0,
         actions: [
           IconButton(
@@ -1901,11 +2048,48 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                 const SizedBox(height: 24),
                 _buildCaseNumberCard(theme, l10n),
               ],
-              const SizedBox(height: 28),
+              if (widget.originalQuestion.trim().isNotEmpty) ...[
+                const SizedBox(height: 18),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 15),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.055),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.14),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '你原本詢問',
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 7),
+                      SelectableText(
+                        widget.originalQuestion,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 14,
+                          height: 1.6,
+                          color: theme.colorScheme.onSurface
+                              .withValues(alpha: 0.72),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              const SizedBox(height: 24),
               SelectableText(
                 widget.body,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 15,
                   height: 1.75,
                 ),
               ),

@@ -2314,7 +2314,8 @@ class _ChatPageState extends State<ChatPage> {
             .toList();
 
         for (final message in recentTests) {
-          if (message.sender == 'user' || message.sender == 'ai') {
+          if ((message.sender == 'user' || message.sender == 'ai') &&
+              message.type != 'callEnded') {
             final text = message.text.trim();
 
             if (text.isEmpty) {
@@ -3059,6 +3060,40 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  Future<void> _addCallEndedMessage({
+    required String characterName,
+    required String durationText,
+  }) async {
+    if (_messagesCollection == null) return;
+
+    final l10n = AppLocalizations.of(context)!;
+
+    final displayText = l10n.chat_call_ended(
+      characterName,
+      durationText,
+    );
+
+    try {
+      await _messagesCollection!.add({
+        'sender': 'ai',
+        'text': displayText,
+        'type': 'callEnded',
+        'path': '',
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // 聊天首頁預覽照樣顯示「通話結束……」
+      if (_sessionDocRef != null) {
+        await _sessionDocRef!.update({
+          'lastMessage': displayText,
+          'lastActivity': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      debugPrint('寫入通話結束訊息失敗: $e');
+    }
+  }
+
 // --- 處理通話按鈕點擊 ---
   Future<void> _handleCallPress(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
@@ -3226,59 +3261,137 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   // --- 📄 第一頁：通話說明與規則 ---
-  Widget _buildDialogPage1(ThemeData theme, VoidCallback onNextPage) {
+  Widget _buildDialogPage1(
+      ThemeData theme,
+      VoidCallback onNextPage,
+      ) {
     final l10n = AppLocalizations.of(context)!;
+    final primary = theme.colorScheme.primary;
+
+    Widget buildRule(String text) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              margin: const EdgeInsets.only(top: 8),
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.55),
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                text,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  height: 1.65,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
       key: const ValueKey(0),
       children: [
         Row(
           children: [
             CircleAvatar(
-              radius: 24,
-              backgroundImage: NetworkImage(_currentCharacter.avatarPath ?? ''),
-              backgroundColor: Colors.grey[300],
+              radius: 25,
+              backgroundColor: primary.withValues(alpha: 0.08),
+              backgroundImage:
+              (_currentCharacter.avatarPath ?? '').trim().isNotEmpty
+                  ? NetworkImage(_currentCharacter.avatarPath!)
+                  : null,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: Text(
                 l10n.chat_call_confirm_title(_currentCharacter.name),
-                style:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 19,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
             ),
           ],
         ),
-        SizedBox(height: 20),
-        _buildBulletText(l10n.chat_call_rule_1, Icons.local_florist,
-            theme.colorScheme.primary),
-        _buildBulletText(l10n.chat_call_rule_2, Icons.timer_outlined,
-            theme.colorScheme.secondary), // 可以用次要顏色
-        _buildBulletText(l10n.chat_call_rule_3, Icons.headphones_outlined,
-            theme.colorScheme.tertiary), // 可以用第三顏色
-        const SizedBox(height: 24),
+
+        const SizedBox(height: 26),
+
+        buildRule(l10n.chat_call_rule_1),
+        buildRule(l10n.chat_call_rule_2),
+        buildRule(l10n.chat_call_rule_3),
+
+        const SizedBox(height: 12),
+
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.chat_call_btn_cancel,
-                  style: TextStyle(
-                      color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.5))),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 12,
+                ),
+              ),
+              child: Text(
+                l10n.chat_call_btn_cancel,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.48),
+                ),
+              ),
             ),
             const SizedBox(width: 8),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  colors: [
+                    primary.withValues(alpha: 0.72),
+                    primary,
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: primary.withValues(alpha: 0.16),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              onPressed: onNextPage, // 按下後換頁
-              child: Text(l10n.ok_button,
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              child: TextButton(
+                onPressed: onNextPage,
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 13,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                child: Text(
+                  l10n.ok_button,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -3289,13 +3402,16 @@ class _ChatPageState extends State<ChatPage> {
   Widget _buildDialogPage2(
       ThemeData theme,
       String currentLang,
-      bool shouldSave, // ✨ 新增
+      bool shouldSave,
       List<String> langs,
       Function(String) onLangChanged,
-      Function(bool) onSaveChanged, // ✨ 新增
+      Function(bool) onSaveChanged,
       VoidCallback onBack,
-      VoidCallback onCall) {
+      VoidCallback onCall,
+      ) {
     final l10n = AppLocalizations.of(context)!;
+    final primary = theme.colorScheme.primary;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3304,69 +3420,173 @@ class _ChatPageState extends State<ChatPage> {
         Row(
           children: [
             InkWell(
-                onTap: onBack,
-                child: const Icon(Icons.arrow_back_ios_new_rounded, size: 20)),
-            const SizedBox(width: 12),
+              borderRadius: BorderRadius.circular(99),
+              onTap: onBack,
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
             Expanded(
-                child: Text(l10n.chat_call_pref_title,
-                    style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+              child: Text(
+                l10n.chat_call_pref_title,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 20),
-        // --- 語言選擇 ---
-        Text(l10n.chat_call_lang_select,
-            style: TextStyle(fontSize: 14, color: Colors.grey)),
-        const SizedBox(height: 8),
-        _buildDropdown(theme, currentLang, langs, onLangChanged),
-        const SizedBox(height: 20),
-        // --- 🌟 通話保存開關 ---
-        Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: SwitchListTile(
-            title: Text(l10n.chat_call_save_memory,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-            subtitle: Text(l10n.chat_call_save_memory_desc,
-                style: TextStyle(fontSize: 12)),
-            secondary: Icon(Icons.auto_awesome_rounded,
-                color: theme.colorScheme.primary),
-            value: shouldSave,
-            onChanged: onSaveChanged,
-            activeColor: theme.colorScheme.primary,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+
+        const SizedBox(height: 24),
+
+        Text(
+          l10n.chat_call_lang_select,
+          style: GoogleFonts.notoSerifTc(
+            fontSize: 13,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
           ),
         ),
-        const SizedBox(height: 24),
-        // --- 按鈕區 ---
-        Wrap(
-          alignment: WrapAlignment.end,
-          spacing: 8,
-          runSpacing: 12,
+
+        const SizedBox(height: 9),
+
+        Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: primary.withValues(alpha: 0.22),
+              width: 1,
+            ),
+          ),
+          child: _buildDropdown(
+            theme,
+            currentLang,
+            langs,
+            onLangChanged,
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        Container(
+          padding: const EdgeInsets.fromLTRB(18, 16, 10, 16),
+          decoration: BoxDecoration(
+            color: primary.withValues(alpha: 0.055),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: primary.withValues(alpha: 0.10),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 7,
+                height: 7,
+                decoration: BoxDecoration(
+                  color: primary.withValues(alpha: 0.60),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.chat_call_save_memory,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      l10n.chat_call_save_memory_desc,
+                      style: GoogleFonts.notoSerifTc(
+                        fontSize: 12,
+                        height: 1.4,
+                        color: theme.colorScheme.onSurface
+                            .withValues(alpha: 0.55),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Switch(
+                value: shouldSave,
+                onChanged: onSaveChanged,
+                activeColor: primary,
+                activeTrackColor: primary.withValues(alpha: 0.28),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 28),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancelButton,
-                  style: TextStyle(
-                      color:
-                      theme.colorScheme.onSurface.withValues(alpha: 0.5))),
-            ),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+              child: Text(
+                l10n.cancelButton,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.48),
+                ),
               ),
-              icon: const Icon(Icons.call, size: 18),
-              label: Text(l10n.chat_call_btn_start,
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              onPressed: onCall,
+            ),
+
+            const SizedBox(width: 10),
+
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  colors: [
+                    primary.withValues(alpha: 0.72),
+                    primary,
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: primary.withValues(alpha: 0.16),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TextButton(
+                onPressed: onCall,
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 26,
+                    vertical: 13,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                child: Text(
+                  l10n.chat_call_btn_start,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -3375,52 +3595,70 @@ class _ChatPageState extends State<ChatPage> {
   }
 
 // 輔助小元件：把 Dropdown 抽出來讓程式碼更乾淨
-  Widget _buildDropdown(ThemeData theme, String currentLang, List<String> langs,
-      Function(String) onLangChanged) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
-        border:
-        Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: currentLang,
-          isExpanded: true,
-          items: langs
-              .map((String lang) =>
-              DropdownMenuItem(value: lang, child: Text(lang)))
-              .toList(),
-          onChanged: (val) => onLangChanged(val!),
-        ),
-      ),
-    );
-  }
+  Widget _buildDropdown(
+      ThemeData theme,
+      String currentLang,
+      List<String> langs,
+      Function(String) onLangChanged,
+      ) {
+    final primary = theme.colorScheme.primary;
 
-  // 🎨 輔助方法：畫出第一頁帶有 Icon 的條列式文字
-  Widget _buildBulletText(String text, IconData icon, Color iconColor) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: iconColor, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                  fontSize: 14,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.85),
-                  height: 1.4),
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<String>(
+        value: currentLang,
+        isExpanded: true,
+        icon: Icon(
+          Icons.keyboard_arrow_down_rounded,
+          color: primary.withValues(alpha: 0.70),
+        ),
+        borderRadius: BorderRadius.circular(18),
+        dropdownColor: theme.scaffoldBackgroundColor,
+        elevation: 3,
+
+        style: GoogleFonts.notoSerifTc(
+          fontSize: 15,
+          color: theme.colorScheme.onSurface,
+        ),
+
+        items: langs.map((String lang) {
+          final bool selected = lang == currentLang;
+
+          return DropdownMenuItem<String>(
+            value: lang,
+            child: Row(
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? primary
+                        : primary.withValues(alpha: 0.18),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  lang,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 15,
+                    fontWeight:
+                    selected ? FontWeight.w600 : FontWeight.w400,
+                    color: selected
+                        ? primary
+                        : theme.colorScheme.onSurface.withValues(alpha: 0.78),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          );
+        }).toList(),
+
+        onChanged: (value) {
+          if (value != null) {
+            onLangChanged(value);
+          }
+        },
       ),
     );
   }
@@ -3485,8 +3723,10 @@ class _ChatPageState extends State<ChatPage> {
                 final timeString = minutes > 0
                     ? l10n.chatPageMinutesSeconds(minutes, seconds)
                     : l10n.chatPageSeconds(seconds);
-                await _addSystemMessage(l10n.chat_call_ended(
-                    widget.character.name, timeString));
+                await _addCallEndedMessage(
+                  characterName: widget.character.name,
+                  durationText: timeString,
+                );
                 if (shouldSave) {
                   try {
                     final user = FirebaseAuth.instance.currentUser;
@@ -3903,7 +4143,8 @@ class _ChatPageState extends State<ChatPage> {
           if (i == recentTests.length - 1 &&
               sender == 'user' &&
               secretPrompt != null) text = secretPrompt;
-          if (sender == 'user' || sender == 'ai') {
+          if ((sender == 'user' || sender == 'ai') &&
+              msg.type != 'callEnded') {
             actualChatHistory.add(
                 {"role": sender == 'ai' ? "assistant" : "user", "text": text});
           }
@@ -6410,12 +6651,12 @@ class _ChatPageState extends State<ChatPage> {
                             onPressed: _stopGenerating,
                           )
                               : IconButton(
-                            icon: Icon(
-                              Icons.send_rounded,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary,
-                              size: 36,
+                            icon: Image.asset(
+                              'assets/images/chat/chat_send_plane_mask.png',
+                              width: 32,
+                              height: 32,
+                              color: Theme.of(context).colorScheme.primary,
+                              colorBlendMode: BlendMode.srcIn,
                             ),
                             onPressed: isSendingVoice
                                 ? null
@@ -7721,8 +7962,13 @@ class _ChatPageState extends State<ChatPage> {
                 ].map((loc) => ListTile(
                   title: Text(loc),
                   trailing:
-                  const Icon(Icons.send, size: 18, color: Colors.blue),
-                  contentPadding: EdgeInsets.zero,
+                  Image.asset(
+                    'assets/images/chat/chat_send_plane_mask.png',
+                    width: 18,
+                    height: 18,
+                    color: Theme.of(context).colorScheme.primary,
+                    colorBlendMode: BlendMode.srcIn,
+                  ),                  contentPadding: EdgeInsets.zero,
                   onTap: () {
                     Navigator.pop(context); // 關閉視窗
                     _sendMessage(text: l10n.chat_player_sent_location(loc));
@@ -9470,7 +9716,43 @@ class _ChatPageState extends State<ChatPage> {
 
           Widget messageContent;
 
-          if (type == 'text') {
+          if (type == 'callEnded') {
+            final primary = theme.colorScheme.primary;
+
+            messageContent = Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.sizeOf(context).width * 0.68,
+              ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: Color.alphaBlend(
+                  primary.withValues(alpha: 0.08),
+                  theme.colorScheme.surface,
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(6),
+                  topRight: Radius.circular(18),
+                  bottomLeft: Radius.circular(18),
+                  bottomRight: Radius.circular(18),
+                ),
+                border: Border.all(
+                  color: primary.withValues(alpha: 0.16),
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                message.text,
+                style: GoogleFonts.notoSerifTc(
+                  fontSize: 14,
+                  height: 1.55,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+                ),
+              ),
+            );
+          } else if (type == 'text') {
             // 玩家改成「淡主題色泡泡＋深色文字」，
             // AI 則保留白/淡 surface，對話文字使用主題色。
             final normalStyle = TextStyle(

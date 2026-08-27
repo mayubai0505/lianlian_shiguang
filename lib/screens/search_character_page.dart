@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import '../utils/character_navigator.dart';
@@ -136,6 +137,24 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
     await prefs.remove(_recentSearchesKey);
   }
 
+  Future<void> _removeRecentSearch(String query) async {
+    final updated = _recentSearches
+        .where((item) => item != query)
+        .toList();
+
+    if (mounted) {
+      setState(() {
+        _recentSearches = updated;
+      });
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      _recentSearchesKey,
+      updated,
+    );
+  }
+
   void _scheduleRecentSearchSave(String query) {
     _searchSaveDebounce?.cancel();
 
@@ -177,69 +196,94 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title:  Text(l10n.search_companion_title),
+          title: Text(
+            l10n.search_companion_title,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           foregroundColor: theme.colorScheme.onSurface,
         ),
-        body: Column(
+        body: Stack(
           children: [
-            // 🔍 搜尋框
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: TextField(
-                controller: _searchController,
-                style: TextStyle(color: theme.colorScheme.onSurface),
-                decoration: InputDecoration(
-                  hintText: '搜尋角色、創作者、職業或標籤',
-                  hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5)),
-                  prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
-                  suffixIcon: _searchQuery.isEmpty
-                      ? null
-                      : IconButton(
-                    tooltip: '清除',
-                    icon: const Icon(Icons.close_rounded),
-                    onPressed: () {
-                      _searchSaveDebounce?.cancel();
-                      _searchController.clear();
-                      setState(() => _searchQuery = '');
-                    },
-                  ),
-                  filled: true,
-                  fillColor: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.2)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.1)),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: isDarkMode ? 0.07 : 0.13,
+                  child: Image.asset(
+                    'assets/images/blocked_top_right_botanical.png',
+                    width: MediaQuery.sizeOf(context).width * 0.34,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                   ),
                 ),
-                textInputAction: TextInputAction.search,
-                onChanged: (value) {
-                  final keyword = value.trim();
-                  setState(() => _searchQuery = keyword);
-
-                  if (keyword.isEmpty) {
-                    _searchSaveDebounce?.cancel();
-                  } else {
-                    _scheduleRecentSearchSave(keyword);
-                  }
-                },
-                onSubmitted: (value) {
-                  _searchSaveDebounce?.cancel();
-                  _saveRecentSearch(value);
-                },
               ),
             ),
+            Column(
+              children: [
+                // 🔍 搜尋框
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: TextField(
+                    controller: _searchController,
+                    style: TextStyle(color: theme.colorScheme.onSurface),
+                    decoration: InputDecoration(
+                      hintText: '搜尋角色、創作者、職業或標籤',
+                      hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5)),
+                      prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
+                      suffixIcon: _searchQuery.isEmpty
+                          ? null
+                          : IconButton(
+                        tooltip: '清除',
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () {
+                          _searchSaveDebounce?.cancel();
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                      ),
+                      filled: true,
+                      fillColor: theme.cardColor.withValues(alpha:isDarkMode ? 0.6 : 0.4),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.2)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(color: theme.colorScheme.primary.withValues(alpha:0.1)),
+                      ),
+                    ),
+                    textInputAction: TextInputAction.search,
+                    onChanged: (value) {
+                      final keyword = value.trim();
+                      setState(() => _searchQuery = keyword);
 
-            if (_searchQuery.isEmpty && _recentSearches.isNotEmpty)
-              _buildRecentSearches(theme),
+                      if (keyword.isEmpty) {
+                        _searchSaveDebounce?.cancel();
+                      } else {
+                        _scheduleRecentSearchSave(keyword);
+                      }
+                    },
+                    onSubmitted: (value) {
+                      _searchSaveDebounce?.cancel();
+                      _saveRecentSearch(value);
+                    },
+                  ),
+                ),
 
-            // 📜 雙排格網結果
-            Expanded(
-              child: _buildGridResults(theme),
+                if (_searchQuery.isEmpty && _recentSearches.isNotEmpty)
+                  _buildRecentSearches(theme),
+
+                // 📜 雙排格網結果
+                Expanded(
+                  child: _buildGridResults(theme),
+                ),
+              ],
             ),
           ],
         ),
@@ -249,8 +293,11 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
 
   Widget _buildRecentSearches(ThemeData theme) {
+    final primary = theme.colorScheme.primary;
+    final onSurface = theme.colorScheme.onSurface;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 2, 16, 10),
+      padding: const EdgeInsets.fromLTRB(18, 0, 18, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -259,59 +306,98 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
               Expanded(
                 child: Text(
                   '最近搜尋',
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface,
+                  style: GoogleFonts.notoSerifTc(
+                    color: onSurface,
                     fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
                   ),
                 ),
               ),
               TextButton(
                 onPressed: _clearRecentSearches,
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(0, 24),
+                  padding: EdgeInsets.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: const VisualDensity(
+                    horizontal: -4,
+                    vertical: -4,
+                  ),
+                ),
                 child: Text(
                   '清除',
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
-                    fontSize: 12,
+                  style: GoogleFonts.notoSerifTc(
+                    color: onSurface.withValues(alpha: 0.44),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 1),
           SizedBox(
-            height: 42,
+            height: 29,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
               itemCount: _recentSearches.length,
-              separatorBuilder: (context, index) =>
-              const SizedBox(width: 8),
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 final query = _recentSearches[index];
 
-                return ActionChip(
-                  avatar: Icon(
-                    Icons.history_rounded,
-                    size: 16,
-                    color: theme.colorScheme.primary,
-                  ),
-                  label: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 150),
-                    child: Text(
-                      query,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                return ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 118),
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(8, 2, 5, 2),
+                    decoration: BoxDecoration(
+                      color: primary.withValues(alpha: 0.018),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: primary.withValues(alpha: 0.11),
+                        width: 0.7,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => _applyRecentSearch(query),
+                            child: Transform.translate(
+                              offset: const Offset(0, 0.5),
+                              child: Text(
+                                query,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.notoSerifTc(
+                                  color: onSurface.withValues(alpha: 0.70),
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 3),
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => _removeRecentSearch(query),
+                          child: Padding(
+                            padding: const EdgeInsets.all(1),
+                            child: Icon(
+                              Icons.close_rounded,
+                              size: 14,
+                              color: onSurface.withValues(alpha: 0.38),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  backgroundColor:
-                  theme.cardColor.withValues(alpha: 0.55),
-                  side: BorderSide(
-                    color: theme.colorScheme.primary
-                        .withValues(alpha: 0.15),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  onPressed: () => _applyRecentSearch(query),
                 );
               },
             ),
@@ -481,7 +567,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
         final String resultHeader =
         keyword.isEmpty
-            ? '❤️ 大家最近都在喜歡'
+            ? '大家最近都在喜歡'
             : '找到 ${docs.length} 位角色';
 
         return Column(
@@ -510,10 +596,10 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
               child: GridView.builder(
                 padding:
                 const EdgeInsets.fromLTRB(
-                  12,
-                  6,
-                  12,
-                  12,
+                  16,
+                  8,
+                  16,
+                  16,
                 ),
                 gridDelegate:
                 const SliverGridDelegateWithFixedCrossAxisCount(
@@ -593,7 +679,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(
-                alpha: 0.1,
+                alpha: 0.06,
               ),
               blurRadius: 10,
               offset: const Offset(0, 4),
@@ -700,21 +786,16 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                 top: 8,
                 right: 8,
                 child: Container(
-                  padding:
-                  const EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 8,
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(
-                      alpha: 0.5,
-                    ),
-                    borderRadius:
-                    BorderRadius.circular(12),
+                    color: Colors.black.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
-                    mainAxisSize:
-                    MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(
                         Icons.favorite,
@@ -724,12 +805,10 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                       const SizedBox(width: 4),
                       Text(
                         '$likesCount',
-                        style:
-                        const TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
-                          fontWeight:
-                          FontWeight.bold,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],

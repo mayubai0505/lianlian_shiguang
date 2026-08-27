@@ -243,7 +243,12 @@ class _ChatInputBarState extends State<ChatInputBar>
               tooltip: widget.isGenerating ? 'Stop' : 'Send',
               icon: widget.isGenerating
                   ? Icons.stop_circle_outlined
-                  : Icons.send_rounded,
+                  : null,
+              asset: widget.isGenerating
+                  ? null
+                  : 'assets/images/chat/chat_send_plane_mask.png',
+              assetSize: 30,
+              iconSize: 25,
               iconColor: widget.isGenerating ? Colors.redAccent : primary,
               onPressed: widget.isGenerating
                   ? widget.onStop
