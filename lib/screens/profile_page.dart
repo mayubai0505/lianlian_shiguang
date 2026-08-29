@@ -24,7 +24,6 @@ import 'settings_page.dart';
 import 'character_edit_page.dart';
 import 'store_page.dart';
 import '../page/announcement_page.dart';
-import '../page/admin_announcement_page.dart';
 import '../services/app_constants.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 import 'creator_studio_page.dart';
@@ -2004,8 +2003,6 @@ class _ProfilePageState extends State<ProfilePage>
     final l10n = AppLocalizations.of(context)!;
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final currentUser = FirebaseAuth.instance.currentUser;
-    final String adminUid = 'B71k2kyooubYsOtIO1nkiBwyBXt2';
-    final bool isAdmin = currentUser?.uid == adminUid;
     final theme = Theme.of(context);
 
     final profileTheme = theme.copyWith(
@@ -2176,26 +2173,6 @@ class _ProfilePageState extends State<ProfilePage>
                         },
                       ),
 
-                      // 👑 管理後台（只有管理員）
-                      if (isAdmin)
-                        IconButton(
-                          tooltip: '管理後台',
-                          icon: Icon(
-                            Icons.admin_panel_settings_rounded,
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white70
-                                : const Color(0xFF6750A4),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AdminAnnouncementPage(),
-                              ),
-                            );
-                          },
-                        ),
-
                       IconButton(
                         icon: Icon(
                           Icons.settings_outlined,
@@ -2330,7 +2307,6 @@ class _ProfilePageState extends State<ProfilePage>
 
   void _showProfileUtilityMenu({
     required User? currentUser,
-    required bool isAdmin,
   }) {
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
@@ -2363,20 +2339,6 @@ class _ProfilePageState extends State<ProfilePage>
                   );
                 },
               ),
-              if (isAdmin)
-                ListTile(
-                  leading: const Icon(Icons.admin_panel_settings_outlined),
-                  title: const Text('管理後台'),
-                  onTap: () {
-                    Navigator.pop(sheetContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AdminAnnouncementPage(),
-                      ),
-                    );
-                  },
-                ),
               const SizedBox(height: 8),
             ],
           ),

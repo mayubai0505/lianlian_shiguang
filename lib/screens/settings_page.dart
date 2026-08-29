@@ -12,6 +12,7 @@ import 'language_selection_page.dart'; // ✨ 引入語言選擇頁面
 import 'package:shared_preferences/shared_preferences.dart';
 import '../page/theme_selection_page.dart';
 import '../page/character_management_page.dart';
+import '../page/admin_announcement_page.dart';
 import '../page/app_texts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
@@ -389,6 +390,11 @@ class _SettingsPageState extends State<SettingsPage> {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
+
+    // 與原本個人主頁相同的管理員判斷；一般玩家不會建立管理區塊。
+    const String adminUid = 'B71k2kyooubYsOtIO1nkiBwyBXt2';
+    final bool isAdmin = currentUser?.uid == adminUid;
+
     final String providerId = currentUser?.providerData.first.providerId ??
         "unknown";
     final String authMethod = providerId == 'google.com'
@@ -551,6 +557,28 @@ class _SettingsPageState extends State<SettingsPage> {
                     theme: theme,
                     showDivider: false,
                   ),
+
+                  // 只有管理員帳號看得到。
+                  if (isAdmin) ...[
+                    _buildSectionTitle(context, '管理'),
+
+                    _buildSettingsTile(
+                      maskAsset:
+                      'assets/images/setting/settings_account_mask.png',
+                      title: '管理後台',
+                      subtitle: '拾光內部管理工具',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminAnnouncementPage(),
+                          ),
+                        );
+                      },
+                      theme: theme,
+                      showDivider: false,
+                    ),
+                  ],
 
                   // 🌟 這是合併後的樣子
                   _buildSectionTitle(context, l10n.settingsSectionAbout),
