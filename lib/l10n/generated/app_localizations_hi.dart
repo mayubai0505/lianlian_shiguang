@@ -6438,4 +6438,27 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => 'पात्र की जानकारी नहीं मिली';
+
+  @override
+  String get appUpdateTitle => 'नया संस्करण उपलब्ध है';
+
+  @override
+  String get appUpdateMessage =>
+      'LoveyDovey का नया संस्करण उपलब्ध है। नवीनतम सुविधाएँ और सुधार पाने के लिए अभी अपडेट करें।';
+
+  @override
+  String get appUpdateLater => 'बाद में';
+
+  @override
+  String get appUpdateGo => 'अभी अपडेट करें';
+
+  @override
+  String get appUpdateCurrentVersion => 'वर्तमान संस्करण';
+
+  @override
+  String get appUpdateLatestVersion => 'नवीनतम संस्करण';
+
+  @override
+  String get appUpdateStoreOpenFailed =>
+      'अभी स्टोर नहीं खोला जा सका। कृपया बाद में फिर प्रयास करें।';
 }

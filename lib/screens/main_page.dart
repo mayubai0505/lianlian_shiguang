@@ -13,6 +13,7 @@ import 'profile_page.dart';
 import 'recommendation_page.dart';
 import 'dart:async'; // ✨ 加上這一行，超時功能就能用了！
 import '../services/app_constants.dart';
+import '../services/app_update_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 //主介面
@@ -68,6 +69,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkDailyCheckIn();
       _checkAndTriggerBirthdayEvent();
+
+      // App 進入主介面後再檢查更新，避免與登入 / 首頁初始化搶畫面。
+      AppUpdateService.checkForUpdate(context);
     });
   }
 

@@ -6457,4 +6457,27 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => 'Data karakter tidak ditemukan';
+
+  @override
+  String get appUpdateTitle => 'Versi baru tersedia';
+
+  @override
+  String get appUpdateMessage =>
+      'Versi baru LoveyDovey telah tersedia. Perbarui sekarang untuk mendapatkan fitur dan perbaikan terbaru.';
+
+  @override
+  String get appUpdateLater => 'Nanti';
+
+  @override
+  String get appUpdateGo => 'Perbarui sekarang';
+
+  @override
+  String get appUpdateCurrentVersion => 'Versi saat ini';
+
+  @override
+  String get appUpdateLatestVersion => 'Versi terbaru';
+
+  @override
+  String get appUpdateStoreOpenFailed =>
+      'Toko tidak dapat dibuka saat ini. Silakan coba lagi nanti.';
 }

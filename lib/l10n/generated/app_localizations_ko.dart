@@ -6115,4 +6115,26 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => '캐릭터 정보를 찾을 수 없습니다';
+
+  @override
+  String get appUpdateTitle => '새 버전이 있습니다';
+
+  @override
+  String get appUpdateMessage =>
+      'LoveyDovey의 새 버전이 출시되었습니다. 최신 기능과 수정 사항을 이용하려면 업데이트해 주세요.';
+
+  @override
+  String get appUpdateLater => '나중에';
+
+  @override
+  String get appUpdateGo => '업데이트';
+
+  @override
+  String get appUpdateCurrentVersion => '현재 버전';
+
+  @override
+  String get appUpdateLatestVersion => '최신 버전';
+
+  @override
+  String get appUpdateStoreOpenFailed => '현재 스토어를 열 수 없습니다. 잠시 후 다시 시도해 주세요.';
 }

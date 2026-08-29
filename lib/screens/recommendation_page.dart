@@ -558,12 +558,6 @@ class RecommendationPageState extends State<RecommendationPage> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.asset(
-                        'assets/images/brand/lianlian_butterfly_logo.png',
-                        width: 28,
-                        height: 28,
-                      ),
-                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

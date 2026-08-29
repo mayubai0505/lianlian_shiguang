@@ -6004,6 +6004,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => '找不到角色資料';
+
+  @override
+  String get appUpdateTitle => '發現新版本';
+
+  @override
+  String get appUpdateMessage => '戀戀拾光有新的版本可以更新囉。更新後可以獲得最新功能與修正。';
+
+  @override
+  String get appUpdateLater => '稍後再說';
+
+  @override
+  String get appUpdateGo => '前往更新';
+
+  @override
+  String get appUpdateCurrentVersion => '目前版本';
+
+  @override
+  String get appUpdateLatestVersion => '最新版本';
+
+  @override
+  String get appUpdateStoreOpenFailed => '目前無法開啟商店頁面，請稍後再試。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -12006,6 +12027,27 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get momentCharacterNotFound => '找不到角色资料';
+
+  @override
+  String get appUpdateTitle => '发现新版本';
+
+  @override
+  String get appUpdateMessage => '恋恋拾光有新的版本可以更新啦。更新后可以获得最新功能与修复。';
+
+  @override
+  String get appUpdateLater => '稍后再说';
+
+  @override
+  String get appUpdateGo => '前往更新';
+
+  @override
+  String get appUpdateCurrentVersion => '当前版本';
+
+  @override
+  String get appUpdateLatestVersion => '最新版本';
+
+  @override
+  String get appUpdateStoreOpenFailed => '目前无法打开商店页面，请稍后再试。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -18008,4 +18050,25 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get momentCharacterNotFound => '找不到角色資料';
+
+  @override
+  String get appUpdateTitle => '發現新版本';
+
+  @override
+  String get appUpdateMessage => '戀戀拾光有新的版本可以更新囉。更新後可以獲得最新功能與修正。';
+
+  @override
+  String get appUpdateLater => '稍後再說';
+
+  @override
+  String get appUpdateGo => '前往更新';
+
+  @override
+  String get appUpdateCurrentVersion => '目前版本';
+
+  @override
+  String get appUpdateLatestVersion => '最新版本';
+
+  @override
+  String get appUpdateStoreOpenFailed => '目前無法開啟商店頁面，請稍後再試。';
 }

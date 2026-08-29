@@ -3225,5 +3225,12 @@
   "momentReportSubmitted": "Report submitted. We'll review it",
   "momentSelectShareCharacter": "Choose a character you've chatted with to share this post",
   "momentTagCharacterUnavailable": "This tag isn't linked to a character profile",
-  "momentCharacterNotFound": "Character data not found"
+  "momentCharacterNotFound": "Character data not found",
+  "appUpdateTitle": "New Version Available",
+  "appUpdateMessage": "A new version of LoveyDovey is available. Update now to get the latest features and fixes.",
+  "appUpdateLater": "Later",
+  "appUpdateGo": "Update Now",
+  "appUpdateCurrentVersion": "Current version",
+  "appUpdateLatestVersion": "Latest version",
+  "appUpdateStoreOpenFailed": "Unable to open the store right now. Please try again later."
 }

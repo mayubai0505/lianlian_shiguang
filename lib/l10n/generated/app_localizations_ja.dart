@@ -6093,4 +6093,26 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => 'キャラクター情報が見つかりません';
+
+  @override
+  String get appUpdateTitle => '新しいバージョンがあります';
+
+  @override
+  String get appUpdateMessage =>
+      'LoveyDoveyの新しいバージョンが利用できます。最新機能と修正をご利用いただくため、アップデートしてください。';
+
+  @override
+  String get appUpdateLater => 'あとで';
+
+  @override
+  String get appUpdateGo => 'アップデート';
+
+  @override
+  String get appUpdateCurrentVersion => '現在のバージョン';
+
+  @override
+  String get appUpdateLatestVersion => '最新バージョン';
+
+  @override
+  String get appUpdateStoreOpenFailed => 'ストアを開けませんでした。しばらくしてからもう一度お試しください。';
 }

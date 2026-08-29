@@ -3051,5 +3051,12 @@
     "momentReportSubmitted": "تم إرسال البلاغ، وسنقوم بمراجعته",
     "momentSelectShareCharacter": "اختر شخصية سبق أن تحدثت معها لمشاركة هذا المنشور",
     "momentTagCharacterUnavailable": "هذه الإشارة غير مرتبطة بملف شخصية",
-    "momentCharacterNotFound": "تعذر العثور على بيانات الشخصية"
+    "momentCharacterNotFound": "تعذر العثور على بيانات الشخصية",
+    "appUpdateTitle": "يتوفر إصدار جديد",
+    "appUpdateMessage": "يتوفر إصدار جديد من LoveyDovey. حدّث التطبيق للحصول على أحدث الميزات والإصلاحات.",
+    "appUpdateLater": "لاحقًا",
+    "appUpdateGo": "التحديث الآن",
+    "appUpdateCurrentVersion": "الإصدار الحالي",
+    "appUpdateLatestVersion": "أحدث إصدار",
+    "appUpdateStoreOpenFailed": "تعذّر فتح صفحة المتجر الآن. يُرجى المحاولة مرة أخرى لاحقًا."
 }

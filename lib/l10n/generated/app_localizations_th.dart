@@ -6381,4 +6381,27 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => 'ไม่พบข้อมูลตัวละคร';
+
+  @override
+  String get appUpdateTitle => 'มีเวอร์ชันใหม่แล้ว';
+
+  @override
+  String get appUpdateMessage =>
+      'LoveyDovey มีเวอร์ชันใหม่แล้ว อัปเดตตอนนี้เพื่อใช้งานฟีเจอร์ล่าสุดและการแก้ไขต่าง ๆ';
+
+  @override
+  String get appUpdateLater => 'ไว้ภายหลัง';
+
+  @override
+  String get appUpdateGo => 'อัปเดตตอนนี้';
+
+  @override
+  String get appUpdateCurrentVersion => 'เวอร์ชันปัจจุบัน';
+
+  @override
+  String get appUpdateLatestVersion => 'เวอร์ชันล่าสุด';
+
+  @override
+  String get appUpdateStoreOpenFailed =>
+      'ไม่สามารถเปิดหน้าร้านค้าได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง';
 }

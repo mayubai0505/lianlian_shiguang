@@ -3023,5 +3023,12 @@
   "momentReportSubmitted": "举报已提交，我们会进行审核",
   "momentSelectShareCharacter": "选择一位聊过天的角色分享这则动态",
   "momentTagCharacterUnavailable": "这个标记没有链接到角色档案",
-  "momentCharacterNotFound": "找不到角色资料"
+  "momentCharacterNotFound": "找不到角色资料",
+  "appUpdateTitle": "发现新版本",
+  "appUpdateMessage": "恋恋拾光有新的版本可以更新啦。更新后可以获得最新功能与修复。",
+  "appUpdateLater": "稍后再说",
+  "appUpdateGo": "前往更新",
+  "appUpdateCurrentVersion": "当前版本",
+  "appUpdateLatestVersion": "最新版本",
+  "appUpdateStoreOpenFailed": "目前无法打开商店页面，请稍后再试。"
 }

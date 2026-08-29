@@ -3143,5 +3143,12 @@
   "momentReportSubmitted": "檢舉已送出，我們會進行審核",
   "momentSelectShareCharacter": "選擇一位聊過天的角色分享這則動態",
   "momentTagCharacterUnavailable": "這個標記沒有連結到角色檔案",
-  "momentCharacterNotFound": "找不到角色資料"
+  "momentCharacterNotFound": "找不到角色資料",
+  "appUpdateTitle": "發現新版本",
+  "appUpdateMessage": "戀戀拾光有新的版本可以更新囉。更新後可以獲得最新功能與修正。",
+  "appUpdateLater": "稍後再說",
+  "appUpdateGo": "前往更新",
+  "appUpdateCurrentVersion": "目前版本",
+  "appUpdateLatestVersion": "最新版本",
+  "appUpdateStoreOpenFailed": "目前無法開啟商店頁面，請稍後再試。"
 }

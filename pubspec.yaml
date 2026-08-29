@@ -56,6 +56,7 @@ dependencies:
   webview_flutter: ^4.14.1
   pdf: ^3.12.0
   printing: ^5.14.3
+  package_info_plus: ^10.2.1
 
 
 
@@ -85,7 +86,6 @@ flutter:
     - assets/images/heartbeat_diary/
     - assets/images/store/
     - assets/images/creator_public/
-    - assets/images/echo/
     - assets/images/studio/
     - assets/images/character_create/
     - assets/images/affection/
@@ -124,10 +124,6 @@ flutter:
     - assets/images/qixi_progress_off.png
     - assets/images/qixi_progress_on.png
 
-  fonts:
-    - family: NotoSansTC
-      fonts:
-      - asset: assets/fonts/NotoSansTC-Regular.ttf
 
 flutter_launcher_icons:
   android: "launcher_icon"

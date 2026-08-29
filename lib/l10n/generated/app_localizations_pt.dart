@@ -6496,4 +6496,27 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get momentCharacterNotFound =>
       'Não foi possível encontrar os dados do personagem';
+
+  @override
+  String get appUpdateTitle => 'Nova versão disponível';
+
+  @override
+  String get appUpdateMessage =>
+      'Uma nova versão do LoveyDovey está disponível. Atualize agora para obter os recursos e correções mais recentes.';
+
+  @override
+  String get appUpdateLater => 'Mais tarde';
+
+  @override
+  String get appUpdateGo => 'Atualizar agora';
+
+  @override
+  String get appUpdateCurrentVersion => 'Versão atual';
+
+  @override
+  String get appUpdateLatestVersion => 'Versão mais recente';
+
+  @override
+  String get appUpdateStoreOpenFailed =>
+      'Não foi possível abrir a loja agora. Tente novamente mais tarde.';
 }

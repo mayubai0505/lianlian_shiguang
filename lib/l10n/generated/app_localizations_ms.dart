@@ -6458,4 +6458,27 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => 'Data watak tidak ditemui';
+
+  @override
+  String get appUpdateTitle => 'Versi baharu tersedia';
+
+  @override
+  String get appUpdateMessage =>
+      'Versi baharu LoveyDovey kini tersedia. Kemas kini sekarang untuk mendapatkan ciri dan pembaikan terkini.';
+
+  @override
+  String get appUpdateLater => 'Nanti';
+
+  @override
+  String get appUpdateGo => 'Kemas kini sekarang';
+
+  @override
+  String get appUpdateCurrentVersion => 'Versi semasa';
+
+  @override
+  String get appUpdateLatestVersion => 'Versi terkini';
+
+  @override
+  String get appUpdateStoreOpenFailed =>
+      'Gedung tidak dapat dibuka buat masa ini. Sila cuba lagi kemudian.';
 }

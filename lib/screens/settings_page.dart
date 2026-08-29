@@ -9,14 +9,13 @@ import '../services/toast_utils.dart';
 import 'feedback_page.dart';
 import 'help_page.dart';
 import 'language_selection_page.dart'; // ✨ 引入語言選擇頁面
+import 'change_password_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../page/theme_selection_page.dart';
 import '../page/character_management_page.dart';
 import '../page/admin_announcement_page.dart';
 import '../page/app_texts.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-
-
 //設定
 
 class SettingsPage extends StatefulWidget { // ✨ 改成 StatefulWidget
@@ -399,7 +398,13 @@ class _SettingsPageState extends State<SettingsPage> {
         "unknown";
     final String authMethod = providerId == 'google.com'
         ? l10n.authMethodGoogle
+        : providerId == 'password'
+        ? 'Email'
         : l10n.authMethodUnknown;
+
+    final bool canChangePassword =
+        currentUser?.providerData.any((provider) => provider.providerId == 'password') ==
+            true;
 
     return Container(
       decoration: themeNotifier.currentBackground, // ✅ 漸層背景鋪滿全螢幕
@@ -545,6 +550,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                     theme: theme,
                   ),
+
+                  if (canChangePassword)
+                    _buildSettingsTile(
+                      maskAsset:
+                      'assets/images/setting/settings_account_mask.png',
+                      title: '更改密碼',
+                      subtitle: '驗證目前密碼後設定新的登入密碼',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ChangePasswordPage(),
+                          ),
+                        );
+                      },
+                      theme: theme,
+                    ),
 
                   _buildSettingsTile(
                     maskAsset:

@@ -6455,4 +6455,27 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => 'Không tìm thấy dữ liệu nhân vật';
+
+  @override
+  String get appUpdateTitle => 'Đã có phiên bản mới';
+
+  @override
+  String get appUpdateMessage =>
+      'Đã có phiên bản mới của LoveyDovey. Hãy cập nhật ngay để nhận các tính năng và bản sửa lỗi mới nhất.';
+
+  @override
+  String get appUpdateLater => 'Để sau';
+
+  @override
+  String get appUpdateGo => 'Cập nhật ngay';
+
+  @override
+  String get appUpdateCurrentVersion => 'Phiên bản hiện tại';
+
+  @override
+  String get appUpdateLatestVersion => 'Phiên bản mới nhất';
+
+  @override
+  String get appUpdateStoreOpenFailed =>
+      'Hiện không thể mở cửa hàng. Vui lòng thử lại sau.';
 }

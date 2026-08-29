@@ -3018,5 +3018,12 @@
     "momentReportSubmitted": "Laporan telah dihantar. Kami akan menyemaknya",
     "momentSelectShareCharacter": "Pilih watak yang pernah anda berbual dengannya untuk berkongsi siaran ini",
     "momentTagCharacterUnavailable": "Tag ini tidak dipautkan kepada profil watak",
-    "momentCharacterNotFound": "Data watak tidak ditemui"
+    "momentCharacterNotFound": "Data watak tidak ditemui",
+    "appUpdateTitle": "Versi baharu tersedia",
+    "appUpdateMessage": "Versi baharu LoveyDovey kini tersedia. Kemas kini sekarang untuk mendapatkan ciri dan pembaikan terkini.",
+    "appUpdateLater": "Nanti",
+    "appUpdateGo": "Kemas kini sekarang",
+    "appUpdateCurrentVersion": "Versi semasa",
+    "appUpdateLatestVersion": "Versi terkini",
+    "appUpdateStoreOpenFailed": "Gedung tidak dapat dibuka buat masa ini. Sila cuba lagi kemudian."
 }

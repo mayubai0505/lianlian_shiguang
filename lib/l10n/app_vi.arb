@@ -3009,5 +3009,12 @@
   "momentReportSubmitted": "Báo cáo đã được gửi. Chúng tôi sẽ tiến hành xem xét",
   "momentSelectShareCharacter": "Chọn một nhân vật bạn đã từng trò chuyện để chia sẻ bài đăng này",
   "momentTagCharacterUnavailable": "Thẻ này không được liên kết với hồ sơ nhân vật",
-  "momentCharacterNotFound": "Không tìm thấy dữ liệu nhân vật"
+  "momentCharacterNotFound": "Không tìm thấy dữ liệu nhân vật",
+  "appUpdateTitle": "Đã có phiên bản mới",
+  "appUpdateMessage": "Đã có phiên bản mới của LoveyDovey. Hãy cập nhật ngay để nhận các tính năng và bản sửa lỗi mới nhất.",
+  "appUpdateLater": "Để sau",
+  "appUpdateGo": "Cập nhật ngay",
+  "appUpdateCurrentVersion": "Phiên bản hiện tại",
+  "appUpdateLatestVersion": "Phiên bản mới nhất",
+  "appUpdateStoreOpenFailed": "Hiện không thể mở cửa hàng. Vui lòng thử lại sau."
 }

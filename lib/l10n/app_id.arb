@@ -3009,5 +3009,12 @@
     "momentReportSubmitted": "Laporan telah dikirim. Kami akan meninjaunya",
     "momentSelectShareCharacter": "Pilih karakter yang pernah kamu ajak mengobrol untuk membagikan postingan ini",
     "momentTagCharacterUnavailable": "Tag ini tidak terhubung ke profil karakter",
-    "momentCharacterNotFound": "Data karakter tidak ditemukan"
+    "momentCharacterNotFound": "Data karakter tidak ditemukan",
+    "appUpdateTitle": "Versi baru tersedia",
+    "appUpdateMessage": "Versi baru LoveyDovey telah tersedia. Perbarui sekarang untuk mendapatkan fitur dan perbaikan terbaru.",
+    "appUpdateLater": "Nanti",
+    "appUpdateGo": "Perbarui sekarang",
+    "appUpdateCurrentVersion": "Versi saat ini",
+    "appUpdateLatestVersion": "Versi terbaru",
+    "appUpdateStoreOpenFailed": "Toko tidak dapat dibuka saat ini. Silakan coba lagi nanti."
 }

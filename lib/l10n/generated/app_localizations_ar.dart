@@ -6356,4 +6356,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get momentCharacterNotFound => 'تعذر العثور على بيانات الشخصية';
+
+  @override
+  String get appUpdateTitle => 'يتوفر إصدار جديد';
+
+  @override
+  String get appUpdateMessage =>
+      'يتوفر إصدار جديد من LoveyDovey. حدّث التطبيق للحصول على أحدث الميزات والإصلاحات.';
+
+  @override
+  String get appUpdateLater => 'لاحقًا';
+
+  @override
+  String get appUpdateGo => 'التحديث الآن';
+
+  @override
+  String get appUpdateCurrentVersion => 'الإصدار الحالي';
+
+  @override
+  String get appUpdateLatestVersion => 'أحدث إصدار';
+
+  @override
+  String get appUpdateStoreOpenFailed =>
+      'تعذّر فتح صفحة المتجر الآن. يُرجى المحاولة مرة أخرى لاحقًا.';
 }

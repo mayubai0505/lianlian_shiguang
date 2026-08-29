@@ -11151,6 +11151,48 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'找不到角色資料'**
   String get momentCharacterNotFound;
+
+  /// No description provided for @appUpdateTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發現新版本'**
+  String get appUpdateTitle;
+
+  /// No description provided for @appUpdateMessage.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀拾光有新的版本可以更新囉。更新後可以獲得最新功能與修正。'**
+  String get appUpdateMessage;
+
+  /// No description provided for @appUpdateLater.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'稍後再說'**
+  String get appUpdateLater;
+
+  /// No description provided for @appUpdateGo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'前往更新'**
+  String get appUpdateGo;
+
+  /// No description provided for @appUpdateCurrentVersion.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前版本'**
+  String get appUpdateCurrentVersion;
+
+  /// No description provided for @appUpdateLatestVersion.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最新版本'**
+  String get appUpdateLatestVersion;
+
+  /// No description provided for @appUpdateStoreOpenFailed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前無法開啟商店頁面，請稍後再試。'**
+  String get appUpdateStoreOpenFailed;
 }
 
 class _AppLocalizationsDelegate

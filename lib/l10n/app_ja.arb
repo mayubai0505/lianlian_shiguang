@@ -3010,5 +3010,12 @@
   "momentSelectShareCharacter": "この投稿を共有する、チャットしたことのあるキャラクターを選択してください",
   "momentTagCharacterUnavailable": "このタグはキャラクタープロフィールにリンクされていません",
   "momentCharacterNotFound": "キャラクター情報が見つかりません",
-  "chatRegenerateCountSyncFailed": "再生成には成功しましたが、回数を同期できませんでした。しばらくしてから更新してください。"
+  "chatRegenerateCountSyncFailed": "再生成には成功しましたが、回数を同期できませんでした。しばらくしてから更新してください。",
+  "appUpdateTitle": "新しいバージョンがあります",
+  "appUpdateMessage": "LoveyDoveyの新しいバージョンが利用できます。最新機能と修正をご利用いただくため、アップデートしてください。",
+  "appUpdateLater": "あとで",
+  "appUpdateGo": "アップデート",
+  "appUpdateCurrentVersion": "現在のバージョン",
+  "appUpdateLatestVersion": "最新バージョン",
+  "appUpdateStoreOpenFailed": "ストアを開けませんでした。しばらくしてからもう一度お試しください。"
 }

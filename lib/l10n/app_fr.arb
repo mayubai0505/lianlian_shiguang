@@ -3183,5 +3183,12 @@
     "momentReportSubmitted": "Le signalement a été envoyé. Nous allons l'examiner",
     "momentSelectShareCharacter": "Choisissez un personnage avec lequel vous avez déjà discuté pour partager cette publication",
     "momentTagCharacterUnavailable": "Ce tag n'est lié à aucun profil de personnage",
-    "momentCharacterNotFound": "Impossible de trouver les données du personnage"
+    "momentCharacterNotFound": "Impossible de trouver les données du personnage",
+    "appUpdateTitle": "Nouvelle version disponible",
+    "appUpdateMessage": "Une nouvelle version de LoveyDovey est disponible. Mettez l’application à jour pour profiter des dernières fonctionnalités et corrections.",
+    "appUpdateLater": "Plus tard",
+    "appUpdateGo": "Mettre à jour",
+    "appUpdateCurrentVersion": "Version actuelle",
+    "appUpdateLatestVersion": "Dernière version",
+    "appUpdateStoreOpenFailed": "Impossible d’ouvrir la boutique pour le moment. Veuillez réessayer plus tard."
 }

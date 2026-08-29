@@ -3010,5 +3010,12 @@
     "momentReportSubmitted": "ส่งรายงานแล้ว เราจะดำเนินการตรวจสอบ",
     "momentSelectShareCharacter": "เลือกตัวละครที่คุณเคยแชตด้วยเพื่อแชร์โพสต์นี้",
     "momentTagCharacterUnavailable": "แท็กนี้ไม่ได้เชื่อมโยงกับโปรไฟล์ตัวละคร",
-    "momentCharacterNotFound": "ไม่พบข้อมูลตัวละคร"
+    "momentCharacterNotFound": "ไม่พบข้อมูลตัวละคร",
+    "appUpdateTitle": "มีเวอร์ชันใหม่แล้ว",
+    "appUpdateMessage": "LoveyDovey มีเวอร์ชันใหม่แล้ว อัปเดตตอนนี้เพื่อใช้งานฟีเจอร์ล่าสุดและการแก้ไขต่าง ๆ",
+    "appUpdateLater": "ไว้ภายหลัง",
+    "appUpdateGo": "อัปเดตตอนนี้",
+    "appUpdateCurrentVersion": "เวอร์ชันปัจจุบัน",
+    "appUpdateLatestVersion": "เวอร์ชันล่าสุด",
+    "appUpdateStoreOpenFailed": "ไม่สามารถเปิดหน้าร้านค้าได้ในขณะนี้ โปรดลองอีกครั้งภายหลัง"
 }
