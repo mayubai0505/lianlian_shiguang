@@ -14,7 +14,6 @@ import 'services/theme_notifier.dart';
 import 'firebase_options.dart';
 import 'services/locale_notifier.dart';
 import 'package:flutter/foundation.dart';
-import 'screens/splash_loading_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // 🌟 修改這裡：只保留一個數據來源，並給它一個別名
@@ -150,8 +149,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
-  // ✨ 加回這把鎖！用來控制 SplashLoadingScreen 的顯示時間
-  late Future<void> _appInitFuture;
+
 
   @override
   void initState() {
@@ -159,10 +157,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
 
     WidgetsBinding.instance.addObserver(this);
-
-    _appInitFuture = Future.delayed(
-      const Duration(seconds: 2),
-    );
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -262,24 +256,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
 
           // 🏠 把 FutureBuilder 換成這個完美放權版！
-          home: FutureBuilder(
-            future: _appInitFuture,
-            builder: (context, snapshot) {
-              // ⏳ 1. 在這 2 秒內，顯示妳自訂的「喚醒宇宙」畫面
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SplashLoadingScreen();
-              }
-
-              // ✨ 2. 宇宙喚醒後，只做「一次性」檢查，把導航大權交還給 LoginPage！
-              if (FirebaseAuth.instance.currentUser != null) {
-                print("🏠 總裁已登入，直接進入大廳！");
-                return const MainPage();
-              } else {
-                print("🚪 尚未登入，進入登入頁面！");
-                return const LoginPage();
-              }
-            },
-          ),
+          home: FirebaseAuth.instance.currentUser != null
+              ? const MainPage()
+              : const LoginPage(),
         );
       },
     );

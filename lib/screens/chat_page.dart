@@ -54,6 +54,7 @@ import 'chat_header.dart';
 import 'chat_side_menu.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'chat_input_bar.dart';
+import 'scene_page.dart';
 
 //聊天頁面ˋ
 enum ChatMode { daily, story, immersive, gemini }
@@ -643,6 +644,10 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    // 如果玩家是正常返回聊天列表，清掉「最後聊天室」；
+    // App 被系統直接關閉時通常不會走 dispose，因此仍能保留最後所在房間。
+    unawaited(_clearRememberedChatIfCurrent());
+
     _chatScrollController.dispose();
     _menuScrollController.dispose();
     _recorder?.closeRecorder();
@@ -659,6 +664,97 @@ class _ChatPageState extends State<ChatPage> {
     _audioPlayer.dispose();
     _triggerStorySummary(); //劇情摘要
     super.dispose();
+  }
+
+  // ============================================================
+  // 🧭 記住玩家最後停留的聊天室
+  // ============================================================
+  String? get _lastChatCharacterKey {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty) return null;
+    return 'last_chat_character_$uid';
+  }
+
+  String? get _lastChatSessionKey {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty) return null;
+    return 'last_chat_session_$uid';
+  }
+
+  String? get _lastMainTabKey {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null || uid.isEmpty) return null;
+    return 'last_main_tab_$uid';
+  }
+
+  Future<void> _rememberCurrentChat(String sessionId) async {
+    if (widget.isTestMode) return;
+
+    final characterKey = _lastChatCharacterKey;
+    final sessionKey = _lastChatSessionKey;
+    final mainTabKey = _lastMainTabKey;
+
+    final safeSessionId = sessionId.trim();
+    final safeCharacterId = widget.characterId.trim().isNotEmpty
+        ? widget.characterId.trim()
+        : _currentCharacter.id.trim();
+
+    if (characterKey == null ||
+        sessionKey == null ||
+        mainTabKey == null ||
+        safeSessionId.isEmpty ||
+        safeCharacterId.isEmpty) {
+      return;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // 2 = 聊天分頁
+      await prefs.setInt(mainTabKey, 2);
+      await prefs.setString(characterKey, safeCharacterId);
+      await prefs.setString(sessionKey, safeSessionId);
+
+      debugPrint(
+        '🧭 已記住最後聊天室：character=$safeCharacterId, session=$safeSessionId',
+      );
+    } catch (e) {
+      debugPrint('⚠️ 儲存最後聊天室失敗：$e');
+    }
+  }
+
+  Future<void> _clearRememberedChatIfCurrent() async {
+    if (widget.isTestMode) return;
+
+    final characterKey = _lastChatCharacterKey;
+    final sessionKey = _lastChatSessionKey;
+    final mainTabKey = _lastMainTabKey;
+
+    if (characterKey == null || sessionKey == null || mainTabKey == null) {
+      return;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedSessionId = prefs.getString(sessionKey)?.trim() ?? '';
+      final currentSessionId = (_sessionId ?? widget.sessionId ?? '').trim();
+
+      // 只有目前離開的就是「被記住的那一間」時才清掉，
+      // 避免其他導頁流程誤刪新紀錄。
+      if (currentSessionId.isNotEmpty &&
+          savedSessionId.isNotEmpty &&
+          savedSessionId == currentSessionId) {
+        await prefs.remove(characterKey);
+        await prefs.remove(sessionKey);
+
+        // 離開聊天室後，玩家仍停在「聊天」主分頁。
+        await prefs.setInt(mainTabKey, 2);
+
+        debugPrint('🧭 已離開最後聊天室，保留聊天主分頁');
+      }
+    } catch (e) {
+      debugPrint('⚠️ 清除最後聊天室失敗：$e');
+    }
   }
 
   // 👇 把這整段貼在 initState 的下方
@@ -1438,6 +1534,9 @@ class _ChatPageState extends State<ChatPage> {
               _isLoading = false;
             });
         }
+
+        unawaited(_rememberCurrentChat(sessionId));
+
         if (data['isQixiRoom'] == true &&
             data['qixiOpeningGenerated'] != true) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1476,6 +1575,8 @@ class _ChatPageState extends State<ChatPage> {
               _isLoading = false; // 讓畫面停止轉圈圈，順利進入聊天室
             });
         }
+
+        unawaited(_rememberCurrentChat(sessionId));
       }
     } catch (e) {
       print("讀取舊聊天室失敗: $e");
@@ -1569,6 +1670,8 @@ class _ChatPageState extends State<ChatPage> {
             _isLoading = false;
           });
       }
+
+      unawaited(_rememberCurrentChat(newSessionRef.id));
     } catch (e) {
       print("❌ 建立新聊天室失敗: $e");
       if (mounted) {
@@ -2034,25 +2137,55 @@ class _ChatPageState extends State<ChatPage> {
       final today = DateTime(now.year, now.month, now.day);
       final todayId = DateFormat('yyyyMMdd').format(today);
 
-      final characterRef = FirebaseFirestore.instance
+      final userRef = FirebaseFirestore.instance
           .collection('users')
-          .doc(userId)
+          .doc(userId);
+
+      final characterRef = userRef
           .collection('characters')
           .doc(characterId);
 
-      final results = await Future.wait([
-        characterRef
+      // 新版：生理期與每日身心紀錄為帳號共用；
+      // 「給角色的話」仍然只提供給當前角色。
+      var periodSnapshot = await userRef
+          .collection('period_tracker')
+          .orderBy('startDate', descending: true)
+          .limit(1)
+          .get();
+
+      var dailyLogSnapshot =
+      await userRef.collection('period_daily_logs').doc(todayId).get();
+
+      final characterNoteSnapshot = await characterRef
+          .collection('period_notes')
+          .doc(todayId)
+          .get();
+
+      // 舊版相容：玩家若還沒進過新版生理期頁完成搬移，
+      // 聊天仍可先讀目前角色底下的舊資料，不會突然失憶。
+      if (periodSnapshot.docs.isEmpty) {
+        final legacyPeriodSnapshot = await characterRef
             .collection('period_tracker')
             .orderBy('startDate', descending: true)
             .limit(1)
-            .get(),
-        characterRef.collection('period_daily_logs').doc(todayId).get(),
-      ]);
+            .get();
 
-      final periodSnapshot = results[0] as QuerySnapshot<Map<String, dynamic>>;
+        if (legacyPeriodSnapshot.docs.isNotEmpty) {
+          periodSnapshot = legacyPeriodSnapshot;
+        }
+      }
 
-      final dailyLogSnapshot =
-      results[1] as DocumentSnapshot<Map<String, dynamic>>;
+      DocumentSnapshot<Map<String, dynamic>>? legacyDailyLogSnapshot;
+      if (!dailyLogSnapshot.exists) {
+        legacyDailyLogSnapshot = await characterRef
+            .collection('period_daily_logs')
+            .doc(todayId)
+            .get();
+
+        if (legacyDailyLogSnapshot.exists) {
+          dailyLogSnapshot = legacyDailyLogSnapshot;
+        }
+      }
 
       final contextLines = <String>[];
 
@@ -2063,9 +2196,7 @@ class _ChatPageState extends State<ChatPage> {
         final periodData = periodSnapshot.docs.first.data();
 
         final startTimestamp = periodData['startDate'] as Timestamp?;
-
         final endTimestamp = periodData['endDate'] as Timestamp?;
-
         final isOngoing = periodData['isOngoing'] == true;
 
         if (startTimestamp == null) {
@@ -2090,22 +2221,26 @@ class _ChatPageState extends State<ChatPage> {
           }
 
           if (isOngoing) {
+            final currentDay = today.difference(startDate).inDays + 1;
             contextLines.add(
               '生理期狀態：目前正在生理期，'
-                  '本次開始日為 ${DateFormat('M 月 d 日').format(startDate)}。',
+                  '本次開始日為 ${DateFormat('M 月 d 日').format(startDate)}，'
+                  '今天約為第 ${currentDay < 1 ? 1 : currentDay} 天。',
             );
           } else {
             final isTodayInPeriod =
                 !today.isBefore(startDate) && !today.isAfter(endDate);
 
             contextLines.add(
-              isTodayInPeriod ? '生理期狀態：今天仍在已記錄的生理期範圍內。' : '生理期狀態：目前沒有進行中的生理期。',
+              isTodayInPeriod
+                  ? '生理期狀態：今天仍在已記錄的生理期範圍內。'
+                  : '生理期狀態：目前沒有進行中的生理期。',
             );
           }
         }
       }
 
-      // 讀取今天的心情與身體紀錄
+      // 讀取今天的帳號共用心情與身體紀錄
       final dailyData = dailyLogSnapshot.data();
 
       if (dailyData != null) {
@@ -2121,45 +2256,39 @@ class _ChatPageState extends State<ChatPage> {
         }
 
         final moods = readStringList(dailyData['moods']);
-
         final symptoms = readStringList(dailyData['symptoms']);
-
         final customMood = dailyData['customMood']?.toString().trim() ?? '';
-
         final customSymptom =
             dailyData['customSymptom']?.toString().trim() ?? '';
 
-        final note = dailyData['note']?.toString().trim() ?? '';
-
         if (moods.isNotEmpty) {
-          contextLines.add(
-            '今天記錄的心情：${moods.join('、')}。',
-          );
+          contextLines.add('今天記錄的心情：${moods.join('、')}。');
         }
 
         if (symptoms.isNotEmpty) {
-          contextLines.add(
-            '今天記錄的身體狀態：${symptoms.join('、')}。',
-          );
+          contextLines.add('今天記錄的身體狀態：${symptoms.join('、')}。');
         }
 
         if (customMood.isNotEmpty) {
-          contextLines.add(
-            '今天補充的心情：$customMood。',
-          );
+          contextLines.add('今天補充的心情：$customMood。');
         }
 
         if (customSymptom.isNotEmpty) {
-          contextLines.add(
-            '今天補充的身體狀態：$customSymptom。',
-          );
+          contextLines.add('今天補充的身體狀態：$customSymptom。');
         }
+      }
 
-        if (note.isNotEmpty) {
-          contextLines.add(
-            '今天的備註：$note。',
-          );
-        }
+      // 新版角色專屬備註；若尚未搬移則回退讀舊 daily log 裡的 note。
+      final characterNote =
+          characterNoteSnapshot.data()?['note']?.toString().trim() ?? '';
+      final legacyNote =
+          legacyDailyLogSnapshot?.data()?['note']?.toString().trim() ??
+              dailyData?['note']?.toString().trim() ??
+              '';
+      final note = characterNote.isNotEmpty ? characterNote : legacyNote;
+
+      if (note.isNotEmpty) {
+        contextLines.add('玩家今天特別留給你的話：$note。');
       }
 
       contextLines.add(
@@ -3781,6 +3910,88 @@ class _ChatPageState extends State<ChatPage> {
               },
             )),
       );
+    }
+  }
+
+  Future<void> _insertCreatorSceneOpening(
+      Map<String, dynamic> sceneResult,
+      ) async {
+    if (_messagesCollection == null || _sessionDocRef == null) return;
+
+    String opening = (sceneResult['opening'] ?? '').toString().trim();
+    if (opening.isEmpty) return;
+
+    opening = opening
+        .replaceAll('{{玩家名字}}', _playerNickname)
+        .replaceAll('(玩家名字)', _playerNickname);
+
+    try {
+      await _messagesCollection!.add({
+        'sender': 'ai',
+        'text': opening,
+        'type': 'text',
+        'path': '',
+        'timestamp': FieldValue.serverTimestamp(),
+        'isSceneOpening': true,
+        'sceneId': (sceneResult['sceneId'] ?? '').toString(),
+        'sceneType': 'creator',
+      });
+
+      await _sessionDocRef!.update({
+        'lastMessage': opening,
+        'lastActivity': FieldValue.serverTimestamp(),
+        'unreadCount': 0,
+      });
+
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom();
+        });
+      }
+    } catch (e) {
+      debugPrint('❌ 寫入創作者劇場開場失敗：$e');
+    }
+  }
+
+  Future<void> _generateCustomSceneOpening() async {
+    if (_sessionId == null ||
+        _isGenerating ||
+        generatingRooms.contains(_roomLockKey)) {
+      return;
+    }
+
+    final String clientRequestId = _createAiRequestId();
+    _activeAiRequestId = clientRequestId;
+    generatingRooms.add(_roomLockKey);
+
+    if (mounted) {
+      setState(() {
+        _isGenerating = true;
+        _isLoading = false;
+        _waitingForNewAiReply = true;
+      });
+    }
+
+    try {
+      await _executeMessageSending(
+        userText:
+        '請依照目前啟用的劇場設定，以角色身分自然開始這段故事。'
+            '不要解釋劇場設定，也不要替玩家決定行動、台詞或感受，直接從角色可以感知與做出的反應開始。',
+        clientRequestId: clientRequestId,
+        showInChat: false,
+        userMessageAlreadySaved: true,
+      );
+    } catch (e) {
+      debugPrint('❌ 自行創建劇場開場生成失敗：$e');
+    } finally {
+      generatingRooms.remove(_roomLockKey);
+
+      if (mounted) {
+        setState(() {
+          _isGenerating = false;
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -6960,7 +7171,85 @@ class _ChatPageState extends State<ChatPage> {
                                 },
                               ),
 
-                              // 之後新增第 7、8、9... 個功能，
+                              // 7. 劇場
+                              _buildToolItem(
+                                'assets/images/chat/chat_tool_scene_mask.png',
+                                '劇場',
+                                    () async {
+                                  final String? currentSessionId =
+                                  _sessionId != null &&
+                                      _sessionId!.trim().isNotEmpty
+                                      ? _sessionId!.trim()
+                                      : widget.sessionId != null &&
+                                      widget.sessionId!
+                                          .trim()
+                                          .isNotEmpty
+                                      ? widget.sessionId!.trim()
+                                      : null;
+
+                                  if (currentSessionId == null) {
+                                    ToastUtils.showCenterToast(
+                                      context,
+                                      l10n.chatRoomNotReady,
+                                      isError: true,
+                                    );
+                                    return;
+                                  }
+
+                                  Navigator.pop(context);
+
+                                  final result =
+                                  await Navigator.of(this.context)
+                                      .push<Map<String, dynamic>>(
+                                    MaterialPageRoute(
+                                      builder: (_) => ScenePage(
+                                        characterId: widget.characterId,
+                                        characterName: _currentCharacter.name,
+                                        sessionId: currentSessionId,
+                                        isPublic: _currentCharacter.isPublic,
+                                      ),
+                                    ),
+                                  );
+
+                                  if (!mounted ||
+                                      result == null ||
+                                      result['started'] != true) {
+                                    return;
+                                  }
+
+                                  final String sceneType =
+                                  (result['type'] ?? '').toString();
+
+                                  final String sceneTitle =
+                                  (result['title'] ?? '').toString().trim();
+
+                                  final String sceneDescription =
+                                  (result['description'] ?? '').toString().trim();
+
+                                  final String sceneDisplayText = [
+                                    if (sceneTitle.isNotEmpty)
+                                      '—— 劇場・$sceneTitle ——',
+                                    if (sceneDescription.isNotEmpty)
+                                      sceneDescription,
+                                  ].join('\n\n');
+
+// ① 先把劇場場景顯示在聊天室
+                                      if (sceneDisplayText.isNotEmpty) {
+                                        await _addSystemMessage(sceneDisplayText);
+                                      }
+
+// ② 再出角色第一句
+                                      if (sceneType == 'creator') {
+                                        // 創作者劇場：直接使用創作者寫好的角色開場
+                                        await _insertCreatorSceneOpening(result);
+                                      } else if (sceneType == 'custom') {
+                                        // 自行創建：讓 AI 根據場景＋角色人設生成第一句
+                                        await _generateCustomSceneOpening();
+                                      }
+                                },
+                              ),
+
+                              // 之後新增第 8、9... 個功能，
                               // 直接繼續加 _buildToolItem() 即可。
                               // BottomSheet 高度仍維持 370，
                               // 超出的內容會在這個 GridView 裡上下滑動。
@@ -9241,333 +9530,333 @@ class _ChatPageState extends State<ChatPage> {
       child: Container(
         decoration: themeNotifier.characterChatBackground,
         child: Stack(
-            children: [
-        // 🌟 總裁補丁 2：替換這裡！讓漸層色可以透出來
-        Positioned.fill(
-        child: Container(
-        color: hasPhotoBackground
-        ? theme.colorScheme.surface
-            .withValues(alpha: 0.6) // 有照片：蓋半透明底色
-            : Colors.transparent, // ✨ 沒照片：完全透明！讓櫻花粉、湛藍海完美透出！
-      ),
-    ),
-    Scaffold(
-    backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
-      appBar: ChatHeader(
-        characterName: _currentCharacter.name,
-        friendship: _currentFriendship,
-        nextThreshold: nextStageThreshold,
-        flowerPoints: _flowerPoints,
-        onBack: () => Navigator.maybePop(context),
-
-        onFlowerTap: () {
-          if (kIsWeb) {
-            _showCenterToast(
-              _webPurchaseUnavailableMessage,
-            );
-            return;
-          }
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const StorePage(),
+          children: [
+            // 🌟 總裁補丁 2：替換這裡！讓漸層色可以透出來
+            Positioned.fill(
+              child: Container(
+                color: hasPhotoBackground
+                    ? theme.colorScheme.surface
+                    .withValues(alpha: 0.6) // 有照片：蓋半透明底色
+                    : Colors.transparent, // ✨ 沒照片：完全透明！讓櫻花粉、湛藍海完美透出！
+              ),
             ),
-          );
-        },
+            Scaffold(
+              backgroundColor: Colors.transparent, // 🚩 這裡必須透明，照片才透得過來
+              appBar: ChatHeader(
+                characterName: _currentCharacter.name,
+                friendship: _currentFriendship,
+                nextThreshold: nextStageThreshold,
+                flowerPoints: _flowerPoints,
+                onBack: () => Navigator.maybePop(context),
 
-        onMenuTap: _showChatSideMenu,
+                onFlowerTap: () {
+                  if (kIsWeb) {
+                    _showCenterToast(
+                      _webPurchaseUnavailableMessage,
+                    );
+                    return;
+                  }
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StorePage(),
+                    ),
+                  );
+                },
+
+                onMenuTap: _showChatSideMenu,
+              ),
+              // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
+              body: Column(
+                children: [
+                  // 頂部資訊已移至 ChatHeader
+                  if (_isQixiRoom) _buildQixiProgressCard(theme),
+                  // ✨ 2. 中間訊息列表
+                  Expanded(
+                    child: _isLoading
+                        ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+
+                    // 測試模式必須先判斷，因為它本來就沒有正式 session
+                        : widget.isTestMode
+                        ? (_testMessages.isEmpty && !_isGenerating
+                        ? Center(
+                      child: Text(
+                        l10n.chat_test_mode_msg,
+                      ),
+                    )
+                        : _buildMessageList(
+                      _testMessages,
+                    ))
+
+                    // 只有正式聊天室才檢查這兩個資料
+                        : (_sessionId == null ||
+                        _messagesCollection == null)
+                        ? Center(
+                      child: Text(
+                        l10n.chat_loading_failed,
+                      ),
+                    )
+                        : StreamBuilder<QuerySnapshot>(
+                      stream: _messagesCollection!
+                          .orderBy('timestamp', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData)
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        if (snapshot.hasError)
+                          return Center(
+                              child: Text(
+                                  l10n.chat_error_load_msg(
+                                      snapshot.error
+                                          .toString())));
+
+                        final messages = snapshot.data!.docs
+                            .map((doc) =>
+                            ChatMessage.fromFirestore(doc))
+                            .toList();
+                        _localMessages = messages;
+
+                        // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
+                        if (messages.isNotEmpty) {
+                          final latestMessage = messages.first;
+
+                          if (_isGenerating &&
+                              _waitingForNewAiReply &&
+                              latestMessage.sender == 'ai') {
+                            final lastUserSendTime =
+                                _lastUserSendTime;
+                            final DateTime? aiMessageTime =
+                            latestMessage.timestamp?.toDate();
+
+                            final bool isNewAiReply =
+                                lastUserSendTime != null &&
+                                    aiMessageTime != null &&
+                                    aiMessageTime.isAfter(
+                                        lastUserSendTime);
+
+                            if (isNewAiReply) {
+                              WidgetsBinding.instance
+                                  .addPostFrameCallback((_) {
+                                if (!mounted) return;
+
+                                setState(() {
+                                  _isGenerating = false;
+                                  _isLoading = false;
+                                  _waitingForNewAiReply = false;
+                                });
+
+                                generatingRooms
+                                    .remove(_roomLockKey);
+
+                                debugPrint(
+                                    "✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
+                              });
+                            }
+                          }
+                        }
+                        // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
+                        if (messages.isEmpty && !_isGenerating) {
+                          return Center(
+                              child: Text(l10n.chat_empty_msg));
+                        }
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: _buildMessageList(messages),
+                            ),
+                            if (_isRegenerating)
+                              Padding(
+                                padding:
+                                const EdgeInsets.fromLTRB(
+                                  16,
+                                  8,
+                                  16,
+                                  12,
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    padding: const EdgeInsets
+                                        .symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainerHighest
+                                          .withValues(
+                                          alpha: 0.75),
+                                      borderRadius:
+                                      BorderRadius.circular(
+                                          18),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize:
+                                      MainAxisSize.min,
+                                      children: [
+                                        SizedBox(
+                                          width: 15,
+                                          height: 15,
+                                          child:
+                                          CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color:
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          l10n.chatPageRegenerating,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color:
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withValues(
+                                                alpha:
+                                                0.72),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  if (_isScreenshotMode)
+                  // 如果是截圖模式，就顯示專屬操作列
+                    _buildScreenshotBottomBar()
+                  else ...[
+                    // ✨ 3. 底部（）快捷鍵區
+                    showInputExtras
+                        ? Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      color: theme.cardColor.withValues(alpha: 0.5),
+                      child: Row(
+                        children: [
+                          OutlinedButton(
+                            onPressed: (_isGenerating || _isLoading)
+                                ? null
+                                : () {
+                              final text = _textController.text;
+
+                              final selection =
+                                  _textController.selection;
+
+                              int cursorPosition =
+                                  selection.baseOffset;
+
+                              if (cursorPosition < 0 ||
+                                  cursorPosition > text.length) {
+                                cursorPosition = text.length;
+                              }
+
+                              final newText = text.substring(
+                                0,
+                                cursorPosition,
+                              ) +
+                                  '（）' +
+                                  text.substring(
+                                    cursorPosition,
+                                  );
+
+                              _textController.value =
+                                  TextEditingValue(
+                                    text: newText,
+                                    selection: TextSelection.collapsed(
+                                      offset: cursorPosition + 1,
+                                    ),
+                                  );
+
+                              _focusNode.requestFocus();
+                            },
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(42, 30),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              visualDensity: VisualDensity.compact,
+                              tapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: const Text('（）'),
+                          ),
+                        ],
+                      ),
+                    )
+                        : const SizedBox.shrink(),
+
+                    // 🌟 多選模式 / 平常輸入框
+                    if (_isMultiSelectMode)
+                      _buildMultiSelectBottomBar()
+                    else
+                      ChatInputBar(
+                        controller: _textController,
+                        focusNode: _focusNode,
+                        isGenerating: _isGenerating,
+                        isLoading: _isLoading,
+                        showCounter: showInputExtras,
+                        hintText: _isGenerating
+                            ? (AppLocalizations.of(context)?.chat_ai_typing ??
+                            l10n.chatTypingIndicator)
+                            : (AppLocalizations.of(context)
+                            ?.chat_input_hint_default ??
+                            l10n.chatInputHint),
+                        regeneratingTooltip: l10n.regenerateButtonLabel(
+                          _freeRegenerateCount,
+                          _maxRegenerateCount,
+                        ),
+                        continueTooltip: l10n.continueButton,
+                        onChanged: _saveDraft,
+                        onToolbox: _showToolbox,
+                        onRegenerate: _handleRegenerateButton,
+                        onContinue: _handleContinueButton,
+                        onStop: _stopGenerating,
+                        onSend: () async {
+                          final text = _textController.text.trim();
+                          final imagePath = _selectedChatImagePath;
+
+                          if (text.isEmpty &&
+                              (imagePath == null || imagePath.isEmpty)) {
+                            return;
+                          }
+
+                          setState(() {
+                            _selectedChatImagePath = null;
+                          });
+
+                          await _sendMessage(
+                            text: text,
+                            imagePath: imagePath,
+                            showInChat: true,
+                          );
+                        },
+                      ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    // 👇 🌟 移除了原本擋在前面的內層背景，直接放 Column
-    body: Column(
-    children: [
-    // 頂部資訊已移至 ChatHeader
-    if (_isQixiRoom) _buildQixiProgressCard(theme),
-    // ✨ 2. 中間訊息列表
-    Expanded(
-    child: _isLoading
-    ? const Center(
-    child: CircularProgressIndicator(),
-    )
-
-    // 測試模式必須先判斷，因為它本來就沒有正式 session
-        : widget.isTestMode
-    ? (_testMessages.isEmpty && !_isGenerating
-    ? Center(
-    child: Text(
-    l10n.chat_test_mode_msg,
-    ),
-    )
-        : _buildMessageList(
-    _testMessages,
-    ))
-
-    // 只有正式聊天室才檢查這兩個資料
-        : (_sessionId == null ||
-    _messagesCollection == null)
-    ? Center(
-    child: Text(
-    l10n.chat_loading_failed,
-    ),
-    )
-        : StreamBuilder<QuerySnapshot>(
-    stream: _messagesCollection!
-        .orderBy('timestamp', descending: true)
-        .snapshots(),
-    builder: (context, snapshot) {
-    if (!snapshot.hasData)
-    return const Center(
-    child: CircularProgressIndicator());
-    if (snapshot.hasError)
-    return Center(
-    child: Text(
-    l10n.chat_error_load_msg(
-    snapshot.error
-        .toString())));
-
-    final messages = snapshot.data!.docs
-        .map((doc) =>
-    ChatMessage.fromFirestore(doc))
-        .toList();
-    _localMessages = messages;
-
-    // ✨✨✨ 靈魂出竅自動解鎖魔法 開始 ✨✨✨
-    if (messages.isNotEmpty) {
-    final latestMessage = messages.first;
-
-    if (_isGenerating &&
-    _waitingForNewAiReply &&
-    latestMessage.sender == 'ai') {
-    final lastUserSendTime =
-    _lastUserSendTime;
-    final DateTime? aiMessageTime =
-    latestMessage.timestamp?.toDate();
-
-    final bool isNewAiReply =
-    lastUserSendTime != null &&
-    aiMessageTime != null &&
-    aiMessageTime.isAfter(
-    lastUserSendTime);
-
-    if (isNewAiReply) {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) {
-    if (!mounted) return;
-
-    setState(() {
-    _isGenerating = false;
-    _isLoading = false;
-    _waitingForNewAiReply = false;
-    });
-
-    generatingRooms
-        .remove(_roomLockKey);
-
-    debugPrint(
-    "✨ 偵測到新的 AI 回覆，解除鎖定狀態！");
-    });
-    }
-    }
-    }
-    // ✨✨✨ 靈魂出竅自動解鎖魔法 結束 ✨✨✨
-    if (messages.isEmpty && !_isGenerating) {
-    return Center(
-    child: Text(l10n.chat_empty_msg));
-    }
-    return Column(
-    children: [
-    Expanded(
-    child: _buildMessageList(messages),
-    ),
-    if (_isRegenerating)
-    Padding(
-    padding:
-    const EdgeInsets.fromLTRB(
-    16,
-    8,
-    16,
-    12,
-    ),
-    child: Align(
-    alignment: Alignment.centerLeft,
-    child: Container(
-    padding: const EdgeInsets
-        .symmetric(
-    horizontal: 14,
-    vertical: 10,
-    ),
-    decoration: BoxDecoration(
-    color: Theme.of(context)
-        .colorScheme
-        .surfaceContainerHighest
-        .withValues(
-    alpha: 0.75),
-    borderRadius:
-    BorderRadius.circular(
-    18),
-    ),
-    child: Row(
-    mainAxisSize:
-    MainAxisSize.min,
-    children: [
-    SizedBox(
-    width: 15,
-    height: 15,
-    child:
-    CircularProgressIndicator(
-    strokeWidth: 2,
-    color:
-    Theme.of(context)
-        .colorScheme
-        .primary,
-    ),
-    ),
-    const SizedBox(width: 10),
-    Text(
-    l10n.chatPageRegenerating,
-    style: TextStyle(
-    fontSize: 13,
-    color:
-    Theme.of(context)
-        .colorScheme
-        .onSurface
-        .withValues(
-    alpha:
-    0.72),
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ),
-    ],
     );
-    },
-    ),
-    ),
-    if (_isScreenshotMode)
-    // 如果是截圖模式，就顯示專屬操作列
-    _buildScreenshotBottomBar()
-    else ...[
-    // ✨ 3. 底部（）快捷鍵區
-    showInputExtras
-    ? Container(
-    width: double.infinity,
-    padding: const EdgeInsets.symmetric(
-    horizontal: 8,
-    vertical: 3,
-    ),
-    color: theme.cardColor.withValues(alpha: 0.5),
-    child: Row(
-    children: [
-    OutlinedButton(
-    onPressed: (_isGenerating || _isLoading)
-    ? null
-        : () {
-    final text = _textController.text;
-
-    final selection =
-    _textController.selection;
-
-    int cursorPosition =
-    selection.baseOffset;
-
-    if (cursorPosition < 0 ||
-    cursorPosition > text.length) {
-    cursorPosition = text.length;
-    }
-
-    final newText = text.substring(
-    0,
-    cursorPosition,
-    ) +
-    '（）' +
-    text.substring(
-    cursorPosition,
-    );
-
-    _textController.value =
-    TextEditingValue(
-    text: newText,
-    selection: TextSelection.collapsed(
-    offset: cursorPosition + 1,
-    ),
-    );
-
-    _focusNode.requestFocus();
-    },
-    style: OutlinedButton.styleFrom(
-    minimumSize: const Size(42, 30),
-    padding: const EdgeInsets.symmetric(
-    horizontal: 10,
-    ),
-    visualDensity: VisualDensity.compact,
-    tapTargetSize:
-    MaterialTapTargetSize.shrinkWrap,
-    ),
-    child: const Text('（）'),
-    ),
-    ],
-    ),
-    )
-        : const SizedBox.shrink(),
-
-    // 🌟 多選模式 / 平常輸入框
-    if (_isMultiSelectMode)
-    _buildMultiSelectBottomBar()
-    else
-    ChatInputBar(
-    controller: _textController,
-    focusNode: _focusNode,
-    isGenerating: _isGenerating,
-    isLoading: _isLoading,
-    showCounter: showInputExtras,
-    hintText: _isGenerating
-    ? (AppLocalizations.of(context)?.chat_ai_typing ??
-    l10n.chatTypingIndicator)
-        : (AppLocalizations.of(context)
-        ?.chat_input_hint_default ??
-    l10n.chatInputHint),
-    regeneratingTooltip: l10n.regenerateButtonLabel(
-    _freeRegenerateCount,
-    _maxRegenerateCount,
-    ),
-    continueTooltip: l10n.continueButton,
-    onChanged: _saveDraft,
-    onToolbox: _showToolbox,
-    onRegenerate: _handleRegenerateButton,
-    onContinue: _handleContinueButton,
-    onStop: _stopGenerating,
-    onSend: () async {
-    final text = _textController.text.trim();
-    final imagePath = _selectedChatImagePath;
-
-    if (text.isEmpty &&
-    (imagePath == null || imagePath.isEmpty)) {
-    return;
-    }
-
-    setState(() {
-    _selectedChatImagePath = null;
-    });
-
-    await _sendMessage(
-    text: text,
-    imagePath: imagePath,
-    showInChat: true,
-    );
-    },
-    ),
-    ],
-    ],
-    ),
-    ),
-    ],
-    ),
-    ),
-    );
-    }
+  }
 
 // 🗓️ 小工具 1：判斷是不是同一天 (支援 Firebase 版)
   bool _isSameDay(Timestamp ts1, Timestamp ts2) {

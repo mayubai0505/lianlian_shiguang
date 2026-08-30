@@ -1088,6 +1088,10 @@ class MomentsPageState extends State<MomentsPage> {
 
                           final bool isEnabled =
                               data['autoPostEnabled'] ?? false;
+                          // 🤖 每隻角色獨立控制是否允許 AI 自動回覆玩家動態。
+                          // 舊角色沒有欄位時一律視為關閉，避免更新後突然開始自動留言。
+                          final bool autoReplyEnabled =
+                              data['autoReplyEnabled'] == true;
                           final int postHour =
                               data['autoPostHour'] ?? 15;
                           final int postMinute =
@@ -1116,159 +1120,220 @@ class MomentsPageState extends State<MomentsPage> {
                                 ),
                               ],
                             ),
-                            child: Row(
+                            child: Column(
                               children: [
-                                CircleAvatar(
-                                  radius: 24,
-                                  backgroundImage:
-                                  getAvatarImageProvider(avatar),
-                                  backgroundColor:
-                                  primary.withValues(alpha: 0.08),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        name,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: GoogleFonts.notoSerifTc(
-                                          color: onSurface,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Row(
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 24,
+                                      backgroundImage:
+                                      getAvatarImageProvider(avatar),
+                                      backgroundColor:
+                                      primary.withValues(alpha: 0.08),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                         children: [
-                                          DropdownButtonHideUnderline(
-                                            child: DropdownButton<int>(
-                                              value: postHour,
-                                              isDense: true,
-                                              style:
-                                              GoogleFonts.notoSerifTc(
-                                                color: isEnabled
-                                                    ? onSurface.withValues(
-                                                  alpha: 0.68,
-                                                )
-                                                    : onSurface.withValues(
-                                                  alpha: 0.28,
-                                                ),
-                                                fontSize: 12.5,
-                                              ),
-                                              items: List.generate(
-                                                24,
-                                                    (i) =>
-                                                    DropdownMenuItem(
-                                                      value: i,
-                                                      child: Text(
-                                                        l10n.time_hour(
-                                                          i
-                                                              .toString()
-                                                              .padLeft(
-                                                            2,
-                                                            '0',
+                                          Text(
+                                            name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.notoSerifTc(
+                                              color: onSurface,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Row(
+                                            children: [
+                                              DropdownButtonHideUnderline(
+                                                child: DropdownButton<int>(
+                                                  value: postHour,
+                                                  isDense: true,
+                                                  style:
+                                                  GoogleFonts.notoSerifTc(
+                                                    color: isEnabled
+                                                        ? onSurface.withValues(
+                                                      alpha: 0.68,
+                                                    )
+                                                        : onSurface.withValues(
+                                                      alpha: 0.28,
+                                                    ),
+                                                    fontSize: 12.5,
+                                                  ),
+                                                  items: List.generate(
+                                                    24,
+                                                        (i) =>
+                                                        DropdownMenuItem(
+                                                          value: i,
+                                                          child: Text(
+                                                            l10n.time_hour(
+                                                              i
+                                                                  .toString()
+                                                                  .padLeft(
+                                                                2,
+                                                                '0',
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
+                                                  ),
+                                                  onChanged: isEnabled
+                                                      ? (newHour) {
+                                                    doc.reference.update({
+                                                      'autoPostHour':
+                                                      newHour,
+                                                    });
+                                                  }
+                                                      : null,
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 4,
+                                                ),
+                                                child: Text(
+                                                  ':',
+                                                  style:
+                                                  GoogleFonts.notoSerifTc(
+                                                    color: onSurface.withValues(
+                                                      alpha: isEnabled
+                                                          ? 0.62
+                                                          : 0.28,
                                                     ),
-                                              ),
-                                              onChanged: isEnabled
-                                                  ? (newHour) {
-                                                doc.reference.update({
-                                                  'autoPostHour':
-                                                  newHour,
-                                                });
-                                              }
-                                                  : null,
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal: 4,
-                                            ),
-                                            child: Text(
-                                              ':',
-                                              style:
-                                              GoogleFonts.notoSerifTc(
-                                                color: onSurface.withValues(
-                                                  alpha: isEnabled
-                                                      ? 0.62
-                                                      : 0.28,
+                                                    fontWeight:
+                                                    FontWeight.w600,
+                                                  ),
                                                 ),
-                                                fontWeight:
-                                                FontWeight.w600,
                                               ),
-                                            ),
-                                          ),
-                                          DropdownButtonHideUnderline(
-                                            child: DropdownButton<int>(
-                                              value: postMinute,
-                                              isDense: true,
-                                              style:
-                                              GoogleFonts.notoSerifTc(
-                                                color: isEnabled
-                                                    ? onSurface.withValues(
-                                                  alpha: 0.68,
-                                                )
-                                                    : onSurface.withValues(
-                                                  alpha: 0.28,
-                                                ),
-                                                fontSize: 12.5,
-                                              ),
-                                              items: List.generate(
-                                                12,
-                                                    (minuteIndex) {
-                                                  final minuteValue =
-                                                      minuteIndex * 5;
-                                                  return DropdownMenuItem(
-                                                    value: minuteValue,
-                                                    child: Text(
-                                                      l10n.time_minute(
-                                                        minuteValue
-                                                            .toString()
-                                                            .padLeft(
-                                                          2,
-                                                          '0',
+                                              DropdownButtonHideUnderline(
+                                                child: DropdownButton<int>(
+                                                  value: postMinute,
+                                                  isDense: true,
+                                                  style:
+                                                  GoogleFonts.notoSerifTc(
+                                                    color: isEnabled
+                                                        ? onSurface.withValues(
+                                                      alpha: 0.68,
+                                                    )
+                                                        : onSurface.withValues(
+                                                      alpha: 0.28,
+                                                    ),
+                                                    fontSize: 12.5,
+                                                  ),
+                                                  items: List.generate(
+                                                    12,
+                                                        (minuteIndex) {
+                                                      final minuteValue =
+                                                          minuteIndex * 5;
+                                                      return DropdownMenuItem(
+                                                        value: minuteValue,
+                                                        child: Text(
+                                                          l10n.time_minute(
+                                                            minuteValue
+                                                                .toString()
+                                                                .padLeft(
+                                                              2,
+                                                              '0',
+                                                            ),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
+                                                      );
+                                                    },
+                                                  ),
+                                                  onChanged: isEnabled
+                                                      ? (newMinute) {
+                                                    doc.reference.update({
+                                                      'autoPostMinute':
+                                                      newMinute,
+                                                    });
+                                                  }
+                                                      : null,
+                                                ),
                                               ),
-                                              onChanged: isEnabled
-                                                  ? (newMinute) {
-                                                doc.reference.update({
-                                                  'autoPostMinute':
-                                                  newMinute,
-                                                });
-                                              }
-                                                  : null,
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Switch(
+                                      value: isEnabled,
+                                      activeThumbColor: primary,
+                                      activeTrackColor:
+                                      primary.withValues(alpha: 0.30),
+                                      inactiveThumbColor:
+                                      onSurface.withValues(alpha: 0.32),
+                                      inactiveTrackColor:
+                                      onSurface.withValues(alpha: 0.08),
+                                      onChanged: (bool newValue) {
+                                        doc.reference.update({
+                                          'autoPostEnabled': newValue,
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Divider(
+                                    height: 1,
+                                    color: theme.colorScheme.outlineVariant
+                                        .withValues(alpha: 0.18),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '允許 AI 自動回覆玩家動態',
+                                            style: GoogleFonts.notoSerifTc(
+                                              color: onSurface.withValues(
+                                                alpha: 0.78,
+                                              ),
+                                              fontSize: 12.8,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            '開啟後，角色才會被系統安排回覆玩家。',
+                                            style: GoogleFonts.notoSerifTc(
+                                              color: onSurface.withValues(
+                                                alpha: 0.42,
+                                              ),
+                                              fontSize: 10.8,
+                                              height: 1.4,
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                Switch(
-                                  value: isEnabled,
-                                  activeThumbColor: primary,
-                                  activeTrackColor:
-                                  primary.withValues(alpha: 0.30),
-                                  inactiveThumbColor:
-                                  onSurface.withValues(alpha: 0.32),
-                                  inactiveTrackColor:
-                                  onSurface.withValues(alpha: 0.08),
-                                  onChanged: (bool newValue) {
-                                    doc.reference.update({
-                                      'autoPostEnabled': newValue,
-                                    });
-                                  },
+                                    ),
+                                    Switch(
+                                      value: autoReplyEnabled,
+                                      activeThumbColor: primary,
+                                      activeTrackColor:
+                                      primary.withValues(alpha: 0.30),
+                                      inactiveThumbColor:
+                                      onSurface.withValues(alpha: 0.32),
+                                      inactiveTrackColor:
+                                      onSurface.withValues(alpha: 0.08),
+                                      onChanged: (bool newValue) {
+                                        doc.reference.update({
+                                          'autoReplyEnabled': newValue,
+                                        });
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

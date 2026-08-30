@@ -239,6 +239,7 @@ class _CommentBottomSheetState extends State<CommentBottomSheet> {
         'parentCommentId': parentId,
         'replyToName': replyName,
         'isPlayer': true,
+        'createdBy': currentUser.uid,
       });
 
       batch.update(momentRef, {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 // ✅ 修正：移除重複的 import，保留必要的
 import '../services/theme_notifier.dart';
@@ -15,7 +16,7 @@ import 'dart:async'; // ✨ 加上這一行，超時功能就能用了！
 import '../services/app_constants.dart';
 import '../services/app_update_service.dart';
 import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 //主介面
 
 class MainPage extends StatefulWidget {
@@ -62,6 +63,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           (index) => index == widget.initialIndex,
     );
 
+    // 記住玩家上次停留的主分頁；沒有紀錄時維持 initialIndex（預設 0＝推薦）。
+    unawaited(_restoreLastMainTab());
+
     // 1. 註冊監聽器
     WidgetsBinding.instance.addObserver(this);
 
@@ -90,6 +94,73 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       _performDailyTasks();
     }
   }
+  String? get _currentUserId => FirebaseAuth.instance.currentUser?.uid;
+
+  String? get _lastMainTabKey {
+    final uid = _currentUserId;
+    if (uid == null || uid.isEmpty) return null;
+    return 'last_main_tab_$uid';
+  }
+
+  Future<void> _restoreLastMainTab() async {
+    final key = _lastMainTabKey;
+    final uid = _currentUserId;
+
+    if (key == null || uid == null || uid.isEmpty) return;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedIndex = prefs.getInt(key);
+
+      if (!mounted || savedIndex == null) return;
+      if (savedIndex < 0 || savedIndex >= _pages.length) return;
+
+      if (savedIndex != _selectedIndex) {
+        setState(() {
+          _selectedIndex = savedIndex;
+          _isPageActivated[savedIndex] = true;
+        });
+      }
+
+      // 只有「上次主分頁 = 聊天」時才嘗試回到最後聊天室。
+      if (savedIndex != 2) return;
+
+      final characterId =
+          prefs.getString('last_chat_character_$uid')?.trim() ?? '';
+      final sessionId =
+          prefs.getString('last_chat_session_$uid')?.trim() ?? '';
+
+      if (characterId.isEmpty || sessionId.isEmpty) return;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+
+        Navigator.of(context).pushNamed(
+          '/chat',
+          arguments: {
+            'characterId': characterId,
+            'sessionId': sessionId,
+          },
+        );
+      });
+    } catch (e) {
+      debugPrint('⚠️ 讀取上次停留位置失敗：$e');
+    }
+  }
+
+  Future<void> _saveLastMainTab(int index) async {
+    final key = _lastMainTabKey;
+    if (key == null) return;
+    if (index < 0 || index >= _pages.length) return;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(key, index);
+    } catch (e) {
+      debugPrint('⚠️ 儲存上次主頁分頁失敗：$e');
+    }
+  }
+
   // --- 每日簽到邏輯 ---
   void _performDailyTasks() {
     final String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -163,9 +234,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                     const SizedBox(width: 8),
                     Text(
                       l10n.daily_gift_title,
-                      style: TextStyle(
+                      style: GoogleFonts.notoSerifTc(
                         color: primaryColor,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
                       ),
                     ),
                   ],
@@ -175,7 +247,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                     '戀戀拾光',
                     rewardAmount.toString(),
                   ),
-                  style: const TextStyle(height: 1.5),
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 14,
+                    height: 1.6,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.78),
+                  ),
                 ),
                 actionsPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -298,10 +374,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                                         rewardAmount.toString(),
                                       ),
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(
+                                      style: GoogleFonts.notoSerifTc(
                                         fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight.w700,
                                         color: Colors.black87,
+                                        height: 1.5,
                                       ),
                                     ),
                                     const SizedBox(height: 24),
@@ -325,8 +402,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                                         },
                                         child: Text(
                                           l10n.shop_purchase_awesome,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
+                                          style: GoogleFonts.notoSerifTc(
+                                            fontWeight: FontWeight.w700,
                                             fontSize: 16,
                                           ),
                                         ),
@@ -382,9 +459,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                       },
                       child: Text(
                         l10n.action_claim_now,
-                        style: TextStyle(
+                        style: GoogleFonts.notoSerifTc(
                           color: primaryColor,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w700,
                           fontSize: 16,
                         ),
                       ),
@@ -533,6 +610,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
       _selectedIndex = index;
       _isPageActivated[index] = true;
     });
+
+    unawaited(_saveLastMainTab(index));
   }
 
   @override

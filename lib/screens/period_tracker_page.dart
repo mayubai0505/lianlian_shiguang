@@ -82,6 +82,8 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
   List<DateTime> _previewForecastDays = <DateTime>[];
   int _averageCycleDays = 28;
   int _averagePeriodDays = 5;
+  bool _hasCycleAverage = false;
+  bool _hasPeriodAverage = false;
 
   static const List<MapEntry<String, String>> _moods = [
     MapEntry('😊', '還不錯'),
@@ -106,34 +108,29 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
 
   String? get _userId => FirebaseAuth.instance.currentUser?.uid;
 
+  DocumentReference<Map<String, dynamic>> get _userDoc =>
+      FirebaseFirestore.instance.collection('users').doc(_userId ?? 'dummy');
+
+  // 生理期本體與每日身心紀錄改為「玩家帳號共用」，不再綁定角色。
   CollectionReference<PeriodRecord> get _recordsCollection =>
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(_userId ?? 'dummy')
-          .collection('characters')
-          .doc(widget.character.id)
-          .collection('period_tracker')
-          .withConverter<PeriodRecord>(
+      _userDoc.collection('period_tracker').withConverter<PeriodRecord>(
         fromFirestore: (snapshot, _) =>
             PeriodRecord.fromFirestore(snapshot),
         toFirestore: (record, _) => record.toJson(),
       );
 
   CollectionReference<Map<String, dynamic>> get _dailyLogsCollection =>
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(_userId ?? 'dummy')
-          .collection('characters')
-          .doc(widget.character.id)
-          .collection('period_daily_logs');
+      _userDoc.collection('period_daily_logs');
 
   CollectionReference<Map<String, dynamic>> get _rawRecordsCollection =>
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(_userId ?? 'dummy')
+      _userDoc.collection('period_tracker');
+
+  // 「給角色的話」仍然保留角色維度。
+  CollectionReference<Map<String, dynamic>> get _characterPeriodNotesCollection =>
+      _userDoc
           .collection('characters')
           .doc(widget.character.id)
-          .collection('period_tracker');
+          .collection('period_notes');
 
   String _dayId(DateTime day) => DateFormat('yyyyMMdd').format(day);
 
@@ -143,6 +140,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _migrateLegacyPeriodDataIfNeeded();
       await _loadDayLog(_selectedDay);
       await _showFirstUseGuide();
     });
@@ -154,6 +152,185 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     _customSymptomController.dispose();
     _noteController.dispose();
     super.dispose();
+  }
+
+  Future<void> _migrateLegacyPeriodDataIfNeeded() async {
+    final userId = _userId;
+    if (userId == null) return;
+
+    try {
+      // 新版共用資料已存在就不再重複搬移。
+      final rootChecks = await Future.wait([
+        _rawRecordsCollection.limit(1).get(),
+        _dailyLogsCollection.limit(1).get(),
+      ]);
+
+      final hasNewRecords =
+          (rootChecks[0] as QuerySnapshot<Map<String, dynamic>>).docs.isNotEmpty;
+      final hasNewDailyLogs =
+          (rootChecks[1] as QuerySnapshot<Map<String, dynamic>>).docs.isNotEmpty;
+
+      if (hasNewRecords || hasNewDailyLogs) return;
+
+      final charactersSnapshot = await _userDoc.collection('characters').get();
+      if (charactersSnapshot.docs.isEmpty) return;
+
+      final mergedRecords = <String, Map<String, dynamic>>{};
+      final mergedDailyLogs = <String, Map<String, dynamic>>{};
+      final characterNotes = <String, Map<String, String>>{};
+      var foundLegacyData = false;
+
+      for (final characterDoc in charactersSnapshot.docs) {
+        final characterId = characterDoc.id;
+        final legacyCharacterRef = _userDoc
+            .collection('characters')
+            .doc(characterId);
+
+        final legacyResults = await Future.wait([
+          legacyCharacterRef.collection('period_tracker').get(),
+          legacyCharacterRef.collection('period_daily_logs').get(),
+        ]);
+
+        final legacyRecords =
+        legacyResults[0] as QuerySnapshot<Map<String, dynamic>>;
+        final legacyDailyLogs =
+        legacyResults[1] as QuerySnapshot<Map<String, dynamic>>;
+
+        if (legacyRecords.docs.isNotEmpty || legacyDailyLogs.docs.isNotEmpty) {
+          foundLegacyData = true;
+        }
+
+        for (final doc in legacyRecords.docs) {
+          final data = doc.data();
+          final startTimestamp = data['startDate'] as Timestamp?;
+          if (startTimestamp == null) continue;
+
+          final endTimestamp = data['endDate'] as Timestamp? ?? startTimestamp;
+          final startDate = _dateOnly(startTimestamp.toDate());
+          final endDate = _dateOnly(endTimestamp.toDate());
+          final isOngoing = data['isOngoing'] == true;
+
+          // 相同日期範圍視為同一筆，避免玩家曾在多個角色底下記錄時重複。
+          final migrationId =
+              'legacy_${_dayId(startDate)}_${_dayId(endDate)}_${isOngoing ? 'ongoing' : 'done'}';
+
+          mergedRecords.putIfAbsent(migrationId, () => {
+            'startDate': Timestamp.fromDate(startDate),
+            'endDate': Timestamp.fromDate(endDate),
+            'isOngoing': isOngoing,
+            'mood': data['mood']?.toString() ?? '',
+            'createdAt': data['createdAt'] ?? FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+            'migratedFromLegacy': true,
+          });
+        }
+
+        for (final doc in legacyDailyLogs.docs) {
+          final data = doc.data();
+          final dayId = doc.id;
+          final dateTimestamp = data['date'] as Timestamp?;
+
+          DateTime fallbackDate = _selectedDay;
+          if (dayId.length == 8) {
+            final year = int.tryParse(dayId.substring(0, 4));
+            final month = int.tryParse(dayId.substring(4, 6));
+            final day = int.tryParse(dayId.substring(6, 8));
+            if (year != null && month != null && day != null) {
+              fallbackDate = DateTime(year, month, day);
+            }
+          }
+
+          final merged = mergedDailyLogs.putIfAbsent(dayId, () => {
+            'date': dateTimestamp ?? Timestamp.fromDate(fallbackDate),
+            'moods': <String>{},
+            'symptoms': <String>{},
+            'customMoods': <String>{},
+            'customSymptoms': <String>{},
+            'periodAction': 'none',
+          });
+
+          void mergeListIntoSet(String field, String targetField) {
+            final values = data[field];
+            if (values is Iterable) {
+              (merged[targetField] as Set<String>).addAll(
+                values
+                    .map((value) => value.toString().trim())
+                    .where((value) => value.isNotEmpty),
+              );
+            }
+          }
+
+          mergeListIntoSet('moods', 'moods');
+          mergeListIntoSet('symptoms', 'symptoms');
+
+          final customMood = data['customMood']?.toString().trim() ?? '';
+          if (customMood.isNotEmpty) {
+            (merged['customMoods'] as Set<String>).add(customMood);
+          }
+
+          final customSymptom =
+              data['customSymptom']?.toString().trim() ?? '';
+          if (customSymptom.isNotEmpty) {
+            (merged['customSymptoms'] as Set<String>).add(customSymptom);
+          }
+
+          final action = data['periodAction']?.toString() ?? 'none';
+          if (merged['periodAction'] == 'none' && action != 'none') {
+            merged['periodAction'] = action;
+          }
+
+          final note = data['note']?.toString().trim() ?? '';
+          if (note.isNotEmpty) {
+            characterNotes
+                .putIfAbsent(characterId, () => <String, String>{})[dayId] = note;
+          }
+        }
+      }
+
+      if (!foundLegacyData) return;
+
+      // 先寫共用週期資料。
+      for (final entry in mergedRecords.entries) {
+        await _rawRecordsCollection.doc(entry.key).set(entry.value);
+      }
+
+      // 再寫共用每日身心資料；角色專屬備註不混入其中。
+      for (final entry in mergedDailyLogs.entries) {
+        final data = entry.value;
+        await _dailyLogsCollection.doc(entry.key).set({
+          'date': data['date'],
+          'moods': (data['moods'] as Set<String>).toList(),
+          'symptoms': (data['symptoms'] as Set<String>).toList(),
+          'customMood': (data['customMoods'] as Set<String>).join(' / '),
+          'customSymptom':
+          (data['customSymptoms'] as Set<String>).join(' / '),
+          'periodAction': data['periodAction'],
+          'updatedAt': FieldValue.serverTimestamp(),
+          'migratedFromLegacy': true,
+        }, SetOptions(merge: true));
+      }
+
+      // 最後把舊的「給角色的話」搬到各自角色底下的新 notes 集合。
+      for (final characterEntry in characterNotes.entries) {
+        final notesCollection = _userDoc
+            .collection('characters')
+            .doc(characterEntry.key)
+            .collection('period_notes');
+
+        for (final noteEntry in characterEntry.value.entries) {
+          await notesCollection.doc(noteEntry.key).set({
+            'note': noteEntry.value,
+            'updatedAt': FieldValue.serverTimestamp(),
+            'migratedFromLegacy': true,
+          }, SetOptions(merge: true));
+        }
+      }
+
+      debugPrint('✅ 舊版生理期資料已搬移為帳號共用格式');
+    } catch (e) {
+      // 搬移失敗不阻塞頁面；舊資料仍留在原路徑，不會被刪除。
+      debugPrint('⚠️ 舊版生理期資料搬移失敗：$e');
+    }
   }
 
   Future<void> _showFirstUseGuide() async {
@@ -211,8 +388,16 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     });
 
     try {
-      final snapshot = await _dailyLogsCollection.doc(_dayId(day)).get();
-      final data = snapshot.data();
+      final dayId = _dayId(day);
+      final results = await Future.wait([
+        _dailyLogsCollection.doc(dayId).get(),
+        _characterPeriodNotesCollection.doc(dayId).get(),
+      ]);
+
+      final data =
+      (results[0] as DocumentSnapshot<Map<String, dynamic>>).data();
+      final noteData =
+      (results[1] as DocumentSnapshot<Map<String, dynamic>>).data();
 
       if (!mounted) return;
       setState(() {
@@ -225,7 +410,7 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
         _customMoodController.text = data?['customMood']?.toString() ?? '';
         _customSymptomController.text =
             data?['customSymptom']?.toString() ?? '';
-        _noteController.text = data?['note']?.toString() ?? '';
+        _noteController.text = noteData?['note']?.toString() ?? '';
         _selectedAction = _PeriodAction.none;
       });
     } catch (e) {
@@ -239,6 +424,8 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
     if (records.isEmpty) {
       _averageCycleDays = 28;
       _averagePeriodDays = 5;
+      _hasCycleAverage = false;
+      _hasPeriodAverage = false;
       _predictedDays = <DateTime>[];
       _currentPeriodForecastDays = <DateTime>[];
       return;
@@ -265,6 +452,9 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
         .where((days) => days >= 1 && days <= 15)
         .toList();
 
+    _hasCycleAverage = cycleLengths.isNotEmpty;
+    _hasPeriodAverage = completedDurations.isNotEmpty;
+
     _averageCycleDays = cycleLengths.isEmpty
         ? 28
         : (cycleLengths.reduce((a, b) => a + b) / cycleLengths.length)
@@ -275,12 +465,18 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
         completedDurations.length)
         .round();
 
-    final nextStart = _dateOnly(sorted.last.startDate)
-        .add(Duration(days: _averageCycleDays));
-    _predictedDays = List.generate(
-      _averagePeriodDays,
-          (index) => nextStart.add(Duration(days: index)),
-    );
+    // 至少要有兩次開始日才能建立玩家自己的平均週期，
+    // 資料不足時不使用 28 天預設值假裝成個人預測。
+    if (_hasCycleAverage) {
+      final nextStart = _dateOnly(sorted.last.startDate)
+          .add(Duration(days: _averageCycleDays));
+      _predictedDays = List.generate(
+        _averagePeriodDays,
+            (index) => nextStart.add(Duration(days: index)),
+      );
+    } else {
+      _predictedDays = <DateTime>[];
+    }
 
     final ongoing = sorted.cast<PeriodRecord?>().firstWhere(
           (record) => record?.isOngoing == true,
@@ -385,16 +581,30 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
           break;
       }
 
-      batch.set(_dailyLogsCollection.doc(_dayId(_selectedDay)), {
+      final dayId = _dayId(_selectedDay);
+
+      batch.set(_dailyLogsCollection.doc(dayId), {
         'date': Timestamp.fromDate(_dateOnly(_selectedDay)),
         'moods': _selectedMoods.toList(),
         'symptoms': _selectedSymptoms.toList(),
         'customMood': _customMoodController.text.trim(),
         'customSymptom': _customSymptomController.text.trim(),
-        'note': _noteController.text.trim(),
         'periodAction': _selectedAction.name,
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
+
+      final noteRef = _characterPeriodNotesCollection.doc(dayId);
+      final note = _noteController.text.trim();
+
+      if (note.isEmpty) {
+        batch.delete(noteRef);
+      } else {
+        batch.set(noteRef, {
+          'note': note,
+          'date': Timestamp.fromDate(_dateOnly(_selectedDay)),
+          'updatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
 
       await batch.commit();
 
@@ -516,8 +726,14 @@ class _PeriodTrackerPageState extends State<PeriodTrackerPage> {
             spacing: 10,
             runSpacing: 8,
             children: [
-              _statChip(l10n.periodAverageCycle, l10n.periodDays(_averageCycleDays)),
-              _statChip(l10n.periodAverageDuration, l10n.periodDays(_averagePeriodDays)),
+              _statChip(
+                l10n.periodAverageCycle,
+                _hasCycleAverage ? l10n.periodDays(_averageCycleDays) : '—',
+              ),
+              _statChip(
+                l10n.periodAverageDuration,
+                _hasPeriodAverage ? l10n.periodDays(_averagePeriodDays) : '—',
+              ),
               _statChip(
                 l10n.periodNextPrediction,
                 nextDate == null

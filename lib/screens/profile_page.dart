@@ -18,6 +18,7 @@ import '../services/theme_notifier.dart';
 import 'character_profile_page.dart';
 import 'edit_profile_page.dart';
 import 'chat_page.dart';
+import 'creator_scene_page.dart';
 import 'all_friends_page.dart';
 import 'character_model.dart';
 import 'settings_page.dart';
@@ -3094,7 +3095,6 @@ class _ProfilePageState extends State<ProfilePage>
           child: Wrap(
             children: [
               ListTile(
-                leading: const Icon(Icons.edit_outlined),
                 title: Text(l10n.profilePageEditCharacter),
                 onTap: () async {
                   Navigator.pop(sheetContext);
@@ -3112,10 +3112,8 @@ class _ProfilePageState extends State<ProfilePage>
                   await _refreshData();
                 },
               ),
+
               ListTile(
-                leading: const Icon(
-                  Icons.visibility_outlined,
-                ),
                 title: Text(l10n.profilePagePreviewCharacter),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -3135,6 +3133,24 @@ class _ProfilePageState extends State<ProfilePage>
                           character: character,
                         );
                       },
+                    ),
+                  );
+                },
+              ),
+
+              ListTile(
+                title: const Text('創建劇場'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CreatorScenePage(
+                        characterId: character.id,
+                        characterName: character.name,
+                        isPublic: character.isPublic,
+                      ),
                     ),
                   );
                 },
