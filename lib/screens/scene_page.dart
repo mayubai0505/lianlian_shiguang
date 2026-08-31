@@ -1,19 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/app_constants.dart';
 import 'custom_scene_edit_page.dart';
 
 class ScenePage extends StatefulWidget {
   final String characterId;
   final String characterName;
   final String sessionId;
+  final bool isPublic;
 
   const ScenePage({
     super.key,
     required this.characterId,
     required this.characterName,
     required this.sessionId,
+    required this.isPublic,
   });
 
   @override
@@ -26,10 +29,27 @@ class _ScenePageState extends State<ScenePage>
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _creatorScenesRef {
+    if (widget.isPublic) {
+      return _db
+          .collection('artifacts')
+          .doc(AppConfig.appId)
+          .collection('public_characters')
+          .doc(widget.characterId)
+          .collection('scenes');
+    }
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw StateError('Private character requires a signed-in user.');
+    }
+
     return _db
         .collection('artifacts')
-        .doc('lianlianshiguang')
-        .collection('public_characters')
+        .doc(AppConfig.appId)
+        .collection('users')
+        .doc(user.uid)
+        .collection('private_characters')
         .doc(widget.characterId)
         .collection('scenes');
   }
@@ -37,7 +57,7 @@ class _ScenePageState extends State<ScenePage>
   CollectionReference<Map<String, dynamic>> get _customScenesRef {
     return _db
         .collection('artifacts')
-        .doc('lianlianshiguang')
+        .doc(AppConfig.appId)
         .collection('chat_sessions')
         .doc(widget.sessionId)
         .collection('scenes');
@@ -46,7 +66,7 @@ class _ScenePageState extends State<ScenePage>
   DocumentReference<Map<String, dynamic>> get _sessionRef {
     return _db
         .collection('artifacts')
-        .doc('lianlianshiguang')
+        .doc(AppConfig.appId)
         .collection('chat_sessions')
         .doc(widget.sessionId);
   }
