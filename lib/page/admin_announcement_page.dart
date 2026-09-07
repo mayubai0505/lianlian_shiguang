@@ -1979,16 +1979,27 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         children: [
           Row(
             children: [
-              Icon(icon, size: 18, color: primary.withValues(alpha: 0.78)),
-              const Spacer(),
+              Icon(
+                icon,
+                size: 18,
+                color: primary.withValues(alpha: 0.78),
+              ),
+              const SizedBox(width: 6),
               if (caption != null)
-                Text(
-                  caption,
-                  style: GoogleFonts.notoSerifTc(
-                    fontSize: 10.5,
-                    color: onSurface.withValues(alpha: 0.42),
+                Expanded(
+                  child: Text(
+                    caption,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.right,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 10.5,
+                      color: onSurface.withValues(alpha: 0.42),
+                    ),
                   ),
-                ),
+                )
+              else
+                const Spacer(),
             ],
           ),
           const SizedBox(height: 8),
@@ -2018,11 +2029,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     );
   }
 
-  DateTime _startOfToday() {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
-  }
-
   DateTime? _dateFromDynamic(dynamic raw) {
     if (raw is Timestamp) return raw.toDate();
     if (raw is DateTime) return raw;
@@ -2030,169 +2036,212 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
     return null;
   }
 
+  String _formatRetentionText(
+      Map<String, dynamic> item,
+      ) {
+    final rate =
+    (item['rate'] as num?)
+        ?.toDouble();
+
+    if (rate == null) {
+      return '—';
+    }
+
+    return '${rate.toStringAsFixed(1)}%';
+  }
+
   Future<Map<String, dynamic>> _loadDashboardData() async {
-    final db = FirebaseFirestore.instance;
-    final today = _startOfToday();
-    final sevenDaysAgo = today.subtract(const Duration(days: 6));
-
-    final usersFuture = db.collection('users').get();
-    final publicCharactersFuture = db
-        .collection('artifacts')
-        .doc(AppConfig.appId)
-        .collection('public_characters')
-        .get();
-    final pendingCharactersFuture = db
-        .collection('artifacts')
-        .doc(AppConfig.appId)
-        .collection('pending_characters')
-        .get();
-    final reportsFuture = db.collection('reports').get();
-    // chat_sessions 目前可能沒有開放給 App 端管理員直接讀取。
-    // 後台總覽不能因為單一集合權限不足就整頁炸掉，所以這裡改成安全讀取。
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> sessionDocs = [];
     try {
-      final sessionsSnapshot = await db
-          .collection('artifacts')
-          .doc(AppConfig.appId)
-          .collection('chat_sessions')
-          .where(
-        'lastActivity',
-        isGreaterThanOrEqualTo: Timestamp.fromDate(sevenDaysAgo),
-      )
-          .get();
+      final dashboardCallable =
+      _functions.httpsCallable(
+        'getAdminDashboardStats',
+        options: HttpsCallableOptions(
+          timeout:
+          const Duration(seconds: 120),
+        ),
+      );
 
-      sessionDocs = sessionsSnapshot.docs;
-    } on FirebaseException catch (e) {
+      final recommendationCallable =
+      _functions.httpsCallable(
+        'getRecommendationConversionStats',
+        options: HttpsCallableOptions(
+          timeout:
+          const Duration(seconds: 30),
+        ),
+      );
+
+      final flowerCallable =
+      _functions.httpsCallable(
+        'getAdminFlowerStats',
+        options: HttpsCallableOptions(
+          timeout:
+          const Duration(seconds: 60),
+        ),
+      );
+
+      final revenueCallable =
+      _functions.httpsCallable(
+        'getAdminRevenueStats',
+        options: HttpsCallableOptions(
+          timeout:
+          const Duration(seconds: 60),
+        ),
+      );
+
+      final results =
+      await Future.wait([
+        dashboardCallable.call(),
+        recommendationCallable.call(),
+        flowerCallable.call(),
+        revenueCallable.call(),
+      ]);
+
+      final dashboardResult = results[0];
+
+      final recommendationResult =
+      results[1];
+
+      final flowerResult =
+      results[2];
+
+      final revenueResult =
+      results[3];
+
+      if (dashboardResult.data is! Map) {
+        throw Exception(
+          '管理後台統計資料格式不正確',
+        );
+      }
+
+      final data =
+      Map<String, dynamic>.from(
+        dashboardResult.data as Map,
+      );
+
+      if (revenueResult.data is Map) {
+        data['revenue'] =
+        Map<String, dynamic>.from(
+          revenueResult.data as Map,
+        );
+      }
+
+      if (recommendationResult.data
+      is Map) {
+        data['recommendationConversion'] =
+        Map<String, dynamic>.from(
+          recommendationResult.data as Map,
+        );
+      }
+
+      if (flowerResult.data is Map) {
+        final flowerData =
+        Map<String, dynamic>.from(
+          flowerResult.data as Map,
+        );
+
+        data['flowerGranted'] =
+            (flowerData['flowerGranted']
+            as num?)
+                ?.toInt() ??
+                0;
+
+        data['flowerSpent'] =
+            (flowerData['flowerSpent']
+            as num?)
+                ?.toInt() ??
+                0;
+      }
+
       debugPrint(
-        '⚠️ 後台暫時無法讀取 chat_sessions：${e.code} ${e.message}',
+        '📊 管理後台統計讀取成功：'
+            'activeUsers=${data['todayActiveUsers']} '
+            'todaySessions=${data['todayChatSessions']} '
+            'sessions7d=${data['sessions7d']}',
       );
-    } catch (e) {
-      debugPrint('⚠️ 後台讀取 chat_sessions 失敗：$e');
-    }
 
-    final results = await Future.wait([
-      usersFuture,
-      publicCharactersFuture,
-      pendingCharactersFuture,
-      reportsFuture,
-    ]);
-
-    final users = results[0] as QuerySnapshot<Map<String, dynamic>>;
-    final characters = results[1] as QuerySnapshot<Map<String, dynamic>>;
-    final pendingCharacters = results[2] as QuerySnapshot<Map<String, dynamic>>;
-    final reports = results[3] as QuerySnapshot<Map<String, dynamic>>;
-
-    int todayNewUsers = 0;
-    int monthlyActive = 0;
-    final now = DateTime.now();
-    final List<int> userGrowth = List<int>.filled(7, 0);
-
-    for (final doc in users.docs) {
-      final data = doc.data();
-      final created = _dateFromDynamic(
-        data['createdAt'] ?? data['registeredAt'] ?? data['joinedAt'],
+      return data;
+    } on FirebaseFunctionsException catch (error, stackTrace) {
+      debugPrint(
+        '❌ 管理後台統計 Function 失敗：'
+            '${error.code} ${error.message}',
       );
-      if (created != null) {
-        if (!created.isBefore(today)) todayNewUsers++;
-        final diff = DateTime(created.year, created.month, created.day)
-            .difference(sevenDaysAgo)
-            .inDays;
-        if (diff >= 0 && diff < 7) userGrowth[diff]++;
-      }
 
-      final monthlyEnd = _dateFromDynamic(
-        data['monthlySubEndDate'] ?? data['subscriptionEndAt'],
+      debugPrint(
+        'details: ${error.details}',
       );
-      if (monthlyEnd != null && monthlyEnd.isAfter(now)) monthlyActive++;
-    }
 
-    int todayNewCharacters = 0;
-    for (final doc in characters.docs) {
-      final data = doc.data();
-      final created = _dateFromDynamic(
-        data['publishedAt'] ?? data['createdAt'] ?? data['updatedAt'],
+      debugPrintStack(
+        stackTrace: stackTrace,
       );
-      if (created != null && !created.isBefore(today)) todayNewCharacters++;
+
+      rethrow;
+    } catch (error, stackTrace) {
+      debugPrint(
+        '❌ 讀取管理後台統計失敗：$error',
+      );
+
+      debugPrintStack(
+        stackTrace: stackTrace,
+      );
+
+      rethrow;
     }
+  }
 
-    int pendingReports = 0;
-    for (final doc in reports.docs) {
-      final status = doc.data()['status']?.toString().trim() ?? '';
-      if (status.isEmpty || status == 'pending' || status == 'processing') {
-        pendingReports++;
-      }
-    }
-
-    final Set<String> activeUserIdsToday = <String>{};
-    int activeSessionsToday = 0;
-    final List<int> chatTrend = List<int>.filled(7, 0);
-    final Map<String, int> chatModes = <String, int>{};
-    final Map<String, int> characterChatCounts = <String, int>{};
-
-    for (final doc in sessionDocs) {
-      final data = doc.data();
-      final lastActivity = _dateFromDynamic(data['lastActivity']);
-      if (lastActivity == null) continue;
-
-      final dayIndex = DateTime(lastActivity.year, lastActivity.month, lastActivity.day)
-          .difference(sevenDaysAgo)
-          .inDays;
-      if (dayIndex >= 0 && dayIndex < 7) chatTrend[dayIndex]++;
-
-      if (!lastActivity.isBefore(today)) {
-        activeSessionsToday++;
-        final userId = data['userId']?.toString().trim() ?? '';
-        if (userId.isNotEmpty) activeUserIdsToday.add(userId);
-      }
-
-      final mode = data['chatMode']?.toString().trim() ?? 'daily';
-      chatModes[mode] = (chatModes[mode] ?? 0) + 1;
-
-      final characterId = data['characterId']?.toString().trim() ?? '';
-      if (characterId.isNotEmpty) {
-        characterChatCounts[characterId] =
-            (characterChatCounts[characterId] ?? 0) + 1;
-      }
-    }
-
-    int flowerGranted = 0;
-    int flowerSpent = 0;
+  Future<Map<String, dynamic>>
+  _loadSystemHealth() async {
     try {
-      final logs = await db
-          .collectionGroup('flower_logs')
-          .where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(today))
-          .get();
-      for (final doc in logs.docs) {
-        final data = doc.data();
-        final amount = (data['amount'] as num?)?.toInt() ?? 0;
-        if (amount >= 0) {
-          flowerGranted += amount;
-        } else {
-          flowerSpent += amount.abs();
-        }
-      }
-    } catch (e) {
-      debugPrint('⚠️ 後台讀取今日花花明細失敗：$e');
-    }
+      final callable =
+      _functions.httpsCallable(
+        'getAdminSystemHealth',
+        options:
+        HttpsCallableOptions(
+          timeout:
+          const Duration(
+            seconds: 30,
+          ),
+        ),
+      );
 
-    return {
-      'totalUsers': users.docs.length,
-      'todayNewUsers': todayNewUsers,
-      'todayActiveUsers': activeUserIdsToday.length,
-      'publicCharacters': characters.docs.length,
-      'todayNewCharacters': todayNewCharacters,
-      'pendingCharacters': pendingCharacters.docs.length,
-      'pendingReports': pendingReports,
-      'todayChatSessions': activeSessionsToday,
-      'flowerGranted': flowerGranted,
-      'flowerSpent': flowerSpent,
-      'monthlyActive': monthlyActive,
-      'userGrowth': userGrowth,
-      'chatTrend': chatTrend,
-      'chatModes': chatModes,
-      'characterChatCounts': characterChatCounts,
-      'sessions7d': sessionDocs.length,
-    };
+      final result =
+      await callable.call();
+
+      if (result.data is! Map) {
+        throw Exception(
+          '系統健康資料格式不正確',
+        );
+      }
+
+      return Map<String, dynamic>.from(
+        result.data as Map,
+      );
+    } on FirebaseFunctionsException catch (
+    error,
+    stackTrace
+    ) {
+    debugPrint(
+    '❌ 系統健康資料讀取失敗：'
+    '${error.code} '
+    '${error.message}',
+    );
+
+    debugPrintStack(
+    stackTrace: stackTrace,
+    );
+
+    rethrow;
+    } catch (error, stackTrace) {
+    debugPrint(
+    '❌ 系統健康資料錯誤：'
+    '$error',
+    );
+
+    debugPrintStack(
+    stackTrace: stackTrace,
+    );
+
+    rethrow;
+    }
   }
 
   Widget _miniBarChart({
@@ -2316,7 +2365,6 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                     _adminStatCard(label: '今日活躍玩家', value: v('todayActiveUsers'), icon: Icons.bolt_outlined, caption: '聊天室活動'),
                     _adminStatCard(label: '目前公開角色', value: v('publicCharacters'), icon: Icons.auto_awesome_outlined),
                     _adminStatCard(label: '今日新增角色', value: v('todayNewCharacters'), icon: Icons.person_pin_circle_outlined),
-                    _adminStatCard(label: '待審角色', value: v('pendingCharacters'), icon: Icons.fact_check_outlined),
                     _adminStatCard(label: '待處理客服', value: v('pendingReports'), icon: Icons.support_agent_outlined),
                     _adminStatCard(label: '今日活躍聊天室', value: v('todayChatSessions'), icon: Icons.forum_outlined),
                     _adminStatCard(label: '今日花花發放 / 消耗', value: '${v('flowerGranted')} / ${v('flowerSpent')}', icon: Icons.local_florist_outlined),
@@ -3074,6 +3122,107 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           return const Center(child: CircularProgressIndicator());
         }
         final data = snapshot.data ?? <String, dynamic>{};
+        final recommendation =
+        Map<String, dynamic>.from(
+          data['recommendationConversion'] ??
+              <String, dynamic>{},
+        );
+
+        final recommendationClicks =
+            (recommendation['clicks'] as num?)
+                ?.toInt() ??
+                0;
+
+        final recommendationChatStarts =
+            (recommendation['chatStarts']
+            as num?)
+                ?.toInt() ??
+                0;
+
+        final revenue =
+        Map<String, dynamic>.from(
+          data['revenue'] ??
+              <String, dynamic>{},
+        );
+
+        final revenueTwd =
+            (revenue['revenueTwd']
+            as num?)
+                ?.toDouble() ??
+                0;
+
+        final payingUsers =
+            (revenue['payingUsers']
+            as num?)
+                ?.toInt() ??
+                0;
+
+        final arppuTwd =
+        (revenue['arppuTwd']
+        as num?)
+            ?.toDouble();
+
+        final recommendationRate =
+        (recommendation['conversionRate']
+        as num?)
+            ?.toDouble();
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    size: 42,
+                    color: Colors.redAccent,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '讀取分析資料失敗',
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${snapshot.error}',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        final retention =
+        Map<String, dynamic>.from(
+          data['retention'] ??
+              <String, dynamic>{},
+        );
+
+        final d1 =
+        Map<String, dynamic>.from(
+          retention['d1'] ??
+              <String, dynamic>{},
+        );
+
+        final d7 =
+        Map<String, dynamic>.from(
+          retention['d7'] ??
+              <String, dynamic>{},
+        );
+
+        final d30 =
+        Map<String, dynamic>.from(
+          retention['d30'] ??
+              <String, dynamic>{},
+        );
         final sessions7d = (data['sessions7d'] as num?)?.toInt() ?? 0;
         final activeToday = (data['todayActiveUsers'] as num?)?.toInt() ?? 0;
         final todaySessions = (data['todayChatSessions'] as num?)?.toInt() ?? 0;
@@ -3110,10 +3259,70 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
                   _adminStatCard(label: '日常模式占比', value: modePercent('daily'), icon: Icons.chat_bubble_outline),
                   _adminStatCard(label: '劇情模式占比', value: modePercent('story'), icon: Icons.menu_book_outlined),
                   _adminStatCard(label: '沉浸模式占比', value: modePercent('immersive'), icon: Icons.auto_stories_outlined),
-                  _adminStatCard(label: 'D1 / D7 / D30 留存', value: '待埋點', icon: Icons.repeat_rounded),
-                  _adminStatCard(label: '推薦 → 開聊轉換', value: '待埋點', icon: Icons.route_outlined),
-                  _adminStatCard(label: '收入 / 付費玩家 / ARPPU', value: '待金流彙總', icon: Icons.payments_outlined),
-                ],
+                  _adminStatCard(
+                    label: 'D1 留存',
+                    value: _formatRetentionText(d1),
+                    icon: Icons.looks_one_outlined,
+                    caption:
+                    '${(d1['returned'] as num?)?.toInt() ?? 0} / '
+                        '${(d1['cohortSize'] as num?)?.toInt() ?? 0}',
+                  ),
+
+                  _adminStatCard(
+                    label: 'D7 留存',
+                    value: _formatRetentionText(d7),
+                    icon: Icons.calendar_view_week_outlined,
+                    caption:
+                    '${(d7['returned'] as num?)?.toInt() ?? 0} / '
+                        '${(d7['cohortSize'] as num?)?.toInt() ?? 0}',
+                  ),
+
+                  _adminStatCard(
+                    label: 'D30 留存',
+                    value: _formatRetentionText(d30),
+                    icon: Icons.calendar_month_outlined,
+                    caption:
+                    '${(d30['returned'] as num?)?.toInt() ?? 0} / '
+                        '${(d30['cohortSize'] as num?)?.toInt() ?? 0}',
+                  ),
+                  _adminStatCard(
+                    label: '推薦 → 開聊轉換',
+                    value: recommendationRate == null
+                        ? '—'
+                        : '${recommendationRate.toStringAsFixed(1)}%',
+                    icon: Icons.route_outlined,
+                    caption:
+                    '$recommendationChatStarts / '
+                        '$recommendationClicks',
+                  ),
+                  _adminStatCard(
+                    label: '今日收入',
+                    value:
+                    'NT\$${revenueTwd.toStringAsFixed(0)}',
+                    icon:
+                    Icons.payments_outlined,
+                    caption: '手機 IAP',
+                  ),
+
+                  _adminStatCard(
+                    label: '今日付費玩家',
+                    value:
+                    '$payingUsers',
+                    icon:
+                    Icons.person_outline_rounded,
+                    caption: '不重複玩家',
+                  ),
+
+                  _adminStatCard(
+                    label: '今日 ARPPU',
+                    value:
+                    arppuTwd == null
+                        ? '—'
+                        : 'NT\$${arppuTwd.toStringAsFixed(0)}',
+                    icon:
+                    Icons.calculate_outlined,
+                    caption: '收入 / 付費玩家',
+                  ),                ],
               ),
             ),
             const SizedBox(height: 16),
@@ -3143,8 +3352,10 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
         children: [
           _adminPageHeader(
             title: '系統健康',
-            subtitle: '系統工具已集中在這裡；AI 成功率、錯誤率與成本需由後端寫入日誌後才能可靠顯示。',
-            icon: Icons.monitor_heart_outlined,
+            subtitle:
+            '即時掌握 AI 請求成功率、失敗、Fallback、Timeout、回覆速度與使用量。',
+            icon:
+            Icons.monitor_heart_outlined,
           ),
           const TabBar(
             tabs: [
@@ -3155,55 +3366,318 @@ class _AdminAnnouncementPageState extends State<AdminAnnouncementPage>
           Expanded(
             child: TabBarView(
               children: [
-                ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
+                FutureBuilder<Map<String, dynamic>>(
+                  future: _loadSystemHealth(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                        child:
+                        CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Padding(
+                          padding:
+                          const EdgeInsets.all(
+                            24,
+                          ),
+                          child: Column(
+                            mainAxisSize:
+                            MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons
+                                    .error_outline_rounded,
+                                size: 42,
+                                color:
+                                Colors.redAccent,
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Text(
+                                '健康資料讀取失敗',
+                                style:
+                                GoogleFonts
+                                    .notoSerifTc(
+                                  fontSize: 17,
+                                  fontWeight:
+                                  FontWeight.w600,
                                 ),
-                                const SizedBox(width: 9),
-                                Text('監測資料尚未完整接入', style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700)),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Gemini 成功率、DeepSeek 成功率、content filter、AI request failure、Functions 錯誤、平均回覆時間、API 用量與預估成本，需要 Cloud Functions / AI gateway 寫入 ai_usage_daily 後才能計算。',
-                              style: GoogleFonts.notoSerifTc(fontSize: 12, height: 1.6),
-                            ),
-                          ],
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                '${snapshot.error}',
+                                textAlign:
+                                TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
+                      );
+                    }
+
+                    final data =
+                        snapshot.data ??
+                            <String, dynamic>{};
+
+                    final requests =
+                        (data['requests']
+                        as num?)
+                            ?.toInt() ??
+                            0;
+
+                    final apiAttempts =
+                        (data['apiAttempts']
+                        as num?)
+                            ?.toInt() ??
+                            0;
+
+                    final failureCount =
+                        (data['failureCount']
+                        as num?)
+                            ?.toInt() ??
+                            0;
+
+                    final fallbackCount =
+                        (data['fallbackCount']
+                        as num?)
+                            ?.toInt() ??
+                            0;
+
+                    final filterCount =
+                        (data['contentFilterCount']
+                        as num?)
+                            ?.toInt() ??
+                            0;
+
+                    final timeoutCount =
+                        (data['timeoutCount']
+                        as num?)
+                            ?.toInt() ??
+                            0;
+
+                    final totalTokens =
+                        (data['totalTokens']
+                        as num?)
+                            ?.toInt() ??
+                            0;
+
+                    final successRate =
+                        (data['successRate']
+                        as num?)
+                            ?.toDouble() ??
+                            0;
+
+                    final failureRate =
+                        (data['failureRate']
+                        as num?)
+                            ?.toDouble() ??
+                            0;
+
+                    final avgLatencyMs =
+                        (data['averageLatencyMs']
+                        as num?)
+                            ?.toDouble() ??
+                            0;
+
+                    final avgSeconds =
+                        avgLatencyMs / 1000;
+
+                    final bool healthy =
+                        requests == 0 ||
+                            successRate >= 95;
+
+                    final Color statusColor =
+                    requests == 0
+                        ? Colors.grey
+                        : healthy
+                        ? Colors.green
+                        : successRate >= 85
+                        ? Colors.orange
+                        : Colors.redAccent;
+
+                    final String statusText =
+                    requests == 0
+                        ? '今天尚無 AI 請求'
+                        : healthy
+                        ? 'AI 系統運作正常'
+                        : successRate >= 85
+                        ? 'AI 系統需要留意'
+                        : 'AI 系統異常偏高';
+
+                    String formatTokens(
+                        int value) {
+                      if (value >= 1000000) {
+                        return '${(value / 1000000).toStringAsFixed(2)}M';
+                      }
+
+                      if (value >= 1000) {
+                        return '${(value / 1000).toStringAsFixed(1)}K';
+                      }
+
+                      return '$value';
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        setState(() {});
+                      },
+                      child: ListView(
+                        padding:
+                        const EdgeInsets.all(
+                          20,
+                        ),
+                        children: [
+                          Card(
+                            child: Padding(
+                              padding:
+                              const EdgeInsets.all(
+                                18,
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration:
+                                    BoxDecoration(
+                                      color:
+                                      statusColor,
+                                      shape:
+                                      BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 9,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      statusText,
+                                      style:
+                                      GoogleFonts
+                                          .notoSerifTc(
+                                        fontWeight:
+                                        FontWeight
+                                            .w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(
+                            height: 12,
+                          ),
+
+                          GridView.count(
+                            crossAxisCount:
+                            MediaQuery.sizeOf(
+                                context)
+                                .width >=
+                                800
+                                ? 4
+                                : 2,
+                            shrinkWrap: true,
+                            physics:
+                            const NeverScrollableScrollPhysics(),
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: 1.15,
+                            children: [
+                              _adminStatCard(
+                                label:
+                                'AI 成功率',
+                                value:
+                                '${successRate.toStringAsFixed(1)}%',
+                                icon: Icons
+                                    .check_circle_outline_rounded,
+                              ),
+
+                              _adminStatCard(
+                                label:
+                                'AI 失敗率',
+                                value:
+                                '${failureRate.toStringAsFixed(1)}%',
+                                icon: Icons
+                                    .error_outline_rounded,
+                                caption:
+                                '$failureCount 次',
+                              ),
+
+                              _adminStatCard(
+                                label:
+                                'Content Filter',
+                                value:
+                                '$filterCount',
+                                icon: Icons
+                                    .shield_outlined,
+                                caption: '今日',
+                              ),
+
+                              _adminStatCard(
+                                label:
+                                'Fallback',
+                                value:
+                                '$fallbackCount',
+                                icon: Icons
+                                    .swap_horiz_rounded,
+                                caption: '今日切換',
+                              ),
+
+                              _adminStatCard(
+                                label:
+                                'Timeout',
+                                value:
+                                '$timeoutCount',
+                                icon: Icons
+                                    .timer_off_outlined,
+                                caption: '今日',
+                              ),
+
+                              _adminStatCard(
+                                label:
+                                '平均回覆時間',
+                                value:
+                                '${avgSeconds.toStringAsFixed(1)} 秒',
+                                icon: Icons
+                                    .timer_outlined,
+                              ),
+
+                              _adminStatCard(
+                                label:
+                                '今日 AI 請求',
+                                value:
+                                '$requests',
+                                icon: Icons
+                                    .data_usage_outlined,
+                                caption:
+                                '實際 API 呼叫 $apiAttempts 次',
+                              ),
+
+                              _adminStatCard(
+                                label:
+                                '今日 Token',
+                                value:
+                                formatTokens(
+                                  totalTokens,
+                                ),
+                                icon: Icons
+                                    .token_outlined,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    GridView.count(
-                      crossAxisCount: MediaQuery.sizeOf(context).width >= 800 ? 4 : 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: 1.15,
-                      children: [
-                        _adminStatCard(label: 'Gemini 成功率', value: '待接入', icon: Icons.auto_awesome_outlined),
-                        _adminStatCard(label: 'DeepSeek 成功率', value: '待接入', icon: Icons.psychology_alt_outlined),
-                        _adminStatCard(label: 'Content Filter', value: '待接入', icon: Icons.shield_outlined),
-                        _adminStatCard(label: 'AI Request Failure', value: '待接入', icon: Icons.error_outline_rounded),
-                        _adminStatCard(label: 'Functions 錯誤', value: '待接入', icon: Icons.cloud_off_outlined),
-                        _adminStatCard(label: '平均回覆時間', value: '待接入', icon: Icons.timer_outlined),
-                        _adminStatCard(label: '今日 API 用量', value: '待接入', icon: Icons.data_usage_outlined),
-                        _adminStatCard(label: '今日預估 AI 成本', value: '待接入', icon: Icons.attach_money_rounded),
-                      ],
-                    ),
-                  ],
+                    );
+                  },
                 ),
                 _buildVoiceBankTab(),
               ],

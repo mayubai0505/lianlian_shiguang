@@ -840,6 +840,42 @@ class _LatestTabState extends State<_LatestTab> {
         recentCharacters;
   }
 
+  Future<void> _recordRecommendationClick({
+    required Character character,
+    required String source,
+  }) async {
+    try {
+      final functions =
+      FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      );
+
+      final callable =
+      functions.httpsCallable(
+        'recordRecommendationEvent',
+        options: HttpsCallableOptions(
+          timeout:
+          const Duration(seconds: 20),
+        ),
+      );
+
+      await callable.call({
+        'type': 'click',
+        'source': source,
+        'characterId': character.id,
+      });
+
+      debugPrint(
+        '📈 推薦點擊已記錄：'
+            '$source / ${character.id}',
+      );
+    } catch (error) {
+      debugPrint(
+        '⚠️ 推薦點擊埋點失敗：$error',
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1263,14 +1299,24 @@ class _LatestTabState extends State<_LatestTab> {
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () async {
+                  _recordRecommendationClick(
+                    character: character,
+                    source:
+                    'popular_recommendation',
+                  );
+
                   final result =
                   await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => CharacterProfilePage(
-                        character: character,
-                        characterId: character.id,
-                      ),
+                      builder: (_) =>
+                          CharacterProfilePage(
+                            character: character,
+                            characterId:
+                            character.id,
+                            analyticsSource:
+                            'popular_recommendation',
+                          ),
                     ),
                   );
 
@@ -1488,6 +1534,11 @@ class _LatestTabState extends State<_LatestTab> {
             ),
             child: GestureDetector(
               onTap: () async {
+                _recordRecommendationClick(
+                  character: char,
+                  source: 'recommendation_banner',
+                );
+
                 final result =
                 await Navigator.push<bool>(
                   context,
@@ -1496,6 +1547,8 @@ class _LatestTabState extends State<_LatestTab> {
                         CharacterProfilePage(
                           character: char,
                           characterId: char.id,
+                          analyticsSource:
+                          'recommendation_banner',
                         ),
                   ),
                 );

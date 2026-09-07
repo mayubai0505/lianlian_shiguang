@@ -348,6 +348,15 @@ class PurchaseService extends ChangeNotifier {
         await docRef.collection('flower_logs').add({
           'title': logTitle,
           'amount': pointsToAdd,
+
+          'type': 'purchase',
+          'provider': Platform.isIOS
+              ? 'apple_iap'
+              : 'google_play',
+          'productId': productId,
+          'price': _getPriceFromProductId(productId),
+          'currency': 'TWD',
+
           'createdAt': FieldValue.serverTimestamp(),
         });
 

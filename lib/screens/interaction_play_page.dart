@@ -63,51 +63,41 @@ class InteractionPlayPage extends StatelessWidget {
                 primary: primary,
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: _ActionCard(
-                      assetPath:
-                      'assets/images/chat/chat_interaction_poke_cheek.png',
-                      label: l10n.chat_action_poke,
-                      primary: primary,
-                      onTap: () {
-                        // 先回聊天室，再沿用原本訊息發送邏輯。
-                        Navigator.pop(context);
-                        onAction(l10n.chat_action_poke_prompt);
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _ActionCard(
-                      assetPath: 'assets/images/chat/chat_interaction_hug.png',
-                      label: l10n.chat_action_hug,
-                      primary: primary,
-                      onTap: () {
-                        Navigator.pop(context);
-                        onAction(l10n.chat_action_hug_prompt);
-                      },
-                    ),
-                  ),
-                ],
+              _FeatureTile(
+                assetPath: 'assets/images/chat/chat_interaction_poke_cheek.png',
+                title: l10n.chat_action_poke,
+                cost: '3',
+                primary: primary,
+                onTap: () {
+                  Navigator.pop(context);
+                  onAction(l10n.chat_action_poke_prompt);
+                },
               ),
+
               const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: SizedBox(
-                  width: (MediaQuery.sizeOf(context).width - 56) / 2,
-                  child: _ActionCard(
-                    assetPath:
-                    'assets/images/chat/chat_interaction_hold_hands.png',
-                    label: l10n.chat_action_hand,
-                    primary: primary,
-                    onTap: () {
-                      Navigator.pop(context);
-                      onAction(l10n.chat_action_hand_prompt);
-                    },
-                  ),
-                ),
+
+              _FeatureTile(
+                assetPath: 'assets/images/chat/chat_interaction_hug.png',
+                title: l10n.chat_action_hug,
+                cost: '3',
+                primary: primary,
+                onTap: () {
+                  Navigator.pop(context);
+                  onAction(l10n.chat_action_hug_prompt);
+                },
+              ),
+
+              const SizedBox(height: 12),
+
+              _FeatureTile(
+                assetPath: 'assets/images/chat/chat_interaction_hold_hands.png',
+                title: l10n.chat_action_hand,
+                cost: '3',
+                primary: primary,
+                onTap: () {
+                  Navigator.pop(context);
+                  onAction(l10n.chat_action_hand_prompt);
+                },
               ),
               const SizedBox(height: 34),
               _SectionTitle(
@@ -156,6 +146,7 @@ class InteractionPlayPage extends StatelessWidget {
               _FeatureTile(
                 assetPath: 'assets/images/chat/chat_fun_location.png',
                 title: l10n.chat_menu_send_location,
+                cost: '3',
                 primary: primary,
                 onTap: onLocationTap,
               ),
@@ -163,6 +154,7 @@ class InteractionPlayPage extends StatelessWidget {
               _FeatureTile(
                 assetPath: 'assets/images/chat/chat_fun_dice.png',
                 title: l10n.chat_dice_btn,
+                cost: '3',
                 primary: primary,
                 onTap: onDiceTap,
               ),
@@ -194,53 +186,6 @@ class _SectionTitle extends StatelessWidget {
           letterSpacing: 0.5,
           color: primary.withValues(alpha: 0.82),
         ),
-      ),
-    );
-  }
-}
-
-class _ActionCard extends StatelessWidget {
-  final String assetPath;
-  final String label;
-  final Color primary;
-  final VoidCallback onTap;
-
-  const _ActionCard({
-    required this.assetPath,
-    required this.label,
-    required this.primary,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return _SoftTapSurface(
-      primary: primary,
-      onTap: onTap,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _TintedAsset(
-            assetPath: assetPath,
-            size: 42,
-            primary: primary,
-          ),
-          const SizedBox(width: 10),
-          Flexible(
-            child: Text(
-              label,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.notoSerifTc(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.80),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -313,12 +258,14 @@ class _GiftCard extends StatelessWidget {
 class _FeatureTile extends StatelessWidget {
   final String assetPath;
   final String title;
+  final String cost;
   final Color primary;
   final VoidCallback onTap;
 
   const _FeatureTile({
     required this.assetPath,
     required this.title,
+    required this.cost,
     required this.primary,
     required this.onTap,
   });
@@ -349,10 +296,23 @@ class _FeatureTile extends StatelessWidget {
               ),
             ),
           ),
-          Icon(
-            Icons.chevron_right_rounded,
-            size: 20,
-            color: primary.withValues(alpha: 0.48),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
+            ),
+            decoration: BoxDecoration(
+              color: primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              cost,
+              style: GoogleFonts.notoSerifTc(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: primary,
+              ),
+            ),
           ),
         ],
       ),

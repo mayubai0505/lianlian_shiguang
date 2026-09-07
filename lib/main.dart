@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 // ✨ 1. 導入 App Check 套件
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'services/purchase_service.dart';
@@ -149,8 +150,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
-
-
   @override
   void initState() {
     super.initState();
@@ -172,9 +171,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+  void didChangeAppLifecycleState(
+      AppLifecycleState state,
+      ) {
+    if (state ==
+        AppLifecycleState.resumed) {
       _updateUserStatus(true);
+
+      unawaited(
+        _recordDailyAppActivity(),
+      );
     } else {
       _updateUserStatus(false);
     }
@@ -189,8 +195,62 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _initializeAfterAppStarted() async {
+  Future<void> _recordDailyAppActivity() async {
+    final user =
+        FirebaseAuth.instance.currentUser;
 
+    if (user == null) {
+      return;
+    }
+
+    try {
+      final functions =
+      FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      );
+
+      final callable =
+      functions.httpsCallable(
+        'recordDailyAppActivity',
+        options: HttpsCallableOptions(
+          timeout:
+          const Duration(seconds: 20),
+        ),
+      );
+
+      await callable.call();
+
+      debugPrint(
+        '📈 今日玩家活躍已記錄',
+      );
+    } on FirebaseFunctionsException catch (
+    error,
+    stackTrace
+    ) {
+    // 統計失敗不能影響玩家正常使用 App
+    debugPrint(
+    '⚠️ 今日活躍埋點失敗：'
+    '${error.code} '
+    '${error.message}',
+    );
+
+    debugPrintStack(
+    stackTrace: stackTrace,
+    );
+    } catch (error, stackTrace) {
+    debugPrint(
+    '⚠️ 今日活躍埋點異常：'
+    '$error',
+    );
+
+    debugPrintStack(
+    stackTrace: stackTrace,
+    );
+    }
+  }
+
+  Future<void> _initializeAfterAppStarted() async {
+    await _recordDailyAppActivity();
     try {
       await setupPushNotifications().timeout(
         const Duration(seconds: 15),

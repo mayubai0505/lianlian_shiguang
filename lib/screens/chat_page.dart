@@ -1965,6 +1965,11 @@ class _ChatPageState extends State<ChatPage> {
     String? secretPrompt,
     bool showInChat = true,
     bool isContinue = false,
+
+    // 🌸 新版後端計價資訊
+    String billingType = 'chat',
+    String? interactionType,
+    String? giftType,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     final messageText = text.trim();
@@ -2080,6 +2085,9 @@ class _ChatPageState extends State<ChatPage> {
             isContinue: isContinue,
             userMessageAlreadySaved: true,
             pendingMediaId: pendingMediaId,
+            billingType: billingType,
+            interactionType: interactionType,
+            giftType: giftType,
           );
         } else {
           // 不使用彩蛋：AI 照原本文字正常回覆
@@ -2093,6 +2101,9 @@ class _ChatPageState extends State<ChatPage> {
             isContinue: isContinue,
             userMessageAlreadySaved: true,
             pendingMediaId: pendingMediaId,
+            billingType: billingType,
+            interactionType: interactionType,
+            giftType: giftType,
           );
         }
       } else {
@@ -2105,6 +2116,9 @@ class _ChatPageState extends State<ChatPage> {
           showInChat: showInChat,
           isContinue: isContinue,
           pendingMediaId: pendingMediaId,
+          billingType: billingType,
+          interactionType: interactionType,
+          giftType: giftType,
         );
       }
     } catch (e) {
@@ -4007,6 +4021,11 @@ class _ChatPageState extends State<ChatPage> {
     bool isContinue = false,
     bool userMessageAlreadySaved = false,
     bool isQixiOpening = false,
+
+    // 🌸 新版後端計價資訊
+    String billingType = 'chat',
+    String? interactionType,
+    String? giftType,
   }) async {
     // 🌟 1. 身分檢查
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -4055,8 +4074,39 @@ class _ChatPageState extends State<ChatPage> {
         messageCost = AppConfig.costGeminiChat;
       }
 
+      // 🌸 前端只做點數預檢，真正價格與扣款仍以後端為準。
+      int requiredFlowerPoints = messageCost;
+
+      if (billingType == 'interaction') {
+        requiredFlowerPoints = 3;
+      } else if (billingType == 'gift') {
+        switch (giftType) {
+          case 'heart':
+          case 'flower':
+          case 'sun':
+            requiredFlowerPoints = 1;
+            break;
+
+          case 'confetti':
+            requiredFlowerPoints = 3;
+            break;
+
+          case 'coffee':
+          case 'cake':
+            requiredFlowerPoints = 5;
+            break;
+
+          default:
+          // 不認得時不要自行猜價格，交給後端拒絕。
+            requiredFlowerPoints = 0;
+        }
+      }
+
 // 生日免費時跳過前端點數不足檢查
-      if (!isQixiOpening && !isFreeToday && myActualFlowers < messageCost) {
+      if (!isQixiOpening &&
+          !isFreeToday &&
+          requiredFlowerPoints > 0 &&
+          myActualFlowers < requiredFlowerPoints) {
         if (mounted) {
           showDialog(
             context: context,
@@ -4430,6 +4480,9 @@ class _ChatPageState extends State<ChatPage> {
         "clientRequestId": clientRequestId,
         "userMessageId": userMessageId ?? "",
         "isTestMode": widget.isTestMode,
+        "billingType": billingType,
+        "interactionType": interactionType ?? "",
+        "giftType": giftType ?? "",
         "imageUrl": hasImage ? (storagePath ?? "") : "",
         "audioUrl": hasAudio ? (storagePath ?? "") : "",
         "userMessage": effectiveUserMessage,
@@ -4781,11 +4834,6 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 );
               }
-
-              // 後端成功完成後，前端同步更新顯示的花花數量。
-              final int uiCost = isQixiOpening || isFreeToday ? 0 : messageCost;
-
-              _flowerPoints = (_flowerPoints - uiCost).clamp(0, 999999);
 
               // 測試模式只在目前畫面模擬好感度變化，
               // 不會寫入正式資料庫。
@@ -7857,40 +7905,46 @@ class _ChatPageState extends State<ChatPage> {
   List<Map<String, dynamic>> _getGiftList(AppLocalizations l10n) {
     return [
       {
+        'id': 'heart',
         'name': l10n.gift_heart,
         'icon': Icons.favorite,
         'color': Colors.redAccent,
-        'cost': 1
+        'cost': 1,
       },
       {
+        'id': 'flower',
         'name': l10n.gift_flower,
         'icon': Icons.local_florist,
         'color': Colors.pinkAccent,
-        'cost': 1
+        'cost': 1,
       },
       {
+        'id': 'sun',
         'name': l10n.gift_sun,
         'icon': Icons.wb_sunny,
         'color': Colors.orangeAccent,
-        'cost': 1
+        'cost': 1,
       },
       {
+        'id': 'confetti',
         'name': l10n.gift_confetti,
         'icon': Icons.celebration,
         'color': Colors.blueAccent,
-        'cost': 3
+        'cost': 3,
       },
       {
+        'id': 'coffee',
         'name': l10n.gift_coffee,
         'icon': Icons.coffee,
         'color': Colors.brown,
-        'cost': 5
+        'cost': 5,
       },
       {
+        'id': 'cake',
         'name': l10n.gift_cake,
         'icon': Icons.cake,
         'color': Colors.purpleAccent,
-        'cost': 5
+        'cost': 5,
       },
     ];
   }
@@ -8009,11 +8063,12 @@ class _ChatPageState extends State<ChatPage> {
 
     // 3. 🛡️ 啟動雲端同步！
     // 我們先扣除本地點數並加好感度 (讓玩家感覺「秒更新」)，同時非同步上傳 Firebase
-    if (mounted)
+    if (mounted) {
       setState(() {
-        _flowerPoints -= gift['cost'] as int; // 扣除花花點數
-        _currentFriendship += affectionChange; // 玩家畫面愛心數字立刻跳動
+        // 🌸 花花由後端統一扣款
+        _currentFriendship += affectionChange;
       });
+    }
 
     // ☁️ 同步到 Firebase (使用 increment 確保資料精準)
     if (_sessionDocRef != null) {
@@ -8039,13 +8094,12 @@ class _ChatPageState extends State<ChatPage> {
     String aiSecretPrompt =
         "【系統事件】$playerName送出了一個【${gift['name']}】。(系統隱藏提示：這是你『$preferenceTag』的禮物，好感度 $affectionChange。請根據角色性格與當前場景，給出最真實的反應。)";
 
-    // 7. 關閉抽屜並發送訊息
-    Navigator.pop(context); // 關閉送禮選單
-
     // 🚀 8. 呼叫我們剛升級的「經理」，把兩包文字都交給他！
     _sendMessage(
-        text: displayText, // 👈 畫面上顯示這個
-        secretPrompt: aiSecretPrompt // 👈 AI 腦袋裡看這個
+      text: displayText,
+      secretPrompt: aiSecretPrompt,
+      billingType: 'gift',
+      giftType: gift['id']?.toString(),
     );
   }
 
@@ -8236,7 +8290,13 @@ class _ChatPageState extends State<ChatPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(l10n.chat_loc_title),
+          title: Text(
+            l10n.chat_loc_title,
+            style: GoogleFonts.notoSerifTc(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           content: SingleChildScrollView(
             // 避免鍵盤擋住畫面
             child: Column(
@@ -8249,7 +8309,13 @@ class _ChatPageState extends State<ChatPage> {
                   l10n.chat_loc_3,
                   l10n.chat_loc_4
                 ].map((loc) => ListTile(
-                  title: Text(loc),
+                  title: Text(
+                    loc,
+                    style: GoogleFonts.notoSerifTc(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   trailing:
                   Image.asset(
                     'assets/images/chat/chat_send_plane_mask.png',
@@ -8260,7 +8326,11 @@ class _ChatPageState extends State<ChatPage> {
                   ),                  contentPadding: EdgeInsets.zero,
                   onTap: () {
                     Navigator.pop(context); // 關閉視窗
-                    _sendMessage(text: l10n.chat_player_sent_location(loc));
+                    _sendMessage(
+                      text: l10n.chat_player_sent_location(loc),
+                      billingType: 'interaction',
+                      interactionType: 'location',
+                    );
                   },
                 )),
 
@@ -8268,10 +8338,15 @@ class _ChatPageState extends State<ChatPage> {
                 // ✨ 玩家自訂地點輸入框
                 TextField(
                   controller: customLocationController,
+                  style: GoogleFonts.notoSerifTc(
+                    fontSize: 14,
+                  ),
                   decoration: InputDecoration(
                     hintText: l10n.chat_loc_hint,
-                    hintStyle:
-                    const TextStyle(fontSize: 14, color: Colors.grey),
+                    hintStyle: GoogleFonts.notoSerifTc(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -8286,7 +8361,12 @@ class _ChatPageState extends State<ChatPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel, style: TextStyle(color: Colors.grey)),
+              child: Text(
+                l10n.cancel,
+                style: GoogleFonts.notoSerifTc(
+                  color: Colors.grey,
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -8294,13 +8374,22 @@ class _ChatPageState extends State<ChatPage> {
                 if (customLocationController.text.trim().isNotEmpty) {
                   Navigator.pop(context); // 關閉視窗
                   _sendMessage(
-                      text: l10n.chat_player_sent_location(
-                          customLocationController.text.trim()));
+                    text: l10n.chat_player_sent_location(
+                      customLocationController.text.trim(),
+                    ),
+                    billingType: 'interaction',
+                    interactionType: 'location',
+                  );
                 }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              child: Text(l10n.chat_loc_custom_btn,
-                  style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+              child: Text(
+                l10n.chat_loc_custom_btn,
+                style: GoogleFonts.notoSerifTc(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         );
@@ -8366,8 +8455,10 @@ class _ChatPageState extends State<ChatPage> {
         "\n[系統秘密指令：$aiActionPrompt]";
     // 5. 發送訊息 (A包顯示乾淨的文字，B包偷偷塞給AI)
     _sendMessage(
-      text: l10n.chat_dice_duel_result(aiName), // 畫面上顯示這句就好
-      secretPrompt: secretPrompt, // AI 腦袋裡看這個
+      text: l10n.chat_dice_duel_result(aiName),
+      secretPrompt: secretPrompt,
+      billingType: 'interaction',
+      interactionType: 'dice',
     );
   }
 
@@ -8383,7 +8474,23 @@ class _ChatPageState extends State<ChatPage> {
 
           // 親密互動：新頁面會先 pop 回聊天室，再呼叫這裡。
           onAction: (message) {
-            _sendMessage(text: message);
+            String interactionType;
+
+            if (message == l10n.chat_action_poke_prompt) {
+              interactionType = 'poke';
+            } else if (message == l10n.chat_action_hug_prompt) {
+              interactionType = 'hug';
+            } else if (message == l10n.chat_action_hand_prompt) {
+              interactionType = 'holdHands';
+            } else {
+              return;
+            }
+
+            _sendMessage(
+              text: message,
+              billingType: 'interaction',
+              interactionType: interactionType,
+            );
           },
 
           // 送禮：新頁面會先 pop 回聊天室，再沿用原本送禮完整邏輯。

@@ -153,71 +153,6 @@ class _StorePageState extends State<StorePage> {
                                       color: primary,
                                     ),
                                   ),
-                                  if (user != null)
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: StreamBuilder<DocumentSnapshot>(
-                                        stream: FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(user.uid)
-                                            .snapshots(),
-                                        builder: (context, snapshot) {
-                                          final data = snapshot.data?.data()
-                                          as Map<String, dynamic>?;
-                                          final int points =
-                                              data?['flowerPoints'] ?? 0;
-
-                                          return Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white
-                                                  .withValues(alpha: 0.94),
-                                              borderRadius:
-                                              BorderRadius.circular(20),
-                                              border: Border.all(
-                                                color: primary.withValues(
-                                                    alpha: 0.10),
-                                              ),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: primary.withValues(
-                                                      alpha: 0.06),
-                                                  blurRadius: 12,
-                                                  offset:
-                                                  const Offset(0, 4),
-                                                ),
-                                              ],
-                                            ),
-                                            child: Row(
-                                              mainAxisSize:
-                                              MainAxisSize.min,
-                                              children: [
-                                                Image.asset(
-                                                  'assets/images/store/store_flower_point.png',
-                                                  width: 20,
-                                                  height: 20,
-                                                  fit: BoxFit.contain,
-                                                ),
-                                                const SizedBox(width: 5),
-                                                Text(
-                                                  _formatNumber(points),
-                                                  style:
-                                                  GoogleFonts.notoSerifTc(
-                                                    fontSize: 12.5,
-                                                    color: primary,
-                                                    fontWeight:
-                                                    FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
                                 ],
                               ),
                             ),
@@ -348,6 +283,16 @@ class _StorePageState extends State<StorePage> {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final l10n = AppLocalizations.of(context)!;
+    final DateTime? accountCreatedAt =
+        user?.metadata.creationTime;
+
+    final int daysSinceJoined =
+    accountCreatedAt == null
+        ? 1
+        : DateTime.now()
+        .difference(accountCreatedAt)
+        .inDays +
+        1;
 
     // 餘額卡內花草：依螢幕寬度做相對定位，並用 clamp 限制，
     // 避免小手機太擠、平板又放得過大。
@@ -408,23 +353,6 @@ class _StorePageState extends State<StorePage> {
                   ),
                 ),
               ),
-              Positioned(
-                right: balanceHorizontalOffset,
-                top: balanceVerticalOffset,
-                child: Opacity(
-                  opacity: 0.13,
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(
-                      primary.withValues(alpha: 0.72),
-                      BlendMode.srcIn,
-                    ),
-                    child: Image.asset(
-                      'assets/images/store/store_corner_top_right.png',
-                      width: balanceFlowerWidth,
-                    ),
-                  ),
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 22,
@@ -447,8 +375,8 @@ class _StorePageState extends State<StorePage> {
                       children: [
                         Image.asset(
                           'assets/images/store/store_flower_point.png',
-                          width: 46,
-                          height: 46,
+                          width: 34,
+                          height: 34,
                           fit: BoxFit.contain,
                         ),
                         const SizedBox(width: 16),
@@ -458,7 +386,7 @@ class _StorePageState extends State<StorePage> {
                             child: Text(
                               _formatNumber(currentPoints),
                               style: GoogleFonts.notoSerifTc(
-                                fontSize: screenWidth < 380 ? 45 : 54,
+                                fontSize: screenWidth < 380 ? 34 : 40,
                                 height: 1,
                                 fontWeight: FontWeight.w500,
                                 letterSpacing: 1,
@@ -468,6 +396,28 @@ class _StorePageState extends State<StorePage> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: primary.withValues(alpha: 0.045),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        '✦ 已來到戀戀拾光 $daysSinceJoined 天 ✦',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.notoSerifTc(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.4,
+                          color: primary.withValues(alpha: 0.62),
+                        ),
+                      ),
                     ),
                   ],
                 ),

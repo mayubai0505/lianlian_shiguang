@@ -33,11 +33,16 @@ class CharacterProfilePage extends StatefulWidget {
   final String? sessionId;
   final Character character;
   final String characterId;
+
+  // 📈 從哪一個推薦入口進來
+  final String? analyticsSource;
+
   const CharacterProfilePage({
     super.key,
     required this.character,
     required this.characterId,
     this.sessionId,
+    this.analyticsSource,
   });
 
   @override
@@ -203,6 +208,49 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
       }
       // ✍️ 寫下紀錄，這輩子只彈這一次！
       await prefs.setBool('seen_profile_echo_tip', true);
+    }
+  }
+
+  Future<void> _recordRecommendationChatStart() async {
+    final source =
+        widget.analyticsSource?.trim() ?? '';
+
+    if (source.isEmpty) {
+      return;
+    }
+
+    try {
+      final functions =
+      FirebaseFunctions.instanceFor(
+        region: 'asia-east1',
+      );
+
+      final callable =
+      functions.httpsCallable(
+        'recordRecommendationEvent',
+        options: HttpsCallableOptions(
+          timeout:
+          const Duration(seconds: 20),
+        ),
+      );
+
+      await callable.call({
+        'type': 'chat_start',
+        'source': source,
+        'characterId':
+        widget.character.id,
+      });
+
+      debugPrint(
+        '📈 推薦開聊已記錄：'
+            '$source / '
+            '${widget.character.id}',
+      );
+    } catch (error) {
+      // analytics 絕對不能擋住玩家聊天
+      debugPrint(
+        '⚠️ 推薦開聊埋點失敗：$error',
+      );
     }
   }
 
@@ -2990,6 +3038,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         setState(() {
                           _isNavigating = true;
                         });
+                        _recordRecommendationChatStart();
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -3041,6 +3090,7 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                         setState(() {
                           _isNavigating = true;
                         });
+                        _recordRecommendationChatStart();
                         await Navigator.push(
                             context,
                             MaterialPageRoute(

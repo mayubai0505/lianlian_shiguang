@@ -497,85 +497,462 @@ function getAiProviderConfig(modelId) {
     };
 }
 
-async function callAiWithRetry({
-    modelId,
-    fallbackModelId,
-    requestBody,
-    abortController,
-    timeoutMs = 95_000,
-}) {
-    async function callCurrentAiModel(targetModelId) {
-        const providerConfig = getAiProviderConfig(targetModelId);
+// ==================================================
+// 🩺 AI 系統健康監測
+// 不綁模型品牌，未來換模型不用改後台
+// ==================================================
 
-        console.log("🧭 AI PROVIDER ROUTE:", {
-            originalModelId: targetModelId,
-            provider: providerConfig.provider,
-            apiUrl: providerConfig.apiUrl,
-            modelIdForRequest: providerConfig.modelIdForRequest,
-        });
-
-        return await callOpenRouter({
-            apiUrl: providerConfig.apiUrl,
-            apiKey: providerConfig.apiKey,
-            modelId: providerConfig.modelIdForRequest,
-            requestBody,
-            abortController,
-            timeoutMs,
-        });
+function getAiHealthTaipeiDateKey(date = new Date()) {
+  const parts = new Intl.DateTimeFormat(
+    "en-US",
+    {
+      timeZone: "Asia/Taipei",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     }
+  ).formatToParts(date);
 
+  const values = {};
+
+  for (const part of parts) {
+    if (
+      part.type === "year" ||
+      part.type === "month" ||
+      part.type === "day"
+    ) {
+      values[part.type] = part.value;
+    }
+  }
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function extractAiUsage(result) {
+  const usage = result?.usage || {};
+
+  const inputTokens = Number(
+    usage.prompt_tokens ??
+    usage.input_tokens ??
+    0
+  );
+
+  const outputTokens = Number(
+    usage.completion_tokens ??
+    usage.output_tokens ??
+    0
+  );
+
+  const totalTokens = Number(
+    usage.total_tokens ??
+    inputTokens + outputTokens
+  );
+
+  return {
+    inputTokens:
+      Number.isFinite(inputTokens)
+        ? Math.max(0, Math.trunc(inputTokens))
+        : 0,
+
+    outputTokens:
+      Number.isFinite(outputTokens)
+        ? Math.max(0, Math.trunc(outputTokens))
+        : 0,
+
+    totalTokens:
+      Number.isFinite(totalTokens)
+        ? Math.max(0, Math.trunc(totalTokens))
+        : 0,
+  };
+}
+
+function isAiContentFiltered(result) {
+  return (
+    result?.choices?.some(
+      (choice) =>
+        String(
+          choice?.finish_reason || ""
+        ).toLowerCase() === "content_filter"
+    ) === true
+  );
+}
+
+function isAiTimeoutError(error) {
+  const message =
+    String(error?.message || "").toLowerCase();
+
+  return (
+    message.includes("回覆時間太久") ||
+    message.includes("timeout") ||
+    message.includes("timed out")
+  );
+}
+
+async function recordAiHealth({
+  success,
+  latencyMs = 0,
+  apiAttempts = 1,
+  usedFallback = false,
+  contentFiltered = false,
+  timedOut = false,
+  cancelled = false,
+  result = null,
+  modelId = "",
+}) {
+  try {
+    const dateKey =
+      getAiHealthTaipeiDateKey();
+
+    const ref = db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("ai_usage_daily")
+      .doc(dateKey);
+
+    const usage =
+      extractAiUsage(result);
+
+    const update = {
+      dateKey,
+
+      requests:
+        FieldValue.increment(1),
+
+      apiAttempts:
+        FieldValue.increment(
+          Math.max(1, apiAttempts)
+        ),
+
+      successCount:
+        FieldValue.increment(
+          success ? 1 : 0
+        ),
+
+      failureCount:
+        FieldValue.increment(
+          !success && !cancelled ? 1 : 0
+        ),
+
+      cancelledCount:
+        FieldValue.increment(
+          cancelled ? 1 : 0
+        ),
+
+      fallbackCount:
+        FieldValue.increment(
+          usedFallback ? 1 : 0
+        ),
+
+      contentFilterCount:
+        FieldValue.increment(
+          contentFiltered ? 1 : 0
+        ),
+
+      timeoutCount:
+        FieldValue.increment(
+          timedOut ? 1 : 0
+        ),
+
+      totalLatencyMs:
+        FieldValue.increment(
+          Math.max(
+            0,
+            Math.trunc(latencyMs)
+          )
+        ),
+
+      inputTokens:
+        FieldValue.increment(
+          usage.inputTokens
+        ),
+
+      outputTokens:
+        FieldValue.increment(
+          usage.outputTokens
+        ),
+
+      totalTokens:
+        FieldValue.increment(
+          usage.totalTokens
+        ),
+
+      lastModelId:
+        String(modelId || "")
+          .slice(0, 300),
+
+      updatedAt:
+        FieldValue.serverTimestamp(),
+    };
+
+    await ref.set(
+      update,
+      {
+        merge: true,
+      }
+    );
+  } catch (error) {
+    // ⚠️ 監控失敗絕對不能害聊天失敗
+    console.warn(
+      "⚠️ AI 健康統計寫入失敗：",
+      error
+    );
+  }
+}
+
+async function callAiWithRetry({
+  modelId,
+  fallbackModelId,
+  requestBody,
+  abortController,
+  timeoutMs = 95_000,
+}) {
+  const startedAt = Date.now();
+
+  let apiAttempts = 0;
+  let usedFallback = false;
+  let finalModelId = modelId;
+
+  async function callCurrentAiModel(
+    targetModelId
+  ) {
+    apiAttempts++;
+
+    const providerConfig =
+      getAiProviderConfig(
+        targetModelId
+      );
+
+    console.log(
+      "🧭 AI PROVIDER ROUTE:",
+      {
+        originalModelId:
+          targetModelId,
+
+        provider:
+          providerConfig.provider,
+
+        apiUrl:
+          providerConfig.apiUrl,
+
+        modelIdForRequest:
+          providerConfig.modelIdForRequest,
+      }
+    );
+
+    return await callOpenRouter({
+      apiUrl:
+        providerConfig.apiUrl,
+
+      apiKey:
+        providerConfig.apiKey,
+
+      modelId:
+        providerConfig.modelIdForRequest,
+
+      requestBody,
+      abortController,
+      timeoutMs,
+    });
+  }
+
+  async function finishSuccess(
+    result,
+    selectedModelId
+  ) {
+    finalModelId =
+      selectedModelId;
+
+    await recordAiHealth({
+      success: true,
+
+      latencyMs:
+        Date.now() - startedAt,
+
+      apiAttempts,
+
+      usedFallback,
+
+      contentFiltered:
+        isAiContentFiltered(result),
+
+      timedOut: false,
+
+      cancelled: false,
+
+      result,
+
+      modelId:
+        finalModelId,
+    });
+
+    return result;
+  }
+
+  async function finishFailure(
+    error
+  ) {
+    const cancelled =
+      error?.message ===
+      "PLAYER_DISCONNECTED";
+
+    await recordAiHealth({
+      success: false,
+
+      latencyMs:
+        Date.now() - startedAt,
+
+      apiAttempts:
+        Math.max(1, apiAttempts),
+
+      usedFallback,
+
+      contentFiltered: false,
+
+      timedOut:
+        isAiTimeoutError(error),
+
+      cancelled,
+
+      result: null,
+
+      modelId:
+        finalModelId,
+    });
+
+    throw error;
+  }
+
+  try {
     try {
-        return await callCurrentAiModel(modelId);
+      const result =
+        await callCurrentAiModel(
+          modelId
+        );
+
+      return await finishSuccess(
+        result,
+        modelId
+      );
     } catch (error) {
-        const retryable =
-            error.statusCode === 429 ||
-            error.statusCode === 500 ||
-            error.statusCode === 502 ||
-            error.statusCode === 503 ||
-            error.statusCode === 504 ||
-            error.message === "AI_PROVIDER_BUSY" ||
-            error.message?.includes("AI 回覆時間太久") ||
-            error.message?.includes("AI 服務暫時忙碌") ||
-            error.message?.includes("AI 連線暫時不穩") ||
-            error.message?.includes("AI 回傳格式異常") ||
-            error.message?.includes("AI 斷線或沒有回傳 choices");
+      if (
+        error.message ===
+        "PLAYER_DISCONNECTED"
+      ) {
+        return await finishFailure(
+          error
+        );
+      }
 
-        if (error.message === "PLAYER_DISCONNECTED") {
-            throw error;
+      const retryable =
+        error.statusCode === 429 ||
+        error.statusCode === 500 ||
+        error.statusCode === 502 ||
+        error.statusCode === 503 ||
+        error.statusCode === 504 ||
+        error.message ===
+          "AI_PROVIDER_BUSY" ||
+        error.message?.includes(
+          "AI 回覆時間太久"
+        ) ||
+        error.message?.includes(
+          "AI 服務暫時忙碌"
+        ) ||
+        error.message?.includes(
+          "AI 連線暫時不穩"
+        ) ||
+        error.message?.includes(
+          "AI 回傳格式異常"
+        ) ||
+        error.message?.includes(
+          "AI 斷線或沒有回傳 choices"
+        );
+
+      if (!retryable) {
+        return await finishFailure(
+          error
+        );
+      }
+
+      console.warn(
+        "🌧️ 主模型忙線、逾時或回傳異常，先重試一次:",
+        {
+          modelId,
+          message:
+            error?.message,
+          statusCode:
+            error?.statusCode,
+        }
+      );
+
+      await new Promise(
+        (resolve) =>
+          setTimeout(
+            resolve,
+            1200
+          )
+      );
+
+      try {
+        const retryResult =
+          await callCurrentAiModel(
+            modelId
+          );
+
+        return await finishSuccess(
+          retryResult,
+          modelId
+        );
+      } catch (retryError) {
+        if (
+          retryError.message ===
+          "PLAYER_DISCONNECTED"
+        ) {
+          return await finishFailure(
+            retryError
+          );
         }
 
-        if (!retryable) {
-            throw error;
+        if (!fallbackModelId) {
+          return await finishFailure(
+            retryError
+          );
         }
 
-        console.warn("🌧️ 主模型忙線、逾時或回傳異常，先重試一次:", {
-            modelId,
-            message: error?.message,
-            statusCode: error?.statusCode,
-        });
+        usedFallback = true;
+        finalModelId =
+          fallbackModelId;
 
-        await new Promise((resolve) => setTimeout(resolve, 1200));
+        console.warn(
+          "🚑 主模型重試失敗，切換 fallback:",
+          {
+            fallbackModelId,
+            message:
+              retryError?.message,
+            statusCode:
+              retryError?.statusCode,
+          }
+        );
 
         try {
-            return await callCurrentAiModel(modelId);
-        } catch (retryError) {
-            if (retryError.message === "PLAYER_DISCONNECTED") {
-                throw retryError;
-            }
+          const fallbackResult =
+            await callCurrentAiModel(
+              fallbackModelId
+            );
 
-            if (!fallbackModelId) {
-                throw retryError;
-            }
-
-            console.warn("🚑 主模型重試失敗，切換 fallback:", {
-                fallbackModelId,
-                message: retryError?.message,
-                statusCode: retryError?.statusCode,
-            });
-
-            return await callCurrentAiModel(fallbackModelId);
+          return await finishSuccess(
+            fallbackResult,
+            fallbackModelId
+          );
+        } catch (fallbackError) {
+          return await finishFailure(
+            fallbackError
+          );
         }
+      }
     }
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function downloadMediaAsBase64(mediaUrlOrPath) {
@@ -775,8 +1152,18 @@ exports.getAiResponse = onRequest({
                 periodStatus = "未知",
                 lastStoryTime,
                 lastStoryLocation,
-                overrideSystemPrompt = ""
+                overrideSystemPrompt = "",
+                billingType = "chat",
+                interactionType = "",
+                giftType = "",
             } = body;
+
+            // 🌸 只有新版 App 明確送出 billingType，才啟用新版計價。
+            // 舊版 App 沒有這個欄位，完全維持原本收費方式。
+            const hasNewBillingFields =
+                Object.prototype.hasOwnProperty.call(body, "billingType") &&
+                typeof body.billingType === "string" &&
+                body.billingType.trim() !== "";
 
             // 角色建立頁的測試聊天室
             // 只有明確傳入 true 才視為測試模式
@@ -1220,6 +1607,27 @@ const cancellationRef =
             console.log("🎧 finalAudioUrl:", finalAudioUrl ? "有語音" : "無語音");
             console.log("🔁 finalUserMessage:", finalUserMessage.slice(0, 500));
 
+            // =====================================================
+            // 🌸 新版特殊互動／禮物價格
+            // 注意：只有新版 App 明確傳 billingType 才會使用
+            // =====================================================
+            const INTERACTION_COSTS = {
+                poke: 3,
+                hug: 3,
+                holdHands: 3,
+                location: 3,
+                dice: 3,
+            };
+
+            const GIFT_COSTS = {
+                heart: 1,
+                flower: 1,
+                sun: 1,
+                confetti: 3,
+                coffee: 5,
+                cake: 5,
+            };
+
             const modeConfig = {
                 gemini: {
                   cost: 0,
@@ -1256,13 +1664,64 @@ const cancellationRef =
 
             const config = modeConfig[chatMode] || modeConfig["daily"];
             const targetModel = config.modelId;
-            // 生日免費與重新生成都不得扣一般聊天花花。
-            const cost =
-              isBirthdayFreebie ||
+
+            // =====================================================
+            // 🌸 決定本次真正收費
+            //
+            // 舊版 App：
+            //   沒有 billingType → 完全維持原本 chatMode 價格
+            //
+            // 新版 App：
+            //   chat        → 原本 chatMode 價格
+            //   interaction → 特殊互動固定價格
+            //   gift        → 禮物固定價格
+            // =====================================================
+            let cost = config.cost;
+
+            if (hasNewBillingFields) {
+                if (billingType === "interaction") {
+                    const interactionCost =
+                        INTERACTION_COSTS[interactionType];
+
+                    if (!Number.isInteger(interactionCost)) {
+                        return res.status(400).json({
+                            error: "INVALID_INTERACTION_TYPE",
+                            message: "無效的互動類型",
+                        });
+                    }
+
+                    cost = interactionCost;
+                } else if (billingType === "gift") {
+                    const giftCost =
+                        GIFT_COSTS[giftType];
+
+                    if (!Number.isInteger(giftCost)) {
+                        return res.status(400).json({
+                            error: "INVALID_GIFT_TYPE",
+                            message: "無效的禮物類型",
+                        });
+                    }
+
+                    cost = giftCost;
+                } else if (billingType === "chat") {
+                    // 新版的一般聊天仍照原本模式收費
+                    cost = config.cost;
+                } else {
+                    return res.status(400).json({
+                        error: "INVALID_BILLING_TYPE",
+                        message: "無效的計價類型",
+                    });
+                }
+            }
+
+            // 免費情況優先於所有計價
+            if (
+                isBirthdayFreebie ||
                 isRegenerateRequest ||
                 isQixiOpeningRequest
-                    ? 0
-                    : config.cost;
+            ) {
+                cost = 0;
+            }
 
             const userDoc = await userDocRef.get();
             if (!userDoc.exists) return res.status(404).json({ error: "找不到資料" });
@@ -4848,6 +5307,22 @@ const sessionSnapshot =
 const sessionData =
     sessionSnapshot?.data() || {};
 
+    const latestUserSnapshot =
+        cost > 0
+            ? await transaction.get(userDocRef)
+            : null;
+
+    if (cost > 0) {
+        const latestFlowerPoints =
+            Number(
+                latestUserSnapshot?.data()?.flowerPoints || 0
+            );
+
+        if (latestFlowerPoints < cost) {
+            throw new Error("INSUFFICIENT_FLOWER_POINTS");
+        }
+    }
+
     // 只採計正式活動期間內的日期。
     // 測試用的 8/17 不會被算入三日完成條件。
     const existingOfficialQixiDates = [
@@ -5258,6 +5733,28 @@ const sessionData =
             );
         }
     } catch (writeError) {
+        if (writeError?.message === "INSUFFICIENT_FLOWER_POINTS") {
+            console.log(
+                "🌸 [安全收銀台] 最終餘額不足，取消本次回覆與扣款。",
+                {
+                    userId,
+                    sessionId,
+                    cost,
+                }
+            );
+
+            if (!res.writableEnded && !res.destroyed) {
+                return res.status(402).json({
+                    status: "error",
+                    errorCode: "INSUFFICIENT_FLOWER_POINTS",
+                    errorMessage: "花花不足",
+                    charged: false,
+                    cost: 0,
+                });
+            }
+
+            return;
+        }
         console.error(
             "🛑 [安全收銀台] 回覆寫入或扣款失敗，" +
             "整個 Batch 已取消，本次不扣花花：",
@@ -6888,11 +7385,52 @@ exports.processMemoryJob = onDocumentCreated(
                               try {
                                   const userRef = db.collection("users").doc(userId);
 
-                                  await userRef.update({
-                                      flowerPoints: FieldValue.increment(amount)
-                                  });
+                                  const flowerLogRef =
+                                      userRef
+                                          .collection("flower_logs")
+                                          .doc();
 
-                                  console.log(`✅ 已發放 ${amount} 朵花花給玩家 ${userId} (理由: ${reason})`);
+                                  await db.runTransaction(
+                                      async (transaction) => {
+                                          transaction.update(
+                                              userRef,
+                                              {
+                                                  flowerPoints:
+                                                      FieldValue.increment(amount),
+                                              }
+                                          );
+
+                                          transaction.set(
+                                              flowerLogRef,
+                                              {
+                                                  title:
+                                                      typeof reason === "string" &&
+                                                      reason.trim().length > 0
+                                                          ? reason.trim()
+                                                          : "系統發放花花",
+
+                                                  amount,
+
+                                                  type: "system_grant",
+
+                                                  reason:
+                                                      typeof reason === "string"
+                                                          ? reason.trim()
+                                                          : "",
+
+                                                  source: "addFlowerPoints",
+
+                                                  createdAt:
+                                                      FieldValue.serverTimestamp(),
+                                              }
+                                          );
+                                      }
+                                  );
+
+                                  console.log(
+                                      `✅ 已發放 ${amount} 朵花花給玩家 ${userId} ` +
+                                      `(理由: ${reason})`
+                                  );
 
                                   // 成功後回傳收據給 Flutter
                                   return {
@@ -12248,6 +12786,1461 @@ function requireRewardCampaignAdmin(request) {
 
   return uid;
 }
+
+// ==================================================
+// 📊 管理後台：營運總覽 / 聊天室活動 / 分析
+// ==================================================
+
+function adminDateFromDynamic(value) {
+  if (!value) return null;
+
+  if (typeof value.toDate === "function") {
+    return value.toDate();
+  }
+
+  if (value instanceof Date) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed;
+    }
+  }
+
+  return null;
+}
+
+// 台灣固定 UTC+8，避免 Cloud Functions 在 UTC 下把「今天」算錯。
+const TAIPEI_OFFSET_MS = 8 * 60 * 60 * 1000;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+function getTaipeiDayStart(date = new Date()) {
+  const shifted = new Date(
+    date.getTime() + TAIPEI_OFFSET_MS
+  );
+
+  const taipeiMidnightAsUtc = Date.UTC(
+    shifted.getUTCFullYear(),
+    shifted.getUTCMonth(),
+    shifted.getUTCDate()
+  );
+
+  return new Date(
+    taipeiMidnightAsUtc - TAIPEI_OFFSET_MS
+  );
+}
+
+function getTaipeiDayIndex(date, startDate) {
+  const shiftedDate = new Date(
+    date.getTime() + TAIPEI_OFFSET_MS
+  );
+
+  const shiftedStart = new Date(
+    startDate.getTime() + TAIPEI_OFFSET_MS
+  );
+
+  const dateDay = Date.UTC(
+    shiftedDate.getUTCFullYear(),
+    shiftedDate.getUTCMonth(),
+    shiftedDate.getUTCDate()
+  );
+
+  const startDay = Date.UTC(
+    shiftedStart.getUTCFullYear(),
+    shiftedStart.getUTCMonth(),
+    shiftedStart.getUTCDate()
+  );
+
+  return Math.floor(
+    (dateDay - startDay) / ONE_DAY_MS
+  );
+}
+
+exports.getAdminDashboardStats = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 120,
+    memory: "512MiB",
+  },
+  async (request) => {
+    // 🔐 只有管理員可以讀全服營運資料
+    requireRewardCampaignAdmin(request);
+
+    const now = new Date();
+    const today = getTaipeiDayStart(now);
+
+    // 包含今天在內，共 7 天
+    const sevenDaysAgo = new Date(
+      today.getTime() - 6 * ONE_DAY_MS
+    );
+
+    try {
+      const usersFuture =
+        db.collection("users").get();
+
+      const publicCharactersFuture = db
+        .collection("artifacts")
+        .doc(APP_ID)
+        .collection("public_characters")
+        .get();
+
+      const privateCharactersFuture = db
+        .collectionGroup("private_characters")
+        .get();
+
+      const reportsFuture =
+        db.collection("reports").get();
+
+      // ⭐ 這次改成由 Admin SDK 讀取聊天室，
+      // 不再讓 Flutter App 直接碰全服 chat_sessions。
+      const chatSessionsFuture = db
+        .collection("artifacts")
+        .doc(APP_ID)
+        .collection("chat_sessions")
+        .where(
+          "lastActivity",
+          ">=",
+          Timestamp.fromDate(sevenDaysAgo)
+        )
+        .get();
+
+        const todayKey =
+          getAnalyticsTaipeiDateKey(now);
+
+        const activityTodayFuture = db
+          .collection(
+            "analytics_user_activity"
+          )
+          .where(
+            "dateKey",
+            "==",
+            todayKey
+          )
+          .get();
+
+      const [
+        usersSnapshot,
+        publicCharactersSnapshot,
+        privateCharactersSnapshot,
+        reportsSnapshot,
+        chatSessionsSnapshot,
+        activityTodaySnapshot,
+      ] = await Promise.all([
+        usersFuture,
+        publicCharactersFuture,
+        privateCharactersFuture,
+        reportsFuture,
+        chatSessionsFuture,
+        activityTodayFuture,
+      ]);
+
+      // ==================================================
+      // 👥 玩家
+      // ==================================================
+
+      const activeTodayUserIds =
+        new Set(
+          activityTodaySnapshot.docs
+            .map(
+              (doc) =>
+                String(
+                  doc.data()?.uid || ""
+                ).trim()
+            )
+            .filter(Boolean)
+        );
+
+      function dateKeyDaysAgo(days) {
+        return getAnalyticsTaipeiDateKey(
+          new Date(
+            now.getTime() -
+            days *
+              24 *
+              60 *
+              60 *
+              1000
+          )
+        );
+      }
+
+      const d1CohortDate =
+        dateKeyDaysAgo(1);
+
+      const d7CohortDate =
+        dateKeyDaysAgo(7);
+
+      const d30CohortDate =
+        dateKeyDaysAgo(30);
+
+      let d1Total = 0;
+      let d1Returned = 0;
+
+      let d7Total = 0;
+      let d7Returned = 0;
+
+      let d30Total = 0;
+      let d30Returned = 0;
+
+      let todayNewUsers = 0;
+      let monthlyActive = 0;
+
+      const userGrowth =
+        new Array(7).fill(0);
+
+      for (const document of usersSnapshot.docs) {
+        const data = document.data() || {};
+
+        const createdAt = adminDateFromDynamic(
+          data.createdAt ??
+          data.registeredAt ??
+          data.joinedAt
+        );
+
+        if (createdAt) {
+          const registrationKey =
+            getAnalyticsTaipeiDateKey(
+              createdAt
+            );
+
+          if (
+            registrationKey ===
+            d1CohortDate
+          ) {
+            d1Total++;
+
+            if (
+              activeTodayUserIds.has(
+                document.id
+              )
+            ) {
+              d1Returned++;
+            }
+          }
+
+          if (
+            registrationKey ===
+            d7CohortDate
+          ) {
+            d7Total++;
+
+            if (
+              activeTodayUserIds.has(
+                document.id
+              )
+            ) {
+              d7Returned++;
+            }
+          }
+
+          if (
+            registrationKey ===
+            d30CohortDate
+          ) {
+            d30Total++;
+
+            if (
+              activeTodayUserIds.has(
+                document.id
+              )
+            ) {
+              d30Returned++;
+            }
+          }
+        }
+
+        if (createdAt) {
+          if (createdAt >= today) {
+            todayNewUsers++;
+          }
+
+          const dayIndex =
+            getTaipeiDayIndex(
+              createdAt,
+              sevenDaysAgo
+            );
+
+          if (
+            dayIndex >= 0 &&
+            dayIndex < 7
+          ) {
+            userGrowth[dayIndex]++;
+          }
+        }
+
+        const monthlyEnd =
+          adminDateFromDynamic(
+            data.monthlySubEndDate ??
+            data.subscriptionEndAt
+          );
+
+        if (
+          monthlyEnd &&
+          monthlyEnd > now
+        ) {
+          monthlyActive++;
+        }
+      }
+
+      // ==================================================
+      // 🎭 角色
+      // ==================================================
+
+      let todayNewCharacters = 0;
+
+      // 公開角色
+      for (
+        const document
+        of publicCharactersSnapshot.docs
+      ) {
+        const data = document.data() || {};
+
+        const createdAt =
+          adminDateFromDynamic(
+            data.createdAt
+          );
+
+        if (
+          createdAt &&
+          createdAt >= today
+        ) {
+          todayNewCharacters++;
+        }
+      }
+
+      // 私人角色
+      for (
+        const document
+        of privateCharactersSnapshot.docs
+      ) {
+        const data = document.data() || {};
+
+        const createdAt =
+          adminDateFromDynamic(
+            data.createdAt
+          );
+
+        if (
+          createdAt &&
+          createdAt >= today
+        ) {
+          todayNewCharacters++;
+        }
+      }
+
+      // ==================================================
+      // 💌 客服
+      // ==================================================
+
+      let pendingReports = 0;
+
+      for (const document of reportsSnapshot.docs) {
+        const data = document.data() || {};
+
+        const status =
+          String(data.status || "").trim();
+
+        if (
+          !status ||
+          status === "pending" ||
+          status === "processing"
+        ) {
+          pendingReports++;
+        }
+      }
+
+      // ==================================================
+      // 💬 聊天室活動
+      // ==================================================
+
+      const activeUserIdsToday =
+        new Set();
+
+      let activeSessionsToday = 0;
+
+      const chatTrend =
+        new Array(7).fill(0);
+
+      const chatModes = {};
+
+      const characterChatCounts = {};
+
+      for (
+        const document
+        of chatSessionsSnapshot.docs
+      ) {
+        const data = document.data() || {};
+
+        const lastActivity =
+          adminDateFromDynamic(
+            data.lastActivity
+          );
+
+        if (!lastActivity) {
+          continue;
+        }
+
+        const dayIndex =
+          getTaipeiDayIndex(
+            lastActivity,
+            sevenDaysAgo
+          );
+
+        if (
+          dayIndex >= 0 &&
+          dayIndex < 7
+        ) {
+          chatTrend[dayIndex]++;
+        }
+
+        if (lastActivity >= today) {
+          activeSessionsToday++;
+
+          const userId =
+            String(
+              data.userId || ""
+            ).trim();
+
+          if (userId) {
+            activeUserIdsToday.add(userId);
+          }
+        }
+
+        const mode =
+          String(
+            data.chatMode || "daily"
+          ).trim();
+
+        chatModes[mode] =
+          (chatModes[mode] || 0) + 1;
+
+        const characterId =
+          String(
+            data.characterId || ""
+          ).trim();
+
+        if (characterId) {
+          characterChatCounts[characterId] =
+            (
+              characterChatCounts[
+                characterId
+              ] || 0
+            ) + 1;
+        }
+      }
+
+      // ==================================================
+      // 🌸 今日花花收支
+      // ==================================================
+
+      let flowerGranted = 0;
+      let flowerSpent = 0;
+
+      try {
+        const flowerLogsSnapshot = await db
+          .collectionGroup("flower_logs")
+          .where(
+            "createdAt",
+            ">=",
+            Timestamp.fromDate(today)
+          )
+          .get();
+
+        for (
+          const document
+          of flowerLogsSnapshot.docs
+        ) {
+          const data =
+            document.data() || {};
+
+          const amount =
+            Number(data.amount || 0);
+
+          if (!Number.isFinite(amount)) {
+            continue;
+          }
+
+          if (amount >= 0) {
+            flowerGranted += amount;
+          } else {
+            flowerSpent += Math.abs(amount);
+          }
+        }
+      } catch (error) {
+        console.warn(
+          "⚠️ 管理後台讀取今日花花明細失敗：",
+          error
+        );
+      }
+
+      const d1Retention =
+        d1Total > 0
+          ? d1Returned /
+            d1Total *
+            100
+          : null;
+
+      const d7Retention =
+        d7Total > 0
+          ? d7Returned /
+            d7Total *
+            100
+          : null;
+
+      const d30Retention =
+        d30Total > 0
+          ? d30Returned /
+            d30Total *
+            100
+          : null;
+
+      const result = {
+        totalUsers:
+          usersSnapshot.size,
+
+        todayNewUsers,
+
+        todayActiveUsers:
+          activeUserIdsToday.size,
+
+        publicCharacters:
+          publicCharactersSnapshot.size,
+
+        todayNewCharacters,
+
+        pendingReports,
+
+        todayChatSessions:
+          activeSessionsToday,
+
+        flowerGranted,
+        flowerSpent,
+
+        monthlyActive,
+
+        userGrowth,
+        chatTrend,
+        chatModes,
+        characterChatCounts,
+
+        sessions7d:
+          chatSessionsSnapshot.size,
+
+        generatedAt:
+          new Date().toISOString(),
+
+        retention: {
+          d1: {
+            rate: d1Retention,
+            cohortSize: d1Total,
+            returned: d1Returned,
+          },
+
+          d7: {
+            rate: d7Retention,
+            cohortSize: d7Total,
+            returned: d7Returned,
+          },
+
+          d30: {
+            rate: d30Retention,
+            cohortSize: d30Total,
+            returned: d30Returned,
+          },
+        },
+      };
+
+      console.log(
+        "📊 管理後台統計完成",
+        {
+          adminUid: request.auth?.uid,
+          totalUsers: result.totalUsers,
+          todayActiveUsers:
+            result.todayActiveUsers,
+          todayChatSessions:
+            result.todayChatSessions,
+          sessions7d:
+            result.sessions7d,
+        }
+      );
+
+      return result;
+    } catch (error) {
+      console.error(
+        "❌ getAdminDashboardStats 失敗：",
+        error
+      );
+
+      throw new HttpsError(
+        "internal",
+        "讀取管理後台統計資料失敗"
+      );
+    }
+  }
+);
+
+// ==================================================
+// 🩺 管理後台：讀取今日 AI 系統健康
+// ==================================================
+
+exports.getAdminSystemHealth = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 30,
+    memory: "256MiB",
+  },
+  async (request) => {
+    requireRewardCampaignAdmin(
+      request
+    );
+
+    const dateKey =
+      getAiHealthTaipeiDateKey();
+
+    const snapshot = await db
+      .collection("artifacts")
+      .doc(APP_ID)
+      .collection("ai_usage_daily")
+      .doc(dateKey)
+      .get();
+
+    if (!snapshot.exists) {
+      return {
+        dateKey,
+
+        requests: 0,
+        apiAttempts: 0,
+
+        successCount: 0,
+        failureCount: 0,
+        cancelledCount: 0,
+
+        fallbackCount: 0,
+        contentFilterCount: 0,
+        timeoutCount: 0,
+
+        totalLatencyMs: 0,
+
+        inputTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
+
+        successRate: 0,
+        failureRate: 0,
+        fallbackRate: 0,
+
+        averageLatencyMs: 0,
+
+        lastModelId: "",
+      };
+    }
+
+    const data =
+      snapshot.data() || {};
+
+    const requests =
+      Number(
+        data.requests || 0
+      );
+
+    const successCount =
+      Number(
+        data.successCount || 0
+      );
+
+    const failureCount =
+      Number(
+        data.failureCount || 0
+      );
+
+    const fallbackCount =
+      Number(
+        data.fallbackCount || 0
+      );
+
+    const totalLatencyMs =
+      Number(
+        data.totalLatencyMs || 0
+      );
+
+    // 玩家自己取消的不列入成功 / 失敗率分母
+    const completedRequests =
+      successCount +
+      failureCount;
+
+    const successRate =
+      completedRequests > 0
+        ? successCount /
+          completedRequests *
+          100
+        : 0;
+
+    const failureRate =
+      completedRequests > 0
+        ? failureCount /
+          completedRequests *
+          100
+        : 0;
+
+    const fallbackRate =
+      requests > 0
+        ? fallbackCount /
+          requests *
+          100
+        : 0;
+
+    const averageLatencyMs =
+      requests > 0
+        ? totalLatencyMs /
+          requests
+        : 0;
+
+    return {
+      dateKey,
+
+      requests,
+
+      apiAttempts:
+        Number(
+          data.apiAttempts || 0
+        ),
+
+      successCount,
+      failureCount,
+
+      cancelledCount:
+        Number(
+          data.cancelledCount || 0
+        ),
+
+      fallbackCount,
+
+      contentFilterCount:
+        Number(
+          data.contentFilterCount || 0
+        ),
+
+      timeoutCount:
+        Number(
+          data.timeoutCount || 0
+        ),
+
+      totalLatencyMs,
+
+      inputTokens:
+        Number(
+          data.inputTokens || 0
+        ),
+
+      outputTokens:
+        Number(
+          data.outputTokens || 0
+        ),
+
+      totalTokens:
+        Number(
+          data.totalTokens || 0
+        ),
+
+      successRate,
+      failureRate,
+      fallbackRate,
+      averageLatencyMs,
+
+      lastModelId:
+        String(
+          data.lastModelId || ""
+        ),
+    };
+  }
+);
+
+// ==================================================
+// 📈 玩家每日活躍埋點
+// 用於 D1 / D7 / D30 留存
+// ==================================================
+
+function getAnalyticsTaipeiDateKey(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone: "Asia/Taipei",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }
+  );
+
+  return formatter.format(date);
+}
+
+exports.recordDailyAppActivity = onCall(
+  {
+    region: "asia-east1",
+    timeoutSeconds: 20,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const uid = request.auth?.uid;
+
+    if (!uid) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入"
+      );
+    }
+
+    const todayKey =
+      getAnalyticsTaipeiDateKey();
+
+    const activityId =
+      `${todayKey}_${uid}`;
+
+    const activityRef = db
+      .collection("analytics_user_activity")
+      .doc(activityId);
+
+    // 同一玩家同一天只建立一次
+    const existing =
+      await activityRef.get();
+
+    if (existing.exists) {
+      return {
+        success: true,
+        alreadyRecorded: true,
+        dateKey: todayKey,
+      };
+    }
+
+    // Firebase Auth 的建立時間比讓前端自己傳安全
+    const authUser =
+      await auth.getUser(uid);
+
+    const creationTime =
+      authUser.metadata?.creationTime
+        ? new Date(
+            authUser.metadata.creationTime
+          )
+        : new Date();
+
+    const registrationDateKey =
+      getAnalyticsTaipeiDateKey(
+        creationTime
+      );
+
+    await activityRef.set({
+      uid,
+      dateKey: todayKey,
+      registrationDateKey,
+
+      recordedAt:
+        FieldValue.serverTimestamp(),
+
+      source: "app_open",
+    });
+
+    return {
+      success: true,
+      alreadyRecorded: false,
+      dateKey: todayKey,
+      registrationDateKey,
+    };
+  }
+);
+
+function getRecommendationTaipeiDateKey(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Taipei",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+
+  const values = {};
+
+  for (const part of parts) {
+    if (["year", "month", "day"].includes(part.type)) {
+      values[part.type] = part.value;
+    }
+  }
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+
+// ============================================================
+// 📈 記錄推薦 → 開聊事件
+// ============================================================
+exports.recordRecommendationEvent = onCall(
+  {
+    region: REGION,
+    timeoutSeconds: 20,
+    memory: "256MiB",
+  },
+  async (request) => {
+    const uid = request.auth?.uid;
+
+    if (!uid) {
+      throw new HttpsError(
+        "unauthenticated",
+        "請先登入"
+      );
+    }
+
+    const data = request.data || {};
+
+    const type =
+      typeof data.type === "string"
+        ? data.type.trim()
+        : "";
+
+    const characterId =
+      typeof data.characterId === "string"
+        ? data.characterId.trim()
+        : "";
+
+    const source =
+      typeof data.source === "string"
+        ? data.source.trim()
+        : "";
+
+    const allowedTypes = new Set([
+      "click",
+      "chat_start",
+    ]);
+
+    const allowedSources = new Set([
+      "recommendation_banner",
+      "popular_recommendation",
+    ]);
+
+    if (!allowedTypes.has(type)) {
+      throw new HttpsError(
+        "invalid-argument",
+        "無效的推薦事件類型"
+      );
+    }
+
+    if (!allowedSources.has(source)) {
+      throw new HttpsError(
+        "invalid-argument",
+        "無效的推薦來源"
+      );
+    }
+
+    if (!characterId) {
+      throw new HttpsError(
+        "invalid-argument",
+        "缺少 characterId"
+      );
+    }
+
+    const dateKey =
+      getRecommendationTaipeiDateKey();
+
+    // 同一位玩家、同一天、同一角色、同一推薦來源：
+    // click / chat_start 各只計一次。
+    //
+    // 避免玩家狂點造成數據膨脹。
+    const safeSource =
+      source.replace(/[^a-zA-Z0-9_-]/g, "_");
+
+    const safeCharacterId =
+      characterId.replace(
+        /[^a-zA-Z0-9_-]/g,
+        "_"
+      );
+
+    const docId =
+      `${dateKey}_${uid}_${safeSource}_${safeCharacterId}_${type}`;
+
+    const ref = db
+      .collection(
+        "analytics_recommendation_events"
+      )
+      .doc(docId);
+
+    await ref.set(
+      {
+        uid,
+        dateKey,
+        type,
+        source,
+        characterId,
+        recordedAt:
+          FieldValue.serverTimestamp(),
+      },
+      {
+        merge: true,
+      }
+    );
+
+    return {
+      success: true,
+    };
+  }
+);
+
+
+// ============================================================
+// 📊 後台：今日推薦 → 開聊轉換
+// ============================================================
+exports.getRecommendationConversionStats =
+  onCall(
+    {
+      region: REGION,
+      timeoutSeconds: 30,
+      memory: "256MiB",
+    },
+    async (request) => {
+      requireRewardCampaignAdmin(request);
+
+      const dateKey =
+        getRecommendationTaipeiDateKey();
+
+      const snapshot = await db
+        .collection(
+          "analytics_recommendation_events"
+        )
+        .where(
+          "dateKey",
+          "==",
+          dateKey
+        )
+        .get();
+
+      let clickCount = 0;
+      let chatStartCount = 0;
+
+      const sourceStats = {};
+
+      for (const doc of snapshot.docs) {
+        const data =
+          doc.data() || {};
+
+        const type =
+          data.type?.toString() ?? "";
+
+        const source =
+          data.source?.toString() ??
+          "unknown";
+
+        if (!sourceStats[source]) {
+          sourceStats[source] = {
+            clicks: 0,
+            chatStarts: 0,
+          };
+        }
+
+        if (type === "click") {
+          clickCount++;
+
+          sourceStats[source].clicks++;
+        }
+
+        if (type === "chat_start") {
+          chatStartCount++;
+
+          sourceStats[source]
+            .chatStarts++;
+        }
+      }
+
+      const conversionRate =
+        clickCount <= 0
+          ? null
+          : (
+              chatStartCount /
+              clickCount *
+              100
+            );
+
+      return {
+        dateKey,
+        clicks: clickCount,
+        chatStarts: chatStartCount,
+        conversionRate,
+        sources: sourceStats,
+      };
+    }
+  );
+
+  // ============================================================
+  // 🌸 後台：今日花花發放 / 消耗
+  // ============================================================
+
+  function getFlowerStatsTaipeiDayRange(
+      date = new Date()
+  ) {
+      const formatter =
+          new Intl.DateTimeFormat(
+              "en-CA",
+              {
+                  timeZone: "Asia/Taipei",
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+              }
+          );
+
+      const parts =
+          formatter.formatToParts(date);
+
+      const values = {};
+
+      for (const part of parts) {
+          if (
+              part.type === "year" ||
+              part.type === "month" ||
+              part.type === "day"
+          ) {
+              values[part.type] =
+                  Number(part.value);
+          }
+      }
+
+      // 台北 UTC+8
+      // 台北 00:00 = UTC 前一天 16:00
+      const startUtc =
+          new Date(
+              Date.UTC(
+                  values.year,
+                  values.month - 1,
+                  values.day,
+                  -8,
+                  0,
+                  0,
+                  0
+              )
+          );
+
+      const endUtc =
+          new Date(
+              startUtc.getTime() +
+              24 * 60 * 60 * 1000
+          );
+
+      return {
+          start:
+              Timestamp.fromDate(startUtc),
+
+          end:
+              Timestamp.fromDate(endUtc),
+      };
+  }
+
+
+  exports.getAdminFlowerStats = onCall(
+      {
+          region: REGION,
+          timeoutSeconds: 60,
+          memory: "256MiB",
+      },
+      async (request) => {
+          requireRewardCampaignAdmin(request);
+
+          const range =
+              getFlowerStatsTaipeiDayRange();
+
+          const snapshot =
+              await db
+                  .collectionGroup(
+                      "flower_logs"
+                  )
+                  .where(
+                      "createdAt",
+                      ">=",
+                      range.start
+                  )
+                  .where(
+                      "createdAt",
+                      "<",
+                      range.end
+                  )
+                  .get();
+
+          let flowerGranted = 0;
+          let flowerSpent = 0;
+
+          let grantedTransactions = 0;
+          let spentTransactions = 0;
+
+          for (
+              const doc of snapshot.docs
+          ) {
+              const data =
+                  doc.data() || {};
+
+              const amount =
+                  Number(
+                      data.amount || 0
+                  );
+
+              if (
+                  !Number.isFinite(amount) ||
+                  amount === 0
+              ) {
+                  continue;
+              }
+
+              if (amount > 0) {
+                  flowerGranted += amount;
+
+                  grantedTransactions++;
+              } else {
+                  // 後台顯示消耗量使用正數
+                  flowerSpent +=
+                      Math.abs(amount);
+
+                  spentTransactions++;
+              }
+          }
+
+          console.log(
+              "🌸 今日花花統計",
+              {
+                  flowerGranted,
+                  flowerSpent,
+                  grantedTransactions,
+                  spentTransactions,
+                  logs:
+                      snapshot.size,
+              }
+          );
+
+          return {
+              flowerGranted,
+              flowerSpent,
+
+              grantedTransactions,
+              spentTransactions,
+
+              totalLogs:
+                  snapshot.size,
+          };
+      }
+  );
+
+  // ============================================================
+  // 💰 後台：今日手機 IAP 金流
+  // ============================================================
+
+  function getRevenueTaipeiDayRange(
+      date = new Date()
+  ) {
+      const formatter =
+          new Intl.DateTimeFormat(
+              "en-US",
+              {
+                  timeZone: "Asia/Taipei",
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+              }
+          );
+
+      const parts =
+          formatter.formatToParts(date);
+
+      const values = {};
+
+      for (const part of parts) {
+          if (
+              part.type === "year" ||
+              part.type === "month" ||
+              part.type === "day"
+          ) {
+              values[part.type] =
+                  Number(part.value);
+          }
+      }
+
+      // 台灣時間 00:00
+      // 換算成 UTC = 前一天 16:00
+      const startUtc =
+          new Date(
+              Date.UTC(
+                  values.year,
+                  values.month - 1,
+                  values.day,
+                  -8,
+                  0,
+                  0,
+                  0
+              )
+          );
+
+      const endUtc =
+          new Date(
+              startUtc.getTime() +
+              24 * 60 * 60 * 1000
+          );
+
+      return {
+          start:
+              Timestamp.fromDate(startUtc),
+
+          end:
+              Timestamp.fromDate(endUtc),
+      };
+  }
+
+
+  exports.getAdminRevenueStats = onCall(
+      {
+          region: REGION,
+          timeoutSeconds: 60,
+          memory: "256MiB",
+      },
+      async (request) => {
+          requireRewardCampaignAdmin(request);
+
+          const range =
+              getRevenueTaipeiDayRange();
+
+          const snapshot =
+              await db
+                  .collectionGroup(
+                      "flower_logs"
+                  )
+                  .where(
+                      "createdAt",
+                      ">=",
+                      range.start
+                  )
+                  .where(
+                      "createdAt",
+                      "<",
+                      range.end
+                  )
+                  .get();
+
+          let revenueTwd = 0;
+
+          let purchaseCount = 0;
+
+          let applePurchaseCount = 0;
+
+          let googlePurchaseCount = 0;
+
+          const payerUids =
+              new Set();
+
+          for (
+              const doc of snapshot.docs
+          ) {
+              const data =
+                  doc.data() || {};
+
+              const type =
+                  String(
+                      data.type || ""
+                  ).trim();
+
+              const provider =
+                  String(
+                      data.provider || ""
+                  ).trim();
+
+              const currency =
+                  String(
+                      data.currency || ""
+                  )
+                      .trim()
+                      .toUpperCase();
+
+              const price =
+                  Number(
+                      data.price || 0
+                  );
+
+              // 只統計新的手機 IAP purchase log
+              if (type !== "purchase") {
+                  continue;
+              }
+
+              if (
+                  provider !== "apple_iap" &&
+                  provider !== "google_play"
+              ) {
+                  continue;
+              }
+
+              if (currency !== "TWD") {
+                  continue;
+              }
+
+              if (
+                  !Number.isFinite(price) ||
+                  price <= 0
+              ) {
+                  continue;
+              }
+
+              revenueTwd += price;
+
+              purchaseCount++;
+
+              if (provider === "apple_iap") {
+                  applePurchaseCount++;
+              }
+
+              if (provider === "google_play") {
+                  googlePurchaseCount++;
+              }
+
+              // flower_logs 位於 users/{uid}/flower_logs/{logId}
+              // parent = flower_logs
+              // parent.parent = user document
+              const userRef =
+                  doc.ref.parent.parent;
+
+              const uid =
+                  userRef?.id || "";
+
+              if (uid) {
+                  payerUids.add(uid);
+              }
+          }
+
+          const payingUsers =
+              payerUids.size;
+
+          const arppuTwd =
+              payingUsers > 0
+                  ? revenueTwd /
+                    payingUsers
+                  : null;
+
+          console.log(
+              "💰 今日手機 IAP 金流",
+              {
+                  revenueTwd,
+                  payingUsers,
+                  arppuTwd,
+                  purchaseCount,
+                  applePurchaseCount,
+                  googlePurchaseCount,
+              }
+          );
+
+          return {
+              revenueTwd,
+
+              payingUsers,
+
+              arppuTwd,
+
+              purchaseCount,
+
+              applePurchaseCount,
+
+              googlePurchaseCount,
+          };
+      }
+  );
 
 function parseRewardCampaignDate(value, fieldName) {
   if (!value) {
