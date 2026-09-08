@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -34,24 +36,26 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   String _friendlyError(FirebaseAuthException error) {
+    final l10n = AppLocalizations.of(context)!;
     switch (error.code) {
       case 'wrong-password':
       case 'invalid-credential':
-        return '目前密碼不正確，請再確認一次。';
+        return l10n.auth_error_wrong_password;
       case 'weak-password':
-        return '新密碼強度不足，請至少輸入 6 個字元。';
+        return l10n.auth_error_weak_password;
       case 'requires-recent-login':
-        return '登入狀態已過期，請重新登入後再更改密碼。';
+        return l10n.auth_error_requires_recent_login;
       case 'too-many-requests':
-        return '嘗試次數過多，請稍後再試。';
+        return l10n.auth_error_too_many_requests;
       case 'network-request-failed':
-        return '目前網路連線不穩定，請稍後再試。';
+        return l10n.auth_error_network_failed;
       default:
-        return error.message ?? '更改密碼失敗，請稍後再試。';
+        return error.message ?? l10n.change_password_failed;
     }
   }
 
   Future<void> _changePassword() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_isSaving) return;
     if (!_formKey.currentState!.validate()) return;
 
@@ -59,12 +63,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     final email = user?.email;
 
     if (user == null || email == null || email.trim().isEmpty) {
-      _showMessage('找不到目前登入帳號，請重新登入後再試。', isError: true);
+      _showMessage(l10n.change_password_account_not_found, isError: true);
       return;
     }
 
     if (!_isPasswordAccount) {
-      _showMessage('此帳號不是使用 Email 密碼登入，無法在此變更密碼。', isError: true);
+      _showMessage(l10n.change_password_not_password_account, isError: true);
       return;
     }
 
@@ -72,7 +76,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     final newPassword = _newPasswordController.text;
 
     if (currentPassword == newPassword) {
-      _showMessage('新密碼不能與目前密碼相同。', isError: true);
+      _showMessage(l10n.change_password_same_as_current, isError: true);
       return;
     }
 
@@ -104,13 +108,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               borderRadius: BorderRadius.circular(22),
             ),
             title: Text(
-              '密碼已更新',
+              l10n.change_password_success_title,
               style: GoogleFonts.notoSerifTc(
                 fontWeight: FontWeight.w700,
               ),
             ),
             content: Text(
-              '新的密碼已經設定完成，下次登入請使用新密碼。',
+              l10n.change_password_success_message,
               style: GoogleFonts.notoSerifTc(
                 height: 1.6,
               ),
@@ -119,7 +123,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
                 child: Text(
-                  '知道了',
+                  l10n.editProfileGotIt,
                   style: GoogleFonts.notoSerifTc(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
@@ -139,7 +143,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       _showMessage(_friendlyError(error), isError: true);
     } catch (_) {
       if (!mounted) return;
-      _showMessage('更改密碼失敗，請稍後再試。', isError: true);
+      _showMessage(l10n.change_password_failed, isError: true);
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -223,6 +227,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -232,7 +237,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         title: Text(
-          '更改密碼',
+          l10n.change_password_title,
           style: GoogleFonts.notoSerifTc(
             fontSize: 21,
             fontWeight: FontWeight.w600,
@@ -251,7 +256,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '帳號安全',
+                  l10n.change_password_security_title,
                   style: GoogleFonts.notoSerifTc(
                     color: primary,
                     fontSize: 14,
@@ -261,7 +266,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '請先輸入目前密碼完成身分驗證，再設定新的登入密碼。',
+                  l10n.change_password_description,
                   style: GoogleFonts.notoSerifTc(
                     color: onSurface.withValues(alpha: 0.58),
                     fontSize: 13,
@@ -277,7 +282,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   textInputAction: TextInputAction.next,
                   style: GoogleFonts.notoSerifTc(),
                   decoration: _fieldDecoration(
-                    label: '目前密碼',
+                    label: l10n.change_password_current_label,
                     hidden: _hideCurrent,
                     onToggle: () {
                       setState(() => _hideCurrent = !_hideCurrent);
@@ -285,7 +290,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '請輸入目前密碼';
+                      return l10n.change_password_current_required;
                     }
                     return null;
                   },
@@ -299,7 +304,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   textInputAction: TextInputAction.next,
                   style: GoogleFonts.notoSerifTc(),
                   decoration: _fieldDecoration(
-                    label: '新密碼',
+                    label: l10n.change_password_new_label,
                     hidden: _hideNew,
                     onToggle: () {
                       setState(() => _hideNew = !_hideNew);
@@ -307,13 +312,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '請輸入新密碼';
+                      return l10n.change_password_new_required;
                     }
                     if (value.length < 6) {
-                      return '新密碼至少需要 6 個字元';
+                      return l10n.change_password_new_min_length;
                     }
                     if (value == _currentPasswordController.text) {
-                      return '新密碼不能與目前密碼相同';
+                      return l10n.change_password_same_as_current;
                     }
                     return null;
                   },
@@ -336,17 +341,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '請再次輸入新密碼';
+                      return l10n.change_password_confirm_required;
                     }
                     if (value != _newPasswordController.text) {
-                      return '兩次輸入的新密碼不一致';
+                      return l10n.change_password_mismatch;
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '密碼至少 6 個字元。更改完成後，其他裝置下次重新登入時需使用新密碼。',
+                  l10n.change_password_hint,
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 12,
                     height: 1.55,
@@ -368,7 +373,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       ),
                     ),
                     child: _isSaving
-                        ? const SizedBox.square(
+                        ? SizedBox.square(
                       dimension: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
@@ -376,7 +381,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       ),
                     )
                         : Text(
-                      '確認更改',
+                      l10n.about_us_edit_confirm,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

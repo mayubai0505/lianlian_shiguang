@@ -6,6 +6,8 @@ import '../screens/creator_profile_page.dart';
 import '../services/app_constants.dart';
 import '../utils/image_utils.dart';
 import '../screens/creator_profile_page.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 enum CreatorFollowListType {
   following,
@@ -27,11 +29,12 @@ class CreatorFollowListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUser =
         FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
 
     if (currentUser == null) {
-      return const Scaffold(
+      return  Scaffold(
         body: Center(
-          child: Text('請先登入'),
+          child: Text(l10n.profilePagePleaseSignIn),
         ),
       );
     }
@@ -54,8 +57,8 @@ class CreatorFollowListPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           _isFollowingList
-              ? '我追蹤的創作者'
-              : '追蹤我的玩家',
+              ? l10n.creator_follow_following_title
+              : l10n.creator_follow_followers_title,
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -71,7 +74,7 @@ class CreatorFollowListPage extends StatelessWidget {
           if (snapshot.hasError) {
             return Center(
               child: Text(
-                '讀取失敗：${snapshot.error}',
+                l10n.creator_follow_load_failed(snapshot.error.toString()),
               ),
             );
           }
@@ -120,6 +123,7 @@ class CreatorFollowListPage extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context,) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Center(
       child: Padding(
@@ -138,8 +142,8 @@ class CreatorFollowListPage extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               _isFollowingList
-                  ? '還沒有追蹤創作者'
-                  : '目前還沒有追蹤者',
+                  ? l10n.creator_follow_empty_following_title
+                  : l10n.creator_follow_empty_followers_title,
               style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -148,8 +152,8 @@ class CreatorFollowListPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               _isFollowingList
-                  ? '在角色檔案或創作者工作坊追蹤喜歡的創作者吧。'
-                  : '當其他玩家追蹤你時，會顯示在這裡。',
+                  ? l10n.creator_follow_empty_following_description
+                  : l10n.creator_follow_empty_followers_description,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
@@ -169,6 +173,7 @@ class CreatorFollowListPage extends StatelessWidget {
     required String currentUserId,
     required String targetUserId,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return FutureBuilder<
         DocumentSnapshot<Map<String, dynamic>>>(
       future: FirebaseFirestore.instance
@@ -189,7 +194,7 @@ class CreatorFollowListPage extends StatelessWidget {
                 <String, dynamic>{};
 
         final String nickname =
-        (data['nickname'] ?? '未知玩家')
+        (data['nickname'] ?? l10n.creator_follow_unknown_player)
             .toString();
 
         final String playerId =
@@ -223,8 +228,8 @@ class CreatorFollowListPage extends StatelessWidget {
           ),
           subtitle: Text(
             playerId.isNotEmpty
-                ? 'ID：$playerId'
-                : '尚未設定玩家 ID',
+                ? l10n.creator_follow_player_id(playerId)
+                : l10n.creator_follow_no_player_id,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -256,6 +261,7 @@ class CreatorFollowListPage extends StatelessWidget {
     required String currentUserId,
     required String creatorId,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return OutlinedButton(
       onPressed: () {
         _confirmUnfollow(
@@ -274,7 +280,7 @@ class CreatorFollowListPage extends StatelessWidget {
           vertical: 7,
         ),
       ),
-      child: const Text('已追蹤'),
+      child: Text(l10n.creator_follow_following),
     );
   }
 
@@ -283,14 +289,15 @@ class CreatorFollowListPage extends StatelessWidget {
     required String currentUserId,
     required String creatorId,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final bool confirmed =
         await showDialog<bool>(
           context: context,
           builder: (dialogContext,) {
             return AlertDialog(
-              title: const Text('取消追蹤'),
-              content: const Text(
-                '確定要取消追蹤這位創作者嗎？',
+              title: Text(l10n.creator_follow_unfollow_title),
+              content:  Text(
+                l10n.creator_follow_unfollow_confirm,
               ),
               actions: [
                 TextButton(
@@ -301,7 +308,7 @@ class CreatorFollowListPage extends StatelessWidget {
                     );
                   },
                   child:
-                  const Text('取消'),
+                  Text(l10n.cancel),
                 ),
                 TextButton(
                   onPressed: () {
@@ -310,8 +317,8 @@ class CreatorFollowListPage extends StatelessWidget {
                       true,
                     );
                   },
-                  child: const Text(
-                    '取消追蹤',
+                  child:  Text(
+                    l10n.creator_follow_unfollow,
                     style: TextStyle(
                       color:
                       Colors.redAccent,

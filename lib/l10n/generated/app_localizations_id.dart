@@ -6480,4 +6480,591 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get appUpdateStoreOpenFailed =>
       'Toko tidak dapat dibuka saat ini. Silakan coba lagi nanti.';
+
+  @override
+  String get auth_error_requires_recent_login =>
+      'Sesi login Anda telah berakhir. Silakan login kembali sebelum mengubah kata sandi.';
+
+  @override
+  String get auth_error_too_many_requests =>
+      'Terlalu banyak percobaan. Silakan coba lagi nanti.';
+
+  @override
+  String get auth_error_network_failed =>
+      'Koneksi jaringan saat ini tidak stabil. Silakan coba lagi nanti.';
+
+  @override
+  String get change_password_failed =>
+      'Gagal mengubah kata sandi. Silakan coba lagi nanti.';
+
+  @override
+  String get change_password_account_not_found =>
+      'Akun yang sedang login tidak ditemukan. Silakan login kembali dan coba lagi.';
+
+  @override
+  String get change_password_not_password_account =>
+      'Akun ini tidak menggunakan login dengan email dan kata sandi, sehingga kata sandinya tidak dapat diubah di sini.';
+
+  @override
+  String get change_password_same_as_current =>
+      'Kata sandi baru tidak boleh sama dengan kata sandi saat ini.';
+
+  @override
+  String get change_password_success_title => 'Kata Sandi Diperbarui';
+
+  @override
+  String get change_password_success_message =>
+      'Kata sandi baru telah berhasil diatur. Gunakan kata sandi baru saat login berikutnya.';
+
+  @override
+  String get change_password_title => 'Ubah Kata Sandi';
+
+  @override
+  String get change_password_security_title => 'Keamanan Akun';
+
+  @override
+  String get change_password_description =>
+      'Masukkan kata sandi saat ini untuk memverifikasi identitas Anda, lalu atur kata sandi login yang baru.';
+
+  @override
+  String get change_password_current_label => 'Kata Sandi Saat Ini';
+
+  @override
+  String get change_password_current_required => 'Masukkan kata sandi saat ini';
+
+  @override
+  String get change_password_new_label => 'Kata Sandi Baru';
+
+  @override
+  String get change_password_new_required => 'Masukkan kata sandi baru';
+
+  @override
+  String get change_password_new_min_length =>
+      'Kata sandi baru harus terdiri dari minimal 6 karakter';
+
+  @override
+  String get change_password_confirm_label => 'Konfirmasi Kata Sandi Baru';
+
+  @override
+  String get change_password_confirm_required =>
+      'Masukkan kembali kata sandi baru';
+
+  @override
+  String get change_password_mismatch =>
+      'Kata sandi baru yang dimasukkan tidak cocok';
+
+  @override
+  String get change_password_hint =>
+      'Kata sandi harus terdiri dari minimal 6 karakter. Setelah diubah, gunakan kata sandi baru saat login kembali di perangkat lain.';
+
+  @override
+  String get character_npc_add => '＋ Tambah Karakter Pendukung';
+
+  @override
+  String character_npc_added_count(int count) {
+    return 'Karakter pendukung yang ditambahkan: $count';
+  }
+
+  @override
+  String get character_npc_unnamed => 'Karakter Pendukung Tanpa Nama';
+
+  @override
+  String get character_npc_title => 'Pengaturan Karakter Pendukung';
+
+  @override
+  String get character_npc_description =>
+      'Buat karakter penting yang akan muncul dalam cerita agar dunia karakter terasa lebih lengkap.';
+
+  @override
+  String get character_npc_empty_title => 'Belum Ada Karakter Pendukung';
+
+  @override
+  String get character_npc_empty_description =>
+      'Setelah ditambahkan, Anda dapat melihat, mengedit, dan mengelola pengaturan karakter pendukung di sini.';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age tahun';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return 'Hubungan dengan karakter utama: $relationship';
+  }
+
+  @override
+  String get character_management_login_required =>
+      'Silakan login terlebih dahulu';
+
+  @override
+  String get character_management_character_tab => 'Karakter';
+
+  @override
+  String get character_management_creator_tab => 'Kreator';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      'Karakter yang Anda hentikan kontaknya akan muncul di sini.';
+
+  @override
+  String get character_management_blocked_creators_load_failed =>
+      'Gagal memuat kreator yang diblokir';
+
+  @override
+  String get character_management_blocked_creators_empty =>
+      'Kreator yang Anda blokir akan muncul di sini.';
+
+  @override
+  String get character_management_creator_fallback => 'Kreator';
+
+  @override
+  String get character_management_blocked_creator_status => 'Kreator Diblokir';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      'Karakter publik dan karakter baru yang mereka tambahkan tidak akan muncul dalam rekomendasi.';
+
+  @override
+  String get character_management_unblock_creator_title =>
+      'Buka Blokir Kreator';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return 'Yakin ingin membuka blokir “$creatorName”?\n\nSetelah blokir dibuka, kreator ini dan karakternya mungkin muncul kembali dalam rekomendasi. Karakter yang sebelumnya Anda blokir secara terpisah akan tetap diblokir.';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return 'Blokir “$creatorName” telah dibuka';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed =>
+      'Gagal membuka blokir. Silakan coba lagi nanti';
+
+  @override
+  String get character_management_title => 'Kelola Karakter';
+
+  @override
+  String get character_management_subtitle =>
+      'Kelola karakter yang telah Anda hentikan kontaknya';
+
+  @override
+  String get character_management_character_fallback => 'Karakter';
+
+  @override
+  String get character_management_blocked_character_status =>
+      'Kontak Dihentikan';
+
+  @override
+  String get character_management_blocked_character_description =>
+      'Percakapan dan notifikasi akan dihentikan tanpa menghapus data terkait.';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return 'Yakin ingin membuka blokir “$charName”? Setelah blokir dibuka, konten terkait mungkin muncul kembali.';
+  }
+
+  @override
+  String get creator_follow_following_title => 'Kreator yang Saya Ikuti';
+
+  @override
+  String get creator_follow_followers_title => 'Pemain yang Mengikuti Saya';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return 'Gagal memuat: $error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title => 'Belum Mengikuti Kreator';
+
+  @override
+  String get creator_follow_empty_followers_title => 'Belum Ada Pengikut';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      'Ikuti kreator yang Anda sukai melalui profil karakter atau Lokakarya Kreator.';
+
+  @override
+  String get creator_follow_empty_followers_description =>
+      'Pemain yang mengikuti Anda akan muncul di sini.';
+
+  @override
+  String get creator_follow_unknown_player => 'Pemain Tidak Dikenal';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID: $playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => 'ID pemain belum diatur';
+
+  @override
+  String get creator_follow_following => 'Mengikuti';
+
+  @override
+  String get creator_follow_unfollow_title => 'Berhenti Mengikuti';
+
+  @override
+  String get creator_follow_unfollow_confirm =>
+      'Yakin ingin berhenti mengikuti kreator ini?';
+
+  @override
+  String get creator_follow_unfollow => 'Berhenti Mengikuti';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return 'Gagal memuat: $error';
+  }
+
+  @override
+  String get creator_profile_report_creator => 'Laporkan Kreator';
+
+  @override
+  String get creator_profile_block_creator => 'Blokir Kreator';
+
+  @override
+  String get creator_profile_report_login_required =>
+      'Silakan login sebelum melaporkan kreator';
+
+  @override
+  String get creator_profile_report_self_not_allowed =>
+      'Anda tidak dapat melaporkan profil kreator milik sendiri';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'Pilih alasan untuk melaporkan “$creatorName”:';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate =>
+      'Konten tidak pantas atau melanggar aturan';
+
+  @override
+  String get creator_profile_report_reason_harassment =>
+      'Pelecehan, serangan, atau konten kebencian';
+
+  @override
+  String get creator_profile_report_reason_impersonation =>
+      'Penyamaran atau identitas palsu';
+
+  @override
+  String get creator_profile_report_reason_spam =>
+      'Spam atau promosi berbahaya';
+
+  @override
+  String get creator_profile_report_success =>
+      'Laporan telah diterima. Terima kasih telah memberi tahu kami';
+
+  @override
+  String get creator_profile_report_failed =>
+      'Gagal mengirim laporan. Silakan coba lagi nanti';
+
+  @override
+  String get creator_profile_block_login_required =>
+      'Silakan login sebelum memblokir kreator';
+
+  @override
+  String get creator_profile_block_self_not_allowed =>
+      'Anda tidak dapat memblokir diri sendiri';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return 'Yakin ingin memblokir “$creatorName”?\n\nSetelah diblokir, Anda tidak akan lagi melihat profil publik kreator ini. Karakter publik yang telah dibuatnya juga akan ditambahkan ke daftar blokir Anda.';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => 'Konfirmasi Blokir';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return '“$creatorName” telah diblokir';
+  }
+
+  @override
+  String get creator_profile_block_failed =>
+      'Gagal memblokir. Silakan coba lagi nanti';
+
+  @override
+  String get creator_scene_edit_title_edit => 'Edit Adegan';
+
+  @override
+  String get creator_scene_edit_title_add => 'Tambah Adegan';
+
+  @override
+  String get creator_scene_edit_heading_edit => 'Sesuaikan awal cerita ini';
+
+  @override
+  String get creator_scene_edit_heading_add => 'Tuliskan awal cerita yang baru';
+
+  @override
+  String get creator_scene_edit_scene_title_label => 'Judul Adegan';
+
+  @override
+  String get creator_scene_edit_scene_title_hint =>
+      'Contoh: Bertemu Kembali di Malam Hujan';
+
+  @override
+  String get creator_scene_edit_description_label => 'Deskripsi Adegan';
+
+  @override
+  String get creator_scene_edit_description_hint =>
+      'Jelaskan waktu, tempat, hubungan, dan situasi dalam cerita.';
+
+  @override
+  String get creator_scene_edit_opening_label => 'Pembuka Karakter';
+
+  @override
+  String get creator_scene_edit_opening_hint =>
+      'Tuliskan reaksi atau ucapan pertama karakter saat memasuki cerita ini.';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      'Pembuka karakter akan menjadi babak pertama adegan ini. Percakapan selanjutnya akan tetap berpusat pada kepribadian asli karakter.';
+
+  @override
+  String get creator_scene_edit_save_changes => 'Simpan Perubahan';
+
+  @override
+  String get creator_scene_edit_save_scene => 'Simpan Adegan';
+
+  @override
+  String get creator_scene_edit_error_title_required =>
+      'Masukkan judul adegan terlebih dahulu.';
+
+  @override
+  String get creator_scene_edit_error_description_required =>
+      'Masukkan deskripsi adegan terlebih dahulu.';
+
+  @override
+  String get creator_scene_edit_error_opening_required =>
+      'Masukkan pembuka karakter terlebih dahulu.';
+
+  @override
+  String get creator_scene_edit_save_failed =>
+      'Gagal menyimpan. Silakan coba lagi nanti.';
+
+  @override
+  String get creator_scene_delete_title => 'Hapus Adegan?';
+
+  @override
+  String get creator_scene_delete_target_fallback => 'adegan ini';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return 'Yakin ingin menghapus “$sceneTitle”? Adegan yang dihapus tidak dapat dipulihkan.';
+  }
+
+  @override
+  String get creator_scene_delete_failed =>
+      'Gagal menghapus. Silakan coba lagi nanti.';
+
+  @override
+  String get creator_scene_empty_title => 'Belum Ada Adegan Kreator';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return 'Tuliskan alur cerita alternatif untuk $characterName,\nagar pemain dapat memulai dari kisah yang berbeda.';
+  }
+
+  @override
+  String get creator_scene_add => 'Tambah Adegan';
+
+  @override
+  String get creator_scene_unnamed => 'Adegan Tanpa Judul';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return 'Pembuka Karakter: $opening';
+  }
+
+  @override
+  String get creator_scene_edit => 'Edit';
+
+  @override
+  String get creator_scene_delete => 'Hapus';
+
+  @override
+  String get creator_scene_title => 'Adegan Kreator';
+
+  @override
+  String get creator_scene_character_unavailable =>
+      'Informasi karakter saat ini tidak dapat dimuat.';
+
+  @override
+  String get creator_scene_load_failed =>
+      'Gagal memuat adegan. Silakan coba lagi nanti.';
+
+  @override
+  String get creator_scene_heading =>
+      'Buat awal cerita yang berbeda untuk karakter';
+
+  @override
+  String get custom_scene_edit_heading_edit =>
+      'Sesuaikan cerita yang hanya menjadi milik Anda';
+
+  @override
+  String get custom_scene_edit_heading_add =>
+      'Tuliskan cerita khusus untuk ruang obrolan ini';
+
+  @override
+  String get custom_scene_edit_description_hint =>
+      'Jelaskan waktu, tempat, hubungan, dan situasi yang Anda inginkan sebagai awal cerita.';
+
+  @override
+  String get custom_scene_edit_note =>
+      'Adegan yang Anda buat tidak memiliki pembuka karakter yang telah ditentukan. Setelah dimulai, karakter akan memasuki cerita berdasarkan deskripsi adegan dan kepribadian aslinya.';
+
+  @override
+  String get moment_create_no_mentionable_characters =>
+      'Saat ini tidak ada karakter yang dapat disebut.';
+
+  @override
+  String get moment_create_mention_my_characters => 'Sebut Karakter Saya';
+
+  @override
+  String get moment_create_no_matching_characters =>
+      'Karakter yang sesuai tidak ditemukan';
+
+  @override
+  String get moment_create_my_character => 'Karakter Saya';
+
+  @override
+  String get moment_create_friend_character => 'Karakter Teman';
+
+  @override
+  String get moment_create_public_visibility_hint =>
+      'Postingan akan ditampilkan di Dinding Momen';
+
+  @override
+  String get moment_create_private_visibility_hint =>
+      'Hanya dapat dilihat dalam lingkup khusus';
+
+  @override
+  String get moment_create_add_image => 'Tambah Gambar';
+
+  @override
+  String get moment_create_mention_character => 'Sebut Karakter';
+
+  @override
+  String get moment_edit_content_hint => 'Bagikan perasaanmu...';
+
+  @override
+  String get moment_forward_chat_preview => '【Membagikan sebuah postingan】';
+
+  @override
+  String get feedback_image_too_large =>
+      'Ukuran gambar tidak boleh melebihi 10 MB';
+
+  @override
+  String get feedback_image_pick_failed =>
+      'Tidak dapat memilih gambar. Silakan coba lagi nanti';
+
+  @override
+  String get feedback_category_general => 'Masalah Umum';
+
+  @override
+  String get feedback_category_bug => 'Laporan Bug';
+
+  @override
+  String get feedback_category_suggestion => 'Saran Fitur';
+
+  @override
+  String get feedback_category_flower => 'Masalah Poin Bunga';
+
+  @override
+  String get feedback_category_payment => 'Masalah Isi Ulang / Pembayaran';
+
+  @override
+  String get feedback_category_ai_reply => 'Masalah Balasan AI';
+
+  @override
+  String get feedback_category_character_report => 'Laporkan Karakter';
+
+  @override
+  String get feedback_category_moment_report => 'Laporkan Postingan';
+
+  @override
+  String get feedback_screenshot_required_error =>
+      'Lampirkan tangkapan layar untuk jenis masalah ini agar kami dapat memeriksanya';
+
+  @override
+  String get feedback_login_required =>
+      'Silakan login sebelum mengirim laporan';
+
+  @override
+  String get feedback_mail_received_title =>
+      '【Kasus Dibuat】Kami Telah Menerima Laporan Anda';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return 'Kami telah menerima laporan Anda dan akan memeriksanya sesegera mungkin.\n\nNomor kasus: $caseNumber\n\nJika tim dukungan memiliki tanggapan lebih lanjut, Anda akan diberi tahu melalui kotak masuk LoveyDovey.';
+  }
+
+  @override
+  String get feedback_submit_success =>
+      'Laporan berhasil dikirim. Terima kasih atas masukan Anda!';
+
+  @override
+  String get feedback_submit_failed =>
+      'Gagal mengirim. Periksa koneksi jaringan Anda dan coba lagi';
+
+  @override
+  String get feedback_category_section_title => 'Jenis Masalah';
+
+  @override
+  String get feedback_reported_content_title => 'Konten yang Dilaporkan';
+
+  @override
+  String get feedback_screenshot_required_title =>
+      'Tangkapan Layar Masalah (Wajib)';
+
+  @override
+  String get feedback_image_optional_title => 'Gambar Tambahan (Opsional)';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      'Lampirkan tangkapan layar saat masalah terjadi agar tim kami dapat memeriksa situasi sebenarnya.';
+
+  @override
+  String get feedback_image_optional_description =>
+      'Jika memiliki gambar terkait, Anda juga dapat melampirkannya untuk membantu tim kami melakukan pemeriksaan.';
+
+  @override
+  String get feedback_footer_message =>
+      'Masukan Anda akan membantu kami terus meningkatkan pengalaman bermain. Terima kasih!';
+
+  @override
+  String get feedback_select_image_semantics => 'Pilih gambar laporan';
+
+  @override
+  String get feedback_opening_gallery => 'Membuka galeri…';
+
+  @override
+  String get feedback_select_image_upload =>
+      'Ketuk di sini untuk memilih gambar yang akan diunggah';
+
+  @override
+  String get feedback_image_requirements =>
+      'Mendukung JPG dan PNG, maksimal 10 MB per gambar';
+
+  @override
+  String get feedback_submitting_semantics => 'Mengirim';
+
+  @override
+  String get feedback_submit_semantics => 'Kirim laporan';
+
+  @override
+  String get feedback_submit_button => 'Kirim';
+
+  @override
+  String get feedback_remove_image => 'Hapus Gambar';
+
+  @override
+  String get feedback_selected_image => 'Gambar Dipilih';
+
+  @override
+  String get feedback_change_image => 'Ganti';
 }

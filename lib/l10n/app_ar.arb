@@ -3058,5 +3058,359 @@
     "appUpdateGo": "التحديث الآن",
     "appUpdateCurrentVersion": "الإصدار الحالي",
     "appUpdateLatestVersion": "أحدث إصدار",
-    "appUpdateStoreOpenFailed": "تعذّر فتح صفحة المتجر الآن. يُرجى المحاولة مرة أخرى لاحقًا."
-}
+    "appUpdateStoreOpenFailed": "تعذّر فتح صفحة المتجر الآن. يُرجى المحاولة مرة أخرى لاحقًا.",
+    "auth_error_requires_recent_login": "انتهت صلاحية جلسة تسجيل الدخول. يرجى تسجيل الدخول مجددًا قبل تغيير كلمة المرور.",
+    "auth_error_too_many_requests": "عدد المحاولات كبير جدًا. يرجى المحاولة مرة أخرى لاحقًا.",
+    "auth_error_network_failed": "اتصال الشبكة غير مستقر حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
+    "change_password_failed": "تعذر تغيير كلمة المرور. يرجى المحاولة مرة أخرى لاحقًا.",
+
+    "change_password_account_not_found": "تعذر العثور على الحساب المسجل دخوله حاليًا. يرجى تسجيل الدخول مجددًا والمحاولة مرة أخرى.",
+    "change_password_not_password_account": "لم يتم تسجيل الدخول إلى هذا الحساب باستخدام البريد الإلكتروني وكلمة المرور، لذلك لا يمكن تغيير كلمة المرور من هنا.",
+    "change_password_same_as_current": "يجب أن تختلف كلمة المرور الجديدة عن كلمة المرور الحالية.",
+
+    "change_password_success_title": "تم تحديث كلمة المرور",
+    "change_password_success_message": "تم تعيين كلمة المرور الجديدة. يرجى استخدامها عند تسجيل الدخول في المرة القادمة.",
+
+    "change_password_title": "تغيير كلمة المرور",
+    "change_password_security_title": "أمان الحساب",
+    "change_password_description": "أدخل كلمة المرور الحالية أولًا للتحقق من هويتك، ثم عيّن كلمة مرور جديدة لتسجيل الدخول.",
+
+    "change_password_current_label": "كلمة المرور الحالية",
+    "change_password_current_required": "يرجى إدخال كلمة المرور الحالية",
+
+    "change_password_new_label": "كلمة المرور الجديدة",
+    "change_password_new_required": "يرجى إدخال كلمة المرور الجديدة",
+    "change_password_new_min_length": "يجب ألا تقل كلمة المرور الجديدة عن 6 أحرف",
+
+    "change_password_confirm_label": "تأكيد كلمة المرور الجديدة",
+    "change_password_confirm_required": "يرجى إدخال كلمة المرور الجديدة مرة أخرى",
+    "change_password_mismatch": "كلمتا المرور الجديدتان غير متطابقتين",
+
+    "change_password_hint": "يجب ألا تقل كلمة المرور عن 6 أحرف. بعد تغييرها، ستحتاج إلى استخدام كلمة المرور الجديدة عند تسجيل الدخول مجددًا على الأجهزة الأخرى.",
+    "character_npc_add": "＋ إضافة شخصية مساندة",
+    "character_npc_add": "＋ إضافة شخصية مساندة",
+    "character_npc_added_count": "الشخصيات المساندة المضافة: {count}",
+    "@character_npc_added_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "character_npc_unnamed": "شخصية مساندة بلا اسم",
+
+    "character_npc_title": "إعدادات الشخصيات المساندة",
+    "character_npc_description": "أنشئ شخصيات مهمة تظهر في القصة لتجعل عالم الشخصية أكثر اكتمالًا.",
+
+    "character_npc_empty_title": "لم تتم إضافة أي شخصيات مساندة بعد",
+    "character_npc_empty_description": "بعد إضافة شخصية مساندة، يمكنك عرض إعداداتها وتعديلها وإدارتها هنا.",
+
+    "character_npc_age": "العمر: {age}",
+    "@character_npc_age": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_npc_relationship_with_main": "علاقتها بالشخصية الرئيسية: {relationship}",
+    "@character_npc_relationship_with_main": {
+        "placeholders": {
+            "relationship": {
+                "type": "String"
+            }
+        }
+    },
+    "character_management_login_required": "يرجى تسجيل الدخول أولًا",
+
+    "character_management_character_tab": "الشخصيات",
+    "character_management_creator_tab": "المنشئون",
+
+    "character_management_blocked_characters_empty": "ستظهر هنا الشخصيات التي أوقفت التواصل معها.",
+
+    "character_management_blocked_creators_load_failed": "تعذر تحميل المنشئين المحظورين",
+    "character_management_blocked_creators_empty": "سيظهر هنا المنشئون الذين حظرتهم.",
+    "character_management_creator_fallback": "المنشئ",
+
+    "character_management_blocked_creator_status": "المنشئ محظور",
+    "character_management_blocked_creator_description": "لن تظهر شخصياته العامة أو الشخصيات التي يضيفها لاحقًا ضمن التوصيات.",
+
+    "character_management_unblock_creator_title": "إلغاء حظر المنشئ",
+
+    "character_management_unblock_creator_confirm": "هل تريد بالتأكيد إلغاء حظر «{creatorName}»؟\n\nبعد إلغاء الحظر، قد يظهر هذا المنشئ وشخصياته مجددًا ضمن المحتوى الموصى به. ستظل الشخصيات التي حظرتها بشكل منفصل محظورة.",
+    "@character_management_unblock_creator_confirm": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_management_unblock_creator_success": "تم إلغاء حظر «{creatorName}»",
+    "@character_management_unblock_creator_success": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_management_unblock_creator_failed": "تعذر إلغاء الحظر. يرجى المحاولة مرة أخرى لاحقًا",
+
+    "character_management_title": "إدارة الشخصيات",
+    "character_management_subtitle": "إدارة الشخصيات التي أوقفت التواصل معها",
+
+    "character_management_character_fallback": "الشخصية",
+
+    "character_management_blocked_character_status": "التواصل متوقف",
+    "character_management_blocked_character_description": "سيتم إيقاف المحادثات والإشعارات دون حذف البيانات ذات الصلة.",
+
+    "character_management_unblock_character_confirm": "هل تريد بالتأكيد إلغاء حظر «{charName}»؟ قد يظهر المحتوى المرتبط بها مجددًا بعد إلغاء الحظر.",
+    "@character_management_unblock_character_confirm": {
+        "placeholders": {
+            "charName": {
+                "type": "String"
+            }
+        }
+    },
+    "creator_follow_following_title": "المنشئون الذين أتابعهم",
+    "creator_follow_followers_title": "اللاعبون الذين يتابعونني",
+
+    "creator_follow_load_failed": "فشل التحميل: {error}",
+    "@creator_follow_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_follow_empty_following_title": "لا تتابع أي منشئ بعد",
+    "creator_follow_empty_followers_title": "ليس لديك متابعون حاليًا",
+
+    "creator_follow_empty_following_description": "تابع منشئيك المفضلين من صفحة الشخصية أو ورشة المنشئ.",
+    "creator_follow_empty_followers_description": "سيظهر اللاعبون هنا عندما يتابعونك.",
+
+    "creator_follow_unknown_player": "لاعب غير معروف",
+
+    "creator_follow_player_id": "المعرّف: {playerId}",
+    "@creator_follow_player_id": {
+        "placeholders": {
+            "playerId": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_follow_no_player_id": "لم يتم تعيين معرّف اللاعب بعد",
+
+    "creator_follow_following": "تتم المتابعة",
+
+    "creator_follow_unfollow_title": "إلغاء المتابعة",
+    "creator_follow_unfollow_confirm": "هل تريد بالتأكيد إلغاء متابعة هذا المنشئ؟",
+    "creator_follow_unfollow": "إلغاء المتابعة",
+    "interaction_history_load_failed": "فشل التحميل: {error}",
+    "@interaction_history_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "creator_profile_report_creator": "الإبلاغ عن المنشئ",
+    "creator_profile_block_creator": "حظر المنشئ",
+
+    "creator_profile_report_login_required": "يرجى تسجيل الدخول قبل الإبلاغ عن المنشئ",
+    "creator_profile_report_self_not_allowed": "لا يمكنك الإبلاغ عن صفحة المنشئ الخاصة بك",
+
+    "creator_profile_report_reason_prompt": "حدد سبب الإبلاغ عن «{creatorName}»:",
+    "@creator_profile_report_reason_prompt": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_report_reason_inappropriate": "محتوى غير لائق أو مخالف",
+    "creator_profile_report_reason_harassment": "مضايقة أو إساءة أو محتوى يحض على الكراهية",
+    "creator_profile_report_reason_impersonation": "انتحال شخصية شخص آخر أو تزوير الهوية",
+    "creator_profile_report_reason_spam": "محتوى مزعج أو ترويج ضار",
+
+    "creator_profile_report_success": "تم استلام بلاغك. شكرًا لإبلاغنا",
+    "creator_profile_report_failed": "تعذر إرسال البلاغ. يرجى المحاولة مرة أخرى لاحقًا",
+
+    "creator_profile_block_login_required": "يرجى تسجيل الدخول قبل حظر المنشئ",
+    "creator_profile_block_self_not_allowed": "لا يمكنك حظر نفسك",
+
+    "creator_profile_block_confirm": "هل تريد بالتأكيد حظر «{creatorName}»؟\n\nبعد الحظر، لن تتمكن من رؤية الصفحة العامة لهذا المنشئ، وستتم أيضًا إضافة الشخصيات العامة التي أنشأها حاليًا إلى قائمة الحظر.",
+    "@creator_profile_block_confirm": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_block_confirm_button": "تأكيد الحظر",
+
+    "creator_profile_block_success": "تم حظر «{creatorName}»",
+    "@creator_profile_block_success": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_block_failed": "تعذر الحظر. يرجى المحاولة مرة أخرى لاحقًا",
+    "creator_scene_edit_title_edit": "تعديل المشهد",
+    "creator_scene_edit_title_add": "إضافة مشهد",
+
+    "creator_scene_edit_heading_edit": "عدّل مدخل هذه القصة",
+    "creator_scene_edit_heading_add": "اكتب مدخلًا جديدًا للقصة",
+
+    "creator_scene_edit_scene_title_label": "عنوان المشهد",
+    "creator_scene_edit_scene_title_hint": "مثال: لقاء مجددًا في ليلة ممطرة",
+
+    "creator_scene_edit_description_label": "وصف المشهد",
+    "creator_scene_edit_description_hint": "صِف زمان القصة ومكانها والعلاقات والسياق المحيط بها.",
+
+    "creator_scene_edit_opening_label": "افتتاحية الشخصية",
+    "creator_scene_edit_opening_hint": "اكتب أول رد فعل أو أول جملة للشخصية عند دخولها إلى هذه القصة.",
+
+    "creator_scene_edit_opening_note": "ستكون افتتاحية الشخصية هي المشهد الأول في هذه القصة، وستستمر الحوارات اللاحقة بالاستناد إلى شخصية الدور الأصلية.",
+
+    "creator_scene_edit_save_changes": "حفظ التعديلات",
+    "creator_scene_edit_save_scene": "حفظ المشهد",
+
+    "creator_scene_edit_error_title_required": "يرجى إدخال عنوان المشهد أولًا.",
+    "creator_scene_edit_error_description_required": "يرجى إدخال وصف المشهد أولًا.",
+    "creator_scene_edit_error_opening_required": "يرجى كتابة افتتاحية الشخصية أولًا.",
+    "creator_scene_edit_save_failed": "تعذر الحفظ. يرجى المحاولة مرة أخرى لاحقًا.",
+    "creator_scene_delete_title": "حذف المشهد؟",
+
+    "creator_scene_delete_target_fallback": "هذا المشهد",
+
+    "creator_scene_delete_confirm": "هل تريد بالتأكيد حذف «{sceneTitle}»؟ لا يمكن التراجع عن الحذف.",
+    "@creator_scene_delete_confirm": {
+        "placeholders": {
+            "sceneTitle": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_delete_failed": "تعذر الحذف. يرجى المحاولة مرة أخرى لاحقًا.",
+
+    "creator_scene_empty_title": "لا توجد مشاهد من إنشاء المبدعين بعد",
+
+    "creator_scene_empty_description": "اكتب مسارات قصصية مختلفة لـ {characterName}،\nحتى يتمكن اللاعبون من البدء من قصة أخرى.",
+    "@creator_scene_empty_description": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_add": "إضافة مشهد",
+
+    "creator_scene_unnamed": "مشهد بلا عنوان",
+
+    "creator_scene_opening": "افتتاحية الشخصية: {opening}",
+    "@creator_scene_opening": {
+        "placeholders": {
+            "opening": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_edit": "تعديل",
+    "creator_scene_delete": "حذف",
+
+    "creator_scene_title": "مشاهد المبدعين",
+
+    "creator_scene_character_unavailable": "يتعذر حاليًا تحميل بيانات الشخصية.",
+
+    "creator_scene_load_failed": "تعذر تحميل المشاهد. يرجى المحاولة مرة أخرى لاحقًا.",
+
+    "creator_scene_heading": "أنشئ بدايات قصصية مختلفة للشخصية",
+    "custom_scene_edit_heading_edit": "عدّل هذه القصة الخاصة بك وحدك",
+
+    "custom_scene_edit_heading_add": "اكتب قصة خاصة بغرفة الدردشة هذه وحدها",
+
+    "custom_scene_edit_description_hint": "صِف زمان القصة ومكانها والعلاقات والسياق الذي تريد أن تبدأ منه.",
+
+    "custom_scene_edit_note": "لا تتضمن المشاهد التي تنشئها افتتاحية محددة مسبقًا للشخصية. بعد البدء، ستدخل الشخصية إلى القصة وفقًا لوصف المشهد وشخصيتها الأصلية.",
+    "moment_create_no_mentionable_characters": "لا توجد حاليًا شخصيات يمكن الإشارة إليها.",
+
+    "moment_create_mention_my_characters": "الإشارة إلى شخصياتي",
+
+    "moment_create_no_matching_characters": "لم يتم العثور على شخصيات مطابقة",
+
+    "moment_create_my_character": "شخصيتي",
+    "moment_create_friend_character": "شخصية صديق",
+
+    "moment_create_public_visibility_hint": "سيظهر المنشور على حائط اللحظات",
+    "moment_create_private_visibility_hint": "سيكون مرئيًا ضمن النطاق المخصص فقط",
+
+    "moment_create_add_image": "إضافة صورة",
+    "moment_create_mention_character": "الإشارة إلى شخصية",
+    "moment_edit_content_hint": "شارك ما تشعر به...",
+    "moment_forward_chat_preview": "【تمت مشاركة منشور】",
+    "feedback_image_too_large": "يجب ألا يتجاوز حجم الصورة 10 ميغابايت",
+    "feedback_image_pick_failed": "تعذر اختيار الصورة. يرجى المحاولة مرة أخرى لاحقًا",
+
+    "feedback_category_general": "مشكلة عامة",
+    "feedback_category_bug": "الإبلاغ عن خلل",
+    "feedback_category_suggestion": "اقتراح ميزة",
+    "feedback_category_flower": "مشكلة نقاط الزهور",
+    "feedback_category_payment": "مشكلة الشحن أو الدفع",
+    "feedback_category_ai_reply": "مشكلة في رد الذكاء الاصطناعي",
+    "feedback_category_character_report": "الإبلاغ عن شخصية",
+    "feedback_category_moment_report": "الإبلاغ عن منشور",
+
+    "feedback_screenshot_required_error": "يرجى إرفاق لقطة شاشة لهذا النوع من المشكلات لمساعدتنا على التحقق منه",
+    "feedback_login_required": "يرجى تسجيل الدخول قبل إرسال البلاغ",
+
+    "feedback_mail_received_title": "【تم إنشاء الطلب】تلقينا بلاغك",
+
+    "feedback_mail_received_body": "لقد تلقينا بلاغك وسنتحقق منه في أقرب وقت ممكن.\n\nرقم الطلب: {caseNumber}\n\nإذا كان لدى فريق الدعم رد إضافي، فسيتم إشعارك عبر صندوق بريد LoveyDovey.",
+    "@feedback_mail_received_body": {
+        "placeholders": {
+            "caseNumber": {
+                "type": "String"
+            }
+        }
+    },
+
+    "feedback_submit_success": "تم إرسال البلاغ بنجاح. شكرًا لملاحظاتك!",
+    "feedback_submit_failed": "تعذر الإرسال. يرجى التحقق من اتصال الشبكة والمحاولة مرة أخرى",
+
+    "feedback_category_section_title": "نوع المشكلة",
+    "feedback_reported_content_title": "المحتوى المُبلغ عنه",
+
+    "feedback_screenshot_required_title": "لقطة شاشة للمشكلة (مطلوبة)",
+    "feedback_image_optional_title": "صورة إضافية (اختيارية)",
+
+    "feedback_screenshot_required_description": "يرجى إرفاق لقطة شاشة توضح المشكلة لمساعدة الفريق على التحقق من الحالة الفعلية.",
+    "feedback_image_optional_description": "إذا كانت لديك صورة ذات صلة، فيمكنك إرفاقها لمساعدة الفريق على التحقق.",
+
+    "feedback_footer_message": "ستساعدنا ملاحظاتك على مواصلة تحسين تجربة اللعب. شكرًا لك!",
+
+    "feedback_select_image_semantics": "اختيار صورة للبلاغ",
+    "feedback_opening_gallery": "جارٍ فتح معرض الصور…",
+    "feedback_select_image_upload": "اضغط هنا لاختيار صورة ورفعها",
+    "feedback_image_requirements": "يدعم JPG وPNG، وبحد أقصى 10 ميغابايت للصورة",
+
+    "feedback_submitting_semantics": "جارٍ الإرسال",
+    "feedback_submit_semantics": "إرسال البلاغ",
+    "feedback_submit_button": "إرسال",
+
+    "feedback_remove_image": "إزالة الصورة",
+    "feedback_selected_image": "تم اختيار صورة",
+    "feedback_change_image": "تغيير"}

@@ -6137,4 +6137,551 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get appUpdateStoreOpenFailed => '현재 스토어를 열 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get auth_error_requires_recent_login =>
+      '로그인 세션이 만료되었습니다. 비밀번호를 변경하기 전에 다시 로그인해 주세요.';
+
+  @override
+  String get auth_error_too_many_requests => '시도 횟수가 너무 많습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get auth_error_network_failed =>
+      '현재 네트워크 연결이 불안정합니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get change_password_failed => '비밀번호를 변경하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get change_password_account_not_found =>
+      '현재 로그인한 계정을 찾을 수 없습니다. 다시 로그인한 후 시도해 주세요.';
+
+  @override
+  String get change_password_not_password_account =>
+      '이 계정은 이메일과 비밀번호로 로그인하는 계정이 아니므로 여기에서 비밀번호를 변경할 수 없습니다.';
+
+  @override
+  String get change_password_same_as_current => '새 비밀번호는 현재 비밀번호와 같을 수 없습니다.';
+
+  @override
+  String get change_password_success_title => '비밀번호가 변경되었습니다';
+
+  @override
+  String get change_password_success_message =>
+      '새 비밀번호가 설정되었습니다. 다음 로그인부터 새 비밀번호를 사용해 주세요.';
+
+  @override
+  String get change_password_title => '비밀번호 변경';
+
+  @override
+  String get change_password_security_title => '계정 보안';
+
+  @override
+  String get change_password_description =>
+      '본인 확인을 위해 현재 비밀번호를 입력한 후 새로운 로그인 비밀번호를 설정해 주세요.';
+
+  @override
+  String get change_password_current_label => '현재 비밀번호';
+
+  @override
+  String get change_password_current_required => '현재 비밀번호를 입력해 주세요';
+
+  @override
+  String get change_password_new_label => '새 비밀번호';
+
+  @override
+  String get change_password_new_required => '새 비밀번호를 입력해 주세요';
+
+  @override
+  String get change_password_new_min_length => '새 비밀번호는 6자 이상이어야 합니다';
+
+  @override
+  String get change_password_confirm_label => '새 비밀번호 확인';
+
+  @override
+  String get change_password_confirm_required => '새 비밀번호를 다시 입력해 주세요';
+
+  @override
+  String get change_password_mismatch => '새 비밀번호가 일치하지 않습니다';
+
+  @override
+  String get change_password_hint =>
+      '비밀번호는 6자 이상이어야 합니다. 변경 후 다른 기기에서 다시 로그인할 때는 새 비밀번호를 사용해 주세요.';
+
+  @override
+  String get character_npc_add => '＋ 조연 추가';
+
+  @override
+  String character_npc_added_count(int count) {
+    return '추가된 조연 $count명';
+  }
+
+  @override
+  String get character_npc_unnamed => '이름 없는 조연';
+
+  @override
+  String get character_npc_title => '조연 설정';
+
+  @override
+  String get character_npc_description =>
+      '이야기에 등장하는 주요 인물을 만들어 캐릭터의 세계를 더욱 풍성하게 완성해 보세요.';
+
+  @override
+  String get character_npc_empty_title => '아직 추가된 조연이 없습니다';
+
+  @override
+  String get character_npc_empty_description =>
+      '조연을 추가하면 여기에서 설정을 확인하고 편집하거나 관리할 수 있습니다.';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age세';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return '주인공과의 관계: $relationship';
+  }
+
+  @override
+  String get character_management_login_required => '먼저 로그인해 주세요';
+
+  @override
+  String get character_management_character_tab => '캐릭터';
+
+  @override
+  String get character_management_creator_tab => '크리에이터';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      '연락을 중단한 캐릭터가 여기에 표시됩니다.';
+
+  @override
+  String get character_management_blocked_creators_load_failed =>
+      '차단한 크리에이터를 불러오지 못했습니다';
+
+  @override
+  String get character_management_blocked_creators_empty =>
+      '차단한 크리에이터가 여기에 표시됩니다.';
+
+  @override
+  String get character_management_creator_fallback => '크리에이터';
+
+  @override
+  String get character_management_blocked_creator_status => '차단한 크리에이터';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      '해당 크리에이터의 공개 캐릭터와 이후 추가되는 캐릭터는 추천에 표시되지 않습니다.';
+
+  @override
+  String get character_management_unblock_creator_title => '크리에이터 차단 해제';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return '「$creatorName」 님의 차단을 해제하시겠습니까?\n\n차단을 해제하면 이 크리에이터와 캐릭터가 추천 콘텐츠에 다시 표시될 수 있습니다. 이전에 개별적으로 차단한 캐릭터는 계속 차단된 상태로 유지됩니다.';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return '「$creatorName」 님의 차단을 해제했습니다';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed =>
+      '차단을 해제하지 못했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get character_management_title => '캐릭터 관리';
+
+  @override
+  String get character_management_subtitle => '연락을 중단한 캐릭터를 관리합니다';
+
+  @override
+  String get character_management_character_fallback => '캐릭터';
+
+  @override
+  String get character_management_blocked_character_status => '연락 중단 중';
+
+  @override
+  String get character_management_blocked_character_description =>
+      '관련 데이터는 삭제하지 않고 대화와 알림만 중단합니다.';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return '「$charName」의 차단을 해제하시겠습니까? 차단을 해제하면 관련 콘텐츠가 다시 표시될 수 있습니다.';
+  }
+
+  @override
+  String get creator_follow_following_title => '내가 팔로우한 크리에이터';
+
+  @override
+  String get creator_follow_followers_title => '나를 팔로우한 플레이어';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return '불러오지 못했습니다: $error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title => '아직 팔로우한 크리에이터가 없습니다';
+
+  @override
+  String get creator_follow_empty_followers_title => '아직 팔로워가 없습니다';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      '캐릭터 프로필이나 크리에이터 워크숍에서 마음에 드는 크리에이터를 팔로우해 보세요.';
+
+  @override
+  String get creator_follow_empty_followers_description =>
+      '다른 플레이어가 나를 팔로우하면 여기에 표시됩니다.';
+
+  @override
+  String get creator_follow_unknown_player => '알 수 없는 플레이어';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID: $playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => '플레이어 ID가 아직 설정되지 않았습니다';
+
+  @override
+  String get creator_follow_following => '팔로우 중';
+
+  @override
+  String get creator_follow_unfollow_title => '팔로우 취소';
+
+  @override
+  String get creator_follow_unfollow_confirm => '이 크리에이터의 팔로우를 취소하시겠습니까?';
+
+  @override
+  String get creator_follow_unfollow => '팔로우 취소';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return '불러오지 못했습니다: $error';
+  }
+
+  @override
+  String get creator_profile_report_creator => '크리에이터 신고';
+
+  @override
+  String get creator_profile_block_creator => '크리에이터 차단';
+
+  @override
+  String get creator_profile_report_login_required =>
+      '크리에이터를 신고하려면 먼저 로그인해 주세요';
+
+  @override
+  String get creator_profile_report_self_not_allowed =>
+      '자신의 크리에이터 페이지는 신고할 수 없습니다';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '「$creatorName」 님을 신고하는 이유를 선택해 주세요:';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate =>
+      '부적절하거나 규정을 위반한 콘텐츠';
+
+  @override
+  String get creator_profile_report_reason_harassment => '괴롭힘, 공격 또는 혐오 콘텐츠';
+
+  @override
+  String get creator_profile_report_reason_impersonation => '타인 사칭 또는 신원 위조';
+
+  @override
+  String get creator_profile_report_reason_spam => '스팸 또는 악의적인 홍보';
+
+  @override
+  String get creator_profile_report_success => '신고가 접수되었습니다. 제보해 주셔서 감사합니다';
+
+  @override
+  String get creator_profile_report_failed => '신고를 제출하지 못했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get creator_profile_block_login_required => '크리에이터를 차단하려면 먼저 로그인해 주세요';
+
+  @override
+  String get creator_profile_block_self_not_allowed => '자기 자신은 차단할 수 없습니다';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return '「$creatorName」 님을 차단하시겠습니까?\n\n차단하면 이 크리에이터의 공개 페이지가 더 이상 표시되지 않으며, 현재 이 크리에이터가 만든 공개 캐릭터도 차단 목록에 함께 추가됩니다.';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => '차단 확인';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return '「$creatorName」 님을 차단했습니다';
+  }
+
+  @override
+  String get creator_profile_block_failed => '차단하지 못했습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get creator_scene_edit_title_edit => '장면 편집';
+
+  @override
+  String get creator_scene_edit_title_add => '장면 추가';
+
+  @override
+  String get creator_scene_edit_heading_edit => '이 이야기의 시작을 다듬어 보세요';
+
+  @override
+  String get creator_scene_edit_heading_add => '새로운 이야기의 시작을 작성해 보세요';
+
+  @override
+  String get creator_scene_edit_scene_title_label => '장면 제목';
+
+  @override
+  String get creator_scene_edit_scene_title_hint => '예: 비 오는 밤의 재회';
+
+  @override
+  String get creator_scene_edit_description_label => '장면 설명';
+
+  @override
+  String get creator_scene_edit_description_hint =>
+      '이야기가 펼쳐지는 시간, 장소, 관계와 상황을 설명해 주세요.';
+
+  @override
+  String get creator_scene_edit_opening_label => '캐릭터 도입부';
+
+  @override
+  String get creator_scene_edit_opening_hint =>
+      '캐릭터가 이 이야기에 등장할 때 보이는 첫 반응이나 첫 대사를 작성해 주세요.';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      '캐릭터 도입부는 이 장면의 첫 장면으로 사용됩니다. 이후 대화도 캐릭터의 기존 설정을 중심으로 이어집니다.';
+
+  @override
+  String get creator_scene_edit_save_changes => '변경 사항 저장';
+
+  @override
+  String get creator_scene_edit_save_scene => '장면 저장';
+
+  @override
+  String get creator_scene_edit_error_title_required => '장면 제목을 먼저 입력해 주세요.';
+
+  @override
+  String get creator_scene_edit_error_description_required =>
+      '장면 설명을 먼저 입력해 주세요.';
+
+  @override
+  String get creator_scene_edit_error_opening_required =>
+      '캐릭터 도입부를 먼저 입력해 주세요.';
+
+  @override
+  String get creator_scene_edit_save_failed => '저장하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get creator_scene_delete_title => '장면을 삭제할까요?';
+
+  @override
+  String get creator_scene_delete_target_fallback => '이 장면';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return '「$sceneTitle」을 삭제하시겠습니까? 삭제한 후에는 복구할 수 없습니다.';
+  }
+
+  @override
+  String get creator_scene_delete_failed => '삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get creator_scene_empty_title => '아직 크리에이터 장면이 없습니다';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return '$characterName의 또 다른 세계관을 작성하여\n플레이어가 새로운 이야기에서 시작할 수 있게 해 보세요.';
+  }
+
+  @override
+  String get creator_scene_add => '장면 추가';
+
+  @override
+  String get creator_scene_unnamed => '제목 없는 장면';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return '캐릭터 도입부: $opening';
+  }
+
+  @override
+  String get creator_scene_edit => '편집';
+
+  @override
+  String get creator_scene_delete => '삭제';
+
+  @override
+  String get creator_scene_title => '크리에이터 장면';
+
+  @override
+  String get creator_scene_character_unavailable => '현재 캐릭터 정보를 불러올 수 없습니다.';
+
+  @override
+  String get creator_scene_load_failed => '장면을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get creator_scene_heading => '캐릭터를 위한 다양한 이야기의 시작 만들기';
+
+  @override
+  String get custom_scene_edit_heading_edit => '오직 나만을 위한 이야기를 다듬어 보세요';
+
+  @override
+  String get custom_scene_edit_heading_add => '이 채팅방만을 위한 이야기를 작성해 보세요';
+
+  @override
+  String get custom_scene_edit_description_hint =>
+      '이야기가 펼쳐지는 시간, 장소, 관계와 시작하고 싶은 상황을 설명해 주세요.';
+
+  @override
+  String get custom_scene_edit_note =>
+      '직접 만든 장면에는 미리 설정된 캐릭터 도입부가 없습니다. 시작하면 캐릭터가 장면 설명과 기존 설정에 따라 이야기에 등장합니다.';
+
+  @override
+  String get moment_create_no_mentionable_characters =>
+      '현재 태그할 수 있는 캐릭터가 없습니다.';
+
+  @override
+  String get moment_create_mention_my_characters => '내 캐릭터 태그';
+
+  @override
+  String get moment_create_no_matching_characters => '일치하는 캐릭터를 찾을 수 없습니다';
+
+  @override
+  String get moment_create_my_character => '내 캐릭터';
+
+  @override
+  String get moment_create_friend_character => '친구 캐릭터';
+
+  @override
+  String get moment_create_public_visibility_hint => '게시물이 모먼트 담벼락에 표시됩니다';
+
+  @override
+  String get moment_create_private_visibility_hint => '지정된 범위 내에서만 공개됩니다';
+
+  @override
+  String get moment_create_add_image => '이미지 추가';
+
+  @override
+  String get moment_create_mention_character => '캐릭터 태그';
+
+  @override
+  String get moment_edit_content_hint => '지금의 기분을 공유해 보세요...';
+
+  @override
+  String get moment_forward_chat_preview => '【게시물을 공유했습니다】';
+
+  @override
+  String get feedback_image_too_large => '이미지 크기는 10MB를 초과할 수 없습니다';
+
+  @override
+  String get feedback_image_pick_failed => '이미지를 선택할 수 없습니다. 잠시 후 다시 시도해 주세요';
+
+  @override
+  String get feedback_category_general => '일반 문의';
+
+  @override
+  String get feedback_category_bug => '버그 신고';
+
+  @override
+  String get feedback_category_suggestion => '기능 제안';
+
+  @override
+  String get feedback_category_flower => '꽃 포인트 문제';
+
+  @override
+  String get feedback_category_payment => '충전 / 결제 문제';
+
+  @override
+  String get feedback_category_ai_reply => 'AI 답변 오류';
+
+  @override
+  String get feedback_category_character_report => '캐릭터 신고';
+
+  @override
+  String get feedback_category_moment_report => '게시물 신고';
+
+  @override
+  String get feedback_screenshot_required_error =>
+      '상황을 확인할 수 있도록 이 유형의 문제에는 화면 스크린샷을 첨부해 주세요';
+
+  @override
+  String get feedback_login_required => '신고를 제출하려면 먼저 로그인해 주세요';
+
+  @override
+  String get feedback_mail_received_title => '【접수 완료】신고가 접수되었습니다';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return '신고가 접수되었으며 최대한 빠르게 확인하겠습니다.\n\n접수 번호: $caseNumber\n\n고객센터에서 추가 답변을 보내면 LoveyDovey 우편함을 통해 알려드립니다.';
+  }
+
+  @override
+  String get feedback_submit_success => '신고가 성공적으로 제출되었습니다. 소중한 의견 감사합니다!';
+
+  @override
+  String get feedback_submit_failed => '제출하지 못했습니다. 네트워크 연결을 확인한 후 다시 시도해 주세요';
+
+  @override
+  String get feedback_category_section_title => '문제 유형';
+
+  @override
+  String get feedback_reported_content_title => '신고된 콘텐츠';
+
+  @override
+  String get feedback_screenshot_required_title => '문제 스크린샷 (필수)';
+
+  @override
+  String get feedback_image_optional_title => '추가 이미지 (선택)';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      '실제 상황을 확인할 수 있도록 문제가 발생했을 때의 화면 스크린샷을 첨부해 주세요.';
+
+  @override
+  String get feedback_image_optional_description =>
+      '관련 이미지가 있다면 확인에 도움이 되도록 함께 첨부해 주세요.';
+
+  @override
+  String get feedback_footer_message =>
+      '보내 주신 의견은 게임 경험을 지속적으로 개선하는 데 도움이 됩니다. 감사합니다!';
+
+  @override
+  String get feedback_select_image_semantics => '신고 이미지 선택';
+
+  @override
+  String get feedback_opening_gallery => '갤러리를 여는 중…';
+
+  @override
+  String get feedback_select_image_upload => '여기를 눌러 업로드할 이미지를 선택하세요';
+
+  @override
+  String get feedback_image_requirements => 'JPG 및 PNG 지원, 이미지당 최대 10MB';
+
+  @override
+  String get feedback_submitting_semantics => '제출 중';
+
+  @override
+  String get feedback_submit_semantics => '신고 제출';
+
+  @override
+  String get feedback_submit_button => '제출';
+
+  @override
+  String get feedback_remove_image => '이미지 삭제';
+
+  @override
+  String get feedback_selected_image => '이미지 선택됨';
+
+  @override
+  String get feedback_change_image => '변경';
 }

@@ -236,7 +236,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
 
   Future<void> _showMentionCharacterSheet() async {
     FocusScope.of(context).unfocus();
-
+    final l10n = AppLocalizations.of(context)!;
     final characters =
     await _fetchMyCharactersForMention();
 
@@ -245,7 +245,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
     if (characters.isEmpty) {
       ToastUtils.showCenterToast(
         context,
-        '目前沒有可以標記的角色。',
+        l10n.moment_create_no_mentionable_characters,
         customIcon: Icons.person_search_rounded,
       );
       return;
@@ -284,7 +284,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        '標記我的角色',
+                        l10n.moment_create_mention_my_characters,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -335,8 +335,8 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                         ),
                         subtitle: Text(
                           character.isPublic
-                              ? '公開角色'
-                              : '私人角色',
+                              ? l10n.profilePagePublicCharacter
+                              : l10n.profilePagePrivateCharacter,
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 11.5,
                             color: Theme.of(context)
@@ -747,7 +747,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
     if (!_showMentionSuggestions) {
       return const SizedBox.shrink();
     }
-
+    final l10n = AppLocalizations.of(context)!;
     final characters =
         _filteredMentionCharacters;
 
@@ -786,12 +786,12 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
         ),
       )
           : characters.isEmpty
-          ? const Padding(
+          ?  Padding(
         padding:
         EdgeInsets.all(20),
         child: Center(
           child: Text(
-            '找不到符合的角色',
+            l10n.moment_create_no_matching_characters,
           ),
         ),
       )
@@ -837,8 +837,8 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
             ),
             subtitle: Text(
               isMine
-                  ? '我的角色'
-                  : '好友角色',
+                  ? l10n.moment_create_my_character
+                  : l10n.moment_create_friend_character,
               style: TextStyle(
                 fontSize: 11,
                 color: isMine
@@ -1303,8 +1303,8 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                                     const SizedBox(height: 2),
                                     Text(
                                       _isPublic
-                                          ? '動態將顯示在拾光牆上'
-                                          : '只有專屬範圍內可見',
+                                          ? l10n.moment_create_public_visibility_hint
+                                          : l10n.moment_create_private_visibility_hint,
                                       style: GoogleFonts.notoSerifTc(
                                         color: onSurface.withValues(
                                           alpha: 0.40,
@@ -1371,7 +1371,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  '添加圖片',
+                                  l10n.moment_create_add_image,
                                   style: GoogleFonts.notoSerifTc(
                                     color: onSurface.withValues(
                                       alpha: 0.66,
@@ -1409,7 +1409,7 @@ class _CreateMomentPageState extends State<CreateMomentPage> {
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  '提及角色',
+                                  l10n.moment_create_mention_character,
                                   style: GoogleFonts.notoSerifTc(
                                     color: onSurface.withValues(
                                       alpha: 0.66,

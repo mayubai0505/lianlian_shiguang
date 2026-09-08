@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 //玩家自己的新增／編輯劇場頁
 class CustomSceneEditPage extends StatefulWidget {
   final String sessionId;
@@ -148,6 +150,7 @@ class _CustomSceneEditPageState extends State<CustomSceneEditPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -179,8 +182,8 @@ class _CustomSceneEditPageState extends State<CustomSceneEditPage> {
               const SizedBox(height: 6),
               Text(
                 widget.isEditing
-                    ? '調整這段只屬於你的故事'
-                    : '寫下一個只屬於這間聊天室的故事',
+                    ? l10n.custom_scene_edit_heading_edit
+                    : l10n.custom_scene_edit_heading_add,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 21,
                   fontWeight: FontWeight.w700,
@@ -188,7 +191,7 @@ class _CustomSceneEditPageState extends State<CustomSceneEditPage> {
               ),
               const SizedBox(height: 26),
               Text(
-                '劇場標題',
+                l10n.creator_scene_edit_scene_title_label,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -204,12 +207,12 @@ class _CustomSceneEditPageState extends State<CustomSceneEditPage> {
                 ),
                 decoration: _inputDecoration(
                   theme: theme,
-                  hintText: '例如：雨夜重逢',
+                  hintText: l10n.creator_scene_edit_scene_title_hint,
                 ),
               ),
               const SizedBox(height: 18),
               Text(
-                '場景說明',
+                l10n.creator_scene_edit_description_label,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -227,7 +230,7 @@ class _CustomSceneEditPageState extends State<CustomSceneEditPage> {
                 ),
                 decoration: _inputDecoration(
                   theme: theme,
-                  hintText: '描述故事發生的時間、地點、關係與你想開始的情境。',
+                  hintText: l10n.custom_scene_edit_description_hint,
                 ),
               ),
               const SizedBox(height: 12),
@@ -239,7 +242,7 @@ class _CustomSceneEditPageState extends State<CustomSceneEditPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  '自行創建的劇場沒有預設角色開場。開始後，角色會依照場景說明與原本人設進入故事。',
+                  l10n.custom_scene_edit_note,
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 12,
                     height: 1.6,
@@ -270,7 +273,7 @@ class _CustomSceneEditPageState extends State<CustomSceneEditPage> {
                     ),
                   )
                       : Text(
-                    widget.isEditing ? '儲存修改' : '儲存劇場',
+                    widget.isEditing ? l10n.creator_scene_edit_save_changes : l10n.creator_scene_edit_save_scene,
                     style: GoogleFonts.notoSerifTc(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,

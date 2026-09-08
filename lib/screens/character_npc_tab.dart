@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class CharacterNpcTab extends StatelessWidget {
   final List<Map<String, dynamic>> npcCharacters;
@@ -24,6 +26,7 @@ class CharacterNpcTab extends StatelessWidget {
     final primary = theme.colorScheme.primary;
     final textTheme = theme.textTheme;
     final serif = GoogleFonts.notoSerifTc();
+    final l10n = AppLocalizations.of(context)!;
 
     return SafeArea(
       top: false,
@@ -57,7 +60,7 @@ class CharacterNpcTab extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              child: const Text('＋ 新增配角'),
+              child: Text(l10n.character_npc_add),
             ),
 
             const SizedBox(height: 28),
@@ -70,7 +73,7 @@ class CharacterNpcTab extends StatelessWidget {
               )
             else ...[
               Text(
-                '已加入的配角  ${npcCharacters.length}',
+                l10n.character_npc_added_count(npcCharacters.length),
                 style: serif.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -86,7 +89,7 @@ class CharacterNpcTab extends StatelessWidget {
                 final name =
                 npc['name']?.toString().trim().isNotEmpty == true
                     ? npc['name'].toString().trim()
-                    : '未命名配角';
+                    : l10n.character_npc_unnamed;
 
                 final occupation =
                     npc['occupation']?.toString().trim() ?? '';
@@ -120,6 +123,7 @@ class CharacterNpcTab extends StatelessWidget {
     required TextStyle serif,
   }) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -149,7 +153,7 @@ class CharacterNpcTab extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '配角設定',
+                l10n.character_npc_title,
                 style: serif.copyWith(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -159,7 +163,7 @@ class CharacterNpcTab extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               Text(
-                '建立會在故事裡登場的重要人物，讓角色世界更完整。',
+                l10n.character_npc_description,
                 style: serif.copyWith(
                   fontSize: 13,
                   height: 1.55,
@@ -179,6 +183,7 @@ class CharacterNpcTab extends StatelessWidget {
     required TextStyle serif,
   }) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 46),
@@ -196,7 +201,7 @@ class CharacterNpcTab extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Text(
-            '目前尚未新增配角',
+            l10n.character_npc_empty_title,
             style: serif.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -205,7 +210,7 @@ class CharacterNpcTab extends StatelessWidget {
           ),
           const SizedBox(height: 7),
           Text(
-            '新增後可以在這裡查看、編輯與管理配角設定。',
+            l10n.character_npc_empty_description,
             textAlign: TextAlign.center,
             style: serif.copyWith(
               fontSize: 13,
@@ -229,9 +234,10 @@ class CharacterNpcTab extends StatelessWidget {
     required TextStyle serif,
   }) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final meta = <String>[
-      if (age.isNotEmpty) '$age歲',
+      if (age.isNotEmpty) l10n.character_npc_age(age),
       if (occupation.isNotEmpty) occupation,
     ].join(' · ');
 
@@ -291,7 +297,7 @@ class CharacterNpcTab extends StatelessWidget {
                     if (relationship.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
-                        '與主角色：$relationship',
+                        l10n.character_npc_relationship_with_main(relationship),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: serif.copyWith(
@@ -309,7 +315,7 @@ class CharacterNpcTab extends StatelessWidget {
               const SizedBox(width: 4),
 
               PopupMenuButton<String>(
-                tooltip: '更多',
+                tooltip: l10n.moreOptions,
                 padding: EdgeInsets.zero,
                 icon: Icon(
                   Icons.more_horiz_rounded,
@@ -327,14 +333,14 @@ class CharacterNpcTab extends StatelessWidget {
                   PopupMenuItem<String>(
                     value: 'edit',
                     child: Text(
-                      '編輯',
+                      l10n.edit_btn,
                       style: serif.copyWith(fontSize: 14),
                     ),
                   ),
                   PopupMenuItem<String>(
                     value: 'delete',
                     child: Text(
-                      '刪除',
+                      l10n.delete_btn,
                       style: serif.copyWith(
                         fontSize: 14,
                         color: Colors.redAccent,

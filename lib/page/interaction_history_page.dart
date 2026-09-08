@@ -73,7 +73,9 @@ class _InteractionHistoryPageState extends State<InteractionHistoryPage> {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('讀取失敗: ${snapshot.error}'));
+          return Center(child: Text(l10n.interaction_history_load_failed(
+            snapshot.error.toString(),
+          )));
         }
         final docs = snapshot.data?.docs ?? [];
         if (docs.isEmpty) {

@@ -11193,6 +11193,972 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'目前無法開啟商店頁面，請稍後再試。'**
   String get appUpdateStoreOpenFailed;
+
+  /// No description provided for @auth_error_requires_recent_login.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'登入狀態已過期，請重新登入後再更改密碼。'**
+  String get auth_error_requires_recent_login;
+
+  /// No description provided for @auth_error_too_many_requests.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'嘗試次數過多，請稍後再試。'**
+  String get auth_error_too_many_requests;
+
+  /// No description provided for @auth_error_network_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前網路連線不穩定，請稍後再試。'**
+  String get auth_error_network_failed;
+
+  /// No description provided for @change_password_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更改密碼失敗，請稍後再試。'**
+  String get change_password_failed;
+
+  /// No description provided for @change_password_account_not_found.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到目前登入帳號，請重新登入後再試。'**
+  String get change_password_account_not_found;
+
+  /// No description provided for @change_password_not_password_account.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'此帳號不是使用 Email 密碼登入，無法在此變更密碼。'**
+  String get change_password_not_password_account;
+
+  /// No description provided for @change_password_same_as_current.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新密碼不能與目前密碼相同。'**
+  String get change_password_same_as_current;
+
+  /// No description provided for @change_password_success_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'密碼已更新'**
+  String get change_password_success_title;
+
+  /// No description provided for @change_password_success_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新的密碼已經設定完成，下次登入請使用新密碼。'**
+  String get change_password_success_message;
+
+  /// No description provided for @change_password_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更改密碼'**
+  String get change_password_title;
+
+  /// No description provided for @change_password_security_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'帳號安全'**
+  String get change_password_security_title;
+
+  /// No description provided for @change_password_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先輸入目前密碼完成身分驗證，再設定新的登入密碼。'**
+  String get change_password_description;
+
+  /// No description provided for @change_password_current_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前密碼'**
+  String get change_password_current_label;
+
+  /// No description provided for @change_password_current_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請輸入目前密碼'**
+  String get change_password_current_required;
+
+  /// No description provided for @change_password_new_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新密碼'**
+  String get change_password_new_label;
+
+  /// No description provided for @change_password_new_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請輸入新密碼'**
+  String get change_password_new_required;
+
+  /// No description provided for @change_password_new_min_length.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新密碼至少需要 6 個字元'**
+  String get change_password_new_min_length;
+
+  /// No description provided for @change_password_confirm_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認新密碼'**
+  String get change_password_confirm_label;
+
+  /// No description provided for @change_password_confirm_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請再次輸入新密碼'**
+  String get change_password_confirm_required;
+
+  /// No description provided for @change_password_mismatch.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'兩次輸入的新密碼不一致'**
+  String get change_password_mismatch;
+
+  /// No description provided for @change_password_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'密碼至少 6 個字元。更改完成後，其他裝置下次重新登入時需使用新密碼。'**
+  String get change_password_hint;
+
+  /// No description provided for @character_npc_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'＋ 新增配角'**
+  String get character_npc_add;
+
+  /// No description provided for @character_npc_added_count.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已加入的配角 {count}'**
+  String character_npc_added_count(int count);
+
+  /// No description provided for @character_npc_unnamed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未命名配角'**
+  String get character_npc_unnamed;
+
+  /// No description provided for @character_npc_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'配角設定'**
+  String get character_npc_title;
+
+  /// No description provided for @character_npc_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'建立會在故事裡登場的重要人物，讓角色世界更完整。'**
+  String get character_npc_description;
+
+  /// No description provided for @character_npc_empty_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前尚未新增配角'**
+  String get character_npc_empty_title;
+
+  /// No description provided for @character_npc_empty_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增後可以在這裡查看、編輯與管理配角設定。'**
+  String get character_npc_empty_description;
+
+  /// No description provided for @character_npc_age.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{age}歲'**
+  String character_npc_age(String age);
+
+  /// No description provided for @character_npc_relationship_with_main.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與主角色：{relationship}'**
+  String character_npc_relationship_with_main(String relationship);
+
+  /// No description provided for @character_management_login_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入系統'**
+  String get character_management_login_required;
+
+  /// No description provided for @character_management_character_tab.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色'**
+  String get character_management_character_tab;
+
+  /// No description provided for @character_management_creator_tab.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者'**
+  String get character_management_creator_tab;
+
+  /// No description provided for @character_management_blocked_characters_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'若你暫停與角色聯繫，會顯示在這裡。'**
+  String get character_management_blocked_characters_empty;
+
+  /// No description provided for @character_management_blocked_creators_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取封鎖創作者失敗'**
+  String get character_management_blocked_creators_load_failed;
+
+  /// No description provided for @character_management_blocked_creators_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'若你封鎖創作者，會顯示在這裡。'**
+  String get character_management_blocked_creators_empty;
+
+  /// No description provided for @character_management_creator_fallback.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者'**
+  String get character_management_creator_fallback;
+
+  /// No description provided for @character_management_blocked_creator_status.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已封鎖創作者'**
+  String get character_management_blocked_creator_status;
+
+  /// No description provided for @character_management_blocked_creator_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'其公開角色與後續新增角色不會出現在推薦中。'**
+  String get character_management_blocked_creator_description;
+
+  /// No description provided for @character_management_unblock_creator_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解除封鎖創作者'**
+  String get character_management_unblock_creator_title;
+
+  /// No description provided for @character_management_unblock_creator_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要解除封鎖「{creatorName}」嗎？\n\n解除後，這位創作者與其角色可能會再次出現在推薦內容中。你先前「單獨封鎖」的角色仍會維持封鎖。'**
+  String character_management_unblock_creator_confirm(String creatorName);
+
+  /// No description provided for @character_management_unblock_creator_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已解除封鎖「{creatorName}」'**
+  String character_management_unblock_creator_success(String creatorName);
+
+  /// No description provided for @character_management_unblock_creator_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'解除封鎖失敗，請稍後再試'**
+  String get character_management_unblock_creator_failed;
+
+  /// No description provided for @character_management_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色管理'**
+  String get character_management_title;
+
+  /// No description provided for @character_management_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'管理暫停聯繫的角色'**
+  String get character_management_subtitle;
+
+  /// No description provided for @character_management_character_fallback.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色'**
+  String get character_management_character_fallback;
+
+  /// No description provided for @character_management_blocked_character_status.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'暫停聯繫中'**
+  String get character_management_blocked_character_status;
+
+  /// No description provided for @character_management_blocked_character_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'暫停對話與通知，不會刪除相關資料。'**
+  String get character_management_blocked_character_description;
+
+  /// No description provided for @character_management_unblock_character_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要解除封鎖「{charName}」嗎？解除後，相關內容可能會再次顯示。'**
+  String character_management_unblock_character_confirm(String charName);
+
+  /// No description provided for @creator_follow_following_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我追蹤的創作者'**
+  String get creator_follow_following_title;
+
+  /// No description provided for @creator_follow_followers_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'追蹤我的玩家'**
+  String get creator_follow_followers_title;
+
+  /// No description provided for @creator_follow_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取失敗：{error}'**
+  String creator_follow_load_failed(String error);
+
+  /// No description provided for @creator_follow_empty_following_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有追蹤創作者'**
+  String get creator_follow_empty_following_title;
+
+  /// No description provided for @creator_follow_empty_followers_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有追蹤者'**
+  String get creator_follow_empty_followers_title;
+
+  /// No description provided for @creator_follow_empty_following_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'在角色檔案或創作者工作坊追蹤喜歡的創作者吧。'**
+  String get creator_follow_empty_following_description;
+
+  /// No description provided for @creator_follow_empty_followers_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'當其他玩家追蹤你時，會顯示在這裡。'**
+  String get creator_follow_empty_followers_description;
+
+  /// No description provided for @creator_follow_unknown_player.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未知玩家'**
+  String get creator_follow_unknown_player;
+
+  /// No description provided for @creator_follow_player_id.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'ID：{playerId}'**
+  String creator_follow_player_id(String playerId);
+
+  /// No description provided for @creator_follow_no_player_id.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未設定玩家 ID'**
+  String get creator_follow_no_player_id;
+
+  /// No description provided for @creator_follow_following.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已追蹤'**
+  String get creator_follow_following;
+
+  /// No description provided for @creator_follow_unfollow_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消追蹤'**
+  String get creator_follow_unfollow_title;
+
+  /// No description provided for @creator_follow_unfollow_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要取消追蹤這位創作者嗎？'**
+  String get creator_follow_unfollow_confirm;
+
+  /// No description provided for @creator_follow_unfollow.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消追蹤'**
+  String get creator_follow_unfollow;
+
+  /// No description provided for @interaction_history_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取失敗：{error}'**
+  String interaction_history_load_failed(String error);
+
+  /// No description provided for @creator_profile_report_creator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉創作者'**
+  String get creator_profile_report_creator;
+
+  /// No description provided for @creator_profile_block_creator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖創作者'**
+  String get creator_profile_block_creator;
+
+  /// No description provided for @creator_profile_report_login_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再檢舉創作者'**
+  String get creator_profile_report_login_required;
+
+  /// No description provided for @creator_profile_report_self_not_allowed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法檢舉自己的創作者頁面'**
+  String get creator_profile_report_self_not_allowed;
+
+  /// No description provided for @creator_profile_report_reason_prompt.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請選擇檢舉「{creatorName}」的原因：'**
+  String creator_profile_report_reason_prompt(String creatorName);
+
+  /// No description provided for @creator_profile_report_reason_inappropriate.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'不當或違規內容'**
+  String get creator_profile_report_reason_inappropriate;
+
+  /// No description provided for @creator_profile_report_reason_harassment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'騷擾、攻擊或仇恨內容'**
+  String get creator_profile_report_reason_harassment;
+
+  /// No description provided for @creator_profile_report_reason_impersonation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'冒充他人或偽造身分'**
+  String get creator_profile_report_reason_impersonation;
+
+  /// No description provided for @creator_profile_report_reason_spam.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'垃圾內容或惡意宣傳'**
+  String get creator_profile_report_reason_spam;
+
+  /// No description provided for @creator_profile_report_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已收到檢舉，感謝你的回報'**
+  String get creator_profile_report_success;
+
+  /// No description provided for @creator_profile_report_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'檢舉送出失敗，請稍後再試'**
+  String get creator_profile_report_failed;
+
+  /// No description provided for @creator_profile_block_login_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再封鎖創作者'**
+  String get creator_profile_block_login_required;
+
+  /// No description provided for @creator_profile_block_self_not_allowed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法封鎖自己'**
+  String get creator_profile_block_self_not_allowed;
+
+  /// No description provided for @creator_profile_block_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要封鎖「{creatorName}」嗎？\n\n封鎖後，你將不會再看到這位創作者的公開頁面，目前由他建立的公開角色也會一併加入封鎖名單。'**
+  String creator_profile_block_confirm(String creatorName);
+
+  /// No description provided for @creator_profile_block_confirm_button.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認封鎖'**
+  String get creator_profile_block_confirm_button;
+
+  /// No description provided for @creator_profile_block_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已封鎖「{creatorName}」'**
+  String creator_profile_block_success(String creatorName);
+
+  /// No description provided for @creator_profile_block_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'封鎖失敗，請稍後再試'**
+  String get creator_profile_block_failed;
+
+  /// No description provided for @creator_scene_edit_title_edit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯劇場'**
+  String get creator_scene_edit_title_edit;
+
+  /// No description provided for @creator_scene_edit_title_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增劇場'**
+  String get creator_scene_edit_title_add;
+
+  /// No description provided for @creator_scene_edit_heading_edit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'調整這段故事的入口'**
+  String get creator_scene_edit_heading_edit;
+
+  /// No description provided for @creator_scene_edit_heading_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寫下一個新的故事入口'**
+  String get creator_scene_edit_heading_add;
+
+  /// No description provided for @creator_scene_edit_scene_title_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'劇場標題'**
+  String get creator_scene_edit_scene_title_label;
+
+  /// No description provided for @creator_scene_edit_scene_title_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：雨夜重逢'**
+  String get creator_scene_edit_scene_title_hint;
+
+  /// No description provided for @creator_scene_edit_description_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'場景說明'**
+  String get creator_scene_edit_description_label;
+
+  /// No description provided for @creator_scene_edit_description_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述故事發生的時間、地點、關係與情境。'**
+  String get creator_scene_edit_description_hint;
+
+  /// No description provided for @creator_scene_edit_opening_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色開場'**
+  String get creator_scene_edit_opening_label;
+
+  /// No description provided for @creator_scene_edit_opening_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寫下角色進入這段劇情時的第一個反應或第一句話。'**
+  String get creator_scene_edit_opening_hint;
+
+  /// No description provided for @creator_scene_edit_opening_note.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色開場會作為這段劇場的第一幕；後續對話仍會以角色原本人設為核心繼續。'**
+  String get creator_scene_edit_opening_note;
+
+  /// No description provided for @creator_scene_edit_save_changes.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存修改'**
+  String get creator_scene_edit_save_changes;
+
+  /// No description provided for @creator_scene_edit_save_scene.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存劇場'**
+  String get creator_scene_edit_save_scene;
+
+  /// No description provided for @creator_scene_edit_error_title_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先填寫劇場標題。'**
+  String get creator_scene_edit_error_title_required;
+
+  /// No description provided for @creator_scene_edit_error_description_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先填寫場景說明。'**
+  String get creator_scene_edit_error_description_required;
+
+  /// No description provided for @creator_scene_edit_error_opening_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先填寫角色開場。'**
+  String get creator_scene_edit_error_opening_required;
+
+  /// No description provided for @creator_scene_edit_save_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲存失敗，請稍後再試。'**
+  String get creator_scene_edit_save_failed;
+
+  /// No description provided for @creator_scene_delete_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除劇場？'**
+  String get creator_scene_delete_title;
+
+  /// No description provided for @creator_scene_delete_target_fallback.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個劇場'**
+  String get creator_scene_delete_target_fallback;
+
+  /// No description provided for @creator_scene_delete_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要刪除「{sceneTitle}」嗎？刪除後無法復原。'**
+  String creator_scene_delete_confirm(String sceneTitle);
+
+  /// No description provided for @creator_scene_delete_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗，請稍後再試。'**
+  String get creator_scene_delete_failed;
+
+  /// No description provided for @creator_scene_empty_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有創作者劇場'**
+  String get creator_scene_empty_title;
+
+  /// No description provided for @creator_scene_empty_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'替 {characterName} 寫下不同世界線，\n讓玩家可以從另一段故事開始。'**
+  String creator_scene_empty_description(String characterName);
+
+  /// No description provided for @creator_scene_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增劇場'**
+  String get creator_scene_add;
+
+  /// No description provided for @creator_scene_unnamed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未命名劇場'**
+  String get creator_scene_unnamed;
+
+  /// No description provided for @creator_scene_opening.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色開場：{opening}'**
+  String creator_scene_opening(String opening);
+
+  /// No description provided for @creator_scene_edit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯'**
+  String get creator_scene_edit;
+
+  /// No description provided for @creator_scene_delete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除'**
+  String get creator_scene_delete;
+
+  /// No description provided for @creator_scene_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者劇場'**
+  String get creator_scene_title;
+
+  /// No description provided for @creator_scene_character_unavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前無法讀取角色資料。'**
+  String get creator_scene_character_unavailable;
+
+  /// No description provided for @creator_scene_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'劇場讀取失敗，請稍後再試。'**
+  String get creator_scene_load_failed;
+
+  /// No description provided for @creator_scene_heading.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'為角色建立不同故事入口'**
+  String get creator_scene_heading;
+
+  /// No description provided for @custom_scene_edit_heading_edit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'調整這段只屬於你的故事'**
+  String get custom_scene_edit_heading_edit;
+
+  /// No description provided for @custom_scene_edit_heading_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寫下一個只屬於這間聊天室的故事'**
+  String get custom_scene_edit_heading_add;
+
+  /// No description provided for @custom_scene_edit_description_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述故事發生的時間、地點、關係與你想開始的情境。'**
+  String get custom_scene_edit_description_hint;
+
+  /// No description provided for @custom_scene_edit_note.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自行創建的劇場沒有預設角色開場。開始後，角色會依照場景說明與原本人設進入故事。'**
+  String get custom_scene_edit_note;
+
+  /// No description provided for @moment_create_no_mentionable_characters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有可以標記的角色。'**
+  String get moment_create_no_mentionable_characters;
+
+  /// No description provided for @moment_create_mention_my_characters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'標記我的角色'**
+  String get moment_create_mention_my_characters;
+
+  /// No description provided for @moment_create_no_matching_characters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到符合的角色'**
+  String get moment_create_no_matching_characters;
+
+  /// No description provided for @moment_create_my_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的角色'**
+  String get moment_create_my_character;
+
+  /// No description provided for @moment_create_friend_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'好友角色'**
+  String get moment_create_friend_character;
+
+  /// No description provided for @moment_create_public_visibility_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動態將顯示在拾光牆上'**
+  String get moment_create_public_visibility_hint;
+
+  /// No description provided for @moment_create_private_visibility_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'只有專屬範圍內可見'**
+  String get moment_create_private_visibility_hint;
+
+  /// No description provided for @moment_create_add_image.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'添加圖片'**
+  String get moment_create_add_image;
+
+  /// No description provided for @moment_create_mention_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'提及角色'**
+  String get moment_create_mention_character;
+
+  /// No description provided for @moment_edit_content_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'分享你的心情...'**
+  String get moment_edit_content_hint;
+
+  /// No description provided for @moment_forward_chat_preview.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【轉發了一則動態】'**
+  String get moment_forward_chat_preview;
+
+  /// No description provided for @feedback_image_too_large.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'圖片大小不能超過 10 MB'**
+  String get feedback_image_too_large;
+
+  /// No description provided for @feedback_image_pick_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法選擇圖片，請稍後再試'**
+  String get feedback_image_pick_failed;
+
+  /// No description provided for @feedback_category_general.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'一般問題'**
+  String get feedback_category_general;
+
+  /// No description provided for @feedback_category_bug.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'Bug 回報'**
+  String get feedback_category_bug;
+
+  /// No description provided for @feedback_category_suggestion.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'功能建議'**
+  String get feedback_category_suggestion;
+
+  /// No description provided for @feedback_category_flower.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'花花點數問題'**
+  String get feedback_category_flower;
+
+  /// No description provided for @feedback_category_payment.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'儲值／付款問題'**
+  String get feedback_category_payment;
+
+  /// No description provided for @feedback_category_ai_reply.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'AI 回覆異常'**
+  String get feedback_category_ai_reply;
+
+  /// No description provided for @feedback_category_character_report.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色檢舉'**
+  String get feedback_category_character_report;
+
+  /// No description provided for @feedback_category_moment_report.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'貼文檢舉'**
+  String get feedback_category_moment_report;
+
+  /// No description provided for @feedback_screenshot_required_error.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'此類問題請附上畫面截圖，方便我們確認狀況'**
+  String get feedback_screenshot_required_error;
+
+  /// No description provided for @feedback_login_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先登入後再送出回報'**
+  String get feedback_login_required;
+
+  /// No description provided for @feedback_mail_received_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【案件已建立】已收到你的回報'**
+  String get feedback_mail_received_title;
+
+  /// No description provided for @feedback_mail_received_body.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我們已收到你的回報，會盡快協助確認。\n\n案件編號：{caseNumber}\n\n若客服有進一步回覆，會再透過戀戀拾光信箱通知你。'**
+  String feedback_mail_received_body(String caseNumber);
+
+  /// No description provided for @feedback_submit_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'回報已成功送出，謝謝你的意見！'**
+  String get feedback_submit_success;
+
+  /// No description provided for @feedback_submit_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出失敗，請確認網路後再試'**
+  String get feedback_submit_failed;
+
+  /// No description provided for @feedback_category_section_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'問題類型'**
+  String get feedback_category_section_title;
+
+  /// No description provided for @feedback_reported_content_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'被回報的內容'**
+  String get feedback_reported_content_title;
+
+  /// No description provided for @feedback_screenshot_required_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'問題截圖（必填）'**
+  String get feedback_screenshot_required_title;
+
+  /// No description provided for @feedback_image_optional_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'附加圖片（選填）'**
+  String get feedback_image_optional_title;
+
+  /// No description provided for @feedback_screenshot_required_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請附上問題發生時的畫面截圖，方便官方確認實際狀況。'**
+  String get feedback_screenshot_required_description;
+
+  /// No description provided for @feedback_image_optional_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'若有相關畫面，也可以附上截圖協助官方確認。'**
+  String get feedback_image_optional_description;
+
+  /// No description provided for @feedback_footer_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您的意見將協助我們持續優化遊戲體驗，謝謝您！'**
+  String get feedback_footer_message;
+
+  /// No description provided for @feedback_select_image_semantics.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇回報圖片'**
+  String get feedback_select_image_semantics;
+
+  /// No description provided for @feedback_opening_gallery.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開啟相簿中…'**
+  String get feedback_opening_gallery;
+
+  /// No description provided for @feedback_select_image_upload.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊此處選擇圖片上傳'**
+  String get feedback_select_image_upload;
+
+  /// No description provided for @feedback_image_requirements.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'支援 jpg、png，單張不超過 10 MB'**
+  String get feedback_image_requirements;
+
+  /// No description provided for @feedback_submitting_semantics.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出中'**
+  String get feedback_submitting_semantics;
+
+  /// No description provided for @feedback_submit_semantics.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出回報'**
+  String get feedback_submit_semantics;
+
+  /// No description provided for @feedback_submit_button.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'送出'**
+  String get feedback_submit_button;
+
+  /// No description provided for @feedback_remove_image.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'移除圖片'**
+  String get feedback_remove_image;
+
+  /// No description provided for @feedback_selected_image.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已選擇圖片'**
+  String get feedback_selected_image;
+
+  /// No description provided for @feedback_change_image.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更換'**
+  String get feedback_change_image;
 }
 
 class _AppLocalizationsDelegate

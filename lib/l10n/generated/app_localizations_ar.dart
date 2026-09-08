@@ -6379,4 +6379,580 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get appUpdateStoreOpenFailed =>
       'تعذّر فتح صفحة المتجر الآن. يُرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get auth_error_requires_recent_login =>
+      'انتهت صلاحية جلسة تسجيل الدخول. يرجى تسجيل الدخول مجددًا قبل تغيير كلمة المرور.';
+
+  @override
+  String get auth_error_too_many_requests =>
+      'عدد المحاولات كبير جدًا. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get auth_error_network_failed =>
+      'اتصال الشبكة غير مستقر حاليًا. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get change_password_failed =>
+      'تعذر تغيير كلمة المرور. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get change_password_account_not_found =>
+      'تعذر العثور على الحساب المسجل دخوله حاليًا. يرجى تسجيل الدخول مجددًا والمحاولة مرة أخرى.';
+
+  @override
+  String get change_password_not_password_account =>
+      'لم يتم تسجيل الدخول إلى هذا الحساب باستخدام البريد الإلكتروني وكلمة المرور، لذلك لا يمكن تغيير كلمة المرور من هنا.';
+
+  @override
+  String get change_password_same_as_current =>
+      'يجب أن تختلف كلمة المرور الجديدة عن كلمة المرور الحالية.';
+
+  @override
+  String get change_password_success_title => 'تم تحديث كلمة المرور';
+
+  @override
+  String get change_password_success_message =>
+      'تم تعيين كلمة المرور الجديدة. يرجى استخدامها عند تسجيل الدخول في المرة القادمة.';
+
+  @override
+  String get change_password_title => 'تغيير كلمة المرور';
+
+  @override
+  String get change_password_security_title => 'أمان الحساب';
+
+  @override
+  String get change_password_description =>
+      'أدخل كلمة المرور الحالية أولًا للتحقق من هويتك، ثم عيّن كلمة مرور جديدة لتسجيل الدخول.';
+
+  @override
+  String get change_password_current_label => 'كلمة المرور الحالية';
+
+  @override
+  String get change_password_current_required =>
+      'يرجى إدخال كلمة المرور الحالية';
+
+  @override
+  String get change_password_new_label => 'كلمة المرور الجديدة';
+
+  @override
+  String get change_password_new_required => 'يرجى إدخال كلمة المرور الجديدة';
+
+  @override
+  String get change_password_new_min_length =>
+      'يجب ألا تقل كلمة المرور الجديدة عن 6 أحرف';
+
+  @override
+  String get change_password_confirm_label => 'تأكيد كلمة المرور الجديدة';
+
+  @override
+  String get change_password_confirm_required =>
+      'يرجى إدخال كلمة المرور الجديدة مرة أخرى';
+
+  @override
+  String get change_password_mismatch => 'كلمتا المرور الجديدتان غير متطابقتين';
+
+  @override
+  String get change_password_hint =>
+      'يجب ألا تقل كلمة المرور عن 6 أحرف. بعد تغييرها، ستحتاج إلى استخدام كلمة المرور الجديدة عند تسجيل الدخول مجددًا على الأجهزة الأخرى.';
+
+  @override
+  String get character_npc_add => '＋ إضافة شخصية مساندة';
+
+  @override
+  String character_npc_added_count(int count) {
+    return 'الشخصيات المساندة المضافة: $count';
+  }
+
+  @override
+  String get character_npc_unnamed => 'شخصية مساندة بلا اسم';
+
+  @override
+  String get character_npc_title => 'إعدادات الشخصيات المساندة';
+
+  @override
+  String get character_npc_description =>
+      'أنشئ شخصيات مهمة تظهر في القصة لتجعل عالم الشخصية أكثر اكتمالًا.';
+
+  @override
+  String get character_npc_empty_title => 'لم تتم إضافة أي شخصيات مساندة بعد';
+
+  @override
+  String get character_npc_empty_description =>
+      'بعد إضافة شخصية مساندة، يمكنك عرض إعداداتها وتعديلها وإدارتها هنا.';
+
+  @override
+  String character_npc_age(String age) {
+    return 'العمر: $age';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return 'علاقتها بالشخصية الرئيسية: $relationship';
+  }
+
+  @override
+  String get character_management_login_required => 'يرجى تسجيل الدخول أولًا';
+
+  @override
+  String get character_management_character_tab => 'الشخصيات';
+
+  @override
+  String get character_management_creator_tab => 'المنشئون';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      'ستظهر هنا الشخصيات التي أوقفت التواصل معها.';
+
+  @override
+  String get character_management_blocked_creators_load_failed =>
+      'تعذر تحميل المنشئين المحظورين';
+
+  @override
+  String get character_management_blocked_creators_empty =>
+      'سيظهر هنا المنشئون الذين حظرتهم.';
+
+  @override
+  String get character_management_creator_fallback => 'المنشئ';
+
+  @override
+  String get character_management_blocked_creator_status => 'المنشئ محظور';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      'لن تظهر شخصياته العامة أو الشخصيات التي يضيفها لاحقًا ضمن التوصيات.';
+
+  @override
+  String get character_management_unblock_creator_title => 'إلغاء حظر المنشئ';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return 'هل تريد بالتأكيد إلغاء حظر «$creatorName»؟\n\nبعد إلغاء الحظر، قد يظهر هذا المنشئ وشخصياته مجددًا ضمن المحتوى الموصى به. ستظل الشخصيات التي حظرتها بشكل منفصل محظورة.';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return 'تم إلغاء حظر «$creatorName»';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed =>
+      'تعذر إلغاء الحظر. يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get character_management_title => 'إدارة الشخصيات';
+
+  @override
+  String get character_management_subtitle =>
+      'إدارة الشخصيات التي أوقفت التواصل معها';
+
+  @override
+  String get character_management_character_fallback => 'الشخصية';
+
+  @override
+  String get character_management_blocked_character_status => 'التواصل متوقف';
+
+  @override
+  String get character_management_blocked_character_description =>
+      'سيتم إيقاف المحادثات والإشعارات دون حذف البيانات ذات الصلة.';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return 'هل تريد بالتأكيد إلغاء حظر «$charName»؟ قد يظهر المحتوى المرتبط بها مجددًا بعد إلغاء الحظر.';
+  }
+
+  @override
+  String get creator_follow_following_title => 'المنشئون الذين أتابعهم';
+
+  @override
+  String get creator_follow_followers_title => 'اللاعبون الذين يتابعونني';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return 'فشل التحميل: $error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title => 'لا تتابع أي منشئ بعد';
+
+  @override
+  String get creator_follow_empty_followers_title => 'ليس لديك متابعون حاليًا';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      'تابع منشئيك المفضلين من صفحة الشخصية أو ورشة المنشئ.';
+
+  @override
+  String get creator_follow_empty_followers_description =>
+      'سيظهر اللاعبون هنا عندما يتابعونك.';
+
+  @override
+  String get creator_follow_unknown_player => 'لاعب غير معروف';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'المعرّف: $playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => 'لم يتم تعيين معرّف اللاعب بعد';
+
+  @override
+  String get creator_follow_following => 'تتم المتابعة';
+
+  @override
+  String get creator_follow_unfollow_title => 'إلغاء المتابعة';
+
+  @override
+  String get creator_follow_unfollow_confirm =>
+      'هل تريد بالتأكيد إلغاء متابعة هذا المنشئ؟';
+
+  @override
+  String get creator_follow_unfollow => 'إلغاء المتابعة';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return 'فشل التحميل: $error';
+  }
+
+  @override
+  String get creator_profile_report_creator => 'الإبلاغ عن المنشئ';
+
+  @override
+  String get creator_profile_block_creator => 'حظر المنشئ';
+
+  @override
+  String get creator_profile_report_login_required =>
+      'يرجى تسجيل الدخول قبل الإبلاغ عن المنشئ';
+
+  @override
+  String get creator_profile_report_self_not_allowed =>
+      'لا يمكنك الإبلاغ عن صفحة المنشئ الخاصة بك';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'حدد سبب الإبلاغ عن «$creatorName»:';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate =>
+      'محتوى غير لائق أو مخالف';
+
+  @override
+  String get creator_profile_report_reason_harassment =>
+      'مضايقة أو إساءة أو محتوى يحض على الكراهية';
+
+  @override
+  String get creator_profile_report_reason_impersonation =>
+      'انتحال شخصية شخص آخر أو تزوير الهوية';
+
+  @override
+  String get creator_profile_report_reason_spam => 'محتوى مزعج أو ترويج ضار';
+
+  @override
+  String get creator_profile_report_success =>
+      'تم استلام بلاغك. شكرًا لإبلاغنا';
+
+  @override
+  String get creator_profile_report_failed =>
+      'تعذر إرسال البلاغ. يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get creator_profile_block_login_required =>
+      'يرجى تسجيل الدخول قبل حظر المنشئ';
+
+  @override
+  String get creator_profile_block_self_not_allowed => 'لا يمكنك حظر نفسك';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return 'هل تريد بالتأكيد حظر «$creatorName»؟\n\nبعد الحظر، لن تتمكن من رؤية الصفحة العامة لهذا المنشئ، وستتم أيضًا إضافة الشخصيات العامة التي أنشأها حاليًا إلى قائمة الحظر.';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => 'تأكيد الحظر';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return 'تم حظر «$creatorName»';
+  }
+
+  @override
+  String get creator_profile_block_failed =>
+      'تعذر الحظر. يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get creator_scene_edit_title_edit => 'تعديل المشهد';
+
+  @override
+  String get creator_scene_edit_title_add => 'إضافة مشهد';
+
+  @override
+  String get creator_scene_edit_heading_edit => 'عدّل مدخل هذه القصة';
+
+  @override
+  String get creator_scene_edit_heading_add => 'اكتب مدخلًا جديدًا للقصة';
+
+  @override
+  String get creator_scene_edit_scene_title_label => 'عنوان المشهد';
+
+  @override
+  String get creator_scene_edit_scene_title_hint =>
+      'مثال: لقاء مجددًا في ليلة ممطرة';
+
+  @override
+  String get creator_scene_edit_description_label => 'وصف المشهد';
+
+  @override
+  String get creator_scene_edit_description_hint =>
+      'صِف زمان القصة ومكانها والعلاقات والسياق المحيط بها.';
+
+  @override
+  String get creator_scene_edit_opening_label => 'افتتاحية الشخصية';
+
+  @override
+  String get creator_scene_edit_opening_hint =>
+      'اكتب أول رد فعل أو أول جملة للشخصية عند دخولها إلى هذه القصة.';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      'ستكون افتتاحية الشخصية هي المشهد الأول في هذه القصة، وستستمر الحوارات اللاحقة بالاستناد إلى شخصية الدور الأصلية.';
+
+  @override
+  String get creator_scene_edit_save_changes => 'حفظ التعديلات';
+
+  @override
+  String get creator_scene_edit_save_scene => 'حفظ المشهد';
+
+  @override
+  String get creator_scene_edit_error_title_required =>
+      'يرجى إدخال عنوان المشهد أولًا.';
+
+  @override
+  String get creator_scene_edit_error_description_required =>
+      'يرجى إدخال وصف المشهد أولًا.';
+
+  @override
+  String get creator_scene_edit_error_opening_required =>
+      'يرجى كتابة افتتاحية الشخصية أولًا.';
+
+  @override
+  String get creator_scene_edit_save_failed =>
+      'تعذر الحفظ. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get creator_scene_delete_title => 'حذف المشهد؟';
+
+  @override
+  String get creator_scene_delete_target_fallback => 'هذا المشهد';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return 'هل تريد بالتأكيد حذف «$sceneTitle»؟ لا يمكن التراجع عن الحذف.';
+  }
+
+  @override
+  String get creator_scene_delete_failed =>
+      'تعذر الحذف. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get creator_scene_empty_title => 'لا توجد مشاهد من إنشاء المبدعين بعد';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return 'اكتب مسارات قصصية مختلفة لـ $characterName،\nحتى يتمكن اللاعبون من البدء من قصة أخرى.';
+  }
+
+  @override
+  String get creator_scene_add => 'إضافة مشهد';
+
+  @override
+  String get creator_scene_unnamed => 'مشهد بلا عنوان';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return 'افتتاحية الشخصية: $opening';
+  }
+
+  @override
+  String get creator_scene_edit => 'تعديل';
+
+  @override
+  String get creator_scene_delete => 'حذف';
+
+  @override
+  String get creator_scene_title => 'مشاهد المبدعين';
+
+  @override
+  String get creator_scene_character_unavailable =>
+      'يتعذر حاليًا تحميل بيانات الشخصية.';
+
+  @override
+  String get creator_scene_load_failed =>
+      'تعذر تحميل المشاهد. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get creator_scene_heading => 'أنشئ بدايات قصصية مختلفة للشخصية';
+
+  @override
+  String get custom_scene_edit_heading_edit => 'عدّل هذه القصة الخاصة بك وحدك';
+
+  @override
+  String get custom_scene_edit_heading_add =>
+      'اكتب قصة خاصة بغرفة الدردشة هذه وحدها';
+
+  @override
+  String get custom_scene_edit_description_hint =>
+      'صِف زمان القصة ومكانها والعلاقات والسياق الذي تريد أن تبدأ منه.';
+
+  @override
+  String get custom_scene_edit_note =>
+      'لا تتضمن المشاهد التي تنشئها افتتاحية محددة مسبقًا للشخصية. بعد البدء، ستدخل الشخصية إلى القصة وفقًا لوصف المشهد وشخصيتها الأصلية.';
+
+  @override
+  String get moment_create_no_mentionable_characters =>
+      'لا توجد حاليًا شخصيات يمكن الإشارة إليها.';
+
+  @override
+  String get moment_create_mention_my_characters => 'الإشارة إلى شخصياتي';
+
+  @override
+  String get moment_create_no_matching_characters =>
+      'لم يتم العثور على شخصيات مطابقة';
+
+  @override
+  String get moment_create_my_character => 'شخصيتي';
+
+  @override
+  String get moment_create_friend_character => 'شخصية صديق';
+
+  @override
+  String get moment_create_public_visibility_hint =>
+      'سيظهر المنشور على حائط اللحظات';
+
+  @override
+  String get moment_create_private_visibility_hint =>
+      'سيكون مرئيًا ضمن النطاق المخصص فقط';
+
+  @override
+  String get moment_create_add_image => 'إضافة صورة';
+
+  @override
+  String get moment_create_mention_character => 'الإشارة إلى شخصية';
+
+  @override
+  String get moment_edit_content_hint => 'شارك ما تشعر به...';
+
+  @override
+  String get moment_forward_chat_preview => '【تمت مشاركة منشور】';
+
+  @override
+  String get feedback_image_too_large =>
+      'يجب ألا يتجاوز حجم الصورة 10 ميغابايت';
+
+  @override
+  String get feedback_image_pick_failed =>
+      'تعذر اختيار الصورة. يرجى المحاولة مرة أخرى لاحقًا';
+
+  @override
+  String get feedback_category_general => 'مشكلة عامة';
+
+  @override
+  String get feedback_category_bug => 'الإبلاغ عن خلل';
+
+  @override
+  String get feedback_category_suggestion => 'اقتراح ميزة';
+
+  @override
+  String get feedback_category_flower => 'مشكلة نقاط الزهور';
+
+  @override
+  String get feedback_category_payment => 'مشكلة الشحن أو الدفع';
+
+  @override
+  String get feedback_category_ai_reply => 'مشكلة في رد الذكاء الاصطناعي';
+
+  @override
+  String get feedback_category_character_report => 'الإبلاغ عن شخصية';
+
+  @override
+  String get feedback_category_moment_report => 'الإبلاغ عن منشور';
+
+  @override
+  String get feedback_screenshot_required_error =>
+      'يرجى إرفاق لقطة شاشة لهذا النوع من المشكلات لمساعدتنا على التحقق منه';
+
+  @override
+  String get feedback_login_required => 'يرجى تسجيل الدخول قبل إرسال البلاغ';
+
+  @override
+  String get feedback_mail_received_title => '【تم إنشاء الطلب】تلقينا بلاغك';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return 'لقد تلقينا بلاغك وسنتحقق منه في أقرب وقت ممكن.\n\nرقم الطلب: $caseNumber\n\nإذا كان لدى فريق الدعم رد إضافي، فسيتم إشعارك عبر صندوق بريد LoveyDovey.';
+  }
+
+  @override
+  String get feedback_submit_success =>
+      'تم إرسال البلاغ بنجاح. شكرًا لملاحظاتك!';
+
+  @override
+  String get feedback_submit_failed =>
+      'تعذر الإرسال. يرجى التحقق من اتصال الشبكة والمحاولة مرة أخرى';
+
+  @override
+  String get feedback_category_section_title => 'نوع المشكلة';
+
+  @override
+  String get feedback_reported_content_title => 'المحتوى المُبلغ عنه';
+
+  @override
+  String get feedback_screenshot_required_title => 'لقطة شاشة للمشكلة (مطلوبة)';
+
+  @override
+  String get feedback_image_optional_title => 'صورة إضافية (اختيارية)';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      'يرجى إرفاق لقطة شاشة توضح المشكلة لمساعدة الفريق على التحقق من الحالة الفعلية.';
+
+  @override
+  String get feedback_image_optional_description =>
+      'إذا كانت لديك صورة ذات صلة، فيمكنك إرفاقها لمساعدة الفريق على التحقق.';
+
+  @override
+  String get feedback_footer_message =>
+      'ستساعدنا ملاحظاتك على مواصلة تحسين تجربة اللعب. شكرًا لك!';
+
+  @override
+  String get feedback_select_image_semantics => 'اختيار صورة للبلاغ';
+
+  @override
+  String get feedback_opening_gallery => 'جارٍ فتح معرض الصور…';
+
+  @override
+  String get feedback_select_image_upload => 'اضغط هنا لاختيار صورة ورفعها';
+
+  @override
+  String get feedback_image_requirements =>
+      'يدعم JPG وPNG، وبحد أقصى 10 ميغابايت للصورة';
+
+  @override
+  String get feedback_submitting_semantics => 'جارٍ الإرسال';
+
+  @override
+  String get feedback_submit_semantics => 'إرسال البلاغ';
+
+  @override
+  String get feedback_submit_button => 'إرسال';
+
+  @override
+  String get feedback_remove_image => 'إزالة الصورة';
+
+  @override
+  String get feedback_selected_image => 'تم اختيار صورة';
+
+  @override
+  String get feedback_change_image => 'تغيير';
 }

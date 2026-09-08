@@ -6574,4 +6574,602 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get appUpdateStoreOpenFailed =>
       'Impossible d’ouvrir la boutique pour le moment. Veuillez réessayer plus tard.';
+
+  @override
+  String get auth_error_requires_recent_login =>
+      'Votre session a expiré. Veuillez vous reconnecter avant de modifier votre mot de passe.';
+
+  @override
+  String get auth_error_too_many_requests =>
+      'Trop de tentatives. Veuillez réessayer plus tard.';
+
+  @override
+  String get auth_error_network_failed =>
+      'La connexion réseau est actuellement instable. Veuillez réessayer plus tard.';
+
+  @override
+  String get change_password_failed =>
+      'Échec de la modification du mot de passe. Veuillez réessayer plus tard.';
+
+  @override
+  String get change_password_account_not_found =>
+      'Le compte actuellement connecté est introuvable. Veuillez vous reconnecter et réessayer.';
+
+  @override
+  String get change_password_not_password_account =>
+      'Ce compte n’utilise pas la connexion par adresse e-mail et mot de passe. Son mot de passe ne peut donc pas être modifié ici.';
+
+  @override
+  String get change_password_same_as_current =>
+      'Le nouveau mot de passe doit être différent du mot de passe actuel.';
+
+  @override
+  String get change_password_success_title => 'Mot de passe mis à jour';
+
+  @override
+  String get change_password_success_message =>
+      'Votre nouveau mot de passe a bien été défini. Utilisez-le lors de votre prochaine connexion.';
+
+  @override
+  String get change_password_title => 'Modifier le mot de passe';
+
+  @override
+  String get change_password_security_title => 'Sécurité du compte';
+
+  @override
+  String get change_password_description =>
+      'Saisissez d’abord votre mot de passe actuel pour confirmer votre identité, puis définissez un nouveau mot de passe de connexion.';
+
+  @override
+  String get change_password_current_label => 'Mot de passe actuel';
+
+  @override
+  String get change_password_current_required =>
+      'Veuillez saisir votre mot de passe actuel';
+
+  @override
+  String get change_password_new_label => 'Nouveau mot de passe';
+
+  @override
+  String get change_password_new_required =>
+      'Veuillez saisir un nouveau mot de passe';
+
+  @override
+  String get change_password_new_min_length =>
+      'Le nouveau mot de passe doit contenir au moins 6 caractères';
+
+  @override
+  String get change_password_confirm_label =>
+      'Confirmer le nouveau mot de passe';
+
+  @override
+  String get change_password_confirm_required =>
+      'Veuillez saisir de nouveau votre nouveau mot de passe';
+
+  @override
+  String get change_password_mismatch =>
+      'Les nouveaux mots de passe ne correspondent pas';
+
+  @override
+  String get change_password_hint =>
+      'Le mot de passe doit contenir au moins 6 caractères. Après sa modification, utilisez le nouveau mot de passe lors de votre prochaine connexion sur vos autres appareils.';
+
+  @override
+  String get character_npc_add => '＋ Ajouter un personnage secondaire';
+
+  @override
+  String character_npc_added_count(int count) {
+    return 'Personnages secondaires ajoutés : $count';
+  }
+
+  @override
+  String get character_npc_unnamed => 'Personnage secondaire sans nom';
+
+  @override
+  String get character_npc_title => 'Paramètres des personnages secondaires';
+
+  @override
+  String get character_npc_description =>
+      'Créez des personnages importants qui apparaîtront dans l’histoire afin d’enrichir l’univers du personnage.';
+
+  @override
+  String get character_npc_empty_title => 'Aucun personnage secondaire ajouté';
+
+  @override
+  String get character_npc_empty_description =>
+      'Après en avoir ajouté, vous pourrez consulter, modifier et gérer leurs paramètres ici.';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age ans';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return 'Lien avec le personnage principal : $relationship';
+  }
+
+  @override
+  String get character_management_login_required =>
+      'Veuillez d’abord vous connecter';
+
+  @override
+  String get character_management_character_tab => 'Personnages';
+
+  @override
+  String get character_management_creator_tab => 'Créateurs';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      'Les personnages avec lesquels vous interrompez le contact apparaîtront ici.';
+
+  @override
+  String get character_management_blocked_creators_load_failed =>
+      'Échec du chargement des créateurs bloqués';
+
+  @override
+  String get character_management_blocked_creators_empty =>
+      'Les créateurs que vous bloquez apparaîtront ici.';
+
+  @override
+  String get character_management_creator_fallback => 'Créateur';
+
+  @override
+  String get character_management_blocked_creator_status => 'Créateur bloqué';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      'Ses personnages publics et ceux qu’il ajoutera ultérieurement n’apparaîtront pas dans les recommandations.';
+
+  @override
+  String get character_management_unblock_creator_title =>
+      'Débloquer le créateur';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return 'Voulez-vous vraiment débloquer « $creatorName » ?\n\nAprès le déblocage, ce créateur et ses personnages pourront de nouveau apparaître dans les recommandations. Les personnages que vous aviez bloqués individuellement resteront bloqués.';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return '« $creatorName » a été débloqué';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed =>
+      'Échec du déblocage. Veuillez réessayer plus tard';
+
+  @override
+  String get character_management_title => 'Gestion des personnages';
+
+  @override
+  String get character_management_subtitle =>
+      'Gérez les personnages avec lesquels vous avez interrompu le contact';
+
+  @override
+  String get character_management_character_fallback => 'Personnage';
+
+  @override
+  String get character_management_blocked_character_status =>
+      'Contact interrompu';
+
+  @override
+  String get character_management_blocked_character_description =>
+      'Les conversations et notifications sont suspendues sans supprimer les données associées.';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return 'Voulez-vous vraiment débloquer « $charName » ? Après le déblocage, le contenu associé pourra de nouveau apparaître.';
+  }
+
+  @override
+  String get creator_follow_following_title => 'Créateurs que je suis';
+
+  @override
+  String get creator_follow_followers_title => 'Joueurs qui me suivent';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return 'Échec du chargement : $error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title =>
+      'Vous ne suivez encore aucun créateur';
+
+  @override
+  String get creator_follow_empty_followers_title =>
+      'Vous n’avez encore aucun abonné';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      'Suivez les créateurs que vous appréciez depuis la fiche d’un personnage ou l’atelier des créateurs.';
+
+  @override
+  String get creator_follow_empty_followers_description =>
+      'Les joueurs qui vous suivent apparaîtront ici.';
+
+  @override
+  String get creator_follow_unknown_player => 'Joueur inconnu';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID : $playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => 'ID de joueur non configuré';
+
+  @override
+  String get creator_follow_following => 'Suivi';
+
+  @override
+  String get creator_follow_unfollow_title => 'Ne plus suivre';
+
+  @override
+  String get creator_follow_unfollow_confirm =>
+      'Voulez-vous vraiment ne plus suivre ce créateur ?';
+
+  @override
+  String get creator_follow_unfollow => 'Ne plus suivre';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return 'Échec du chargement : $error';
+  }
+
+  @override
+  String get creator_profile_report_creator => 'Signaler le créateur';
+
+  @override
+  String get creator_profile_block_creator => 'Bloquer le créateur';
+
+  @override
+  String get creator_profile_report_login_required =>
+      'Veuillez vous connecter avant de signaler un créateur';
+
+  @override
+  String get creator_profile_report_self_not_allowed =>
+      'Vous ne pouvez pas signaler votre propre profil de créateur';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'Sélectionnez le motif du signalement de « $creatorName » :';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate =>
+      'Contenu inapproprié ou non conforme';
+
+  @override
+  String get creator_profile_report_reason_harassment =>
+      'Harcèlement, attaques ou contenu haineux';
+
+  @override
+  String get creator_profile_report_reason_impersonation =>
+      'Usurpation d’identité ou fausse identité';
+
+  @override
+  String get creator_profile_report_reason_spam =>
+      'Contenu indésirable ou promotion malveillante';
+
+  @override
+  String get creator_profile_report_success =>
+      'Votre signalement a bien été reçu. Merci de nous en avoir informés';
+
+  @override
+  String get creator_profile_report_failed =>
+      'Échec de l’envoi du signalement. Veuillez réessayer plus tard';
+
+  @override
+  String get creator_profile_block_login_required =>
+      'Veuillez vous connecter avant de bloquer un créateur';
+
+  @override
+  String get creator_profile_block_self_not_allowed =>
+      'Vous ne pouvez pas vous bloquer vous-même';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return 'Voulez-vous vraiment bloquer « $creatorName » ?\n\nAprès le blocage, vous ne verrez plus le profil public de ce créateur. Ses personnages actuellement publics seront également ajoutés à votre liste de blocage.';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => 'Confirmer le blocage';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return '« $creatorName » a été bloqué';
+  }
+
+  @override
+  String get creator_profile_block_failed =>
+      'Échec du blocage. Veuillez réessayer plus tard';
+
+  @override
+  String get creator_scene_edit_title_edit => 'Modifier la scène';
+
+  @override
+  String get creator_scene_edit_title_add => 'Ajouter une scène';
+
+  @override
+  String get creator_scene_edit_heading_edit =>
+      'Ajustez le point de départ de cette histoire';
+
+  @override
+  String get creator_scene_edit_heading_add =>
+      'Écrivez le début d’une nouvelle histoire';
+
+  @override
+  String get creator_scene_edit_scene_title_label => 'Titre de la scène';
+
+  @override
+  String get creator_scene_edit_scene_title_hint =>
+      'Exemple : Retrouvailles par une nuit pluvieuse';
+
+  @override
+  String get creator_scene_edit_description_label => 'Description de la scène';
+
+  @override
+  String get creator_scene_edit_description_hint =>
+      'Décrivez l’époque, le lieu, les relations et le contexte de l’histoire.';
+
+  @override
+  String get creator_scene_edit_opening_label => 'Ouverture du personnage';
+
+  @override
+  String get creator_scene_edit_opening_hint =>
+      'Écrivez la première réaction ou la première réplique du personnage lorsqu’il entre dans cette histoire.';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      'L’ouverture du personnage constituera le premier acte de cette scène. Les conversations suivantes continueront de respecter la personnalité d’origine du personnage.';
+
+  @override
+  String get creator_scene_edit_save_changes => 'Enregistrer les modifications';
+
+  @override
+  String get creator_scene_edit_save_scene => 'Enregistrer la scène';
+
+  @override
+  String get creator_scene_edit_error_title_required =>
+      'Veuillez d’abord saisir le titre de la scène.';
+
+  @override
+  String get creator_scene_edit_error_description_required =>
+      'Veuillez d’abord saisir la description de la scène.';
+
+  @override
+  String get creator_scene_edit_error_opening_required =>
+      'Veuillez d’abord saisir l’ouverture du personnage.';
+
+  @override
+  String get creator_scene_edit_save_failed =>
+      'Échec de l’enregistrement. Veuillez réessayer plus tard.';
+
+  @override
+  String get creator_scene_delete_title => 'Supprimer la scène ?';
+
+  @override
+  String get creator_scene_delete_target_fallback => 'cette scène';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return 'Voulez-vous vraiment supprimer « $sceneTitle » ? Cette action est irréversible.';
+  }
+
+  @override
+  String get creator_scene_delete_failed =>
+      'Échec de la suppression. Veuillez réessayer plus tard.';
+
+  @override
+  String get creator_scene_empty_title =>
+      'Aucune scène de créateur pour le moment';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return 'Créez des histoires alternatives pour $characterName\nafin que les joueurs puissent commencer par une autre histoire.';
+  }
+
+  @override
+  String get creator_scene_add => 'Ajouter une scène';
+
+  @override
+  String get creator_scene_unnamed => 'Scène sans titre';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return 'Ouverture du personnage : $opening';
+  }
+
+  @override
+  String get creator_scene_edit => 'Modifier';
+
+  @override
+  String get creator_scene_delete => 'Supprimer';
+
+  @override
+  String get creator_scene_title => 'Scènes des créateurs';
+
+  @override
+  String get creator_scene_character_unavailable =>
+      'Les informations du personnage sont actuellement indisponibles.';
+
+  @override
+  String get creator_scene_load_failed =>
+      'Échec du chargement des scènes. Veuillez réessayer plus tard.';
+
+  @override
+  String get creator_scene_heading =>
+      'Créez différents débuts d’histoire pour le personnage';
+
+  @override
+  String get custom_scene_edit_heading_edit =>
+      'Ajustez cette histoire qui n’appartient qu’à vous';
+
+  @override
+  String get custom_scene_edit_heading_add =>
+      'Écrivez une histoire réservée à cette discussion';
+
+  @override
+  String get custom_scene_edit_description_hint =>
+      'Décrivez l’époque, le lieu, les relations et la situation à partir de laquelle vous souhaitez commencer.';
+
+  @override
+  String get custom_scene_edit_note =>
+      'Les scènes que vous créez ne comportent pas d’ouverture prédéfinie pour le personnage. Une fois la scène lancée, le personnage entrera dans l’histoire en fonction de sa description et de sa personnalité d’origine.';
+
+  @override
+  String get moment_create_no_mentionable_characters =>
+      'Aucun personnage ne peut être mentionné pour le moment.';
+
+  @override
+  String get moment_create_mention_my_characters =>
+      'Mentionner mes personnages';
+
+  @override
+  String get moment_create_no_matching_characters =>
+      'Aucun personnage correspondant trouvé';
+
+  @override
+  String get moment_create_my_character => 'Mon personnage';
+
+  @override
+  String get moment_create_friend_character => 'Personnage d’un ami';
+
+  @override
+  String get moment_create_public_visibility_hint =>
+      'La publication apparaîtra sur le mur des moments';
+
+  @override
+  String get moment_create_private_visibility_hint =>
+      'Visible uniquement dans le cercle désigné';
+
+  @override
+  String get moment_create_add_image => 'Ajouter une image';
+
+  @override
+  String get moment_create_mention_character => 'Mentionner un personnage';
+
+  @override
+  String get moment_edit_content_hint => 'Partagez ce que vous ressentez...';
+
+  @override
+  String get moment_forward_chat_preview => '【Une publication a été partagée】';
+
+  @override
+  String get feedback_image_too_large =>
+      'La taille de l’image ne doit pas dépasser 10 Mo';
+
+  @override
+  String get feedback_image_pick_failed =>
+      'Impossible de sélectionner l’image. Veuillez réessayer plus tard';
+
+  @override
+  String get feedback_category_general => 'Problème général';
+
+  @override
+  String get feedback_category_bug => 'Signaler un bug';
+
+  @override
+  String get feedback_category_suggestion => 'Suggestion de fonctionnalité';
+
+  @override
+  String get feedback_category_flower => 'Problème de points Fleur';
+
+  @override
+  String get feedback_category_payment => 'Problème de recharge ou de paiement';
+
+  @override
+  String get feedback_category_ai_reply => 'Problème de réponse de l’IA';
+
+  @override
+  String get feedback_category_character_report => 'Signaler un personnage';
+
+  @override
+  String get feedback_category_moment_report => 'Signaler une publication';
+
+  @override
+  String get feedback_screenshot_required_error =>
+      'Veuillez joindre une capture d’écran pour ce type de problème afin de nous aider à vérifier la situation';
+
+  @override
+  String get feedback_login_required =>
+      'Veuillez vous connecter avant d’envoyer votre signalement';
+
+  @override
+  String get feedback_mail_received_title =>
+      '【Dossier créé】Nous avons reçu votre signalement';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return 'Nous avons reçu votre signalement et l’examinerons dès que possible.\n\nNuméro de dossier : $caseNumber\n\nSi notre service client apporte une réponse complémentaire, vous serez averti dans la messagerie de LoveyDovey.';
+  }
+
+  @override
+  String get feedback_submit_success =>
+      'Votre signalement a bien été envoyé. Merci pour vos commentaires !';
+
+  @override
+  String get feedback_submit_failed =>
+      'Échec de l’envoi. Vérifiez votre connexion, puis réessayez';
+
+  @override
+  String get feedback_category_section_title => 'Type de problème';
+
+  @override
+  String get feedback_reported_content_title => 'Contenu signalé';
+
+  @override
+  String get feedback_screenshot_required_title =>
+      'Capture du problème (obligatoire)';
+
+  @override
+  String get feedback_image_optional_title =>
+      'Image supplémentaire (facultative)';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      'Veuillez joindre une capture d’écran montrant le problème afin que notre équipe puisse vérifier la situation.';
+
+  @override
+  String get feedback_image_optional_description =>
+      'Si vous disposez d’une image pertinente, vous pouvez également la joindre pour faciliter la vérification.';
+
+  @override
+  String get feedback_footer_message =>
+      'Vos commentaires nous aideront à continuer d’améliorer votre expérience de jeu. Merci !';
+
+  @override
+  String get feedback_select_image_semantics =>
+      'Sélectionner une image pour le signalement';
+
+  @override
+  String get feedback_opening_gallery => 'Ouverture de la galerie…';
+
+  @override
+  String get feedback_select_image_upload =>
+      'Appuyez ici pour sélectionner une image à importer';
+
+  @override
+  String get feedback_image_requirements =>
+      'Formats JPG et PNG acceptés, 10 Mo maximum par image';
+
+  @override
+  String get feedback_submitting_semantics => 'Envoi en cours';
+
+  @override
+  String get feedback_submit_semantics => 'Envoyer le signalement';
+
+  @override
+  String get feedback_submit_button => 'Envoyer';
+
+  @override
+  String get feedback_remove_image => 'Supprimer l’image';
+
+  @override
+  String get feedback_selected_image => 'Image sélectionnée';
+
+  @override
+  String get feedback_change_image => 'Modifier';
 }

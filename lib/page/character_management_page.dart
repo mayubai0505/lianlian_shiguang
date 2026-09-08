@@ -30,7 +30,7 @@ class CharacterManagementPage extends StatelessWidget {
     (screenWidth * 0.54).clamp(174.0, 268.0);
 
     if (uid == null)
-      return const Scaffold(body: Center(child: Text("請先登入系統")));
+      return Scaffold(body: Center(child: Text(l10n.character_management_login_required)));
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -74,7 +74,7 @@ class CharacterManagementPage extends StatelessWidget {
               child: Column(
                 children: [
                   _buildHeader(context, theme),
-                  _buildManagementTabs(theme),
+                  _buildManagementTabs(context, theme),
                   const SizedBox(height: 4),
                   Expanded(
                     child: TabBarView(
@@ -103,8 +103,12 @@ class CharacterManagementPage extends StatelessWidget {
   }
 
 
-  Widget _buildManagementTabs(ThemeData theme) {
+  Widget _buildManagementTabs(
+      BuildContext context,
+      ThemeData theme,
+      ) {
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
@@ -145,9 +149,9 @@ class CharacterManagementPage extends StatelessWidget {
             fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
-          tabs: const [
-            Tab(text: '角色'),
-            Tab(text: '創作者'),
+          tabs:  [
+            Tab(text: l10n.character_management_character_tab),
+            Tab(text: l10n.character_management_creator_tab),
           ],
         ),
       ),
@@ -180,7 +184,7 @@ class CharacterManagementPage extends StatelessWidget {
           return _buildEmptyState(
             context,
             theme,
-            message: '若你暫停與角色聯繫，會顯示在這裡。',
+            message:l10n.character_management_blocked_characters_empty,
           );
         }
 
@@ -217,6 +221,7 @@ class CharacterManagementPage extends StatelessWidget {
     required ThemeData theme,
     required String uid,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
@@ -227,7 +232,7 @@ class CharacterManagementPage extends StatelessWidget {
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              '讀取封鎖創作者失敗',
+              l10n.character_management_blocked_creators_load_failed,
               style: GoogleFonts.notoSerifTc(),
             ),
           );
@@ -242,7 +247,7 @@ class CharacterManagementPage extends StatelessWidget {
           return _buildEmptyState(
             context,
             theme,
-            message: '若你封鎖創作者，會顯示在這裡。',
+            message: l10n.character_management_blocked_creators_empty,
           );
         }
 
@@ -256,7 +261,7 @@ class CharacterManagementPage extends StatelessWidget {
             final creatorName =
             data['creatorName']?.toString().trim().isNotEmpty == true
                 ? data['creatorName'].toString().trim()
-                : '創作者';
+                : l10n.character_management_creator_fallback;
 
             return _buildCreatorCard(
               context: context,
@@ -279,6 +284,7 @@ class CharacterManagementPage extends StatelessWidget {
     required String creatorName,
   }) {
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -328,7 +334,7 @@ class CharacterManagementPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '已封鎖創作者',
+                    l10n.character_management_blocked_creator_status,
                     style: GoogleFonts.notoSerifTc(
                       color: primary.withValues(alpha: 0.72),
                       fontSize: 12.5,
@@ -336,7 +342,7 @@ class CharacterManagementPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    '其公開角色與後續新增角色不會出現在推薦中。',
+                    l10n.character_management_blocked_creator_description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.notoSerifTc(
@@ -371,7 +377,7 @@ class CharacterManagementPage extends StatelessWidget {
                 creatorName: creatorName,
               ),
               child: Text(
-                '解除封鎖',
+                l10n.unblock,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w500,
@@ -390,6 +396,7 @@ class CharacterManagementPage extends StatelessWidget {
     required String creatorId,
     required String creatorName,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final bool confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -397,16 +404,14 @@ class CharacterManagementPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(22),
         ),
         title: Text(
-          '解除封鎖創作者',
+          l10n.character_management_unblock_creator_title,
           style: GoogleFonts.notoSerifTc(
             fontSize: 17,
             fontWeight: FontWeight.w600,
           ),
         ),
         content: Text(
-          '確定要解除封鎖「$creatorName」嗎？\n\n'
-              '解除後，這位創作者與其角色可能會再次出現在推薦內容中。'
-              '你先前「單獨封鎖」的角色仍會維持封鎖。',
+          l10n.character_management_unblock_creator_confirm(creatorName),
           style: GoogleFonts.notoSerifTc(
             fontSize: 13.5,
             height: 1.65,
@@ -416,14 +421,14 @@ class CharacterManagementPage extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(
-              '取消',
+              l10n.cancel,
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(
-              '解除封鎖',
+              l10n.unblock,
               style: GoogleFonts.notoSerifTc(
                 color: Theme.of(dialogContext).colorScheme.primary,
               ),
@@ -471,7 +476,7 @@ class CharacterManagementPage extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '已解除封鎖「$creatorName」',
+            l10n.character_management_unblock_creator_success(creatorName),
             style: GoogleFonts.notoSerifTc(),
           ),
         ),
@@ -484,7 +489,7 @@ class CharacterManagementPage extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '解除封鎖失敗，請稍後再試',
+            l10n.character_management_unblock_creator_failed,
             style: GoogleFonts.notoSerifTc(),
           ),
         ),
@@ -494,6 +499,7 @@ class CharacterManagementPage extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context, ThemeData theme) {
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 24, 14),
@@ -511,7 +517,7 @@ class CharacterManagementPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '角色管理',
+                  l10n.character_management_title,
                   style: GoogleFonts.notoSerifTc(
                     color: theme.colorScheme.onSurface,
                     fontSize: 22,
@@ -521,7 +527,7 @@ class CharacterManagementPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '管理暫停聯繫的角色',
+                  l10n.character_management_subtitle,
                   style: GoogleFonts.notoSerifTc(
                     color: primary.withValues(alpha: 0.58),
                     fontSize: 13.5,
@@ -590,7 +596,7 @@ class CharacterManagementPage extends StatelessWidget {
     charData['name']?.toString().trim().isNotEmpty == true
         ? charData['name'].toString().trim()
         : (charData['characterName']?.toString().trim() ?? '');
-    final name = rawName.isNotEmpty ? rawName : '角色';
+    final name = rawName.isNotEmpty ? rawName : l10n.character_management_character_tab;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -654,7 +660,7 @@ class CharacterManagementPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      isBlocked ? '暫停聯繫中' : l10n.status_in_progress,
+                      isBlocked ? l10n.character_management_blocked_character_status : l10n.status_in_progress,
                       style: GoogleFonts.notoSerifTc(
                         color: primary.withValues(alpha: 0.72),
                         fontSize: 12.5,
@@ -662,7 +668,7 @@ class CharacterManagementPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      '暫停對話與通知，不會刪除相關資料。',
+                      l10n.character_management_blocked_character_description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.notoSerifTc(
@@ -724,7 +730,7 @@ class CharacterManagementPage extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.unblock),
-        content: Text('確定要解除封鎖「$charName」嗎？解除後，相關內容可能會再次顯示。'),
+        content: Text(l10n.character_management_unblock_character_confirm(charName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -776,7 +782,7 @@ class CharacterManagementPage extends StatelessWidget {
               Text(
                   data['name']?.toString().trim().isNotEmpty == true
                       ? data['name'].toString().trim()
-                      : (data['characterName']?.toString() ?? '角色'),
+                      : (data['characterName']?.toString() ??l10n.character_management_character_tab),
                   style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold)
               ),

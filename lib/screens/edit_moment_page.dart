@@ -190,7 +190,7 @@ class _EditMomentPageState extends State<EditMomentPage> {
           children: [
             TextField(
               controller: _contentController,
-              decoration: const InputDecoration(hintText: '分享你的心情...', border: InputBorder.none),
+              decoration: InputDecoration(hintText: l10n.moment_edit_content_hint, border: InputBorder.none),
               maxLines: null,
               autofocus: true,
             ),

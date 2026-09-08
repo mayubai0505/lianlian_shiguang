@@ -6461,4 +6461,597 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get appUpdateStoreOpenFailed =>
       'अभी स्टोर नहीं खोला जा सका। कृपया बाद में फिर प्रयास करें।';
+
+  @override
+  String get auth_error_requires_recent_login =>
+      'आपका लॉगिन सत्र समाप्त हो गया है। पासवर्ड बदलने से पहले कृपया फिर से लॉग इन करें।';
+
+  @override
+  String get auth_error_too_many_requests =>
+      'बहुत अधिक प्रयास किए गए हैं। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
+  String get auth_error_network_failed =>
+      'फ़िलहाल नेटवर्क कनेक्शन अस्थिर है। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
+  String get change_password_failed =>
+      'पासवर्ड बदला नहीं जा सका। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
+  String get change_password_account_not_found =>
+      'वर्तमान में लॉग इन खाता नहीं मिला। कृपया फिर से लॉग इन करके प्रयास करें।';
+
+  @override
+  String get change_password_not_password_account =>
+      'यह खाता ईमेल और पासवर्ड से लॉग इन नहीं करता है, इसलिए यहाँ इसका पासवर्ड नहीं बदला जा सकता।';
+
+  @override
+  String get change_password_same_as_current =>
+      'नया पासवर्ड वर्तमान पासवर्ड के समान नहीं हो सकता।';
+
+  @override
+  String get change_password_success_title => 'पासवर्ड अपडेट हो गया';
+
+  @override
+  String get change_password_success_message =>
+      'आपका नया पासवर्ड सेट हो गया है। अगली बार लॉग इन करते समय नए पासवर्ड का उपयोग करें।';
+
+  @override
+  String get change_password_title => 'पासवर्ड बदलें';
+
+  @override
+  String get change_password_security_title => 'खाता सुरक्षा';
+
+  @override
+  String get change_password_description =>
+      'अपनी पहचान सत्यापित करने के लिए पहले वर्तमान पासवर्ड दर्ज करें, फिर नया लॉगिन पासवर्ड सेट करें।';
+
+  @override
+  String get change_password_current_label => 'वर्तमान पासवर्ड';
+
+  @override
+  String get change_password_current_required =>
+      'कृपया वर्तमान पासवर्ड दर्ज करें';
+
+  @override
+  String get change_password_new_label => 'नया पासवर्ड';
+
+  @override
+  String get change_password_new_required => 'कृपया नया पासवर्ड दर्ज करें';
+
+  @override
+  String get change_password_new_min_length =>
+      'नया पासवर्ड कम से कम 6 वर्णों का होना चाहिए';
+
+  @override
+  String get change_password_confirm_label => 'नए पासवर्ड की पुष्टि करें';
+
+  @override
+  String get change_password_confirm_required =>
+      'कृपया नया पासवर्ड फिर से दर्ज करें';
+
+  @override
+  String get change_password_mismatch => 'दोनों नए पासवर्ड मेल नहीं खाते';
+
+  @override
+  String get change_password_hint =>
+      'पासवर्ड कम से कम 6 वर्णों का होना चाहिए। इसे बदलने के बाद, अन्य डिवाइस पर अगली बार लॉग इन करते समय नए पासवर्ड का उपयोग करें।';
+
+  @override
+  String get character_npc_add => '＋ सहायक पात्र जोड़ें';
+
+  @override
+  String character_npc_added_count(int count) {
+    return 'जोड़े गए सहायक पात्र: $count';
+  }
+
+  @override
+  String get character_npc_unnamed => 'अनाम सहायक पात्र';
+
+  @override
+  String get character_npc_title => 'सहायक पात्र की सेटिंग';
+
+  @override
+  String get character_npc_description =>
+      'कहानी में दिखाई देने वाले महत्वपूर्ण पात्र बनाएँ और मुख्य पात्र की दुनिया को अधिक संपूर्ण बनाएँ।';
+
+  @override
+  String get character_npc_empty_title =>
+      'अभी तक कोई सहायक पात्र नहीं जोड़ा गया है';
+
+  @override
+  String get character_npc_empty_description =>
+      'सहायक पात्र जोड़ने के बाद, आप यहाँ उनकी सेटिंग देख, संपादित और प्रबंधित कर सकते हैं।';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age वर्ष';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return 'मुख्य पात्र से संबंध: $relationship';
+  }
+
+  @override
+  String get character_management_login_required => 'कृपया पहले लॉग इन करें';
+
+  @override
+  String get character_management_character_tab => 'पात्र';
+
+  @override
+  String get character_management_creator_tab => 'निर्माता';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      'जिन पात्रों से आप संपर्क रोकेंगे, वे यहाँ दिखाई देंगे।';
+
+  @override
+  String get character_management_blocked_creators_load_failed =>
+      'ब्लॉक किए गए निर्माताओं को लोड नहीं किया जा सका';
+
+  @override
+  String get character_management_blocked_creators_empty =>
+      'जिन निर्माताओं को आप ब्लॉक करेंगे, वे यहाँ दिखाई देंगे।';
+
+  @override
+  String get character_management_creator_fallback => 'निर्माता';
+
+  @override
+  String get character_management_blocked_creator_status =>
+      'निर्माता ब्लॉक किया गया';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      'उनके सार्वजनिक पात्र और भविष्य में जोड़े जाने वाले पात्र सुझावों में दिखाई नहीं देंगे।';
+
+  @override
+  String get character_management_unblock_creator_title =>
+      'निर्माता को अनब्लॉक करें';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return 'क्या आप वाकई「$creatorName」को अनब्लॉक करना चाहते हैं?\n\nअनब्लॉक करने के बाद, यह निर्माता और इनके पात्र सुझावों में फिर से दिखाई दे सकते हैं। जिन पात्रों को आपने पहले अलग से ब्लॉक किया था, वे ब्लॉक ही रहेंगे।';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return '「$creatorName」को अनब्लॉक कर दिया गया';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed =>
+      'अनब्लॉक नहीं किया जा सका। कृपया बाद में फिर से प्रयास करें';
+
+  @override
+  String get character_management_title => 'पात्र प्रबंधन';
+
+  @override
+  String get character_management_subtitle =>
+      'उन पात्रों को प्रबंधित करें जिनसे आपने संपर्क रोका है';
+
+  @override
+  String get character_management_character_fallback => 'पात्र';
+
+  @override
+  String get character_management_blocked_character_status => 'संपर्क रोका गया';
+
+  @override
+  String get character_management_blocked_character_description =>
+      'संबंधित डेटा मिटाए बिना बातचीत और सूचनाएँ रोक दी जाएँगी।';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return 'क्या आप वाकई「$charName」को अनब्लॉक करना चाहते हैं? अनब्लॉक करने के बाद संबंधित सामग्री फिर से दिखाई दे सकती है।';
+  }
+
+  @override
+  String get creator_follow_following_title =>
+      'मेरे द्वारा फ़ॉलो किए गए निर्माता';
+
+  @override
+  String get creator_follow_followers_title => 'मुझे फ़ॉलो करने वाले खिलाड़ी';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return 'लोड नहीं किया जा सका: $error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title =>
+      'आपने अभी तक किसी निर्माता को फ़ॉलो नहीं किया है';
+
+  @override
+  String get creator_follow_empty_followers_title =>
+      'अभी तक कोई फ़ॉलोअर नहीं है';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      'पात्र प्रोफ़ाइल या निर्माता वर्कशॉप से अपने पसंदीदा निर्माताओं को फ़ॉलो करें।';
+
+  @override
+  String get creator_follow_empty_followers_description =>
+      'जब अन्य खिलाड़ी आपको फ़ॉलो करेंगे, तो वे यहाँ दिखाई देंगे।';
+
+  @override
+  String get creator_follow_unknown_player => 'अज्ञात खिलाड़ी';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'आईडी: $playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id =>
+      'खिलाड़ी आईडी अभी सेट नहीं की गई है';
+
+  @override
+  String get creator_follow_following => 'फ़ॉलो कर रहे हैं';
+
+  @override
+  String get creator_follow_unfollow_title => 'फ़ॉलो करना बंद करें';
+
+  @override
+  String get creator_follow_unfollow_confirm =>
+      'क्या आप वाकई इस निर्माता को फ़ॉलो करना बंद करना चाहते हैं?';
+
+  @override
+  String get creator_follow_unfollow => 'फ़ॉलो करना बंद करें';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return 'लोड नहीं किया जा सका: $error';
+  }
+
+  @override
+  String get creator_profile_report_creator => 'निर्माता की रिपोर्ट करें';
+
+  @override
+  String get creator_profile_block_creator => 'निर्माता को ब्लॉक करें';
+
+  @override
+  String get creator_profile_report_login_required =>
+      'निर्माता की रिपोर्ट करने से पहले कृपया लॉग इन करें';
+
+  @override
+  String get creator_profile_report_self_not_allowed =>
+      'आप अपने निर्माता प्रोफ़ाइल की रिपोर्ट नहीं कर सकते';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '「$creatorName」की रिपोर्ट करने का कारण चुनें:';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate =>
+      'अनुचित या नियमों का उल्लंघन करने वाली सामग्री';
+
+  @override
+  String get creator_profile_report_reason_harassment =>
+      'उत्पीड़न, हमला या घृणास्पद सामग्री';
+
+  @override
+  String get creator_profile_report_reason_impersonation =>
+      'किसी अन्य व्यक्ति का प्रतिरूपण या झूठी पहचान';
+
+  @override
+  String get creator_profile_report_reason_spam =>
+      'स्पैम या दुर्भावनापूर्ण प्रचार';
+
+  @override
+  String get creator_profile_report_success =>
+      'आपकी रिपोर्ट प्राप्त हो गई है। हमें सूचित करने के लिए धन्यवाद';
+
+  @override
+  String get creator_profile_report_failed =>
+      'रिपोर्ट भेजी नहीं जा सकी। कृपया बाद में फिर से प्रयास करें';
+
+  @override
+  String get creator_profile_block_login_required =>
+      'निर्माता को ब्लॉक करने से पहले कृपया लॉग इन करें';
+
+  @override
+  String get creator_profile_block_self_not_allowed =>
+      'आप स्वयं को ब्लॉक नहीं कर सकते';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return 'क्या आप वाकई「$creatorName」को ब्लॉक करना चाहते हैं?\n\nब्लॉक करने के बाद, आपको इस निर्माता का सार्वजनिक प्रोफ़ाइल दिखाई नहीं देगा। इनके वर्तमान सार्वजनिक पात्र भी आपकी ब्लॉक सूची में जोड़ दिए जाएँगे।';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button =>
+      'ब्लॉक करने की पुष्टि करें';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return '「$creatorName」को ब्लॉक कर दिया गया';
+  }
+
+  @override
+  String get creator_profile_block_failed =>
+      'ब्लॉक नहीं किया जा सका। कृपया बाद में फिर से प्रयास करें';
+
+  @override
+  String get creator_scene_edit_title_edit => 'दृश्य संपादित करें';
+
+  @override
+  String get creator_scene_edit_title_add => 'दृश्य जोड़ें';
+
+  @override
+  String get creator_scene_edit_heading_edit => 'इस कहानी की शुरुआत को सँवारें';
+
+  @override
+  String get creator_scene_edit_heading_add => 'एक नई कहानी की शुरुआत लिखें';
+
+  @override
+  String get creator_scene_edit_scene_title_label => 'दृश्य का शीर्षक';
+
+  @override
+  String get creator_scene_edit_scene_title_hint =>
+      'उदाहरण: बरसात की रात फिर से मुलाकात';
+
+  @override
+  String get creator_scene_edit_description_label => 'दृश्य का विवरण';
+
+  @override
+  String get creator_scene_edit_description_hint =>
+      'कहानी का समय, स्थान, पात्रों के संबंध और परिस्थिति का वर्णन करें।';
+
+  @override
+  String get creator_scene_edit_opening_label => 'पात्र की शुरुआत';
+
+  @override
+  String get creator_scene_edit_opening_hint =>
+      'इस कहानी में प्रवेश करते समय पात्र की पहली प्रतिक्रिया या पहला संवाद लिखें।';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      'पात्र की शुरुआत इस दृश्य का पहला अंक होगी। आगे की बातचीत पात्र के मूल व्यक्तित्व को केंद्र में रखकर जारी रहेगी।';
+
+  @override
+  String get creator_scene_edit_save_changes => 'बदलाव सहेजें';
+
+  @override
+  String get creator_scene_edit_save_scene => 'दृश्य सहेजें';
+
+  @override
+  String get creator_scene_edit_error_title_required =>
+      'कृपया पहले दृश्य का शीर्षक दर्ज करें।';
+
+  @override
+  String get creator_scene_edit_error_description_required =>
+      'कृपया पहले दृश्य का विवरण दर्ज करें।';
+
+  @override
+  String get creator_scene_edit_error_opening_required =>
+      'कृपया पहले पात्र की शुरुआत लिखें।';
+
+  @override
+  String get creator_scene_edit_save_failed =>
+      'सहेजा नहीं जा सका। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
+  String get creator_scene_delete_title => 'दृश्य मिटाएँ?';
+
+  @override
+  String get creator_scene_delete_target_fallback => 'यह दृश्य';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return 'क्या आप वाकई「$sceneTitle」को मिटाना चाहते हैं? इसे मिटाने के बाद वापस प्राप्त नहीं किया जा सकता।';
+  }
+
+  @override
+  String get creator_scene_delete_failed =>
+      'मिटाया नहीं जा सका। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
+  String get creator_scene_empty_title => 'अभी तक कोई निर्माता दृश्य नहीं है';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return '$characterName के लिए अलग-अलग कहानी मार्ग लिखें,\nताकि खिलाड़ी किसी दूसरी कहानी से शुरुआत कर सकें।';
+  }
+
+  @override
+  String get creator_scene_add => 'दृश्य जोड़ें';
+
+  @override
+  String get creator_scene_unnamed => 'बिना शीर्षक का दृश्य';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return 'पात्र की शुरुआत: $opening';
+  }
+
+  @override
+  String get creator_scene_edit => 'संपादित करें';
+
+  @override
+  String get creator_scene_delete => 'मिटाएँ';
+
+  @override
+  String get creator_scene_title => 'निर्माता दृश्य';
+
+  @override
+  String get creator_scene_character_unavailable =>
+      'फ़िलहाल पात्र की जानकारी लोड नहीं की जा सकती।';
+
+  @override
+  String get creator_scene_load_failed =>
+      'दृश्य लोड नहीं किए जा सके। कृपया बाद में फिर से प्रयास करें।';
+
+  @override
+  String get creator_scene_heading =>
+      'पात्र के लिए अलग-अलग कहानी की शुरुआत बनाएँ';
+
+  @override
+  String get custom_scene_edit_heading_edit =>
+      'सिर्फ़ अपनी इस कहानी को सँवारें';
+
+  @override
+  String get custom_scene_edit_heading_add =>
+      'सिर्फ़ इस चैट के लिए एक कहानी लिखें';
+
+  @override
+  String get custom_scene_edit_description_hint =>
+      'कहानी का समय, स्थान, पात्रों के संबंध और वह परिस्थिति बताएँ जहाँ से आप शुरुआत करना चाहते हैं।';
+
+  @override
+  String get custom_scene_edit_note =>
+      'आपके द्वारा बनाए गए दृश्यों में पात्र की कोई पूर्वनिर्धारित शुरुआत नहीं होती। शुरू करने के बाद, पात्र दृश्य के विवरण और अपने मूल व्यक्तित्व के अनुसार कहानी में प्रवेश करेगा।';
+
+  @override
+  String get moment_create_no_mentionable_characters =>
+      'फ़िलहाल उल्लेख करने के लिए कोई पात्र उपलब्ध नहीं है।';
+
+  @override
+  String get moment_create_mention_my_characters =>
+      'मेरे पात्रों का उल्लेख करें';
+
+  @override
+  String get moment_create_no_matching_characters =>
+      'कोई मेल खाता पात्र नहीं मिला';
+
+  @override
+  String get moment_create_my_character => 'मेरा पात्र';
+
+  @override
+  String get moment_create_friend_character => 'मित्र का पात्र';
+
+  @override
+  String get moment_create_public_visibility_hint =>
+      'यह पोस्ट मोमेंट्स वॉल पर दिखाई देगी';
+
+  @override
+  String get moment_create_private_visibility_hint =>
+      'केवल निर्धारित दायरे में दिखाई देगी';
+
+  @override
+  String get moment_create_add_image => 'चित्र जोड़ें';
+
+  @override
+  String get moment_create_mention_character => 'पात्र का उल्लेख करें';
+
+  @override
+  String get moment_edit_content_hint => 'अपने मन की बात साझा करें...';
+
+  @override
+  String get moment_forward_chat_preview => '【एक पोस्ट साझा की गई】';
+
+  @override
+  String get feedback_image_too_large =>
+      'चित्र का आकार 10 MB से अधिक नहीं हो सकता';
+
+  @override
+  String get feedback_image_pick_failed =>
+      'चित्र नहीं चुना जा सका। कृपया बाद में फिर से प्रयास करें';
+
+  @override
+  String get feedback_category_general => 'सामान्य समस्या';
+
+  @override
+  String get feedback_category_bug => 'बग रिपोर्ट';
+
+  @override
+  String get feedback_category_suggestion => 'फ़ीचर का सुझाव';
+
+  @override
+  String get feedback_category_flower => 'फूल पॉइंट की समस्या';
+
+  @override
+  String get feedback_category_payment => 'रीचार्ज या भुगतान की समस्या';
+
+  @override
+  String get feedback_category_ai_reply => 'AI के जवाब में समस्या';
+
+  @override
+  String get feedback_category_character_report => 'पात्र की रिपोर्ट';
+
+  @override
+  String get feedback_category_moment_report => 'पोस्ट की रिपोर्ट';
+
+  @override
+  String get feedback_screenshot_required_error =>
+      'इस प्रकार की समस्या के लिए कृपया स्क्रीनशॉट संलग्न करें, ताकि हम इसकी जाँच कर सकें';
+
+  @override
+  String get feedback_login_required =>
+      'रिपोर्ट भेजने से पहले कृपया लॉग इन करें';
+
+  @override
+  String get feedback_mail_received_title =>
+      '【मामला बनाया गया】हमें आपकी रिपोर्ट मिल गई है';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return 'हमें आपकी रिपोर्ट मिल गई है और हम जल्द से जल्द इसकी जाँच करेंगे।\n\nमामला संख्या: $caseNumber\n\nसहायता टीम से कोई नया जवाब मिलने पर आपको LoveyDovey मेलबॉक्स के माध्यम से सूचित किया जाएगा।';
+  }
+
+  @override
+  String get feedback_submit_success =>
+      'आपकी रिपोर्ट सफलतापूर्वक भेज दी गई है। आपकी राय के लिए धन्यवाद!';
+
+  @override
+  String get feedback_submit_failed =>
+      'रिपोर्ट भेजी नहीं जा सकी। कृपया नेटवर्क की जाँच करके फिर से प्रयास करें';
+
+  @override
+  String get feedback_category_section_title => 'समस्या का प्रकार';
+
+  @override
+  String get feedback_reported_content_title => 'रिपोर्ट की गई सामग्री';
+
+  @override
+  String get feedback_screenshot_required_title =>
+      'समस्या का स्क्रीनशॉट (आवश्यक)';
+
+  @override
+  String get feedback_image_optional_title => 'अतिरिक्त चित्र (वैकल्पिक)';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      'कृपया समस्या होने के समय का स्क्रीनशॉट संलग्न करें, ताकि हमारी टीम वास्तविक स्थिति की जाँच कर सके।';
+
+  @override
+  String get feedback_image_optional_description =>
+      'यदि आपके पास संबंधित चित्र है, तो जाँच में सहायता के लिए उसे भी संलग्न कर सकते हैं।';
+
+  @override
+  String get feedback_footer_message =>
+      'आपकी राय हमें गेम के अनुभव को लगातार बेहतर बनाने में मदद करेगी। धन्यवाद!';
+
+  @override
+  String get feedback_select_image_semantics => 'रिपोर्ट के लिए चित्र चुनें';
+
+  @override
+  String get feedback_opening_gallery => 'गैलरी खोली जा रही है…';
+
+  @override
+  String get feedback_select_image_upload =>
+      'अपलोड करने के लिए चित्र चुनने हेतु यहाँ टैप करें';
+
+  @override
+  String get feedback_image_requirements =>
+      'JPG और PNG समर्थित हैं, प्रत्येक चित्र अधिकतम 10 MB';
+
+  @override
+  String get feedback_submitting_semantics => 'भेजा जा रहा है';
+
+  @override
+  String get feedback_submit_semantics => 'रिपोर्ट भेजें';
+
+  @override
+  String get feedback_submit_button => 'भेजें';
+
+  @override
+  String get feedback_remove_image => 'चित्र हटाएँ';
+
+  @override
+  String get feedback_selected_image => 'चित्र चुना गया';
+
+  @override
+  String get feedback_change_image => 'बदलें';
 }

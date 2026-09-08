@@ -244,7 +244,7 @@ class CreatorProfilePage extends StatelessWidget {
                     actions: [
                       if (!isOwner)
                         PopupMenuButton<String>(
-                          tooltip: '更多',
+                          tooltip: l10n.moreOptions,
                           icon: Icon(
                             Icons.more_vert_rounded,
                             color: theme.colorScheme.onSurface,
@@ -283,7 +283,7 @@ class CreatorProfilePage extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    '檢舉創作者',
+                                    l10n.creator_profile_report_creator,
                                     style: GoogleFonts.notoSerifTc(
                                       fontSize: 13.5,
                                     ),
@@ -302,7 +302,7 @@ class CreatorProfilePage extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    '封鎖創作者',
+                                    l10n.creator_profile_block_creator,
                                     style: GoogleFonts.notoSerifTc(
                                       fontSize: 13.5,
                                       color: Colors.redAccent,
@@ -424,11 +424,12 @@ class CreatorProfilePage extends StatelessWidget {
     required String creatorName,
   }) async {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
 
     if (user == null) {
       ToastUtils.showCenterToast(
         context,
-        '請先登入後再檢舉創作者',
+        l10n.creator_profile_report_login_required,
         isError: true,
       );
       return;
@@ -437,7 +438,7 @@ class CreatorProfilePage extends StatelessWidget {
     if (user.uid == creatorId) {
       ToastUtils.showCenterToast(
         context,
-        '無法檢舉自己的創作者頁面',
+        l10n.creator_profile_report_self_not_allowed,
         isError: true,
       );
       return;
@@ -486,18 +487,18 @@ class CreatorProfilePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              reasonTile('inappropriate_content', '不當或違規內容'),
-              reasonTile('harassment', '騷擾、攻擊或仇恨內容'),
-              reasonTile('impersonation', '冒充他人或偽造身分'),
-              reasonTile('spam', '垃圾內容或惡意宣傳'),
-              reasonTile('other', '其他'),
+              reasonTile('inappropriate_content', l10n.creator_profile_report_reason_inappropriate),
+              reasonTile('harassment', l10n.creator_profile_report_reason_harassment),
+              reasonTile('impersonation', l10n.creator_profile_report_reason_impersonation),
+              reasonTile('spam',l10n.creator_profile_report_reason_spam),
+              reasonTile('other', l10n.genderOther),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
               child: Text(
-                '取消',
+               l10n.cancelButton,
                 style: GoogleFonts.notoSerifTc(),
               ),
             ),
@@ -530,7 +531,7 @@ class CreatorProfilePage extends StatelessWidget {
 
       ToastUtils.showCenterToast(
         context,
-        '已收到檢舉，感謝你的回報',
+        l10n.creator_profile_report_success,
         customIcon: Icons.flag_outlined,
       );
     } catch (e) {
@@ -540,7 +541,7 @@ class CreatorProfilePage extends StatelessWidget {
 
       ToastUtils.showCenterToast(
         context,
-        '檢舉送出失敗，請稍後再試',
+        l10n.creator_profile_report_failed,
         isError: true,
       );
     }
@@ -553,11 +554,12 @@ class CreatorProfilePage extends StatelessWidget {
     required List<Character> characters,
   }) async {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
 
     if (user == null) {
       ToastUtils.showCenterToast(
         context,
-        '請先登入後再封鎖創作者',
+        l10n.creator_profile_block_login_required,
         isError: true,
       );
       return false;
@@ -566,7 +568,7 @@ class CreatorProfilePage extends StatelessWidget {
     if (user.uid == creatorId) {
       ToastUtils.showCenterToast(
         context,
-        '無法封鎖自己',
+        l10n.creator_profile_block_self_not_allowed,
         isError: true,
       );
       return false;
@@ -597,9 +599,7 @@ class CreatorProfilePage extends StatelessWidget {
             ],
           ),
           content: Text(
-            '確定要封鎖「$creatorName」嗎？\n\n'
-                '封鎖後，你將不會再看到這位創作者的公開頁面，'
-                '目前由他建立的公開角色也會一併加入封鎖名單。',
+            l10n.creator_profile_block_confirm(creatorName),
             style: GoogleFonts.notoSerifTc(
               fontSize: 13.5,
               height: 1.65,
@@ -609,7 +609,7 @@ class CreatorProfilePage extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
               child: Text(
-                '取消',
+                l10n.cancelButton,
                 style: GoogleFonts.notoSerifTc(),
               ),
             ),
@@ -619,7 +619,7 @@ class CreatorProfilePage extends StatelessWidget {
               ),
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(
-                '確認封鎖',
+                l10n.dialog_title_block,
                 style: GoogleFonts.notoSerifTc(
                   color: Colors.white,
                 ),
@@ -699,7 +699,7 @@ class CreatorProfilePage extends StatelessWidget {
 
       ToastUtils.showCenterToast(
         context,
-        '已封鎖「$creatorName」',
+        l10n.creator_profile_block_success(creatorName),
         customIcon: Icons.block_rounded,
       );
 
@@ -711,7 +711,7 @@ class CreatorProfilePage extends StatelessWidget {
 
       ToastUtils.showCenterToast(
         context,
-        '封鎖失敗，請稍後再試',
+        l10n.creator_profile_block_failed,
         isError: true,
       );
 

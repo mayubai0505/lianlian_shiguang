@@ -519,7 +519,7 @@ class _MomentCardState extends State<MomentCard> {
                                     'characterName': char.name,
                                     'avatarPath': char.avatarPath,
                                     'lastActivity': FieldValue.serverTimestamp(),
-                                    'lastMessage': '【轉發了一則動態】',
+                                    'lastMessage': l10n.moment_forward_chat_preview,
                                     'chatMode': 'daily',
                                     'friendshipScore': 0, // 如果是新房就給 0，舊房會被 merge 掉
                                   }, SetOptions(merge: true));

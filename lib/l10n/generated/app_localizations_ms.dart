@@ -6481,4 +6481,592 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get appUpdateStoreOpenFailed =>
       'Gedung tidak dapat dibuka buat masa ini. Sila cuba lagi kemudian.';
+
+  @override
+  String get auth_error_requires_recent_login =>
+      'Sesi log masuk anda telah tamat. Sila log masuk semula sebelum menukar kata laluan.';
+
+  @override
+  String get auth_error_too_many_requests =>
+      'Terlalu banyak percubaan. Sila cuba lagi kemudian.';
+
+  @override
+  String get auth_error_network_failed =>
+      'Sambungan rangkaian tidak stabil buat masa ini. Sila cuba lagi kemudian.';
+
+  @override
+  String get change_password_failed =>
+      'Gagal menukar kata laluan. Sila cuba lagi kemudian.';
+
+  @override
+  String get change_password_account_not_found =>
+      'Akaun yang sedang dilog masuk tidak ditemukan. Sila log masuk semula dan cuba lagi.';
+
+  @override
+  String get change_password_not_password_account =>
+      'Akaun ini tidak menggunakan log masuk melalui e-mel dan kata laluan, jadi kata laluannya tidak boleh ditukar di sini.';
+
+  @override
+  String get change_password_same_as_current =>
+      'Kata laluan baharu tidak boleh sama dengan kata laluan semasa.';
+
+  @override
+  String get change_password_success_title => 'Kata Laluan Dikemas Kini';
+
+  @override
+  String get change_password_success_message =>
+      'Kata laluan baharu telah berjaya ditetapkan. Gunakan kata laluan baharu apabila anda log masuk semula.';
+
+  @override
+  String get change_password_title => 'Tukar Kata Laluan';
+
+  @override
+  String get change_password_security_title => 'Keselamatan Akaun';
+
+  @override
+  String get change_password_description =>
+      'Masukkan kata laluan semasa untuk mengesahkan identiti anda, kemudian tetapkan kata laluan log masuk yang baharu.';
+
+  @override
+  String get change_password_current_label => 'Kata Laluan Semasa';
+
+  @override
+  String get change_password_current_required =>
+      'Sila masukkan kata laluan semasa';
+
+  @override
+  String get change_password_new_label => 'Kata Laluan Baharu';
+
+  @override
+  String get change_password_new_required => 'Sila masukkan kata laluan baharu';
+
+  @override
+  String get change_password_new_min_length =>
+      'Kata laluan baharu mestilah sekurang-kurangnya 6 aksara';
+
+  @override
+  String get change_password_confirm_label => 'Sahkan Kata Laluan Baharu';
+
+  @override
+  String get change_password_confirm_required =>
+      'Sila masukkan kata laluan baharu sekali lagi';
+
+  @override
+  String get change_password_mismatch =>
+      'Kata laluan baharu yang dimasukkan tidak sepadan';
+
+  @override
+  String get change_password_hint =>
+      'Kata laluan mestilah sekurang-kurangnya 6 aksara. Selepas ditukar, gunakan kata laluan baharu apabila anda log masuk semula pada peranti lain.';
+
+  @override
+  String get character_npc_add => '＋ Tambah Watak Sampingan';
+
+  @override
+  String character_npc_added_count(int count) {
+    return 'Watak sampingan yang ditambahkan: $count';
+  }
+
+  @override
+  String get character_npc_unnamed => 'Watak Sampingan Tanpa Nama';
+
+  @override
+  String get character_npc_title => 'Tetapan Watak Sampingan';
+
+  @override
+  String get character_npc_description =>
+      'Cipta watak penting yang akan muncul dalam cerita untuk melengkapkan dunia watak.';
+
+  @override
+  String get character_npc_empty_title => 'Belum Ada Watak Sampingan';
+
+  @override
+  String get character_npc_empty_description =>
+      'Selepas ditambahkan, anda boleh melihat, mengedit dan mengurus tetapan watak sampingan di sini.';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age tahun';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return 'Hubungan dengan watak utama: $relationship';
+  }
+
+  @override
+  String get character_management_login_required =>
+      'Sila log masuk terlebih dahulu';
+
+  @override
+  String get character_management_character_tab => 'Watak';
+
+  @override
+  String get character_management_creator_tab => 'Pencipta';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      'Watak yang anda hentikan hubungan dengannya akan dipaparkan di sini.';
+
+  @override
+  String get character_management_blocked_creators_load_failed =>
+      'Gagal memuatkan pencipta yang disekat';
+
+  @override
+  String get character_management_blocked_creators_empty =>
+      'Pencipta yang anda sekat akan dipaparkan di sini.';
+
+  @override
+  String get character_management_creator_fallback => 'Pencipta';
+
+  @override
+  String get character_management_blocked_creator_status => 'Pencipta Disekat';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      'Watak awam dan watak baharu yang ditambahkan oleh pencipta ini tidak akan muncul dalam cadangan.';
+
+  @override
+  String get character_management_unblock_creator_title => 'Nyahsekat Pencipta';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return 'Adakah anda pasti mahu menyahsekat “$creatorName”?\n\nSelepas dinyahsekat, pencipta ini dan wataknya mungkin muncul semula dalam cadangan. Watak yang anda sekat secara berasingan sebelum ini akan kekal disekat.';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return 'Sekatan terhadap “$creatorName” telah dibuka';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed =>
+      'Gagal menyahsekat. Sila cuba lagi kemudian';
+
+  @override
+  String get character_management_title => 'Pengurusan Watak';
+
+  @override
+  String get character_management_subtitle =>
+      'Urus watak yang telah anda hentikan hubungan dengannya';
+
+  @override
+  String get character_management_character_fallback => 'Watak';
+
+  @override
+  String get character_management_blocked_character_status =>
+      'Hubungan Dihentikan';
+
+  @override
+  String get character_management_blocked_character_description =>
+      'Perbualan dan pemberitahuan akan dihentikan tanpa memadamkan data berkaitan.';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return 'Adakah anda pasti mahu menyahsekat “$charName”? Selepas dinyahsekat, kandungan berkaitan mungkin dipaparkan semula.';
+  }
+
+  @override
+  String get creator_follow_following_title => 'Pencipta yang Saya Ikuti';
+
+  @override
+  String get creator_follow_followers_title => 'Pemain yang Mengikuti Saya';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return 'Gagal memuatkan: $error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title =>
+      'Belum Mengikuti Mana-mana Pencipta';
+
+  @override
+  String get creator_follow_empty_followers_title => 'Belum Ada Pengikut';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      'Ikuti pencipta yang anda sukai melalui profil watak atau Bengkel Pencipta.';
+
+  @override
+  String get creator_follow_empty_followers_description =>
+      'Pemain yang mengikuti anda akan dipaparkan di sini.';
+
+  @override
+  String get creator_follow_unknown_player => 'Pemain Tidak Dikenali';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID: $playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => 'ID pemain belum ditetapkan';
+
+  @override
+  String get creator_follow_following => 'Mengikuti';
+
+  @override
+  String get creator_follow_unfollow_title => 'Berhenti Mengikuti';
+
+  @override
+  String get creator_follow_unfollow_confirm =>
+      'Adakah anda pasti mahu berhenti mengikuti pencipta ini?';
+
+  @override
+  String get creator_follow_unfollow => 'Berhenti Mengikuti';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return 'Gagal memuatkan: $error';
+  }
+
+  @override
+  String get creator_profile_report_creator => 'Laporkan Pencipta';
+
+  @override
+  String get creator_profile_block_creator => 'Sekat Pencipta';
+
+  @override
+  String get creator_profile_report_login_required =>
+      'Sila log masuk sebelum melaporkan pencipta';
+
+  @override
+  String get creator_profile_report_self_not_allowed =>
+      'Anda tidak boleh melaporkan profil pencipta anda sendiri';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'Pilih sebab untuk melaporkan “$creatorName”:';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate =>
+      'Kandungan tidak sesuai atau melanggar peraturan';
+
+  @override
+  String get creator_profile_report_reason_harassment =>
+      'Gangguan, serangan atau kandungan kebencian';
+
+  @override
+  String get creator_profile_report_reason_impersonation =>
+      'Penyamaran atau pemalsuan identiti';
+
+  @override
+  String get creator_profile_report_reason_spam =>
+      'Kandungan spam atau promosi berniat jahat';
+
+  @override
+  String get creator_profile_report_success =>
+      'Laporan telah diterima. Terima kasih kerana memaklumkan kepada kami';
+
+  @override
+  String get creator_profile_report_failed =>
+      'Gagal menghantar laporan. Sila cuba lagi kemudian';
+
+  @override
+  String get creator_profile_block_login_required =>
+      'Sila log masuk sebelum menyekat pencipta';
+
+  @override
+  String get creator_profile_block_self_not_allowed =>
+      'Anda tidak boleh menyekat diri sendiri';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return 'Adakah anda pasti mahu menyekat “$creatorName”?\n\nSelepas disekat, anda tidak akan melihat lagi halaman awam pencipta ini. Watak awam yang telah diciptanya juga akan ditambahkan pada senarai sekatan anda.';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => 'Sahkan Sekatan';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return '“$creatorName” telah disekat';
+  }
+
+  @override
+  String get creator_profile_block_failed =>
+      'Gagal menyekat. Sila cuba lagi kemudian';
+
+  @override
+  String get creator_scene_edit_title_edit => 'Edit Babak';
+
+  @override
+  String get creator_scene_edit_title_add => 'Tambah Babak';
+
+  @override
+  String get creator_scene_edit_heading_edit => 'Laraskan permulaan cerita ini';
+
+  @override
+  String get creator_scene_edit_heading_add =>
+      'Tuliskan permulaan cerita yang baharu';
+
+  @override
+  String get creator_scene_edit_scene_title_label => 'Tajuk Babak';
+
+  @override
+  String get creator_scene_edit_scene_title_hint =>
+      'Contoh: Bertemu Semula pada Malam Hujan';
+
+  @override
+  String get creator_scene_edit_description_label => 'Penerangan Babak';
+
+  @override
+  String get creator_scene_edit_description_hint =>
+      'Terangkan masa, tempat, hubungan dan situasi dalam cerita.';
+
+  @override
+  String get creator_scene_edit_opening_label => 'Pembukaan Watak';
+
+  @override
+  String get creator_scene_edit_opening_hint =>
+      'Tuliskan reaksi atau dialog pertama watak apabila memasuki cerita ini.';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      'Pembukaan watak akan menjadi babak pertama adegan ini. Perbualan seterusnya akan terus berteraskan personaliti asal watak.';
+
+  @override
+  String get creator_scene_edit_save_changes => 'Simpan Perubahan';
+
+  @override
+  String get creator_scene_edit_save_scene => 'Simpan Babak';
+
+  @override
+  String get creator_scene_edit_error_title_required =>
+      'Sila masukkan tajuk babak terlebih dahulu.';
+
+  @override
+  String get creator_scene_edit_error_description_required =>
+      'Sila masukkan penerangan babak terlebih dahulu.';
+
+  @override
+  String get creator_scene_edit_error_opening_required =>
+      'Sila masukkan pembukaan watak terlebih dahulu.';
+
+  @override
+  String get creator_scene_edit_save_failed =>
+      'Gagal menyimpan. Sila cuba lagi kemudian.';
+
+  @override
+  String get creator_scene_delete_title => 'Padam Babak?';
+
+  @override
+  String get creator_scene_delete_target_fallback => 'babak ini';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return 'Adakah anda pasti mahu memadamkan “$sceneTitle”? Babak yang dipadamkan tidak boleh dipulihkan.';
+  }
+
+  @override
+  String get creator_scene_delete_failed =>
+      'Gagal memadamkan. Sila cuba lagi kemudian.';
+
+  @override
+  String get creator_scene_empty_title => 'Belum Ada Babak Pencipta';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return 'Tuliskan jalan cerita alternatif untuk $characterName,\nsupaya pemain boleh bermula daripada kisah yang berbeza.';
+  }
+
+  @override
+  String get creator_scene_add => 'Tambah Babak';
+
+  @override
+  String get creator_scene_unnamed => 'Babak Tanpa Tajuk';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return 'Pembukaan Watak: $opening';
+  }
+
+  @override
+  String get creator_scene_edit => 'Edit';
+
+  @override
+  String get creator_scene_delete => 'Padam';
+
+  @override
+  String get creator_scene_title => 'Babak Pencipta';
+
+  @override
+  String get creator_scene_character_unavailable =>
+      'Maklumat watak tidak dapat dimuatkan buat masa ini.';
+
+  @override
+  String get creator_scene_load_failed =>
+      'Gagal memuatkan babak. Sila cuba lagi kemudian.';
+
+  @override
+  String get creator_scene_heading =>
+      'Cipta permulaan cerita yang berbeza untuk watak';
+
+  @override
+  String get custom_scene_edit_heading_edit =>
+      'Laraskan cerita yang hanya milik anda';
+
+  @override
+  String get custom_scene_edit_heading_add =>
+      'Tuliskan cerita khas untuk ruang sembang ini';
+
+  @override
+  String get custom_scene_edit_description_hint =>
+      'Terangkan masa, tempat, hubungan dan situasi yang ingin anda jadikan sebagai permulaan cerita.';
+
+  @override
+  String get custom_scene_edit_note =>
+      'Babak yang anda cipta tidak mempunyai pembukaan watak yang telah ditetapkan. Selepas dimulakan, watak akan memasuki cerita berdasarkan penerangan babak dan personaliti asalnya.';
+
+  @override
+  String get moment_create_no_mentionable_characters =>
+      'Tiada watak yang boleh disebut buat masa ini.';
+
+  @override
+  String get moment_create_mention_my_characters => 'Sebut Watak Saya';
+
+  @override
+  String get moment_create_no_matching_characters =>
+      'Tiada watak yang sepadan ditemukan';
+
+  @override
+  String get moment_create_my_character => 'Watak Saya';
+
+  @override
+  String get moment_create_friend_character => 'Watak Rakan';
+
+  @override
+  String get moment_create_public_visibility_hint =>
+      'Siaran akan dipaparkan pada Dinding Momen';
+
+  @override
+  String get moment_create_private_visibility_hint =>
+      'Hanya boleh dilihat dalam lingkungan khusus';
+
+  @override
+  String get moment_create_add_image => 'Tambah Imej';
+
+  @override
+  String get moment_create_mention_character => 'Sebut Watak';
+
+  @override
+  String get moment_edit_content_hint => 'Kongsi perasaan anda...';
+
+  @override
+  String get moment_forward_chat_preview => '【Satu siaran telah dikongsi】';
+
+  @override
+  String get feedback_image_too_large => 'Saiz imej tidak boleh melebihi 10 MB';
+
+  @override
+  String get feedback_image_pick_failed =>
+      'Tidak dapat memilih imej. Sila cuba lagi kemudian';
+
+  @override
+  String get feedback_category_general => 'Masalah Umum';
+
+  @override
+  String get feedback_category_bug => 'Laporan Pepijat';
+
+  @override
+  String get feedback_category_suggestion => 'Cadangan Ciri';
+
+  @override
+  String get feedback_category_flower => 'Masalah Mata Bunga';
+
+  @override
+  String get feedback_category_payment => 'Masalah Tambah Nilai / Pembayaran';
+
+  @override
+  String get feedback_category_ai_reply => 'Masalah Balasan AI';
+
+  @override
+  String get feedback_category_character_report => 'Laporkan Watak';
+
+  @override
+  String get feedback_category_moment_report => 'Laporkan Siaran';
+
+  @override
+  String get feedback_screenshot_required_error =>
+      'Sila lampirkan tangkapan skrin untuk jenis masalah ini supaya kami dapat menyemaknya';
+
+  @override
+  String get feedback_login_required =>
+      'Sila log masuk sebelum menghantar laporan';
+
+  @override
+  String get feedback_mail_received_title =>
+      '【Kes Telah Dibuka】Kami Telah Menerima Laporan Anda';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return 'Kami telah menerima laporan anda dan akan menyemaknya secepat mungkin.\n\nNombor kes: $caseNumber\n\nJika pihak sokongan mempunyai maklum balas lanjut, anda akan dimaklumkan melalui peti masuk LoveyDovey.';
+  }
+
+  @override
+  String get feedback_submit_success =>
+      'Laporan berjaya dihantar. Terima kasih atas maklum balas anda!';
+
+  @override
+  String get feedback_submit_failed =>
+      'Gagal menghantar. Sila semak sambungan rangkaian dan cuba lagi';
+
+  @override
+  String get feedback_category_section_title => 'Jenis Masalah';
+
+  @override
+  String get feedback_reported_content_title => 'Kandungan yang Dilaporkan';
+
+  @override
+  String get feedback_screenshot_required_title =>
+      'Tangkapan Skrin Masalah (Wajib)';
+
+  @override
+  String get feedback_image_optional_title => 'Imej Tambahan (Pilihan)';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      'Sila lampirkan tangkapan skrin semasa masalah berlaku supaya pihak kami dapat mengesahkan keadaan sebenar.';
+
+  @override
+  String get feedback_image_optional_description =>
+      'Jika terdapat imej berkaitan, anda juga boleh melampirkannya untuk membantu pihak kami membuat semakan.';
+
+  @override
+  String get feedback_footer_message =>
+      'Maklum balas anda akan membantu kami terus meningkatkan pengalaman permainan. Terima kasih!';
+
+  @override
+  String get feedback_select_image_semantics => 'Pilih imej laporan';
+
+  @override
+  String get feedback_opening_gallery => 'Membuka galeri…';
+
+  @override
+  String get feedback_select_image_upload =>
+      'Ketik di sini untuk memilih imej yang ingin dimuat naik';
+
+  @override
+  String get feedback_image_requirements =>
+      'Menyokong JPG dan PNG, maksimum 10 MB bagi setiap imej';
+
+  @override
+  String get feedback_submitting_semantics => 'Sedang menghantar';
+
+  @override
+  String get feedback_submit_semantics => 'Hantar laporan';
+
+  @override
+  String get feedback_submit_button => 'Hantar';
+
+  @override
+  String get feedback_remove_image => 'Alih Keluar Imej';
+
+  @override
+  String get feedback_selected_image => 'Imej Dipilih';
+
+  @override
+  String get feedback_change_image => 'Tukar';
 }

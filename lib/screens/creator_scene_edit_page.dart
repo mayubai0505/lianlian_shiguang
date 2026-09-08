@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 //劇場編輯
 class CreatorSceneEditPage extends StatefulWidget {
   final String characterName;
@@ -53,6 +55,7 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_isSaving) return;
 
     final title = _titleController.text.trim();
@@ -60,17 +63,17 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
     final opening = _openingController.text.trim();
 
     if (title.isEmpty) {
-      _showMessage('請先填寫劇場標題。');
+      _showMessage(l10n.creator_scene_edit_error_title_required);
       return;
     }
 
     if (description.isEmpty) {
-      _showMessage('請先填寫場景說明。');
+      _showMessage(l10n.creator_scene_edit_error_description_required);
       return;
     }
 
     if (opening.isEmpty) {
-      _showMessage('請先填寫角色開場。');
+      _showMessage(l10n.creator_scene_edit_error_opening_required);
       return;
     }
 
@@ -105,7 +108,7 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      _showMessage('儲存失敗，請稍後再試。');
+      _showMessage(l10n.creator_scene_edit_save_failed);
     } finally {
       if (mounted) {
         setState(() {
@@ -205,6 +208,7 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -213,7 +217,7 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
         backgroundColor: Colors.transparent,
         foregroundColor: theme.colorScheme.onSurface,
         title: Text(
-          widget.isEditing ? '編輯劇場' : '新增劇場',
+          widget.isEditing ? l10n.creator_scene_edit_title_edit : l10n.creator_scene_edit_title_add,
           style: GoogleFonts.notoSerifTc(fontWeight: FontWeight.w700),
         ),
       ),
@@ -233,7 +237,7 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
               ),
               const SizedBox(height: 6),
               Text(
-                widget.isEditing ? '調整這段故事的入口' : '寫下一個新的故事入口',
+                widget.isEditing ? l10n.creator_scene_edit_heading_edit : l10n.creator_scene_edit_heading_add,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 21,
                   fontWeight: FontWeight.w700,
@@ -242,16 +246,16 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
               const SizedBox(height: 26),
               _buildField(
                 theme: theme,
-                label: '劇場標題',
-                hint: '例如：雨夜重逢',
+                label: l10n.creator_scene_edit_scene_title_label,
+                hint: l10n.creator_scene_edit_scene_title_hint,
                 controller: _titleController,
                 maxLength: 30,
               ),
               const SizedBox(height: 18),
               _buildField(
                 theme: theme,
-                label: '場景說明',
-                hint: '描述故事發生的時間、地點、關係與情境。',
+                label: l10n.creator_scene_edit_description_label,
+                hint: l10n.creator_scene_edit_description_hint,
                 controller: _descriptionController,
                 minLines: 6,
                 maxLines: 10,
@@ -260,8 +264,8 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
               const SizedBox(height: 18),
               _buildField(
                 theme: theme,
-                label: '角色開場',
-                hint: '寫下角色進入這段劇情時的第一個反應或第一句話。',
+                label: l10n.creator_scene_edit_opening_label,
+                hint: l10n.creator_scene_edit_opening_hint,
                 controller: _openingController,
                 minLines: 5,
                 maxLines: 9,
@@ -276,7 +280,7 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  '角色開場會作為這段劇場的第一幕；後續對話仍會以角色原本人設為核心繼續。',
+                  l10n.creator_scene_edit_opening_note,
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 12,
                     height: 1.6,
@@ -307,7 +311,7 @@ class _CreatorSceneEditPageState extends State<CreatorSceneEditPage> {
                     ),
                   )
                       : Text(
-                    widget.isEditing ? '儲存修改' : '儲存劇場',
+                    widget.isEditing ? l10n.creator_scene_edit_save_changes : l10n.creator_scene_edit_save_scene,
                     style: GoogleFonts.notoSerifTc(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,

@@ -6478,4 +6478,595 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get appUpdateStoreOpenFailed =>
       'Hiện không thể mở cửa hàng. Vui lòng thử lại sau.';
+
+  @override
+  String get auth_error_requires_recent_login =>
+      'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại trước khi đổi mật khẩu.';
+
+  @override
+  String get auth_error_too_many_requests =>
+      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
+
+  @override
+  String get auth_error_network_failed =>
+      'Kết nối mạng hiện không ổn định. Vui lòng thử lại sau.';
+
+  @override
+  String get change_password_failed =>
+      'Không thể đổi mật khẩu. Vui lòng thử lại sau.';
+
+  @override
+  String get change_password_account_not_found =>
+      'Không tìm thấy tài khoản đang đăng nhập. Vui lòng đăng nhập lại rồi thử lại.';
+
+  @override
+  String get change_password_not_password_account =>
+      'Tài khoản này không sử dụng phương thức đăng nhập bằng email và mật khẩu nên không thể đổi mật khẩu tại đây.';
+
+  @override
+  String get change_password_same_as_current =>
+      'Mật khẩu mới không được trùng với mật khẩu hiện tại.';
+
+  @override
+  String get change_password_success_title => 'Đã cập nhật mật khẩu';
+
+  @override
+  String get change_password_success_message =>
+      'Mật khẩu mới đã được thiết lập. Vui lòng sử dụng mật khẩu mới trong lần đăng nhập tiếp theo.';
+
+  @override
+  String get change_password_title => 'Đổi mật khẩu';
+
+  @override
+  String get change_password_security_title => 'Bảo mật tài khoản';
+
+  @override
+  String get change_password_description =>
+      'Trước tiên, hãy nhập mật khẩu hiện tại để xác minh danh tính, sau đó thiết lập mật khẩu đăng nhập mới.';
+
+  @override
+  String get change_password_current_label => 'Mật khẩu hiện tại';
+
+  @override
+  String get change_password_current_required =>
+      'Vui lòng nhập mật khẩu hiện tại';
+
+  @override
+  String get change_password_new_label => 'Mật khẩu mới';
+
+  @override
+  String get change_password_new_required => 'Vui lòng nhập mật khẩu mới';
+
+  @override
+  String get change_password_new_min_length =>
+      'Mật khẩu mới phải có ít nhất 6 ký tự';
+
+  @override
+  String get change_password_confirm_label => 'Xác nhận mật khẩu mới';
+
+  @override
+  String get change_password_confirm_required =>
+      'Vui lòng nhập lại mật khẩu mới';
+
+  @override
+  String get change_password_mismatch => 'Mật khẩu mới nhập hai lần không khớp';
+
+  @override
+  String get change_password_hint =>
+      'Mật khẩu phải có ít nhất 6 ký tự. Sau khi thay đổi, hãy sử dụng mật khẩu mới khi đăng nhập lại trên các thiết bị khác.';
+
+  @override
+  String get character_npc_add => '＋ Thêm nhân vật phụ';
+
+  @override
+  String character_npc_added_count(int count) {
+    return 'Nhân vật phụ đã thêm: $count';
+  }
+
+  @override
+  String get character_npc_unnamed => 'Nhân vật phụ chưa đặt tên';
+
+  @override
+  String get character_npc_title => 'Thiết lập nhân vật phụ';
+
+  @override
+  String get character_npc_description =>
+      'Tạo những nhân vật quan trọng sẽ xuất hiện trong câu chuyện để thế giới của nhân vật trở nên hoàn chỉnh hơn.';
+
+  @override
+  String get character_npc_empty_title => 'Chưa thêm nhân vật phụ';
+
+  @override
+  String get character_npc_empty_description =>
+      'Sau khi thêm, bạn có thể xem, chỉnh sửa và quản lý thiết lập của các nhân vật phụ tại đây.';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age tuổi';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return 'Quan hệ với nhân vật chính: $relationship';
+  }
+
+  @override
+  String get character_management_login_required => 'Vui lòng đăng nhập trước';
+
+  @override
+  String get character_management_character_tab => 'Nhân vật';
+
+  @override
+  String get character_management_creator_tab => 'Nhà sáng tạo';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      'Những nhân vật bạn tạm dừng liên hệ sẽ xuất hiện tại đây.';
+
+  @override
+  String get character_management_blocked_creators_load_failed =>
+      'Không thể tải danh sách nhà sáng tạo đã chặn';
+
+  @override
+  String get character_management_blocked_creators_empty =>
+      'Những nhà sáng tạo bạn chặn sẽ xuất hiện tại đây.';
+
+  @override
+  String get character_management_creator_fallback => 'Nhà sáng tạo';
+
+  @override
+  String get character_management_blocked_creator_status =>
+      'Đã chặn nhà sáng tạo';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      'Các nhân vật công khai và nhân vật được họ thêm sau này sẽ không xuất hiện trong mục đề xuất.';
+
+  @override
+  String get character_management_unblock_creator_title =>
+      'Bỏ chặn nhà sáng tạo';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return 'Bạn có chắc muốn bỏ chặn “$creatorName” không?\n\nSau khi bỏ chặn, nhà sáng tạo này và các nhân vật của họ có thể xuất hiện lại trong nội dung đề xuất. Những nhân vật bạn đã chặn riêng trước đó vẫn sẽ bị chặn.';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return 'Đã bỏ chặn “$creatorName”';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed =>
+      'Không thể bỏ chặn, vui lòng thử lại sau';
+
+  @override
+  String get character_management_title => 'Quản lý nhân vật';
+
+  @override
+  String get character_management_subtitle =>
+      'Quản lý những nhân vật bạn đã tạm dừng liên hệ';
+
+  @override
+  String get character_management_character_fallback => 'Nhân vật';
+
+  @override
+  String get character_management_blocked_character_status =>
+      'Đang tạm dừng liên hệ';
+
+  @override
+  String get character_management_blocked_character_description =>
+      'Tạm dừng trò chuyện và thông báo mà không xóa dữ liệu liên quan.';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return 'Bạn có chắc muốn bỏ chặn “$charName” không? Sau khi bỏ chặn, nội dung liên quan có thể xuất hiện trở lại.';
+  }
+
+  @override
+  String get creator_follow_following_title => 'Nhà sáng tạo tôi theo dõi';
+
+  @override
+  String get creator_follow_followers_title => 'Người chơi theo dõi tôi';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return 'Không thể tải: $error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title =>
+      'Bạn chưa theo dõi nhà sáng tạo nào';
+
+  @override
+  String get creator_follow_empty_followers_title =>
+      'Hiện chưa có người theo dõi';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      'Hãy theo dõi những nhà sáng tạo bạn yêu thích từ hồ sơ nhân vật hoặc Xưởng sáng tạo.';
+
+  @override
+  String get creator_follow_empty_followers_description =>
+      'Khi người chơi khác theo dõi bạn, họ sẽ xuất hiện tại đây.';
+
+  @override
+  String get creator_follow_unknown_player => 'Người chơi không xác định';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID: $playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => 'Chưa thiết lập ID người chơi';
+
+  @override
+  String get creator_follow_following => 'Đang theo dõi';
+
+  @override
+  String get creator_follow_unfollow_title => 'Bỏ theo dõi';
+
+  @override
+  String get creator_follow_unfollow_confirm =>
+      'Bạn có chắc muốn bỏ theo dõi nhà sáng tạo này không?';
+
+  @override
+  String get creator_follow_unfollow => 'Bỏ theo dõi';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return 'Không thể tải: $error';
+  }
+
+  @override
+  String get creator_profile_report_creator => 'Báo cáo nhà sáng tạo';
+
+  @override
+  String get creator_profile_block_creator => 'Chặn nhà sáng tạo';
+
+  @override
+  String get creator_profile_report_login_required =>
+      'Vui lòng đăng nhập trước khi báo cáo nhà sáng tạo';
+
+  @override
+  String get creator_profile_report_self_not_allowed =>
+      'Bạn không thể báo cáo trang nhà sáng tạo của chính mình';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'Vui lòng chọn lý do báo cáo “$creatorName”:';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate =>
+      'Nội dung không phù hợp hoặc vi phạm quy định';
+
+  @override
+  String get creator_profile_report_reason_harassment =>
+      'Nội dung quấy rối, công kích hoặc thù ghét';
+
+  @override
+  String get creator_profile_report_reason_impersonation =>
+      'Mạo danh người khác hoặc giả mạo danh tính';
+
+  @override
+  String get creator_profile_report_reason_spam =>
+      'Nội dung rác hoặc quảng bá độc hại';
+
+  @override
+  String get creator_profile_report_success =>
+      'Đã nhận được báo cáo. Cảm ơn bạn đã thông báo';
+
+  @override
+  String get creator_profile_report_failed =>
+      'Không thể gửi báo cáo, vui lòng thử lại sau';
+
+  @override
+  String get creator_profile_block_login_required =>
+      'Vui lòng đăng nhập trước khi chặn nhà sáng tạo';
+
+  @override
+  String get creator_profile_block_self_not_allowed =>
+      'Bạn không thể tự chặn chính mình';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return 'Bạn có chắc muốn chặn “$creatorName” không?\n\nSau khi chặn, bạn sẽ không còn thấy trang công khai của nhà sáng tạo này. Những nhân vật công khai hiện do họ tạo cũng sẽ được thêm vào danh sách chặn.';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => 'Xác nhận chặn';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return 'Đã chặn “$creatorName”';
+  }
+
+  @override
+  String get creator_profile_block_failed =>
+      'Không thể chặn, vui lòng thử lại sau';
+
+  @override
+  String get creator_scene_edit_title_edit => 'Chỉnh sửa phân cảnh';
+
+  @override
+  String get creator_scene_edit_title_add => 'Thêm phân cảnh';
+
+  @override
+  String get creator_scene_edit_heading_edit =>
+      'Điều chỉnh phần mở đầu của câu chuyện này';
+
+  @override
+  String get creator_scene_edit_heading_add =>
+      'Viết phần mở đầu cho một câu chuyện mới';
+
+  @override
+  String get creator_scene_edit_scene_title_label => 'Tiêu đề phân cảnh';
+
+  @override
+  String get creator_scene_edit_scene_title_hint =>
+      'Ví dụ: Gặp lại trong đêm mưa';
+
+  @override
+  String get creator_scene_edit_description_label => 'Mô tả bối cảnh';
+
+  @override
+  String get creator_scene_edit_description_hint =>
+      'Mô tả thời gian, địa điểm, mối quan hệ và tình huống diễn ra câu chuyện.';
+
+  @override
+  String get creator_scene_edit_opening_label => 'Mở đầu của nhân vật';
+
+  @override
+  String get creator_scene_edit_opening_hint =>
+      'Viết phản ứng hoặc câu thoại đầu tiên của nhân vật khi bước vào câu chuyện này.';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      'Phần mở đầu của nhân vật sẽ là cảnh đầu tiên của câu chuyện này. Những cuộc trò chuyện sau đó vẫn tiếp tục dựa trên thiết lập tính cách ban đầu của nhân vật.';
+
+  @override
+  String get creator_scene_edit_save_changes => 'Lưu thay đổi';
+
+  @override
+  String get creator_scene_edit_save_scene => 'Lưu phân cảnh';
+
+  @override
+  String get creator_scene_edit_error_title_required =>
+      'Vui lòng nhập tiêu đề phân cảnh trước.';
+
+  @override
+  String get creator_scene_edit_error_description_required =>
+      'Vui lòng nhập mô tả bối cảnh trước.';
+
+  @override
+  String get creator_scene_edit_error_opening_required =>
+      'Vui lòng nhập phần mở đầu của nhân vật trước.';
+
+  @override
+  String get creator_scene_edit_save_failed =>
+      'Không thể lưu, vui lòng thử lại sau.';
+
+  @override
+  String get creator_scene_delete_title => 'Xóa phân cảnh?';
+
+  @override
+  String get creator_scene_delete_target_fallback => 'phân cảnh này';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return 'Bạn có chắc muốn xóa “$sceneTitle” không? Sau khi xóa sẽ không thể khôi phục.';
+  }
+
+  @override
+  String get creator_scene_delete_failed =>
+      'Không thể xóa, vui lòng thử lại sau.';
+
+  @override
+  String get creator_scene_empty_title => 'Chưa có phân cảnh của nhà sáng tạo';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return 'Viết những dòng thời gian khác nhau cho $characterName,\nđể người chơi có thể bắt đầu từ một câu chuyện khác.';
+  }
+
+  @override
+  String get creator_scene_add => 'Thêm phân cảnh';
+
+  @override
+  String get creator_scene_unnamed => 'Phân cảnh chưa đặt tên';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return 'Mở đầu của nhân vật: $opening';
+  }
+
+  @override
+  String get creator_scene_edit => 'Chỉnh sửa';
+
+  @override
+  String get creator_scene_delete => 'Xóa';
+
+  @override
+  String get creator_scene_title => 'Phân cảnh của nhà sáng tạo';
+
+  @override
+  String get creator_scene_character_unavailable =>
+      'Hiện không thể tải thông tin nhân vật.';
+
+  @override
+  String get creator_scene_load_failed =>
+      'Không thể tải phân cảnh, vui lòng thử lại sau.';
+
+  @override
+  String get creator_scene_heading =>
+      'Tạo những phần mở đầu khác nhau cho nhân vật';
+
+  @override
+  String get custom_scene_edit_heading_edit =>
+      'Điều chỉnh câu chuyện chỉ thuộc về riêng bạn';
+
+  @override
+  String get custom_scene_edit_heading_add =>
+      'Viết một câu chuyện dành riêng cho phòng trò chuyện này';
+
+  @override
+  String get custom_scene_edit_description_hint =>
+      'Mô tả thời gian, địa điểm, mối quan hệ và tình huống mà bạn muốn dùng để bắt đầu câu chuyện.';
+
+  @override
+  String get custom_scene_edit_note =>
+      'Phân cảnh do bạn tự tạo sẽ không có phần mở đầu nhân vật được thiết lập sẵn. Sau khi bắt đầu, nhân vật sẽ bước vào câu chuyện dựa trên mô tả bối cảnh và thiết lập tính cách ban đầu.';
+
+  @override
+  String get moment_create_no_mentionable_characters =>
+      'Hiện không có nhân vật nào có thể được nhắc đến.';
+
+  @override
+  String get moment_create_mention_my_characters => 'Nhắc đến nhân vật của tôi';
+
+  @override
+  String get moment_create_no_matching_characters =>
+      'Không tìm thấy nhân vật phù hợp';
+
+  @override
+  String get moment_create_my_character => 'Nhân vật của tôi';
+
+  @override
+  String get moment_create_friend_character => 'Nhân vật của bạn bè';
+
+  @override
+  String get moment_create_public_visibility_hint =>
+      'Bài đăng sẽ xuất hiện trên Tường khoảnh khắc';
+
+  @override
+  String get moment_create_private_visibility_hint =>
+      'Chỉ hiển thị trong phạm vi riêng được chỉ định';
+
+  @override
+  String get moment_create_add_image => 'Thêm hình ảnh';
+
+  @override
+  String get moment_create_mention_character => 'Nhắc đến nhân vật';
+
+  @override
+  String get moment_edit_content_hint => 'Chia sẻ cảm xúc của bạn...';
+
+  @override
+  String get moment_forward_chat_preview => '【Đã chia sẻ một bài viết】';
+
+  @override
+  String get feedback_image_too_large =>
+      'Kích thước hình ảnh không được vượt quá 10 MB';
+
+  @override
+  String get feedback_image_pick_failed =>
+      'Không thể chọn hình ảnh, vui lòng thử lại sau';
+
+  @override
+  String get feedback_category_general => 'Vấn đề chung';
+
+  @override
+  String get feedback_category_bug => 'Báo cáo lỗi';
+
+  @override
+  String get feedback_category_suggestion => 'Đề xuất tính năng';
+
+  @override
+  String get feedback_category_flower => 'Vấn đề điểm Hoa';
+
+  @override
+  String get feedback_category_payment => 'Vấn đề nạp tiền / thanh toán';
+
+  @override
+  String get feedback_category_ai_reply => 'Phản hồi AI bất thường';
+
+  @override
+  String get feedback_category_character_report => 'Báo cáo nhân vật';
+
+  @override
+  String get feedback_category_moment_report => 'Báo cáo bài viết';
+
+  @override
+  String get feedback_screenshot_required_error =>
+      'Vui lòng đính kèm ảnh chụp màn hình cho loại vấn đề này để chúng tôi có thể kiểm tra';
+
+  @override
+  String get feedback_login_required =>
+      'Vui lòng đăng nhập trước khi gửi báo cáo';
+
+  @override
+  String get feedback_mail_received_title =>
+      '【Đã tạo yêu cầu】Chúng tôi đã nhận được báo cáo của bạn';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return 'Chúng tôi đã nhận được báo cáo của bạn và sẽ kiểm tra trong thời gian sớm nhất.\n\nMã yêu cầu: $caseNumber\n\nNếu bộ phận hỗ trợ có phản hồi thêm, bạn sẽ nhận được thông báo qua hộp thư LoveyDovey.';
+  }
+
+  @override
+  String get feedback_submit_success =>
+      'Báo cáo đã được gửi thành công. Cảm ơn ý kiến của bạn!';
+
+  @override
+  String get feedback_submit_failed =>
+      'Không thể gửi, vui lòng kiểm tra kết nối mạng rồi thử lại';
+
+  @override
+  String get feedback_category_section_title => 'Loại vấn đề';
+
+  @override
+  String get feedback_reported_content_title => 'Nội dung bị báo cáo';
+
+  @override
+  String get feedback_screenshot_required_title => 'Ảnh chụp vấn đề (bắt buộc)';
+
+  @override
+  String get feedback_image_optional_title =>
+      'Hình ảnh bổ sung (không bắt buộc)';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      'Vui lòng đính kèm ảnh chụp màn hình khi vấn đề xảy ra để đội ngũ có thể kiểm tra tình trạng thực tế.';
+
+  @override
+  String get feedback_image_optional_description =>
+      'Nếu có hình ảnh liên quan, bạn cũng có thể đính kèm để hỗ trợ đội ngũ kiểm tra.';
+
+  @override
+  String get feedback_footer_message =>
+      'Ý kiến của bạn sẽ giúp chúng tôi tiếp tục cải thiện trải nghiệm trò chơi. Xin cảm ơn!';
+
+  @override
+  String get feedback_select_image_semantics => 'Chọn hình ảnh báo cáo';
+
+  @override
+  String get feedback_opening_gallery => 'Đang mở thư viện ảnh…';
+
+  @override
+  String get feedback_select_image_upload =>
+      'Nhấn vào đây để chọn hình ảnh tải lên';
+
+  @override
+  String get feedback_image_requirements =>
+      'Hỗ trợ JPG và PNG, tối đa 10 MB mỗi hình';
+
+  @override
+  String get feedback_submitting_semantics => 'Đang gửi';
+
+  @override
+  String get feedback_submit_semantics => 'Gửi báo cáo';
+
+  @override
+  String get feedback_submit_button => 'Gửi';
+
+  @override
+  String get feedback_remove_image => 'Xóa hình ảnh';
+
+  @override
+  String get feedback_selected_image => 'Đã chọn hình ảnh';
+
+  @override
+  String get feedback_change_image => 'Thay đổi';
 }

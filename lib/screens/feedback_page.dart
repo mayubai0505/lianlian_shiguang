@@ -95,6 +95,7 @@ class _FeedbackPageState
   }
 
   Future<void> _pickImage() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_isPickingImage ||
         _isSubmitting) {
       return;
@@ -127,7 +128,7 @@ class _FeedbackPageState
 
         ToastUtils.showCenterToast(
           context,
-          '圖片大小不能超過 10 MB',
+          l10n.feedback_image_too_large,
           isError: true,
         );
         return;
@@ -151,7 +152,7 @@ class _FeedbackPageState
 
       ToastUtils.showCenterToast(
         context,
-        '無法選擇圖片，請稍後再試',
+        l10n.feedback_image_pick_failed,
         isError: true,
       );
     } finally {
@@ -265,30 +266,31 @@ class _FeedbackPageState
   String _categoryLabel(
       ReportCategory category,
       ) {
+    final l10n = AppLocalizations.of(context)!;
     switch (category) {
       case ReportCategory.feedback:
-        return '一般問題';
+        return l10n.feedback_category_general;
 
       case ReportCategory.bug:
-        return 'Bug 回報';
+        return l10n.feedback_category_bug;
 
       case ReportCategory.suggestion:
-        return '功能建議';
+        return l10n.feedback_category_suggestion;
 
       case ReportCategory.flower:
-        return '花花點數問題';
+        return l10n.feedback_category_flower;
 
       case ReportCategory.payment:
-        return '儲值／付款問題';
+        return l10n.feedback_category_payment;
 
       case ReportCategory.aiReply:
-        return 'AI 回覆異常';
+        return l10n.feedback_category_ai_reply;
 
       case ReportCategory.character:
-        return '角色檢舉';
+        return l10n.feedback_category_character_report;
 
       case ReportCategory.moment:
-        return '貼文檢舉';
+        return l10n.feedback_category_moment_report;
     }
   }
 
@@ -321,7 +323,7 @@ class _FeedbackPageState
         _selectedImage == null) {
       ToastUtils.showCenterToast(
         context,
-        '此類問題請附上畫面截圖，方便我們確認狀況',
+        l10n.feedback_screenshot_required_error,
         isError: true,
       );
       return;
@@ -335,7 +337,7 @@ class _FeedbackPageState
     if (user == null) {
       ToastUtils.showCenterToast(
         context,
-        '請先登入後再送出回報',
+        l10n.feedback_login_required,
         isError: true,
       );
       return;
@@ -527,13 +529,9 @@ class _FeedbackPageState
           'type':
           'cs_received',
 
-          'title': '【案件已建立】已收到你的回報 💌',
+          'title': l10n.feedback_mail_received_title,
 
-          'body':
-          '我們已收到你的回報，會盡快協助確認。\n\n'
-              '案件編號：$caseNumber\n\n'
-              '若客服有進一步回覆，'
-              '會再透過戀戀拾光信箱通知你。',
+          'body': l10n.feedback_mail_received_body,
 
           // ⭐ 方便之後客服回覆對應
           'caseNumber':
@@ -582,7 +580,7 @@ class _FeedbackPageState
       // ==========================================
       ToastUtils.showCenterToast(
         context,
-        '回報已成功送出，謝謝你的意見！',
+        l10n.feedback_submit_success,
         customIcon:
         Icons.mark_email_read_rounded,
       );
@@ -599,7 +597,7 @@ class _FeedbackPageState
 
       ToastUtils.showCenterToast(
         context,
-        '送出失敗，請確認網路後再試',
+        l10n.feedback_submit_failed,
         isError: true,
       );
     } finally {
@@ -783,7 +781,7 @@ class _FeedbackPageState
                           const SizedBox(height: 30),
                           _buildContactSectionTitle(
                             theme,
-                            '問題類型',
+                            l10n.feedback_category_section_title,
                             'assets/images/contact/contact_section_leaves.png',
                           ),
                           const SizedBox(height: 10),
@@ -862,7 +860,7 @@ class _FeedbackPageState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '被回報的內容',
+                                    l10n.feedback_reported_content_title,
                                     style: GoogleFonts.notoSerifTc(
                                       color: primary,
                                       fontSize: 12,
@@ -936,8 +934,8 @@ class _FeedbackPageState
                               Expanded(
                                 child: Text(
                                   _requiresScreenshot
-                                      ? '問題截圖（必填）'
-                                      : '附加圖片（選填）',
+                                      ? l10n.feedback_screenshot_required_title
+                                      : l10n.feedback_image_optional_title,
                                   style: GoogleFonts.notoSerifTc(
                                     color: textColor,
                                     fontSize: 18,
@@ -951,8 +949,8 @@ class _FeedbackPageState
                           const SizedBox(height: 6),
                           Text(
                             _requiresScreenshot
-                                ? '請附上問題發生時的畫面截圖，方便官方確認實際狀況。'
-                                : '若有相關畫面，也可以附上截圖協助官方確認。',
+                                ? l10n.feedback_screenshot_required_description
+                                : l10n.feedback_image_optional_description,
                             style: GoogleFonts.notoSerifTc(
                               color: textColor.withValues(alpha: 0.58),
                               fontSize: 13,
@@ -978,7 +976,7 @@ class _FeedbackPageState
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '您的意見將協助我們持續優化遊戲體驗，謝謝您！',
+                                  l10n.feedback_footer_message,
                                   style: GoogleFonts.notoSerifTc(
                                     color: textColor.withValues(alpha: 0.46),
                                     fontSize: 10.5,
@@ -1104,10 +1102,11 @@ class _FeedbackPageState
     final primary = theme.colorScheme.primary;
     final textColor = theme.colorScheme.onSurface;
     final disabled = _isPickingImage || _isSubmitting;
+    final l10n = AppLocalizations.of(context)!;
 
     return Semantics(
       button: true,
-      label: '選擇回報圖片',
+      label: l10n.feedback_select_image_semantics,
       child: InkWell(
         onTap: disabled ? null : _pickImage,
         borderRadius: BorderRadius.circular(20),
@@ -1151,7 +1150,7 @@ class _FeedbackPageState
                 ),
                 const SizedBox(height: 13),
                 Text(
-                  _isPickingImage ? '開啟相簿中…' : '點擊此處選擇圖片上傳',
+                  _isPickingImage ? l10n.feedback_opening_gallery : l10n.feedback_select_image_upload,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.notoSerifTc(
                     color: textColor.withValues(alpha: 0.75),
@@ -1161,7 +1160,7 @@ class _FeedbackPageState
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '支援 jpg、png，單張不超過 10 MB',
+                  l10n.feedback_image_requirements,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.notoSerifTc(
                     color: textColor.withValues(alpha: 0.44),
@@ -1178,6 +1177,7 @@ class _FeedbackPageState
 
   Widget _buildContactSubmitButton(ThemeData theme) {
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     final lightPrimary = Color.lerp(
       primary,
@@ -1194,7 +1194,7 @@ class _FeedbackPageState
     return Semantics(
       button: true,
       enabled: !_isSubmitting,
-      label: _isSubmitting ? '送出中' : '送出回報',
+      label: _isSubmitting ? l10n.feedback_submitting_semantics : l10n.feedback_submit_semantics,
       child: Opacity(
         opacity: _isSubmitting ? 0.65 : 1,
         child: InkWell(
@@ -1300,7 +1300,7 @@ class _FeedbackPageState
                     )
                   else
                     Text(
-                      '送出',
+                      l10n.feedback_submit_button,
                       style: GoogleFonts.notoSerifTc(
                         color: Colors.white,
 
@@ -1330,6 +1330,8 @@ class _FeedbackPageState
   Widget _buildSelectedImagePreview(
       ThemeData theme,
       ) {
+    final l10n = AppLocalizations.of(context)!;
+
     final Uint8List? imageBytes =
         _selectedImageBytes;
 
@@ -1372,7 +1374,7 @@ class _FeedbackPageState
                   shape:
                   const CircleBorder(),
                   child: IconButton(
-                    tooltip: '移除圖片',
+                    tooltip: l10n.feedback_remove_image,
                     onPressed:
                     _isSubmitting
                         ? null
@@ -1399,7 +1401,7 @@ class _FeedbackPageState
                 Expanded(
                   child: Text(
                     _selectedImage?.name ??
-                        '已選擇圖片',
+                        l10n.feedback_selected_image,
                     maxLines: 1,
                     overflow:
                     TextOverflow.ellipsis,
@@ -1416,7 +1418,7 @@ class _FeedbackPageState
                     size: 18,
                   ),
                   label:
-                  const Text('更換'),
+                  Text(l10n.feedback_change_image),
                 ),
               ],
             ),

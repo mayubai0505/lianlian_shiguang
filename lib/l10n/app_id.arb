@@ -3016,5 +3016,359 @@
     "appUpdateGo": "Perbarui sekarang",
     "appUpdateCurrentVersion": "Versi saat ini",
     "appUpdateLatestVersion": "Versi terbaru",
-    "appUpdateStoreOpenFailed": "Toko tidak dapat dibuka saat ini. Silakan coba lagi nanti."
+    "appUpdateStoreOpenFailed": "Toko tidak dapat dibuka saat ini. Silakan coba lagi nanti.",
+    "auth_error_requires_recent_login": "Sesi login Anda telah berakhir. Silakan login kembali sebelum mengubah kata sandi.",
+    "auth_error_too_many_requests": "Terlalu banyak percobaan. Silakan coba lagi nanti.",
+    "auth_error_network_failed": "Koneksi jaringan saat ini tidak stabil. Silakan coba lagi nanti.",
+    "change_password_failed": "Gagal mengubah kata sandi. Silakan coba lagi nanti.",
+
+    "change_password_account_not_found": "Akun yang sedang login tidak ditemukan. Silakan login kembali dan coba lagi.",
+    "change_password_not_password_account": "Akun ini tidak menggunakan login dengan email dan kata sandi, sehingga kata sandinya tidak dapat diubah di sini.",
+    "change_password_same_as_current": "Kata sandi baru tidak boleh sama dengan kata sandi saat ini.",
+
+    "change_password_success_title": "Kata Sandi Diperbarui",
+    "change_password_success_message": "Kata sandi baru telah berhasil diatur. Gunakan kata sandi baru saat login berikutnya.",
+
+    "change_password_title": "Ubah Kata Sandi",
+    "change_password_security_title": "Keamanan Akun",
+    "change_password_description": "Masukkan kata sandi saat ini untuk memverifikasi identitas Anda, lalu atur kata sandi login yang baru.",
+
+    "change_password_current_label": "Kata Sandi Saat Ini",
+    "change_password_current_required": "Masukkan kata sandi saat ini",
+
+    "change_password_new_label": "Kata Sandi Baru",
+    "change_password_new_required": "Masukkan kata sandi baru",
+    "change_password_new_min_length": "Kata sandi baru harus terdiri dari minimal 6 karakter",
+
+    "change_password_confirm_label": "Konfirmasi Kata Sandi Baru",
+    "change_password_confirm_required": "Masukkan kembali kata sandi baru",
+    "change_password_mismatch": "Kata sandi baru yang dimasukkan tidak cocok",
+
+    "change_password_hint": "Kata sandi harus terdiri dari minimal 6 karakter. Setelah diubah, gunakan kata sandi baru saat login kembali di perangkat lain.",
+    "character_npc_add": "＋ Tambah Karakter Pendukung",
+    "character_npc_added_count": "Karakter pendukung yang ditambahkan: {count}",
+    "@character_npc_added_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "character_npc_unnamed": "Karakter Pendukung Tanpa Nama",
+
+    "character_npc_title": "Pengaturan Karakter Pendukung",
+    "character_npc_description": "Buat karakter penting yang akan muncul dalam cerita agar dunia karakter terasa lebih lengkap.",
+
+    "character_npc_empty_title": "Belum Ada Karakter Pendukung",
+    "character_npc_empty_description": "Setelah ditambahkan, Anda dapat melihat, mengedit, dan mengelola pengaturan karakter pendukung di sini.",
+
+    "character_npc_age": "{age} tahun",
+    "@character_npc_age": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_npc_relationship_with_main": "Hubungan dengan karakter utama: {relationship}",
+    "@character_npc_relationship_with_main": {
+        "placeholders": {
+            "relationship": {
+                "type": "String"
+            }
+        }
+    },
+    "character_management_login_required": "Silakan login terlebih dahulu",
+
+    "character_management_character_tab": "Karakter",
+    "character_management_creator_tab": "Kreator",
+
+    "character_management_blocked_characters_empty": "Karakter yang Anda hentikan kontaknya akan muncul di sini.",
+
+    "character_management_blocked_creators_load_failed": "Gagal memuat kreator yang diblokir",
+    "character_management_blocked_creators_empty": "Kreator yang Anda blokir akan muncul di sini.",
+    "character_management_creator_fallback": "Kreator",
+
+    "character_management_blocked_creator_status": "Kreator Diblokir",
+    "character_management_blocked_creator_description": "Karakter publik dan karakter baru yang mereka tambahkan tidak akan muncul dalam rekomendasi.",
+
+    "character_management_unblock_creator_title": "Buka Blokir Kreator",
+
+    "character_management_unblock_creator_confirm": "Yakin ingin membuka blokir “{creatorName}”?\n\nSetelah blokir dibuka, kreator ini dan karakternya mungkin muncul kembali dalam rekomendasi. Karakter yang sebelumnya Anda blokir secara terpisah akan tetap diblokir.",
+    "@character_management_unblock_creator_confirm": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_management_unblock_creator_success": "Blokir “{creatorName}” telah dibuka",
+    "@character_management_unblock_creator_success": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_management_unblock_creator_failed": "Gagal membuka blokir. Silakan coba lagi nanti",
+
+    "character_management_title": "Kelola Karakter",
+    "character_management_subtitle": "Kelola karakter yang telah Anda hentikan kontaknya",
+
+    "character_management_character_fallback": "Karakter",
+
+    "character_management_blocked_character_status": "Kontak Dihentikan",
+    "character_management_blocked_character_description": "Percakapan dan notifikasi akan dihentikan tanpa menghapus data terkait.",
+
+    "character_management_unblock_character_confirm": "Yakin ingin membuka blokir “{charName}”? Setelah blokir dibuka, konten terkait mungkin muncul kembali.",
+    "@character_management_unblock_character_confirm": {
+        "placeholders": {
+            "charName": {
+                "type": "String"
+            }
+        }
+    },
+    "creator_follow_following_title": "Kreator yang Saya Ikuti",
+    "creator_follow_followers_title": "Pemain yang Mengikuti Saya",
+
+    "creator_follow_load_failed": "Gagal memuat: {error}",
+    "@creator_follow_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_follow_empty_following_title": "Belum Mengikuti Kreator",
+    "creator_follow_empty_followers_title": "Belum Ada Pengikut",
+
+    "creator_follow_empty_following_description": "Ikuti kreator yang Anda sukai melalui profil karakter atau Lokakarya Kreator.",
+    "creator_follow_empty_followers_description": "Pemain yang mengikuti Anda akan muncul di sini.",
+
+    "creator_follow_unknown_player": "Pemain Tidak Dikenal",
+
+    "creator_follow_player_id": "ID: {playerId}",
+    "@creator_follow_player_id": {
+        "placeholders": {
+            "playerId": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_follow_no_player_id": "ID pemain belum diatur",
+
+    "creator_follow_following": "Mengikuti",
+
+    "creator_follow_unfollow_title": "Berhenti Mengikuti",
+    "creator_follow_unfollow_confirm": "Yakin ingin berhenti mengikuti kreator ini?",
+    "creator_follow_unfollow": "Berhenti Mengikuti",
+    "interaction_history_load_failed": "Gagal memuat: {error}",
+    "@interaction_history_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "creator_profile_report_creator": "Laporkan Kreator",
+    "creator_profile_block_creator": "Blokir Kreator",
+
+    "creator_profile_report_login_required": "Silakan login sebelum melaporkan kreator",
+    "creator_profile_report_self_not_allowed": "Anda tidak dapat melaporkan profil kreator milik sendiri",
+
+    "creator_profile_report_reason_prompt": "Pilih alasan untuk melaporkan “{creatorName}”:",
+    "@creator_profile_report_reason_prompt": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_report_reason_inappropriate": "Konten tidak pantas atau melanggar aturan",
+    "creator_profile_report_reason_harassment": "Pelecehan, serangan, atau konten kebencian",
+    "creator_profile_report_reason_impersonation": "Penyamaran atau identitas palsu",
+    "creator_profile_report_reason_spam": "Spam atau promosi berbahaya",
+
+    "creator_profile_report_success": "Laporan telah diterima. Terima kasih telah memberi tahu kami",
+    "creator_profile_report_failed": "Gagal mengirim laporan. Silakan coba lagi nanti",
+
+    "creator_profile_block_login_required": "Silakan login sebelum memblokir kreator",
+    "creator_profile_block_self_not_allowed": "Anda tidak dapat memblokir diri sendiri",
+
+    "creator_profile_block_confirm": "Yakin ingin memblokir “{creatorName}”?\n\nSetelah diblokir, Anda tidak akan lagi melihat profil publik kreator ini. Karakter publik yang telah dibuatnya juga akan ditambahkan ke daftar blokir Anda.",
+    "@creator_profile_block_confirm": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_block_confirm_button": "Konfirmasi Blokir",
+
+    "creator_profile_block_success": "“{creatorName}” telah diblokir",
+    "@creator_profile_block_success": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_block_failed": "Gagal memblokir. Silakan coba lagi nanti",
+    "creator_scene_edit_title_edit": "Edit Adegan",
+    "creator_scene_edit_title_add": "Tambah Adegan",
+
+    "creator_scene_edit_heading_edit": "Sesuaikan awal cerita ini",
+    "creator_scene_edit_heading_add": "Tuliskan awal cerita yang baru",
+
+    "creator_scene_edit_scene_title_label": "Judul Adegan",
+    "creator_scene_edit_scene_title_hint": "Contoh: Bertemu Kembali di Malam Hujan",
+
+    "creator_scene_edit_description_label": "Deskripsi Adegan",
+    "creator_scene_edit_description_hint": "Jelaskan waktu, tempat, hubungan, dan situasi dalam cerita.",
+
+    "creator_scene_edit_opening_label": "Pembuka Karakter",
+    "creator_scene_edit_opening_hint": "Tuliskan reaksi atau ucapan pertama karakter saat memasuki cerita ini.",
+
+    "creator_scene_edit_opening_note": "Pembuka karakter akan menjadi babak pertama adegan ini. Percakapan selanjutnya akan tetap berpusat pada kepribadian asli karakter.",
+
+    "creator_scene_edit_save_changes": "Simpan Perubahan",
+    "creator_scene_edit_save_scene": "Simpan Adegan",
+
+    "creator_scene_edit_error_title_required": "Masukkan judul adegan terlebih dahulu.",
+    "creator_scene_edit_error_description_required": "Masukkan deskripsi adegan terlebih dahulu.",
+    "creator_scene_edit_error_opening_required": "Masukkan pembuka karakter terlebih dahulu.",
+    "creator_scene_edit_save_failed": "Gagal menyimpan. Silakan coba lagi nanti.",
+    "creator_scene_delete_title": "Hapus Adegan?",
+
+    "creator_scene_delete_target_fallback": "adegan ini",
+
+    "creator_scene_delete_confirm": "Yakin ingin menghapus “{sceneTitle}”? Adegan yang dihapus tidak dapat dipulihkan.",
+    "@creator_scene_delete_confirm": {
+        "placeholders": {
+            "sceneTitle": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_delete_failed": "Gagal menghapus. Silakan coba lagi nanti.",
+
+    "creator_scene_empty_title": "Belum Ada Adegan Kreator",
+
+    "creator_scene_empty_description": "Tuliskan alur cerita alternatif untuk {characterName},\nagar pemain dapat memulai dari kisah yang berbeda.",
+    "@creator_scene_empty_description": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_add": "Tambah Adegan",
+
+    "creator_scene_unnamed": "Adegan Tanpa Judul",
+
+    "creator_scene_opening": "Pembuka Karakter: {opening}",
+    "@creator_scene_opening": {
+        "placeholders": {
+            "opening": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_edit": "Edit",
+    "creator_scene_delete": "Hapus",
+
+    "creator_scene_title": "Adegan Kreator",
+
+    "creator_scene_character_unavailable": "Informasi karakter saat ini tidak dapat dimuat.",
+
+    "creator_scene_load_failed": "Gagal memuat adegan. Silakan coba lagi nanti.",
+
+    "creator_scene_heading": "Buat awal cerita yang berbeda untuk karakter",
+    "custom_scene_edit_heading_edit": "Sesuaikan cerita yang hanya menjadi milik Anda",
+
+    "custom_scene_edit_heading_add": "Tuliskan cerita khusus untuk ruang obrolan ini",
+
+    "custom_scene_edit_description_hint": "Jelaskan waktu, tempat, hubungan, dan situasi yang Anda inginkan sebagai awal cerita.",
+
+    "custom_scene_edit_note": "Adegan yang Anda buat tidak memiliki pembuka karakter yang telah ditentukan. Setelah dimulai, karakter akan memasuki cerita berdasarkan deskripsi adegan dan kepribadian aslinya.",
+    "moment_create_no_mentionable_characters": "Saat ini tidak ada karakter yang dapat disebut.",
+
+    "moment_create_mention_my_characters": "Sebut Karakter Saya",
+
+    "moment_create_no_matching_characters": "Karakter yang sesuai tidak ditemukan",
+
+    "moment_create_my_character": "Karakter Saya",
+    "moment_create_friend_character": "Karakter Teman",
+
+    "moment_create_public_visibility_hint": "Postingan akan ditampilkan di Dinding Momen",
+    "moment_create_private_visibility_hint": "Hanya dapat dilihat dalam lingkup khusus",
+
+    "moment_create_add_image": "Tambah Gambar",
+    "moment_create_mention_character": "Sebut Karakter",
+    "moment_edit_content_hint": "Bagikan perasaanmu...",
+  "moment_forward_chat_preview": "【Membagikan sebuah postingan】",
+    "feedback_image_too_large": "Ukuran gambar tidak boleh melebihi 10 MB",
+    "feedback_image_pick_failed": "Tidak dapat memilih gambar. Silakan coba lagi nanti",
+
+    "feedback_category_general": "Masalah Umum",
+    "feedback_category_bug": "Laporan Bug",
+    "feedback_category_suggestion": "Saran Fitur",
+    "feedback_category_flower": "Masalah Poin Bunga",
+    "feedback_category_payment": "Masalah Isi Ulang / Pembayaran",
+    "feedback_category_ai_reply": "Masalah Balasan AI",
+    "feedback_category_character_report": "Laporkan Karakter",
+    "feedback_category_moment_report": "Laporkan Postingan",
+
+    "feedback_screenshot_required_error": "Lampirkan tangkapan layar untuk jenis masalah ini agar kami dapat memeriksanya",
+    "feedback_login_required": "Silakan login sebelum mengirim laporan",
+
+    "feedback_mail_received_title": "【Kasus Dibuat】Kami Telah Menerima Laporan Anda",
+
+    "feedback_mail_received_body": "Kami telah menerima laporan Anda dan akan memeriksanya sesegera mungkin.\n\nNomor kasus: {caseNumber}\n\nJika tim dukungan memiliki tanggapan lebih lanjut, Anda akan diberi tahu melalui kotak masuk LoveyDovey.",
+    "@feedback_mail_received_body": {
+        "placeholders": {
+            "caseNumber": {
+                "type": "String"
+            }
+        }
+    },
+
+    "feedback_submit_success": "Laporan berhasil dikirim. Terima kasih atas masukan Anda!",
+    "feedback_submit_failed": "Gagal mengirim. Periksa koneksi jaringan Anda dan coba lagi",
+
+    "feedback_category_section_title": "Jenis Masalah",
+    "feedback_reported_content_title": "Konten yang Dilaporkan",
+
+    "feedback_screenshot_required_title": "Tangkapan Layar Masalah (Wajib)",
+    "feedback_image_optional_title": "Gambar Tambahan (Opsional)",
+
+    "feedback_screenshot_required_description": "Lampirkan tangkapan layar saat masalah terjadi agar tim kami dapat memeriksa situasi sebenarnya.",
+    "feedback_image_optional_description": "Jika memiliki gambar terkait, Anda juga dapat melampirkannya untuk membantu tim kami melakukan pemeriksaan.",
+
+    "feedback_footer_message": "Masukan Anda akan membantu kami terus meningkatkan pengalaman bermain. Terima kasih!",
+
+    "feedback_select_image_semantics": "Pilih gambar laporan",
+    "feedback_opening_gallery": "Membuka galeri…",
+    "feedback_select_image_upload": "Ketuk di sini untuk memilih gambar yang akan diunggah",
+    "feedback_image_requirements": "Mendukung JPG dan PNG, maksimal 10 MB per gambar",
+
+    "feedback_submitting_semantics": "Mengirim",
+    "feedback_submit_semantics": "Kirim laporan",
+    "feedback_submit_button": "Kirim",
+
+    "feedback_remove_image": "Hapus Gambar",
+    "feedback_selected_image": "Gambar Dipilih",
+    "feedback_change_image": "Ganti"
 }

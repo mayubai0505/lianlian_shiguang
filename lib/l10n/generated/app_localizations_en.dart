@@ -6435,4 +6435,589 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get appUpdateStoreOpenFailed =>
       'Unable to open the store right now. Please try again later.';
+
+  @override
+  String get auth_error_requires_recent_login =>
+      'Your login session has expired. Please sign in again before changing your password.';
+
+  @override
+  String get auth_error_too_many_requests =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get auth_error_network_failed =>
+      'Your network connection is currently unstable. Please try again later.';
+
+  @override
+  String get change_password_failed =>
+      'Failed to change your password. Please try again later.';
+
+  @override
+  String get change_password_account_not_found =>
+      'Could not find the currently signed-in account. Please sign in again and try again.';
+
+  @override
+  String get change_password_not_password_account =>
+      'This account does not use email and password sign-in, so its password cannot be changed here.';
+
+  @override
+  String get change_password_same_as_current =>
+      'Your new password cannot be the same as your current password.';
+
+  @override
+  String get change_password_success_title => 'Password Updated';
+
+  @override
+  String get change_password_success_message =>
+      'Your new password has been set. Please use it the next time you sign in.';
+
+  @override
+  String get change_password_title => 'Change Password';
+
+  @override
+  String get change_password_security_title => 'Account Security';
+
+  @override
+  String get change_password_description =>
+      'Enter your current password to verify your identity, then set a new sign-in password.';
+
+  @override
+  String get change_password_current_label => 'Current Password';
+
+  @override
+  String get change_password_current_required =>
+      'Please enter your current password';
+
+  @override
+  String get change_password_new_label => 'New Password';
+
+  @override
+  String get change_password_new_required => 'Please enter a new password';
+
+  @override
+  String get change_password_new_min_length =>
+      'Your new password must be at least 6 characters long';
+
+  @override
+  String get change_password_confirm_label => 'Confirm New Password';
+
+  @override
+  String get change_password_confirm_required =>
+      'Please enter your new password again';
+
+  @override
+  String get change_password_mismatch => 'The new passwords do not match';
+
+  @override
+  String get change_password_hint =>
+      'Your password must be at least 6 characters long. After changing it, use your new password the next time you sign in on other devices.';
+
+  @override
+  String get character_npc_add => '＋ Add Supporting Character';
+
+  @override
+  String character_npc_added_count(int count) {
+    return 'Supporting Characters Added: $count';
+  }
+
+  @override
+  String get character_npc_unnamed => 'Unnamed Supporting Character';
+
+  @override
+  String get character_npc_title => 'Supporting Character Settings';
+
+  @override
+  String get character_npc_description =>
+      'Create important characters who appear in the story to make the character’s world feel more complete.';
+
+  @override
+  String get character_npc_empty_title => 'No Supporting Characters Added Yet';
+
+  @override
+  String get character_npc_empty_description =>
+      'Once added, you can view, edit, and manage supporting character settings here.';
+
+  @override
+  String character_npc_age(String age) {
+    return 'Age $age';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return 'Relationship to Main Character: $relationship';
+  }
+
+  @override
+  String get character_management_login_required => 'Please sign in first';
+
+  @override
+  String get character_management_character_tab => 'Characters';
+
+  @override
+  String get character_management_creator_tab => 'Creators';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      'Characters you pause contact with will appear here.';
+
+  @override
+  String get character_management_blocked_creators_load_failed =>
+      'Failed to load blocked creators';
+
+  @override
+  String get character_management_blocked_creators_empty =>
+      'Creators you block will appear here.';
+
+  @override
+  String get character_management_creator_fallback => 'Creator';
+
+  @override
+  String get character_management_blocked_creator_status => 'Creator Blocked';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      'Their public characters and any characters they add later will not appear in recommendations.';
+
+  @override
+  String get character_management_unblock_creator_title => 'Unblock Creator';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return 'Are you sure you want to unblock “$creatorName”?\n\nAfter unblocking, this creator and their characters may appear in recommendations again. Characters you previously blocked individually will remain blocked.';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return 'Unblocked “$creatorName”';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed =>
+      'Failed to unblock. Please try again later';
+
+  @override
+  String get character_management_title => 'Character Management';
+
+  @override
+  String get character_management_subtitle =>
+      'Manage characters you have paused contact with';
+
+  @override
+  String get character_management_character_fallback => 'Character';
+
+  @override
+  String get character_management_blocked_character_status => 'Contact Paused';
+
+  @override
+  String get character_management_blocked_character_description =>
+      'Pauses conversations and notifications without deleting related data.';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return 'Are you sure you want to unblock “$charName”? Related content may appear again after unblocking.';
+  }
+
+  @override
+  String get creator_follow_following_title => 'Creators I Follow';
+
+  @override
+  String get creator_follow_followers_title => 'Players Following Me';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return 'Failed to load: $error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title =>
+      'You’re Not Following Any Creators Yet';
+
+  @override
+  String get creator_follow_empty_followers_title => 'No Followers Yet';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      'Follow creators you like from a character profile or Creator Workshop.';
+
+  @override
+  String get creator_follow_empty_followers_description =>
+      'Players who follow you will appear here.';
+
+  @override
+  String get creator_follow_unknown_player => 'Unknown Player';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID: $playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => 'Player ID not set';
+
+  @override
+  String get creator_follow_following => 'Following';
+
+  @override
+  String get creator_follow_unfollow_title => 'Unfollow';
+
+  @override
+  String get creator_follow_unfollow_confirm =>
+      'Are you sure you want to unfollow this creator?';
+
+  @override
+  String get creator_follow_unfollow => 'Unfollow';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return 'Failed to load: $error';
+  }
+
+  @override
+  String get creator_profile_report_creator => 'Report Creator';
+
+  @override
+  String get creator_profile_block_creator => 'Block Creator';
+
+  @override
+  String get creator_profile_report_login_required =>
+      'Please sign in before reporting a creator';
+
+  @override
+  String get creator_profile_report_self_not_allowed =>
+      'You cannot report your own creator profile';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return 'Select a reason for reporting “$creatorName”:';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate =>
+      'Inappropriate or prohibited content';
+
+  @override
+  String get creator_profile_report_reason_harassment =>
+      'Harassment, abuse, or hateful content';
+
+  @override
+  String get creator_profile_report_reason_impersonation =>
+      'Impersonation or false identity';
+
+  @override
+  String get creator_profile_report_reason_spam =>
+      'Spam or malicious promotion';
+
+  @override
+  String get creator_profile_report_success =>
+      'Report received. Thank you for letting us know';
+
+  @override
+  String get creator_profile_report_failed =>
+      'Failed to submit the report. Please try again later';
+
+  @override
+  String get creator_profile_block_login_required =>
+      'Please sign in before blocking a creator';
+
+  @override
+  String get creator_profile_block_self_not_allowed =>
+      'You cannot block yourself';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return 'Are you sure you want to block “$creatorName”?\n\nAfter blocking, you will no longer see this creator’s public profile. Their existing public characters will also be added to your block list.';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => 'Confirm Block';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return 'Blocked “$creatorName”';
+  }
+
+  @override
+  String get creator_profile_block_failed =>
+      'Failed to block. Please try again later';
+
+  @override
+  String get creator_scene_edit_title_edit => 'Edit Scene';
+
+  @override
+  String get creator_scene_edit_title_add => 'Add Scene';
+
+  @override
+  String get creator_scene_edit_heading_edit =>
+      'Refine the opening to this story';
+
+  @override
+  String get creator_scene_edit_heading_add => 'Create a new story opening';
+
+  @override
+  String get creator_scene_edit_scene_title_label => 'Scene Title';
+
+  @override
+  String get creator_scene_edit_scene_title_hint =>
+      'Example: Reunion on a Rainy Night';
+
+  @override
+  String get creator_scene_edit_description_label => 'Scene Description';
+
+  @override
+  String get creator_scene_edit_description_hint =>
+      'Describe when and where the story takes place, the relationships involved, and the situation.';
+
+  @override
+  String get creator_scene_edit_opening_label => 'Character Opening';
+
+  @override
+  String get creator_scene_edit_opening_hint =>
+      'Write the character’s first reaction or first line upon entering this story.';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      'The character opening will serve as the first act of this scene. Future conversations will continue to center on the character’s original persona.';
+
+  @override
+  String get creator_scene_edit_save_changes => 'Save Changes';
+
+  @override
+  String get creator_scene_edit_save_scene => 'Save Scene';
+
+  @override
+  String get creator_scene_edit_error_title_required =>
+      'Please enter a scene title first.';
+
+  @override
+  String get creator_scene_edit_error_description_required =>
+      'Please enter a scene description first.';
+
+  @override
+  String get creator_scene_edit_error_opening_required =>
+      'Please enter a character opening first.';
+
+  @override
+  String get creator_scene_edit_save_failed =>
+      'Failed to save. Please try again later.';
+
+  @override
+  String get creator_scene_delete_title => 'Delete Scene?';
+
+  @override
+  String get creator_scene_delete_target_fallback => 'this scene';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return 'Are you sure you want to delete “$sceneTitle”? This action cannot be undone.';
+  }
+
+  @override
+  String get creator_scene_delete_failed =>
+      'Failed to delete. Please try again later.';
+
+  @override
+  String get creator_scene_empty_title => 'No Creator Scenes Yet';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return 'Create alternate storylines for $characterName,\nso players can begin from a different story.';
+  }
+
+  @override
+  String get creator_scene_add => 'Add Scene';
+
+  @override
+  String get creator_scene_unnamed => 'Untitled Scene';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return 'Character Opening: $opening';
+  }
+
+  @override
+  String get creator_scene_edit => 'Edit';
+
+  @override
+  String get creator_scene_delete => 'Delete';
+
+  @override
+  String get creator_scene_title => 'Creator Scenes';
+
+  @override
+  String get creator_scene_character_unavailable =>
+      'Character information is currently unavailable.';
+
+  @override
+  String get creator_scene_load_failed =>
+      'Failed to load scenes. Please try again later.';
+
+  @override
+  String get creator_scene_heading =>
+      'Create different story openings for your character';
+
+  @override
+  String get custom_scene_edit_heading_edit =>
+      'Refine this story that belongs only to you';
+
+  @override
+  String get custom_scene_edit_heading_add =>
+      'Create a story just for this chat';
+
+  @override
+  String get custom_scene_edit_description_hint =>
+      'Describe when and where the story takes place, the relationships involved, and the situation you want to begin with.';
+
+  @override
+  String get custom_scene_edit_note =>
+      'Custom scenes do not include a preset character opening. Once you begin, the character will enter the story based on the scene description and their original persona.';
+
+  @override
+  String get moment_create_no_mentionable_characters =>
+      'There are currently no characters you can mention.';
+
+  @override
+  String get moment_create_mention_my_characters => 'Mention My Characters';
+
+  @override
+  String get moment_create_no_matching_characters =>
+      'No matching characters found';
+
+  @override
+  String get moment_create_my_character => 'My Character';
+
+  @override
+  String get moment_create_friend_character => 'Friend’s Character';
+
+  @override
+  String get moment_create_public_visibility_hint =>
+      'This post will appear on the Moments Wall';
+
+  @override
+  String get moment_create_private_visibility_hint =>
+      'Visible only within the designated circle';
+
+  @override
+  String get moment_create_add_image => 'Add Image';
+
+  @override
+  String get moment_create_mention_character => 'Mention Character';
+
+  @override
+  String get moment_edit_content_hint => 'Share what’s on your mind...';
+
+  @override
+  String get moment_forward_chat_preview => '【轉發了一則動態】';
+
+  @override
+  String get feedback_image_too_large => 'Image size cannot exceed 10 MB';
+
+  @override
+  String get feedback_image_pick_failed =>
+      'Unable to select an image. Please try again later';
+
+  @override
+  String get feedback_category_general => 'General Issue';
+
+  @override
+  String get feedback_category_bug => 'Bug Report';
+
+  @override
+  String get feedback_category_suggestion => 'Feature Suggestion';
+
+  @override
+  String get feedback_category_flower => 'Flower Points Issue';
+
+  @override
+  String get feedback_category_payment => 'Top-up / Payment Issue';
+
+  @override
+  String get feedback_category_ai_reply => 'AI Reply Issue';
+
+  @override
+  String get feedback_category_character_report => 'Report Character';
+
+  @override
+  String get feedback_category_moment_report => 'Report Post';
+
+  @override
+  String get feedback_screenshot_required_error =>
+      'Please attach a screenshot for this type of issue so we can investigate';
+
+  @override
+  String get feedback_login_required =>
+      'Please sign in before submitting a report';
+
+  @override
+  String get feedback_mail_received_title =>
+      '【Case Created】We’ve Received Your Report';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return 'We’ve received your report and will look into it as soon as possible.\n\nCase number: $caseNumber\n\nIf our support team has any updates, you’ll be notified through your LoveyDovey mailbox.';
+  }
+
+  @override
+  String get feedback_submit_success =>
+      'Your report was submitted successfully. Thank you for your feedback!';
+
+  @override
+  String get feedback_submit_failed =>
+      'Failed to submit. Please check your connection and try again';
+
+  @override
+  String get feedback_category_section_title => 'Issue Type';
+
+  @override
+  String get feedback_reported_content_title => 'Reported Content';
+
+  @override
+  String get feedback_screenshot_required_title =>
+      'Issue Screenshot (Required)';
+
+  @override
+  String get feedback_image_optional_title => 'Additional Image (Optional)';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      'Please attach a screenshot showing the issue so our team can verify what happened.';
+
+  @override
+  String get feedback_image_optional_description =>
+      'If you have a relevant image, you can attach it to help our team investigate.';
+
+  @override
+  String get feedback_footer_message =>
+      'Your feedback helps us continue improving the game experience. Thank you!';
+
+  @override
+  String get feedback_select_image_semantics => 'Select report image';
+
+  @override
+  String get feedback_opening_gallery => 'Opening gallery…';
+
+  @override
+  String get feedback_select_image_upload =>
+      'Tap here to select an image to upload';
+
+  @override
+  String get feedback_image_requirements =>
+      'Supports JPG and PNG, up to 10 MB per image';
+
+  @override
+  String get feedback_submitting_semantics => 'Submitting';
+
+  @override
+  String get feedback_submit_semantics => 'Submit report';
+
+  @override
+  String get feedback_submit_button => 'Submit';
+
+  @override
+  String get feedback_remove_image => 'Remove Image';
+
+  @override
+  String get feedback_selected_image => 'Image Selected';
+
+  @override
+  String get feedback_change_image => 'Change';
 }

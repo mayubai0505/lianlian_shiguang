@@ -3150,5 +3150,357 @@
   "appUpdateGo": "前往更新",
   "appUpdateCurrentVersion": "目前版本",
   "appUpdateLatestVersion": "最新版本",
-  "appUpdateStoreOpenFailed": "目前無法開啟商店頁面，請稍後再試。"
+  "appUpdateStoreOpenFailed": "目前無法開啟商店頁面，請稍後再試。",
+  "auth_error_requires_recent_login": "登入狀態已過期，請重新登入後再更改密碼。",
+  "auth_error_too_many_requests": "嘗試次數過多，請稍後再試。",
+  "auth_error_network_failed": "目前網路連線不穩定，請稍後再試。",
+  "change_password_failed": "更改密碼失敗，請稍後再試。",
+
+  "change_password_account_not_found": "找不到目前登入帳號，請重新登入後再試。",
+  "change_password_not_password_account": "此帳號不是使用 Email 密碼登入，無法在此變更密碼。",
+  "change_password_same_as_current": "新密碼不能與目前密碼相同。",
+
+  "change_password_success_title": "密碼已更新",
+  "change_password_success_message": "新的密碼已經設定完成，下次登入請使用新密碼。",
+
+  "change_password_title": "更改密碼",
+  "change_password_security_title": "帳號安全",
+  "change_password_description": "請先輸入目前密碼完成身分驗證，再設定新的登入密碼。",
+
+  "change_password_current_label": "目前密碼",
+  "change_password_current_required": "請輸入目前密碼",
+
+  "change_password_new_label": "新密碼",
+  "change_password_new_required": "請輸入新密碼",
+  "change_password_new_min_length": "新密碼至少需要 6 個字元",
+
+  "change_password_confirm_label": "確認新密碼",
+  "change_password_confirm_required": "請再次輸入新密碼",
+  "change_password_mismatch": "兩次輸入的新密碼不一致",
+
+  "change_password_hint": "密碼至少 6 個字元。更改完成後，其他裝置下次重新登入時需使用新密碼。",
+  "character_npc_add": "＋ 新增配角",
+  "character_npc_added_count": "已加入的配角 {count}",
+  "@character_npc_added_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "character_npc_unnamed": "未命名配角",
+
+  "character_npc_title": "配角設定",
+  "character_npc_description": "建立會在故事裡登場的重要人物，讓角色世界更完整。",
+
+  "character_npc_empty_title": "目前尚未新增配角",
+  "character_npc_empty_description": "新增後可以在這裡查看、編輯與管理配角設定。",
+
+  "character_npc_age": "{age}歲",
+  "@character_npc_age": {
+    "placeholders": {
+      "age": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_npc_relationship_with_main": "與主角色：{relationship}",
+  "@character_npc_relationship_with_main": {
+    "placeholders": {
+      "relationship": {
+        "type": "String"
+      }
+    }
+  },
+  "character_management_login_required": "請先登入系統",
+
+  "character_management_character_tab": "角色",
+  "character_management_creator_tab": "創作者",
+
+  "character_management_blocked_characters_empty": "若你暫停與角色聯繫，會顯示在這裡。",
+
+  "character_management_blocked_creators_load_failed": "讀取封鎖創作者失敗",
+  "character_management_blocked_creators_empty": "若你封鎖創作者，會顯示在這裡。",
+  "character_management_creator_fallback": "創作者",
+
+  "character_management_blocked_creator_status": "已封鎖創作者",
+  "character_management_blocked_creator_description": "其公開角色與後續新增角色不會出現在推薦中。",
+
+  "character_management_unblock_creator_title": "解除封鎖創作者",
+
+  "character_management_unblock_creator_confirm": "確定要解除封鎖「{creatorName}」嗎？\n\n解除後，這位創作者與其角色可能會再次出現在推薦內容中。你先前「單獨封鎖」的角色仍會維持封鎖。",
+  "@character_management_unblock_creator_confirm": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_management_unblock_creator_success": "已解除封鎖「{creatorName}」",
+  "@character_management_unblock_creator_success": {
+    "placeholders": {
+      "creatorName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "character_management_unblock_creator_failed": "解除封鎖失敗，請稍後再試",
+
+  "character_management_title": "角色管理",
+  "character_management_subtitle": "管理暫停聯繫的角色",
+
+  "character_management_character_fallback": "角色",
+
+  "character_management_blocked_character_status": "暫停聯繫中",
+  "character_management_blocked_character_description": "暫停對話與通知，不會刪除相關資料。",
+
+  "character_management_unblock_character_confirm": "確定要解除封鎖「{charName}」嗎？解除後，相關內容可能會再次顯示。",
+  "@character_management_unblock_character_confirm": {
+    "placeholders": {
+      "charName": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_follow_following_title": "我追蹤的創作者", "creator_follow_followers_title": "追蹤我的玩家",  "creator_follow_load_failed": "讀取失敗：{error}", "@creator_follow_load_failed": {   "placeholders": {     "error": {       "type": "String"     }   } },  "creator_follow_empty_following_title": "還沒有追蹤創作者", "creator_follow_empty_followers_title": "目前還沒有追蹤者",  "creator_follow_empty_following_description": "在角色檔案或創作者工作坊追蹤喜歡的創作者吧。", "creator_follow_empty_followers_description": "當其他玩家追蹤你時，會顯示在這裡。",  "creator_follow_unknown_player": "未知玩家",  "creator_follow_player_id": "ID：{playerId}", "@creator_follow_player_id": {   "placeholders": {     "playerId": {       "type": "String"     }   } },  "creator_follow_no_player_id": "尚未設定玩家 ID",  "creator_follow_following": "已追蹤",  "creator_follow_unfollow_title": "取消追蹤", "creator_follow_unfollow_confirm": "確定要取消追蹤這位創作者嗎？", "creator_follow_unfollow": "取消追蹤",
+  "interaction_history_load_failed": "讀取失敗：{error}",
+  "@interaction_history_load_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_profile_report_creator": "檢舉創作者",
+
+  "creator_profile_block_creator": "封鎖創作者",
+
+
+
+  "creator_profile_report_login_required": "請先登入後再檢舉創作者",
+
+  "creator_profile_report_self_not_allowed": "無法檢舉自己的創作者頁面",
+
+
+
+  "creator_profile_report_reason_prompt": "請選擇檢舉「{creatorName}」的原因：",
+
+  "@creator_profile_report_reason_prompt": {
+
+    "placeholders": {
+
+      "creatorName": {
+
+        "type": "String"
+
+      }
+
+    }
+
+  },
+
+
+
+  "creator_profile_report_reason_inappropriate": "不當或違規內容",
+
+  "creator_profile_report_reason_harassment": "騷擾、攻擊或仇恨內容",
+
+  "creator_profile_report_reason_impersonation": "冒充他人或偽造身分",
+
+  "creator_profile_report_reason_spam": "垃圾內容或惡意宣傳",
+
+
+
+  "creator_profile_report_success": "已收到檢舉，感謝你的回報",
+
+  "creator_profile_report_failed": "檢舉送出失敗，請稍後再試",
+
+
+
+  "creator_profile_block_login_required": "請先登入後再封鎖創作者",
+
+  "creator_profile_block_self_not_allowed": "無法封鎖自己",
+
+
+
+  "creator_profile_block_confirm": "確定要封鎖「{creatorName}」嗎？\n\n封鎖後，你將不會再看到這位創作者的公開頁面，目前由他建立的公開角色也會一併加入封鎖名單。",
+
+  "@creator_profile_block_confirm": {
+
+    "placeholders": {
+
+      "creatorName": {
+
+        "type": "String"
+
+      }
+
+    }
+
+  },
+
+
+
+  "creator_profile_block_confirm_button": "確認封鎖",
+
+
+
+  "creator_profile_block_success": "已封鎖「{creatorName}」",
+
+  "@creator_profile_block_success": {
+
+    "placeholders": {
+
+      "creatorName": {
+
+        "type": "String"
+
+      }
+
+    }
+
+  },
+
+
+
+  "creator_profile_block_failed": "封鎖失敗，請稍後再試",
+  "creator_scene_edit_title_edit": "編輯劇場",
+  "creator_scene_edit_title_add": "新增劇場",
+
+  "creator_scene_edit_heading_edit": "調整這段故事的入口",
+  "creator_scene_edit_heading_add": "寫下一個新的故事入口",
+
+  "creator_scene_edit_scene_title_label": "劇場標題",
+  "creator_scene_edit_scene_title_hint": "例如：雨夜重逢",
+
+  "creator_scene_edit_description_label": "場景說明",
+  "creator_scene_edit_description_hint": "描述故事發生的時間、地點、關係與情境。",
+
+  "creator_scene_edit_opening_label": "角色開場",
+  "creator_scene_edit_opening_hint": "寫下角色進入這段劇情時的第一個反應或第一句話。",
+
+  "creator_scene_edit_opening_note": "角色開場會作為這段劇場的第一幕；後續對話仍會以角色原本人設為核心繼續。",
+
+  "creator_scene_edit_save_changes": "儲存修改",
+  "creator_scene_edit_save_scene": "儲存劇場",
+
+  "creator_scene_edit_error_title_required": "請先填寫劇場標題。",
+  "creator_scene_edit_error_description_required": "請先填寫場景說明。",
+  "creator_scene_edit_error_opening_required": "請先填寫角色開場。",
+  "creator_scene_edit_save_failed": "儲存失敗，請稍後再試。",
+  "creator_scene_delete_title": "刪除劇場？",
+
+  "creator_scene_delete_target_fallback": "這個劇場",
+
+  "creator_scene_delete_confirm": "確定要刪除「{sceneTitle}」嗎？刪除後無法復原。",
+  "@creator_scene_delete_confirm": {
+    "placeholders": {
+      "sceneTitle": {
+        "type": "String"
+      }
+    }
+  },
+
+  "creator_scene_delete_failed": "刪除失敗，請稍後再試。",
+
+  "creator_scene_empty_title": "還沒有創作者劇場",
+
+  "creator_scene_empty_description": "替 {characterName} 寫下不同世界線，\n讓玩家可以從另一段故事開始。",
+  "@creator_scene_empty_description": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "creator_scene_add": "新增劇場",
+
+  "creator_scene_unnamed": "未命名劇場",
+
+  "creator_scene_opening": "角色開場：{opening}",
+  "@creator_scene_opening": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      }
+    }
+  },
+  "creator_scene_edit": "編輯",
+  "creator_scene_delete": "刪除",
+  "creator_scene_title": "創作者劇場",
+  "creator_scene_character_unavailable": "目前無法讀取角色資料。",
+  "creator_scene_load_failed": "劇場讀取失敗，請稍後再試。",
+  "creator_scene_heading": "為角色建立不同故事入口",
+  "custom_scene_edit_heading_edit": "調整這段只屬於你的故事",
+  "custom_scene_edit_heading_add": "寫下一個只屬於這間聊天室的故事",
+  "custom_scene_edit_description_hint": "描述故事發生的時間、地點、關係與你想開始的情境。",
+  "custom_scene_edit_note": "自行創建的劇場沒有預設角色開場。開始後，角色會依照場景說明與原本人設進入故事。",
+  "moment_create_no_mentionable_characters": "目前沒有可以標記的角色。",
+  "moment_create_mention_my_characters": "標記我的角色",
+  "moment_create_no_matching_characters": "找不到符合的角色",
+  "moment_create_my_character": "我的角色",
+  "moment_create_friend_character": "好友角色",
+  "moment_create_public_visibility_hint": "動態將顯示在拾光牆上",
+  "moment_create_private_visibility_hint": "只有專屬範圍內可見",
+  "moment_create_add_image": "添加圖片",
+  "moment_create_mention_character": "提及角色",
+  "moment_edit_content_hint": "分享你的心情...",
+  "moment_forward_chat_preview": "【轉發了一則動態】",
+  "feedback_image_too_large": "圖片大小不能超過 10 MB",
+  "feedback_image_pick_failed": "無法選擇圖片，請稍後再試",
+
+  "feedback_category_general": "一般問題",
+  "feedback_category_bug": "Bug 回報",
+  "feedback_category_suggestion": "功能建議",
+  "feedback_category_flower": "花花點數問題",
+  "feedback_category_payment": "儲值／付款問題",
+  "feedback_category_ai_reply": "AI 回覆異常",
+  "feedback_category_character_report": "角色檢舉",
+  "feedback_category_moment_report": "貼文檢舉",
+
+  "feedback_screenshot_required_error": "此類問題請附上畫面截圖，方便我們確認狀況",
+  "feedback_login_required": "請先登入後再送出回報",
+
+  "feedback_mail_received_title": "【案件已建立】已收到你的回報",
+
+  "feedback_mail_received_body": "我們已收到你的回報，會盡快協助確認。\n\n案件編號：{caseNumber}\n\n若客服有進一步回覆，會再透過戀戀拾光信箱通知你。",
+  "@feedback_mail_received_body": {
+    "placeholders": {
+      "caseNumber": {
+        "type": "String"
+      }
+    }
+  },
+
+  "feedback_submit_success": "回報已成功送出，謝謝你的意見！",
+  "feedback_submit_failed": "送出失敗，請確認網路後再試",
+
+  "feedback_category_section_title": "問題類型",
+  "feedback_reported_content_title": "被回報的內容",
+
+  "feedback_screenshot_required_title": "問題截圖（必填）",
+  "feedback_image_optional_title": "附加圖片（選填）",
+
+  "feedback_screenshot_required_description": "請附上問題發生時的畫面截圖，方便官方確認實際狀況。",
+  "feedback_image_optional_description": "若有相關畫面，也可以附上截圖協助官方確認。",
+
+  "feedback_footer_message": "您的意見將協助我們持續優化遊戲體驗，謝謝您！",
+
+  "feedback_select_image_semantics": "選擇回報圖片",
+  "feedback_opening_gallery": "開啟相簿中…",
+  "feedback_select_image_upload": "點擊此處選擇圖片上傳",
+  "feedback_image_requirements": "支援 jpg、png，單張不超過 10 MB",
+
+  "feedback_submitting_semantics": "送出中",
+  "feedback_submit_semantics": "送出回報",
+  "feedback_submit_button": "送出",
+
+  "feedback_remove_image": "移除圖片",
+  "feedback_selected_image": "已選擇圖片",
+  "feedback_change_image": "更換"
 }

@@ -6025,6 +6025,529 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get appUpdateStoreOpenFailed => '目前無法開啟商店頁面，請稍後再試。';
+
+  @override
+  String get auth_error_requires_recent_login => '登入狀態已過期，請重新登入後再更改密碼。';
+
+  @override
+  String get auth_error_too_many_requests => '嘗試次數過多，請稍後再試。';
+
+  @override
+  String get auth_error_network_failed => '目前網路連線不穩定，請稍後再試。';
+
+  @override
+  String get change_password_failed => '更改密碼失敗，請稍後再試。';
+
+  @override
+  String get change_password_account_not_found => '找不到目前登入帳號，請重新登入後再試。';
+
+  @override
+  String get change_password_not_password_account =>
+      '此帳號不是使用 Email 密碼登入，無法在此變更密碼。';
+
+  @override
+  String get change_password_same_as_current => '新密碼不能與目前密碼相同。';
+
+  @override
+  String get change_password_success_title => '密碼已更新';
+
+  @override
+  String get change_password_success_message => '新的密碼已經設定完成，下次登入請使用新密碼。';
+
+  @override
+  String get change_password_title => '更改密碼';
+
+  @override
+  String get change_password_security_title => '帳號安全';
+
+  @override
+  String get change_password_description => '請先輸入目前密碼完成身分驗證，再設定新的登入密碼。';
+
+  @override
+  String get change_password_current_label => '目前密碼';
+
+  @override
+  String get change_password_current_required => '請輸入目前密碼';
+
+  @override
+  String get change_password_new_label => '新密碼';
+
+  @override
+  String get change_password_new_required => '請輸入新密碼';
+
+  @override
+  String get change_password_new_min_length => '新密碼至少需要 6 個字元';
+
+  @override
+  String get change_password_confirm_label => '確認新密碼';
+
+  @override
+  String get change_password_confirm_required => '請再次輸入新密碼';
+
+  @override
+  String get change_password_mismatch => '兩次輸入的新密碼不一致';
+
+  @override
+  String get change_password_hint => '密碼至少 6 個字元。更改完成後，其他裝置下次重新登入時需使用新密碼。';
+
+  @override
+  String get character_npc_add => '＋ 新增配角';
+
+  @override
+  String character_npc_added_count(int count) {
+    return '已加入的配角 $count';
+  }
+
+  @override
+  String get character_npc_unnamed => '未命名配角';
+
+  @override
+  String get character_npc_title => '配角設定';
+
+  @override
+  String get character_npc_description => '建立會在故事裡登場的重要人物，讓角色世界更完整。';
+
+  @override
+  String get character_npc_empty_title => '目前尚未新增配角';
+
+  @override
+  String get character_npc_empty_description => '新增後可以在這裡查看、編輯與管理配角設定。';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age歲';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return '與主角色：$relationship';
+  }
+
+  @override
+  String get character_management_login_required => '請先登入系統';
+
+  @override
+  String get character_management_character_tab => '角色';
+
+  @override
+  String get character_management_creator_tab => '創作者';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      '若你暫停與角色聯繫，會顯示在這裡。';
+
+  @override
+  String get character_management_blocked_creators_load_failed => '讀取封鎖創作者失敗';
+
+  @override
+  String get character_management_blocked_creators_empty => '若你封鎖創作者，會顯示在這裡。';
+
+  @override
+  String get character_management_creator_fallback => '創作者';
+
+  @override
+  String get character_management_blocked_creator_status => '已封鎖創作者';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      '其公開角色與後續新增角色不會出現在推薦中。';
+
+  @override
+  String get character_management_unblock_creator_title => '解除封鎖創作者';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return '確定要解除封鎖「$creatorName」嗎？\n\n解除後，這位創作者與其角色可能會再次出現在推薦內容中。你先前「單獨封鎖」的角色仍會維持封鎖。';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return '已解除封鎖「$creatorName」';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed => '解除封鎖失敗，請稍後再試';
+
+  @override
+  String get character_management_title => '角色管理';
+
+  @override
+  String get character_management_subtitle => '管理暫停聯繫的角色';
+
+  @override
+  String get character_management_character_fallback => '角色';
+
+  @override
+  String get character_management_blocked_character_status => '暫停聯繫中';
+
+  @override
+  String get character_management_blocked_character_description =>
+      '暫停對話與通知，不會刪除相關資料。';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return '確定要解除封鎖「$charName」嗎？解除後，相關內容可能會再次顯示。';
+  }
+
+  @override
+  String get creator_follow_following_title => '我追蹤的創作者';
+
+  @override
+  String get creator_follow_followers_title => '追蹤我的玩家';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return '讀取失敗：$error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title => '還沒有追蹤創作者';
+
+  @override
+  String get creator_follow_empty_followers_title => '目前還沒有追蹤者';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      '在角色檔案或創作者工作坊追蹤喜歡的創作者吧。';
+
+  @override
+  String get creator_follow_empty_followers_description => '當其他玩家追蹤你時，會顯示在這裡。';
+
+  @override
+  String get creator_follow_unknown_player => '未知玩家';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID：$playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => '尚未設定玩家 ID';
+
+  @override
+  String get creator_follow_following => '已追蹤';
+
+  @override
+  String get creator_follow_unfollow_title => '取消追蹤';
+
+  @override
+  String get creator_follow_unfollow_confirm => '確定要取消追蹤這位創作者嗎？';
+
+  @override
+  String get creator_follow_unfollow => '取消追蹤';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return '讀取失敗：$error';
+  }
+
+  @override
+  String get creator_profile_report_creator => '檢舉創作者';
+
+  @override
+  String get creator_profile_block_creator => '封鎖創作者';
+
+  @override
+  String get creator_profile_report_login_required => '請先登入後再檢舉創作者';
+
+  @override
+  String get creator_profile_report_self_not_allowed => '無法檢舉自己的創作者頁面';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '請選擇檢舉「$creatorName」的原因：';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate => '不當或違規內容';
+
+  @override
+  String get creator_profile_report_reason_harassment => '騷擾、攻擊或仇恨內容';
+
+  @override
+  String get creator_profile_report_reason_impersonation => '冒充他人或偽造身分';
+
+  @override
+  String get creator_profile_report_reason_spam => '垃圾內容或惡意宣傳';
+
+  @override
+  String get creator_profile_report_success => '已收到檢舉，感謝你的回報';
+
+  @override
+  String get creator_profile_report_failed => '檢舉送出失敗，請稍後再試';
+
+  @override
+  String get creator_profile_block_login_required => '請先登入後再封鎖創作者';
+
+  @override
+  String get creator_profile_block_self_not_allowed => '無法封鎖自己';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return '確定要封鎖「$creatorName」嗎？\n\n封鎖後，你將不會再看到這位創作者的公開頁面，目前由他建立的公開角色也會一併加入封鎖名單。';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => '確認封鎖';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return '已封鎖「$creatorName」';
+  }
+
+  @override
+  String get creator_profile_block_failed => '封鎖失敗，請稍後再試';
+
+  @override
+  String get creator_scene_edit_title_edit => '編輯劇場';
+
+  @override
+  String get creator_scene_edit_title_add => '新增劇場';
+
+  @override
+  String get creator_scene_edit_heading_edit => '調整這段故事的入口';
+
+  @override
+  String get creator_scene_edit_heading_add => '寫下一個新的故事入口';
+
+  @override
+  String get creator_scene_edit_scene_title_label => '劇場標題';
+
+  @override
+  String get creator_scene_edit_scene_title_hint => '例如：雨夜重逢';
+
+  @override
+  String get creator_scene_edit_description_label => '場景說明';
+
+  @override
+  String get creator_scene_edit_description_hint => '描述故事發生的時間、地點、關係與情境。';
+
+  @override
+  String get creator_scene_edit_opening_label => '角色開場';
+
+  @override
+  String get creator_scene_edit_opening_hint => '寫下角色進入這段劇情時的第一個反應或第一句話。';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      '角色開場會作為這段劇場的第一幕；後續對話仍會以角色原本人設為核心繼續。';
+
+  @override
+  String get creator_scene_edit_save_changes => '儲存修改';
+
+  @override
+  String get creator_scene_edit_save_scene => '儲存劇場';
+
+  @override
+  String get creator_scene_edit_error_title_required => '請先填寫劇場標題。';
+
+  @override
+  String get creator_scene_edit_error_description_required => '請先填寫場景說明。';
+
+  @override
+  String get creator_scene_edit_error_opening_required => '請先填寫角色開場。';
+
+  @override
+  String get creator_scene_edit_save_failed => '儲存失敗，請稍後再試。';
+
+  @override
+  String get creator_scene_delete_title => '刪除劇場？';
+
+  @override
+  String get creator_scene_delete_target_fallback => '這個劇場';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return '確定要刪除「$sceneTitle」嗎？刪除後無法復原。';
+  }
+
+  @override
+  String get creator_scene_delete_failed => '刪除失敗，請稍後再試。';
+
+  @override
+  String get creator_scene_empty_title => '還沒有創作者劇場';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return '替 $characterName 寫下不同世界線，\n讓玩家可以從另一段故事開始。';
+  }
+
+  @override
+  String get creator_scene_add => '新增劇場';
+
+  @override
+  String get creator_scene_unnamed => '未命名劇場';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return '角色開場：$opening';
+  }
+
+  @override
+  String get creator_scene_edit => '編輯';
+
+  @override
+  String get creator_scene_delete => '刪除';
+
+  @override
+  String get creator_scene_title => '創作者劇場';
+
+  @override
+  String get creator_scene_character_unavailable => '目前無法讀取角色資料。';
+
+  @override
+  String get creator_scene_load_failed => '劇場讀取失敗，請稍後再試。';
+
+  @override
+  String get creator_scene_heading => '為角色建立不同故事入口';
+
+  @override
+  String get custom_scene_edit_heading_edit => '調整這段只屬於你的故事';
+
+  @override
+  String get custom_scene_edit_heading_add => '寫下一個只屬於這間聊天室的故事';
+
+  @override
+  String get custom_scene_edit_description_hint => '描述故事發生的時間、地點、關係與你想開始的情境。';
+
+  @override
+  String get custom_scene_edit_note =>
+      '自行創建的劇場沒有預設角色開場。開始後，角色會依照場景說明與原本人設進入故事。';
+
+  @override
+  String get moment_create_no_mentionable_characters => '目前沒有可以標記的角色。';
+
+  @override
+  String get moment_create_mention_my_characters => '標記我的角色';
+
+  @override
+  String get moment_create_no_matching_characters => '找不到符合的角色';
+
+  @override
+  String get moment_create_my_character => '我的角色';
+
+  @override
+  String get moment_create_friend_character => '好友角色';
+
+  @override
+  String get moment_create_public_visibility_hint => '動態將顯示在拾光牆上';
+
+  @override
+  String get moment_create_private_visibility_hint => '只有專屬範圍內可見';
+
+  @override
+  String get moment_create_add_image => '添加圖片';
+
+  @override
+  String get moment_create_mention_character => '提及角色';
+
+  @override
+  String get moment_edit_content_hint => '分享你的心情...';
+
+  @override
+  String get moment_forward_chat_preview => '【轉發了一則動態】';
+
+  @override
+  String get feedback_image_too_large => '圖片大小不能超過 10 MB';
+
+  @override
+  String get feedback_image_pick_failed => '無法選擇圖片，請稍後再試';
+
+  @override
+  String get feedback_category_general => '一般問題';
+
+  @override
+  String get feedback_category_bug => 'Bug 回報';
+
+  @override
+  String get feedback_category_suggestion => '功能建議';
+
+  @override
+  String get feedback_category_flower => '花花點數問題';
+
+  @override
+  String get feedback_category_payment => '儲值／付款問題';
+
+  @override
+  String get feedback_category_ai_reply => 'AI 回覆異常';
+
+  @override
+  String get feedback_category_character_report => '角色檢舉';
+
+  @override
+  String get feedback_category_moment_report => '貼文檢舉';
+
+  @override
+  String get feedback_screenshot_required_error => '此類問題請附上畫面截圖，方便我們確認狀況';
+
+  @override
+  String get feedback_login_required => '請先登入後再送出回報';
+
+  @override
+  String get feedback_mail_received_title => '【案件已建立】已收到你的回報';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return '我們已收到你的回報，會盡快協助確認。\n\n案件編號：$caseNumber\n\n若客服有進一步回覆，會再透過戀戀拾光信箱通知你。';
+  }
+
+  @override
+  String get feedback_submit_success => '回報已成功送出，謝謝你的意見！';
+
+  @override
+  String get feedback_submit_failed => '送出失敗，請確認網路後再試';
+
+  @override
+  String get feedback_category_section_title => '問題類型';
+
+  @override
+  String get feedback_reported_content_title => '被回報的內容';
+
+  @override
+  String get feedback_screenshot_required_title => '問題截圖（必填）';
+
+  @override
+  String get feedback_image_optional_title => '附加圖片（選填）';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      '請附上問題發生時的畫面截圖，方便官方確認實際狀況。';
+
+  @override
+  String get feedback_image_optional_description => '若有相關畫面，也可以附上截圖協助官方確認。';
+
+  @override
+  String get feedback_footer_message => '您的意見將協助我們持續優化遊戲體驗，謝謝您！';
+
+  @override
+  String get feedback_select_image_semantics => '選擇回報圖片';
+
+  @override
+  String get feedback_opening_gallery => '開啟相簿中…';
+
+  @override
+  String get feedback_select_image_upload => '點擊此處選擇圖片上傳';
+
+  @override
+  String get feedback_image_requirements => '支援 jpg、png，單張不超過 10 MB';
+
+  @override
+  String get feedback_submitting_semantics => '送出中';
+
+  @override
+  String get feedback_submit_semantics => '送出回報';
+
+  @override
+  String get feedback_submit_button => '送出';
+
+  @override
+  String get feedback_remove_image => '移除圖片';
+
+  @override
+  String get feedback_selected_image => '已選擇圖片';
+
+  @override
+  String get feedback_change_image => '更換';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -12048,6 +12571,528 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get appUpdateStoreOpenFailed => '目前无法打开商店页面，请稍后再试。';
+
+  @override
+  String get auth_error_requires_recent_login => '登录状态已过期，请重新登录后再更改密码。';
+
+  @override
+  String get auth_error_too_many_requests => '尝试次数过多，请稍后再试。';
+
+  @override
+  String get auth_error_network_failed => '当前网络连接不稳定，请稍后再试。';
+
+  @override
+  String get change_password_failed => '更改密码失败，请稍后再试。';
+
+  @override
+  String get change_password_account_not_found => '找不到当前登录账号，请重新登录后再试。';
+
+  @override
+  String get change_password_not_password_account => '此账号不是使用邮箱密码登录，无法在此更改密码。';
+
+  @override
+  String get change_password_same_as_current => '新密码不能与当前密码相同。';
+
+  @override
+  String get change_password_success_title => '密码已更新';
+
+  @override
+  String get change_password_success_message => '新的密码已经设置完成，下次登录请使用新密码。';
+
+  @override
+  String get change_password_title => '更改密码';
+
+  @override
+  String get change_password_security_title => '账号安全';
+
+  @override
+  String get change_password_description => '请先输入当前密码完成身份验证，再设置新的登录密码。';
+
+  @override
+  String get change_password_current_label => '当前密码';
+
+  @override
+  String get change_password_current_required => '请输入当前密码';
+
+  @override
+  String get change_password_new_label => '新密码';
+
+  @override
+  String get change_password_new_required => '请输入新密码';
+
+  @override
+  String get change_password_new_min_length => '新密码至少需要 6 个字符';
+
+  @override
+  String get change_password_confirm_label => '确认新密码';
+
+  @override
+  String get change_password_confirm_required => '请再次输入新密码';
+
+  @override
+  String get change_password_mismatch => '两次输入的新密码不一致';
+
+  @override
+  String get change_password_hint => '密码至少需要 6 个字符。更改完成后，其他设备下次重新登录时需使用新密码。';
+
+  @override
+  String get character_npc_add => '＋ 新增配角';
+
+  @override
+  String character_npc_added_count(int count) {
+    return '已加入的配角 $count';
+  }
+
+  @override
+  String get character_npc_unnamed => '未命名配角';
+
+  @override
+  String get character_npc_title => '配角设置';
+
+  @override
+  String get character_npc_description => '创建会在故事中登场的重要人物，让角色世界更加完整。';
+
+  @override
+  String get character_npc_empty_title => '目前尚未新增配角';
+
+  @override
+  String get character_npc_empty_description => '新增后可以在这里查看、编辑与管理配角设置。';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age岁';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return '与主角色：$relationship';
+  }
+
+  @override
+  String get character_management_login_required => '请先登录系统';
+
+  @override
+  String get character_management_character_tab => '角色';
+
+  @override
+  String get character_management_creator_tab => '创作者';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      '若你暂停与角色联系，会显示在这里。';
+
+  @override
+  String get character_management_blocked_creators_load_failed => '读取封锁创作者失败';
+
+  @override
+  String get character_management_blocked_creators_empty => '若你封锁创作者，会显示在这里。';
+
+  @override
+  String get character_management_creator_fallback => '创作者';
+
+  @override
+  String get character_management_blocked_creator_status => '已封锁创作者';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      '其公开角色与后续新增角色不会出现在推荐中。';
+
+  @override
+  String get character_management_unblock_creator_title => '解除封锁创作者';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return '确定要解除封锁“$creatorName”吗？\n\n解除后，这位创作者及其角色可能会再次出现在推荐内容中。你先前“单独封锁”的角色仍会维持封锁。';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return '已解除封锁“$creatorName”';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed => '解除封锁失败，请稍后再试';
+
+  @override
+  String get character_management_title => '角色管理';
+
+  @override
+  String get character_management_subtitle => '管理暂停联系的角色';
+
+  @override
+  String get character_management_character_fallback => '角色';
+
+  @override
+  String get character_management_blocked_character_status => '暂停联系中';
+
+  @override
+  String get character_management_blocked_character_description =>
+      '暂停对话与通知，不会删除相关数据。';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return '确定要解除封锁“$charName”吗？解除后，相关内容可能会再次显示。';
+  }
+
+  @override
+  String get creator_follow_following_title => '我关注的创作者';
+
+  @override
+  String get creator_follow_followers_title => '关注我的玩家';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return '读取失败：$error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title => '还没有关注创作者';
+
+  @override
+  String get creator_follow_empty_followers_title => '目前还没有关注者';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      '在角色档案或创作者工作坊关注喜欢的创作者吧。';
+
+  @override
+  String get creator_follow_empty_followers_description => '当其他玩家关注你时，会显示在这里。';
+
+  @override
+  String get creator_follow_unknown_player => '未知玩家';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID：$playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => '尚未设置玩家 ID';
+
+  @override
+  String get creator_follow_following => '已关注';
+
+  @override
+  String get creator_follow_unfollow_title => '取消关注';
+
+  @override
+  String get creator_follow_unfollow_confirm => '确定要取消关注这位创作者吗？';
+
+  @override
+  String get creator_follow_unfollow => '取消关注';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return '读取失败：$error';
+  }
+
+  @override
+  String get creator_profile_report_creator => '举报创作者';
+
+  @override
+  String get creator_profile_block_creator => '封锁创作者';
+
+  @override
+  String get creator_profile_report_login_required => '请先登录后再举报创作者';
+
+  @override
+  String get creator_profile_report_self_not_allowed => '无法举报自己的创作者页面';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '请选择举报“$creatorName”的原因：';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate => '不当或违规内容';
+
+  @override
+  String get creator_profile_report_reason_harassment => '骚扰、攻击或仇恨内容';
+
+  @override
+  String get creator_profile_report_reason_impersonation => '冒充他人或伪造身份';
+
+  @override
+  String get creator_profile_report_reason_spam => '垃圾内容或恶意宣传';
+
+  @override
+  String get creator_profile_report_success => '已收到举报，感谢你的反馈';
+
+  @override
+  String get creator_profile_report_failed => '举报提交失败，请稍后再试';
+
+  @override
+  String get creator_profile_block_login_required => '请先登录后再封锁创作者';
+
+  @override
+  String get creator_profile_block_self_not_allowed => '无法封锁自己';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return '确定要封锁“$creatorName”吗？\n\n封锁后，你将不会再看到这位创作者的公开页面，目前由其创建的公开角色也会一并加入封锁名单。';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => '确认封锁';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return '已封锁“$creatorName”';
+  }
+
+  @override
+  String get creator_profile_block_failed => '封锁失败，请稍后再试';
+
+  @override
+  String get creator_scene_edit_title_edit => '编辑剧场';
+
+  @override
+  String get creator_scene_edit_title_add => '新增剧场';
+
+  @override
+  String get creator_scene_edit_heading_edit => '调整这段故事的入口';
+
+  @override
+  String get creator_scene_edit_heading_add => '写下一个新的故事入口';
+
+  @override
+  String get creator_scene_edit_scene_title_label => '剧场标题';
+
+  @override
+  String get creator_scene_edit_scene_title_hint => '例如：雨夜重逢';
+
+  @override
+  String get creator_scene_edit_description_label => '场景说明';
+
+  @override
+  String get creator_scene_edit_description_hint => '描述故事发生的时间、地点、关系与情境。';
+
+  @override
+  String get creator_scene_edit_opening_label => '角色开场';
+
+  @override
+  String get creator_scene_edit_opening_hint => '写下角色进入这段剧情时的第一个反应或第一句话。';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      '角色开场会作为这段剧场的第一幕；后续对话仍会以角色原本人设为核心继续。';
+
+  @override
+  String get creator_scene_edit_save_changes => '保存修改';
+
+  @override
+  String get creator_scene_edit_save_scene => '保存剧场';
+
+  @override
+  String get creator_scene_edit_error_title_required => '请先填写剧场标题。';
+
+  @override
+  String get creator_scene_edit_error_description_required => '请先填写场景说明。';
+
+  @override
+  String get creator_scene_edit_error_opening_required => '请先填写角色开场。';
+
+  @override
+  String get creator_scene_edit_save_failed => '保存失败，请稍后再试。';
+
+  @override
+  String get creator_scene_delete_title => '删除剧场？';
+
+  @override
+  String get creator_scene_delete_target_fallback => '这个剧场';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return '确定要删除“$sceneTitle”吗？删除后无法恢复。';
+  }
+
+  @override
+  String get creator_scene_delete_failed => '删除失败，请稍后再试。';
+
+  @override
+  String get creator_scene_empty_title => '还没有创作者剧场';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return '为 $characterName 写下不同世界线，\n让玩家可以从另一段故事开始。';
+  }
+
+  @override
+  String get creator_scene_add => '新增剧场';
+
+  @override
+  String get creator_scene_unnamed => '未命名剧场';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return '角色开场：$opening';
+  }
+
+  @override
+  String get creator_scene_edit => '编辑';
+
+  @override
+  String get creator_scene_delete => '删除';
+
+  @override
+  String get creator_scene_title => '创作者剧场';
+
+  @override
+  String get creator_scene_character_unavailable => '目前无法读取角色资料。';
+
+  @override
+  String get creator_scene_load_failed => '剧场读取失败，请稍后再试。';
+
+  @override
+  String get creator_scene_heading => '为角色创建不同故事入口';
+
+  @override
+  String get custom_scene_edit_heading_edit => '调整这段只属于你的故事';
+
+  @override
+  String get custom_scene_edit_heading_add => '写下一个只属于这间聊天室的故事';
+
+  @override
+  String get custom_scene_edit_description_hint => '描述故事发生的时间、地点、关系与你想开始的情境。';
+
+  @override
+  String get custom_scene_edit_note =>
+      '自行创建的剧场没有预设角色开场。开始后，角色会按照场景说明与原本人设进入故事。';
+
+  @override
+  String get moment_create_no_mentionable_characters => '目前没有可以标记的角色。';
+
+  @override
+  String get moment_create_mention_my_characters => '标记我的角色';
+
+  @override
+  String get moment_create_no_matching_characters => '找不到符合的角色';
+
+  @override
+  String get moment_create_my_character => '我的角色';
+
+  @override
+  String get moment_create_friend_character => '好友角色';
+
+  @override
+  String get moment_create_public_visibility_hint => '动态将显示在拾光墙上';
+
+  @override
+  String get moment_create_private_visibility_hint => '仅在专属范围内可见';
+
+  @override
+  String get moment_create_add_image => '添加图片';
+
+  @override
+  String get moment_create_mention_character => '提及角色';
+
+  @override
+  String get moment_edit_content_hint => '分享你的心情...';
+
+  @override
+  String get moment_forward_chat_preview => '【转发了一条动态】';
+
+  @override
+  String get feedback_image_too_large => '图片大小不能超过 10 MB';
+
+  @override
+  String get feedback_image_pick_failed => '无法选择图片，请稍后再试';
+
+  @override
+  String get feedback_category_general => '一般问题';
+
+  @override
+  String get feedback_category_bug => 'Bug 反馈';
+
+  @override
+  String get feedback_category_suggestion => '功能建议';
+
+  @override
+  String get feedback_category_flower => '花花点数问题';
+
+  @override
+  String get feedback_category_payment => '充值／付款问题';
+
+  @override
+  String get feedback_category_ai_reply => 'AI 回复异常';
+
+  @override
+  String get feedback_category_character_report => '角色举报';
+
+  @override
+  String get feedback_category_moment_report => '帖子举报';
+
+  @override
+  String get feedback_screenshot_required_error => '此类问题请附上画面截图，方便我们确认情况';
+
+  @override
+  String get feedback_login_required => '请先登录后再提交反馈';
+
+  @override
+  String get feedback_mail_received_title => '【工单已创建】已收到你的反馈';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return '我们已收到你的反馈，会尽快协助确认。\n\n工单编号：$caseNumber\n\n若客服有进一步回复，会再通过恋恋拾光信箱通知你。';
+  }
+
+  @override
+  String get feedback_submit_success => '反馈已成功提交，谢谢你的意见！';
+
+  @override
+  String get feedback_submit_failed => '提交失败，请确认网络后再试';
+
+  @override
+  String get feedback_category_section_title => '问题类型';
+
+  @override
+  String get feedback_reported_content_title => '被举报的内容';
+
+  @override
+  String get feedback_screenshot_required_title => '问题截图（必填）';
+
+  @override
+  String get feedback_image_optional_title => '附加图片（选填）';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      '请附上问题发生时的画面截图，方便官方确认实际情况。';
+
+  @override
+  String get feedback_image_optional_description => '若有相关画面，也可以附上截图协助官方确认。';
+
+  @override
+  String get feedback_footer_message => '您的意见将帮助我们持续优化游戏体验，谢谢您！';
+
+  @override
+  String get feedback_select_image_semantics => '选择反馈图片';
+
+  @override
+  String get feedback_opening_gallery => '正在打开相册…';
+
+  @override
+  String get feedback_select_image_upload => '点击此处选择图片上传';
+
+  @override
+  String get feedback_image_requirements => '支持 JPG、PNG，单张不超过 10 MB';
+
+  @override
+  String get feedback_submitting_semantics => '提交中';
+
+  @override
+  String get feedback_submit_semantics => '提交反馈';
+
+  @override
+  String get feedback_submit_button => '提交';
+
+  @override
+  String get feedback_remove_image => '移除图片';
+
+  @override
+  String get feedback_selected_image => '已选择图片';
+
+  @override
+  String get feedback_change_image => '更换';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -18071,4 +19116,527 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get appUpdateStoreOpenFailed => '目前無法開啟商店頁面，請稍後再試。';
+
+  @override
+  String get auth_error_requires_recent_login => '登入狀態已過期，請重新登入後再更改密碼。';
+
+  @override
+  String get auth_error_too_many_requests => '嘗試次數過多，請稍後再試。';
+
+  @override
+  String get auth_error_network_failed => '目前網路連線不穩定，請稍後再試。';
+
+  @override
+  String get change_password_failed => '更改密碼失敗，請稍後再試。';
+
+  @override
+  String get change_password_account_not_found => '找不到目前登入帳號，請重新登入後再試。';
+
+  @override
+  String get change_password_not_password_account =>
+      '此帳號不是使用 Email 密碼登入，無法在此變更密碼。';
+
+  @override
+  String get change_password_same_as_current => '新密碼不能與目前密碼相同。';
+
+  @override
+  String get change_password_success_title => '密碼已更新';
+
+  @override
+  String get change_password_success_message => '新的密碼已經設定完成，下次登入請使用新密碼。';
+
+  @override
+  String get change_password_title => '更改密碼';
+
+  @override
+  String get change_password_security_title => '帳號安全';
+
+  @override
+  String get change_password_description => '請先輸入目前密碼完成身分驗證，再設定新的登入密碼。';
+
+  @override
+  String get change_password_current_label => '目前密碼';
+
+  @override
+  String get change_password_current_required => '請輸入目前密碼';
+
+  @override
+  String get change_password_new_label => '新密碼';
+
+  @override
+  String get change_password_new_required => '請輸入新密碼';
+
+  @override
+  String get change_password_new_min_length => '新密碼至少需要 6 個字元';
+
+  @override
+  String get change_password_confirm_label => '確認新密碼';
+
+  @override
+  String get change_password_confirm_required => '請再次輸入新密碼';
+
+  @override
+  String get change_password_mismatch => '兩次輸入的新密碼不一致';
+
+  @override
+  String get change_password_hint => '密碼至少 6 個字元。更改完成後，其他裝置下次重新登入時需使用新密碼。';
+
+  @override
+  String get character_npc_add => '＋ 新增配角';
+
+  @override
+  String character_npc_added_count(int count) {
+    return '已加入的配角 $count';
+  }
+
+  @override
+  String get character_npc_unnamed => '未命名配角';
+
+  @override
+  String get character_npc_title => '配角設定';
+
+  @override
+  String get character_npc_description => '建立會在故事裡登場的重要人物，讓角色世界更完整。';
+
+  @override
+  String get character_npc_empty_title => '目前尚未新增配角';
+
+  @override
+  String get character_npc_empty_description => '新增後可以在這裡查看、編輯與管理配角設定。';
+
+  @override
+  String character_npc_age(String age) {
+    return '$age歲';
+  }
+
+  @override
+  String character_npc_relationship_with_main(String relationship) {
+    return '與主角色：$relationship';
+  }
+
+  @override
+  String get character_management_login_required => '請先登入系統';
+
+  @override
+  String get character_management_character_tab => '角色';
+
+  @override
+  String get character_management_creator_tab => '創作者';
+
+  @override
+  String get character_management_blocked_characters_empty =>
+      '若你暫停與角色聯繫，會顯示在這裡。';
+
+  @override
+  String get character_management_blocked_creators_load_failed => '讀取封鎖創作者失敗';
+
+  @override
+  String get character_management_blocked_creators_empty => '若你封鎖創作者，會顯示在這裡。';
+
+  @override
+  String get character_management_creator_fallback => '創作者';
+
+  @override
+  String get character_management_blocked_creator_status => '已封鎖創作者';
+
+  @override
+  String get character_management_blocked_creator_description =>
+      '其公開角色與後續新增角色不會出現在推薦中。';
+
+  @override
+  String get character_management_unblock_creator_title => '解除封鎖創作者';
+
+  @override
+  String character_management_unblock_creator_confirm(String creatorName) {
+    return '確定要解除封鎖「$creatorName」嗎？\n\n解除後，這位創作者與其角色可能會再次出現在推薦內容中。你先前「單獨封鎖」的角色仍會維持封鎖。';
+  }
+
+  @override
+  String character_management_unblock_creator_success(String creatorName) {
+    return '已解除封鎖「$creatorName」';
+  }
+
+  @override
+  String get character_management_unblock_creator_failed => '解除封鎖失敗，請稍後再試';
+
+  @override
+  String get character_management_title => '角色管理';
+
+  @override
+  String get character_management_subtitle => '管理暫停聯繫的角色';
+
+  @override
+  String get character_management_character_fallback => '角色';
+
+  @override
+  String get character_management_blocked_character_status => '暫停聯繫中';
+
+  @override
+  String get character_management_blocked_character_description =>
+      '暫停對話與通知，不會刪除相關資料。';
+
+  @override
+  String character_management_unblock_character_confirm(String charName) {
+    return '確定要解除封鎖「$charName」嗎？解除後，相關內容可能會再次顯示。';
+  }
+
+  @override
+  String get creator_follow_following_title => '我追蹤的創作者';
+
+  @override
+  String get creator_follow_followers_title => '追蹤我的玩家';
+
+  @override
+  String creator_follow_load_failed(String error) {
+    return '讀取失敗：$error';
+  }
+
+  @override
+  String get creator_follow_empty_following_title => '還沒有追蹤創作者';
+
+  @override
+  String get creator_follow_empty_followers_title => '目前還沒有追蹤者';
+
+  @override
+  String get creator_follow_empty_following_description =>
+      '在角色檔案或創作者工作坊追蹤喜歡的創作者吧。';
+
+  @override
+  String get creator_follow_empty_followers_description => '當其他玩家追蹤你時，會顯示在這裡。';
+
+  @override
+  String get creator_follow_unknown_player => '未知玩家';
+
+  @override
+  String creator_follow_player_id(String playerId) {
+    return 'ID：$playerId';
+  }
+
+  @override
+  String get creator_follow_no_player_id => '尚未設定玩家 ID';
+
+  @override
+  String get creator_follow_following => '已追蹤';
+
+  @override
+  String get creator_follow_unfollow_title => '取消追蹤';
+
+  @override
+  String get creator_follow_unfollow_confirm => '確定要取消追蹤這位創作者嗎？';
+
+  @override
+  String get creator_follow_unfollow => '取消追蹤';
+
+  @override
+  String interaction_history_load_failed(String error) {
+    return '讀取失敗：$error';
+  }
+
+  @override
+  String get creator_profile_report_creator => '檢舉創作者';
+
+  @override
+  String get creator_profile_block_creator => '封鎖創作者';
+
+  @override
+  String get creator_profile_report_login_required => '請先登入後再檢舉創作者';
+
+  @override
+  String get creator_profile_report_self_not_allowed => '無法檢舉自己的創作者頁面';
+
+  @override
+  String creator_profile_report_reason_prompt(String creatorName) {
+    return '請選擇檢舉「$creatorName」的原因：';
+  }
+
+  @override
+  String get creator_profile_report_reason_inappropriate => '不當或違規內容';
+
+  @override
+  String get creator_profile_report_reason_harassment => '騷擾、攻擊或仇恨內容';
+
+  @override
+  String get creator_profile_report_reason_impersonation => '冒充他人或偽造身分';
+
+  @override
+  String get creator_profile_report_reason_spam => '垃圾內容或惡意宣傳';
+
+  @override
+  String get creator_profile_report_success => '已收到檢舉，感謝你的回報';
+
+  @override
+  String get creator_profile_report_failed => '檢舉送出失敗，請稍後再試';
+
+  @override
+  String get creator_profile_block_login_required => '請先登入後再封鎖創作者';
+
+  @override
+  String get creator_profile_block_self_not_allowed => '無法封鎖自己';
+
+  @override
+  String creator_profile_block_confirm(String creatorName) {
+    return '確定要封鎖「$creatorName」嗎？\n\n封鎖後，你將不會再看到這位創作者的公開頁面，目前由他建立的公開角色也會一併加入封鎖名單。';
+  }
+
+  @override
+  String get creator_profile_block_confirm_button => '確認封鎖';
+
+  @override
+  String creator_profile_block_success(String creatorName) {
+    return '已封鎖「$creatorName」';
+  }
+
+  @override
+  String get creator_profile_block_failed => '封鎖失敗，請稍後再試';
+
+  @override
+  String get creator_scene_edit_title_edit => '編輯劇場';
+
+  @override
+  String get creator_scene_edit_title_add => '新增劇場';
+
+  @override
+  String get creator_scene_edit_heading_edit => '調整這段故事的入口';
+
+  @override
+  String get creator_scene_edit_heading_add => '寫下一個新的故事入口';
+
+  @override
+  String get creator_scene_edit_scene_title_label => '劇場標題';
+
+  @override
+  String get creator_scene_edit_scene_title_hint => '例如：雨夜重逢';
+
+  @override
+  String get creator_scene_edit_description_label => '場景說明';
+
+  @override
+  String get creator_scene_edit_description_hint => '描述故事發生的時間、地點、關係與情境。';
+
+  @override
+  String get creator_scene_edit_opening_label => '角色開場';
+
+  @override
+  String get creator_scene_edit_opening_hint => '寫下角色進入這段劇情時的第一個反應或第一句話。';
+
+  @override
+  String get creator_scene_edit_opening_note =>
+      '角色開場會作為這段劇場的第一幕；後續對話仍會以角色原本人設為核心繼續。';
+
+  @override
+  String get creator_scene_edit_save_changes => '儲存修改';
+
+  @override
+  String get creator_scene_edit_save_scene => '儲存劇場';
+
+  @override
+  String get creator_scene_edit_error_title_required => '請先填寫劇場標題。';
+
+  @override
+  String get creator_scene_edit_error_description_required => '請先填寫場景說明。';
+
+  @override
+  String get creator_scene_edit_error_opening_required => '請先填寫角色開場。';
+
+  @override
+  String get creator_scene_edit_save_failed => '儲存失敗，請稍後再試。';
+
+  @override
+  String get creator_scene_delete_title => '刪除劇場？';
+
+  @override
+  String get creator_scene_delete_target_fallback => '這個劇場';
+
+  @override
+  String creator_scene_delete_confirm(String sceneTitle) {
+    return '確定要刪除「$sceneTitle」嗎？刪除後無法復原。';
+  }
+
+  @override
+  String get creator_scene_delete_failed => '刪除失敗，請稍後再試。';
+
+  @override
+  String get creator_scene_empty_title => '還沒有創作者劇場';
+
+  @override
+  String creator_scene_empty_description(String characterName) {
+    return '替 $characterName 寫下不同世界線，\n讓玩家可以從另一段故事開始。';
+  }
+
+  @override
+  String get creator_scene_add => '新增劇場';
+
+  @override
+  String get creator_scene_unnamed => '未命名劇場';
+
+  @override
+  String creator_scene_opening(String opening) {
+    return '角色開場：$opening';
+  }
+
+  @override
+  String get creator_scene_edit => '編輯';
+
+  @override
+  String get creator_scene_delete => '刪除';
+
+  @override
+  String get creator_scene_title => '創作者劇場';
+
+  @override
+  String get creator_scene_character_unavailable => '目前無法讀取角色資料。';
+
+  @override
+  String get creator_scene_load_failed => '劇場讀取失敗，請稍後再試。';
+
+  @override
+  String get creator_scene_heading => '為角色建立不同故事入口';
+
+  @override
+  String get custom_scene_edit_heading_edit => '調整這段只屬於你的故事';
+
+  @override
+  String get custom_scene_edit_heading_add => '寫下一個只屬於這間聊天室的故事';
+
+  @override
+  String get custom_scene_edit_description_hint => '描述故事發生的時間、地點、關係與你想開始的情境。';
+
+  @override
+  String get custom_scene_edit_note =>
+      '自行創建的劇場沒有預設角色開場。開始後，角色會依照場景說明與原本人設進入故事。';
+
+  @override
+  String get moment_create_no_mentionable_characters => '目前沒有可以標記的角色。';
+
+  @override
+  String get moment_create_mention_my_characters => '標記我的角色';
+
+  @override
+  String get moment_create_no_matching_characters => '找不到符合的角色';
+
+  @override
+  String get moment_create_my_character => '我的角色';
+
+  @override
+  String get moment_create_friend_character => '好友角色';
+
+  @override
+  String get moment_create_public_visibility_hint => '動態將顯示在拾光牆上';
+
+  @override
+  String get moment_create_private_visibility_hint => '只有專屬範圍內可見';
+
+  @override
+  String get moment_create_add_image => '添加圖片';
+
+  @override
+  String get moment_create_mention_character => '提及角色';
+
+  @override
+  String get moment_edit_content_hint => '分享你的心情...';
+
+  @override
+  String get moment_forward_chat_preview => '【轉發了一則動態】';
+
+  @override
+  String get feedback_image_too_large => '圖片大小不能超過 10 MB';
+
+  @override
+  String get feedback_image_pick_failed => '無法選擇圖片，請稍後再試';
+
+  @override
+  String get feedback_category_general => '一般問題';
+
+  @override
+  String get feedback_category_bug => 'Bug 回報';
+
+  @override
+  String get feedback_category_suggestion => '功能建議';
+
+  @override
+  String get feedback_category_flower => '花花點數問題';
+
+  @override
+  String get feedback_category_payment => '儲值／付款問題';
+
+  @override
+  String get feedback_category_ai_reply => 'AI 回覆異常';
+
+  @override
+  String get feedback_category_character_report => '角色檢舉';
+
+  @override
+  String get feedback_category_moment_report => '貼文檢舉';
+
+  @override
+  String get feedback_screenshot_required_error => '此類問題請附上畫面截圖，方便我們確認狀況';
+
+  @override
+  String get feedback_login_required => '請先登入後再送出回報';
+
+  @override
+  String get feedback_mail_received_title => '【案件已建立】已收到你的回報';
+
+  @override
+  String feedback_mail_received_body(String caseNumber) {
+    return '我們已收到你的回報，會盡快協助確認。\n\n案件編號：$caseNumber\n\n若客服有進一步回覆，會再透過戀戀拾光信箱通知你。';
+  }
+
+  @override
+  String get feedback_submit_success => '回報已成功送出，謝謝你的意見！';
+
+  @override
+  String get feedback_submit_failed => '送出失敗，請確認網路後再試';
+
+  @override
+  String get feedback_category_section_title => '問題類型';
+
+  @override
+  String get feedback_reported_content_title => '被回報的內容';
+
+  @override
+  String get feedback_screenshot_required_title => '問題截圖（必填）';
+
+  @override
+  String get feedback_image_optional_title => '附加圖片（選填）';
+
+  @override
+  String get feedback_screenshot_required_description =>
+      '請附上問題發生時的畫面截圖，方便官方確認實際狀況。';
+
+  @override
+  String get feedback_image_optional_description => '若有相關畫面，也可以附上截圖協助官方確認。';
+
+  @override
+  String get feedback_footer_message => '您的意見將協助我們持續優化遊戲體驗，謝謝您！';
+
+  @override
+  String get feedback_select_image_semantics => '選擇回報圖片';
+
+  @override
+  String get feedback_opening_gallery => '開啟相簿中…';
+
+  @override
+  String get feedback_select_image_upload => '點擊此處選擇圖片上傳';
+
+  @override
+  String get feedback_image_requirements => '支援 jpg、png，單張不超過 10 MB';
+
+  @override
+  String get feedback_submitting_semantics => '送出中';
+
+  @override
+  String get feedback_submit_semantics => '送出回報';
+
+  @override
+  String get feedback_submit_button => '送出';
+
+  @override
+  String get feedback_remove_image => '移除圖片';
+
+  @override
+  String get feedback_selected_image => '已選擇圖片';
+
+  @override
+  String get feedback_change_image => '更換';
 }

@@ -3013,5 +3013,359 @@
     "appUpdateGo": "Actualizar ahora",
     "appUpdateCurrentVersion": "Versión actual",
     "appUpdateLatestVersion": "Última versión",
-    "appUpdateStoreOpenFailed": "No se puede abrir la tienda en este momento. Inténtalo de nuevo más tarde."
+    "appUpdateStoreOpenFailed": "No se puede abrir la tienda en este momento. Inténtalo de nuevo más tarde.",
+    "auth_error_requires_recent_login": "Tu sesión ha caducado. Inicia sesión de nuevo antes de cambiar la contraseña.",
+    "auth_error_too_many_requests": "Demasiados intentos. Inténtalo de nuevo más tarde.",
+    "auth_error_network_failed": "La conexión de red no es estable en este momento. Inténtalo de nuevo más tarde.",
+    "change_password_failed": "No se pudo cambiar la contraseña. Inténtalo de nuevo más tarde.",
+
+    "change_password_account_not_found": "No se pudo encontrar la cuenta con la sesión iniciada. Inicia sesión de nuevo e inténtalo otra vez.",
+    "change_password_not_password_account": "Esta cuenta no utiliza el inicio de sesión con correo electrónico y contraseña, por lo que no puedes cambiar la contraseña aquí.",
+    "change_password_same_as_current": "La nueva contraseña no puede ser igual a la actual.",
+
+    "change_password_success_title": "Contraseña actualizada",
+    "change_password_success_message": "La nueva contraseña se ha configurado correctamente. Utilízala la próxima vez que inicies sesión.",
+
+    "change_password_title": "Cambiar contraseña",
+    "change_password_security_title": "Seguridad de la cuenta",
+    "change_password_description": "Introduce primero tu contraseña actual para verificar tu identidad y, después, configura una nueva contraseña de inicio de sesión.",
+
+    "change_password_current_label": "Contraseña actual",
+    "change_password_current_required": "Introduce tu contraseña actual",
+
+    "change_password_new_label": "Nueva contraseña",
+    "change_password_new_required": "Introduce una nueva contraseña",
+    "change_password_new_min_length": "La nueva contraseña debe tener al menos 6 caracteres",
+
+    "change_password_confirm_label": "Confirmar nueva contraseña",
+    "change_password_confirm_required": "Vuelve a introducir la nueva contraseña",
+    "change_password_mismatch": "Las nuevas contraseñas no coinciden",
+
+    "change_password_hint": "La contraseña debe tener al menos 6 caracteres. Después de cambiarla, deberás utilizar la nueva contraseña la próxima vez que inicies sesión en otros dispositivos.",
+    "character_npc_add": "＋ Añadir personaje secundario",
+    "character_npc_added_count": "Personajes secundarios añadidos: {count}",
+    "@character_npc_added_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "character_npc_unnamed": "Personaje secundario sin nombre",
+
+    "character_npc_title": "Configuración de personajes secundarios",
+    "character_npc_description": "Crea personajes importantes que aparecerán en la historia para enriquecer el mundo del personaje.",
+
+    "character_npc_empty_title": "Aún no has añadido personajes secundarios",
+    "character_npc_empty_description": "Después de añadirlos, podrás consultar, editar y administrar aquí su configuración.",
+
+    "character_npc_age": "{age} años",
+    "@character_npc_age": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_npc_relationship_with_main": "Relación con el personaje principal: {relationship}",
+    "@character_npc_relationship_with_main": {
+        "placeholders": {
+            "relationship": {
+                "type": "String"
+            }
+        }
+    },
+    "character_management_login_required": "Inicia sesión primero",
+
+    "character_management_character_tab": "Personajes",
+    "character_management_creator_tab": "Creadores",
+
+    "character_management_blocked_characters_empty": "Los personajes con los que suspendas el contacto aparecerán aquí.",
+
+    "character_management_blocked_creators_load_failed": "No se pudieron cargar los creadores bloqueados",
+    "character_management_blocked_creators_empty": "Los creadores que bloquees aparecerán aquí.",
+    "character_management_creator_fallback": "Creador",
+
+    "character_management_blocked_creator_status": "Creador bloqueado",
+    "character_management_blocked_creator_description": "Sus personajes públicos y los que añada posteriormente no aparecerán en las recomendaciones.",
+
+    "character_management_unblock_creator_title": "Desbloquear creador",
+
+    "character_management_unblock_creator_confirm": "¿Seguro que quieres desbloquear a «{creatorName}»?\n\nDespués de desbloquearlo, este creador y sus personajes podrían volver a aparecer en las recomendaciones. Los personajes que hayas bloqueado individualmente seguirán bloqueados.",
+    "@character_management_unblock_creator_confirm": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_management_unblock_creator_success": "Se desbloqueó a «{creatorName}»",
+    "@character_management_unblock_creator_success": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_management_unblock_creator_failed": "No se pudo desbloquear. Inténtalo de nuevo más tarde",
+
+    "character_management_title": "Gestión de personajes",
+    "character_management_subtitle": "Administra los personajes con los que has suspendido el contacto",
+
+    "character_management_character_fallback": "Personaje",
+
+    "character_management_blocked_character_status": "Contacto suspendido",
+    "character_management_blocked_character_description": "Se suspenden las conversaciones y notificaciones sin eliminar los datos relacionados.",
+
+    "character_management_unblock_character_confirm": "¿Seguro que quieres desbloquear a «{charName}»? Después de desbloquearlo, el contenido relacionado podría volver a aparecer.",
+    "@character_management_unblock_character_confirm": {
+        "placeholders": {
+            "charName": {
+                "type": "String"
+            }
+        }
+    },
+    "creator_follow_following_title": "Creadores que sigo",
+    "creator_follow_followers_title": "Jugadores que me siguen",
+
+    "creator_follow_load_failed": "No se pudo cargar: {error}",
+    "@creator_follow_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_follow_empty_following_title": "Aún no sigues a ningún creador",
+    "creator_follow_empty_followers_title": "Aún no tienes seguidores",
+
+    "creator_follow_empty_following_description": "Sigue a los creadores que te gusten desde el perfil de un personaje o el Taller de creadores.",
+    "creator_follow_empty_followers_description": "Los jugadores que te sigan aparecerán aquí.",
+
+    "creator_follow_unknown_player": "Jugador desconocido",
+
+    "creator_follow_player_id": "ID: {playerId}",
+    "@creator_follow_player_id": {
+        "placeholders": {
+            "playerId": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_follow_no_player_id": "ID de jugador aún no configurado",
+
+    "creator_follow_following": "Siguiendo",
+
+    "creator_follow_unfollow_title": "Dejar de seguir",
+    "creator_follow_unfollow_confirm": "¿Seguro que quieres dejar de seguir a este creador?",
+    "creator_follow_unfollow": "Dejar de seguir",
+    "interaction_history_load_failed": "No se pudo cargar: {error}",
+    "@interaction_history_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "creator_profile_report_creator": "Denunciar creador",
+    "creator_profile_block_creator": "Bloquear creador",
+
+    "creator_profile_report_login_required": "Inicia sesión antes de denunciar a un creador",
+    "creator_profile_report_self_not_allowed": "No puedes denunciar tu propio perfil de creador",
+
+    "creator_profile_report_reason_prompt": "Selecciona el motivo por el que quieres denunciar a «{creatorName}»:",
+    "@creator_profile_report_reason_prompt": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_report_reason_inappropriate": "Contenido inapropiado o que infringe las normas",
+    "creator_profile_report_reason_harassment": "Acoso, ataques o contenido de odio",
+    "creator_profile_report_reason_impersonation": "Suplantación de identidad o identidad falsa",
+    "creator_profile_report_reason_spam": "Contenido no deseado o promoción maliciosa",
+
+    "creator_profile_report_success": "Hemos recibido tu denuncia. Gracias por informarnos",
+    "creator_profile_report_failed": "No se pudo enviar la denuncia. Inténtalo de nuevo más tarde",
+
+    "creator_profile_block_login_required": "Inicia sesión antes de bloquear a un creador",
+    "creator_profile_block_self_not_allowed": "No puedes bloquearte a ti mismo",
+
+    "creator_profile_block_confirm": "¿Seguro que quieres bloquear a «{creatorName}»?\n\nDespués de bloquearlo, dejarás de ver el perfil público de este creador. Sus personajes públicos actuales también se añadirán a tu lista de bloqueados.",
+    "@creator_profile_block_confirm": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_block_confirm_button": "Confirmar bloqueo",
+
+    "creator_profile_block_success": "Se bloqueó a «{creatorName}»",
+    "@creator_profile_block_success": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_block_failed": "No se pudo bloquear. Inténtalo de nuevo más tarde",
+    "creator_scene_edit_title_edit": "Editar escena",
+    "creator_scene_edit_title_add": "Añadir escena",
+
+    "creator_scene_edit_heading_edit": "Ajusta el inicio de esta historia",
+    "creator_scene_edit_heading_add": "Escribe el inicio de una nueva historia",
+
+    "creator_scene_edit_scene_title_label": "Título de la escena",
+    "creator_scene_edit_scene_title_hint": "Ejemplo: Reencuentro en una noche lluviosa",
+
+    "creator_scene_edit_description_label": "Descripción de la escena",
+    "creator_scene_edit_description_hint": "Describe cuándo y dónde ocurre la historia, las relaciones y la situación.",
+
+    "creator_scene_edit_opening_label": "Inicio del personaje",
+    "creator_scene_edit_opening_hint": "Escribe la primera reacción o frase del personaje al entrar en esta historia.",
+
+    "creator_scene_edit_opening_note": "El inicio del personaje será el primer acto de esta escena. Las conversaciones posteriores continuarán centrándose en la personalidad original del personaje.",
+
+    "creator_scene_edit_save_changes": "Guardar cambios",
+    "creator_scene_edit_save_scene": "Guardar escena",
+
+    "creator_scene_edit_error_title_required": "Introduce primero el título de la escena.",
+    "creator_scene_edit_error_description_required": "Introduce primero la descripción de la escena.",
+    "creator_scene_edit_error_opening_required": "Introduce primero el inicio del personaje.",
+    "creator_scene_edit_save_failed": "No se pudo guardar. Inténtalo de nuevo más tarde.",
+    "creator_scene_delete_title": "¿Eliminar escena?",
+
+    "creator_scene_delete_target_fallback": "esta escena",
+
+    "creator_scene_delete_confirm": "¿Seguro que quieres eliminar «{sceneTitle}»? Esta acción no se puede deshacer.",
+    "@creator_scene_delete_confirm": {
+        "placeholders": {
+            "sceneTitle": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_delete_failed": "No se pudo eliminar. Inténtalo de nuevo más tarde.",
+
+    "creator_scene_empty_title": "Aún no hay escenas de creadores",
+
+    "creator_scene_empty_description": "Crea historias alternativas para {characterName}\npara que los jugadores puedan comenzar desde otra historia.",
+    "@creator_scene_empty_description": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_add": "Añadir escena",
+
+    "creator_scene_unnamed": "Escena sin título",
+
+    "creator_scene_opening": "Inicio del personaje: {opening}",
+    "@creator_scene_opening": {
+        "placeholders": {
+            "opening": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_edit": "Editar",
+    "creator_scene_delete": "Eliminar",
+
+    "creator_scene_title": "Escenas de creadores",
+
+    "creator_scene_character_unavailable": "La información del personaje no está disponible en este momento.",
+
+    "creator_scene_load_failed": "No se pudieron cargar las escenas. Inténtalo de nuevo más tarde.",
+
+    "creator_scene_heading": "Crea diferentes inicios de historia para el personaje",
+    "custom_scene_edit_heading_edit": "Ajusta esta historia que es solo tuya",
+
+    "custom_scene_edit_heading_add": "Escribe una historia exclusiva para este chat",
+
+    "custom_scene_edit_description_hint": "Describe cuándo y dónde ocurre la historia, las relaciones y la situación desde la que quieres comenzar.",
+
+    "custom_scene_edit_note": "Las escenas que crees no incluyen un inicio de personaje predeterminado. Al comenzar, el personaje entrará en la historia según la descripción de la escena y su personalidad original.",
+    "moment_create_no_mentionable_characters": "Actualmente no hay personajes que puedas mencionar.",
+
+    "moment_create_mention_my_characters": "Mencionar a mis personajes",
+
+    "moment_create_no_matching_characters": "No se encontraron personajes coincidentes",
+
+    "moment_create_my_character": "Mi personaje",
+    "moment_create_friend_character": "Personaje de un amigo",
+
+    "moment_create_public_visibility_hint": "La publicación aparecerá en el muro de momentos",
+    "moment_create_private_visibility_hint": "Solo será visible dentro del círculo designado",
+
+    "moment_create_add_image": "Añadir imagen",
+    "moment_create_mention_character": "Mencionar personaje",
+    "moment_edit_content_hint": "Comparte cómo te sientes...",
+    "moment_forward_chat_preview": "【Se compartió una publicación】",
+    "feedback_image_too_large": "La imagen no puede superar los 10 MB",
+    "feedback_image_pick_failed": "No se pudo seleccionar la imagen. Inténtalo de nuevo más tarde",
+
+    "feedback_category_general": "Problema general",
+    "feedback_category_bug": "Informe de error",
+    "feedback_category_suggestion": "Sugerencia de función",
+    "feedback_category_flower": "Problema con los puntos Flor",
+    "feedback_category_payment": "Problema de recarga o pago",
+    "feedback_category_ai_reply": "Problema con la respuesta de la IA",
+    "feedback_category_character_report": "Denunciar personaje",
+    "feedback_category_moment_report": "Denunciar publicación",
+
+    "feedback_screenshot_required_error": "Adjunta una captura de pantalla para este tipo de problema a fin de que podamos comprobarlo",
+    "feedback_login_required": "Inicia sesión antes de enviar el informe",
+
+    "feedback_mail_received_title": "【Caso creado】Hemos recibido tu informe",
+
+    "feedback_mail_received_body": "Hemos recibido tu informe y lo revisaremos lo antes posible.\n\nNúmero de caso: {caseNumber}\n\nSi el equipo de soporte tiene alguna novedad, recibirás una notificación en el buzón de LoveyDovey.",
+    "@feedback_mail_received_body": {
+        "placeholders": {
+            "caseNumber": {
+                "type": "String"
+            }
+        }
+    },
+
+    "feedback_submit_success": "Tu informe se envió correctamente. ¡Gracias por tus comentarios!",
+    "feedback_submit_failed": "No se pudo enviar. Comprueba tu conexión e inténtalo de nuevo",
+
+    "feedback_category_section_title": "Tipo de problema",
+    "feedback_reported_content_title": "Contenido denunciado",
+
+    "feedback_screenshot_required_title": "Captura del problema (obligatoria)",
+    "feedback_image_optional_title": "Imagen adicional (opcional)",
+
+    "feedback_screenshot_required_description": "Adjunta una captura de pantalla del momento en que ocurrió el problema para que el equipo pueda comprobarlo.",
+    "feedback_image_optional_description": "Si tienes alguna imagen relacionada, también puedes adjuntarla para facilitar la revisión.",
+
+    "feedback_footer_message": "Tus comentarios nos ayudarán a seguir mejorando la experiencia de juego. ¡Gracias!",
+
+    "feedback_select_image_semantics": "Seleccionar imagen del informe",
+    "feedback_opening_gallery": "Abriendo la galería…",
+    "feedback_select_image_upload": "Pulsa aquí para seleccionar una imagen y subirla",
+    "feedback_image_requirements": "Compatible con JPG y PNG, máximo 10 MB por imagen",
+
+    "feedback_submitting_semantics": "Enviando",
+    "feedback_submit_semantics": "Enviar informe",
+    "feedback_submit_button": "Enviar",
+
+    "feedback_remove_image": "Eliminar imagen",
+    "feedback_selected_image": "Imagen seleccionada",
+    "feedback_change_image": "Cambiar"
 }

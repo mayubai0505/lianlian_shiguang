@@ -3190,5 +3190,359 @@
     "appUpdateGo": "Mettre à jour",
     "appUpdateCurrentVersion": "Version actuelle",
     "appUpdateLatestVersion": "Dernière version",
-    "appUpdateStoreOpenFailed": "Impossible d’ouvrir la boutique pour le moment. Veuillez réessayer plus tard."
+    "appUpdateStoreOpenFailed": "Impossible d’ouvrir la boutique pour le moment. Veuillez réessayer plus tard.",
+    "auth_error_requires_recent_login": "Votre session a expiré. Veuillez vous reconnecter avant de modifier votre mot de passe.",
+    "auth_error_too_many_requests": "Trop de tentatives. Veuillez réessayer plus tard.",
+    "auth_error_network_failed": "La connexion réseau est actuellement instable. Veuillez réessayer plus tard.",
+    "change_password_failed": "Échec de la modification du mot de passe. Veuillez réessayer plus tard.",
+
+    "change_password_account_not_found": "Le compte actuellement connecté est introuvable. Veuillez vous reconnecter et réessayer.",
+    "change_password_not_password_account": "Ce compte n’utilise pas la connexion par adresse e-mail et mot de passe. Son mot de passe ne peut donc pas être modifié ici.",
+    "change_password_same_as_current": "Le nouveau mot de passe doit être différent du mot de passe actuel.",
+
+    "change_password_success_title": "Mot de passe mis à jour",
+    "change_password_success_message": "Votre nouveau mot de passe a bien été défini. Utilisez-le lors de votre prochaine connexion.",
+
+    "change_password_title": "Modifier le mot de passe",
+    "change_password_security_title": "Sécurité du compte",
+    "change_password_description": "Saisissez d’abord votre mot de passe actuel pour confirmer votre identité, puis définissez un nouveau mot de passe de connexion.",
+
+    "change_password_current_label": "Mot de passe actuel",
+    "change_password_current_required": "Veuillez saisir votre mot de passe actuel",
+
+    "change_password_new_label": "Nouveau mot de passe",
+    "change_password_new_required": "Veuillez saisir un nouveau mot de passe",
+    "change_password_new_min_length": "Le nouveau mot de passe doit contenir au moins 6 caractères",
+
+    "change_password_confirm_label": "Confirmer le nouveau mot de passe",
+    "change_password_confirm_required": "Veuillez saisir de nouveau votre nouveau mot de passe",
+    "change_password_mismatch": "Les nouveaux mots de passe ne correspondent pas",
+
+    "change_password_hint": "Le mot de passe doit contenir au moins 6 caractères. Après sa modification, utilisez le nouveau mot de passe lors de votre prochaine connexion sur vos autres appareils.",
+    "character_npc_add": "＋ Ajouter un personnage secondaire",
+    "character_npc_added_count": "Personnages secondaires ajoutés : {count}",
+    "@character_npc_added_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "character_npc_unnamed": "Personnage secondaire sans nom",
+
+    "character_npc_title": "Paramètres des personnages secondaires",
+    "character_npc_description": "Créez des personnages importants qui apparaîtront dans l’histoire afin d’enrichir l’univers du personnage.",
+
+    "character_npc_empty_title": "Aucun personnage secondaire ajouté",
+    "character_npc_empty_description": "Après en avoir ajouté, vous pourrez consulter, modifier et gérer leurs paramètres ici.",
+
+    "character_npc_age": "{age} ans",
+    "@character_npc_age": {
+        "placeholders": {
+            "age": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_npc_relationship_with_main": "Lien avec le personnage principal : {relationship}",
+    "@character_npc_relationship_with_main": {
+        "placeholders": {
+            "relationship": {
+                "type": "String"
+            }
+        }
+    },
+    "character_management_login_required": "Veuillez d’abord vous connecter",
+
+    "character_management_character_tab": "Personnages",
+    "character_management_creator_tab": "Créateurs",
+
+    "character_management_blocked_characters_empty": "Les personnages avec lesquels vous interrompez le contact apparaîtront ici.",
+
+    "character_management_blocked_creators_load_failed": "Échec du chargement des créateurs bloqués",
+    "character_management_blocked_creators_empty": "Les créateurs que vous bloquez apparaîtront ici.",
+    "character_management_creator_fallback": "Créateur",
+
+    "character_management_blocked_creator_status": "Créateur bloqué",
+    "character_management_blocked_creator_description": "Ses personnages publics et ceux qu’il ajoutera ultérieurement n’apparaîtront pas dans les recommandations.",
+
+    "character_management_unblock_creator_title": "Débloquer le créateur",
+
+    "character_management_unblock_creator_confirm": "Voulez-vous vraiment débloquer « {creatorName} » ?\n\nAprès le déblocage, ce créateur et ses personnages pourront de nouveau apparaître dans les recommandations. Les personnages que vous aviez bloqués individuellement resteront bloqués.",
+    "@character_management_unblock_creator_confirm": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_management_unblock_creator_success": "« {creatorName} » a été débloqué",
+    "@character_management_unblock_creator_success": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "character_management_unblock_creator_failed": "Échec du déblocage. Veuillez réessayer plus tard",
+
+    "character_management_title": "Gestion des personnages",
+    "character_management_subtitle": "Gérez les personnages avec lesquels vous avez interrompu le contact",
+
+    "character_management_character_fallback": "Personnage",
+
+    "character_management_blocked_character_status": "Contact interrompu",
+    "character_management_blocked_character_description": "Les conversations et notifications sont suspendues sans supprimer les données associées.",
+
+    "character_management_unblock_character_confirm": "Voulez-vous vraiment débloquer « {charName} » ? Après le déblocage, le contenu associé pourra de nouveau apparaître.",
+    "@character_management_unblock_character_confirm": {
+        "placeholders": {
+            "charName": {
+                "type": "String"
+            }
+        }
+    },
+    "creator_follow_following_title": "Créateurs que je suis",
+    "creator_follow_followers_title": "Joueurs qui me suivent",
+
+    "creator_follow_load_failed": "Échec du chargement : {error}",
+    "@creator_follow_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_follow_empty_following_title": "Vous ne suivez encore aucun créateur",
+    "creator_follow_empty_followers_title": "Vous n’avez encore aucun abonné",
+
+    "creator_follow_empty_following_description": "Suivez les créateurs que vous appréciez depuis la fiche d’un personnage ou l’atelier des créateurs.",
+    "creator_follow_empty_followers_description": "Les joueurs qui vous suivent apparaîtront ici.",
+
+    "creator_follow_unknown_player": "Joueur inconnu",
+
+    "creator_follow_player_id": "ID : {playerId}",
+    "@creator_follow_player_id": {
+        "placeholders": {
+            "playerId": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_follow_no_player_id": "ID de joueur non configuré",
+
+    "creator_follow_following": "Suivi",
+
+    "creator_follow_unfollow_title": "Ne plus suivre",
+    "creator_follow_unfollow_confirm": "Voulez-vous vraiment ne plus suivre ce créateur ?",
+    "creator_follow_unfollow": "Ne plus suivre",
+    "interaction_history_load_failed": "Échec du chargement : {error}",
+    "@interaction_history_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "creator_profile_report_creator": "Signaler le créateur",
+    "creator_profile_block_creator": "Bloquer le créateur",
+
+    "creator_profile_report_login_required": "Veuillez vous connecter avant de signaler un créateur",
+    "creator_profile_report_self_not_allowed": "Vous ne pouvez pas signaler votre propre profil de créateur",
+
+    "creator_profile_report_reason_prompt": "Sélectionnez le motif du signalement de « {creatorName} » :",
+    "@creator_profile_report_reason_prompt": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_report_reason_inappropriate": "Contenu inapproprié ou non conforme",
+    "creator_profile_report_reason_harassment": "Harcèlement, attaques ou contenu haineux",
+    "creator_profile_report_reason_impersonation": "Usurpation d’identité ou fausse identité",
+    "creator_profile_report_reason_spam": "Contenu indésirable ou promotion malveillante",
+
+    "creator_profile_report_success": "Votre signalement a bien été reçu. Merci de nous en avoir informés",
+    "creator_profile_report_failed": "Échec de l’envoi du signalement. Veuillez réessayer plus tard",
+
+    "creator_profile_block_login_required": "Veuillez vous connecter avant de bloquer un créateur",
+    "creator_profile_block_self_not_allowed": "Vous ne pouvez pas vous bloquer vous-même",
+
+    "creator_profile_block_confirm": "Voulez-vous vraiment bloquer « {creatorName} » ?\n\nAprès le blocage, vous ne verrez plus le profil public de ce créateur. Ses personnages actuellement publics seront également ajoutés à votre liste de blocage.",
+    "@creator_profile_block_confirm": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_block_confirm_button": "Confirmer le blocage",
+
+    "creator_profile_block_success": "« {creatorName} » a été bloqué",
+    "@creator_profile_block_success": {
+        "placeholders": {
+            "creatorName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_profile_block_failed": "Échec du blocage. Veuillez réessayer plus tard",
+    "creator_scene_edit_title_edit": "Modifier la scène",
+    "creator_scene_edit_title_add": "Ajouter une scène",
+
+    "creator_scene_edit_heading_edit": "Ajustez le point de départ de cette histoire",
+    "creator_scene_edit_heading_add": "Écrivez le début d’une nouvelle histoire",
+
+    "creator_scene_edit_scene_title_label": "Titre de la scène",
+    "creator_scene_edit_scene_title_hint": "Exemple : Retrouvailles par une nuit pluvieuse",
+
+    "creator_scene_edit_description_label": "Description de la scène",
+    "creator_scene_edit_description_hint": "Décrivez l’époque, le lieu, les relations et le contexte de l’histoire.",
+
+    "creator_scene_edit_opening_label": "Ouverture du personnage",
+    "creator_scene_edit_opening_hint": "Écrivez la première réaction ou la première réplique du personnage lorsqu’il entre dans cette histoire.",
+
+    "creator_scene_edit_opening_note": "L’ouverture du personnage constituera le premier acte de cette scène. Les conversations suivantes continueront de respecter la personnalité d’origine du personnage.",
+
+    "creator_scene_edit_save_changes": "Enregistrer les modifications",
+    "creator_scene_edit_save_scene": "Enregistrer la scène",
+
+    "creator_scene_edit_error_title_required": "Veuillez d’abord saisir le titre de la scène.",
+    "creator_scene_edit_error_description_required": "Veuillez d’abord saisir la description de la scène.",
+    "creator_scene_edit_error_opening_required": "Veuillez d’abord saisir l’ouverture du personnage.",
+    "creator_scene_edit_save_failed": "Échec de l’enregistrement. Veuillez réessayer plus tard.",
+    "creator_scene_delete_title": "Supprimer la scène ?",
+
+    "creator_scene_delete_target_fallback": "cette scène",
+
+    "creator_scene_delete_confirm": "Voulez-vous vraiment supprimer « {sceneTitle} » ? Cette action est irréversible.",
+    "@creator_scene_delete_confirm": {
+        "placeholders": {
+            "sceneTitle": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_delete_failed": "Échec de la suppression. Veuillez réessayer plus tard.",
+
+    "creator_scene_empty_title": "Aucune scène de créateur pour le moment",
+
+    "creator_scene_empty_description": "Créez des histoires alternatives pour {characterName}\nafin que les joueurs puissent commencer par une autre histoire.",
+    "@creator_scene_empty_description": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_add": "Ajouter une scène",
+
+    "creator_scene_unnamed": "Scène sans titre",
+
+    "creator_scene_opening": "Ouverture du personnage : {opening}",
+    "@creator_scene_opening": {
+        "placeholders": {
+            "opening": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_scene_edit": "Modifier",
+    "creator_scene_delete": "Supprimer",
+
+    "creator_scene_title": "Scènes des créateurs",
+
+    "creator_scene_character_unavailable": "Les informations du personnage sont actuellement indisponibles.",
+
+    "creator_scene_load_failed": "Échec du chargement des scènes. Veuillez réessayer plus tard.",
+
+    "creator_scene_heading": "Créez différents débuts d’histoire pour le personnage",
+    "custom_scene_edit_heading_edit": "Ajustez cette histoire qui n’appartient qu’à vous",
+
+    "custom_scene_edit_heading_add": "Écrivez une histoire réservée à cette discussion",
+
+    "custom_scene_edit_description_hint": "Décrivez l’époque, le lieu, les relations et la situation à partir de laquelle vous souhaitez commencer.",
+
+    "custom_scene_edit_note": "Les scènes que vous créez ne comportent pas d’ouverture prédéfinie pour le personnage. Une fois la scène lancée, le personnage entrera dans l’histoire en fonction de sa description et de sa personnalité d’origine.",
+    "moment_create_no_mentionable_characters": "Aucun personnage ne peut être mentionné pour le moment.",
+
+    "moment_create_mention_my_characters": "Mentionner mes personnages",
+
+    "moment_create_no_matching_characters": "Aucun personnage correspondant trouvé",
+
+    "moment_create_my_character": "Mon personnage",
+    "moment_create_friend_character": "Personnage d’un ami",
+
+    "moment_create_public_visibility_hint": "La publication apparaîtra sur le mur des moments",
+    "moment_create_private_visibility_hint": "Visible uniquement dans le cercle désigné",
+
+    "moment_create_add_image": "Ajouter une image",
+    "moment_create_mention_character": "Mentionner un personnage",
+    "moment_edit_content_hint": "Partagez ce que vous ressentez...",
+    "moment_forward_chat_preview": "【Une publication a été partagée】",
+    "feedback_image_too_large": "La taille de l’image ne doit pas dépasser 10 Mo",
+    "feedback_image_pick_failed": "Impossible de sélectionner l’image. Veuillez réessayer plus tard",
+
+    "feedback_category_general": "Problème général",
+    "feedback_category_bug": "Signaler un bug",
+    "feedback_category_suggestion": "Suggestion de fonctionnalité",
+    "feedback_category_flower": "Problème de points Fleur",
+    "feedback_category_payment": "Problème de recharge ou de paiement",
+    "feedback_category_ai_reply": "Problème de réponse de l’IA",
+    "feedback_category_character_report": "Signaler un personnage",
+    "feedback_category_moment_report": "Signaler une publication",
+
+    "feedback_screenshot_required_error": "Veuillez joindre une capture d’écran pour ce type de problème afin de nous aider à vérifier la situation",
+    "feedback_login_required": "Veuillez vous connecter avant d’envoyer votre signalement",
+
+    "feedback_mail_received_title": "【Dossier créé】Nous avons reçu votre signalement",
+
+    "feedback_mail_received_body": "Nous avons reçu votre signalement et l’examinerons dès que possible.\n\nNuméro de dossier : {caseNumber}\n\nSi notre service client apporte une réponse complémentaire, vous serez averti dans la messagerie de LoveyDovey.",
+    "@feedback_mail_received_body": {
+        "placeholders": {
+            "caseNumber": {
+                "type": "String"
+            }
+        }
+    },
+
+    "feedback_submit_success": "Votre signalement a bien été envoyé. Merci pour vos commentaires !",
+    "feedback_submit_failed": "Échec de l’envoi. Vérifiez votre connexion, puis réessayez",
+
+    "feedback_category_section_title": "Type de problème",
+    "feedback_reported_content_title": "Contenu signalé",
+
+    "feedback_screenshot_required_title": "Capture du problème (obligatoire)",
+    "feedback_image_optional_title": "Image supplémentaire (facultative)",
+
+    "feedback_screenshot_required_description": "Veuillez joindre une capture d’écran montrant le problème afin que notre équipe puisse vérifier la situation.",
+    "feedback_image_optional_description": "Si vous disposez d’une image pertinente, vous pouvez également la joindre pour faciliter la vérification.",
+
+    "feedback_footer_message": "Vos commentaires nous aideront à continuer d’améliorer votre expérience de jeu. Merci !",
+
+    "feedback_select_image_semantics": "Sélectionner une image pour le signalement",
+    "feedback_opening_gallery": "Ouverture de la galerie…",
+    "feedback_select_image_upload": "Appuyez ici pour sélectionner une image à importer",
+    "feedback_image_requirements": "Formats JPG et PNG acceptés, 10 Mo maximum par image",
+
+    "feedback_submitting_semantics": "Envoi en cours",
+    "feedback_submit_semantics": "Envoyer le signalement",
+    "feedback_submit_button": "Envoyer",
+
+    "feedback_remove_image": "Supprimer l’image",
+    "feedback_selected_image": "Image sélectionnée",
+    "feedback_change_image": "Modifier"
 }
