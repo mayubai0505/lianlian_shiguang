@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import '../services/theme_notifier.dart';
 import '../services/toast_utils.dart';
 import '../utils/image_utils.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class ThemeSelectionPage extends StatefulWidget {
   const ThemeSelectionPage({super.key});
@@ -28,62 +30,63 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
   static const List<_ThemeOption> _options = [
     _ThemeOption(
       theme: AppTheme.light,
-      zhName: '拾光紫',
-      enName: 'Starlight',
       asset: 'assets/images/theme/theme_card_starlight.png',
       accent: _starlight,
     ),
     _ThemeOption(
       theme: AppTheme.pinkGradient,
-      zhName: '櫻花粉',
-      enName: 'Sakura Pink',
       asset: 'assets/images/theme/theme_card_sakura.png',
       accent: Color(0xFFD890A7),
     ),
     _ThemeOption(
       theme: AppTheme.blueGradient,
-      zhName: '湛藍海',
-      enName: 'Ocean Blue',
       asset: 'assets/images/theme/theme_card_ocean.png',
       accent: Color(0xFF7899CC),
     ),
     _ThemeOption(
       theme: AppTheme.orangeGradient,
-      zhName: '夕陽橙',
-      enName: 'Sunset Orange',
       asset: 'assets/images/theme/theme_card_sunset.png',
       accent: Color(0xFFD88967),
     ),
     _ThemeOption(
       theme: AppTheme.greenGradient,
-      zhName: '薄荷森',
-      enName: 'Mint Forest',
       asset: 'assets/images/theme/theme_card_mint.png',
       accent: Color(0xFF78A996),
     ),
     _ThemeOption(
       theme: AppTheme.dark,
-      zhName: '深夜模式',
-      enName: 'Midnight',
       asset: 'assets/images/theme/theme_card_midnight.png',
       accent: Color(0xFF7180B6),
       isDark: true,
     ),
     _ThemeOption(
       theme: AppTheme.custom,
-      zhName: '自定義色彩',
-      enName: 'Custom Color',
       asset: 'assets/images/theme/theme_card_custom.png',
       accent: _starlight,
       isCustom: true,
     ),
   ];
 
-  bool _isZh(BuildContext context) =>
-      Localizations.localeOf(context).languageCode == 'zh';
-
-  String _text(BuildContext context, String zh, String en) =>
-      _isZh(context) ? zh : en;
+  String _themeName(AppTheme theme, AppLocalizations l10n) {
+    switch (theme) {
+      case AppTheme.light:
+        return l10n.theme_name_starlight;
+      case AppTheme.pinkGradient:
+        return l10n.theme_name_sakura;
+      case AppTheme.blueGradient:
+        return l10n.theme_name_ocean;
+      case AppTheme.orangeGradient:
+        return l10n.theme_name_sunset;
+      case AppTheme.greenGradient:
+        return l10n.theme_name_mint;
+      case AppTheme.yellowGradient:
+        return l10n.theme_name_sunset;
+      case AppTheme.dark:
+        return l10n.theme_name_midnight;
+      case AppTheme.custom:
+        return l10n.theme_name_custom;
+    }
+  }
 
   _ThemeOption get _selectedOption => _options.firstWhere(
         (option) => option.theme == _previewTheme,
@@ -107,6 +110,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final background = _isDarkPreview
         ? const Color(0xFF11182B)
         : Color.lerp(Colors.white, _previewColor, 0.055)!;
@@ -140,7 +144,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                     padding: const EdgeInsets.fromLTRB(20, 34, 20, 12),
                     sliver: SliverToBoxAdapter(
                       child: _sectionTitle(
-                        _text(context, '選擇主題色', 'Choose a theme'),
+                        l10n.theme_selection_choose_theme,
                         foreground,
                       ),
                     ),
@@ -185,6 +189,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
 
 
   Widget _buildHeader(Color foreground, Color secondary) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 12, 20, 18),
       child: Stack(
@@ -203,7 +208,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
             child: Column(
               children: [
                 Text(
-                  _text(context, '更換氛圍', 'Change the mood'),
+                  l10n.theme_selection_title,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.notoSerifTc(
                     color: foreground,
@@ -214,11 +219,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                 ),
                 const SizedBox(height: 9),
                 Text(
-                  _text(
-                    context,
-                    '挑選你喜歡的主題色，讓戀戀拾光更像你的樣子。',
-                    'Choose a theme that makes Lianlian Shiguang feel more like you.',
-                  ),
+                  l10n.theme_selection_description,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.notoSerifTc(
                     color: secondary,
@@ -239,7 +240,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
     final cardColor = _isDarkPreview
         ? const Color(0xFF1B243A).withValues(alpha: 0.94)
         : Colors.white.withValues(alpha: 0.88);
-
+    final l10n = AppLocalizations.of(context)!;
     final currentUser = FirebaseAuth.instance.currentUser;
 
     return AnimatedContainer(
@@ -254,7 +255,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: _sectionTitle(_text(context, '預覽效果', 'Preview'), foreground),
+            child: _sectionTitle(l10n.theme_selection_preview, foreground),
           ),
           const SizedBox(height: 12),
           StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -270,7 +271,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                   ? data['nickname'].toString().trim()
                   : (currentUser?.displayName?.trim().isNotEmpty == true
                   ? currentUser!.displayName!.trim()
-                  : _text(context, '戀戀拾光', 'Lianlian Shiguang'));
+                  : l10n.app_name);
               final playerId = data['playerID']?.toString().trim().isNotEmpty == true
                   ? data['playerID'].toString().trim()
                   : 'lianlian_shiguang';
@@ -306,6 +307,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
     required String avatarPath,
     required int flowerPoints,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         CircleAvatar(
@@ -352,7 +354,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                 ),
                 const SizedBox(width: 5),
                 Text(
-                  _text(context, '編輯個人檔案', 'Edit profile'),
+                  l10n.title_edit_profile,
                   style: GoogleFonts.notoSerifTc(
                     color: _previewColor,
                     fontSize: 12.5,
@@ -388,9 +390,9 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
         const SizedBox(height: 17),
         Row(
           children: [
-            Expanded(child: _previewStat('4', _text(context, '角色', 'Characters'), foreground, secondary)),
-            Expanded(child: _previewStat('102', _text(context, '動態', 'Posts'), foreground, secondary)),
-            Expanded(child: _previewStat('1', _text(context, '喜歡', 'Likes'), foreground, secondary)),
+            Expanded(child: _previewStat('4', l10n.theme_selection_characters, foreground, secondary)),
+            Expanded(child: _previewStat('102', l10n.theme_selection_posts, foreground, secondary)),
+            Expanded(child: _previewStat('1', l10n.profile_likes_label, foreground, secondary)),
           ],
         ),
         const SizedBox(height: 17),
@@ -400,8 +402,8 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
               child: _previewEditorialShortcut(
                 asset: 'assets/images/profile/calendar_base_mask.png',
                 overlayAsset: 'assets/images/profile/calendar_check_mask.png',
-                title: _text(context, '已簽到', 'Checked in'),
-                subtitle: _text(context, '今天已留下足跡', 'Today’s trace is saved'),
+                title: l10n.profile_check_in_done,
+                subtitle: l10n.profile_check_in_done_subtitle,
                 foreground: foreground,
                 secondary: secondary,
               ),
@@ -414,8 +416,8 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
             Expanded(
               child: _previewEditorialShortcut(
                 asset: 'assets/images/profile/heart_diary_mask.png',
-                title: _text(context, '心動日記', 'Diary'),
-                subtitle: _text(context, '記下心動瞬間', 'Keep a tender moment'),
+                title: l10n.tab_heartbeat_diary,
+                subtitle: l10n.profile_heartbeat_diary_subtitle,
                 foreground: foreground,
                 secondary: secondary,
               ),
@@ -528,6 +530,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
   }
 
   Widget _buildThemeCard(_ThemeOption option) {
+    final l10n = AppLocalizations.of(context)!;
     final selected = option.theme == _previewTheme;
     final accent = option.isCustom ? _previewCustomColor : option.accent;
     final labelColor = option.isDark ? Colors.white : const Color(0xFF353143);
@@ -535,7 +538,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
     return Semantics(
       button: true,
       selected: selected,
-      label: option.name(context),
+      label: _themeName(option.theme, l10n),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: () {
@@ -584,7 +587,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                 right: 7,
                 bottom: 10,
                 child: Text(
-                  option.name(context),
+                  _themeName(option.theme, l10n),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -604,6 +607,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
   }
 
   Widget _buildActions(Color foreground) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Row(
@@ -613,7 +617,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
             const SizedBox(width: 7),
             Flexible(
               child: Text(
-                '${_text(context, '目前預覽', 'Previewing')}：${_selectedOption.name(context)}',
+                l10n.theme_selection_previewing(_themeName(_selectedOption.theme, l10n)),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.notoSerifTc(color: foreground.withValues(alpha: 0.76), fontSize: 14),
               ),
@@ -637,7 +641,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                   child: _isApplying
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                       : Text(
-                    _text(context, '套用主題', 'Apply theme'),
+                    l10n.theme_selection_apply,
                     style: GoogleFonts.notoSerifTc(fontSize: 15.5, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -655,7 +659,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
                   ),
                   child: Text(
-                    _text(context, '恢復預設', 'Restore default'),
+                    l10n.theme_selection_restore_default,
                     style: GoogleFonts.notoSerifTc(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -668,12 +672,13 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
   }
 
   Future<void> _showColorPicker() async {
+    final l10n = AppLocalizations.of(context)!;
     Color pickedColor = _previewCustomColor;
     final result = await showDialog<Color>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(
-          _text(context, '挑選你的專屬色彩', 'Choose your color'),
+          l10n.theme_selection_choose_color,
           style: GoogleFonts.notoSerifTc(fontSize: 19, fontWeight: FontWeight.w600),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
@@ -694,7 +699,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, pickedColor),
-            child: Text(_text(context, '確定', 'Confirm')),
+            child: Text(l10n.editProfileConfirm),
           ),
         ],
       ),
@@ -717,6 +722,7 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
   }
 
   Future<void> _applyTheme() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isApplying = true);
     final notifier = context.read<ThemeNotifier>();
     if (_previewTheme == AppTheme.custom) {
@@ -730,10 +736,8 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
     HapticFeedback.mediumImpact();
     ToastUtils.showCenterToast(
       context,
-      _text(
-        context,
-        '已套用「${_selectedOption.name(context)}」',
-        'Theme applied',
+      l10n.theme_selection_applied(
+        _themeName(_selectedOption.theme, l10n),
       ),
       customIcon: Icons.check_rounded,
     );
@@ -743,8 +747,6 @@ class _ThemeSelectionPageState extends State<ThemeSelectionPage> {
 class _ThemeOption {
   const _ThemeOption({
     required this.theme,
-    required this.zhName,
-    required this.enName,
     required this.asset,
     required this.accent,
     this.isDark = false,
@@ -752,13 +754,9 @@ class _ThemeOption {
   });
 
   final AppTheme theme;
-  final String zhName;
-  final String enName;
   final String asset;
   final Color accent;
   final bool isDark;
   final bool isCustom;
 
-  String name(BuildContext context) =>
-      Localizations.localeOf(context).languageCode == 'zh' ? zhName : enName;
 }

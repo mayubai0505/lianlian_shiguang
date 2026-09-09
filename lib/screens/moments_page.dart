@@ -1295,7 +1295,7 @@ class MomentsPageState extends State<MomentsPage> {
                                         CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            '允許 AI 自動回覆玩家動態',
+                                            l10n.moments_auto_reply_title,
                                             style: GoogleFonts.notoSerifTc(
                                               color: onSurface.withValues(
                                                 alpha: 0.78,
@@ -1306,7 +1306,7 @@ class MomentsPageState extends State<MomentsPage> {
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
-                                            '開啟後，角色才會被系統安排回覆玩家。',
+                                            l10n.moments_auto_reply_description,
                                             style: GoogleFonts.notoSerifTc(
                                               color: onSurface.withValues(
                                                 alpha: 0.42,

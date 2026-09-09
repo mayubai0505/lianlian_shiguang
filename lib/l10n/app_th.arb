@@ -3372,5 +3372,781 @@
 
   "feedback_remove_image": "ลบรูปภาพ",
   "feedback_selected_image": "เลือกรูปภาพแล้ว",
-  "feedback_change_image": "เปลี่ยน"
+  "feedback_change_image": "เปลี่ยน",
+    "profile_backpack_title": "กระเป๋าและสิทธิพิเศษเฉพาะของฉัน",
+    "profile_backpack_total_spent": "สายสัมพันธ์โรแมนติกสะสมในปัจจุบัน",
+    "profile_backpack_total_spent_amount": "NT$ {amount}",
+    "@profile_backpack_total_spent_amount": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+
+    "profile_backpack_physical_gift_status": "สถานะการปลดล็อกกล่องของขวัญจริง:",
+    "profile_backpack_vip_gift_title": "【รักสูงสุด】กล่องของขวัญ VIP แบบจัดส่งเฉพาะ",
+    "profile_backpack_vip_gift_contents": "ประกอบด้วย: จดหมายเขียนด้วยมือตามสั่ง + ตุ๊กตาตัวแทนตัวละคร + จดหมายขอบคุณอย่างเป็นทางการ",
+
+    "profile_backpack_edit_shipping_info": "แก้ไขข้อมูลที่อยู่จัดส่ง",
+    "profile_backpack_unlock_shipping_info": "ปลดล็อกแล้ว! แตะเพื่อกรอกข้อมูลจัดส่ง",
+    "profile_backpack_shipping_registered": "ลงทะเบียนที่อยู่จัดส่งสำเร็จแล้ว เราจะจัดเตรียมของขวัญให้คุณโดยเร็วที่สุด!",
+
+    "profile_backpack_amount_remaining": "เหลืออีกเพียง NT$ {amount} เพื่อปลดล็อกรางวัลใหญ่แบบจัดส่ง!",
+    "@profile_backpack_amount_remaining": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+
+    "profile_backpack_hint": "เคล็ดลับ: สามารถดูรูปลักษณ์และกรอบรูปโปรไฟล์อื่น ๆ ได้ในกระเป๋า",
+    "profile_backpack_close": "ปิด",
+
+    "profile_physical_gift_title": "【รักสูงสุด】ปลดล็อกกล่องของขวัญจริง",
+    "profile_physical_gift_description": "ขอบคุณสำหรับการสนับสนุน 「LoveyDovey」อย่างเต็มเปี่ยม!\nโปรดกรอกข้อมูลจัดส่งด้านล่าง แล้วเราจะส่งจดหมายเขียนด้วยมือตามสั่งและตุ๊กตาตัวแทนตัวละครให้คุณ:",
+
+    "profile_physical_gift_recipient_name": "ชื่อจริงและนามสกุลของผู้รับ",
+    "profile_physical_gift_phone": "หมายเลขโทรศัพท์",
+    "profile_physical_gift_address": "ที่อยู่จัดส่งโดยละเอียด (รวมรหัสไปรษณีย์)",
+    "profile_physical_gift_character_name": "ชื่อตัวละครที่ต้องการรับเป็นตุ๊กตา",
+    "profile_physical_gift_character_hint": "ตัวอย่าง: กรอกชื่อตัวละครที่ต้องการ",
+
+    "profile_physical_gift_fill_later": "กรอกภายหลัง",
+    "profile_physical_gift_required_error": "โปรดกรอกข้อมูลจัดส่งและชื่อตัวละครที่ต้องการให้ครบถ้วน!",
+    "profile_physical_gift_submit_success": "ส่งข้อมูลจัดส่งสำเร็จแล้ว! โปรดรอรับเซอร์ไพรส์จริงจากเรา!",
+    "profile_physical_gift_confirm_submit": "ยืนยันการส่ง",
+
+    "profile_tooltip_announcement": "ประกาศ",
+    "profile_tooltip_settings": "การตั้งค่า",
+    "profile_tooltip_backpack": "กระเป๋าของฉัน",
+    "profile_backpack_menu_title": "กระเป๋าของฉัน",
+
+    "profile_about_me_title": "เกี่ยวกับฉัน",
+    "profile_tab_bio_title": "แนะนำตัว",
+
+    "profile_check_in_done": "เช็กอินแล้ว",
+    "profile_check_in": "เช็กอิน",
+    "profile_check_in_done_subtitle": "วันนี้คุณได้ทิ้งร่องรอยไว้แล้ว",
+    "profile_check_in_not_done_subtitle": "วันนี้ยังไม่ได้เช็กอิน",
+
+    "profile_likes_label": "ถูกใจ",
+    "profile_heartbeat_diary_subtitle": "บันทึกช่วงเวลาที่หัวใจเต้นแรง",
+
+    "profile_create_scene": "สร้างฉาก",
+
+    "profile_link_invalid": "รูปแบบลิงก์ไม่ถูกต้อง",
+    "profile_link_open_failed": "ไม่สามารถเปิดลิงก์นี้ได้",
+    "profile_link_default_name": "ลิงก์ของฉัน",
+
+    "profile_publish_moment_short": "เขียนถึงช่วงเวลานี้",
+    "edit_profile_default_link_name": "ลิงก์ของฉัน {index}",
+    "@edit_profile_default_link_name": {
+        "placeholders": {
+            "index": {
+                "type": "int"
+            }
+        }
+    },
+
+    "edit_profile_done": "เสร็จสิ้น",
+    "edit_profile_social_links": "โซเชียลมีเดียและลิงก์",
+    "edit_profile_add_link": "เพิ่มลิงก์",
+    "edit_profile_link_name_hint": "ชื่อลิงก์",
+    "edit_profile_link_url_hint": "ป้อนลิงก์",
+    "theme_name_starlight": "ม่วงแสงดาว",
+    "theme_name_sakura": "ชมพูซากุระ",
+    "theme_name_ocean": "น้ำเงินมหาสมุทร",
+    "theme_name_sunset": "ส้มพระอาทิตย์ตก",
+    "theme_name_mint": "มินต์พงไพร",
+    "theme_name_midnight": "โหมดกลางคืน",
+    "theme_name_custom": "สีที่กำหนดเอง",
+
+    "theme_selection_choose_theme": "เลือกสีธีม",
+    "theme_selection_title": "เปลี่ยนบรรยากาศ",
+    "theme_selection_description": "เลือกสีธีมที่คุณชื่นชอบ เพื่อให้ LoveyDovey สะท้อนความเป็นคุณมากยิ่งขึ้น",
+    "theme_selection_preview": "ดูตัวอย่าง",
+
+    "theme_selection_characters": "ตัวละคร",
+    "theme_selection_posts": "โพสต์",
+
+    "theme_selection_previewing": "กำลังแสดงตัวอย่าง: {themeName}",
+    "@theme_selection_previewing": {
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "theme_selection_apply": "ใช้ธีม",
+    "theme_selection_restore_default": "คืนค่าเริ่มต้น",
+    "theme_selection_choose_color": "เลือกสีเฉพาะของคุณ",
+
+    "theme_selection_applied": "ใช้ธีม “{themeName}” แล้ว",
+    "@theme_selection_applied": {
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "welcome_guide_help": "คู่มือการเล่น",
+    "welcome_guide_start": "เริ่มต้นการเดินทาง",
+    "welcome_guide_next": "ถัดไป",
+
+    "welcome_guide_welcome_title": "ยินดีต้อนรับสู่ 「LoveyDovey」",
+    "welcome_guide_welcome_description": "ที่นี่ ทุกการพบเจออาจกลายเป็นเรื่องราวที่ยากจะลืมเลือน ขอให้ 「LoveyDovey」ได้อยู่เคียงข้างคุณและร่วมสร้างความทรงจำอันงดงามที่เป็นของพวกคุณ",
+
+    "welcome_guide_chat_title": "โหมดแชท",
+    "welcome_guide_chat_description": "「LoveyDovey」มีโหมดแชทหลากหลาย โดยแต่ละโหมดมอบประสบการณ์การโต้ตอบที่แตกต่างกัน",
+
+    "welcome_guide_daily_title": "โหมดประจำวัน",
+    "welcome_guide_daily_description": "อยู่เคียงข้างกัน แบ่งปันเรื่องราวในชีวิต และเพลิดเพลินกับบทสนทนาสบาย ๆ",
+
+    "welcome_guide_story_title": "โหมดเนื้อเรื่อง",
+    "welcome_guide_story_description": "ดำเนินเรื่องราวของตัวละครและปลดล็อกเนื้อเรื่องกับการโต้ตอบพิเศษเพิ่มเติม",
+
+    "welcome_guide_immersive_title": "โหมดดื่มด่ำ",
+    "welcome_guide_immersive_description": "สัมผัสบทสนทนาที่น่าติดตามและสมจริงยิ่งขึ้น",
+
+    "welcome_guide_chat_more": "ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดแชทได้ที่ “วิธีเล่นเกม”",
+
+    "welcome_guide_encounter_title": "การพบพาน",
+    "welcome_guide_encounter_description": "ตัวละครแต่ละตัวมีบุคลิก เรื่องราว และเสียงที่เป็นเอกลักษณ์ เมื่อพบตัวละครที่ชื่นชอบ คุณสามารถเพิ่มเป็นเพื่อน พูดคุย โต้ตอบ แบ่งปันชีวิตประจำวัน และสร้างความทรงจำร่วมกัน",
+
+    "welcome_guide_more_title": "เนื้อหาเพิ่มเติม",
+    "welcome_guide_more_description": "ยังมีคอลเลกชัน ผู้สร้าง ร้านค้า และฟีเจอร์น่าสนใจอีกมากมาย ไปที่ “วิธีเล่นเกม” เพื่อดูข้อมูลเพิ่มเติม",
+    "preference_selection_max_error": "เลือกความชอบได้สูงสุด {count} รายการ",
+    "@preference_selection_max_error": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "preference_selection_save_failed": "ขณะนี้ไม่สามารถบันทึกความชอบได้ โปรดลองอีกครั้งภายหลัง",
+
+    "preference_selection_title": "คุณอยากพบเจอคนแบบไหน?",
+    "preference_selection_description": "เลือกประเภทที่คุณชื่นชอบ 3–5 แบบ เพื่อให้ LoveyDovey เริ่มทำความรู้จักคุณจากตรงนี้",
+    "preference_selection_recommendation_note": "หลังจากนี้ ระบบจะค่อย ๆ ปรับคำแนะนำตามการโต้ตอบจริงของคุณ เพื่อให้เหมาะกับคุณมากยิ่งขึ้น",
+    "preference_selection_selected": "เลือกแล้ว",
+    "preference_selection_start": "เริ่มต้นจากตรงนี้",
+
+    "preference_group_personality": "บุคลิกและนิสัย",
+    "preference_group_relationship_age": "ความสัมพันธ์・ช่วงอายุ",
+    "preference_group_story": "บรรยากาศของเรื่อง",
+
+    "preference_tag_gentle": "อ่อนโยน",
+    "preference_tag_cold": "เย็นชา",
+    "preference_tag_scheming": "เจ้าเล่ห์",
+    "preference_tag_tsundere": "ซึนเดเระ",
+    "preference_tag_loyal": "ซื่อสัตย์",
+    "preference_tag_yandere": "ยันเดเระ",
+    "preference_tag_mysterious": "ลึกลับ",
+    "preference_tag_healing": "เยียวยาใจ",
+    "preference_tag_gap_moe": "เสน่ห์ที่คาดไม่ถึง",
+
+    "preference_tag_older": "อายุมากกว่า",
+    "preference_tag_younger": "อายุน้อยกว่า",
+
+    "preference_tag_ceo": "ประธานจอมเผด็จการ",
+    "preference_tag_school": "โรงเรียน",
+    "preference_tag_workplace": "ที่ทำงาน",
+    "preference_tag_ancient": "ย้อนยุค",
+    "preference_tag_nonhuman": "ไม่ใช่มนุษย์",
+    "encounter_load_failed": "โหลดข้อมูลการพบพานไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "encounter_no_available_characters": "ขณะนี้ยังไม่มีตัวละครที่สามารถพบเจอได้",
+    "encounter_category_empty": "ขณะนี้ยังไม่มีตัวละครในหมวดหมู่นี้",
+
+    "encounter_category_all": "ทั้งหมด",
+    "encounter_category_xianxia": "เซียน侠",
+    "encounter_category_childhood_friend": "เพื่อนสมัยเด็ก",
+    "encounter_category_master_disciple": "อาจารย์และศิษย์",
+    "encounter_category_sweet_romance": "รักหวานละมุน",
+    "encounter_category_other": "อื่น ๆ",
+    "character_edit_tab_character_settings": "การตั้งค่าตัวละคร",
+    "character_edit_test": "ทดสอบ",
+
+    "character_edit_supporting_basic_info": "ข้อมูลพื้นฐาน",
+    "character_edit_supporting_main_setting": "ความสัมพันธ์กับตัวละครหลัก",
+    "character_edit_supporting_main_description": "อธิบายความสัมพันธ์ระหว่างตัวละครสมทบนี้กับตัวละครหลัก รวมถึงบทบาทของตัวละครในเรื่อง",
+
+    "character_edit_banner_preview_hint": "แตะรูปภาพเพื่อดูภาพขนาดใหญ่",
+    "character_edit_main_photo_hint": "รูปภาพแรกจะใช้เป็นรูปโปรไฟล์หลัก",
+    "character_edit_other_photos": "รูปภาพอื่นของตัวละคร",
+    "character_edit_photo_action_hint": "แตะรูปภาพเพื่อดูตัวอย่าง หรือแตะไอคอนดินสอเพื่อแก้ไขการตั้งค่ารูปภาพ",
+
+    "character_edit_over_limit_warning": "⚠ {label} เกินขีดจำกัด {count} ตัวอักษร โปรดแก้ไขก่อนเผยแพร่",
+    "@character_edit_over_limit_warning": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            },
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "memo_notification_channel_name": "การแจ้งเตือนบันทึกช่วยจำ",
+    "memo_notification_channel_description": "ตัวละครจะแจ้งเตือนผู้เล่นเกี่ยวกับบันทึกช่วยจำที่ตั้งไว้",
+
+    "memo_notification_title": "{characterName} เตือนคุณ",
+    "@memo_notification_title": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_tsundere": "ฉันไม่ได้เป็นห่วงคุณสักหน่อย แค่กลัวว่าคุณจะลืมเท่านั้น วันนี้อย่าลืม: {memoContent}",
+    "@memo_notification_tsundere": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_dominant": "ฉันจำกำหนดการให้แล้ว ทำให้เสร็จตรงเวลาด้วย วันนี้อย่าลืม: {memoContent}",
+    "@memo_notification_dominant": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_yandere": "ห้ามลืมนะ เพราะฉันจะจดจำเอาไว้ตลอด วันนี้อย่าลืม: {memoContent}",
+    "@memo_notification_yandere": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_gentle": "กลัวว่าคุณจะยุ่งจนลืม เลยอยากมาเตือนสักหน่อย วันนี้อย่าลืม: {memoContent}",
+    "@memo_notification_gentle": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_cold": "มีเรื่องหนึ่งที่ต้องเตือน วันนี้อย่าลืม: {memoContent}",
+    "@memo_notification_cold": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_sunny": "นี่ วันนี้ยังมีเรื่องสำคัญอีกอย่างนะ! อย่าลืม: {memoContent}",
+    "@memo_notification_sunny": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_lazy": "ถึงจะอยากนอนต่อ แต่ก็ต้องมาเตือนคุณอยู่ดี วันนี้อย่าลืม: {memoContent}",
+    "@memo_notification_lazy": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_older": "เด็กดี วันนี้อย่าลืมสิ่งที่ต้องทำนะ จำไว้ว่า: {memoContent}",
+    "@memo_notification_older": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_younger": "ฉันจำเอาไว้ให้คุณอย่างดีเลยนะ! วันนี้อย่าลืม: {memoContent}",
+    "@memo_notification_younger": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_mechanical": "เปิดใช้งานการแจ้งเตือนแล้ว ภารกิจวันนี้: {memoContent}",
+    "@memo_notification_mechanical": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_default": "วันนี้อย่าลืม: {memoContent}",
+    "@memo_notification_default": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+    "recommendation_load_failed": "ขณะนี้ไม่สามารถโหลดคำแนะนำได้ โปรดลองอีกครั้งภายหลัง",
+    "recommendation_reload": "โหลดใหม่",
+    "recommendation_empty": "ขณะนี้ยังไม่มีตัวละครที่สามารถแนะนำได้",
+
+    "recommendation_title": "การพบพานที่เลือกมาเพื่อคุณ",
+
+    "recommendation_featured_title": "ลองพบกับพวกเขาก่อน",
+    "recommendation_featured_subtitle": "เราจะแสดงการพบพานที่เหมาะกับคุณที่สุดไว้ก่อน",
+
+    "recommendation_matched_behavior_title": "ใกล้เคียงกับความชอบของคุณมากขึ้น",
+    "recommendation_matched_initial_title": "อ้างอิงจากความชอบที่คุณเลือกไว้ตอนแรก",
+    "recommendation_matched_behavior_subtitle": "ตั้งแต่หลังวันที่ 4 เป็นต้นไป การโต้ตอบล่าสุดของคุณจะส่งผลต่อลำดับด้วย",
+    "recommendation_matched_initial_subtitle": "ตอนนี้เราจะใช้แท็กที่คุณเลือกไว้ตอนแรกเพื่อช่วยจำกัดตัวเลือก",
+
+    "recommendation_explore_title": "บางทีคุณอาจชอบ",
+    "recommendation_explore_subtitle": "เราจะเก็บตัวเลือกแบบสุ่มไว้บางส่วน เพื่อให้คุณได้พบคนที่แตกต่างออกไปบ้างเป็นครั้งคราว",
+
+    "recommendation_refreshing": "กำลังจัดเตรียมการพบพานครั้งใหม่ให้คุณ……",
+
+    "recommendation_badge_for_you": "แนะนำสำหรับคุณ",
+    "recommendation_badge_featured": "การพบพานที่คัดสรร",
+    "recommendation_badge_explore": "สำรวจ",
+
+    "recommendation_default_occupation_hint": "ลองเปิดดูสิ บางทีนี่อาจเป็นการพบพานครั้งต่อไปที่ทำให้คุณใจเต้น",
+    "recommendation_explore_fallback": "ลองเปลี่ยนแนวดูบ้าง บางทีอาจตรงกับสิ่งที่ทำให้หัวใจคุณเต้นแรงพอดี",
+
+    "recommendation_behavior_hint_similar_type": "ช่วงนี้คุณมักใช้เวลากับตัวละครประเภทนี้",
+    "recommendation_behavior_hint_forming": "ความชอบจากการโต้ตอบของคุณกำลังค่อย ๆ เป็นรูปเป็นร่าง",
+    "recommendation_behavior_hint_recent": "คัดเลือกจากการโต้ตอบล่าสุดของคุณ",
+
+    "recommendation_reason_liked_tags": "เพราะคุณชอบ・{tags}",
+    "@recommendation_reason_liked_tags": {
+        "placeholders": {
+            "tags": {
+                "type": "String"
+            }
+        }
+    },
+
+    "recommendation_reason_popular": "ช่วงนี้มีหลายคนเข้ามาดูตัวละครนี้",
+    "recommendation_reason_default": "บางทีนี่อาจเป็นการพบพานครั้งต่อไปที่ลงตัวสำหรับคุณ",
+    "scene_delete_title": "ลบฉากหรือไม่?",
+
+    "scene_delete_content": "ยืนยันที่จะลบ “{title}” หรือไม่? เมื่อลบแล้วจะไม่สามารถกู้คืนได้",
+    "@scene_delete_content": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "scene_unnamed": "ฉากที่ยังไม่มีชื่อ",
+    "scene_cancel": "ยกเลิก",
+    "scene_delete": "ลบ",
+    "scene_delete_failed": "ลบไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+
+    "scene_start_failed": "ขณะนี้ไม่สามารถเริ่มฉากได้ โปรดลองอีกครั้งภายหลัง",
+
+    "scene_end_title": "จบฉากหรือไม่?",
+    "scene_end_content": "เมื่อจบฉากแล้ว คุณจะกลับไปยังแชททั่วไป แต่ประวัติการสนทนาปัจจุบันจะไม่ถูกลบ",
+    "scene_end_action": "จบฉาก",
+    "scene_ended": "ฉากจบลงแล้ว",
+    "scene_end_failed": "ขณะนี้ไม่สามารถจบฉากได้ โปรดลองอีกครั้งภายหลัง",
+
+    "scene_active_label": "กำลังดำเนินอยู่",
+
+    "scene_opening": "บทเปิดของตัวละคร: {opening}",
+    "@scene_opening": {
+        "placeholders": {
+            "opening": {
+                "type": "String"
+            }
+        }
+    },
+
+    "scene_edit": "แก้ไข",
+    "scene_start": "เริ่มฉาก",
+
+    "scene_creator_load_failed": "โหลดฉากจากผู้สร้างไม่สำเร็จ",
+    "scene_creator_empty_title": "ขณะนี้ยังไม่มีฉากจากผู้สร้าง",
+    "scene_creator_empty_body": "ผู้สร้างตัวละครนี้ยังไม่ได้สร้างเรื่องราวเพิ่มเติม",
+
+    "scene_custom_load_failed": "โหลดฉากที่สร้างเองไม่สำเร็จ",
+    "scene_custom_empty_title": "ยังไม่มีฉากที่คุณสร้างเอง",
+    "scene_custom_empty_body": "สร้างเรื่องราวที่เป็นของคุณเพียงคนเดียวสำหรับห้องแชทนี้",
+    "scene_add": "เพิ่มฉาก",
+
+    "scene_title": "ฉาก",
+    "scene_tab_creator": "ฉากจากผู้สร้าง",
+    "scene_tab_custom": "สร้างด้วยตัวเอง",
+    "chat_book_player": "ผู้เล่น",
+
+    "chat_book_title": "บันทึกการสนทนา",
+    "chat_book_export_pdf": "ส่งออก PDF",
+
+    "chat_book_brand": "— LoveyDovey",
+    "chat_book_change_cover": "เปลี่ยนปก",
+    "chat_book_cover_subtitle": "ช่วงเวลาที่เรามีร่วมกัน · หนังสือที่ระลึกบทสนทนา",
+    "chat_book_choose_cover": "เลือกปกหนังสือที่ระลึก",
+
+    "chat_book_initial_story": "เรื่องราวเริ่มต้น",
+
+    "chat_book_transcript_title": "{characterName} · บันทึกการสนทนา",
+    "@chat_book_transcript_title": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_book_continuation": "{name} · ต่อ",
+    "@chat_book_continuation": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_book_previous_page": "หน้าก่อนหน้า",
+    "chat_book_next_page": "หน้าถัดไป",
+
+    "chat_book_photo_message": "〔รูปภาพ〕",
+    "chat_book_audio_message": "〔ข้อความเสียง〕",
+    "chat_book_generic_message": "〔ข้อความ〕",
+
+    "chat_book_export_failed": "ส่งออก PDF ไม่สำเร็จ: {error}",
+    "@chat_book_export_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "email_policy_open_failed": "ไม่สามารถเปิด {title} ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง",
+    "@email_policy_open_failed": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_read_instruction": "โปรดเปิดและอ่าน {title} ฉบับเต็มก่อน เมื่ออ่านเสร็จแล้วให้กลับมาที่ 「LoveyDovey」จากนั้นจึงจะสามารถกด “ฉันอ่านและยอมรับแล้ว” ได้",
+    "@email_policy_read_instruction": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_opening": "กำลังเปิด……",
+
+    "email_policy_read_full": "อ่าน {title} ฉบับเต็ม",
+    "@email_policy_read_full": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_opened_ready": "เปิด {title} แล้ว คุณสามารถยืนยันการยอมรับได้",
+    "@email_policy_opened_ready": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_not_opened": "ยังไม่ได้เปิด {title}",
+    "@email_policy_not_opened": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_cancel_login": "ยกเลิกการเข้าสู่ระบบ",
+    "email_policy_agree": "ฉันอ่านและยอมรับแล้ว",
+
+    "email_policy_status_check_failed": "ขณะนี้ไม่สามารถตรวจสอบสถานะการยอมรับข้อกำหนดได้ โปรดลองอีกครั้งภายหลัง",
+
+    "email_policy_login_notice": "เมื่อลงชื่อเข้าใช้ครั้งแรกหรือมีการอัปเดตข้อกำหนด ระบบจะขอให้คุณอ่านและยอมรับข้อกำหนดการให้บริการกับนโยบายความเป็นส่วนตัว",
+
+    "email_policy_refresh": "รีเฟรช",
+    "email_policy_page_load_failed": "โหลดหน้าไม่สำเร็จ",
+    "email_policy_check_network": "โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง",
+    "email_policy_reload": "โหลดใหม่","login_method_info_google_title": "เข้าสู่ระบบอย่างรวดเร็วด้วย Google",
+    "login_method_info_apple_title": "เข้าสู่ระบบด้วย Apple",
+    "login_method_info_facebook_title": "เข้าสู่ระบบด้วย Facebook",
+    "login_method_info_email_title": "บัญชี LoveyDovey (อีเมล)",
+    "login_method_info_email_provider": "บัญชี LoveyDovey (อีเมล)",
+
+    "login_method_info_content": "เข้าสู่ระบบ 「LoveyDovey」ด้วย {providerName}\n\nโปรดทราบ:\n\n• {providerName} และวิธีเข้าสู่ระบบอื่น ๆ ใช้ระบบบัญชีที่แยกจากกัน\n\n• หากสร้างบัญชีด้วย {providerName} โปรดใช้วิธีเดิมในการเข้าสู่ระบบต่อไป\n\n• ข้อมูลตัวละคร ประวัติการแชท และเนื้อหาที่ซื้อจะไม่เชื่อมโยงกับบัญชีจากวิธีเข้าสู่ระบบอื่น\n\nแนะนำให้ใช้วิธีเข้าสู่ระบบเดิมต่อไปหลังจากเข้าสู่ระบบครั้งแรก เพื่อป้องกันการสร้างบัญชีแยกที่ไม่สามารถใช้ข้อมูลร่วมกันได้",
+    "@login_method_info_content": {
+        "placeholders": {
+            "providerName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "login_method_info_got_it": "เข้าใจแล้ว",
+    "creator_studio_delete_failed": "ลบไม่สำเร็จ: {error}",
+    "@creator_studio_delete_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_studio_subtitle": "เก็บรวบรวมแรงบันดาลใจ จัดระเบียบตัวละคร และค่อย ๆ สร้างผลงานของคุณให้สมบูรณ์",
+
+    "creator_studio_load_failed": "โหลดสตูดิโอไม่สำเร็จ: {error}",
+    "@creator_studio_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_studio_add_character": "เพิ่มตัวละคร",
+
+    "creator_studio_public_title": "ตัวละครสาธารณะ",
+    "creator_studio_public_subtitle": "เผยแพร่แล้วและผู้เล่นคนอื่นสามารถค้นพบได้",
+    "creator_studio_public_empty": "ขณะนี้ยังไม่มีตัวละครสาธารณะ",
+
+    "creator_studio_private_title": "ตัวละครส่วนตัว",
+    "creator_studio_private_subtitle": "มีเพียงคุณเท่านั้นที่มองเห็น",
+    "creator_studio_private_empty": "ขณะนี้ยังไม่มีตัวละครส่วนตัว",
+
+    "creator_studio_draft_title": "ฉบับร่าง",
+    "creator_studio_draft_subtitle": "ผลงานที่ยังไม่เสร็จสมบูรณ์",
+    "creator_studio_draft_empty": "ขณะนี้ยังไม่มีฉบับร่างที่ยังไม่เสร็จ",
+
+    "creator_studio_draft_empty_title": "ยังไม่มีฉบับร่างที่นี่",
+    "creator_studio_draft_empty_hint": "เมื่อมีแรงบันดาลใจ ลองจดเก็บไว้ที่นี่ก่อน",
+
+    "creator_studio_status_public": "สาธารณะ",
+    "creator_studio_status_private": "ส่วนตัว",
+    "creator_studio_status_draft": "ฉบับร่าง",
+
+    "creator_studio_character_load_failed": "โหลดข้อมูลตัวละครไม่สำเร็จ",
+
+    "creator_studio_delete_draft_tooltip": "ลบฉบับร่าง",
+
+    "creator_studio_unnamed_creator": "ผู้สร้างที่ยังไม่มีชื่อ",
+    "creator_studio_no_bio": "ยังไม่ได้กรอกคำแนะนำตัว",
+    "chat_input_tools": "ฟังก์ชัน",
+    "chat_input_expand_tools": "แสดงฟังก์ชัน",
+    "chat_input_stop": "หยุด",
+    "chat_input_send": "ส่ง",
+    "chat_side_menu_section_chat": "แชท",
+    "chat_side_menu_section_relationship": "ความสัมพันธ์",
+    "chat_side_menu_section_memory": "จัดการความทรงจำ",
+    "character_navigator_confidential_title": "แฟ้มลับ",
+    "character_navigator_unavailable_message": "ตัวละครนี้อาจถูกเปลี่ยนเป็นส่วนตัว นำออกจากแพลตฟอร์ม เก็บถาวรเนื่องจากละเมิดกฎ หรือถูกลบ",
+    "character_navigator_got_it": "เข้าใจแล้ว",
+
+    "character_navigator_load_failed_title": "โหลดไม่สำเร็จ",
+    "character_navigator_load_failed_message": "ไม่สามารถโหลดข้อมูลตัวละครได้ชั่วคราว โปรดลองอีกครั้งภายหลัง",
+    "character_navigator_confirm": "ตกลง",
+  "character_profile_add_bookmark": "บันทึกตัวละคร",
+  "character_profile_remove_bookmark": "ยกเลิกการบันทึก",
+
+  "character_profile_pronoun_female": "เธอ",
+  "character_profile_pronoun_male": "เขา",
+  "character_profile_pronoun_neutral": "ตัวละครนี้",
+    "chat_home_pin_limit_reached": "ปักหมุดห้องแชทได้สูงสุด 3 ห้อง โปรดยกเลิกการปักหมุดห้องแชทอื่นก่อน",
+    "chat_home_pinned_success": "ปักหมุดห้องแชทแล้ว",
+    "chat_home_unpinned_success": "ยกเลิกการปักหมุดแล้ว",
+
+    "chat_home_pin_update_failed": "อัปเดตสถานะการปักหมุดไม่สำเร็จ: {error}",
+    "@chat_home_pin_update_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_home_unpin": "ยกเลิกการปักหมุด",
+    "chat_home_pin": "ปักหมุดห้องแชท",
+
+    "chat_home_time_label": "เวลา: {time}",
+    "@chat_home_time_label": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "main_check_in_already_done": "วันนี้คุณเช็กอินแล้ว",
+    "nav_recommend": "แนะนำ",
+    "moments_auto_reply_title": "อนุญาตให้ AI ตอบกลับโพสต์ของผู้เล่นโดยอัตโนมัติ",
+    "moments_auto_reply_description": "เมื่อเปิดใช้งาน ระบบอาจเลือกตัวละครนี้ให้ตอบกลับโพสต์ของผู้เล่น",
+    "mailShareTooltip": "แชร์จดหมาย",
+    "mailOriginalQuestionLabel": "คำถามเดิมของคุณ",
+    "hidden_moments_empty_hint": "ขณะนี้ยังไม่มีโพสต์ที่ซ่อนอยู่",
+    "moment_search_unavailable": "ไม่สามารถใช้การค้นหาได้ชั่วคราว โปรดลองอีกครั้งภายหลัง",
+    "moment_search_hint": "ค้นหาโพสต์สาธารณะ ตัวละคร หรือผู้สร้าง",
+    "moment_search_instruction": "ป้อนเนื้อหาโพสต์ ชื่อตัวละคร หรือชื่อผู้สร้าง",
+    "moment_search_no_results": "ไม่พบโพสต์สาธารณะที่เกี่ยวข้อง",
+    "settingsErrorTitle": "เกิดข้อผิดพลาด",
+    "settingsChangePasswordSubtitle": "ยืนยันรหัสผ่านปัจจุบันแล้วตั้งรหัสผ่านใหม่สำหรับเข้าสู่ระบบ",
+    "settingsCreatorGuidelines": "แนวทางสำหรับผู้สร้าง",
+    "settingsPlayGuide": "คู่มือการเล่น",
+    "language_selection_subtitle": "เลือกภาษาที่คุณถนัด",
+    "search_character_hint": "ค้นหาตัวละคร ผู้สร้าง อาชีพ หรือแท็ก",
+    "search_character_clear": "ล้าง",
+    "search_character_recent": "การค้นหาล่าสุด",
+    "search_character_load_failed": "โหลดข้อมูลการค้นหาไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "search_character_popular": "ตัวละครยอดนิยมช่วงนี้",
+    "search_character_result_count": "พบตัวละคร {count} ตัว",
+    "@search_character_result_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_tab_monthly": "แพ็กรายเดือน",
+
+    "shop_joined_days": "✦ คุณอยู่กับ LoveyDovey มาแล้ว {days} วัน ✦",
+    "@shop_joined_days": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+
+    "shop_vip_tier_1_title": "รักแรกพบ",
+    "shop_vip_tier_1_reward": "คะแนนดอกไม้ 20 คะแนน + ฉายาผู้เล่นใหม่สุดพิเศษ",
+
+    "shop_vip_tier_2_title": "แสงริบหรี่แห่งหัวใจ",
+    "shop_vip_tier_2_reward": "กรอบรูปโปรไฟล์สุดพิเศษ 【แสงริบหรี่แห่งหัวใจ】",
+
+    "shop_vip_tier_3_title": "เสียงกระซิบใต้ดวงดาว",
+    "shop_vip_tier_3_reward": "กรอบข้อความแชทสุดพิเศษ + คะแนนดอกไม้ 50 คะแนน",
+
+    "shop_vip_tier_4_title": "อาทิตย์อัสดงแสนโรแมนติก",
+    "shop_vip_tier_4_reward": "ไอคอนแอปสุดพิเศษ",
+
+    "shop_vip_tier_5_title": "หัวใจเต้นแรง",
+    "shop_vip_tier_5_reward": "เอฟเฟกต์แตะหน้าจอ (Lottie) + คะแนนดอกไม้ 100 คะแนน",
+
+    "shop_vip_tier_6_title": "คำสาบานนิรันดร์",
+    "shop_vip_tier_6_reward": "กรอบรูปโปรไฟล์เคลื่อนไหวขั้นสูง + คะแนนดอกไม้ 200 คะแนน",
+
+    "shop_vip_tier_7_title": "การบรรจบของสองวิญญาณ",
+    "shop_vip_tier_7_reward": "เอฟเฟกต์กรอบข้อความแชทเคลื่อนไหว + ฉายาขั้นสูงสุดพิเศษ",
+
+    "shop_vip_tier_8_title": "เฝ้ารอเพียงคุณ",
+    "shop_vip_tier_8_reward": "ป้ายชื่อเคลื่อนไหวระดับสูงสุด + คะแนนดอกไม้ 500 คะแนน",
+
+    "shop_vip_tier_9_title": "ทางช้างเผือกเจิดจรัส",
+    "shop_vip_tier_9_reward": "เอฟเฟกต์เข้า Lottie สุดพิเศษ + ฝ่ายบริการลูกค้าเฉพาะ",
+
+    "shop_vip_tier_10_title": "รักสูงสุด",
+    "shop_vip_tier_10_reward": "【กล่องของขวัญ VIP แบบจัดส่งเฉพาะ】 (จดหมายเขียนด้วยมือ + ตุ๊กตาตัวละคร)",
+
+    "shop_vip_total_bond": "สายสัมพันธ์โรแมนติกสะสม",
+
+    "shop_vip_all_unlocked": "คุณปลดล็อกสิทธิพิเศษระดับสูงสุดทั้งหมดแล้ว!",
+
+    "shop_vip_next_unlock": "เติมเงินอีก NT$ {amount} เพื่อปลดล็อกระดับถัดไป",
+    "@shop_vip_next_unlock": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "call_connecting": "กำลังเชื่อมต่อสาย...",
+
+    "call_listening_auto_send": "กำลังฟัง... (ระบบจะส่งอัตโนมัติเมื่อพูดจบ)",
+
+    "call_listening_release_to_send": "กำลังฟัง... (ปล่อยนิ้วเพื่อส่ง)",
+
+    "call_sending_transcript": " {text}\n\n(กำลังส่ง...)",
+    "@call_sending_transcript": {
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "help_translation_fallback": "ขณะนี้ยังไม่มีคู่มือการเล่นในภาษานี้ ระบบจะแสดงเป็นภาษาจีนตัวเต็มชั่วคราว",
+
+    "help_all_categories": "ทั้งหมด",
+
+    "help_subtitle_companion": "ฟังก์ชันประจำวันและเครื่องมือช่วยเหลือ",
+    "help_subtitle_ai_chat": "การแชต เสียง และการโต้ตอบอัจฉริยะ",
+    "help_subtitle_creation": "การตั้งค่าตัวละครและฟังก์ชันสร้างสรรค์",
+    "help_subtitle_explore": "สำรวจตัวละครและเนื้อหาภายในเกม",
+    "help_subtitle_care": "การอยู่เคียงข้างอย่างอ่อนโยนและความใส่ใจในทุกวัน",
+    "help_subtitle_general": "ฟังก์ชันทั่วไปและคำแนะนำการใช้งาน",
+    "chat_interact_fun": "กิจกรรมสนุก ๆ",
+    "memo_notification_permission_missing": "ยังไม่ได้เปิดสิทธิ์การแจ้งเตือน ระบบจะยังคงบันทึกโน้ตไว้ แต่จะไม่แสดงการแจ้งเตือนจากระบบ",
+
+    "memo_saved_with_reminder": "บันทึกโน้ตแล้ว {characterName} จะคอยเตือนคุณ!",
+    "@memo_saved_with_reminder": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_saved_without_notification": "บันทึกโน้ตแล้ว แต่ยังไม่ได้เปิดสิทธิ์การแจ้งเตือน",
+
+    "memo_updated_with_reminder": "อัปเดตโน้ตแล้ว {characterName} จะคอยเตือนคุณ!",
+    "@memo_updated_with_reminder": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_updated_without_notification": "อัปเดตโน้ตแล้ว แต่ขณะนี้ยังไม่ได้รับสิทธิ์การแจ้งเตือน",
+
+    "memo_load_error": "เกิดข้อผิดพลาดขณะโหลดข้อมูล: {error}",
+    "@memo_load_error": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "story_summary_content_required": "เนื้อเรื่องต้องไม่เว้นว่าง",
+
+    "story_summary_edit_hint": "เขียนเรื่องราวของพวกคุณ...",
+    "profile_section_basic_info": "ข้อมูลพื้นฐาน",
+    "profile_section_about_me": "เกี่ยวกับฉัน",
+    "dice_duel_you": "คุณ",
+
+    "dice_duel_result_saved": "บันทึกผลการประลองแล้ว!",
+
+    "dice_duel_rolling": "กำลังรวบรวมพลังแห่งจักรวาล..."
 }

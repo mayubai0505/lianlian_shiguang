@@ -1,5 +1,13 @@
 {
   "en": [
     "moment_forward_chat_preview"
+  ],
+
+  "id": [
+    "mailOriginalQuestionLabel"
+  ],
+
+  "zh_Hans": [
+    "story_summary_edit_hint"
   ]
 }

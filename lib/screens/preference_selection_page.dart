@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'main_page.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class PreferenceSelectionPage extends StatefulWidget {
   const PreferenceSelectionPage({super.key});
@@ -60,6 +62,7 @@ class _PreferenceSelectionPageState
           _selected.length <= _maxSelection;
 
   void _toggleTag(String tag) {
+    final l10n = AppLocalizations.of(context)!;
     if (_isSaving) return;
 
     if (_selected.contains(tag)) {
@@ -74,7 +77,7 @@ class _PreferenceSelectionPageState
           SnackBar(
             behavior: SnackBarBehavior.floating,
             content: Text(
-              '最多選擇 $_maxSelection 個偏好。',
+              l10n.preference_selection_max_error(_maxSelection),
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
@@ -86,6 +89,7 @@ class _PreferenceSelectionPageState
   }
 
   Future<void> _savePreferences() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_canContinue || _isSaving) return;
 
     setState(() => _isSaving = true);
@@ -135,7 +139,7 @@ class _PreferenceSelectionPageState
           SnackBar(
             behavior: SnackBarBehavior.floating,
             content: Text(
-              '目前無法儲存偏好，請稍後再試。',
+              l10n.preference_selection_save_failed,
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
@@ -148,6 +152,7 @@ class _PreferenceSelectionPageState
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final onSurface = colors.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return PopScope(
       canPop: !_isSaving,
@@ -184,7 +189,7 @@ class _PreferenceSelectionPageState
                           ),
                           const SizedBox(height: 14),
                           Text(
-                            '你想遇見怎樣的人？',
+                            l10n.preference_selection_title,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
@@ -195,8 +200,7 @@ class _PreferenceSelectionPageState
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            '選擇 3～5 個你喜歡的類型，'
-                                '戀戀會先從這裡開始認識你。',
+                            l10n.preference_selection_description,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 14,
                               height: 1.8,
@@ -236,8 +240,7 @@ class _PreferenceSelectionPageState
                               ),
                             ),
                             child: Text(
-                              '之後也會依照你的實際互動，'
-                                  '慢慢調整更適合你的推薦。',
+                              l10n.preference_selection_recommendation_note,
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 12.5,
                                 height: 1.7,
@@ -295,7 +298,7 @@ class _PreferenceSelectionPageState
                             CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '已選',
+                                l10n.preference_selection_selected,
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 11.5,
                                   color: onSurface.withValues(
@@ -356,7 +359,7 @@ class _PreferenceSelectionPageState
                                 ),
                               )
                                   : Text(
-                                '就從這裡開始',
+                                l10n.preference_selection_start,
                                 style:
                                 GoogleFonts.notoSerifTc(
                                   fontSize: 15,
@@ -379,18 +382,77 @@ class _PreferenceSelectionPageState
     );
   }
 
+  String _preferenceGroupLabel(
+      String value,
+      AppLocalizations l10n,
+      ) {
+    switch (value) {
+      case '性格氣質':
+        return l10n.preference_group_personality;
+      case '關係・年齡感':
+        return l10n.preference_group_relationship_age;
+      case '故事氛圍':
+        return l10n.preference_group_story;
+      default:
+        return value;
+    }
+  }
+
+  String _preferenceTagLabel(
+      String value,
+      AppLocalizations l10n,
+      ) {
+    switch (value) {
+      case '溫柔':
+        return l10n.preference_tag_gentle;
+      case '高冷':
+        return l10n.preference_tag_cold;
+      case '腹黑':
+        return l10n.preference_tag_scheming;
+      case '傲嬌':
+        return l10n.preference_tag_tsundere;
+      case '忠犬':
+        return l10n.preference_tag_loyal;
+      case '病嬌':
+        return l10n.preference_tag_yandere;
+      case '神秘':
+        return l10n.preference_tag_mysterious;
+      case '治癒':
+        return l10n.preference_tag_healing;
+      case '反差感':
+        return l10n.preference_tag_gap_moe;
+      case '年上':
+        return l10n.preference_tag_older;
+      case '年下':
+        return l10n.preference_tag_younger;
+      case '霸總':
+        return l10n.preference_tag_ceo;
+      case '校園':
+        return l10n.preference_tag_school;
+      case '職場':
+        return l10n.preference_tag_workplace;
+      case '古風':
+        return l10n.preference_tag_ancient;
+      case '非人':
+        return l10n.preference_tag_nonhuman;
+      default:
+        return value;
+    }
+  }
+
   Widget _buildGroup(
       BuildContext context,
       _PreferenceGroup group,
       ) {
     final colors = Theme.of(context).colorScheme;
     final onSurface = colors.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          group.title,
+          _preferenceGroupLabel(group.title, l10n),
           style: GoogleFonts.notoSerifTc(
             fontSize: 13,
             fontWeight: FontWeight.w700,
@@ -441,7 +503,7 @@ class _PreferenceSelectionPageState
                         : null,
                   ),
                   child: Text(
-                    tag,
+                    _preferenceTagLabel(tag, l10n),
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 14,
                       fontWeight: selected

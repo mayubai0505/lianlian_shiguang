@@ -470,7 +470,7 @@ class PurchaseService extends ChangeNotifier {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(l10n.ok_button),
           ),
         ],
       ),

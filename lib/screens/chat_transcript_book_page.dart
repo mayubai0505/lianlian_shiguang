@@ -12,6 +12,8 @@ import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../utils/image_utils.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class ChatTranscriptBookPage extends StatefulWidget {
   final String characterName;
@@ -125,6 +127,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
   Future<void> _loadPlayerProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
+    final l10n = AppLocalizations.of(context)!;
 
     String name = _resolvedPlayerName;
     String avatarPath = user.photoURL?.trim() ?? '';
@@ -156,7 +159,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
     if (!mounted) return;
 
     if (name.trim().isEmpty) {
-      name = '玩家';
+      name = l10n.chat_book_player;
     }
 
     if (avatarPath.trim().isEmpty) {
@@ -729,6 +732,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Color.lerp(
@@ -749,7 +753,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
           onPressed: () => Navigator.maybePop(context),
         ),
         title: Text(
-          '對話紀錄',
+          l10n.chat_book_title,
           style: GoogleFonts.notoSerifTc(
             fontSize: 17,
             fontWeight: FontWeight.w600,
@@ -759,7 +763,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            tooltip: '匯出 PDF',
+            tooltip: l10n.chat_book_export_pdf,
             onPressed: _isExporting ? null : _exportPdf,
             icon: _isExporting
                 ? SizedBox(
@@ -851,6 +855,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     // 書頁直接吃滿 PageView 可用空間，不再用固定 AspectRatio
     // 縮成畫面中央的一張小卡。
@@ -954,7 +959,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
                     child: Opacity(
                       opacity: 0.22,
                       child: Text(
-                        '— 戀戀拾光',
+                        l10n.chat_book_brand,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 8.0,
                           fontWeight: FontWeight.w500,
@@ -991,6 +996,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
   Widget _buildCoverPage(ThemeData theme) {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return Stack(
       fit: StackFit.expand,
@@ -1052,7 +1058,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        '更換封面',
+                        l10n.chat_book_change_cover,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w600,
@@ -1093,7 +1099,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                '與你的拾光 · 對話紀念書',
+                l10n.chat_book_cover_subtitle,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 12,
                   letterSpacing: 1.3,
@@ -1102,7 +1108,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
               ),
               const SizedBox(height: 20),
               Text(
-                '— 戀戀拾光',
+                l10n.chat_book_brand,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -1122,6 +1128,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
 
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     final selected = await showModalBottomSheet<String>(
       context: context,
@@ -1142,7 +1149,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '選擇紀念書封面',
+                  l10n.chat_book_choose_cover,
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -1231,6 +1238,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
       ) {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1247,7 +1255,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
           ),
           const SizedBox(height: 5),
           Text(
-            '初始故事',
+            l10n.chat_book_initial_story,
             style: GoogleFonts.notoSerifTc(
               fontSize: 11.5,
               color: primary.withValues(alpha: 0.62),
@@ -1286,6 +1294,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
       ) {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1295,7 +1304,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
             children: [
               Expanded(
                 child: Text(
-                  '${widget.characterName} · 對話紀錄',
+                  l10n.chat_book_transcript_title(widget.characterName),
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -1339,13 +1348,15 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
     final isAi = message.sender == 'ai' || message.isAI == true;
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
-
+    final l10n = AppLocalizations.of(context)!;
     final baseName = isAi
         ? widget.characterName
         : (_resolvedPlayerName.trim().isNotEmpty
         ? _resolvedPlayerName
-        : '玩家');
-    final name = slice.isContinuation ? '$baseName · 續' : baseName;
+        : l10n.chat_book_player);
+    final name = slice.isContinuation
+        ? l10n.chat_book_continuation(baseName)
+        : baseName;
 
     final avatarPath =
     isAi ? widget.characterAvatarPath : _playerAvatarPath;
@@ -1493,6 +1504,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
   Widget _buildPageNavigator(ThemeData theme) {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return SafeArea(
       top: false,
@@ -1501,7 +1513,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
         child: Row(
           children: [
             IconButton(
-              tooltip: '上一頁',
+              tooltip: l10n.chat_book_previous_page,
               onPressed: _currentPage <= 0
                   ? null
                   : () {
@@ -1544,7 +1556,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
               ),
             ),
             IconButton(
-              tooltip: '下一頁',
+              tooltip: l10n.chat_book_next_page,
               onPressed: _currentPage >= _pages.length - 1
                   ? null
                   : () {
@@ -1594,21 +1606,23 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
     required String text,
     required String type,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     if (text.isNotEmpty && text != '[語音訊息]') {
       return text;
     }
 
     switch (type) {
       case 'image':
-        return '〔照片〕';
+        return l10n.chat_book_photo_message;
       case 'audio':
-        return '〔語音訊息〕';
+        return l10n.chat_book_audio_message;
       default:
-        return text.isEmpty ? '〔訊息〕' : text;
+        return text.isEmpty ? l10n.chat_book_generic_message : text;
     }
   }
 
   Future<void> _exportPdf() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_isExporting) return;
 
     setState(() {
@@ -1632,7 +1646,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
 
       await Share.shareXFiles(
         [file],
-        text: '${widget.characterName} · 對話紀錄',
+        text: l10n.chat_book_transcript_title(widget.characterName),
       );
     } catch (e) {
       if (!mounted) return;
@@ -1640,7 +1654,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '匯出 PDF 失敗：$e',
+            l10n.chat_book_export_failed(e.toString()),
             style: GoogleFonts.notoSerifTc(),
           ),
         ),
@@ -1656,7 +1670,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
 
   Future<Uint8List> _buildPdfBytes() async {
     final document = pw.Document();
-
+    final l10n = AppLocalizations.of(context)!;
     // PDF 主字體改成與 App 視覺一致的 Serif 系列。
     final regularFont = await PdfGoogleFonts.notoSerifTCRegular();
     final boldFont = await PdfGoogleFonts.notoSerifTCBold();
@@ -1792,7 +1806,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
                     child: pw.Opacity(
                       opacity: 0.30,
                       child: pw.Text(
-                        '— 戀戀拾光',
+                        l10n.chat_book_brand,
                         style: pw.TextStyle(
                           font: regularFont,
                           fontFallback: fallbackFonts,
@@ -1860,6 +1874,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
     required List<pw.Font> fallbackFonts,
     required List<pw.Font> boldFallbackFonts,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return pw.Stack(
       fit: pw.StackFit.expand,
       children: [
@@ -1910,7 +1925,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
                     ),
                     pw.SizedBox(height: 7),
                     pw.Text(
-                      '與你的拾光 · 對話紀念書',
+                      l10n.chat_book_cover_subtitle,
                       style: pw.TextStyle(
                         font: regularFont,
                         fontFallback: fallbackFonts,
@@ -1921,7 +1936,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
                     ),
                     pw.SizedBox(height: 13),
                     pw.Text(
-                      '— 戀戀拾光',
+                      l10n.chat_book_brand,
                       style: pw.TextStyle(
                         font: regularFont,
                         fontFallback: fallbackFonts,
@@ -1947,6 +1962,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
       List<pw.Font> fallbackFonts,
       List<pw.Font> boldFallbackFonts,
       ) {
+    final l10n = AppLocalizations.of(context)!;
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -1962,7 +1978,7 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
           ),
           pw.SizedBox(height: 5),
           pw.Text(
-            '初始故事',
+            l10n.chat_book_initial_story,
             style: pw.TextStyle(
               font: regularFont,
               fontFallback: fallbackFonts,
@@ -2005,12 +2021,13 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
       pw.ImageProvider? characterAvatar,
       pw.ImageProvider? playerAvatar,
       ) {
+    final l10n = AppLocalizations.of(context)!;
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.stretch,
       children: [
         if (page.isFirstChatPage) ...[
           pw.Text(
-            '${widget.characterName} · 對話紀錄',
+            l10n.chat_book_transcript_title(widget.characterName),
             style: pw.TextStyle(
               font: boldFont,
               fontFallback: boldFallbackFonts,
@@ -2028,20 +2045,20 @@ class _ChatTranscriptBookPageState extends State<ChatTranscriptBookPage> {
               final isAi =
                   message.sender == 'ai' || message.isAI == true;
 
-              final name = isAi
+              final baseName = isAi
                   ? widget.characterName
                   : (_resolvedPlayerName.trim().isNotEmpty
                   ? _resolvedPlayerName
-                  : '玩家');
+                  : l10n.chat_book_player);
+
+              final name = slice.isContinuation
+                  ? l10n.chat_book_continuation(baseName)
+                  : baseName;
 
               final avatar =
               isAi ? characterAvatar : playerAvatar;
 
-              final text =
-              (message.text ?? '').toString().trim();
-
-              final type =
-              (message.type ?? 'text').toString();
+              final text = slice.text;
 
               final dateTime = _messageDateTime(message);
 

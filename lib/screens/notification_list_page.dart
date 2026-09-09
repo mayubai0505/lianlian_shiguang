@@ -1983,7 +1983,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
         elevation: 0,
         actions: [
           IconButton(
-            tooltip: '分享信件',
+            tooltip: l10n.mailShareTooltip,
             onPressed: _shareMailAsImage,
             icon: Transform.flip(
               flipX: true,
@@ -2064,7 +2064,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '你原本詢問',
+                        l10n.mailOriginalQuestionLabel,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -2339,7 +2339,7 @@ class _MailDetailPageState extends State<_MailDetailPage> {
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                '來自 ${widget.fromName} 的七夕信',
+                                l10n.mailQixiFromCharacter(widget.fromName),
                                 style: const TextStyle(
                                   color: mutedPurple,
                                   fontSize: 13,

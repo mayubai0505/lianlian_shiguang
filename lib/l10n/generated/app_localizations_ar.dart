@@ -6955,4 +6955,1218 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get feedback_change_image => 'تغيير';
+
+  @override
+  String get profile_backpack_title => 'حقيبتي ومزاياي الحصرية';
+
+  @override
+  String get profile_backpack_total_spent => 'إجمالي رابطة الرومانسية الحالية';
+
+  @override
+  String profile_backpack_total_spent_amount(int amount) {
+    return '$amount دولار تايواني';
+  }
+
+  @override
+  String get profile_backpack_physical_gift_status =>
+      'حالة فتح صندوق الهدايا الفعلي:';
+
+  @override
+  String get profile_backpack_vip_gift_title =>
+      '【الحب الأسمى】صندوق هدايا VIP فعلي حصري';
+
+  @override
+  String get profile_backpack_vip_gift_contents =>
+      'يتضمن: رسالة حصرية مكتوبة بخط اليد + دمية تمثل الشخصية + رسالة شكر رسمية';
+
+  @override
+  String get profile_backpack_edit_shipping_info =>
+      'تعديل معلومات عنوان الاستلام';
+
+  @override
+  String get profile_backpack_unlock_shipping_info =>
+      'تم فتحه! اضغط هنا لإدخال معلومات الاستلام';
+
+  @override
+  String get profile_backpack_shipping_registered =>
+      'تم تسجيل عنوان الاستلام بنجاح، وسنبدأ بتجهيز هديتك في أقرب وقت ممكن!';
+
+  @override
+  String profile_backpack_amount_remaining(int amount) {
+    return 'تبقى $amount دولار تايواني فقط لفتح الجائزة الفعلية الكبرى!';
+  }
+
+  @override
+  String get profile_backpack_hint =>
+      'تلميح: يمكنك عرض المظاهر وإطارات الصور الرمزية الأخرى داخل الحقيبة.';
+
+  @override
+  String get profile_backpack_close => 'إغلاق';
+
+  @override
+  String get profile_physical_gift_title =>
+      '【الحب الأسمى】فتح صندوق الهدايا الفعلي';
+
+  @override
+  String get profile_physical_gift_description =>
+      'شكرًا لك على دعمك الاستثنائي والمستمر لـ «LoveyDovey»!\nيرجى إدخال معلومات الاستلام أدناه، وسنرسل إليك رسالة حصرية مكتوبة بخط اليد ودمية تمثل الشخصية:';
+
+  @override
+  String get profile_physical_gift_recipient_name => 'الاسم الحقيقي للمستلم';
+
+  @override
+  String get profile_physical_gift_phone => 'رقم الهاتف';
+
+  @override
+  String get profile_physical_gift_address =>
+      'عنوان الاستلام الكامل (متضمنًا الرمز البريدي)';
+
+  @override
+  String get profile_physical_gift_character_name =>
+      'اسم الشخصية التي تريد دمية تمثلها';
+
+  @override
+  String get profile_physical_gift_character_hint =>
+      'مثال: أدخل اسم الشخصية المطلوبة';
+
+  @override
+  String get profile_physical_gift_fill_later => 'إدخالها لاحقًا';
+
+  @override
+  String get profile_physical_gift_required_error =>
+      'يرجى إدخال جميع معلومات الاستلام واسم الشخصية التي تريدها!';
+
+  @override
+  String get profile_physical_gift_submit_success =>
+      'تم إرسال معلومات الاستلام بنجاح! ترقب مفاجأتنا الفعلية!';
+
+  @override
+  String get profile_physical_gift_confirm_submit => 'تأكيد الإرسال';
+
+  @override
+  String get profile_tooltip_announcement => 'الإعلانات';
+
+  @override
+  String get profile_tooltip_settings => 'الإعدادات';
+
+  @override
+  String get profile_tooltip_backpack => 'حقيبتي';
+
+  @override
+  String get profile_backpack_menu_title => 'حقيبتي';
+
+  @override
+  String get profile_about_me_title => 'نبذة عني';
+
+  @override
+  String get profile_tab_bio_title => 'التعريف بنفسي';
+
+  @override
+  String get profile_check_in_done => 'تم تسجيل الحضور';
+
+  @override
+  String get profile_check_in => 'تسجيل الحضور';
+
+  @override
+  String get profile_check_in_done_subtitle => 'تركت أثرك اليوم';
+
+  @override
+  String get profile_check_in_not_done_subtitle => 'لم تسجل حضورك اليوم بعد';
+
+  @override
+  String get profile_likes_label => 'الإعجابات';
+
+  @override
+  String get profile_heartbeat_diary_subtitle => 'دوّن لحظات خفقان قلبك';
+
+  @override
+  String get profile_create_scene => 'إنشاء مشهد';
+
+  @override
+  String get profile_link_invalid => 'تنسيق الرابط غير صحيح';
+
+  @override
+  String get profile_link_open_failed => 'تعذر فتح هذا الرابط';
+
+  @override
+  String get profile_link_default_name => 'رابطي';
+
+  @override
+  String get profile_publish_moment_short => 'اكتب عن هذه اللحظة';
+
+  @override
+  String edit_profile_default_link_name(int index) {
+    return 'رابطي $index';
+  }
+
+  @override
+  String get edit_profile_done => 'تم';
+
+  @override
+  String get edit_profile_social_links => 'وسائل التواصل والروابط';
+
+  @override
+  String get edit_profile_add_link => 'إضافة رابط';
+
+  @override
+  String get edit_profile_link_name_hint => 'اسم الرابط';
+
+  @override
+  String get edit_profile_link_url_hint => 'أدخل الرابط';
+
+  @override
+  String get theme_name_starlight => 'بنفسجي ضوء الذكريات';
+
+  @override
+  String get theme_name_sakura => 'وردي أزهار الكرز';
+
+  @override
+  String get theme_name_ocean => 'أزرق المحيط';
+
+  @override
+  String get theme_name_sunset => 'برتقالي الغروب';
+
+  @override
+  String get theme_name_mint => 'نعناع الغابة';
+
+  @override
+  String get theme_name_midnight => 'الوضع الليلي';
+
+  @override
+  String get theme_name_custom => 'لون مخصص';
+
+  @override
+  String get theme_selection_choose_theme => 'اختيار لون السمة';
+
+  @override
+  String get theme_selection_title => 'تغيير الأجواء';
+
+  @override
+  String get theme_selection_description =>
+      'اختر لون السمة الذي يعجبك واجعل LoveyDovey يعكس أسلوبك.';
+
+  @override
+  String get theme_selection_preview => 'معاينة';
+
+  @override
+  String get theme_selection_characters => 'الشخصيات';
+
+  @override
+  String get theme_selection_posts => 'المنشورات';
+
+  @override
+  String theme_selection_previewing(String themeName) {
+    return 'المعاينة الحالية: $themeName';
+  }
+
+  @override
+  String get theme_selection_apply => 'تطبيق السمة';
+
+  @override
+  String get theme_selection_restore_default => 'استعادة الافتراضي';
+
+  @override
+  String get theme_selection_choose_color => 'اختر لونك الخاص';
+
+  @override
+  String theme_selection_applied(String themeName) {
+    return 'تم تطبيق «$themeName»';
+  }
+
+  @override
+  String get welcome_guide_help => 'دليل اللعب';
+
+  @override
+  String get welcome_guide_start => 'بدء الرحلة';
+
+  @override
+  String get welcome_guide_next => 'التالي';
+
+  @override
+  String get welcome_guide_welcome_title => 'مرحبًا بك في «LoveyDovey»';
+
+  @override
+  String get welcome_guide_welcome_description =>
+      'هنا، قد يتحول كل لقاء إلى قصة لا تُنسى. نأمل أن يرافقك «LoveyDovey» في صنع ذكريات جميلة تخصكما وحدكما.';
+
+  @override
+  String get welcome_guide_chat_title => 'أوضاع الدردشة';
+
+  @override
+  String get welcome_guide_chat_description =>
+      'يقدم «LoveyDovey» عدة أوضاع للدردشة، ولكل وضع تجربة تفاعلية مختلفة.';
+
+  @override
+  String get welcome_guide_daily_title => 'الوضع اليومي';
+
+  @override
+  String get welcome_guide_daily_description =>
+      'تشاركا تفاصيل الحياة واستمتعا بأحاديث يومية مريحة وعفوية.';
+
+  @override
+  String get welcome_guide_story_title => 'وضع القصة';
+
+  @override
+  String get welcome_guide_story_description =>
+      'تقدم في قصة الشخصية وافتح المزيد من الأحداث والتفاعلات الحصرية.';
+
+  @override
+  String get welcome_guide_immersive_title => 'الوضع الغامر';
+
+  @override
+  String get welcome_guide_immersive_description =>
+      'استمتع بمحادثات أكثر اندماجًا وواقعية.';
+
+  @override
+  String get welcome_guide_chat_more =>
+      'يمكنك معرفة المزيد عن أوضاع الدردشة من خلال «تعليمات اللعبة».';
+
+  @override
+  String get welcome_guide_encounter_title => 'اللقاءات';
+
+  @override
+  String get welcome_guide_encounter_description =>
+      'لكل شخصية طابعها وقصتها وصوتها الفريد. عندما تقابل شخصية تعجبك، يمكنك إضافتها إلى أصدقائك والدردشة والتفاعل معها ومشاركة تفاصيل الحياة وصنع ذكريات تخصكما وحدكما.';
+
+  @override
+  String get welcome_guide_more_title => 'المزيد من المحتوى';
+
+  @override
+  String get welcome_guide_more_description =>
+      'توجد أيضًا ميزات متنوعة مثل المجموعات والمنشئين والمتجر. انتقل إلى «تعليمات اللعبة» لمعرفة المزيد.';
+
+  @override
+  String preference_selection_max_error(int count) {
+    return 'يمكنك اختيار $count تفضيلات كحد أقصى.';
+  }
+
+  @override
+  String get preference_selection_save_failed =>
+      'يتعذر حفظ تفضيلاتك حاليًا. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get preference_selection_title => 'ما نوع الشخص الذي ترغب في لقائه؟';
+
+  @override
+  String get preference_selection_description =>
+      'اختر من 3 إلى 5 أنواع تفضلها، ليبدأ LoveyDovey بالتعرف إليك من خلالها.';
+
+  @override
+  String get preference_selection_recommendation_note =>
+      'ستتطور توصياتك تدريجيًا بناءً على تفاعلاتك الفعلية لتصبح أكثر ملاءمة لك.';
+
+  @override
+  String get preference_selection_selected => 'تم الاختيار';
+
+  @override
+  String get preference_selection_start => 'لنبدأ من هنا';
+
+  @override
+  String get preference_group_personality => 'الشخصية والطابع';
+
+  @override
+  String get preference_group_relationship_age => 'العلاقة・الفئة العمرية';
+
+  @override
+  String get preference_group_story => 'أجواء القصة';
+
+  @override
+  String get preference_tag_gentle => 'لطيف';
+
+  @override
+  String get preference_tag_cold => 'بارد ومتحفظ';
+
+  @override
+  String get preference_tag_scheming => 'ماكر';
+
+  @override
+  String get preference_tag_tsundere => 'تسونديري';
+
+  @override
+  String get preference_tag_loyal => 'مخلص';
+
+  @override
+  String get preference_tag_yandere => 'يانديري';
+
+  @override
+  String get preference_tag_mysterious => 'غامض';
+
+  @override
+  String get preference_tag_healing => 'مريح';
+
+  @override
+  String get preference_tag_gap_moe => 'شخصية متناقضة';
+
+  @override
+  String get preference_tag_older => 'أكبر سنًا';
+
+  @override
+  String get preference_tag_younger => 'أصغر سنًا';
+
+  @override
+  String get preference_tag_ceo => 'رئيس تنفيذي متسلط';
+
+  @override
+  String get preference_tag_school => 'مدرسي';
+
+  @override
+  String get preference_tag_workplace => 'مكان العمل';
+
+  @override
+  String get preference_tag_ancient => 'تاريخي';
+
+  @override
+  String get preference_tag_nonhuman => 'غير بشري';
+
+  @override
+  String get encounter_load_failed =>
+      'تعذر تحميل بيانات اللقاءات. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get encounter_no_available_characters =>
+      'لا توجد حاليًا شخصيات متاحة للقائها';
+
+  @override
+  String get encounter_category_empty => 'لا توجد حاليًا شخصيات ضمن هذه الفئة';
+
+  @override
+  String get encounter_category_all => 'الكل';
+
+  @override
+  String get encounter_category_xianxia => 'فانتازيا الخلود';
+
+  @override
+  String get encounter_category_childhood_friend => 'صديق الطفولة';
+
+  @override
+  String get encounter_category_master_disciple => 'المعلم والتلميذ';
+
+  @override
+  String get encounter_category_sweet_romance => 'رومانسية حلوة';
+
+  @override
+  String get encounter_category_other => 'أخرى';
+
+  @override
+  String get character_edit_tab_character_settings => 'إعدادات الشخصية';
+
+  @override
+  String get character_edit_test => 'اختبار';
+
+  @override
+  String get character_edit_supporting_basic_info => 'المعلومات الأساسية';
+
+  @override
+  String get character_edit_supporting_main_setting =>
+      'العلاقة بالشخصية الرئيسية';
+
+  @override
+  String get character_edit_supporting_main_description =>
+      'صِف علاقة هذه الشخصية المساندة بالشخصية الرئيسية ومكانتها في القصة.';
+
+  @override
+  String get character_edit_banner_preview_hint =>
+      'اضغط على الصورة لمعاينتها بالحجم الكامل';
+
+  @override
+  String get character_edit_main_photo_hint =>
+      'ستُستخدم الصورة الأولى كصورة رمزية رئيسية';
+
+  @override
+  String get character_edit_other_photos => 'صور أخرى للشخصية';
+
+  @override
+  String get character_edit_photo_action_hint =>
+      'اضغط على الصورة لمعاينتها، أو اضغط على رمز القلم لتعديل إعداداتها';
+
+  @override
+  String character_edit_over_limit_warning(String label, String count) {
+    return '⚠ تجاوز حقل $label الحد الأقصى البالغ $count حرفًا. يرجى تعديله قبل النشر.';
+  }
+
+  @override
+  String get memo_notification_channel_name => 'تذكيرات المذكرات';
+
+  @override
+  String get memo_notification_channel_description =>
+      'تذكّر الشخصيات اللاعبين بالمذكرات التي أعدّوها';
+
+  @override
+  String memo_notification_title(String characterName) {
+    return 'يذكّرك $characterName';
+  }
+
+  @override
+  String memo_notification_tsundere(String memoContent) {
+    return 'ليس لأنني قلقة عليك، بل لأنني لا أريدك أن تنسى. لا تنسَ اليوم: $memoContent';
+  }
+
+  @override
+  String memo_notification_dominant(String memoContent) {
+    return 'لقد سجّلت جدولك من أجلك، فأنجزه في الموعد. لا تنسَ اليوم: $memoContent';
+  }
+
+  @override
+  String memo_notification_yandere(String memoContent) {
+    return 'لا يمكنك أن تنسى، فأنا سأظل أتذكر دائمًا. لا تنسَ اليوم: $memoContent';
+  }
+
+  @override
+  String memo_notification_gentle(String memoContent) {
+    return 'خشيت أن تنشغل وتنسى، لذلك أردت تذكيرك. لا تنسَ اليوم: $memoContent';
+  }
+
+  @override
+  String memo_notification_cold(String memoContent) {
+    return 'لدي تذكير لك. لا تنسَ اليوم: $memoContent';
+  }
+
+  @override
+  String memo_notification_sunny(String memoContent) {
+    return 'مرحبًا، ما زال لديك أمر مهم اليوم! لا تنسَ: $memoContent';
+  }
+
+  @override
+  String memo_notification_lazy(String memoContent) {
+    return 'مع أنني أريد الاستمرار في الاستلقاء، لا بد أن أذكّرك. لا تنسَ اليوم: $memoContent';
+  }
+
+  @override
+  String memo_notification_older(String memoContent) {
+    return 'كن مطيعًا ولا تنسَ ما عليك فعله اليوم. تذكّر: $memoContent';
+  }
+
+  @override
+  String memo_notification_younger(String memoContent) {
+    return 'لقد تذكّرت هذا من أجلك! لا تنسَ اليوم: $memoContent';
+  }
+
+  @override
+  String memo_notification_mechanical(String memoContent) {
+    return 'تم تفعيل التذكير. مهمة اليوم: $memoContent';
+  }
+
+  @override
+  String memo_notification_default(String memoContent) {
+    return 'لا تنسَ اليوم: $memoContent';
+  }
+
+  @override
+  String get recommendation_load_failed =>
+      'يتعذر تحميل التوصيات حاليًا. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get recommendation_reload => 'إعادة التحميل';
+
+  @override
+  String get recommendation_empty => 'لا توجد حاليًا شخصيات يمكن التوصية بها.';
+
+  @override
+  String get recommendation_title => 'لقاءات اخترناها لك';
+
+  @override
+  String get recommendation_featured_title => 'ابدأ بالتعرف إلى هؤلاء';
+
+  @override
+  String get recommendation_featured_subtitle =>
+      'سنضع اللقاءات الأكثر ملاءمة لك في المقدمة.';
+
+  @override
+  String get recommendation_matched_behavior_title => 'أقرب فأقرب إلى تفضيلاتك';
+
+  @override
+  String get recommendation_matched_initial_title =>
+      'بناءً على تفضيلاتك الأولى';
+
+  @override
+  String get recommendation_matched_behavior_subtitle =>
+      'ابتداءً من اليوم الرابع، ستؤثر تفاعلاتك الأخيرة أيضًا في ترتيب التوصيات.';
+
+  @override
+  String get recommendation_matched_initial_subtitle =>
+      'سنستخدم حاليًا الوسوم التي اخترتها في البداية لتضييق نطاق الخيارات.';
+
+  @override
+  String get recommendation_explore_title => 'قد يعجبك أيضًا';
+
+  @override
+  String get recommendation_explore_subtitle =>
+      'سنحتفظ ببعض الخيارات العشوائية لتلتقي أحيانًا بأشخاص مختلفين.';
+
+  @override
+  String get recommendation_refreshing => 'جارٍ إعداد لقاءات جديدة لك……';
+
+  @override
+  String get recommendation_badge_for_you => 'موصى به لك';
+
+  @override
+  String get recommendation_badge_featured => 'لقاء مميز';
+
+  @override
+  String get recommendation_badge_explore => 'استكشاف';
+
+  @override
+  String get recommendation_default_occupation_hint =>
+      'افتح الصفحة وألقِ نظرة، فقد يكون هذا لقاءك القادم الذي يخفق له قلبك.';
+
+  @override
+  String get recommendation_explore_fallback =>
+      'جرّب اتجاهًا مختلفًا، فقد يصادف تمامًا ما يجعل قلبك يخفق.';
+
+  @override
+  String get recommendation_behavior_hint_similar_type =>
+      'تتوقف مؤخرًا كثيرًا عند شخصيات من هذا النوع';
+
+  @override
+  String get recommendation_behavior_hint_forming =>
+      'تفضيلاتك في التفاعل بدأت تتشكل تدريجيًا';
+
+  @override
+  String get recommendation_behavior_hint_recent =>
+      'تم اختياره لك بناءً على تفاعلاتك الأخيرة';
+
+  @override
+  String recommendation_reason_liked_tags(String tags) {
+    return 'لأنك تحب・$tags';
+  }
+
+  @override
+  String get recommendation_reason_popular =>
+      'نال اهتمام عدد كبير من الأشخاص مؤخرًا';
+
+  @override
+  String get recommendation_reason_default =>
+      'ربما يكون هذا لقاءك المناسب القادم';
+
+  @override
+  String get scene_delete_title => 'حذف المشهد؟';
+
+  @override
+  String scene_delete_content(String title) {
+    return 'هل تريد بالتأكيد حذف «$title»؟ لا يمكن التراجع عن الحذف.';
+  }
+
+  @override
+  String get scene_unnamed => 'مشهد بلا عنوان';
+
+  @override
+  String get scene_cancel => 'إلغاء';
+
+  @override
+  String get scene_delete => 'حذف';
+
+  @override
+  String get scene_delete_failed =>
+      'تعذر الحذف. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get scene_start_failed =>
+      'يتعذر بدء المشهد حاليًا. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get scene_end_title => 'إنهاء المشهد؟';
+
+  @override
+  String get scene_end_content =>
+      'ستعود إلى الدردشة العادية بعد الإنهاء، ولن تُحذف المحادثة الحالية.';
+
+  @override
+  String get scene_end_action => 'إنهاء المشهد';
+
+  @override
+  String get scene_ended => 'انتهى المشهد';
+
+  @override
+  String get scene_end_failed =>
+      'يتعذر إنهاء المشهد حاليًا. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get scene_active_label => 'جارٍ حاليًا';
+
+  @override
+  String scene_opening(String opening) {
+    return 'افتتاحية الشخصية: $opening';
+  }
+
+  @override
+  String get scene_edit => 'تعديل';
+
+  @override
+  String get scene_start => 'بدء المشهد';
+
+  @override
+  String get scene_creator_load_failed => 'تعذر تحميل مشاهد المنشئ.';
+
+  @override
+  String get scene_creator_empty_title =>
+      'لا توجد مشاهد من إنشاء المنشئ حاليًا';
+
+  @override
+  String get scene_creator_empty_body =>
+      'لم ينشئ صاحب هذه الشخصية أي قصص إضافية بعد.';
+
+  @override
+  String get scene_custom_load_failed => 'تعذر تحميل المشاهد المخصصة.';
+
+  @override
+  String get scene_custom_empty_title => 'لم تنشئ أي مشاهد بعد';
+
+  @override
+  String get scene_custom_empty_body =>
+      'أنشئ قصة خاصة بك وحدك لغرفة الدردشة هذه.';
+
+  @override
+  String get scene_add => 'إضافة مشهد';
+
+  @override
+  String get scene_title => 'المشاهد';
+
+  @override
+  String get scene_tab_creator => 'مشاهد المنشئ';
+
+  @override
+  String get scene_tab_custom => 'إنشاء مخصص';
+
+  @override
+  String get chat_book_player => 'اللاعب';
+
+  @override
+  String get chat_book_title => 'سجل المحادثة';
+
+  @override
+  String get chat_book_export_pdf => 'تصدير بصيغة PDF';
+
+  @override
+  String get chat_book_brand => '— LoveyDovey';
+
+  @override
+  String get chat_book_change_cover => 'تغيير الغلاف';
+
+  @override
+  String get chat_book_cover_subtitle => 'لحظاتنا معًا · كتاب تذكاري للمحادثات';
+
+  @override
+  String get chat_book_choose_cover => 'اختيار غلاف الكتاب التذكاري';
+
+  @override
+  String get chat_book_initial_story => 'القصة الأولى';
+
+  @override
+  String chat_book_transcript_title(String characterName) {
+    return '$characterName · سجل المحادثة';
+  }
+
+  @override
+  String chat_book_continuation(String name) {
+    return '$name · تابع';
+  }
+
+  @override
+  String get chat_book_previous_page => 'الصفحة السابقة';
+
+  @override
+  String get chat_book_next_page => 'الصفحة التالية';
+
+  @override
+  String get chat_book_photo_message => '〔صورة〕';
+
+  @override
+  String get chat_book_audio_message => '〔رسالة صوتية〕';
+
+  @override
+  String get chat_book_generic_message => '〔رسالة〕';
+
+  @override
+  String chat_book_export_failed(String error) {
+    return 'تعذر التصدير بصيغة PDF: $error';
+  }
+
+  @override
+  String email_policy_open_failed(String title) {
+    return 'تعذر فتح $title. يرجى التحقق من اتصال الشبكة والمحاولة مرة أخرى.';
+  }
+
+  @override
+  String email_policy_read_instruction(String title) {
+    return 'يرجى فتح $title وقراءته بالكامل أولًا. بعد القراءة، ارجع إلى «LoveyDovey» للضغط على «لقد قرأت وأوافق».';
+  }
+
+  @override
+  String get email_policy_opening => 'جارٍ الفتح……';
+
+  @override
+  String email_policy_read_full(String title) {
+    return 'قراءة $title بالكامل';
+  }
+
+  @override
+  String email_policy_opened_ready(String title) {
+    return 'تم فتح $title. يمكنك الآن تأكيد الموافقة.';
+  }
+
+  @override
+  String email_policy_not_opened(String title) {
+    return 'لم يتم فتح $title بعد.';
+  }
+
+  @override
+  String get email_policy_cancel_login => 'إلغاء تسجيل الدخول';
+
+  @override
+  String get email_policy_agree => 'لقد قرأت وأوافق';
+
+  @override
+  String get email_policy_status_check_failed =>
+      'يتعذر حاليًا التحقق من حالة الموافقة على الشروط. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get email_policy_login_notice =>
+      'عند تسجيل الدخول لأول مرة أو تحديث الشروط، سيُطلب منك قراءة شروط الخدمة وسياسة الخصوصية والموافقة عليهما.';
+
+  @override
+  String get email_policy_refresh => 'تحديث';
+
+  @override
+  String get email_policy_page_load_failed => 'تعذر تحميل الصفحة';
+
+  @override
+  String get email_policy_check_network =>
+      'يرجى التحقق من اتصال الشبكة والمحاولة مرة أخرى.';
+
+  @override
+  String get email_policy_reload => 'إعادة التحميل';
+
+  @override
+  String get login_method_info_google_title =>
+      'تسجيل الدخول السريع باستخدام Google';
+
+  @override
+  String get login_method_info_apple_title => 'تسجيل الدخول باستخدام Apple';
+
+  @override
+  String get login_method_info_facebook_title =>
+      'تسجيل الدخول باستخدام Facebook';
+
+  @override
+  String get login_method_info_email_title =>
+      'حساب LoveyDovey (البريد الإلكتروني)';
+
+  @override
+  String get login_method_info_email_provider =>
+      'حساب LoveyDovey (البريد الإلكتروني)';
+
+  @override
+  String login_method_info_content(String providerName) {
+    return 'سجّل الدخول إلى «LoveyDovey» باستخدام $providerName.\n\nيرجى الانتباه:\n\n• يُعد $providerName نظام حساب مختلفًا عن طرق تسجيل الدخول الأخرى.\n\n• إذا أنشأت حسابًا باستخدام $providerName، فيرجى الاستمرار في تسجيل الدخول بالطريقة نفسها.\n\n• لن تتم مشاركة بيانات الشخصيات وسجل المحادثات والمشتريات مع الحسابات المستخدمة عبر طرق تسجيل الدخول الأخرى.\n\nننصحك بالاستمرار في استخدام طريقة تسجيل الدخول نفسها بعد تسجيل الدخول لأول مرة، لتجنب إنشاء حسابات مختلفة لا يمكنها مشاركة البيانات.';
+  }
+
+  @override
+  String get login_method_info_got_it => 'فهمت';
+
+  @override
+  String creator_studio_delete_failed(String error) {
+    return 'تعذر الحذف: $error';
+  }
+
+  @override
+  String get creator_studio_subtitle =>
+      'اجمع أفكارك ونظّم شخصياتك وأكمل أعمالك على مهل';
+
+  @override
+  String creator_studio_load_failed(String error) {
+    return 'تعذر تحميل الاستوديو: $error';
+  }
+
+  @override
+  String get creator_studio_add_character => 'إضافة شخصية';
+
+  @override
+  String get creator_studio_public_title => 'الشخصيات العامة';
+
+  @override
+  String get creator_studio_public_subtitle =>
+      'منشورة ويمكن للاعبين الآخرين اكتشافها';
+
+  @override
+  String get creator_studio_public_empty => 'لا توجد شخصيات عامة حاليًا';
+
+  @override
+  String get creator_studio_private_title => 'الشخصيات الخاصة';
+
+  @override
+  String get creator_studio_private_subtitle => 'يمكنك أنت وحدك رؤيتها';
+
+  @override
+  String get creator_studio_private_empty => 'لا توجد شخصيات خاصة حاليًا';
+
+  @override
+  String get creator_studio_draft_title => 'المسودات';
+
+  @override
+  String get creator_studio_draft_subtitle => 'أعمال لم تكتمل بعد';
+
+  @override
+  String get creator_studio_draft_empty => 'لا توجد حاليًا مسودات غير مكتملة';
+
+  @override
+  String get creator_studio_draft_empty_title => 'لا توجد مسودات هنا بعد';
+
+  @override
+  String get creator_studio_draft_empty_hint =>
+      'عندما تأتيك فكرة، دوّنها هنا أولًا';
+
+  @override
+  String get creator_studio_status_public => 'عام';
+
+  @override
+  String get creator_studio_status_private => 'خاص';
+
+  @override
+  String get creator_studio_status_draft => 'مسودة';
+
+  @override
+  String get creator_studio_character_load_failed =>
+      'تعذر تحميل بيانات الشخصية';
+
+  @override
+  String get creator_studio_delete_draft_tooltip => 'حذف المسودة';
+
+  @override
+  String get creator_studio_unnamed_creator => 'منشئ بلا اسم';
+
+  @override
+  String get creator_studio_no_bio => 'لم تتم إضافة نبذة شخصية بعد';
+
+  @override
+  String get chat_input_tools => 'الأدوات';
+
+  @override
+  String get chat_input_expand_tools => 'عرض الأدوات';
+
+  @override
+  String get chat_input_stop => 'إيقاف';
+
+  @override
+  String get chat_input_send => 'إرسال';
+
+  @override
+  String get chat_side_menu_section_chat => 'الدردشة';
+
+  @override
+  String get chat_side_menu_section_relationship => 'العلاقة';
+
+  @override
+  String get chat_side_menu_section_memory => 'إدارة الذاكرة';
+
+  @override
+  String get character_navigator_confidential_title => 'ملف سري';
+
+  @override
+  String get character_navigator_unavailable_message =>
+      'ربما أصبحت هذه الشخصية خاصة، أو أُزيلت من المنصة، أو أُرشفت بسبب مخالفة، أو حُذفت.';
+
+  @override
+  String get character_navigator_got_it => 'فهمت';
+
+  @override
+  String get character_navigator_load_failed_title => 'تعذر التحميل';
+
+  @override
+  String get character_navigator_load_failed_message =>
+      'يتعذر تحميل بيانات الشخصية مؤقتًا. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get character_navigator_confirm => 'تأكيد';
+
+  @override
+  String get character_profile_add_bookmark => 'إضافة الشخصية إلى المفضلة';
+
+  @override
+  String get character_profile_remove_bookmark => 'إزالة من المفضلة';
+
+  @override
+  String get character_profile_pronoun_female => 'هي';
+
+  @override
+  String get character_profile_pronoun_male => 'هو';
+
+  @override
+  String get character_profile_pronoun_neutral => 'هم';
+
+  @override
+  String get chat_home_pin_limit_reached =>
+      'يمكنك تثبيت 3 محادثات كحد أقصى. يرجى إلغاء تثبيت محادثة أخرى أولًا.';
+
+  @override
+  String get chat_home_pinned_success => 'تم تثبيت المحادثة';
+
+  @override
+  String get chat_home_unpinned_success => 'تم إلغاء التثبيت';
+
+  @override
+  String chat_home_pin_update_failed(String error) {
+    return 'تعذر تحديث حالة التثبيت: $error';
+  }
+
+  @override
+  String get chat_home_unpin => 'إلغاء التثبيت';
+
+  @override
+  String get chat_home_pin => 'تثبيت المحادثة';
+
+  @override
+  String chat_home_time_label(String time) {
+    return 'الوقت: $time';
+  }
+
+  @override
+  String get main_check_in_already_done => 'لقد سجلت حضورك اليوم بالفعل';
+
+  @override
+  String get nav_recommend => 'التوصيات';
+
+  @override
+  String get moments_auto_reply_title =>
+      'السماح للذكاء الاصطناعي بالرد تلقائيًا على منشورات اللاعبين';
+
+  @override
+  String get moments_auto_reply_description =>
+      'عند تفعيل هذا الخيار، سيتمكن النظام من اختيار الشخصية للرد على منشورات اللاعبين.';
+
+  @override
+  String get mailOriginalQuestionLabel => 'سؤالك الأصلي';
+
+  @override
+  String get hidden_moments_empty_hint => 'لا توجد منشورات مخفية حاليًا';
+
+  @override
+  String get moment_search_unavailable =>
+      'البحث غير متاح مؤقتًا. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get moment_search_hint =>
+      'البحث في المنشورات العامة أو الشخصيات أو المنشئين';
+
+  @override
+  String get moment_search_instruction =>
+      'أدخل محتوى المنشور أو اسم الشخصية أو اسم المنشئ';
+
+  @override
+  String get moment_search_no_results =>
+      'لم يتم العثور على منشورات عامة ذات صلة';
+
+  @override
+  String get settingsErrorTitle => 'حدث خطأ';
+
+  @override
+  String get settingsChangePasswordSubtitle =>
+      'تحقق من كلمة المرور الحالية، ثم عيّن كلمة مرور جديدة لتسجيل الدخول';
+
+  @override
+  String get settingsCreatorGuidelines => 'إرشادات المنشئين';
+
+  @override
+  String get settingsPlayGuide => 'دليل اللعب';
+
+  @override
+  String get language_selection_subtitle => 'اختر اللغة التي تفضل استخدامها';
+
+  @override
+  String get search_character_hint => 'البحث عن شخصية أو منشئ أو مهنة أو وسم';
+
+  @override
+  String get search_character_clear => 'مسح';
+
+  @override
+  String get search_character_recent => 'عمليات البحث الأخيرة';
+
+  @override
+  String get search_character_load_failed =>
+      'تعذر تحميل بيانات البحث. يرجى المحاولة مرة أخرى لاحقًا.';
+
+  @override
+  String get search_character_popular => 'الأكثر إعجابًا مؤخرًا';
+
+  @override
+  String search_character_result_count(int count) {
+    return 'تم العثور على $count شخصية';
+  }
+
+  @override
+  String get shop_tab_monthly => 'قسم البطاقة الشهرية';
+
+  @override
+  String shop_joined_days(int days) {
+    return '✦ مضى على قدومك إلى LoveyDovey عدد $days من الأيام ✦';
+  }
+
+  @override
+  String get shop_vip_tier_1_title => 'حب من النظرة الأولى';
+
+  @override
+  String get shop_vip_tier_1_reward => '20 نقطة زهرة + لقب حصري للمبتدئين';
+
+  @override
+  String get shop_vip_tier_2_title => 'خفقان الضوء الخافت';
+
+  @override
+  String get shop_vip_tier_2_reward =>
+      'إطار صورة رمزية حصري 【خفقان الضوء الخافت】';
+
+  @override
+  String get shop_vip_tier_3_title => 'همسات السماء المرصعة بالنجوم';
+
+  @override
+  String get shop_vip_tier_3_reward => 'فقاعة دردشة حصرية + 50 نقطة زهرة';
+
+  @override
+  String get shop_vip_tier_4_title => 'غروب رومانسي';
+
+  @override
+  String get shop_vip_tier_4_reward => 'أيقونة حصرية للتطبيق';
+
+  @override
+  String get shop_vip_tier_5_title => 'خفقان القلب';
+
+  @override
+  String get shop_vip_tier_5_reward =>
+      'تأثير لمس الشاشة (Lottie) + 100 نقطة زهرة';
+
+  @override
+  String get shop_vip_tier_6_title => 'عهد أبدي';
+
+  @override
+  String get shop_vip_tier_6_reward =>
+      'إطار صورة رمزية متحرك متقدم + 200 نقطة زهرة';
+
+  @override
+  String get shop_vip_tier_7_title => 'تلاقي الأرواح';
+
+  @override
+  String get shop_vip_tier_7_reward =>
+      'تأثير متحرك لفقاعة الدردشة + لقب متقدم حصري';
+
+  @override
+  String get shop_vip_tier_8_title => 'وفاء لا يخص سواك';
+
+  @override
+  String get shop_vip_tier_8_reward => 'شارة اسم متحركة فاخرة + 500 نقطة زهرة';
+
+  @override
+  String get shop_vip_tier_9_title => 'نهر النجوم المتلألئ';
+
+  @override
+  String get shop_vip_tier_9_reward =>
+      'تأثير دخول Lottie حصري + خدمة عملاء حصرية';
+
+  @override
+  String get shop_vip_tier_10_title => 'الحب الأسمى';
+
+  @override
+  String get shop_vip_tier_10_reward =>
+      '【صندوق هدايا VIP فعلي حصري】 (رسالة مكتوبة بخط اليد + دمية الشخصية)';
+
+  @override
+  String get shop_vip_total_bond => 'إجمالي رابطة الرومانسية';
+
+  @override
+  String get shop_vip_all_unlocked => 'لقد فتحت جميع المزايا الفاخرة!';
+
+  @override
+  String shop_vip_next_unlock(int amount) {
+    return 'اشحن بمبلغ إضافي قدره $amount دولار تايواني لفتح المستوى التالي';
+  }
+
+  @override
+  String get call_connecting => 'جارٍ توصيل المكالمة...';
+
+  @override
+  String get call_listening_auto_send =>
+      'جارٍ الاستماع... (سيتم الإرسال تلقائيًا عند الانتهاء من التحدث)';
+
+  @override
+  String get call_listening_release_to_send =>
+      'جارٍ الاستماع... (ارفع إصبعك للإرسال)';
+
+  @override
+  String call_sending_transcript(String text) {
+    return ' $text\n\n(جارٍ الإرسال...)';
+  }
+
+  @override
+  String get help_translation_fallback =>
+      'دليل اللعب غير متوفر بهذه اللغة حاليًا، لذا سيُعرض مؤقتًا باللغة الصينية التقليدية.';
+
+  @override
+  String get help_all_categories => 'الكل';
+
+  @override
+  String get help_subtitle_companion => 'الميزات اليومية والأدوات المساعدة';
+
+  @override
+  String get help_subtitle_ai_chat => 'الدردشة والصوت والتفاعل الذكي';
+
+  @override
+  String get help_subtitle_creation => 'إعداد الشخصيات وميزات الإنشاء';
+
+  @override
+  String get help_subtitle_explore => 'استكشاف الشخصيات ومحتوى اللعبة';
+
+  @override
+  String get help_subtitle_care => 'الرفقة اللطيفة والرعاية اليومية';
+
+  @override
+  String get help_subtitle_general => 'شرح الميزات الشائعة وطريقة استخدامها';
+
+  @override
+  String get chat_interact_fun => 'أنشطة ممتعة';
+
+  @override
+  String get memo_notification_permission_missing =>
+      'لم يتم تفعيل إذن الإشعارات بعد. ستظل المذكرة محفوظة، لكن لن يظهر تنبيه من النظام.';
+
+  @override
+  String memo_saved_with_reminder(String characterName) {
+    return 'تم حفظ المذكرة، وسيذكّرك $characterName!';
+  }
+
+  @override
+  String get memo_saved_without_notification =>
+      'تم حفظ المذكرة، لكن إذن الإشعارات غير مفعّل بعد.';
+
+  @override
+  String memo_updated_with_reminder(String characterName) {
+    return 'تم تحديث المذكرة، وسيذكّرك $characterName!';
+  }
+
+  @override
+  String get memo_updated_without_notification =>
+      'تم تحديث المذكرة، لكن إذن الإشعارات غير متوفر حاليًا.';
+
+  @override
+  String memo_load_error(String error) {
+    return 'حدث خطأ أثناء تحميل البيانات: $error';
+  }
+
+  @override
+  String get story_summary_content_required =>
+      'لا يمكن أن يكون محتوى القصة فارغًا';
+
+  @override
+  String get story_summary_edit_hint => 'اكتب قصتكما...';
+
+  @override
+  String get profile_section_basic_info => 'المعلومات الأساسية';
+
+  @override
+  String get profile_section_about_me => 'نبذة عني';
+
+  @override
+  String get dice_duel_you => 'أنت';
+
+  @override
+  String get dice_duel_result_saved => 'تم حفظ نتيجة المواجهة!';
+
+  @override
+  String get dice_duel_rolling => 'تتجمع طاقة الكون...';
 }

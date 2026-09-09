@@ -87,6 +87,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   // --- 個人連結處理 ---
   void _setProfileLinks(dynamic rawLinks) {
+    final l10n = AppLocalizations.of(context)!;
     for (final controller in _linkNameControllers) {
       controller.dispose();
     }
@@ -113,7 +114,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     // 新功能第一次使用時，預設保留 3 格「我的連結」。
     while (parsed.length < 3) {
       parsed.add({
-        'name': '我的連結 ${parsed.length + 1}',
+        'name': l10n.edit_profile_default_link_name(parsed.length + 1),
         'url': '',
       });
     }
@@ -122,8 +123,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final item = parsed[i];
       _linkNameControllers.add(
         TextEditingController(
-          text: item['name']!.isEmpty ? '我的連結 ${i + 1}' : item['name'],
-        ),
+          text: item['name']!.isEmpty
+              ? l10n.edit_profile_default_link_name(i + 1)
+              : item['name'],        ),
       );
       _linkUrlControllers.add(
         TextEditingController(text: item['url'] ?? ''),
@@ -164,16 +166,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   void _addProfileLink() {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       final index = _linkNameControllers.length + 1;
       _linkNameControllers.add(
-        TextEditingController(text: '我的連結 $index'),
+        TextEditingController(
+          text: l10n.edit_profile_default_link_name(index),
+        ),
       );
       _linkUrlControllers.add(TextEditingController());
     });
   }
 
   void _removeProfileLink(int index) {
+    final l10n = AppLocalizations.of(context)!;
     if (index < 0 || index >= _linkNameControllers.length) return;
 
     setState(() {
@@ -183,7 +189,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // 至少保留 1 格，避免整個區塊變成空的。
       if (_linkNameControllers.isEmpty) {
         _linkNameControllers.add(
-          TextEditingController(text: '我的連結 1'),
+          TextEditingController(text: l10n.edit_profile_default_link_name(index)),
         );
         _linkUrlControllers.add(TextEditingController());
       }
@@ -194,102 +200,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // 但玩家自行改過的名稱（例如 Instagram、作品集）不會被改掉。
       for (int i = 0; i < _linkNameControllers.length; i++) {
         final currentName = _linkNameControllers[i].text.trim();
-        final isDefaultName =
-        RegExp(r'^我的連結\s*\d+$').hasMatch(currentName);
-
+        final isDefaultName = List.generate(
+          _linkNameControllers.length + 1,
+              (index) => l10n.edit_profile_default_link_name(index + 1),
+        ).contains(currentName);
         if (isDefaultName) {
-          _linkNameControllers[i].text = '我的連結 ${i + 1}';
+          _linkNameControllers[i].text =
+              l10n.edit_profile_default_link_name(i + 1);
         }
       }
     });
   }
-
-  String _profileUiText(String key) {
-    final code = Localizations.localeOf(context).languageCode;
-
-    const table = <String, Map<String, String>>{
-      'done': {
-        'zh': '完成',
-        'en': 'Done',
-        'ja': '完了',
-        'ko': '완료',
-        'es': 'Listo',
-        'fr': 'Terminé',
-        'hi': 'पूर्ण',
-        'id': 'Selesai',
-        'ms': 'Selesai',
-        'pt': 'Concluir',
-        'th': 'เสร็จสิ้น',
-        'vi': 'Xong',
-        'ar': 'تم',
-      },
-      'socialLinks': {
-        'zh': '社群與連結',
-        'en': 'Social & Links',
-        'ja': 'SNS・リンク',
-        'ko': '소셜 및 링크',
-        'es': 'Redes y enlaces',
-        'fr': 'Réseaux et liens',
-        'hi': 'सोशल और लिंक',
-        'id': 'Sosial & Tautan',
-        'ms': 'Sosial & Pautan',
-        'pt': 'Redes e links',
-        'th': 'โซเชียลและลิงก์',
-        'vi': 'Mạng xã hội & Liên kết',
-        'ar': 'الاجتماعي والروابط',
-      },
-      'addLink': {
-        'zh': '新增連結',
-        'en': 'Add link',
-        'ja': 'リンクを追加',
-        'ko': '링크 추가',
-        'es': 'Añadir enlace',
-        'fr': 'Ajouter un lien',
-        'hi': 'लिंक जोड़ें',
-        'id': 'Tambah tautan',
-        'ms': 'Tambah pautan',
-        'pt': 'Adicionar link',
-        'th': 'เพิ่มลิงก์',
-        'vi': 'Thêm liên kết',
-        'ar': 'إضافة رابط',
-      },
-      'linkNameHint': {
-        'zh': '連結名稱',
-        'en': 'Link name',
-        'ja': 'リンク名',
-        'ko': '링크 이름',
-        'es': 'Nombre',
-        'fr': 'Nom du lien',
-        'hi': 'लिंक नाम',
-        'id': 'Nama tautan',
-        'ms': 'Nama pautan',
-        'pt': 'Nome do link',
-        'th': 'ชื่อลิงก์',
-        'vi': 'Tên liên kết',
-        'ar': 'اسم الرابط',
-      },
-      'linkUrlHint': {
-        'zh': '輸入連結',
-        'en': 'Enter URL',
-        'ja': 'URLを入力',
-        'ko': '링크 입력',
-        'es': 'Ingresa el enlace',
-        'fr': 'Saisir le lien',
-        'hi': 'लिंक दर्ज करें',
-        'id': 'Masukkan tautan',
-        'ms': 'Masukkan pautan',
-        'pt': 'Digite o link',
-        'th': 'ใส่ลิงก์',
-        'vi': 'Nhập liên kết',
-        'ar': 'أدخل الرابط',
-      },
-    };
-
-    final values = table[key];
-    if (values == null) return key;
-    return values[code] ?? values['en'] ?? key;
-  }
-
   // --- 資料處理邏輯 ---
 
   Future<void> _loadProfileData() async {
@@ -1487,7 +1408,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 maxLines: 1,
                 decoration: lineDecoration(
-                  hintText: _profileUiText('linkNameHint'),
+                  hintText: l10n.edit_profile_link_url_hint,
                 ),
               ),
             ),
@@ -1503,7 +1424,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   fontSize: 12,
                 ),
                 decoration: lineDecoration(
-                  hintText: _profileUiText('linkUrlHint'),
+                  hintText: l10n.edit_profile_link_url_hint,
                 ),
               ),
             ),
@@ -1561,7 +1482,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               )
                   : Text(
-                _profileUiText('done'),
+                l10n.edit_profile_done,
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -1852,7 +1773,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        _profileUiText('socialLinks'),
+                        l10n.edit_profile_social_links,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -1876,7 +1797,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       onPressed: _addProfileLink,
                       icon: const Icon(Icons.add_rounded, size: 19),
                       label: Text(
-                        _profileUiText('addLink'),
+                        l10n.edit_profile_add_link,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 14,
                         ),

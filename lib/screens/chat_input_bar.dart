@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class ChatInputBar extends StatefulWidget {
   final TextEditingController controller;
@@ -98,6 +99,7 @@ class _ChatInputBarState extends State<ChatInputBar>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final primary = theme.colorScheme.primary;
     final disabled = widget.isGenerating || widget.isLoading;
 
@@ -132,7 +134,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _BareIconButton(
-                      tooltip: 'Tools',
+                      tooltip: l10n.chat_input_tools,
                       asset:
                       'assets/images/chat/chat_more_cloud_mask.png',
                       assetSize: 30,
@@ -159,7 +161,7 @@ class _ChatInputBarState extends State<ChatInputBar>
                 )
                     : _BareIconButton(
                   key: const ValueKey('expand-chat-tools'),
-                  tooltip: '展開功能',
+                  tooltip: l10n.chat_input_expand_tools,
                   icon: Icons.chevron_right_rounded,
                   iconSize: 29,
                   onPressed: disabled ? null : _expandTools,
@@ -240,7 +242,9 @@ class _ChatInputBarState extends State<ChatInputBar>
             ),
             const SizedBox(width: 5),
             _BareIconButton(
-              tooltip: widget.isGenerating ? 'Stop' : 'Send',
+              tooltip: widget.isGenerating
+                  ? l10n.chat_input_stop
+                  : l10n.chat_input_send,
               icon: widget.isGenerating
                   ? Icons.stop_circle_outlined
                   : null,

@@ -6684,4 +6684,1168 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get feedback_change_image => '변경';
+
+  @override
+  String get profile_backpack_title => '나만의 가방과 특별 혜택';
+
+  @override
+  String get profile_backpack_total_spent => '현재까지 쌓인 로맨틱 인연';
+
+  @override
+  String profile_backpack_total_spent_amount(int amount) {
+    return 'NT\$ $amount';
+  }
+
+  @override
+  String get profile_backpack_physical_gift_status => '실물 선물 상자 해제 상태:';
+
+  @override
+  String get profile_backpack_vip_gift_title => '【최고의 사랑】VIP 전용 실물 선물 상자';
+
+  @override
+  String get profile_backpack_vip_gift_contents =>
+      '구성: 전용 손편지 + 캐릭터 대표 인형 + 공식 감사 편지';
+
+  @override
+  String get profile_backpack_edit_shipping_info => '배송지 정보 수정';
+
+  @override
+  String get profile_backpack_unlock_shipping_info => '해제 완료! 눌러서 배송 정보를 입력하세요';
+
+  @override
+  String get profile_backpack_shipping_registered =>
+      '배송지 등록이 완료되었습니다. 최대한 빠르게 준비해 드리겠습니다!';
+
+  @override
+  String profile_backpack_amount_remaining(int amount) {
+    return 'NT\$ $amount만 더 모으면 실물 대상이 해제됩니다!';
+  }
+
+  @override
+  String get profile_backpack_hint => '팁: 다른 외형과 프로필 테두리는 가방에서 확인할 수 있어요.';
+
+  @override
+  String get profile_backpack_close => '닫기';
+
+  @override
+  String get profile_physical_gift_title => '【최고의 사랑】실물 선물 상자 해제';
+
+  @override
+  String get profile_physical_gift_description =>
+      '「LoveyDovey」를 향한 변함없는 사랑에 감사드립니다!\n아래 배송 정보를 입력해 주세요. 전용 손편지와 캐릭터 대표 인형을 보내 드립니다:';
+
+  @override
+  String get profile_physical_gift_recipient_name => '수령인의 실명';
+
+  @override
+  String get profile_physical_gift_phone => '연락처';
+
+  @override
+  String get profile_physical_gift_address => '전체 배송 주소 (우편번호 포함)';
+
+  @override
+  String get profile_physical_gift_character_name => '받고 싶은 캐릭터 대표 인형의 이름';
+
+  @override
+  String get profile_physical_gift_character_hint => '예: 원하는 캐릭터 이름 입력';
+
+  @override
+  String get profile_physical_gift_fill_later => '나중에 입력';
+
+  @override
+  String get profile_physical_gift_required_error =>
+      '배송 정보와 원하는 캐릭터 이름을 모두 입력해 주세요!';
+
+  @override
+  String get profile_physical_gift_submit_success =>
+      '배송 정보가 성공적으로 제출되었습니다! 실물 깜짝 선물을 기대해 주세요!';
+
+  @override
+  String get profile_physical_gift_confirm_submit => '제출 확인';
+
+  @override
+  String get profile_tooltip_announcement => '공지';
+
+  @override
+  String get profile_tooltip_settings => '설정';
+
+  @override
+  String get profile_tooltip_backpack => '내 가방';
+
+  @override
+  String get profile_backpack_menu_title => '내 가방';
+
+  @override
+  String get profile_about_me_title => '내 소개';
+
+  @override
+  String get profile_tab_bio_title => '자기소개';
+
+  @override
+  String get profile_check_in_done => '출석 완료';
+
+  @override
+  String get profile_check_in => '출석';
+
+  @override
+  String get profile_check_in_done_subtitle => '오늘의 발자국을 남겼어요';
+
+  @override
+  String get profile_check_in_not_done_subtitle => '오늘은 아직 출석하지 않았어요';
+
+  @override
+  String get profile_likes_label => '좋아요';
+
+  @override
+  String get profile_heartbeat_diary_subtitle => '설레는 순간을 기록하세요';
+
+  @override
+  String get profile_create_scene => '장면 만들기';
+
+  @override
+  String get profile_link_invalid => '링크 형식이 올바르지 않습니다';
+
+  @override
+  String get profile_link_open_failed => '이 링크를 열 수 없습니다';
+
+  @override
+  String get profile_link_default_name => '내 링크';
+
+  @override
+  String get profile_publish_moment_short => '이 순간 기록하기';
+
+  @override
+  String edit_profile_default_link_name(int index) {
+    return '내 링크 $index';
+  }
+
+  @override
+  String get edit_profile_done => '완료';
+
+  @override
+  String get edit_profile_social_links => '소셜 미디어 및 링크';
+
+  @override
+  String get edit_profile_add_link => '링크 추가';
+
+  @override
+  String get edit_profile_link_name_hint => '링크 이름';
+
+  @override
+  String get edit_profile_link_url_hint => '링크 입력';
+
+  @override
+  String get theme_name_starlight => '별빛 보라';
+
+  @override
+  String get theme_name_sakura => '벚꽃 분홍';
+
+  @override
+  String get theme_name_ocean => '푸른 바다';
+
+  @override
+  String get theme_name_sunset => '노을 주황';
+
+  @override
+  String get theme_name_mint => '숲속 민트';
+
+  @override
+  String get theme_name_midnight => '심야 모드';
+
+  @override
+  String get theme_name_custom => '사용자 지정 색상';
+
+  @override
+  String get theme_selection_choose_theme => '테마 색상 선택';
+
+  @override
+  String get theme_selection_title => '분위기 바꾸기';
+
+  @override
+  String get theme_selection_description =>
+      '마음에 드는 테마 색상을 골라 LoveyDovey를 나만의 분위기로 꾸며 보세요.';
+
+  @override
+  String get theme_selection_preview => '미리보기';
+
+  @override
+  String get theme_selection_characters => '캐릭터';
+
+  @override
+  String get theme_selection_posts => '게시물';
+
+  @override
+  String theme_selection_previewing(String themeName) {
+    return '현재 미리보기: $themeName';
+  }
+
+  @override
+  String get theme_selection_apply => '테마 적용';
+
+  @override
+  String get theme_selection_restore_default => '기본값으로 복원';
+
+  @override
+  String get theme_selection_choose_color => '나만의 색상 선택';
+
+  @override
+  String theme_selection_applied(String themeName) {
+    return '「$themeName」 테마를 적용했습니다';
+  }
+
+  @override
+  String get welcome_guide_help => '게임 가이드';
+
+  @override
+  String get welcome_guide_start => '여정 시작';
+
+  @override
+  String get welcome_guide_next => '다음';
+
+  @override
+  String get welcome_guide_welcome_title => '「LoveyDovey」에 오신 것을 환영합니다';
+
+  @override
+  String get welcome_guide_welcome_description =>
+      '이곳에서는 모든 만남이 잊지 못할 이야기로 이어질 수 있습니다. 「LoveyDovey」와 함께 둘만의 아름다운 추억을 만들어 가세요.';
+
+  @override
+  String get welcome_guide_chat_title => '채팅 모드';
+
+  @override
+  String get welcome_guide_chat_description =>
+      '「LoveyDovey」에서는 다양한 채팅 모드를 제공하며, 모드마다 서로 다른 상호작용을 경험할 수 있습니다.';
+
+  @override
+  String get welcome_guide_daily_title => '일상 모드';
+
+  @override
+  String get welcome_guide_daily_description =>
+      '서로의 곁을 지키고 일상을 나누며 편안한 대화를 즐겨 보세요.';
+
+  @override
+  String get welcome_guide_story_title => '스토리 모드';
+
+  @override
+  String get welcome_guide_story_description =>
+      '캐릭터의 이야기를 진행하고 더 많은 전용 스토리와 상호작용을 해제하세요.';
+
+  @override
+  String get welcome_guide_immersive_title => '몰입 모드';
+
+  @override
+  String get welcome_guide_immersive_description =>
+      '더욱 깊이 빠져들 수 있는 생생한 대화를 경험해 보세요.';
+
+  @override
+  String get welcome_guide_chat_more =>
+      '채팅 모드에 대한 자세한 설명은 「게임 도움말」에서 확인할 수 있습니다.';
+
+  @override
+  String get welcome_guide_encounter_title => '새로운 만남';
+
+  @override
+  String get welcome_guide_encounter_description =>
+      '모든 캐릭터는 저마다 독특한 성격과 이야기, 목소리를 지니고 있습니다. 마음에 드는 캐릭터를 만나면 친구로 추가하여 대화하고 교감하며 일상을 나누고, 둘만의 추억을 만들어 보세요.';
+
+  @override
+  String get welcome_guide_more_title => '더 많은 콘텐츠';
+
+  @override
+  String get welcome_guide_more_description =>
+      '컬렉션, 크리에이터, 상점 등 다양한 기능도 준비되어 있습니다. 자세한 내용은 「게임 도움말」에서 확인해 주세요.';
+
+  @override
+  String preference_selection_max_error(int count) {
+    return '취향은 최대 $count개까지 선택할 수 있습니다.';
+  }
+
+  @override
+  String get preference_selection_save_failed =>
+      '현재 취향을 저장할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get preference_selection_title => '어떤 사람을 만나고 싶나요?';
+
+  @override
+  String get preference_selection_description =>
+      '좋아하는 유형을 3~5개 선택해 주세요. LoveyDovey가 여기서부터 당신을 알아갈게요.';
+
+  @override
+  String get preference_selection_recommendation_note =>
+      '앞으로 실제 상호작용에 따라 더욱 잘 맞는 추천으로 조금씩 조정됩니다.';
+
+  @override
+  String get preference_selection_selected => '선택됨';
+
+  @override
+  String get preference_selection_start => '여기서 시작하기';
+
+  @override
+  String get preference_group_personality => '성격・분위기';
+
+  @override
+  String get preference_group_relationship_age => '관계・나이 차이';
+
+  @override
+  String get preference_group_story => '이야기 분위기';
+
+  @override
+  String get preference_tag_gentle => '다정함';
+
+  @override
+  String get preference_tag_cold => '차가움';
+
+  @override
+  String get preference_tag_scheming => '계략형';
+
+  @override
+  String get preference_tag_tsundere => '츤데레';
+
+  @override
+  String get preference_tag_loyal => '충견형';
+
+  @override
+  String get preference_tag_yandere => '얀데레';
+
+  @override
+  String get preference_tag_mysterious => '신비로움';
+
+  @override
+  String get preference_tag_healing => '힐링';
+
+  @override
+  String get preference_tag_gap_moe => '반전 매력';
+
+  @override
+  String get preference_tag_older => '연상';
+
+  @override
+  String get preference_tag_younger => '연하';
+
+  @override
+  String get preference_tag_ceo => '재벌 대표';
+
+  @override
+  String get preference_tag_school => '학원물';
+
+  @override
+  String get preference_tag_workplace => '오피스물';
+
+  @override
+  String get preference_tag_ancient => '시대물';
+
+  @override
+  String get preference_tag_nonhuman => '인외';
+
+  @override
+  String get encounter_load_failed => '만남 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get encounter_no_available_characters => '아직 만날 수 있는 캐릭터가 없습니다';
+
+  @override
+  String get encounter_category_empty => '현재 이 카테고리에 캐릭터가 없습니다';
+
+  @override
+  String get encounter_category_all => '전체';
+
+  @override
+  String get encounter_category_xianxia => '선협';
+
+  @override
+  String get encounter_category_childhood_friend => '소꿉친구';
+
+  @override
+  String get encounter_category_master_disciple => '사제';
+
+  @override
+  String get encounter_category_sweet_romance => '달콤한 로맨스';
+
+  @override
+  String get encounter_category_other => '기타';
+
+  @override
+  String get character_edit_tab_character_settings => '캐릭터 설정';
+
+  @override
+  String get character_edit_test => '테스트';
+
+  @override
+  String get character_edit_supporting_basic_info => '기본 정보';
+
+  @override
+  String get character_edit_supporting_main_setting => '주인공과의 관계 설정';
+
+  @override
+  String get character_edit_supporting_main_description =>
+      '이 조연과 주인공의 관계 및 이야기 속 역할을 설명해 주세요.';
+
+  @override
+  String get character_edit_banner_preview_hint => '이미지를 누르면 크게 볼 수 있습니다';
+
+  @override
+  String get character_edit_main_photo_hint => '첫 번째 이미지가 대표 프로필로 사용됩니다';
+
+  @override
+  String get character_edit_other_photos => '다른 캐릭터 사진';
+
+  @override
+  String get character_edit_photo_action_hint =>
+      '사진을 누르면 미리 볼 수 있으며, 연필 아이콘으로 사진 설정을 편집할 수 있습니다';
+
+  @override
+  String character_edit_over_limit_warning(String label, String count) {
+    return '⚠ $label이(가) $count자를 초과했습니다. 수정한 후 다시 공개해 주세요.';
+  }
+
+  @override
+  String get memo_notification_channel_name => '메모 알림';
+
+  @override
+  String get memo_notification_channel_description =>
+      '캐릭터가 플레이어에게 설정한 메모를 알려 줍니다';
+
+  @override
+  String memo_notification_title(String characterName) {
+    return '$characterName의 알림';
+  }
+
+  @override
+  String memo_notification_tsundere(String memoContent) {
+    return '딱히 네가 걱정되는 건 아니야. 그냥 잊을까 봐 알려 주는 것뿐이야. 오늘 잊지 마: $memoContent';
+  }
+
+  @override
+  String memo_notification_dominant(String memoContent) {
+    return '일정은 이미 대신 기억해 뒀어. 제시간에 끝내. 오늘 잊지 마: $memoContent';
+  }
+
+  @override
+  String memo_notification_yandere(String memoContent) {
+    return '잊으면 안 돼. 나는 계속 기억하고 있을 테니까. 오늘 잊지 마: $memoContent';
+  }
+
+  @override
+  String memo_notification_gentle(String memoContent) {
+    return '바쁘다 보면 잊을까 봐 알려 주고 싶었어. 오늘 잊지 마: $memoContent';
+  }
+
+  @override
+  String memo_notification_cold(String memoContent) {
+    return '한 가지 알려 줄 게 있어. 오늘 잊지 마: $memoContent';
+  }
+
+  @override
+  String memo_notification_sunny(String memoContent) {
+    return '있잖아, 오늘 아직 중요한 일이 하나 남았어! 잊지 마: $memoContent';
+  }
+
+  @override
+  String memo_notification_lazy(String memoContent) {
+    return '계속 누워 있고 싶지만, 그래도 알려 줘야겠지. 오늘 잊지 마: $memoContent';
+  }
+
+  @override
+  String memo_notification_older(String memoContent) {
+    return '착하지, 오늘 할 일 잊지 마. 기억해 둬: $memoContent';
+  }
+
+  @override
+  String memo_notification_younger(String memoContent) {
+    return '내가 착하게 대신 기억하고 있었어! 오늘 잊지 마: $memoContent';
+  }
+
+  @override
+  String memo_notification_mechanical(String memoContent) {
+    return '알림이 활성화되었습니다. 오늘의 임무: $memoContent';
+  }
+
+  @override
+  String memo_notification_default(String memoContent) {
+    return '오늘 잊지 마: $memoContent';
+  }
+
+  @override
+  String get recommendation_load_failed =>
+      '현재 추천을 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get recommendation_reload => '다시 불러오기';
+
+  @override
+  String get recommendation_empty => '아직 추천할 수 있는 캐릭터가 없습니다.';
+
+  @override
+  String get recommendation_title => '당신을 위해 고른 만남';
+
+  @override
+  String get recommendation_featured_title => '먼저 이들을 만나 보세요';
+
+  @override
+  String get recommendation_featured_subtitle =>
+      '당신에게 가장 잘 맞을 것 같은 만남을 먼저 보여 드려요.';
+
+  @override
+  String get recommendation_matched_behavior_title => '당신의 취향에 점점 가까워지고 있어요';
+
+  @override
+  String get recommendation_matched_initial_title => '처음 선택한 취향을 바탕으로';
+
+  @override
+  String get recommendation_matched_behavior_subtitle =>
+      '4일 차 이후부터 최근 상호작용도 추천 순서에 반영됩니다.';
+
+  @override
+  String get recommendation_matched_initial_subtitle =>
+      '지금은 처음 선택한 태그를 바탕으로 추천 범위를 좁혀 드려요.';
+
+  @override
+  String get recommendation_explore_title => '이런 사람도 좋아할지 몰라요';
+
+  @override
+  String get recommendation_explore_subtitle =>
+      '가끔은 색다른 사람을 만날 수 있도록 무작위 탐색도 조금 남겨 두었어요.';
+
+  @override
+  String get recommendation_refreshing => '새로운 만남을 준비하고 있어요……';
+
+  @override
+  String get recommendation_badge_for_you => '맞춤 추천';
+
+  @override
+  String get recommendation_badge_featured => '특별한 만남';
+
+  @override
+  String get recommendation_badge_explore => '탐색';
+
+  @override
+  String get recommendation_default_occupation_hint =>
+      '한번 열어 보세요. 다음에 마음을 설레게 할 인연일지도 몰라요.';
+
+  @override
+  String get recommendation_explore_fallback => '조금 다른 방향에서 뜻밖의 설렘을 발견할지도 몰라요.';
+
+  @override
+  String get recommendation_behavior_hint_similar_type =>
+      '최근 이런 유형의 캐릭터를 자주 보고 있어요';
+
+  @override
+  String get recommendation_behavior_hint_forming =>
+      '최근 상호작용을 통해 취향이 조금씩 만들어지고 있어요';
+
+  @override
+  String get recommendation_behavior_hint_recent => '최근 상호작용을 바탕으로 골랐어요';
+
+  @override
+  String recommendation_reason_liked_tags(String tags) {
+    return '좋아하는 취향・$tags';
+  }
+
+  @override
+  String get recommendation_reason_popular => '최근 많은 사람이 이 캐릭터를 만나 보고 있어요';
+
+  @override
+  String get recommendation_reason_default => '다음 설렘으로 이어질 꼭 맞는 만남일지도 몰라요';
+
+  @override
+  String get scene_delete_title => '장면을 삭제할까요?';
+
+  @override
+  String scene_delete_content(String title) {
+    return '「$title」을 삭제하시겠습니까? 삭제한 후에는 복구할 수 없습니다.';
+  }
+
+  @override
+  String get scene_unnamed => '제목 없는 장면';
+
+  @override
+  String get scene_cancel => '취소';
+
+  @override
+  String get scene_delete => '삭제';
+
+  @override
+  String get scene_delete_failed => '삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get scene_start_failed => '현재 장면을 시작할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get scene_end_title => '장면을 종료할까요?';
+
+  @override
+  String get scene_end_content => '종료하면 일반 채팅으로 돌아가며, 현재 대화 기록은 삭제되지 않습니다.';
+
+  @override
+  String get scene_end_action => '장면 종료';
+
+  @override
+  String get scene_ended => '장면이 종료되었습니다';
+
+  @override
+  String get scene_end_failed => '현재 장면을 종료할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get scene_active_label => '현재 진행 중';
+
+  @override
+  String scene_opening(String opening) {
+    return '캐릭터 도입부: $opening';
+  }
+
+  @override
+  String get scene_edit => '편집';
+
+  @override
+  String get scene_start => '장면 시작';
+
+  @override
+  String get scene_creator_load_failed => '크리에이터 장면을 불러오지 못했습니다.';
+
+  @override
+  String get scene_creator_empty_title => '아직 크리에이터 장면이 없습니다';
+
+  @override
+  String get scene_creator_empty_body => '이 캐릭터의 크리에이터가 아직 추가 이야기를 만들지 않았습니다.';
+
+  @override
+  String get scene_custom_load_failed => '직접 만든 장면을 불러오지 못했습니다.';
+
+  @override
+  String get scene_custom_empty_title => '아직 직접 만든 장면이 없습니다';
+
+  @override
+  String get scene_custom_empty_body => '이 채팅방만을 위한 나만의 이야기를 만들어 보세요.';
+
+  @override
+  String get scene_add => '장면 추가';
+
+  @override
+  String get scene_title => '장면';
+
+  @override
+  String get scene_tab_creator => '크리에이터 장면';
+
+  @override
+  String get scene_tab_custom => '직접 만들기';
+
+  @override
+  String get chat_book_player => '플레이어';
+
+  @override
+  String get chat_book_title => '대화 기록';
+
+  @override
+  String get chat_book_export_pdf => 'PDF 내보내기';
+
+  @override
+  String get chat_book_brand => '— LoveyDovey';
+
+  @override
+  String get chat_book_change_cover => '표지 변경';
+
+  @override
+  String get chat_book_cover_subtitle => '함께한 시간 · 대화 기념책';
+
+  @override
+  String get chat_book_choose_cover => '기념책 표지 선택';
+
+  @override
+  String get chat_book_initial_story => '첫 이야기';
+
+  @override
+  String chat_book_transcript_title(String characterName) {
+    return '$characterName · 대화 기록';
+  }
+
+  @override
+  String chat_book_continuation(String name) {
+    return '$name · 계속';
+  }
+
+  @override
+  String get chat_book_previous_page => '이전 페이지';
+
+  @override
+  String get chat_book_next_page => '다음 페이지';
+
+  @override
+  String get chat_book_photo_message => '〔사진〕';
+
+  @override
+  String get chat_book_audio_message => '〔음성 메시지〕';
+
+  @override
+  String get chat_book_generic_message => '〔메시지〕';
+
+  @override
+  String chat_book_export_failed(String error) {
+    return 'PDF를 내보내지 못했습니다: $error';
+  }
+
+  @override
+  String email_policy_open_failed(String title) {
+    return '$title을(를) 열 수 없습니다. 네트워크 연결을 확인한 후 다시 시도해 주세요.';
+  }
+
+  @override
+  String email_policy_read_instruction(String title) {
+    return '먼저 $title 전문을 열어 읽어 주세요. 모두 읽은 후 「LoveyDovey」로 돌아오면 「읽었으며 동의합니다」를 누를 수 있습니다.';
+  }
+
+  @override
+  String get email_policy_opening => '여는 중……';
+
+  @override
+  String email_policy_read_full(String title) {
+    return '$title 전문 읽기';
+  }
+
+  @override
+  String email_policy_opened_ready(String title) {
+    return '$title을(를) 열었습니다. 이제 동의 여부를 확인할 수 있습니다.';
+  }
+
+  @override
+  String email_policy_not_opened(String title) {
+    return '$title을(를) 아직 열지 않았습니다.';
+  }
+
+  @override
+  String get email_policy_cancel_login => '로그인 취소';
+
+  @override
+  String get email_policy_agree => '읽었으며 동의합니다';
+
+  @override
+  String get email_policy_status_check_failed =>
+      '현재 약관 동의 상태를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get email_policy_login_notice =>
+      '최초 로그인 또는 약관 업데이트 시 서비스 이용약관과 개인정보 처리방침을 읽고 동의해야 합니다.';
+
+  @override
+  String get email_policy_refresh => '새로 고침';
+
+  @override
+  String get email_policy_page_load_failed => '페이지를 불러오지 못했습니다';
+
+  @override
+  String get email_policy_check_network => '네트워크 연결을 확인한 후 다시 시도해 주세요.';
+
+  @override
+  String get email_policy_reload => '다시 불러오기';
+
+  @override
+  String get login_method_info_google_title => 'Google 빠른 로그인';
+
+  @override
+  String get login_method_info_apple_title => 'Apple로 로그인';
+
+  @override
+  String get login_method_info_facebook_title => 'Facebook으로 로그인';
+
+  @override
+  String get login_method_info_email_title => 'LoveyDovey 계정 (이메일)';
+
+  @override
+  String get login_method_info_email_provider => 'LoveyDovey 계정 (이메일)';
+
+  @override
+  String login_method_info_content(String providerName) {
+    return '$providerName(으)로 「LoveyDovey」에 로그인합니다.\n\n유의 사항:\n\n• $providerName 로그인과 다른 로그인 방식은 서로 별개의 계정 시스템입니다.\n\n• $providerName(으)로 계정을 만들었다면 이후에도 같은 방식으로 로그인해 주세요.\n\n• 캐릭터 데이터, 채팅 기록 및 구매 내역은 다른 로그인 방식의 계정과 공유되지 않습니다.\n\n서로 다른 계정이 생성되어 데이터를 공유하지 못하는 상황을 방지하려면 최초 로그인 후에도 같은 로그인 방식을 계속 사용해 주세요.';
+  }
+
+  @override
+  String get login_method_info_got_it => '확인';
+
+  @override
+  String creator_studio_delete_failed(String error) {
+    return '삭제하지 못했습니다: $error';
+  }
+
+  @override
+  String get creator_studio_subtitle => '영감을 모으고 캐릭터를 정리하며 천천히 작품을 완성해 보세요';
+
+  @override
+  String creator_studio_load_failed(String error) {
+    return '스튜디오를 불러오지 못했습니다: $error';
+  }
+
+  @override
+  String get creator_studio_add_character => '캐릭터 추가';
+
+  @override
+  String get creator_studio_public_title => '공개 캐릭터';
+
+  @override
+  String get creator_studio_public_subtitle => '공개되어 다른 플레이어가 만날 수 있습니다';
+
+  @override
+  String get creator_studio_public_empty => '현재 공개 캐릭터가 없습니다';
+
+  @override
+  String get creator_studio_private_title => '비공개 캐릭터';
+
+  @override
+  String get creator_studio_private_subtitle => '나만 볼 수 있습니다';
+
+  @override
+  String get creator_studio_private_empty => '현재 비공개 캐릭터가 없습니다';
+
+  @override
+  String get creator_studio_draft_title => '초안';
+
+  @override
+  String get creator_studio_draft_subtitle => '아직 완성되지 않은 작품';
+
+  @override
+  String get creator_studio_draft_empty => '현재 미완성 초안이 없습니다';
+
+  @override
+  String get creator_studio_draft_empty_title => '아직 초안이 없습니다';
+
+  @override
+  String get creator_studio_draft_empty_hint => '영감이 떠오르면 먼저 여기에 기록해 보세요';
+
+  @override
+  String get creator_studio_status_public => '공개';
+
+  @override
+  String get creator_studio_status_private => '비공개';
+
+  @override
+  String get creator_studio_status_draft => '초안';
+
+  @override
+  String get creator_studio_character_load_failed => '캐릭터 정보를 불러오지 못했습니다';
+
+  @override
+  String get creator_studio_delete_draft_tooltip => '초안 삭제';
+
+  @override
+  String get creator_studio_unnamed_creator => '이름 없는 크리에이터';
+
+  @override
+  String get creator_studio_no_bio => '아직 자기소개를 작성하지 않았습니다';
+
+  @override
+  String get chat_input_tools => '기능';
+
+  @override
+  String get chat_input_expand_tools => '기능 펼치기';
+
+  @override
+  String get chat_input_stop => '중지';
+
+  @override
+  String get chat_input_send => '전송';
+
+  @override
+  String get chat_side_menu_section_chat => '채팅';
+
+  @override
+  String get chat_side_menu_section_relationship => '관계';
+
+  @override
+  String get chat_side_menu_section_memory => '기억 관리';
+
+  @override
+  String get character_navigator_confidential_title => '기밀 파일';
+
+  @override
+  String get character_navigator_unavailable_message =>
+      '이 캐릭터는 비공개로 전환되었거나, 공개 중단, 규정 위반으로 인한 보관 또는 삭제 처리되었을 수 있습니다.';
+
+  @override
+  String get character_navigator_got_it => '확인';
+
+  @override
+  String get character_navigator_load_failed_title => '불러오기 실패';
+
+  @override
+  String get character_navigator_load_failed_message =>
+      '현재 캐릭터 정보를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get character_navigator_confirm => '확인';
+
+  @override
+  String get character_profile_add_bookmark => '캐릭터 보관';
+
+  @override
+  String get character_profile_remove_bookmark => '보관 취소';
+
+  @override
+  String get character_profile_pronoun_female => '그녀';
+
+  @override
+  String get character_profile_pronoun_male => '그';
+
+  @override
+  String get character_profile_pronoun_neutral => '그 캐릭터';
+
+  @override
+  String get chat_home_pin_limit_reached =>
+      '채팅방은 최대 3개까지 고정할 수 있습니다. 먼저 다른 채팅방의 고정을 해제해 주세요.';
+
+  @override
+  String get chat_home_pinned_success => '채팅방을 고정했습니다';
+
+  @override
+  String get chat_home_unpinned_success => '고정을 해제했습니다';
+
+  @override
+  String chat_home_pin_update_failed(String error) {
+    return '고정 상태를 업데이트하지 못했습니다: $error';
+  }
+
+  @override
+  String get chat_home_unpin => '고정 해제';
+
+  @override
+  String get chat_home_pin => '채팅방 고정';
+
+  @override
+  String chat_home_time_label(String time) {
+    return '시간: $time';
+  }
+
+  @override
+  String get main_check_in_already_done => '오늘은 이미 출석했어요';
+
+  @override
+  String get nav_recommend => '추천';
+
+  @override
+  String get moments_auto_reply_title => 'AI의 플레이어 게시물 자동 답글 허용';
+
+  @override
+  String get moments_auto_reply_description =>
+      '활성화하면 시스템이 이 캐릭터를 선택해 플레이어의 게시물에 답글을 남길 수 있습니다.';
+
+  @override
+  String get mailOriginalQuestionLabel => '처음 물어본 내용';
+
+  @override
+  String get hidden_moments_empty_hint => '아직 숨긴 게시물이 없어요';
+
+  @override
+  String get moment_search_unavailable => '현재 검색을 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get moment_search_hint => '공개 게시물, 캐릭터 또는 크리에이터 검색';
+
+  @override
+  String get moment_search_instruction => '게시물 내용, 캐릭터 이름 또는 크리에이터 이름을 입력하세요';
+
+  @override
+  String get moment_search_no_results => '관련 공개 게시물을 찾을 수 없습니다';
+
+  @override
+  String get settingsErrorTitle => '오류가 발생했습니다';
+
+  @override
+  String get settingsChangePasswordSubtitle =>
+      '현재 비밀번호를 확인한 후 새 로그인 비밀번호를 설정합니다';
+
+  @override
+  String get settingsCreatorGuidelines => '크리에이터 가이드라인';
+
+  @override
+  String get settingsPlayGuide => '게임 가이드';
+
+  @override
+  String get language_selection_subtitle => '사용할 언어를 선택해 주세요';
+
+  @override
+  String get search_character_hint => '캐릭터, 크리에이터, 직업 또는 태그 검색';
+
+  @override
+  String get search_character_clear => '지우기';
+
+  @override
+  String get search_character_recent => '최근 검색';
+
+  @override
+  String get search_character_load_failed =>
+      '검색 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get search_character_popular => '요즘 모두가 좋아하는 캐릭터';
+
+  @override
+  String search_character_result_count(int count) {
+    return '캐릭터 $count명을 찾았습니다';
+  }
+
+  @override
+  String get shop_tab_monthly => '월간 패스';
+
+  @override
+  String shop_joined_days(int days) {
+    return '✦ LoveyDovey와 함께한 지 $days일째 ✦';
+  }
+
+  @override
+  String get shop_vip_tier_1_title => '첫눈에 반한 마음';
+
+  @override
+  String get shop_vip_tier_1_reward => '꽃 포인트 20개 + 신규 전용 칭호';
+
+  @override
+  String get shop_vip_tier_2_title => '희미한 빛의 설렘';
+
+  @override
+  String get shop_vip_tier_2_reward => '전용 프로필 테두리 【희미한 빛의 설렘】';
+
+  @override
+  String get shop_vip_tier_3_title => '별빛 아래 속삭임';
+
+  @override
+  String get shop_vip_tier_3_reward => '전용 채팅 말풍선 + 꽃 포인트 50개';
+
+  @override
+  String get shop_vip_tier_4_title => '낭만적인 노을';
+
+  @override
+  String get shop_vip_tier_4_reward => '전용 앱 아이콘';
+
+  @override
+  String get shop_vip_tier_5_title => '두근거리는 마음';
+
+  @override
+  String get shop_vip_tier_5_reward => '화면 터치 효과 (Lottie) + 꽃 포인트 100개';
+
+  @override
+  String get shop_vip_tier_6_title => '영원한 맹세';
+
+  @override
+  String get shop_vip_tier_6_reward => '고급 움직이는 프로필 테두리 + 꽃 포인트 200개';
+
+  @override
+  String get shop_vip_tier_7_title => '영혼의 만남';
+
+  @override
+  String get shop_vip_tier_7_reward => '움직이는 채팅 말풍선 효과 + 전용 고급 칭호';
+
+  @override
+  String get shop_vip_tier_8_title => '오직 당신을 위한 기다림';
+
+  @override
+  String get shop_vip_tier_8_reward => '최고급 움직이는 명찰 + 꽃 포인트 500개';
+
+  @override
+  String get shop_vip_tier_9_title => '눈부신 은하수';
+
+  @override
+  String get shop_vip_tier_9_reward => '전용 입장 Lottie 효과 + 전용 고객 지원';
+
+  @override
+  String get shop_vip_tier_10_title => '최고의 사랑';
+
+  @override
+  String get shop_vip_tier_10_reward => '【VIP 전용 실물 선물 상자】 (손편지 + 캐릭터 대표 인형)';
+
+  @override
+  String get shop_vip_total_bond => '누적 로맨틱 인연';
+
+  @override
+  String get shop_vip_all_unlocked => '모든 최고급 혜택을 해제했습니다!';
+
+  @override
+  String shop_vip_next_unlock(int amount) {
+    return 'NT\$ $amount를 더 충전하면 다음 단계를 해제할 수 있습니다';
+  }
+
+  @override
+  String get call_connecting => '통화 연결 중...';
+
+  @override
+  String get call_listening_auto_send => '듣고 있습니다... (말을 마치면 자동으로 전송됩니다)';
+
+  @override
+  String get call_listening_release_to_send => '듣고 있습니다... (손가락을 떼면 전송됩니다)';
+
+  @override
+  String call_sending_transcript(String text) {
+    return ' $text\n\n(전송 중...)';
+  }
+
+  @override
+  String get help_translation_fallback =>
+      '현재 이 언어로 제공되는 플레이 가이드가 없어 임시로 번체 중국어로 표시됩니다.';
+
+  @override
+  String get help_all_categories => '전체';
+
+  @override
+  String get help_subtitle_companion => '일상 기능과 유용한 도우미';
+
+  @override
+  String get help_subtitle_ai_chat => '채팅, 음성 및 스마트 상호작용';
+
+  @override
+  String get help_subtitle_creation => '캐릭터 설정 및 창작 기능';
+
+  @override
+  String get help_subtitle_explore => '캐릭터와 게임 콘텐츠 탐색';
+
+  @override
+  String get help_subtitle_care => '다정한 동행과 일상의 배려';
+
+  @override
+  String get help_subtitle_general => '일반적인 기능 및 이용 방법';
+
+  @override
+  String get chat_interact_fun => '재미있는 활동';
+
+  @override
+  String get memo_notification_permission_missing =>
+      '알림 권한이 아직 허용되지 않았습니다. 메모는 저장되지만 시스템 알림은 표시되지 않습니다.';
+
+  @override
+  String memo_saved_with_reminder(String characterName) {
+    return '메모를 저장했습니다. $characterName이(가) 알려 줄 거예요!';
+  }
+
+  @override
+  String get memo_saved_without_notification =>
+      '메모를 저장했지만 알림 권한이 아직 허용되지 않았습니다.';
+
+  @override
+  String memo_updated_with_reminder(String characterName) {
+    return '메모를 수정했습니다. $characterName이(가) 알려 줄 거예요!';
+  }
+
+  @override
+  String get memo_updated_without_notification => '메모를 수정했지만 현재 알림 권한이 없습니다.';
+
+  @override
+  String memo_load_error(String error) {
+    return '데이터를 불러오는 중 오류가 발생했습니다: $error';
+  }
+
+  @override
+  String get story_summary_content_required => '스토리 내용을 입력해 주세요';
+
+  @override
+  String get story_summary_edit_hint => '두 사람의 이야기를 적어 보세요...';
+
+  @override
+  String get profile_section_basic_info => '기본 정보';
+
+  @override
+  String get profile_section_about_me => '나에 대해';
+
+  @override
+  String get dice_duel_you => '나';
+
+  @override
+  String get dice_duel_result_saved => '대결 결과를 저장했습니다!';
+
+  @override
+  String get dice_duel_rolling => '우주의 에너지를 모으는 중...';
 }

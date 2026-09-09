@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class ChatSideMenu extends StatefulWidget {
   final String searchLabel;
@@ -147,6 +148,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Material(
       color: theme.colorScheme.surface,
@@ -180,7 +182,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
           ListView(
             padding: const EdgeInsets.fromLTRB(22, 26, 18, 30),
             children: [
-              _SectionTitle(label: '聊天'),
+              _SectionTitle(label: l10n.chat_side_menu_section_chat),
 
               // 回覆模型直接放在「聊天」第一個，不再另外拉「回覆設定」。
               _MenuTile(
@@ -282,7 +284,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
               ),
 
               const _SoftDivider(),
-              _SectionTitle(label: '關係'),
+              _SectionTitle(label: l10n.chat_side_menu_section_relationship),
               _MenuTile(
                 asset: 'assets/images/chat/chat_menu_related_mask.png',
                 fallbackIcon: Icons.person_outline_rounded,
@@ -309,7 +311,7 @@ class _ChatSideMenuState extends State<ChatSideMenu> {
               ),
 
               const _SoftDivider(),
-              _SectionTitle(label: '記憶管理'),
+              _SectionTitle(label: l10n.chat_side_menu_section_memory),
               _MenuTile(
                 asset:
                 'assets/images/chat/chat_menu_reset_memory_mask.png',

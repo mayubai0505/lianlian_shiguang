@@ -61,7 +61,7 @@ class CreatorStudioPage extends StatelessWidget {
         // 💡 總裁級防護：刪除失敗的緊急警告
         ToastUtils.showCenterToast(
           context,
-          '刪除失敗: $e',
+          l10n.creator_studio_delete_failed(e.toString()),
           isError: true,
         );
       }
@@ -143,236 +143,236 @@ class CreatorStudioPage extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
-      IgnorePointer(
-      child: Stack(
-      children: [
-        Positioned(
-        top: 20,
-        right: -25,
-        width: 210,
-        child: Opacity(
-          opacity: 0.17,
-          child: Image.asset(
-            'assets/images/studio/studio_top_right.png',
+          IgnorePointer(
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 20,
+                  right: -25,
+                  width: 210,
+                  child: Opacity(
+                    opacity: 0.17,
+                    child: Image.asset(
+                      'assets/images/studio/studio_top_right.png',
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: -25,
+                  bottom: -10,
+                  width: 215,
+                  child: Opacity(
+                    opacity: 0.16,
+                    child: Image.asset(
+                      'assets/images/studio/studio_bottom_left.png',
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-      Positioned(
-        left: -25,
-        bottom: -10,
-        width: 215,
-        child: Opacity(
-          opacity: 0.16,
-          child: Image.asset(
-            'assets/images/studio/studio_bottom_left.png',
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 10, 16, 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.maybePop(context),
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 22,
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    l10n.my_secret_studio_title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.notoSerifTc(
+                                      color: theme.colorScheme.onSurface,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.8,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 7),
+                                Image.asset(
+                                  'assets/images/studio/studio_title_leaf.png',
+                                  width: 30,
+                                  height: 30,
+                                  fit: BoxFit.contain,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                l10n.creator_studio_subtitle,
+                                maxLines: 1,
+                                style: GoogleFonts.notoSerifTc(
+                                  color: primary.withValues(alpha: 0.62),
+                                  fontSize: 12,
+                                  letterSpacing: 0.4,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 42),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
+                    stream: combinedStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            l10n.creator_studio_load_failed(snapshot.error.toString()),
+                          ),
+                        );
+                      }
+
+                      final data = snapshot.data ??
+                          {
+                            'drafts': <QueryDocumentSnapshot>[],
+                            'privates': <QueryDocumentSnapshot>[],
+                            'publics': <QueryDocumentSnapshot>[],
+                          };
+
+                      final drafts =
+                          data['drafts'] ?? <QueryDocumentSnapshot>[];
+
+                      final privates =
+                          data['privates'] ?? <QueryDocumentSnapshot>[];
+
+                      final publics =
+                          data['publics'] ?? <QueryDocumentSnapshot>[];
+
+                      return ListView(
+                        physics:
+                        const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.fromLTRB(
+                          18,
+                          12,
+                          18,
+                          64,
+                        ),
+                        children: [
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: OutlinedButton.icon(
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                    const CharacterEditPage(),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.add_rounded,
+                                size: 21,
+                              ),
+                              label: Text(
+                                l10n.creator_studio_add_character,
+                                style: GoogleFonts.notoSerifTc(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: primary,
+                                backgroundColor: theme.colorScheme.surface
+                                    .withValues(alpha: 0.78),
+                                side: BorderSide(
+                                  color: primary.withValues(alpha: 0.32),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 17,
+                                  vertical: 10,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 18),
+
+                          _buildStudioSection(
+                            context: context,
+                            theme: theme,
+                            title: l10n.creator_studio_public_title,
+                            subtitle: l10n.creator_studio_public_subtitle,
+                            assetPath: 'assets/images/studio/studio_public.png',
+                            count: publics.length,
+                            emptyText: l10n.creator_studio_public_empty,
+                            documents: publics,
+                            status: 'public',
+                          ),
+
+                          const SizedBox(height: 28),
+
+                          _buildStudioSection(
+                            context: context,
+                            theme: theme,
+                            title: l10n.creator_studio_private_title,
+                            subtitle: l10n.creator_studio_private_subtitle,
+                            assetPath: 'assets/images/studio/studio_private.png',
+                            count: privates.length,
+                            emptyText: l10n.creator_studio_private_empty,
+                            documents: privates,
+                            status: 'private',
+                          ),
+
+                          const SizedBox(height: 28),
+
+                          _buildStudioSection(
+                            context: context,
+                            theme: theme,
+                            title: l10n.creator_studio_draft_title,
+                            subtitle: l10n.creator_studio_draft_subtitle,
+                            assetPath: 'assets/images/studio/studio_draft_quill.png',
+                            count: drafts.length,
+                            emptyText: l10n.creator_studio_draft_empty,
+                            documents: drafts,
+                            status: 'draft',
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
-      ],
-    ),
-    ),
-    SafeArea(
-    child: Column(
-    children: [
-    Padding(
-    padding: const EdgeInsets.fromLTRB(8, 10, 16, 4),
-    child: Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-    IconButton(
-    onPressed: () => Navigator.maybePop(context),
-    icon: const Icon(
-    Icons.arrow_back_ios_new_rounded,
-    size: 22,
-    ),
-    ),
-    Expanded(
-    child: Column(
-    children: [
-    Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-    Flexible(
-    child: Text(
-    l10n.my_secret_studio_title,
-    maxLines: 1,
-    overflow: TextOverflow.ellipsis,
-    style: GoogleFonts.notoSerifTc(
-    color: theme.colorScheme.onSurface,
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 1.8,
-    ),
-    ),
-    ),
-    const SizedBox(width: 7),
-    Image.asset(
-    'assets/images/studio/studio_title_leaf.png',
-    width: 30,
-    height: 30,
-    fit: BoxFit.contain,
-    ),
-    ],
-    ),
-    const SizedBox(height: 5),
-      FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(
-          '收藏靈感，整理角色，慢慢完成你的作品',
-          maxLines: 1,
-          style: GoogleFonts.notoSerifTc(
-            color: primary.withValues(alpha: 0.62),
-            fontSize: 12,
-            letterSpacing: 0.4,
-          ),
-        ),
-      ),
-    ],
-    ),
-    ),
-    const SizedBox(width: 42),
-    ],
-    ),
-    ),
-    Expanded(
-    child: StreamBuilder<Map<String, List<QueryDocumentSnapshot>>>(
-    stream: combinedStream,
-    builder: (context, snapshot) {
-    if (snapshot.connectionState ==
-    ConnectionState.waiting) {
-    return const Center(
-    child: CircularProgressIndicator(),
-    );
-    }
-
-    if (snapshot.hasError) {
-    return Center(
-    child: Text(
-    '工作室讀取失敗：${snapshot.error}',
-    ),
-    );
-    }
-
-    final data = snapshot.data ??
-    {
-    'drafts': <QueryDocumentSnapshot>[],
-    'privates': <QueryDocumentSnapshot>[],
-    'publics': <QueryDocumentSnapshot>[],
-    };
-
-    final drafts =
-    data['drafts'] ?? <QueryDocumentSnapshot>[];
-
-    final privates =
-    data['privates'] ?? <QueryDocumentSnapshot>[];
-
-    final publics =
-    data['publics'] ?? <QueryDocumentSnapshot>[];
-
-    return ListView(
-    physics:
-    const AlwaysScrollableScrollPhysics(),
-    padding: const EdgeInsets.fromLTRB(
-    18,
-    12,
-    18,
-    64,
-    ),
-    children: [
-    Align(
-    alignment: Alignment.centerRight,
-    child: OutlinedButton.icon(
-    onPressed: () async {
-    await Navigator.push(
-    context,
-    MaterialPageRoute(
-    builder: (_) =>
-    const CharacterEditPage(),
-    ),
-    );
-    },
-    icon: const Icon(
-    Icons.add_rounded,
-    size: 21,
-    ),
-    label: Text(
-    '新增角色',
-    style: GoogleFonts.notoSerifTc(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.5,
-    ),
-    ),
-    style: OutlinedButton.styleFrom(
-    foregroundColor: primary,
-    backgroundColor: theme.colorScheme.surface
-        .withValues(alpha: 0.78),
-    side: BorderSide(
-    color: primary.withValues(alpha: 0.32),
-    ),
-    padding: const EdgeInsets.symmetric(
-    horizontal: 17,
-    vertical: 10,
-    ),
-    shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(24),
-    ),
-    ),
-    ),
-    ),
-
-    const SizedBox(height: 18),
-
-    _buildStudioSection(
-    context: context,
-    theme: theme,
-    title: '公開角色',
-    subtitle: '已上架，可被其他玩家認識',
-    assetPath: 'assets/images/studio/studio_public.png',
-    count: publics.length,
-    emptyText: '目前沒有公開角色',
-    documents: publics,
-    status: 'public',
-    ),
-
-    const SizedBox(height: 28),
-
-    _buildStudioSection(
-    context: context,
-    theme: theme,
-    title: '私人角色',
-    subtitle: '只有你自己看得到',
-    assetPath: 'assets/images/studio/studio_private.png',
-    count: privates.length,
-    emptyText: '目前沒有私人角色',
-    documents: privates,
-    status: 'private',
-    ),
-
-    const SizedBox(height: 28),
-
-    _buildStudioSection(
-    context: context,
-    theme: theme,
-    title: '草稿',
-    subtitle: '尚未完成的創作',
-    assetPath: 'assets/images/studio/studio_draft_quill.png',
-    count: drafts.length,
-    emptyText: '目前沒有尚未完成的草稿',
-    documents: drafts,
-    status: 'draft',
-    ),
-    ],
-    );
-    },
-    ),
-    ),
-    ],
-    ),
-    ),
-    ],
-    ),
     );
   }
   Widget _buildStudioSection({
@@ -386,6 +386,7 @@ class CreatorStudioPage extends StatelessWidget {
     required List<QueryDocumentSnapshot> documents,
     required String status,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final primary = theme.colorScheme.primary;
 
     return Container(
@@ -477,7 +478,7 @@ class CreatorStudioPage extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    status == 'draft' ? '這裡還沒有草稿' : emptyText,
+                    status == 'draft' ? l10n.creator_studio_draft_empty_title : emptyText,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 15,
@@ -487,7 +488,7 @@ class CreatorStudioPage extends StatelessWidget {
                   if (status == 'draft') ...[
                     const SizedBox(height: 7),
                     Text(
-                      '靈感來了，就先記在這裡吧',
+                      l10n.creator_studio_draft_empty_hint,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 12,
@@ -533,18 +534,18 @@ class CreatorStudioPage extends StatelessWidget {
 
     switch (status) {
       case 'public':
-        statusText = '已公開';
+        statusText = l10n.creator_studio_status_public;
         statusIcon = Icons.public_rounded;
         break;
 
       case 'private':
-        statusText = '私人';
+        statusText = l10n.creator_studio_status_private;
         statusIcon = Icons.lock_outline_rounded;
         break;
 
       case 'draft':
       default:
-        statusText = '草稿';
+        statusText = l10n.creator_studio_status_draft;
         statusIcon = Icons.edit_note_rounded;
     }
 
@@ -600,7 +601,7 @@ class CreatorStudioPage extends StatelessWidget {
 
             ToastUtils.showCenterToast(
               context,
-              '角色資料讀取失敗',
+              l10n.creator_studio_character_load_failed,
               isError: true,
             );
           }
@@ -695,7 +696,7 @@ class CreatorStudioPage extends StatelessWidget {
 
               if (status == 'draft')
                 IconButton(
-                  tooltip: '刪除草稿',
+                  tooltip: l10n.creator_studio_delete_draft_tooltip,
                   icon: const Icon(
                     Icons.delete_outline_rounded,
                     color: Colors.redAccent,
@@ -728,6 +729,7 @@ class CreatorStudioPage extends StatelessWidget {
         required String bio,
         required String avatarPath,
       }) {
+    final l10n = AppLocalizations.of(context)!;
     ImageProvider? avatarProvider;
 
     if (avatarPath.startsWith('http://') ||
@@ -779,7 +781,7 @@ class CreatorStudioPage extends StatelessWidget {
                 children: [
                   Text(
                     nickname.isEmpty
-                        ? '未命名創作者'
+                        ? l10n.creator_studio_unnamed_creator
                         : nickname,
                     style: TextStyle(
                       color:
@@ -803,7 +805,7 @@ class CreatorStudioPage extends StatelessWidget {
                   ] else ...[
                     const SizedBox(height: 6),
                     Text(
-                      '尚未填寫自我介紹',
+                      l10n.creator_studio_no_bio,
                       style: TextStyle(
                         color: theme
                             .colorScheme.onSurface

@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'main_page.dart';
 import 'help_page.dart';
 import 'preference_selection_page.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class WelcomeGuidePage extends StatefulWidget {
   const WelcomeGuidePage({super.key});
@@ -66,6 +68,7 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return PopScope(
       canPop: false,
@@ -125,7 +128,7 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
                               ),
                             ),
                             child: Text(
-                              '遊玩指南',
+                              l10n.welcome_guide_help,
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -158,7 +161,7 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
                               ),
                             )
                                 : Text(
-                              '開始旅程',
+                              l10n.welcome_guide_start,
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
@@ -184,7 +187,7 @@ class _WelcomeGuidePageState extends State<WelcomeGuidePage> {
                         ),
                       ),
                       child: Text(
-                        '下一步',
+                        l10n.welcome_guide_next,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
@@ -283,6 +286,7 @@ class _WelcomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return _GuidePageLayout(
       illustration: Image.asset(
@@ -291,12 +295,9 @@ class _WelcomePage extends StatelessWidget {
         height: 92,
         fit: BoxFit.contain,
       ),
-      title: '歡迎來到《戀戀拾光》',
+      title: l10n.welcome_guide_welcome_title,
       content: Text(
-        '在這裡，每一次相遇，'
-        '都可能成為一段難忘的故事。'
-        '希望《戀戀拾光》能陪伴你，'
-        '創造屬於你們的美好回憶。',
+        l10n.welcome_guide_welcome_description,
         textAlign: TextAlign.center,
         style: GoogleFonts.notoSerifTc(
           color: colorScheme.onSurface.withValues(alpha: 0.70),
@@ -315,6 +316,7 @@ class _ChatModePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return _GuidePageLayout(
       illustration: Container(
@@ -330,12 +332,11 @@ class _ChatModePage extends StatelessWidget {
           color: colorScheme.primary,
         ),
       ),
-      title: '聊天模式',
+      title: l10n.welcome_guide_chat_title,
       content: Column(
         children: [
           Text(
-            '《戀戀拾光》提供多種聊天模式，'
-            '每種模式都有不同的互動體驗。',
+            l10n.welcome_guide_chat_description,
             textAlign: TextAlign.center,
             style: GoogleFonts.notoSerifTc(
               color: colorScheme.onSurface.withValues(alpha: 0.68),
@@ -344,26 +345,26 @@ class _ChatModePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 22),
-          const _ModeCard(
+           _ModeCard(
             iconAsset: 'assets/images/chat/chat_mode_daily_mask.png',
-            title: '日常模式',
-            description: '陪伴彼此、分享生活，享受輕鬆自在的聊天時光。',
+            title: l10n.welcome_guide_daily_title,
+            description: l10n.welcome_guide_daily_description,
           ),
           const SizedBox(height: 12),
-          const _ModeCard(
+          _ModeCard(
             iconAsset: 'assets/images/chat/chat_mode_story_mask.png',
-            title: '劇情模式',
-            description: '推進角色故事，解鎖更多專屬劇情與互動。',
+            title: l10n.welcome_guide_story_title,
+            description: l10n.welcome_guide_story_description,
           ),
           const SizedBox(height: 12),
-          const _ModeCard(
+          _ModeCard(
             iconAsset: 'assets/images/chat/chat_mode_immersive_mask.png',
-            title: '沉浸模式',
-            description: '體驗更投入、更有臨場感的對話。',
+            title: l10n.welcome_guide_immersive_title,
+            description:l10n.welcome_guide_immersive_description,
           ),
           const SizedBox(height: 18),
           Text(
-            '更多聊天模式介紹，可於「遊戲說明」查看。',
+            l10n.welcome_guide_chat_more,
             textAlign: TextAlign.center,
             style: GoogleFonts.notoSerifTc(
               color: colorScheme.onSurface.withValues(alpha: 0.42),
@@ -384,6 +385,7 @@ class _EncounterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return _GuidePageLayout(
       illustration: Container(
@@ -399,14 +401,11 @@ class _EncounterPage extends StatelessWidget {
           color: colorScheme.primary,
         ),
       ),
-      title: '邂逅',
+      title: l10n.welcome_guide_encounter_title,
       content: Column(
         children: [
           Text(
-            '每位角色都擁有獨特的個性、故事與聲音。'
-            '遇見喜歡的角色後，可以加入好友，'
-                '與他聊天互動、分享生活，'
-                '一起創造屬於你們的回憶。',
+            l10n.welcome_guide_encounter_description,
             textAlign: TextAlign.center,
             style: GoogleFonts.notoSerifTc(
               color: colorScheme.onSurface.withValues(alpha: 0.68),
@@ -428,7 +427,7 @@ class _EncounterPage extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  '更多內容',
+                  l10n.welcome_guide_more_title,
                   style: GoogleFonts.notoSerifTc(
                     color: colorScheme.onSurface,
                     fontSize: 15,
@@ -437,8 +436,7 @@ class _EncounterPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '還有收藏、創作者、商城等豐富功能，'
-                      '歡迎前往「遊戲說明」了解更多。',
+                  l10n.welcome_guide_more_description,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.notoSerifTc(
                     color: colorScheme.onSurface.withValues(alpha: 0.58),

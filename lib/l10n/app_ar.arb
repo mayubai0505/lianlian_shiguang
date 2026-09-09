@@ -3413,4 +3413,782 @@
 
     "feedback_remove_image": "إزالة الصورة",
     "feedback_selected_image": "تم اختيار صورة",
-    "feedback_change_image": "تغيير"}
+    "feedback_change_image": "تغيير",
+    "profile_backpack_title": "حقيبتي ومزاياي الحصرية",
+    "profile_backpack_total_spent": "إجمالي رابطة الرومانسية الحالية",
+    "profile_backpack_total_spent_amount": "{amount} دولار تايواني",
+    "@profile_backpack_total_spent_amount": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+
+    "profile_backpack_physical_gift_status": "حالة فتح صندوق الهدايا الفعلي:",
+    "profile_backpack_vip_gift_title": "【الحب الأسمى】صندوق هدايا VIP فعلي حصري",
+    "profile_backpack_vip_gift_contents": "يتضمن: رسالة حصرية مكتوبة بخط اليد + دمية تمثل الشخصية + رسالة شكر رسمية",
+
+    "profile_backpack_edit_shipping_info": "تعديل معلومات عنوان الاستلام",
+    "profile_backpack_unlock_shipping_info": "تم فتحه! اضغط هنا لإدخال معلومات الاستلام",
+    "profile_backpack_shipping_registered": "تم تسجيل عنوان الاستلام بنجاح، وسنبدأ بتجهيز هديتك في أقرب وقت ممكن!",
+
+    "profile_backpack_amount_remaining": "تبقى {amount} دولار تايواني فقط لفتح الجائزة الفعلية الكبرى!",
+    "@profile_backpack_amount_remaining": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+
+    "profile_backpack_hint": "تلميح: يمكنك عرض المظاهر وإطارات الصور الرمزية الأخرى داخل الحقيبة.",
+    "profile_backpack_close": "إغلاق",
+
+    "profile_physical_gift_title": "【الحب الأسمى】فتح صندوق الهدايا الفعلي",
+    "profile_physical_gift_description": "شكرًا لك على دعمك الاستثنائي والمستمر لـ «LoveyDovey»!\nيرجى إدخال معلومات الاستلام أدناه، وسنرسل إليك رسالة حصرية مكتوبة بخط اليد ودمية تمثل الشخصية:",
+
+    "profile_physical_gift_recipient_name": "الاسم الحقيقي للمستلم",
+    "profile_physical_gift_phone": "رقم الهاتف",
+    "profile_physical_gift_address": "عنوان الاستلام الكامل (متضمنًا الرمز البريدي)",
+    "profile_physical_gift_character_name": "اسم الشخصية التي تريد دمية تمثلها",
+    "profile_physical_gift_character_hint": "مثال: أدخل اسم الشخصية المطلوبة",
+
+    "profile_physical_gift_fill_later": "إدخالها لاحقًا",
+    "profile_physical_gift_required_error": "يرجى إدخال جميع معلومات الاستلام واسم الشخصية التي تريدها!",
+    "profile_physical_gift_submit_success": "تم إرسال معلومات الاستلام بنجاح! ترقب مفاجأتنا الفعلية!",
+    "profile_physical_gift_confirm_submit": "تأكيد الإرسال",
+
+    "profile_tooltip_announcement": "الإعلانات",
+    "profile_tooltip_settings": "الإعدادات",
+    "profile_tooltip_backpack": "حقيبتي",
+    "profile_backpack_menu_title": "حقيبتي",
+
+    "profile_about_me_title": "نبذة عني",
+    "profile_tab_bio_title": "التعريف بنفسي",
+
+    "profile_check_in_done": "تم تسجيل الحضور",
+    "profile_check_in": "تسجيل الحضور",
+    "profile_check_in_done_subtitle": "تركت أثرك اليوم",
+    "profile_check_in_not_done_subtitle": "لم تسجل حضورك اليوم بعد",
+
+    "profile_likes_label": "الإعجابات",
+    "profile_heartbeat_diary_subtitle": "دوّن لحظات خفقان قلبك",
+
+    "profile_create_scene": "إنشاء مشهد",
+
+    "profile_link_invalid": "تنسيق الرابط غير صحيح",
+    "profile_link_open_failed": "تعذر فتح هذا الرابط",
+    "profile_link_default_name": "رابطي",
+
+    "profile_publish_moment_short": "اكتب عن هذه اللحظة",
+    "edit_profile_default_link_name": "رابطي {index}",
+    "@edit_profile_default_link_name": {
+        "placeholders": {
+            "index": {
+                "type": "int"
+            }
+        }
+    },
+
+    "edit_profile_done": "تم",
+    "edit_profile_social_links": "وسائل التواصل والروابط",
+    "edit_profile_add_link": "إضافة رابط",
+    "edit_profile_link_name_hint": "اسم الرابط",
+    "edit_profile_link_url_hint": "أدخل الرابط",
+    "theme_name_starlight": "بنفسجي ضوء الذكريات",
+    "theme_name_sakura": "وردي أزهار الكرز",
+    "theme_name_ocean": "أزرق المحيط",
+    "theme_name_sunset": "برتقالي الغروب",
+    "theme_name_mint": "نعناع الغابة",
+    "theme_name_midnight": "الوضع الليلي",
+    "theme_name_custom": "لون مخصص",
+
+    "theme_selection_choose_theme": "اختيار لون السمة",
+    "theme_selection_title": "تغيير الأجواء",
+    "theme_selection_description": "اختر لون السمة الذي يعجبك واجعل LoveyDovey يعكس أسلوبك.",
+    "theme_selection_preview": "معاينة",
+
+    "theme_selection_characters": "الشخصيات",
+    "theme_selection_posts": "المنشورات",
+
+    "theme_selection_previewing": "المعاينة الحالية: {themeName}",
+    "@theme_selection_previewing": {
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "theme_selection_apply": "تطبيق السمة",
+    "theme_selection_restore_default": "استعادة الافتراضي",
+    "theme_selection_choose_color": "اختر لونك الخاص",
+
+    "theme_selection_applied": "تم تطبيق «{themeName}»",
+    "@theme_selection_applied": {
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "welcome_guide_help": "دليل اللعب",
+    "welcome_guide_start": "بدء الرحلة",
+    "welcome_guide_next": "التالي",
+
+    "welcome_guide_welcome_title": "مرحبًا بك في «LoveyDovey»",
+    "welcome_guide_welcome_description": "هنا، قد يتحول كل لقاء إلى قصة لا تُنسى. نأمل أن يرافقك «LoveyDovey» في صنع ذكريات جميلة تخصكما وحدكما.",
+
+    "welcome_guide_chat_title": "أوضاع الدردشة",
+    "welcome_guide_chat_description": "يقدم «LoveyDovey» عدة أوضاع للدردشة، ولكل وضع تجربة تفاعلية مختلفة.",
+
+    "welcome_guide_daily_title": "الوضع اليومي",
+    "welcome_guide_daily_description": "تشاركا تفاصيل الحياة واستمتعا بأحاديث يومية مريحة وعفوية.",
+
+    "welcome_guide_story_title": "وضع القصة",
+    "welcome_guide_story_description": "تقدم في قصة الشخصية وافتح المزيد من الأحداث والتفاعلات الحصرية.",
+
+    "welcome_guide_immersive_title": "الوضع الغامر",
+    "welcome_guide_immersive_description": "استمتع بمحادثات أكثر اندماجًا وواقعية.",
+
+    "welcome_guide_chat_more": "يمكنك معرفة المزيد عن أوضاع الدردشة من خلال «تعليمات اللعبة».",
+
+    "welcome_guide_encounter_title": "اللقاءات",
+    "welcome_guide_encounter_description": "لكل شخصية طابعها وقصتها وصوتها الفريد. عندما تقابل شخصية تعجبك، يمكنك إضافتها إلى أصدقائك والدردشة والتفاعل معها ومشاركة تفاصيل الحياة وصنع ذكريات تخصكما وحدكما.",
+
+    "welcome_guide_more_title": "المزيد من المحتوى",
+    "welcome_guide_more_description": "توجد أيضًا ميزات متنوعة مثل المجموعات والمنشئين والمتجر. انتقل إلى «تعليمات اللعبة» لمعرفة المزيد.",
+    "preference_selection_max_error": "يمكنك اختيار {count} تفضيلات كحد أقصى.",
+    "@preference_selection_max_error": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "preference_selection_save_failed": "يتعذر حفظ تفضيلاتك حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
+
+    "preference_selection_title": "ما نوع الشخص الذي ترغب في لقائه؟",
+    "preference_selection_description": "اختر من 3 إلى 5 أنواع تفضلها، ليبدأ LoveyDovey بالتعرف إليك من خلالها.",
+    "preference_selection_recommendation_note": "ستتطور توصياتك تدريجيًا بناءً على تفاعلاتك الفعلية لتصبح أكثر ملاءمة لك.",
+    "preference_selection_selected": "تم الاختيار",
+    "preference_selection_start": "لنبدأ من هنا",
+
+    "preference_group_personality": "الشخصية والطابع",
+    "preference_group_relationship_age": "العلاقة・الفئة العمرية",
+    "preference_group_story": "أجواء القصة",
+
+    "preference_tag_gentle": "لطيف",
+    "preference_tag_cold": "بارد ومتحفظ",
+    "preference_tag_scheming": "ماكر",
+    "preference_tag_tsundere": "تسونديري",
+    "preference_tag_loyal": "مخلص",
+    "preference_tag_yandere": "يانديري",
+    "preference_tag_mysterious": "غامض",
+    "preference_tag_healing": "مريح",
+    "preference_tag_gap_moe": "شخصية متناقضة",
+
+    "preference_tag_older": "أكبر سنًا",
+    "preference_tag_younger": "أصغر سنًا",
+
+    "preference_tag_ceo": "رئيس تنفيذي متسلط",
+    "preference_tag_school": "مدرسي",
+    "preference_tag_workplace": "مكان العمل",
+    "preference_tag_ancient": "تاريخي",
+    "preference_tag_nonhuman": "غير بشري",
+    "encounter_load_failed": "تعذر تحميل بيانات اللقاءات. يرجى المحاولة مرة أخرى لاحقًا.",
+    "encounter_no_available_characters": "لا توجد حاليًا شخصيات متاحة للقائها",
+    "encounter_category_empty": "لا توجد حاليًا شخصيات ضمن هذه الفئة",
+
+    "encounter_category_all": "الكل",
+    "encounter_category_xianxia": "فانتازيا الخلود",
+    "encounter_category_childhood_friend": "صديق الطفولة",
+    "encounter_category_master_disciple": "المعلم والتلميذ",
+    "encounter_category_sweet_romance": "رومانسية حلوة",
+    "encounter_category_other": "أخرى",
+    "character_edit_tab_character_settings": "إعدادات الشخصية",
+    "character_edit_test": "اختبار",
+
+    "character_edit_supporting_basic_info": "المعلومات الأساسية",
+    "character_edit_supporting_main_setting": "العلاقة بالشخصية الرئيسية",
+    "character_edit_supporting_main_description": "صِف علاقة هذه الشخصية المساندة بالشخصية الرئيسية ومكانتها في القصة.",
+
+    "character_edit_banner_preview_hint": "اضغط على الصورة لمعاينتها بالحجم الكامل",
+    "character_edit_main_photo_hint": "ستُستخدم الصورة الأولى كصورة رمزية رئيسية",
+    "character_edit_other_photos": "صور أخرى للشخصية",
+    "character_edit_photo_action_hint": "اضغط على الصورة لمعاينتها، أو اضغط على رمز القلم لتعديل إعداداتها",
+
+    "character_edit_over_limit_warning": "⚠ تجاوز حقل {label} الحد الأقصى البالغ {count} حرفًا. يرجى تعديله قبل النشر.",
+    "@character_edit_over_limit_warning": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            },
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "memo_notification_channel_name": "تذكيرات المذكرات",
+    "memo_notification_channel_description": "تذكّر الشخصيات اللاعبين بالمذكرات التي أعدّوها",
+
+    "memo_notification_title": "يذكّرك {characterName}",
+    "@memo_notification_title": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_tsundere": "ليس لأنني قلقة عليك، بل لأنني لا أريدك أن تنسى. لا تنسَ اليوم: {memoContent}",
+    "@memo_notification_tsundere": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_dominant": "لقد سجّلت جدولك من أجلك، فأنجزه في الموعد. لا تنسَ اليوم: {memoContent}",
+    "@memo_notification_dominant": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_yandere": "لا يمكنك أن تنسى، فأنا سأظل أتذكر دائمًا. لا تنسَ اليوم: {memoContent}",
+    "@memo_notification_yandere": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_gentle": "خشيت أن تنشغل وتنسى، لذلك أردت تذكيرك. لا تنسَ اليوم: {memoContent}",
+    "@memo_notification_gentle": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_cold": "لدي تذكير لك. لا تنسَ اليوم: {memoContent}",
+    "@memo_notification_cold": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_sunny": "مرحبًا، ما زال لديك أمر مهم اليوم! لا تنسَ: {memoContent}",
+    "@memo_notification_sunny": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_lazy": "مع أنني أريد الاستمرار في الاستلقاء، لا بد أن أذكّرك. لا تنسَ اليوم: {memoContent}",
+    "@memo_notification_lazy": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_older": "كن مطيعًا ولا تنسَ ما عليك فعله اليوم. تذكّر: {memoContent}",
+    "@memo_notification_older": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_younger": "لقد تذكّرت هذا من أجلك! لا تنسَ اليوم: {memoContent}",
+    "@memo_notification_younger": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_mechanical": "تم تفعيل التذكير. مهمة اليوم: {memoContent}",
+    "@memo_notification_mechanical": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_default": "لا تنسَ اليوم: {memoContent}",
+    "@memo_notification_default": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+    "recommendation_load_failed": "يتعذر تحميل التوصيات حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
+    "recommendation_reload": "إعادة التحميل",
+    "recommendation_empty": "لا توجد حاليًا شخصيات يمكن التوصية بها.",
+
+    "recommendation_title": "لقاءات اخترناها لك",
+
+    "recommendation_featured_title": "ابدأ بالتعرف إلى هؤلاء",
+    "recommendation_featured_subtitle": "سنضع اللقاءات الأكثر ملاءمة لك في المقدمة.",
+
+    "recommendation_matched_behavior_title": "أقرب فأقرب إلى تفضيلاتك",
+    "recommendation_matched_initial_title": "بناءً على تفضيلاتك الأولى",
+    "recommendation_matched_behavior_subtitle": "ابتداءً من اليوم الرابع، ستؤثر تفاعلاتك الأخيرة أيضًا في ترتيب التوصيات.",
+    "recommendation_matched_initial_subtitle": "سنستخدم حاليًا الوسوم التي اخترتها في البداية لتضييق نطاق الخيارات.",
+
+    "recommendation_explore_title": "قد يعجبك أيضًا",
+    "recommendation_explore_subtitle": "سنحتفظ ببعض الخيارات العشوائية لتلتقي أحيانًا بأشخاص مختلفين.",
+
+    "recommendation_refreshing": "جارٍ إعداد لقاءات جديدة لك……",
+
+    "recommendation_badge_for_you": "موصى به لك",
+    "recommendation_badge_featured": "لقاء مميز",
+    "recommendation_badge_explore": "استكشاف",
+
+    "recommendation_default_occupation_hint": "افتح الصفحة وألقِ نظرة، فقد يكون هذا لقاءك القادم الذي يخفق له قلبك.",
+    "recommendation_explore_fallback": "جرّب اتجاهًا مختلفًا، فقد يصادف تمامًا ما يجعل قلبك يخفق.",
+
+    "recommendation_behavior_hint_similar_type": "تتوقف مؤخرًا كثيرًا عند شخصيات من هذا النوع",
+    "recommendation_behavior_hint_forming": "تفضيلاتك في التفاعل بدأت تتشكل تدريجيًا",
+    "recommendation_behavior_hint_recent": "تم اختياره لك بناءً على تفاعلاتك الأخيرة",
+
+    "recommendation_reason_liked_tags": "لأنك تحب・{tags}",
+    "@recommendation_reason_liked_tags": {
+        "placeholders": {
+            "tags": {
+                "type": "String"
+            }
+        }
+    },
+
+    "recommendation_reason_popular": "نال اهتمام عدد كبير من الأشخاص مؤخرًا",
+    "recommendation_reason_default": "ربما يكون هذا لقاءك المناسب القادم",
+    "scene_delete_title": "حذف المشهد؟",
+
+    "scene_delete_content": "هل تريد بالتأكيد حذف «{title}»؟ لا يمكن التراجع عن الحذف.",
+    "@scene_delete_content": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "scene_unnamed": "مشهد بلا عنوان",
+    "scene_cancel": "إلغاء",
+    "scene_delete": "حذف",
+    "scene_delete_failed": "تعذر الحذف. يرجى المحاولة مرة أخرى لاحقًا.",
+
+    "scene_start_failed": "يتعذر بدء المشهد حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
+
+    "scene_end_title": "إنهاء المشهد؟",
+    "scene_end_content": "ستعود إلى الدردشة العادية بعد الإنهاء، ولن تُحذف المحادثة الحالية.",
+    "scene_end_action": "إنهاء المشهد",
+    "scene_ended": "انتهى المشهد",
+    "scene_end_failed": "يتعذر إنهاء المشهد حاليًا. يرجى المحاولة مرة أخرى لاحقًا.",
+
+    "scene_active_label": "جارٍ حاليًا",
+
+    "scene_opening": "افتتاحية الشخصية: {opening}",
+    "@scene_opening": {
+        "placeholders": {
+            "opening": {
+                "type": "String"
+            }
+        }
+    },
+
+    "scene_edit": "تعديل",
+    "scene_start": "بدء المشهد",
+
+    "scene_creator_load_failed": "تعذر تحميل مشاهد المنشئ.",
+    "scene_creator_empty_title": "لا توجد مشاهد من إنشاء المنشئ حاليًا",
+    "scene_creator_empty_body": "لم ينشئ صاحب هذه الشخصية أي قصص إضافية بعد.",
+
+    "scene_custom_load_failed": "تعذر تحميل المشاهد المخصصة.",
+    "scene_custom_empty_title": "لم تنشئ أي مشاهد بعد",
+    "scene_custom_empty_body": "أنشئ قصة خاصة بك وحدك لغرفة الدردشة هذه.",
+    "scene_add": "إضافة مشهد",
+
+    "scene_title": "المشاهد",
+    "scene_tab_creator": "مشاهد المنشئ",
+    "scene_tab_custom": "إنشاء مخصص",
+    "chat_book_player": "اللاعب",
+
+    "chat_book_title": "سجل المحادثة",
+    "chat_book_export_pdf": "تصدير بصيغة PDF",
+
+    "chat_book_brand": "— LoveyDovey",
+    "chat_book_change_cover": "تغيير الغلاف",
+    "chat_book_cover_subtitle": "لحظاتنا معًا · كتاب تذكاري للمحادثات",
+    "chat_book_choose_cover": "اختيار غلاف الكتاب التذكاري",
+
+    "chat_book_initial_story": "القصة الأولى",
+
+    "chat_book_transcript_title": "{characterName} · سجل المحادثة",
+    "@chat_book_transcript_title": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_book_continuation": "{name} · تابع",
+    "@chat_book_continuation": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_book_previous_page": "الصفحة السابقة",
+    "chat_book_next_page": "الصفحة التالية",
+
+    "chat_book_photo_message": "〔صورة〕",
+    "chat_book_audio_message": "〔رسالة صوتية〕",
+    "chat_book_generic_message": "〔رسالة〕",
+
+    "chat_book_export_failed": "تعذر التصدير بصيغة PDF: {error}",
+    "@chat_book_export_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "email_policy_open_failed": "تعذر فتح {title}. يرجى التحقق من اتصال الشبكة والمحاولة مرة أخرى.",
+    "@email_policy_open_failed": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_read_instruction": "يرجى فتح {title} وقراءته بالكامل أولًا. بعد القراءة، ارجع إلى «LoveyDovey» للضغط على «لقد قرأت وأوافق».",
+    "@email_policy_read_instruction": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_opening": "جارٍ الفتح……",
+
+    "email_policy_read_full": "قراءة {title} بالكامل",
+    "@email_policy_read_full": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_opened_ready": "تم فتح {title}. يمكنك الآن تأكيد الموافقة.",
+    "@email_policy_opened_ready": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_not_opened": "لم يتم فتح {title} بعد.",
+    "@email_policy_not_opened": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_cancel_login": "إلغاء تسجيل الدخول",
+    "email_policy_agree": "لقد قرأت وأوافق",
+
+    "email_policy_status_check_failed": "يتعذر حاليًا التحقق من حالة الموافقة على الشروط. يرجى المحاولة مرة أخرى لاحقًا.",
+
+    "email_policy_login_notice": "عند تسجيل الدخول لأول مرة أو تحديث الشروط، سيُطلب منك قراءة شروط الخدمة وسياسة الخصوصية والموافقة عليهما.",
+
+    "email_policy_refresh": "تحديث",
+    "email_policy_page_load_failed": "تعذر تحميل الصفحة",
+    "email_policy_check_network": "يرجى التحقق من اتصال الشبكة والمحاولة مرة أخرى.",
+    "email_policy_reload": "إعادة التحميل",
+    "login_method_info_google_title": "تسجيل الدخول السريع باستخدام Google",
+    "login_method_info_apple_title": "تسجيل الدخول باستخدام Apple",
+    "login_method_info_facebook_title": "تسجيل الدخول باستخدام Facebook",
+    "login_method_info_email_title": "حساب LoveyDovey (البريد الإلكتروني)",
+    "login_method_info_email_provider": "حساب LoveyDovey (البريد الإلكتروني)",
+
+    "login_method_info_content": "سجّل الدخول إلى «LoveyDovey» باستخدام {providerName}.\n\nيرجى الانتباه:\n\n• يُعد {providerName} نظام حساب مختلفًا عن طرق تسجيل الدخول الأخرى.\n\n• إذا أنشأت حسابًا باستخدام {providerName}، فيرجى الاستمرار في تسجيل الدخول بالطريقة نفسها.\n\n• لن تتم مشاركة بيانات الشخصيات وسجل المحادثات والمشتريات مع الحسابات المستخدمة عبر طرق تسجيل الدخول الأخرى.\n\nننصحك بالاستمرار في استخدام طريقة تسجيل الدخول نفسها بعد تسجيل الدخول لأول مرة، لتجنب إنشاء حسابات مختلفة لا يمكنها مشاركة البيانات.",
+    "@login_method_info_content": {
+        "placeholders": {
+            "providerName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "login_method_info_got_it": "فهمت",
+    "creator_studio_delete_failed": "تعذر الحذف: {error}",
+    "@creator_studio_delete_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_studio_subtitle": "اجمع أفكارك ونظّم شخصياتك وأكمل أعمالك على مهل",
+
+    "creator_studio_load_failed": "تعذر تحميل الاستوديو: {error}",
+    "@creator_studio_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_studio_add_character": "إضافة شخصية",
+
+    "creator_studio_public_title": "الشخصيات العامة",
+    "creator_studio_public_subtitle": "منشورة ويمكن للاعبين الآخرين اكتشافها",
+    "creator_studio_public_empty": "لا توجد شخصيات عامة حاليًا",
+
+    "creator_studio_private_title": "الشخصيات الخاصة",
+    "creator_studio_private_subtitle": "يمكنك أنت وحدك رؤيتها",
+    "creator_studio_private_empty": "لا توجد شخصيات خاصة حاليًا",
+
+    "creator_studio_draft_title": "المسودات",
+    "creator_studio_draft_subtitle": "أعمال لم تكتمل بعد",
+    "creator_studio_draft_empty": "لا توجد حاليًا مسودات غير مكتملة",
+
+    "creator_studio_draft_empty_title": "لا توجد مسودات هنا بعد",
+    "creator_studio_draft_empty_hint": "عندما تأتيك فكرة، دوّنها هنا أولًا",
+
+    "creator_studio_status_public": "عام",
+    "creator_studio_status_private": "خاص",
+    "creator_studio_status_draft": "مسودة",
+
+    "creator_studio_character_load_failed": "تعذر تحميل بيانات الشخصية",
+
+    "creator_studio_delete_draft_tooltip": "حذف المسودة",
+
+    "creator_studio_unnamed_creator": "منشئ بلا اسم",
+    "creator_studio_no_bio": "لم تتم إضافة نبذة شخصية بعد",
+    "chat_input_tools": "الأدوات",
+    "chat_input_expand_tools": "عرض الأدوات",
+    "chat_input_stop": "إيقاف",
+    "chat_input_send": "إرسال",
+    "chat_side_menu_section_chat": "الدردشة",
+    "chat_side_menu_section_relationship": "العلاقة",
+    "chat_side_menu_section_memory": "إدارة الذاكرة",
+    "character_navigator_confidential_title": "ملف سري",
+    "character_navigator_unavailable_message": "ربما أصبحت هذه الشخصية خاصة، أو أُزيلت من المنصة، أو أُرشفت بسبب مخالفة، أو حُذفت.",
+    "character_navigator_got_it": "فهمت",
+
+    "character_navigator_load_failed_title": "تعذر التحميل",
+    "character_navigator_load_failed_message": "يتعذر تحميل بيانات الشخصية مؤقتًا. يرجى المحاولة مرة أخرى لاحقًا.",
+    "character_navigator_confirm": "تأكيد",
+    "character_profile_add_bookmark": "إضافة الشخصية إلى المفضلة",
+    "character_profile_remove_bookmark": "إزالة من المفضلة",
+
+    "character_profile_pronoun_female": "هي",
+    "character_profile_pronoun_male": "هو",
+    "character_profile_pronoun_neutral": "هم",
+    "chat_home_pin_limit_reached": "يمكنك تثبيت 3 محادثات كحد أقصى. يرجى إلغاء تثبيت محادثة أخرى أولًا.",
+    "chat_home_pinned_success": "تم تثبيت المحادثة",
+    "chat_home_unpinned_success": "تم إلغاء التثبيت",
+
+    "chat_home_pin_update_failed": "تعذر تحديث حالة التثبيت: {error}",
+    "@chat_home_pin_update_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_home_unpin": "إلغاء التثبيت",
+    "chat_home_pin": "تثبيت المحادثة",
+
+    "chat_home_time_label": "الوقت: {time}",
+    "@chat_home_time_label": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "main_check_in_already_done": "لقد سجلت حضورك اليوم بالفعل",
+    "nav_recommend": "التوصيات",
+    "moments_auto_reply_title": "السماح للذكاء الاصطناعي بالرد تلقائيًا على منشورات اللاعبين",
+    "moments_auto_reply_description": "عند تفعيل هذا الخيار، سيتمكن النظام من اختيار الشخصية للرد على منشورات اللاعبين.",
+    "mailShareTooltip": "مشاركة الرسالة",
+    "mailOriginalQuestionLabel": "سؤالك الأصلي",
+    "hidden_moments_empty_hint": "لا توجد منشورات مخفية حاليًا",
+    "moment_search_unavailable": "البحث غير متاح مؤقتًا. يرجى المحاولة مرة أخرى لاحقًا.",
+    "moment_search_hint": "البحث في المنشورات العامة أو الشخصيات أو المنشئين",
+    "moment_search_instruction": "أدخل محتوى المنشور أو اسم الشخصية أو اسم المنشئ",
+    "moment_search_no_results": "لم يتم العثور على منشورات عامة ذات صلة",
+    "settingsErrorTitle": "حدث خطأ",
+    "settingsChangePasswordSubtitle": "تحقق من كلمة المرور الحالية، ثم عيّن كلمة مرور جديدة لتسجيل الدخول",
+    "settingsCreatorGuidelines": "إرشادات المنشئين",
+    "settingsPlayGuide": "دليل اللعب",
+    "language_selection_subtitle": "اختر اللغة التي تفضل استخدامها",
+    "search_character_hint": "البحث عن شخصية أو منشئ أو مهنة أو وسم",
+    "search_character_clear": "مسح",
+    "search_character_recent": "عمليات البحث الأخيرة",
+    "search_character_load_failed": "تعذر تحميل بيانات البحث. يرجى المحاولة مرة أخرى لاحقًا.",
+    "search_character_popular": "الأكثر إعجابًا مؤخرًا",
+    "search_character_result_count": "تم العثور على {count} شخصية",
+    "@search_character_result_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_tab_monthly": "قسم البطاقة الشهرية",
+
+    "shop_joined_days": "✦ مضى على قدومك إلى LoveyDovey عدد {days} من الأيام ✦",
+    "@shop_joined_days": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+
+    "shop_vip_tier_1_title": "حب من النظرة الأولى",
+    "shop_vip_tier_1_reward": "20 نقطة زهرة + لقب حصري للمبتدئين",
+
+    "shop_vip_tier_2_title": "خفقان الضوء الخافت",
+    "shop_vip_tier_2_reward": "إطار صورة رمزية حصري 【خفقان الضوء الخافت】",
+
+    "shop_vip_tier_3_title": "همسات السماء المرصعة بالنجوم",
+    "shop_vip_tier_3_reward": "فقاعة دردشة حصرية + 50 نقطة زهرة",
+
+    "shop_vip_tier_4_title": "غروب رومانسي",
+    "shop_vip_tier_4_reward": "أيقونة حصرية للتطبيق",
+
+    "shop_vip_tier_5_title": "خفقان القلب",
+    "shop_vip_tier_5_reward": "تأثير لمس الشاشة (Lottie) + 100 نقطة زهرة",
+
+    "shop_vip_tier_6_title": "عهد أبدي",
+    "shop_vip_tier_6_reward": "إطار صورة رمزية متحرك متقدم + 200 نقطة زهرة",
+
+    "shop_vip_tier_7_title": "تلاقي الأرواح",
+    "shop_vip_tier_7_reward": "تأثير متحرك لفقاعة الدردشة + لقب متقدم حصري",
+
+    "shop_vip_tier_8_title": "وفاء لا يخص سواك",
+    "shop_vip_tier_8_reward": "شارة اسم متحركة فاخرة + 500 نقطة زهرة",
+
+    "shop_vip_tier_9_title": "نهر النجوم المتلألئ",
+    "shop_vip_tier_9_reward": "تأثير دخول Lottie حصري + خدمة عملاء حصرية",
+
+    "shop_vip_tier_10_title": "الحب الأسمى",
+    "shop_vip_tier_10_reward": "【صندوق هدايا VIP فعلي حصري】 (رسالة مكتوبة بخط اليد + دمية الشخصية)",
+
+    "shop_vip_total_bond": "إجمالي رابطة الرومانسية",
+
+    "shop_vip_all_unlocked": "لقد فتحت جميع المزايا الفاخرة!",
+
+    "shop_vip_next_unlock": "اشحن بمبلغ إضافي قدره {amount} دولار تايواني لفتح المستوى التالي",
+    "@shop_vip_next_unlock": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "call_connecting": "جارٍ توصيل المكالمة...",
+
+    "call_listening_auto_send": "جارٍ الاستماع... (سيتم الإرسال تلقائيًا عند الانتهاء من التحدث)",
+
+    "call_listening_release_to_send": "جارٍ الاستماع... (ارفع إصبعك للإرسال)",
+
+    "call_sending_transcript": " {text}\n\n(جارٍ الإرسال...)",
+    "@call_sending_transcript": {
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "help_translation_fallback": "دليل اللعب غير متوفر بهذه اللغة حاليًا، لذا سيُعرض مؤقتًا باللغة الصينية التقليدية.",
+
+    "help_all_categories": "الكل",
+
+    "help_subtitle_companion": "الميزات اليومية والأدوات المساعدة",
+    "help_subtitle_ai_chat": "الدردشة والصوت والتفاعل الذكي",
+    "help_subtitle_creation": "إعداد الشخصيات وميزات الإنشاء",
+    "help_subtitle_explore": "استكشاف الشخصيات ومحتوى اللعبة",
+    "help_subtitle_care": "الرفقة اللطيفة والرعاية اليومية",
+    "help_subtitle_general": "شرح الميزات الشائعة وطريقة استخدامها",
+    "chat_interact_fun": "أنشطة ممتعة",
+    "memo_notification_permission_missing": "لم يتم تفعيل إذن الإشعارات بعد. ستظل المذكرة محفوظة، لكن لن يظهر تنبيه من النظام.",
+
+    "memo_saved_with_reminder": "تم حفظ المذكرة، وسيذكّرك {characterName}!",
+    "@memo_saved_with_reminder": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_saved_without_notification": "تم حفظ المذكرة، لكن إذن الإشعارات غير مفعّل بعد.",
+
+    "memo_updated_with_reminder": "تم تحديث المذكرة، وسيذكّرك {characterName}!",
+    "@memo_updated_with_reminder": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_updated_without_notification": "تم تحديث المذكرة، لكن إذن الإشعارات غير متوفر حاليًا.",
+
+    "memo_load_error": "حدث خطأ أثناء تحميل البيانات: {error}",
+    "@memo_load_error": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "story_summary_content_required": "لا يمكن أن يكون محتوى القصة فارغًا",
+
+    "story_summary_edit_hint": "اكتب قصتكما...","profile_section_basic_info": "المعلومات الأساسية",
+    "profile_section_about_me": "نبذة عني",
+    "dice_duel_you": "أنت",
+
+    "dice_duel_result_saved": "تم حفظ نتيجة المواجهة!",
+
+    "dice_duel_rolling": "تتجمع طاقة الكون..."
+
+}

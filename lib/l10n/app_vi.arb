@@ -3370,5 +3370,781 @@
 
   "feedback_remove_image": "Xóa hình ảnh",
   "feedback_selected_image": "Đã chọn hình ảnh",
-  "feedback_change_image": "Thay đổi"
+  "feedback_change_image": "Thay đổi",
+  "profile_backpack_title": "Ba lô và đặc quyền riêng của tôi",
+  "profile_backpack_total_spent": "Tổng liên kết lãng mạn hiện tại",
+  "profile_backpack_total_spent_amount": "NT$ {amount}",
+  "@profile_backpack_total_spent_amount": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+
+  "profile_backpack_physical_gift_status": "Trạng thái mở khóa hộp quà hiện vật:",
+  "profile_backpack_vip_gift_title": "【Tình yêu tối thượng】Hộp quà VIP hiện vật độc quyền",
+  "profile_backpack_vip_gift_contents": "Bao gồm: thư viết tay độc quyền + búp bê đại diện nhân vật + thư cảm ơn chính thức",
+
+  "profile_backpack_edit_shipping_info": "Chỉnh sửa thông tin nhận hàng",
+  "profile_backpack_unlock_shipping_info": "Đã mở khóa! Nhấn vào đây để nhập thông tin nhận hàng",
+  "profile_backpack_shipping_registered": "Bạn đã đăng ký địa chỉ nhận hàng thành công. Chúng tôi sẽ chuẩn bị quà trong thời gian sớm nhất!",
+
+  "profile_backpack_amount_remaining": "Chỉ còn NT$ {amount} nữa để mở khóa phần thưởng hiện vật lớn!",
+  "@profile_backpack_amount_remaining": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },
+
+  "profile_backpack_hint": "Mẹo nhỏ: Bạn có thể xem các giao diện và khung ảnh đại diện khác trong ba lô.",
+  "profile_backpack_close": "Đóng",
+
+  "profile_physical_gift_title": "【Tình yêu tối thượng】Mở khóa hộp quà hiện vật",
+  "profile_physical_gift_description": "Cảm ơn bạn vì đã luôn hết lòng ủng hộ 《LoveyDovey》!\nVui lòng điền thông tin nhận hàng bên dưới. Chúng tôi sẽ gửi đến bạn thư viết tay độc quyền và búp bê đại diện nhân vật:",
+
+  "profile_physical_gift_recipient_name": "Họ tên thật của người nhận",
+  "profile_physical_gift_phone": "Số điện thoại liên hệ",
+  "profile_physical_gift_address": "Địa chỉ nhận hàng đầy đủ (bao gồm mã bưu chính)",
+  "profile_physical_gift_character_name": "Tên nhân vật bạn muốn nhận búp bê đại diện",
+  "profile_physical_gift_character_hint": "Ví dụ: Nhập tên nhân vật mong muốn",
+
+  "profile_physical_gift_fill_later": "Điền sau",
+  "profile_physical_gift_required_error": "Vui lòng điền đầy đủ thông tin nhận hàng và tên nhân vật bạn yêu thích!",
+  "profile_physical_gift_submit_success": "Thông tin nhận hàng đã được gửi thành công! Hãy chờ đón món quà bất ngờ từ chúng tôi!",
+  "profile_physical_gift_confirm_submit": "Xác nhận gửi",
+
+  "profile_tooltip_announcement": "Thông báo",
+  "profile_tooltip_settings": "Cài đặt",
+  "profile_tooltip_backpack": "Ba lô của tôi",
+  "profile_backpack_menu_title": "Ba lô của tôi",
+
+  "profile_about_me_title": "Về tôi",
+  "profile_tab_bio_title": "Giới thiệu bản thân",
+
+  "profile_check_in_done": "Đã điểm danh",
+  "profile_check_in": "Điểm danh",
+  "profile_check_in_done_subtitle": "Hôm nay bạn đã để lại dấu chân",
+  "profile_check_in_not_done_subtitle": "Hôm nay bạn chưa điểm danh",
+
+  "profile_likes_label": "Lượt thích",
+  "profile_heartbeat_diary_subtitle": "Ghi lại những khoảnh khắc rung động",
+
+  "profile_create_scene": "Tạo phân cảnh",
+
+  "profile_link_invalid": "Định dạng liên kết không hợp lệ",
+  "profile_link_open_failed": "Không thể mở liên kết này",
+  "profile_link_default_name": "Liên kết của tôi",
+
+  "profile_publish_moment_short": "Viết về khoảnh khắc này",
+  "edit_profile_default_link_name": "Liên kết của tôi {index}",
+  "@edit_profile_default_link_name": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+
+  "edit_profile_done": "Hoàn tất",
+  "edit_profile_social_links": "Mạng xã hội và liên kết",
+  "edit_profile_add_link": "Thêm liên kết",
+  "edit_profile_link_name_hint": "Tên liên kết",
+  "edit_profile_link_url_hint": "Nhập liên kết",
+  "theme_name_starlight": "Tím ánh sao",
+  "theme_name_sakura": "Hồng anh đào",
+  "theme_name_ocean": "Xanh đại dương",
+  "theme_name_sunset": "Cam hoàng hôn",
+  "theme_name_mint": "Bạc hà rừng xanh",
+  "theme_name_midnight": "Chế độ đêm",
+  "theme_name_custom": "Màu tùy chỉnh",
+
+  "theme_selection_choose_theme": "Chọn màu chủ đề",
+  "theme_selection_title": "Thay đổi không khí",
+  "theme_selection_description": "Chọn màu chủ đề bạn yêu thích để LoveyDovey mang đậm phong cách của riêng bạn.",
+  "theme_selection_preview": "Xem trước",
+
+  "theme_selection_characters": "Nhân vật",
+  "theme_selection_posts": "Bài viết",
+
+  "theme_selection_previewing": "Đang xem trước: {themeName}",
+  "@theme_selection_previewing": {
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "theme_selection_apply": "Áp dụng chủ đề",
+  "theme_selection_restore_default": "Khôi phục mặc định",
+  "theme_selection_choose_color": "Chọn màu sắc riêng của bạn",
+
+  "theme_selection_applied": "Đã áp dụng “{themeName}”",
+  "@theme_selection_applied": {
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "welcome_guide_help": "Hướng dẫn chơi",
+  "welcome_guide_start": "Bắt đầu hành trình",
+  "welcome_guide_next": "Tiếp theo",
+
+  "welcome_guide_welcome_title": "Chào mừng đến với 《LoveyDovey》",
+  "welcome_guide_welcome_description": "Tại đây, mỗi cuộc gặp gỡ đều có thể trở thành một câu chuyện khó quên. Mong rằng 《LoveyDovey》sẽ luôn đồng hành cùng bạn để tạo nên những kỷ niệm đẹp chỉ thuộc về hai người.",
+
+  "welcome_guide_chat_title": "Chế độ trò chuyện",
+  "welcome_guide_chat_description": "《LoveyDovey》cung cấp nhiều chế độ trò chuyện, mỗi chế độ mang đến một trải nghiệm tương tác khác nhau.",
+
+  "welcome_guide_daily_title": "Chế độ thường ngày",
+  "welcome_guide_daily_description": "Ở bên nhau, chia sẻ cuộc sống và tận hưởng những cuộc trò chuyện nhẹ nhàng, thoải mái.",
+
+  "welcome_guide_story_title": "Chế độ cốt truyện",
+  "welcome_guide_story_description": "Phát triển câu chuyện của nhân vật và mở khóa thêm nhiều tình tiết cùng tương tác độc quyền.",
+
+  "welcome_guide_immersive_title": "Chế độ nhập vai",
+  "welcome_guide_immersive_description": "Trải nghiệm những cuộc trò chuyện cuốn hút và chân thực hơn.",
+
+  "welcome_guide_chat_more": "Bạn có thể xem thêm thông tin về các chế độ trò chuyện trong mục “Hướng dẫn trò chơi”.",
+
+  "welcome_guide_encounter_title": "Gặp gỡ",
+  "welcome_guide_encounter_description": "Mỗi nhân vật đều có tính cách, câu chuyện và giọng nói riêng. Khi gặp được nhân vật mình yêu thích, bạn có thể thêm họ làm bạn, trò chuyện, tương tác, chia sẻ cuộc sống và cùng nhau tạo nên những kỷ niệm riêng.",
+
+  "welcome_guide_more_title": "Nhiều nội dung hơn",
+  "welcome_guide_more_description": "Ngoài ra còn có bộ sưu tập, nhà sáng tạo, cửa hàng cùng nhiều tính năng phong phú khác. Hãy đến mục “Hướng dẫn trò chơi” để tìm hiểu thêm.",
+  "preference_selection_max_error": "Bạn chỉ có thể chọn tối đa {count} sở thích.",
+  "@preference_selection_max_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "preference_selection_save_failed": "Hiện không thể lưu sở thích của bạn, vui lòng thử lại sau.",
+
+  "preference_selection_title": "Bạn muốn gặp một người như thế nào?",
+  "preference_selection_description": "Chọn 3–5 kiểu người bạn yêu thích để LoveyDovey bắt đầu hiểu bạn hơn.",
+  "preference_selection_recommendation_note": "Sau này, đề xuất sẽ dần được điều chỉnh dựa trên tương tác thực tế để phù hợp với bạn hơn.",
+  "preference_selection_selected": "Đã chọn",
+  "preference_selection_start": "Bắt đầu từ đây",
+
+  "preference_group_personality": "Tính cách・Khí chất",
+  "preference_group_relationship_age": "Mối quan hệ・Độ tuổi",
+  "preference_group_story": "Không khí câu chuyện",
+
+  "preference_tag_gentle": "Dịu dàng",
+  "preference_tag_cold": "Lạnh lùng",
+  "preference_tag_scheming": "Thâm sâu",
+  "preference_tag_tsundere": "Tsundere",
+  "preference_tag_loyal": "Trung thành",
+  "preference_tag_yandere": "Yandere",
+  "preference_tag_mysterious": "Bí ẩn",
+  "preference_tag_healing": "Chữa lành",
+  "preference_tag_gap_moe": "Tương phản cuốn hút",
+
+  "preference_tag_older": "Lớn tuổi hơn",
+  "preference_tag_younger": "Nhỏ tuổi hơn",
+
+  "preference_tag_ceo": "Tổng tài bá đạo",
+  "preference_tag_school": "Học đường",
+  "preference_tag_workplace": "Công sở",
+  "preference_tag_ancient": "Cổ trang",
+  "preference_tag_nonhuman": "Phi nhân loại",
+  "encounter_load_failed": "Không thể tải dữ liệu gặp gỡ, vui lòng thử lại sau.",
+  "encounter_no_available_characters": "Hiện chưa có nhân vật nào để gặp gỡ",
+  "encounter_category_empty": "Hiện chưa có nhân vật trong danh mục này",
+
+  "encounter_category_all": "Tất cả",
+  "encounter_category_xianxia": "Tiên hiệp",
+  "encounter_category_childhood_friend": "Thanh mai trúc mã",
+  "encounter_category_master_disciple": "Sư đồ",
+  "encounter_category_sweet_romance": "Ngọt sủng",
+  "encounter_category_other": "Khác",
+  "character_edit_tab_character_settings": "Thiết lập nhân vật",
+  "character_edit_test": "Kiểm tra",
+
+  "character_edit_supporting_basic_info": "Thông tin cơ bản",
+  "character_edit_supporting_main_setting": "Mối quan hệ với nhân vật chính",
+  "character_edit_supporting_main_description": "Mô tả mối quan hệ giữa nhân vật phụ này với nhân vật chính và vai trò của họ trong câu chuyện.",
+
+  "character_edit_banner_preview_hint": "Nhấn vào hình ảnh để xem kích thước lớn",
+  "character_edit_main_photo_hint": "Hình ảnh đầu tiên sẽ được dùng làm ảnh đại diện chính",
+  "character_edit_other_photos": "Hình ảnh khác của nhân vật",
+  "character_edit_photo_action_hint": "Nhấn vào hình ảnh để xem trước; nhấn biểu tượng bút chì để chỉnh sửa thiết lập hình ảnh",
+
+  "character_edit_over_limit_warning": "⚠ {label} đã vượt quá giới hạn {count} ký tự. Vui lòng chỉnh sửa trước khi đăng.",
+  "@character_edit_over_limit_warning": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "memo_notification_channel_name": "Nhắc nhở ghi chú",
+  "memo_notification_channel_description": "Nhân vật nhắc người chơi về những ghi chú đã thiết lập",
+
+  "memo_notification_title": "{characterName} nhắc bạn",
+  "@memo_notification_title": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_tsundere": "Tôi đâu có lo cho bạn, chỉ sợ bạn quên thôi. Hôm nay đừng quên: {memoContent}",
+  "@memo_notification_tsundere": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_dominant": "Lịch trình đã được tôi ghi nhớ giúp bạn rồi. Hãy hoàn thành đúng giờ. Hôm nay đừng quên: {memoContent}",
+  "@memo_notification_dominant": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_yandere": "Không được quên đâu nhé, vì tôi sẽ luôn ghi nhớ. Hôm nay đừng quên: {memoContent}",
+  "@memo_notification_yandere": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_gentle": "Sợ bạn bận quá rồi quên mất nên tôi muốn nhắc bạn một chút. Hôm nay đừng quên: {memoContent}",
+  "@memo_notification_gentle": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_cold": "Có một việc cần nhắc bạn. Hôm nay đừng quên: {memoContent}",
+  "@memo_notification_cold": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_sunny": "Này, hôm nay vẫn còn một việc quan trọng đấy! Đừng quên: {memoContent}",
+  "@memo_notification_sunny": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_lazy": "Dù rất muốn nằm tiếp nhưng tôi vẫn phải nhắc bạn. Hôm nay đừng quên: {memoContent}",
+  "@memo_notification_lazy": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_older": "Ngoan nào, đừng quên việc hôm nay nhé. Hãy nhớ: {memoContent}",
+  "@memo_notification_older": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_younger": "Tôi đã ngoan ngoãn nhớ giúp bạn rồi đấy! Hôm nay đừng quên: {memoContent}",
+  "@memo_notification_younger": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_mechanical": "Đã kích hoạt lời nhắc. Nhiệm vụ hôm nay: {memoContent}",
+  "@memo_notification_mechanical": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_notification_default": "Hôm nay đừng quên: {memoContent}",
+  "@memo_notification_default": {
+    "placeholders": {
+      "memoContent": {
+        "type": "String"
+      }
+    }
+  },
+  "recommendation_load_failed": "Hiện không thể tải đề xuất, vui lòng thử lại sau.",
+  "recommendation_reload": "Tải lại",
+  "recommendation_empty": "Hiện chưa có nhân vật nào để đề xuất.",
+
+  "recommendation_title": "Những cuộc gặp gỡ dành riêng cho bạn",
+
+  "recommendation_featured_title": "Hãy gặp những người này trước",
+  "recommendation_featured_subtitle": "Những cuộc gặp gỡ phù hợp nhất với bạn sẽ được ưu tiên hiển thị.",
+
+  "recommendation_matched_behavior_title": "Ngày càng gần với sở thích của bạn",
+  "recommendation_matched_initial_title": "Dựa trên sở thích ban đầu của bạn",
+  "recommendation_matched_behavior_subtitle": "Bắt đầu sau ngày thứ 4, những tương tác gần đây cũng sẽ ảnh hưởng đến thứ tự đề xuất.",
+  "recommendation_matched_initial_subtitle": "Hiện tại, chúng tôi sẽ dùng các thẻ bạn chọn lúc đầu để thu hẹp phạm vi.",
+
+  "recommendation_explore_title": "Có thể bạn cũng sẽ thích",
+  "recommendation_explore_subtitle": "Chúng tôi sẽ giữ lại một số lựa chọn ngẫu nhiên để đôi khi bạn có thể gặp được một người thật khác biệt.",
+
+  "recommendation_refreshing": "Đang chuẩn bị những cuộc gặp gỡ mới cho bạn……",
+
+  "recommendation_badge_for_you": "Đề xuất cho bạn",
+  "recommendation_badge_featured": "Gặp gỡ nổi bật",
+  "recommendation_badge_explore": "Khám phá",
+
+  "recommendation_default_occupation_hint": "Hãy mở ra xem thử, biết đâu đây chính là người tiếp theo khiến bạn rung động.",
+  "recommendation_explore_fallback": "Thử một hướng khác xem sao, biết đâu lại chạm đúng điểm rung động của bạn.",
+
+  "recommendation_behavior_hint_similar_type": "Gần đây bạn thường dành nhiều thời gian cho kiểu nhân vật này",
+  "recommendation_behavior_hint_forming": "Sở thích tương tác gần đây của bạn đang dần hình thành",
+  "recommendation_behavior_hint_recent": "Được chọn dựa trên những tương tác gần đây của bạn",
+
+  "recommendation_reason_liked_tags": "Vì bạn thích・{tags}",
+  "@recommendation_reason_liked_tags": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+
+  "recommendation_reason_popular": "Gần đây có khá nhiều người ghé xem nhân vật này",
+  "recommendation_reason_default": "Có thể đây sẽ là cuộc gặp gỡ tiếp theo vừa vặn với bạn",
+  "scene_delete_title": "Xóa phân cảnh?",
+
+  "scene_delete_content": "Bạn có chắc muốn xóa “{title}” không? Sau khi xóa sẽ không thể khôi phục.",
+  "@scene_delete_content": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "scene_unnamed": "Phân cảnh chưa đặt tên",
+  "scene_cancel": "Hủy",
+  "scene_delete": "Xóa",
+  "scene_delete_failed": "Không thể xóa, vui lòng thử lại sau.",
+
+  "scene_start_failed": "Hiện không thể bắt đầu phân cảnh, vui lòng thử lại sau.",
+
+  "scene_end_title": "Kết thúc phân cảnh?",
+  "scene_end_content": "Sau khi kết thúc, bạn sẽ trở lại trò chuyện thông thường nhưng lịch sử cuộc trò chuyện hiện tại sẽ không bị xóa.",
+  "scene_end_action": "Kết thúc phân cảnh",
+  "scene_ended": "Phân cảnh đã kết thúc",
+  "scene_end_failed": "Hiện không thể kết thúc phân cảnh, vui lòng thử lại sau.",
+
+  "scene_active_label": "Đang diễn ra",
+
+  "scene_opening": "Mở đầu của nhân vật: {opening}",
+  "@scene_opening": {
+    "placeholders": {
+      "opening": {
+        "type": "String"
+      }
+    }
+  },
+
+  "scene_edit": "Chỉnh sửa",
+  "scene_start": "Bắt đầu phân cảnh",
+
+  "scene_creator_load_failed": "Không thể tải phân cảnh của nhà sáng tạo.",
+  "scene_creator_empty_title": "Hiện chưa có phân cảnh của nhà sáng tạo",
+  "scene_creator_empty_body": "Nhà sáng tạo của nhân vật này chưa tạo thêm câu chuyện nào.",
+
+  "scene_custom_load_failed": "Không thể tải phân cảnh tự tạo.",
+  "scene_custom_empty_title": "Bạn chưa có phân cảnh riêng",
+  "scene_custom_empty_body": "Tạo một câu chuyện chỉ thuộc về bạn dành riêng cho phòng trò chuyện này.",
+  "scene_add": "Thêm phân cảnh",
+
+  "scene_title": "Phân cảnh",
+  "scene_tab_creator": "Phân cảnh của nhà sáng tạo",
+  "scene_tab_custom": "Tự tạo",
+  "chat_book_player": "Người chơi",
+
+  "chat_book_title": "Lịch sử trò chuyện",
+  "chat_book_export_pdf": "Xuất PDF",
+
+  "chat_book_brand": "— LoveyDovey",
+  "chat_book_change_cover": "Đổi bìa",
+  "chat_book_cover_subtitle": "Khoảnh khắc bên nhau · Sách kỷ niệm trò chuyện",
+  "chat_book_choose_cover": "Chọn bìa sách kỷ niệm",
+
+  "chat_book_initial_story": "Câu chuyện ban đầu",
+
+  "chat_book_transcript_title": "{characterName} · Lịch sử trò chuyện",
+  "@chat_book_transcript_title": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "chat_book_continuation": "{name} · Tiếp",
+  "@chat_book_continuation": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+
+  "chat_book_previous_page": "Trang trước",
+  "chat_book_next_page": "Trang tiếp theo",
+
+  "chat_book_photo_message": "〔Hình ảnh〕",
+  "chat_book_audio_message": "〔Tin nhắn thoại〕",
+  "chat_book_generic_message": "〔Tin nhắn〕",
+
+  "chat_book_export_failed": "Không thể xuất PDF: {error}",
+  "@chat_book_export_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "email_policy_open_failed": "Không thể mở {title}, vui lòng kiểm tra kết nối mạng rồi thử lại.",
+  "@email_policy_open_failed": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "email_policy_read_instruction": "Trước tiên, vui lòng mở và đọc toàn bộ {title}. Sau khi đọc xong, hãy quay lại 《LoveyDovey》để nhấn “Tôi đã đọc và đồng ý”.",
+  "@email_policy_read_instruction": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "email_policy_opening": "Đang mở……",
+
+  "email_policy_read_full": "Đọc toàn bộ {title}",
+  "@email_policy_read_full": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "email_policy_opened_ready": "Đã mở {title}. Bạn có thể xác nhận đồng ý.",
+  "@email_policy_opened_ready": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "email_policy_not_opened": "Bạn chưa mở {title}.",
+  "@email_policy_not_opened": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "email_policy_cancel_login": "Hủy đăng nhập",
+  "email_policy_agree": "Tôi đã đọc và đồng ý",
+
+  "email_policy_status_check_failed": "Hiện không thể xác nhận trạng thái đồng ý với điều khoản, vui lòng thử lại sau.",
+
+  "email_policy_login_notice": "Khi đăng nhập lần đầu hoặc khi điều khoản được cập nhật, hệ thống sẽ yêu cầu bạn đọc và đồng ý với Điều khoản dịch vụ cùng Chính sách quyền riêng tư.",
+
+  "email_policy_refresh": "Làm mới",
+  "email_policy_page_load_failed": "Không thể tải trang",
+  "email_policy_check_network": "Vui lòng kiểm tra kết nối mạng rồi thử lại.",
+  "email_policy_reload": "Tải lại",
+  "login_method_info_google_title": "Đăng nhập nhanh bằng Google",
+  "login_method_info_apple_title": "Đăng nhập bằng Apple",
+  "login_method_info_facebook_title": "Đăng nhập bằng Facebook",
+  "login_method_info_email_title": "Tài khoản LoveyDovey (Email)",
+  "login_method_info_email_provider": "Tài khoản LoveyDovey (Email)",
+
+  "login_method_info_content": "Đăng nhập vào 《LoveyDovey》bằng {providerName}.\n\nXin lưu ý:\n\n• {providerName} và các phương thức đăng nhập khác sử dụng những hệ thống tài khoản riêng biệt.\n\n• Nếu tạo tài khoản bằng {providerName}, vui lòng tiếp tục sử dụng cùng phương thức đó để đăng nhập.\n\n• Dữ liệu nhân vật, lịch sử trò chuyện và nội dung đã mua sẽ không được chia sẻ với các phương thức đăng nhập khác.\n\nBạn nên tiếp tục sử dụng cùng một phương thức sau lần đăng nhập đầu tiên để tránh tạo nhiều tài khoản riêng biệt khiến dữ liệu không thể dùng chung.",
+  "@login_method_info_content": {
+    "placeholders": {
+      "providerName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "login_method_info_got_it": "Đã hiểu",
+  "creator_studio_delete_failed": "Không thể xóa: {error}",
+  "@creator_studio_delete_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "creator_studio_subtitle": "Lưu giữ cảm hứng, sắp xếp nhân vật và từ từ hoàn thiện tác phẩm của bạn",
+
+  "creator_studio_load_failed": "Không thể tải xưởng sáng tạo: {error}",
+  "@creator_studio_load_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "creator_studio_add_character": "Thêm nhân vật",
+
+  "creator_studio_public_title": "Nhân vật công khai",
+  "creator_studio_public_subtitle": "Đã được đăng và người chơi khác có thể khám phá",
+  "creator_studio_public_empty": "Hiện chưa có nhân vật công khai",
+
+  "creator_studio_private_title": "Nhân vật riêng tư",
+  "creator_studio_private_subtitle": "Chỉ mình bạn có thể nhìn thấy",
+  "creator_studio_private_empty": "Hiện chưa có nhân vật riêng tư",
+
+  "creator_studio_draft_title": "Bản nháp",
+  "creator_studio_draft_subtitle": "Những tác phẩm chưa hoàn thiện",
+  "creator_studio_draft_empty": "Hiện không có bản nháp nào chưa hoàn thiện",
+
+  "creator_studio_draft_empty_title": "Chưa có bản nháp nào ở đây",
+  "creator_studio_draft_empty_hint": "Khi có cảm hứng, hãy ghi lại ở đây trước",
+
+  "creator_studio_status_public": "Công khai",
+  "creator_studio_status_private": "Riêng tư",
+  "creator_studio_status_draft": "Bản nháp",
+
+  "creator_studio_character_load_failed": "Không thể tải dữ liệu nhân vật",
+
+  "creator_studio_delete_draft_tooltip": "Xóa bản nháp",
+
+  "creator_studio_unnamed_creator": "Nhà sáng tạo chưa đặt tên",
+  "creator_studio_no_bio": "Chưa điền phần giới thiệu bản thân",
+  "chat_input_tools": "Tính năng",
+  "chat_input_expand_tools": "Mở rộng tính năng",
+  "chat_input_stop": "Dừng",
+  "chat_input_send": "Gửi",
+  "chat_side_menu_section_chat": "Trò chuyện",
+  "chat_side_menu_section_relationship": "Mối quan hệ",
+  "chat_side_menu_section_memory": "Quản lý ký ức",
+  "character_navigator_confidential_title": "Hồ sơ mật",
+  "character_navigator_unavailable_message": "Nhân vật này có thể đã được chuyển sang riêng tư, gỡ khỏi nền tảng, lưu trữ do vi phạm hoặc bị xóa.",
+  "character_navigator_got_it": "Tôi hiểu rồi",
+
+  "character_navigator_load_failed_title": "Không thể tải",
+  "character_navigator_load_failed_message": "Tạm thời không thể tải dữ liệu nhân vật, vui lòng thử lại sau.",
+  "character_navigator_confirm": "Xác nhận",
+  "character_profile_add_bookmark": "Lưu nhân vật",
+  "character_profile_remove_bookmark": "Bỏ lưu",
+
+  "character_profile_pronoun_female": "Cô ấy",
+  "character_profile_pronoun_male": "Anh ấy",
+  "character_profile_pronoun_neutral": "Nhân vật ấy",
+  "chat_home_pin_limit_reached": "Bạn chỉ có thể ghim tối đa 3 cuộc trò chuyện. Vui lòng bỏ ghim một cuộc trò chuyện khác trước.",
+  "chat_home_pinned_success": "Đã ghim cuộc trò chuyện",
+  "chat_home_unpinned_success": "Đã bỏ ghim",
+
+  "chat_home_pin_update_failed": "Không thể cập nhật trạng thái ghim: {error}",
+  "@chat_home_pin_update_failed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "chat_home_unpin": "Bỏ ghim",
+  "chat_home_pin": "Ghim cuộc trò chuyện",
+
+  "chat_home_time_label": "Thời gian: {time}",
+  "@chat_home_time_label": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "main_check_in_already_done": "Hôm nay bạn đã điểm danh rồi",
+  "nav_recommend": "Đề xuất",
+  "moments_auto_reply_title": "Cho phép AI tự động phản hồi bài viết của người chơi",
+  "moments_auto_reply_description": "Khi bật, hệ thống có thể chọn nhân vật này để phản hồi bài viết của người chơi.",
+  "mailShareTooltip": "Chia sẻ thư",
+  "mailOriginalQuestionLabel": "Câu hỏi ban đầu của bạn",
+  "hidden_moments_empty_hint": "Hiện chưa có bài viết nào bị ẩn",
+  "moment_search_unavailable": "Tính năng tìm kiếm tạm thời không khả dụng, vui lòng thử lại sau.",
+  "moment_search_hint": "Tìm kiếm bài viết công khai, nhân vật hoặc nhà sáng tạo",
+  "moment_search_instruction": "Nhập nội dung bài viết, tên nhân vật hoặc tên nhà sáng tạo",
+  "moment_search_no_results": "Không tìm thấy bài viết công khai liên quan",
+  "settingsErrorTitle": "Đã xảy ra lỗi",
+  "settingsChangePasswordSubtitle": "Xác minh mật khẩu hiện tại rồi thiết lập mật khẩu đăng nhập mới",
+  "settingsCreatorGuidelines": "Quy định dành cho nhà sáng tạo",
+  "settingsPlayGuide": "Hướng dẫn chơi",
+  "language_selection_subtitle": "Chọn ngôn ngữ bạn thường sử dụng",
+  "search_character_hint": "Tìm kiếm nhân vật, nhà sáng tạo, nghề nghiệp hoặc thẻ",
+  "search_character_clear": "Xóa",
+  "search_character_recent": "Tìm kiếm gần đây",
+  "search_character_load_failed": "Không thể tải dữ liệu tìm kiếm, vui lòng thử lại sau.",
+  "search_character_popular": "Đang được yêu thích gần đây",
+  "search_character_result_count": "Tìm thấy {count} nhân vật",
+  "@search_character_result_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "shop_tab_monthly": "Gói tháng",
+
+  "shop_joined_days": "✦ Bạn đã đến với LoveyDovey được {days} ngày ✦",
+  "@shop_joined_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+
+  "shop_vip_tier_1_title": "Vừa gặp đã yêu",
+  "shop_vip_tier_1_reward": "20 điểm Hoa + danh hiệu người mới độc quyền",
+
+  "shop_vip_tier_2_title": "Rung động ánh sáng",
+  "shop_vip_tier_2_reward": "Khung ảnh đại diện độc quyền 【Rung động ánh sáng】",
+
+  "shop_vip_tier_3_title": "Lời thì thầm dưới trời sao",
+  "shop_vip_tier_3_reward": "Bong bóng trò chuyện độc quyền + 50 điểm Hoa",
+
+  "shop_vip_tier_4_title": "Hoàng hôn lãng mạn",
+  "shop_vip_tier_4_reward": "Biểu tượng ứng dụng độc quyền",
+
+  "shop_vip_tier_5_title": "Trái tim rung động",
+  "shop_vip_tier_5_reward": "Hiệu ứng chạm màn hình (Lottie) + 100 điểm Hoa",
+
+  "shop_vip_tier_6_title": "Lời thề vĩnh cửu",
+  "shop_vip_tier_6_reward": "Khung ảnh đại diện động cao cấp + 200 điểm Hoa",
+
+  "shop_vip_tier_7_title": "Giao hòa tâm hồn",
+  "shop_vip_tier_7_reward": "Hiệu ứng bong bóng trò chuyện động + danh hiệu cao cấp độc quyền",
+
+  "shop_vip_tier_8_title": "Chỉ đợi riêng người",
+  "shop_vip_tier_8_reward": "Bảng tên động cao cấp nhất + 500 điểm Hoa",
+
+  "shop_vip_tier_9_title": "Dải ngân hà rực rỡ",
+  "shop_vip_tier_9_reward": "Hiệu ứng xuất hiện Lottie độc quyền + hỗ trợ khách hàng riêng",
+
+  "shop_vip_tier_10_title": "Tình yêu tối thượng",
+  "shop_vip_tier_10_reward": "【Hộp quà VIP hiện vật độc quyền】 (Thư viết tay + Búp bê nhân vật)",
+
+  "shop_vip_total_bond": "Liên kết lãng mạn tích lũy",
+
+  "shop_vip_all_unlocked": "Bạn đã mở khóa toàn bộ đặc quyền cao cấp!",
+
+  "shop_vip_next_unlock": "Nạp thêm NT$ {amount} để mở khóa cấp tiếp theo",
+  "@shop_vip_next_unlock": {
+    "placeholders": {
+      "amount": {
+        "type": "int"
+      }
+    }
+  },"call_connecting": "Đang kết nối cuộc gọi...",
+
+  "call_listening_auto_send": "Đang lắng nghe... (Sẽ tự động gửi khi bạn nói xong)",
+
+  "call_listening_release_to_send": "Đang lắng nghe... (Thả tay để gửi)",
+
+  "call_sending_transcript": " {text}\n\n(Đang gửi...)",
+  "@call_sending_transcript": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "help_translation_fallback": "Hiện chưa có hướng dẫn chơi bằng ngôn ngữ này. Hệ thống sẽ tạm thời hiển thị bằng tiếng Trung phồn thể.",
+
+  "help_all_categories": "Tất cả",
+
+  "help_subtitle_companion": "Các tính năng hằng ngày và công cụ hỗ trợ hữu ích",
+  "help_subtitle_ai_chat": "Trò chuyện, giọng nói và tương tác thông minh",
+  "help_subtitle_creation": "Thiết lập nhân vật và các tính năng sáng tạo",
+  "help_subtitle_explore": "Khám phá nhân vật và nội dung trò chơi",
+  "help_subtitle_care": "Đồng hành dịu dàng và quan tâm mỗi ngày",
+  "help_subtitle_general": "Các tính năng phổ biến và hướng dẫn sử dụng",
+  "chat_interact_fun": "Hoạt động thú vị",
+  "memo_notification_permission_missing": "Quyền thông báo chưa được bật. Ghi chú vẫn sẽ được lưu nhưng thông báo hệ thống sẽ không hiển thị.",
+
+  "memo_saved_with_reminder": "Đã lưu ghi chú. {characterName} sẽ nhắc bạn!",
+  "@memo_saved_with_reminder": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_saved_without_notification": "Đã lưu ghi chú nhưng quyền thông báo chưa được bật.",
+
+  "memo_updated_with_reminder": "Đã cập nhật ghi chú. {characterName} sẽ nhắc bạn!",
+  "@memo_updated_with_reminder": {
+    "placeholders": {
+      "characterName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "memo_updated_without_notification": "Đã cập nhật ghi chú nhưng hiện chưa có quyền thông báo.",
+
+  "memo_load_error": "Đã xảy ra lỗi khi tải dữ liệu: {error}",
+  "@memo_load_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "story_summary_content_required": "Nội dung câu chuyện không được để trống",
+
+  "story_summary_edit_hint": "Viết nên câu chuyện của hai người...",
+  "profile_section_basic_info": "Thông tin cơ bản",
+  "profile_section_about_me": "Về tôi",
+  "dice_duel_you": "Bạn",
+
+  "dice_duel_result_saved": "Đã lưu kết quả đối đầu!",
+
+  "dice_duel_rolling": "Đang hội tụ năng lượng vũ trụ..."
 }

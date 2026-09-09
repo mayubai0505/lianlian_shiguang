@@ -229,7 +229,7 @@ class _AboutMePageState extends State<AboutMePage> {
         surfaceTintColor: Colors.transparent,
         titleSpacing: 0,
         title: Text(
-          '與我相關',
+          l10n.chat_menu_aboutme,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: GoogleFonts.notoSerifTc(

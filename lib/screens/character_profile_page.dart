@@ -136,10 +136,14 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
   // 動態判斷代名詞 (總裁神邏輯)
   String get _pronoun {
     final l10n = AppLocalizations.of(context)!;
-    // ✨ 順便把女生也換成多國語言判斷，這樣最安全！(假設妳的翻譯包裡有 genderFemale)
-    if (widget.character.gender.contains(l10n.genderFemale)) return '她';
-    if (widget.character.gender.contains(l10n.genderMale)) return '他';
-    return '它';
+    // 保留原本的性別判斷邏輯，只把實際顯示用代名詞改成多語系。
+    if (widget.character.gender.contains(l10n.genderFemale)) {
+      return l10n.character_profile_pronoun_female;
+    }
+    if (widget.character.gender.contains(l10n.genderMale)) {
+      return l10n.character_profile_pronoun_male;
+    }
+    return l10n.character_profile_pronoun_neutral;
   }
 
   // 判斷當前使用者是不是創作者
@@ -2795,7 +2799,9 @@ class _CharacterProfilePageState extends State<CharacterProfilePage>
                     child: CircleAvatar(
                       backgroundColor: Colors.black.withValues(alpha: 0.38),
                       child: IconButton(
-                        tooltip: _isCharacterBookmarked ? '取消收藏' : '收藏角色',
+                        tooltip: _isCharacterBookmarked
+                            ? l10n.character_profile_remove_bookmark
+                            : l10n.character_profile_add_bookmark,
                         onPressed: _isCharacterBookmarkLoading
                             ? null
                             : _toggleCharacterBookmark,

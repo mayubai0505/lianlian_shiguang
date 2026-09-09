@@ -593,7 +593,7 @@ class SelectChatPageState extends State<SelectChatPage> {
           if (snapshot.hasError) {
             return Center(
               child: Text(
-                '邂逅資料載入失敗，請稍後再試。',
+                l10n.encounter_load_failed,
                 style: GoogleFonts.notoSerifTc(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.65),
                   fontSize: 14,
@@ -607,7 +607,7 @@ class SelectChatPageState extends State<SelectChatPage> {
           if (characters.isEmpty) {
             return Center(
               child: Text(
-                '目前還沒有可以邂逅的角色',
+                l10n.encounter_no_available_characters,
                 style: GoogleFonts.notoSerifTc(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
                   fontSize: 14,
@@ -774,6 +774,48 @@ class _LatestTabState extends State<_LatestTab> {
     '其他',
   ];
 
+  String _categoryLabel(
+      String category,
+      AppLocalizations l10n,
+      ) {
+    switch (category) {
+      case '全部':
+        return l10n.encounter_category_all;
+      case '霸總':
+        return l10n.preference_tag_ceo;
+      case '年上':
+        return l10n.preference_tag_older;
+      case '年下':
+        return l10n.preference_tag_younger;
+      case '校園':
+        return l10n.preference_tag_school;
+      case '職場':
+        return l10n.preference_tag_workplace;
+      case '古風':
+        return l10n.preference_tag_ancient;
+      case '仙俠':
+        return l10n.encounter_category_xianxia;
+      case '病嬌':
+        return l10n.preference_tag_yandere;
+      case '忠犬':
+        return l10n.preference_tag_loyal;
+      case '高冷':
+        return l10n.preference_tag_cold;
+      case '青梅竹馬':
+        return l10n.encounter_category_childhood_friend;
+      case '師徒':
+        return l10n.encounter_category_master_disciple;
+      case '甜寵':
+        return l10n.encounter_category_sweet_romance;
+      case '非人':
+        return l10n.preference_tag_nonhuman;
+      case '其他':
+        return l10n.encounter_category_other;
+      default:
+        return category;
+    }
+  }
+
   // 舊角色仍可能使用較細的 personalityTags，
   // 先用常見同義詞做相容；之後若角色建立頁新增 discoveryTags，
   // 可以再直接改成讀取 discoveryTags。
@@ -909,10 +951,11 @@ class _LatestTabState extends State<_LatestTab> {
   }
 
   bool _matchesCategory(Character character, String category) {
-    if (category == '全部') return true;
-    if (category == '其他') {
+    final l10n = AppLocalizations.of(context)!;
+    if (category == l10n.encounter_category_all) return true;
+    if (category == l10n.encounter_category_other) {
       return !_discoveryCategories
-          .where((item) => item != '全部' && item != '其他')
+          .where((item) => item != l10n.encounter_category_all && item != l10n.encounter_category_other)
           .any((item) => _matchesCategory(character, item));
     }
 
@@ -953,7 +996,7 @@ class _LatestTabState extends State<_LatestTab> {
       bool useDesktopLayout,
       ) {
     final theme = Theme.of(context);
-
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: useDesktopLayout ? 46 : 40,
       child: ListView.separated(
@@ -1006,7 +1049,7 @@ class _LatestTabState extends State<_LatestTab> {
                 ),
                 child: Center(
                   child: Text(
-                    category,
+                    _categoryLabel(category, l10n),
                     style: GoogleFonts.notoSerifTc(
                       color: isSelected
                           ? theme.colorScheme.onPrimary
@@ -1028,12 +1071,13 @@ class _LatestTabState extends State<_LatestTab> {
       BuildContext context,
       ) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 52),
+      padding: EdgeInsets.symmetric(vertical: 52),
       child: Center(
         child: Text(
-          '這個分類目前還沒有角色',
+          l10n.encounter_category_empty,
           style: GoogleFonts.notoSerifTc(
             fontSize: 14,
             color: theme.colorScheme.onSurface.withValues(alpha: 0.48),

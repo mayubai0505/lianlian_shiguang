@@ -3368,5 +3368,782 @@
 
     "feedback_remove_image": "चित्र हटाएँ",
     "feedback_selected_image": "चित्र चुना गया",
-    "feedback_change_image": "बदलें"
+    "feedback_change_image": "बदलें",
+    "profile_backpack_title": "मेरा विशेष बैकपैक और सुविधाएँ",
+    "profile_backpack_total_spent": "अब तक का रोमांटिक बंधन",
+    "profile_backpack_total_spent_amount": "NT$ {amount}",
+    "@profile_backpack_total_spent_amount": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+
+    "profile_backpack_physical_gift_status": "वास्तविक उपहार बॉक्स अनलॉक स्थिति:",
+    "profile_backpack_vip_gift_title": "【सर्वोच्च प्रिय】विशेष वास्तविक VIP उपहार बॉक्स",
+    "profile_backpack_vip_gift_contents": "शामिल हैं: विशेष हस्तलिखित पत्र + पात्र की प्रतिनिधि गुड़िया + आधिकारिक धन्यवाद पत्र",
+
+    "profile_backpack_edit_shipping_info": "डिलीवरी पते की जानकारी बदलें",
+    "profile_backpack_unlock_shipping_info": "अनलॉक हो गया! डिलीवरी की जानकारी भरने के लिए यहाँ टैप करें",
+    "profile_backpack_shipping_registered": "आपका डिलीवरी पता सफलतापूर्वक दर्ज हो गया है। हम जल्द से जल्द आपका उपहार तैयार करेंगे!",
+
+    "profile_backpack_amount_remaining": "वास्तविक महा पुरस्कार अनलॉक करने के लिए केवल NT$ {amount} और!",
+    "@profile_backpack_amount_remaining": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+
+    "profile_backpack_hint": "सुझाव: अन्य रूप और अवतार फ़्रेम बैकपैक में देखे जा सकते हैं।",
+    "profile_backpack_close": "बंद करें",
+
+    "profile_physical_gift_title": "【सर्वोच्च प्रिय】वास्तविक उपहार बॉक्स अनलॉक",
+    "profile_physical_gift_description": "「LoveyDovey」के प्रति आपके असाधारण समर्थन के लिए धन्यवाद!\nकृपया नीचे डिलीवरी की जानकारी भरें। हम आपको एक विशेष हस्तलिखित पत्र और पात्र की प्रतिनिधि गुड़िया भेजेंगे:",
+
+    "profile_physical_gift_recipient_name": "प्राप्तकर्ता का वास्तविक पूरा नाम",
+    "profile_physical_gift_phone": "संपर्क नंबर",
+    "profile_physical_gift_address": "पूरा डिलीवरी पता (पिन कोड सहित)",
+    "profile_physical_gift_character_name": "जिस पात्र की गुड़िया चाहिए उसका नाम",
+    "profile_physical_gift_character_hint": "उदाहरण: पात्र का नाम दर्ज करें",
+
+    "profile_physical_gift_fill_later": "बाद में भरें",
+    "profile_physical_gift_required_error": "कृपया डिलीवरी की पूरी जानकारी और अपने पसंदीदा पात्र का नाम दर्ज करें!",
+    "profile_physical_gift_submit_success": "डिलीवरी की जानकारी सफलतापूर्वक भेज दी गई है! हमारे वास्तविक सरप्राइज़ की प्रतीक्षा करें!",
+    "profile_physical_gift_confirm_submit": "भेजने की पुष्टि करें",
+
+    "profile_tooltip_announcement": "घोषणाएँ",
+    "profile_tooltip_settings": "सेटिंग",
+    "profile_tooltip_backpack": "मेरा बैकपैक",
+    "profile_backpack_menu_title": "मेरा बैकपैक",
+
+    "profile_about_me_title": "मेरे बारे में",
+    "profile_tab_bio_title": "परिचय",
+
+    "profile_check_in_done": "चेक-इन हो गया",
+    "profile_check_in": "चेक-इन",
+    "profile_check_in_done_subtitle": "आज आपने अपनी छाप छोड़ दी है",
+    "profile_check_in_not_done_subtitle": "आज अभी तक चेक-इन नहीं किया गया",
+
+    "profile_likes_label": "पसंद",
+    "profile_heartbeat_diary_subtitle": "दिल धड़काने वाले पल लिखें",
+
+    "profile_create_scene": "दृश्य बनाएँ",
+
+    "profile_link_invalid": "लिंक का प्रारूप सही नहीं है",
+    "profile_link_open_failed": "यह लिंक नहीं खोला जा सका",
+    "profile_link_default_name": "मेरा लिंक",
+
+    "profile_publish_moment_short": "इस पल को लिखें",
+    "edit_profile_default_link_name": "मेरा लिंक {index}",
+    "@edit_profile_default_link_name": {
+        "placeholders": {
+            "index": {
+                "type": "int"
+            }
+        }
+    },
+
+    "edit_profile_done": "पूर्ण",
+    "edit_profile_social_links": "सोशल मीडिया और लिंक",
+    "edit_profile_add_link": "लिंक जोड़ें",
+    "edit_profile_link_name_hint": "लिंक का नाम",
+    "edit_profile_link_url_hint": "लिंक दर्ज करें",
+    "theme_name_starlight": "तारों भरा बैंगनी",
+    "theme_name_sakura": "सकुरा गुलाबी",
+    "theme_name_ocean": "महासागरीय नीला",
+    "theme_name_sunset": "सूर्यास्त नारंगी",
+    "theme_name_mint": "वन मिंट",
+    "theme_name_midnight": "मध्यरात्रि मोड",
+    "theme_name_custom": "कस्टम रंग",
+
+    "theme_selection_choose_theme": "थीम का रंग चुनें",
+    "theme_selection_title": "माहौल बदलें",
+    "theme_selection_description": "अपना पसंदीदा थीम रंग चुनें और LoveyDovey को अपने अंदाज़ में सजाएँ।",
+    "theme_selection_preview": "पूर्वावलोकन",
+
+    "theme_selection_characters": "पात्र",
+    "theme_selection_posts": "पोस्ट",
+
+    "theme_selection_previewing": "वर्तमान पूर्वावलोकन: {themeName}",
+    "@theme_selection_previewing": {
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "theme_selection_apply": "थीम लागू करें",
+    "theme_selection_restore_default": "डिफ़ॉल्ट पुनर्स्थापित करें",
+    "theme_selection_choose_color": "अपना विशेष रंग चुनें",
+
+    "theme_selection_applied": "「{themeName}」लागू किया गया",
+    "@theme_selection_applied": {
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "welcome_guide_help": "खेलने की मार्गदर्शिका",
+    "welcome_guide_start": "यात्रा शुरू करें",
+    "welcome_guide_next": "अगला",
+
+    "welcome_guide_welcome_title": "「LoveyDovey」में आपका स्वागत है",
+    "welcome_guide_welcome_description": "यहाँ हर मुलाकात एक अविस्मरणीय कहानी बन सकती है। हमें आशा है कि 「LoveyDovey」आपका साथ देगा और आप दोनों अपनी खूबसूरत यादें बना सकेंगे।",
+
+    "welcome_guide_chat_title": "चैट मोड",
+    "welcome_guide_chat_description": "「LoveyDovey」कई चैट मोड प्रदान करता है और प्रत्येक मोड में बातचीत का अलग अनुभव मिलता है।",
+
+    "welcome_guide_daily_title": "दैनिक मोड",
+    "welcome_guide_daily_description": "एक-दूसरे का साथ दें, रोज़मर्रा की बातें साझा करें और सहज बातचीत का आनंद लें।",
+
+    "welcome_guide_story_title": "कहानी मोड",
+    "welcome_guide_story_description": "पात्र की कहानी आगे बढ़ाएँ और अधिक विशेष कथानक व बातचीत अनलॉक करें।",
+
+    "welcome_guide_immersive_title": "इमर्सिव मोड",
+    "welcome_guide_immersive_description": "अधिक गहन और वास्तविक लगने वाली बातचीत का अनुभव करें।",
+
+    "welcome_guide_chat_more": "चैट मोड की अधिक जानकारी के लिए「गेम सहायता」देखें।",
+
+    "welcome_guide_encounter_title": "मुलाकात",
+    "welcome_guide_encounter_description": "हर पात्र का अपना अनोखा व्यक्तित्व, कहानी और स्वर होता है। पसंदीदा पात्र मिलने पर उसे मित्र बनाएँ, उससे बातचीत करें, अपनी ज़िंदगी साझा करें और साथ मिलकर अपनी खास यादें बनाएँ।",
+
+    "welcome_guide_more_title": "और भी बहुत कुछ",
+    "welcome_guide_more_description": "यहाँ संग्रह, निर्माता, स्टोर और कई अन्य सुविधाएँ भी उपलब्ध हैं। अधिक जानकारी के लिए「गेम सहायता」देखें।",
+    "preference_selection_max_error": "आप अधिकतम {count} पसंद चुन सकते हैं।",
+    "@preference_selection_max_error": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "preference_selection_save_failed": "फ़िलहाल आपकी पसंद सहेजी नहीं जा सकती। कृपया बाद में फिर से प्रयास करें।",
+
+    "preference_selection_title": "आप किस तरह के व्यक्ति से मिलना चाहते हैं?",
+    "preference_selection_description": "अपनी पसंद के 3–5 प्रकार चुनें, ताकि LoveyDovey आपको यहाँ से जानना शुरू कर सके।",
+    "preference_selection_recommendation_note": "आपकी वास्तविक बातचीत के आधार पर सुझाव धीरे-धीरे बदलेंगे और आपकी पसंद के अधिक अनुकूल बनेंगे।",
+    "preference_selection_selected": "चयनित",
+    "preference_selection_start": "यहीं से शुरू करें",
+
+    "preference_group_personality": "व्यक्तित्व और स्वभाव",
+    "preference_group_relationship_age": "रिश्ता・उम्र का अंतर",
+    "preference_group_story": "कहानी का माहौल",
+
+    "preference_tag_gentle": "कोमल",
+    "preference_tag_cold": "दूर और गंभीर",
+    "preference_tag_scheming": "चालाक",
+    "preference_tag_tsundere": "त्सुंदेरे",
+    "preference_tag_loyal": "समर्पित",
+    "preference_tag_yandere": "यांदेरे",
+    "preference_tag_mysterious": "रहस्यमय",
+    "preference_tag_healing": "सुकून देने वाला",
+    "preference_tag_gap_moe": "विरोधाभासी आकर्षण",
+
+    "preference_tag_older": "उम्र में बड़ा",
+    "preference_tag_younger": "उम्र में छोटा",
+
+    "preference_tag_ceo": "दबंग CEO",
+    "preference_tag_school": "स्कूल",
+    "preference_tag_workplace": "कार्यस्थल",
+    "preference_tag_ancient": "ऐतिहासिक",
+    "preference_tag_nonhuman": "गैर-मानव",
+    "encounter_load_failed": "मुलाकात का डेटा लोड नहीं किया जा सका। कृपया बाद में फिर से प्रयास करें।",
+    "encounter_no_available_characters": "फ़िलहाल मिलने के लिए कोई पात्र उपलब्ध नहीं है",
+    "encounter_category_empty": "फ़िलहाल इस श्रेणी में कोई पात्र नहीं है",
+
+    "encounter_category_all": "सभी",
+    "encounter_category_xianxia": "शियानशिया",
+    "encounter_category_childhood_friend": "बचपन के दोस्त",
+    "encounter_category_master_disciple": "गुरु और शिष्य",
+    "encounter_category_sweet_romance": "मीठा रोमांस",
+    "encounter_category_other": "अन्य",
+    "character_edit_tab_character_settings": "पात्र की सेटिंग",
+    "character_edit_test": "परीक्षण",
+
+    "character_edit_supporting_basic_info": "मूल जानकारी",
+    "character_edit_supporting_main_setting": "मुख्य पात्र से संबंध",
+    "character_edit_supporting_main_description": "इस सहायक पात्र और मुख्य पात्र के बीच संबंध तथा कहानी में इसकी भूमिका का वर्णन करें।",
+
+    "character_edit_banner_preview_hint": "चित्र को बड़े आकार में देखने के लिए उस पर टैप करें",
+    "character_edit_main_photo_hint": "पहला चित्र मुख्य अवतार के रूप में उपयोग किया जाएगा",
+    "character_edit_other_photos": "पात्र के अन्य चित्र",
+    "character_edit_photo_action_hint": "चित्र का पूर्वावलोकन देखने के लिए उस पर टैप करें; उसकी सेटिंग बदलने के लिए पेंसिल पर टैप करें",
+
+    "character_edit_over_limit_warning": "⚠ {label}, {count} वर्णों की सीमा से अधिक है। प्रकाशित करने से पहले इसे ठीक करें।",
+    "@character_edit_over_limit_warning": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            },
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "memo_notification_channel_name": "मेमो रिमाइंडर",
+    "memo_notification_channel_description": "पात्र खिलाड़ियों को उनके निर्धारित मेमो की याद दिलाते हैं",
+
+    "memo_notification_title": "{characterName} आपको याद दिला रहा है",
+    "@memo_notification_title": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_tsundere": "ऐसा नहीं है कि मुझे तुम्हारी चिंता है, बस नहीं चाहता कि तुम भूल जाओ। आज याद रखना: {memoContent}",
+    "@memo_notification_tsundere": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_dominant": "मैंने तुम्हारा कार्यक्रम लिख लिया है। इसे समय पर पूरा करना। आज याद रखना: {memoContent}",
+    "@memo_notification_dominant": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_yandere": "तुम इसे भूल नहीं सकते, ठीक है? मैं तो इसे हमेशा याद रखूँगा। आज याद रखना: {memoContent}",
+    "@memo_notification_yandere": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_gentle": "मुझे लगा कि तुम काम में व्यस्त होकर भूल सकते हो, इसलिए याद दिलाना चाहता था। आज याद रखना: {memoContent}",
+    "@memo_notification_gentle": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_cold": "तुम्हें एक बात याद दिलानी है। आज मत भूलना: {memoContent}",
+    "@memo_notification_cold": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_sunny": "अरे, आज अभी एक ज़रूरी काम बाकी है! मत भूलना: {memoContent}",
+    "@memo_notification_sunny": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_lazy": "मन तो अभी भी लेटे रहने का है, लेकिन तुम्हें याद दिलाना ज़रूरी है। आज मत भूलना: {memoContent}",
+    "@memo_notification_lazy": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_older": "अच्छे बच्चे बनो और आज का काम मत भूलना। याद रखना: {memoContent}",
+    "@memo_notification_older": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_younger": "मैंने तुम्हारे लिए अच्छे से याद रखा है! आज मत भूलना: {memoContent}",
+    "@memo_notification_younger": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_mechanical": "रिमाइंडर सक्रिय किया गया। आज का कार्य: {memoContent}",
+    "@memo_notification_mechanical": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_default": "आज मत भूलना: {memoContent}",
+    "@memo_notification_default": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+    "recommendation_load_failed": "फ़िलहाल सुझाव लोड नहीं किए जा सकते। कृपया बाद में फिर से प्रयास करें।",
+    "recommendation_reload": "फिर से लोड करें",
+    "recommendation_empty": "फ़िलहाल सुझाव देने के लिए कोई पात्र उपलब्ध नहीं है।",
+
+    "recommendation_title": "आपके लिए चुनी गई मुलाकातें",
+
+    "recommendation_featured_title": "पहले इनसे मिलें",
+    "recommendation_featured_subtitle": "सबसे पहले वे मुलाकातें दिखाई जाएँगी जो आपके लिए सबसे उपयुक्त हैं।",
+
+    "recommendation_matched_behavior_title": "आपकी पसंद के और करीब",
+    "recommendation_matched_initial_title": "आपकी शुरुआती पसंद के आधार पर",
+    "recommendation_matched_behavior_subtitle": "चौथे दिन के बाद से आपकी हाल की बातचीत भी क्रम को प्रभावित करेगी।",
+    "recommendation_matched_initial_subtitle": "फ़िलहाल विकल्पों को सीमित करने के लिए शुरुआत में चुने गए टैग का उपयोग किया जाएगा।",
+
+    "recommendation_explore_title": "शायद आपको ये भी पसंद आएँ",
+    "recommendation_explore_subtitle": "कुछ सुझाव अनायास खोज के लिए रखे जाएँगे, ताकि आप कभी-कभी किसी अलग व्यक्ति से भी मिल सकें।",
+
+    "recommendation_refreshing": "आपके लिए नई मुलाकातें तैयार की जा रही हैं……",
+
+    "recommendation_badge_for_you": "आपके लिए",
+    "recommendation_badge_featured": "विशेष मुलाकात",
+    "recommendation_badge_explore": "खोजें",
+
+    "recommendation_default_occupation_hint": "खोलकर देखें—शायद यही आपकी अगली दिल छू लेने वाली मुलाकात हो।",
+    "recommendation_explore_fallback": "कुछ अलग आज़माएँ—शायद वही आपके दिल को छू जाए।",
+
+    "recommendation_behavior_hint_similar_type": "हाल में आप इस प्रकार के पात्रों पर अधिक समय बिताते हैं",
+    "recommendation_behavior_hint_forming": "आपकी बातचीत की पसंद धीरे-धीरे आकार ले रही है",
+    "recommendation_behavior_hint_recent": "आपकी हाल की बातचीत के आधार पर चुना गया",
+
+    "recommendation_reason_liked_tags": "क्योंकि आपको पसंद है・{tags}",
+    "@recommendation_reason_liked_tags": {
+        "placeholders": {
+            "tags": {
+                "type": "String"
+            }
+        }
+    },
+
+    "recommendation_reason_popular": "हाल में कई लोगों ने इस पात्र को देखा है",
+    "recommendation_reason_default": "शायद यही आपकी अगली सही मुलाकात हो",
+    "scene_delete_title": "दृश्य मिटाएँ?",
+
+    "scene_delete_content": "क्या आप वाकई「{title}」को मिटाना चाहते हैं? इसे मिटाने के बाद वापस प्राप्त नहीं किया जा सकता।",
+    "@scene_delete_content": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "scene_unnamed": "बिना शीर्षक का दृश्य",
+    "scene_cancel": "रद्द करें",
+    "scene_delete": "मिटाएँ",
+    "scene_delete_failed": "मिटाया नहीं जा सका। कृपया बाद में फिर से प्रयास करें।",
+
+    "scene_start_failed": "फ़िलहाल दृश्य शुरू नहीं किया जा सकता। कृपया बाद में फिर से प्रयास करें।",
+
+    "scene_end_title": "दृश्य समाप्त करें?",
+    "scene_end_content": "दृश्य समाप्त करने के बाद आप सामान्य चैट में लौट जाएँगे। वर्तमान बातचीत का इतिहास नहीं मिटाया जाएगा।",
+    "scene_end_action": "दृश्य समाप्त करें",
+    "scene_ended": "दृश्य समाप्त हो गया",
+    "scene_end_failed": "फ़िलहाल दृश्य समाप्त नहीं किया जा सकता। कृपया बाद में फिर से प्रयास करें।",
+
+    "scene_active_label": "अभी जारी है",
+
+    "scene_opening": "पात्र की शुरुआत: {opening}",
+    "@scene_opening": {
+        "placeholders": {
+            "opening": {
+                "type": "String"
+            }
+        }
+    },
+
+    "scene_edit": "संपादित करें",
+    "scene_start": "दृश्य शुरू करें",
+
+    "scene_creator_load_failed": "निर्माता के दृश्य लोड नहीं किए जा सके।",
+    "scene_creator_empty_title": "फ़िलहाल निर्माता का कोई दृश्य नहीं है",
+    "scene_creator_empty_body": "इस पात्र के निर्माता ने अभी तक कोई अतिरिक्त कहानी नहीं बनाई है।",
+
+    "scene_custom_load_failed": "आपके बनाए दृश्य लोड नहीं किए जा सके।",
+    "scene_custom_empty_title": "आपने अभी तक अपना कोई दृश्य नहीं बनाया है",
+    "scene_custom_empty_body": "इस चैट के लिए सिर्फ़ अपनी एक कहानी बनाएँ।",
+    "scene_add": "दृश्य जोड़ें",
+
+    "scene_title": "दृश्य",
+    "scene_tab_creator": "निर्माता के दृश्य",
+    "scene_tab_custom": "स्वयं बनाएँ",
+    "chat_book_player": "खिलाड़ी",
+
+    "chat_book_title": "बातचीत का रिकॉर्ड",
+    "chat_book_export_pdf": "PDF निर्यात करें",
+
+    "chat_book_brand": "— LoveyDovey",
+    "chat_book_change_cover": "कवर बदलें",
+    "chat_book_cover_subtitle": "हमारे साथ बिताए पल · बातचीत की स्मृति-पुस्तक",
+    "chat_book_choose_cover": "स्मृति-पुस्तक का कवर चुनें",
+
+    "chat_book_initial_story": "आरंभिक कहानी",
+
+    "chat_book_transcript_title": "{characterName} · बातचीत का रिकॉर्ड",
+    "@chat_book_transcript_title": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_book_continuation": "{name} · जारी",
+    "@chat_book_continuation": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_book_previous_page": "पिछला पृष्ठ",
+    "chat_book_next_page": "अगला पृष्ठ",
+
+    "chat_book_photo_message": "〔चित्र〕",
+    "chat_book_audio_message": "〔वॉइस संदेश〕",
+    "chat_book_generic_message": "〔संदेश〕",
+
+    "chat_book_export_failed": "PDF निर्यात नहीं किया जा सका: {error}",
+    "@chat_book_export_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "email_policy_open_failed": "{title} नहीं खोला जा सका। कृपया नेटवर्क की जाँच करके फिर से प्रयास करें।",
+    "@email_policy_open_failed": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_read_instruction": "कृपया पहले पूरा {title} खोलकर पढ़ें। पढ़ने के बाद「LoveyDovey」पर वापस आएँ और「मैंने पढ़ लिया है और सहमत हूँ」दबाएँ।",
+    "@email_policy_read_instruction": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_opening": "खोला जा रहा है……",
+
+    "email_policy_read_full": "पूरा {title} पढ़ें",
+    "@email_policy_read_full": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_opened_ready": "{title} खोल लिया गया है। अब आप अपनी सहमति की पुष्टि कर सकते हैं।",
+    "@email_policy_opened_ready": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_not_opened": "{title} अभी तक नहीं खोला गया है।",
+    "@email_policy_not_opened": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_cancel_login": "लॉगिन रद्द करें",
+    "email_policy_agree": "मैंने पढ़ लिया है और सहमत हूँ",
+
+    "email_policy_status_check_failed": "फ़िलहाल शर्तों की सहमति की स्थिति की पुष्टि नहीं की जा सकती। कृपया बाद में फिर से प्रयास करें।",
+
+    "email_policy_login_notice": "पहली बार लॉग इन करने या शर्तें अपडेट होने पर आपको सेवा की शर्तें और गोपनीयता नीति पढ़कर उनसे सहमत होना होगा।",
+
+    "email_policy_refresh": "रीफ़्रेश करें",
+    "email_policy_page_load_failed": "पृष्ठ लोड नहीं किया जा सका",
+    "email_policy_check_network": "कृपया नेटवर्क की जाँच करके फिर से प्रयास करें।",
+    "email_policy_reload": "फिर से लोड करें",
+    "login_method_info_google_title": "Google से तुरंत लॉग इन करें",
+    "login_method_info_apple_title": "Apple से लॉग इन करें",
+    "login_method_info_facebook_title": "Facebook से लॉग इन करें",
+    "login_method_info_email_title": "LoveyDovey खाता (ईमेल)",
+    "login_method_info_email_provider": "LoveyDovey खाता (ईमेल)",
+
+    "login_method_info_content": "{providerName} का उपयोग करके「LoveyDovey」में लॉग इन करें।\n\nकृपया ध्यान दें:\n\n• {providerName} और अन्य लॉगिन विधियाँ अलग-अलग खाता प्रणालियाँ हैं।\n\n• यदि आपने {providerName} से खाता बनाया है, तो कृपया आगे भी इसी विधि से लॉग इन करें।\n\n• पात्रों का डेटा, बातचीत का इतिहास और खरीदी गई सामग्री अन्य लॉगिन विधियों के साथ साझा नहीं की जाएगी।\n\nअलग-अलग खाते बनने और डेटा साझा न हो पाने से बचने के लिए, पहली बार लॉग इन करने के बाद भी उसी लॉगिन विधि का उपयोग करते रहने की सलाह दी जाती है।",
+    "@login_method_info_content": {
+        "placeholders": {
+            "providerName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "login_method_info_got_it": "समझ गया",
+    "creator_studio_delete_failed": "मिटाया नहीं जा सका: {error}",
+    "@creator_studio_delete_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_studio_subtitle": "प्रेरणाएँ सहेजें, पात्रों को व्यवस्थित करें और धीरे-धीरे अपनी रचना पूरी करें",
+
+    "creator_studio_load_failed": "स्टूडियो लोड नहीं किया जा सका: {error}",
+    "@creator_studio_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_studio_add_character": "पात्र जोड़ें",
+
+    "creator_studio_public_title": "सार्वजनिक पात्र",
+    "creator_studio_public_subtitle": "प्रकाशित और अन्य खिलाड़ियों के लिए उपलब्ध",
+    "creator_studio_public_empty": "फ़िलहाल कोई सार्वजनिक पात्र नहीं है",
+
+    "creator_studio_private_title": "निजी पात्र",
+    "creator_studio_private_subtitle": "केवल आपको दिखाई देते हैं",
+    "creator_studio_private_empty": "फ़िलहाल कोई निजी पात्र नहीं है",
+
+    "creator_studio_draft_title": "ड्राफ़्ट",
+    "creator_studio_draft_subtitle": "अभी अधूरी रचनाएँ",
+    "creator_studio_draft_empty": "फ़िलहाल कोई अधूरा ड्राफ़्ट नहीं है",
+
+    "creator_studio_draft_empty_title": "यहाँ अभी कोई ड्राफ़्ट नहीं है",
+    "creator_studio_draft_empty_hint": "प्रेरणा मिलते ही उसे पहले यहाँ लिख लें",
+
+    "creator_studio_status_public": "सार्वजनिक",
+    "creator_studio_status_private": "निजी",
+    "creator_studio_status_draft": "ड्राफ़्ट",
+
+    "creator_studio_character_load_failed": "पात्र का डेटा लोड नहीं किया जा सका",
+
+    "creator_studio_delete_draft_tooltip": "ड्राफ़्ट मिटाएँ",
+
+    "creator_studio_unnamed_creator": "अनाम निर्माता",
+    "creator_studio_no_bio": "परिचय अभी तक नहीं लिखा गया है",
+    "chat_input_tools": "टूल",
+    "chat_input_expand_tools": "टूल दिखाएँ",
+    "chat_input_stop": "रोकें",
+    "chat_input_send": "भेजें",
+    "chat_side_menu_section_chat": "चैट",
+    "chat_side_menu_section_relationship": "रिश्ता",
+    "chat_side_menu_section_memory": "स्मृति प्रबंधन",
+    "character_navigator_confidential_title": "गोपनीय फ़ाइल",
+    "character_navigator_unavailable_message": "यह पात्र निजी किया गया, प्लेटफ़ॉर्म से हटाया गया, नियमों के उल्लंघन के कारण संग्रहित किया गया या मिटाया गया हो सकता है।",
+    "character_navigator_got_it": "समझ गया",
+
+    "character_navigator_load_failed_title": "लोड नहीं किया जा सका",
+    "character_navigator_load_failed_message": "पात्र का डेटा अस्थायी रूप से उपलब्ध नहीं है। कृपया बाद में फिर से प्रयास करें।",
+    "character_navigator_confirm": "ठीक है",
+    "character_profile_add_bookmark": "पात्र सहेजें",
+    "character_profile_remove_bookmark": "सहेजे गए पात्रों से हटाएँ",
+
+    "character_profile_pronoun_female": "वह",
+    "character_profile_pronoun_male": "वह",
+    "character_profile_pronoun_neutral": "वे",
+    "chat_home_pin_limit_reached": "आप अधिकतम 3 चैट पिन कर सकते हैं। कृपया पहले किसी अन्य चैट को अनपिन करें।",
+    "chat_home_pinned_success": "चैट पिन कर दी गई",
+    "chat_home_unpinned_success": "चैट अनपिन कर दी गई",
+
+    "chat_home_pin_update_failed": "पिन की स्थिति अपडेट नहीं की जा सकी: {error}",
+    "@chat_home_pin_update_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_home_unpin": "अनपिन करें",
+    "chat_home_pin": "चैट पिन करें",
+
+    "chat_home_time_label": "समय: {time}",
+    "@chat_home_time_label": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "main_check_in_already_done": "आप आज पहले ही चेक-इन कर चुके हैं",
+    "nav_recommend": "सुझाव",
+    "moments_auto_reply_title": "AI को खिलाड़ियों की पोस्ट का अपने आप जवाब देने दें",
+    "moments_auto_reply_description": "इसे चालू करने पर सिस्टम इस पात्र को खिलाड़ियों की पोस्ट का जवाब देने के लिए चुन सकता है।",
+    "mailShareTooltip": "पत्र साझा करें",
+    "mailOriginalQuestionLabel": "आपका मूल प्रश्न",
+    "hidden_moments_empty_hint": "अभी तक कोई छिपी हुई पोस्ट नहीं है",
+    "moment_search_unavailable": "खोज अस्थायी रूप से उपलब्ध नहीं है। कृपया बाद में फिर से प्रयास करें।",
+    "moment_search_hint": "सार्वजनिक पोस्ट, पात्र या निर्माता खोजें",
+    "moment_search_instruction": "पोस्ट की सामग्री, पात्र का नाम या निर्माता का नाम दर्ज करें",
+    "moment_search_no_results": "कोई संबंधित सार्वजनिक पोस्ट नहीं मिली",
+    "settingsErrorTitle": "कोई त्रुटि हुई",
+    "settingsChangePasswordSubtitle": "वर्तमान पासवर्ड सत्यापित करें, फिर नया लॉगिन पासवर्ड सेट करें",
+    "settingsCreatorGuidelines": "निर्माता दिशानिर्देश",
+    "settingsPlayGuide": "खेलने की मार्गदर्शिका",
+    "language_selection_subtitle": "अपनी पसंदीदा भाषा चुनें",
+    "search_character_hint": "पात्र, निर्माता, पेशा या टैग खोजें",
+    "search_character_clear": "साफ़ करें",
+    "search_character_recent": "हाल की खोजें",
+    "search_character_load_failed": "खोज का डेटा लोड नहीं किया जा सका। कृपया बाद में फिर से प्रयास करें।",
+    "search_character_popular": "अभी सबकी पसंद",
+    "search_character_result_count": "{count} पात्र मिले",
+    "@search_character_result_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_tab_monthly": "मासिक पास",
+
+    "shop_joined_days": "✦ आपको LoveyDovey में आए {days} दिन हो गए हैं ✦",
+    "@shop_joined_days": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+
+    "shop_vip_tier_1_title": "पहली नज़र का प्यार",
+    "shop_vip_tier_1_reward": "20 फूल पॉइंट + विशेष शुरुआती उपाधि",
+
+    "shop_vip_tier_2_title": "रोशनी की धड़कन",
+    "shop_vip_tier_2_reward": "विशेष अवतार फ़्रेम 【रोशनी की धड़कन】",
+
+    "shop_vip_tier_3_title": "तारों की फुसफुसाहट",
+    "shop_vip_tier_3_reward": "विशेष चैट बबल + 50 फूल पॉइंट",
+
+    "shop_vip_tier_4_title": "रोमांटिक सूर्यास्त",
+    "shop_vip_tier_4_reward": "विशेष ऐप आइकन",
+
+    "shop_vip_tier_5_title": "धड़कता दिल",
+    "shop_vip_tier_5_reward": "स्क्रीन टैप प्रभाव (Lottie) + 100 फूल पॉइंट",
+
+    "shop_vip_tier_6_title": "अनंत वचन",
+    "shop_vip_tier_6_reward": "उन्नत एनिमेटेड अवतार फ़्रेम + 200 फूल पॉइंट",
+
+    "shop_vip_tier_7_title": "आत्माओं का मिलन",
+    "shop_vip_tier_7_reward": "एनिमेटेड चैट बबल प्रभाव + विशेष उन्नत उपाधि",
+
+    "shop_vip_tier_8_title": "सिर्फ़ तुम्हारे लिए",
+    "shop_vip_tier_8_reward": "प्रीमियम एनिमेटेड नेमप्लेट + 500 फूल पॉइंट",
+
+    "shop_vip_tier_9_title": "चमकती आकाशगंगा",
+    "shop_vip_tier_9_reward": "विशेष प्रवेश Lottie प्रभाव + विशेष ग्राहक सहायता",
+
+    "shop_vip_tier_10_title": "सर्वोच्च प्रिय",
+    "shop_vip_tier_10_reward": "【विशेष वास्तविक VIP उपहार बॉक्स】 (हस्तलिखित पत्र + पात्र की गुड़िया)",
+
+    "shop_vip_total_bond": "कुल रोमांटिक बंधन",
+
+    "shop_vip_all_unlocked": "आपने सभी प्रीमियम सुविधाएँ अनलॉक कर ली हैं!",
+
+    "shop_vip_next_unlock": "अगला स्तर अनलॉक करने के लिए NT$ {amount} और रीचार्ज करें",
+    "@shop_vip_next_unlock": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "call_connecting": "कॉल कनेक्ट हो रही है...",
+
+    "call_listening_auto_send": "सुना जा रहा है... (बोलना पूरा होने पर अपने आप भेज दिया जाएगा)",
+
+    "call_listening_release_to_send": "सुना जा रहा है... (भेजने के लिए उँगली छोड़ें)",
+
+    "call_sending_transcript": " {text}\n\n(भेजा जा रहा है...)",
+    "@call_sending_transcript": {
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "help_translation_fallback": "इस भाषा में खेलने की गाइड अभी उपलब्ध नहीं है। फिलहाल इसे पारंपरिक चीनी भाषा में दिखाया जाएगा।",
+
+    "help_all_categories": "सभी",
+
+    "help_subtitle_companion": "रोज़मर्रा की सुविधाएँ और उपयोगी सहायक टूल",
+    "help_subtitle_ai_chat": "चैट, आवाज़ और स्मार्ट इंटरैक्शन",
+    "help_subtitle_creation": "पात्र सेटिंग और रचना संबंधी सुविधाएँ",
+    "help_subtitle_explore": "पात्रों और गेम की सामग्री को एक्सप्लोर करें",
+    "help_subtitle_care": "स्नेहपूर्ण साथ और रोज़मर्रा की देखभाल",
+    "help_subtitle_general": "सामान्य सुविधाएँ और उपयोग संबंधी निर्देश",
+    "chat_interact_fun": "मज़ेदार गतिविधियाँ",
+    "memo_notification_permission_missing": "सूचनाओं की अनुमति अभी चालू नहीं है। मेमो फिर भी सहेजा जाएगा, लेकिन सिस्टम रिमाइंडर दिखाई नहीं देगा।",
+
+    "memo_saved_with_reminder": "मेमो सहेज लिया गया है। {characterName} आपको याद दिलाएगा!",
+    "@memo_saved_with_reminder": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_saved_without_notification": "मेमो सहेज लिया गया है, लेकिन सूचनाओं की अनुमति अभी चालू नहीं है।",
+
+    "memo_updated_with_reminder": "मेमो अपडेट कर दिया गया है। {characterName} आपको याद दिलाएगा!",
+    "@memo_updated_with_reminder": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_updated_without_notification": "मेमो अपडेट कर दिया गया है, लेकिन फ़िलहाल सूचनाओं की अनुमति उपलब्ध नहीं है।",
+
+    "memo_load_error": "डेटा लोड करते समय त्रुटि हुई: {error}",
+    "@memo_load_error": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "story_summary_content_required": "कहानी की सामग्री खाली नहीं हो सकती",
+
+    "story_summary_edit_hint": "अपनी साझा कहानी लिखें...",
+    "profile_section_basic_info": "बुनियादी जानकारी",
+    "profile_section_about_me": "मेरे बारे में",
+    "dice_duel_you": "आप",
+
+    "dice_duel_result_saved": "मुकाबले का परिणाम सहेज लिया गया है!",
+
+    "dice_duel_rolling": "ब्रह्मांडीय ऊर्जा एकत्रित हो रही है..."
 }

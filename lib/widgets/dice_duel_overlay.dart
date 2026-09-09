@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 // ✨ 全螢幕骰子對決動畫 (無限角色支援版)
 class DiceDuelOverlay extends StatefulWidget {
@@ -80,6 +82,7 @@ class _DiceDuelOverlayState extends State<DiceDuelOverlay> with SingleTickerProv
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     return Center(
       child: Material(
@@ -116,7 +119,7 @@ class _DiceDuelOverlayState extends State<DiceDuelOverlay> with SingleTickerProv
                       children: [
                         Text(widget.playerName, style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                         const SizedBox(height: 8),
-                        const Text('妳', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                        Text(l10n.dice_duel_you, style: TextStyle(color: Colors.grey, fontSize: 12)),
                         const SizedBox(height: 30),
                         // 滾動中的骰子
                         _buildDiceIcon(_showFinalResult ? widget.playerRoll : _tempPlayerRoll),
@@ -156,10 +159,10 @@ class _DiceDuelOverlayState extends State<DiceDuelOverlay> with SingleTickerProv
                       key: const ValueKey('result'),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(color: primaryColor.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-                      child: const Text('對決結果已封存！', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      child: Text(l10n.dice_duel_result_saved, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     )
-                        : const Text(
-                      '🎲 宇宙能量匯聚中...',
+                        : Text(
+                      l10n.dice_duel_rolling,
                       key: ValueKey('rolling'),
                       style: TextStyle(color: Colors.white70, fontStyle: FontStyle.italic),
                     ),

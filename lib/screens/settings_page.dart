@@ -263,7 +263,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 );
               } else {
                 _showErrorDialog(
-                  '發生錯誤',
+                  l10n.settingsErrorTitle,
                   errorMessage,
                 );
               }
@@ -555,8 +555,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     _buildSettingsTile(
                       maskAsset:
                       'assets/images/setting/settings_account_mask.png',
-                      title: '更改密碼',
-                      subtitle: '驗證目前密碼後設定新的登入密碼',
+                      title: l10n.change_password_title,
+                      subtitle: l10n.settingsChangePasswordSubtitle,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -642,7 +642,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildSettingsTile(
                     maskAsset:
                     'assets/images/profile/profile_quill_mask.png',
-                    title: "創作者規範",
+                    title: l10n.settingsCreatorGuidelines,
                     theme: theme,
                     onTap: () {
                       Navigator.push(
@@ -659,7 +659,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildSettingsTile(
                     maskAsset:
                     'assets/images/setting/settings_guide_mask.png',
-                    title: '遊玩指南',
+                    title: l10n.settingsPlayGuide,
                     theme: theme,
                     onTap: () {
                       Navigator.push(
@@ -681,7 +681,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: () {
                       showLicensePage(
                         context: context,
-                        applicationName: '戀戀拾光',
+                        applicationName: l10n.app_name,
                         applicationVersion: '1.0.1',
                         applicationLegalese: '© 2026 默語白',
                       );

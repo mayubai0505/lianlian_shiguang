@@ -137,9 +137,7 @@ class InteractionPlayPage extends StatelessWidget {
               ),
               const SizedBox(height: 34),
               _SectionTitle(
-                text: l10n.chat_dice_btn == l10n.chat_menu_send_location
-                    ? l10n.chat_dice_btn
-                    : '趣味玩法',
+                text: l10n.chat_interact_fun,
                 primary: primary,
               ),
               const SizedBox(height: 16),

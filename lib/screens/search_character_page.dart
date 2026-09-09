@@ -262,13 +262,13 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                     controller: _searchController,
                     style: TextStyle(color: theme.colorScheme.onSurface),
                     decoration: InputDecoration(
-                      hintText: '搜尋角色、創作者、職業或標籤',
+                      hintText: l10n.search_character_hint,
                       hintStyle: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha:0.5)),
                       prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
                       suffixIcon: _searchQuery.isEmpty
                           ? null
                           : IconButton(
-                        tooltip: '清除',
+                        tooltip: l10n.search_character_clear,
                         icon: const Icon(Icons.close_rounded),
                         onPressed: () {
                           _searchSaveDebounce?.cancel();
@@ -322,6 +322,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
 
   Widget _buildRecentSearches(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
 
@@ -334,7 +335,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
             children: [
               Expanded(
                 child: Text(
-                  '最近搜尋',
+                  l10n.search_character_recent,
                   style: GoogleFonts.notoSerifTc(
                     color: onSurface,
                     fontSize: 14,
@@ -355,7 +356,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
                   ),
                 ),
                 child: Text(
-                  '清除',
+                  l10n.search_character_clear,
                   style: GoogleFonts.notoSerifTc(
                     color: onSurface.withValues(alpha: 0.44),
                     fontSize: 11,
@@ -456,7 +457,7 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
-                '搜尋資料載入失敗，請稍後再試。',
+                l10n.search_character_load_failed,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: theme.colorScheme.onSurface.withValues(
@@ -600,8 +601,8 @@ class _SearchCharacterPageState extends State<SearchCharacterPage> {
 
         final String resultHeader =
         keyword.isEmpty
-            ? '大家最近都在喜歡'
-            : '找到 ${docs.length} 位角色';
+            ? l10n.search_character_popular
+            : l10n.search_character_result_count(docs.length);
 
         return Column(
           crossAxisAlignment:

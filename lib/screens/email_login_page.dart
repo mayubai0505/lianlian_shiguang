@@ -79,6 +79,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
     required String title,
     required String url,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     bool hasOpenedPolicy = false;
     bool isOpening = false;
 
@@ -128,7 +129,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                     if (dialogContext.mounted) {
                       ToastUtils.showCenterToast(
                         dialogContext,
-                        '無法開啟$title，請確認網路後再試。',
+                        l10n.email_policy_open_failed(title),
                         customIcon: Icons.link_off_rounded,
                         isError: true,
                       );
@@ -171,9 +172,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '請先開啟並閱讀完整$title。'
-                              '閱讀後回到《戀戀拾光》，即可按下'
-                              '「我已閱讀並同意」。',
+                          l10n.email_policy_read_instruction(title),
                           style: GoogleFonts.notoSerifTc(
                             fontSize: 14,
                             height: 1.6,
@@ -199,8 +198,8 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                             ),
                             label: Text(
                               isOpening
-                                  ? '正在開啟……'
-                                  : '閱讀完整$title',
+                                  ? l10n.email_policy_opening
+                                  : l10n.email_policy_read_full(title),
                             ),
                           ),
                         ),
@@ -235,8 +234,8 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                               Expanded(
                                 child: Text(
                                   hasOpenedPolicy
-                                      ? '已開啟$title，可以確認同意。'
-                                      : '尚未開啟$title。',
+                                      ? l10n.email_policy_opened_ready(title)
+                                      : l10n.email_policy_not_opened(title),
                                   style: TextStyle(
                                     color: hasOpenedPolicy
                                         ? Colors.green
@@ -259,7 +258,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                           ).pop(false);
                         },
                         child: Text(
-                          '取消登入',
+                          l10n.email_policy_cancel_login,
                           style: GoogleFonts.notoSerifTc(),
                         ),
                       ),
@@ -278,7 +277,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                         ),
                         child:
                         Text(
-                          '我已閱讀並同意',
+                          l10n.email_policy_agree,
                           style: GoogleFonts.notoSerifTc(
                             fontWeight: FontWeight.w700,
                           ),
@@ -352,7 +351,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
       if (!privacyIsCurrent) {
         acceptedPrivacyThisTime =
         await _showExternalPolicyDialog(
-          title: '隱私權政策',
+          title: l10n.legal_privacy_button,
           url: _privacyNotionUrl,
         );
 
@@ -398,7 +397,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
       if (mounted) {
         ToastUtils.showCenterToast(
           context,
-          '目前無法確認條款狀態，請稍後再試。',
+          l10n.email_policy_status_check_failed,
           customIcon: Icons.error_outline,
           isError: true,
         );
@@ -562,7 +561,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
     if (!_isValidEmail(email)) {
       ToastUtils.showCenterToast(
         context,
-        '請輸入有效的電子郵件地址。',
+        l10n.auth_error_invalid_email,
         isError: true,
       );
       return;
@@ -632,11 +631,11 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
       } else if (e.code ==
           'too-many-requests') {
         errorMessage =
-        '嘗試次數過多，請稍後再試。';
+            l10n.auth_error_too_many_requests;
       } else if (e.code ==
           'network-request-failed') {
         errorMessage =
-        '網路連線異常，請確認網路後再試。';
+            l10n.auth_error_network_failed;
       }
 
       if (mounted) {
@@ -655,7 +654,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
       if (mounted) {
         ToastUtils.showCenterToast(
           context,
-          '連線異常，請稍後再試。',
+          l10n.auth_error_network_failed,
           isError: true,
         );
       }
@@ -925,8 +924,7 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                     const SizedBox(height: 16),
 
                     Text(
-                      '首次登入或條款更新時，'
-                          '系統將請您閱讀並同意服務條款及隱私權政策。',
+                      l10n.email_policy_login_notice,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 12,
@@ -1034,6 +1032,7 @@ class _EmailPolicyWebViewPageState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1051,7 +1050,7 @@ class _EmailPolicyWebViewPageState
         ),
         actions: [
           IconButton(
-            tooltip: '重新整理',
+            tooltip: l10n.email_policy_refresh,
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () {
               setState(() {
@@ -1090,7 +1089,7 @@ class _EmailPolicyWebViewPageState
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      '頁面載入失敗',
+                      l10n.email_policy_page_load_failed,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -1098,7 +1097,7 @@ class _EmailPolicyWebViewPageState
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      '請確認網路連線後再試一次。',
+                      l10n.email_policy_check_network,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 14,
@@ -1118,7 +1117,7 @@ class _EmailPolicyWebViewPageState
                       },
                       icon: const Icon(Icons.refresh_rounded),
                       label: Text(
-                        '重新載入',
+                        l10n.email_policy_reload,
                         style: GoogleFonts.notoSerifTc(
                           fontWeight: FontWeight.w600,
                         ),

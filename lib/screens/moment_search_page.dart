@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 import '../models/moment_model.dart';
 import '../services/app_constants.dart';
@@ -62,6 +63,7 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
   }
 
   Future<void> _search(String rawQuery) async {
+    final l10n = AppLocalizations.of(context)!;
     final String normalizedQuery = normalizeMomentSearchText(rawQuery);
     final String lookupKey = buildMomentSearchLookupKey(rawQuery);
 
@@ -140,7 +142,7 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
       setState(() {
         _results = <Moment>[];
         _isSearching = false;
-        _errorMessage = '搜尋暫時無法使用，請稍後再試。';
+        _errorMessage = l10n.moment_search_unavailable;
       });
       debugPrint('搜尋拾光牆失敗：$error');
     }
@@ -148,6 +150,7 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final ThemeData theme = Theme.of(context);
     final Color primary = theme.colorScheme.primary;
     final Color onSurface = theme.colorScheme.onSurface;
@@ -195,7 +198,7 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
               fontSize: 14,
             ),
             decoration: InputDecoration(
-              hintText: '搜尋公開貼文、角色或創作者',
+              hintText: l10n.moment_search_hint,
               hintStyle: GoogleFonts.notoSerifTc(
                 color: onSurface.withValues(alpha: 0.34),
                 fontSize: 13.5,
@@ -234,6 +237,7 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
   }
 
   Widget _buildBody(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     final Color primary = theme.colorScheme.primary;
     final Color onSurface = theme.colorScheme.onSurface;
 
@@ -291,7 +295,7 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
               ),
               const SizedBox(height: 18),
               Text(
-                '輸入貼文內容、角色名稱或創作者名稱',
+                l10n.moment_search_instruction,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.notoSerifTc(
                   color: onSurface.withValues(alpha: 0.48),
@@ -320,7 +324,7 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
               ),
               const SizedBox(height: 14),
               Text(
-                '找不到相關的公開貼文',
+                l10n.moment_search_no_results,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.notoSerifTc(
                   color: onSurface.withValues(alpha: 0.48),
@@ -353,5 +357,4 @@ class _MomentSearchPageState extends State<MomentSearchPage> {
       },
     );
   }
-
 }

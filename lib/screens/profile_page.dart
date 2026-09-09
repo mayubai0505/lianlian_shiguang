@@ -1634,17 +1634,18 @@ class _ProfilePageState extends State<ProfilePage>
   void _showBackpackDialog(BuildContext context, String userId, int totalSpent, bool hasSubmittedAddress) {
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Row(
+          title: Row(
             children: [
               Icon(Icons.backpack_outlined, color: Colors.pink),
               SizedBox(width: 8),
-              Text('我的專屬背包與特權'),
+              Text(l10n.profile_backpack_title),
             ],
           ),
           content: SizedBox(
@@ -1664,13 +1665,13 @@ class _ProfilePageState extends State<ProfilePage>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('目前累積浪漫羈絆', style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text('NT\$ $totalSpent', style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor, fontSize: 16)),
+                        Text(l10n.profile_backpack_total_spent, style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(l10n.profile_backpack_total_spent_amount(totalSpent), style: TextStyle(fontWeight: FontWeight.bold, color: primaryColor, fontSize: 16)),
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text('🎁 實體禮盒解鎖狀態：', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(l10n.profile_backpack_physical_gift_status, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   const SizedBox(height: 8),
 
                   // 👑 10,000 元實體禮盒判定
@@ -1692,7 +1693,7 @@ class _ProfilePageState extends State<ProfilePage>
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              '【頂級摯愛】實體 VIP 專屬禮盒',
+                              l10n.profile_backpack_vip_gift_title,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: totalSpent >= 10000 ? primaryColor : Colors.grey,
@@ -1701,8 +1702,8 @@ class _ProfilePageState extends State<ProfilePage>
                           ],
                         ),
                         const SizedBox(height: 6),
-                        const Text(
-                          '含：專屬手寫信 + 角色代表娃 + 官方感謝信',
+                        Text(
+                          l10n.profile_backpack_vip_gift_contents,
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                         const SizedBox(height: 10),
@@ -1720,17 +1721,17 @@ class _ProfilePageState extends State<ProfilePage>
                                 Navigator.pop(context); // 關閉背包
                                 _showPhysicalGiftDialog(context, userId); // 打開地址填寫表單
                               },
-                              child: Text(hasSubmittedAddress ? '修改收件地址資訊' : '🎉 已解鎖！點此填寫收件資訊'),
+                              child: Text(hasSubmittedAddress ? l10n.profile_backpack_edit_shipping_info : l10n.profile_backpack_unlock_shipping_info),
                             ),
                           ),
                           if (hasSubmittedAddress)
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.only(top: 4.0),
-                              child: Text('✅ 您已成功登記收件地址，我們會盡快為您準備！', style: TextStyle(fontSize: 11, color: Colors.green)),
+                              child: Text(l10n.profile_backpack_shipping_registered, style: TextStyle(fontSize: 11, color: Colors.green)),
                             ),
                         ] else ...[
                           Text(
-                            '還差 NT\$ ${10000 - totalSpent} 即可解鎖實體大賞！',
+                            l10n.profile_backpack_amount_remaining(10000 - totalSpent),
                             style: const TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -1738,7 +1739,7 @@ class _ProfilePageState extends State<ProfilePage>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text('💡 提示：其他數位外觀與頭像框可在商店或個人設定中查看與裝備。', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(l10n.profile_backpack_hint, style: TextStyle(fontSize: 12, color: Colors.grey)),
                 ],
               ),
             ),
@@ -1746,7 +1747,7 @@ class _ProfilePageState extends State<ProfilePage>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('關閉'),
+              child: Text(l10n.profile_backpack_close),
             ),
           ],
         );
@@ -1760,6 +1761,7 @@ class _ProfilePageState extends State<ProfilePage>
     final phoneController = TextEditingController();
     final addressController = TextEditingController();
     final characterController = TextEditingController(); // ✨ 改用文字控制器來手動輸入角色名
+    final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
@@ -1768,11 +1770,11 @@ class _ProfilePageState extends State<ProfilePage>
           builder: (context, setState) {
             return AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: const Row(
+              title: Row(
                 children: [
                   Icon(Icons.card_giftcard, color: Colors.pink),
                   SizedBox(width: 8),
-                  Text('【頂級摯愛】實體禮盒解鎖'),
+                  Text(l10n.profile_physical_gift_title),
                 ],
               ),
               content: SingleChildScrollView(
@@ -1780,15 +1782,15 @@ class _ProfilePageState extends State<ProfilePage>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      '感謝玩家對《戀戀拾光》的極致守候！\n請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：',
+                    Text(
+                      l10n.profile_physical_gift_description,
                       style: TextStyle(fontSize: 13, color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: '收件人真實姓名',
+                      decoration: InputDecoration(
+                        labelText: l10n.profile_physical_gift_recipient_name,
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -1796,8 +1798,8 @@ class _ProfilePageState extends State<ProfilePage>
                     TextField(
                       controller: phoneController,
                       keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        labelText: '聯絡電話',
+                      decoration: InputDecoration(
+                        labelText: l10n.profile_physical_gift_phone,
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -1805,17 +1807,17 @@ class _ProfilePageState extends State<ProfilePage>
                     TextField(
                       controller: addressController,
                       maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: '完整收件地址（含郵遞區號）',
+                      decoration: InputDecoration(
+                        labelText: l10n.profile_physical_gift_address,
                         border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: characterController,
-                      decoration: const InputDecoration(
-                        labelText: '想要收到的角色代表娃名字',
-                        hintText: '例如：欲輸入的角色名稱',
+                      decoration: InputDecoration(
+                        labelText: l10n.profile_physical_gift_character_name,
+                        hintText: l10n.profile_physical_gift_character_hint,
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -1825,7 +1827,7 @@ class _ProfilePageState extends State<ProfilePage>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('稍後填寫', style: TextStyle(color: Colors.grey)),
+                  child: Text(l10n.profile_physical_gift_fill_later, style: TextStyle(color: Colors.grey)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1840,7 +1842,7 @@ class _ProfilePageState extends State<ProfilePage>
                         characterController.text.isEmpty) {
                       ToastUtils.error(
                         context,
-                        '請完整填寫收件資訊與心儀的角色名稱喔！',
+                        l10n.profile_physical_gift_required_error,
                       );
                       return;
                     }
@@ -1858,10 +1860,10 @@ class _ProfilePageState extends State<ProfilePage>
                     Navigator.pop(context);
                     ToastUtils.success(
                       context,
-                      '收件資訊已成功送出！請期待我們的實體驚喜！',
+                      l10n.profile_physical_gift_submit_success,
                     );
                   },
-                  child: const Text('確認送出'),
+                  child: Text(l10n.profile_physical_gift_confirm_submit),
                 ),
               ],
             );
@@ -1912,7 +1914,7 @@ class _ProfilePageState extends State<ProfilePage>
           children: [
             Text(
               Localizations.localeOf(context).languageCode == 'zh'
-                  ? '關於我'
+                  ? l10n.profile_about_me_title
                   : l10n.profilePageAboutMe,
               style: GoogleFonts.notoSerifTc(
                 color: theme.colorScheme.onSurface,
@@ -2038,7 +2040,7 @@ class _ProfilePageState extends State<ProfilePage>
                   forceElevated: innerBoxIsScrolled,
                   actions: [
                     IconButton(
-                      tooltip: '公告',
+                      tooltip: l10n.profile_tooltip_announcement,
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -2059,7 +2061,7 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                     ),
                     IconButton(
-                      tooltip: '設定',
+                      tooltip: l10n.profile_tooltip_settings,
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -2081,7 +2083,7 @@ class _ProfilePageState extends State<ProfilePage>
                     if (false) ...[
                       if (!isAppleReviewMode)
                         IconButton(
-                          tooltip: '我的背包',
+                          tooltip: l10n.profile_tooltip_backpack,
                           icon: const Icon(
                             Icons.card_giftcard,
                           ),
@@ -2243,7 +2245,7 @@ class _ProfilePageState extends State<ProfilePage>
                         Tab(
                           height: 48,
                           text: Localizations.localeOf(context).languageCode == 'zh'
-                              ? '自我介紹'
+                              ? l10n.profile_tab_bio_title
                               : l10n.profilePageTabBio,
                         ),
                       ],
@@ -2321,7 +2323,7 @@ class _ProfilePageState extends State<ProfilePage>
               if (!isAppleReviewMode)
                 ListTile(
                   leading: const Icon(Icons.card_giftcard_outlined),
-                  title: const Text('我的背包'),
+                  title: Text(l10n.profile_tooltip_backpack),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     _openProfileBackpack(currentUser);
@@ -2499,7 +2501,7 @@ class _ProfilePageState extends State<ProfilePage>
                 alignment: Alignment.centerLeft,
                 child: Text(
                   Localizations.localeOf(context).languageCode == 'zh'
-                      ? (_hasCheckedInToday ? '已簽到' : '簽到')
+                      ? (_hasCheckedInToday ? l10n.profile_check_in_done : l10n.profile_check_in)
                       : (_hasCheckedInToday
                       ? l10n.profilePageAlreadyCheckedIn
                       : l10n.status_daily_sign_in),
@@ -2896,7 +2898,7 @@ class _ProfilePageState extends State<ProfilePage>
                   Expanded(
                     child: _buildProfileStatItem(
                       value: totalLikes,
-                      label: localeIsChinese ? '喜歡' : 'Likes',
+                      label: localeIsChinese ? l10n.profile_likes_label : 'Likes',
                     ),
                   ),
                 ],
@@ -2928,12 +2930,12 @@ class _ProfilePageState extends State<ProfilePage>
                         opacity: _hasCheckedInToday ? 0.72 : 0.92,
                       ),
                       title: localeIsChinese
-                          ? (_hasCheckedInToday ? '已簽到' : '簽到')
+                          ? (_hasCheckedInToday ? l10n.profile_check_in_done : l10n.profile_check_in)
                           : (_hasCheckedInToday
                           ? l10n.profilePageAlreadyCheckedIn
                           : l10n.status_daily_sign_in),
                       subtitle: localeIsChinese
-                          ? (_hasCheckedInToday ? '今天已留下足跡' : '今日尚未簽到')
+                          ? (_hasCheckedInToday ? l10n.profile_check_in_done_subtitle : l10n.profile_check_in_not_done_subtitle)
                           : null,
                     ),
                   ),
@@ -2952,7 +2954,7 @@ class _ProfilePageState extends State<ProfilePage>
                         opacity: 0.92,
                       ),
                       title: l10n.profilePageHeartbeatDiary,
-                      subtitle: localeIsChinese ? '記下心動瞬間' : null,
+                      subtitle: localeIsChinese ? l10n.profile_heartbeat_diary_subtitle : null,
                     ),
                   ),
                 ],
@@ -3139,7 +3141,7 @@ class _ProfilePageState extends State<ProfilePage>
               ),
 
               ListTile(
-                title: const Text('創建劇場'),
+                title: Text(l10n.profile_create_scene),
                 onTap: () {
                   Navigator.pop(sheetContext);
 
@@ -3204,6 +3206,7 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Future<void> _openProfileLink(String rawUrl) async {
+    final l10n = AppLocalizations.of(context)!;
     String normalized = rawUrl.trim();
     if (normalized.isEmpty) return;
 
@@ -3222,7 +3225,7 @@ class _ProfilePageState extends State<ProfilePage>
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '連結格式不正確',
+        l10n.profile_link_invalid,
         isError: true,
       );
       return;
@@ -3237,7 +3240,7 @@ class _ProfilePageState extends State<ProfilePage>
       if (!opened && mounted) {
         ToastUtils.showCenterToast(
           context,
-          '無法開啟這個連結',
+          l10n.profile_link_open_failed,
           isError: true,
         );
       }
@@ -3247,7 +3250,7 @@ class _ProfilePageState extends State<ProfilePage>
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '無法開啟這個連結',
+        l10n.profile_link_open_failed,
         isError: true,
       );
     }
@@ -3255,6 +3258,7 @@ class _ProfilePageState extends State<ProfilePage>
 
   Widget _buildProfileLinksSection() {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final visibleLinks = _profileLinks
         .where((item) => (item['url'] ?? '').trim().isNotEmpty)
@@ -3272,14 +3276,14 @@ class _ProfilePageState extends State<ProfilePage>
           final url = (item['url'] ?? '').trim();
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: EdgeInsets.only(bottom: 10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Flexible(
                   flex: 0,
                   child: Text(
-                    name.isEmpty ? '我的連結' : name,
+                    name.isEmpty ? l10n.profile_link_default_name : name,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 13,
                       height: 1.55,
@@ -4237,7 +4241,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ),
                   label: Text(
                     Localizations.localeOf(context).languageCode == 'zh'
-                        ? '寫下此刻'
+                        ? l10n.profile_publish_moment_short
                         : l10n.profilePagePublishMoment,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 13,

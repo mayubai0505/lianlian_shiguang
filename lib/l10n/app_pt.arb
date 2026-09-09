@@ -3369,5 +3369,781 @@
 
    "feedback_remove_image": "Remover imagem",
    "feedback_selected_image": "Imagem selecionada",
-   "feedback_change_image": "Alterar"
-}
+   "feedback_change_image": "Alterar",
+   "profile_backpack_title": "Minha mochila e vantagens exclusivas",
+   "profile_backpack_total_spent": "Vínculo romântico acumulado",
+   "profile_backpack_total_spent_amount": "NT$ {amount}",
+   "@profile_backpack_total_spent_amount": {
+      "placeholders": {
+         "amount": {
+            "type": "int"
+         }
+      }
+   },
+
+   "profile_backpack_physical_gift_status": "Status de desbloqueio da caixa de presente física:",
+   "profile_backpack_vip_gift_title": "【Amor supremo】Caixa de presente VIP física exclusiva",
+   "profile_backpack_vip_gift_contents": "Inclui: carta manuscrita exclusiva + boneco representativo do personagem + carta oficial de agradecimento",
+
+   "profile_backpack_edit_shipping_info": "Alterar informações de entrega",
+   "profile_backpack_unlock_shipping_info": "Desbloqueada! Toque aqui para informar os dados de entrega",
+   "profile_backpack_shipping_registered": "Seu endereço de entrega foi registrado com sucesso. Prepararemos seu presente assim que possível!",
+
+   "profile_backpack_amount_remaining": "Faltam apenas NT$ {amount} para desbloquear a grande recompensa física!",
+   "@profile_backpack_amount_remaining": {
+      "placeholders": {
+         "amount": {
+            "type": "int"
+         }
+      }
+   },
+
+   "profile_backpack_hint": "Dica: Você pode conferir outras aparências e molduras de avatar na mochila.",
+   "profile_backpack_close": "Fechar",
+
+   "profile_physical_gift_title": "【Amor supremo】Caixa de presente física desbloqueada",
+   "profile_physical_gift_description": "Agradecemos por sua extraordinária dedicação ao «LoveyDovey»!\nPreencha abaixo as informações de entrega. Enviaremos uma carta manuscrita exclusiva e um boneco representativo do personagem:",
+
+   "profile_physical_gift_recipient_name": "Nome civil completo do destinatário",
+   "profile_physical_gift_phone": "Telefone para contato",
+   "profile_physical_gift_address": "Endereço completo de entrega (incluindo o CEP)",
+   "profile_physical_gift_character_name": "Nome do personagem cujo boneco deseja receber",
+   "profile_physical_gift_character_hint": "Exemplo: Digite o nome do personagem",
+
+   "profile_physical_gift_fill_later": "Preencher depois",
+   "profile_physical_gift_required_error": "Preencha todas as informações de entrega e informe o nome do personagem desejado!",
+   "profile_physical_gift_submit_success": "Suas informações de entrega foram enviadas com sucesso! Aguarde nossa surpresa física!",
+   "profile_physical_gift_confirm_submit": "Confirmar envio",
+
+   "profile_tooltip_announcement": "Avisos",
+   "profile_tooltip_settings": "Configurações",
+   "profile_tooltip_backpack": "Minha mochila",
+   "profile_backpack_menu_title": "Minha mochila",
+
+   "profile_about_me_title": "Sobre mim",
+   "profile_tab_bio_title": "Apresentação",
+
+   "profile_check_in_done": "Check-in concluído",
+   "profile_check_in": "Fazer check-in",
+   "profile_check_in_done_subtitle": "Você já deixou sua marca hoje",
+   "profile_check_in_not_done_subtitle": "Você ainda não fez check-in hoje",
+
+   "profile_likes_label": "Curtidas",
+   "profile_heartbeat_diary_subtitle": "Registre os momentos que fazem seu coração acelerar",
+
+   "profile_create_scene": "Criar cena",
+
+   "profile_link_invalid": "O formato do link é inválido",
+   "profile_link_open_failed": "Não foi possível abrir este link",
+   "profile_link_default_name": "Meu link",
+
+   "profile_publish_moment_short": "Escrever este momento",
+   "edit_profile_default_link_name": "Meu link {index}",
+   "@edit_profile_default_link_name": {
+      "placeholders": {
+         "index": {
+            "type": "int"
+         }
+      }
+   },
+
+   "edit_profile_done": "Concluir",
+   "edit_profile_social_links": "Redes sociais e links",
+   "edit_profile_add_link": "Adicionar link",
+   "edit_profile_link_name_hint": "Nome do link",
+   "edit_profile_link_url_hint": "Insira o link",
+   "theme_name_starlight": "Roxo estrelado",
+   "theme_name_sakura": "Rosa sakura",
+   "theme_name_ocean": "Azul oceano",
+   "theme_name_sunset": "Laranja pôr do sol",
+   "theme_name_mint": "Menta da floresta",
+   "theme_name_midnight": "Modo noturno",
+   "theme_name_custom": "Cor personalizada",
+
+   "theme_selection_choose_theme": "Escolher cor do tema",
+   "theme_selection_title": "Mudar o clima",
+   "theme_selection_description": "Escolha sua cor de tema favorita e deixe o LoveyDovey ainda mais com a sua cara.",
+   "theme_selection_preview": "Prévia",
+
+   "theme_selection_characters": "Personagens",
+   "theme_selection_posts": "Publicações",
+
+   "theme_selection_previewing": "Prévia atual: {themeName}",
+   "@theme_selection_previewing": {
+      "placeholders": {
+         "themeName": {
+            "type": "String"
+         }
+      }
+   },
+
+   "theme_selection_apply": "Aplicar tema",
+   "theme_selection_restore_default": "Restaurar padrão",
+   "theme_selection_choose_color": "Escolha sua cor exclusiva",
+
+   "theme_selection_applied": "“{themeName}” foi aplicado",
+   "@theme_selection_applied": {
+      "placeholders": {
+         "themeName": {
+            "type": "String"
+         }
+      }
+   },
+   "welcome_guide_help": "Guia do jogo",
+   "welcome_guide_start": "Começar a jornada",
+   "welcome_guide_next": "Próximo",
+
+   "welcome_guide_welcome_title": "Boas-vindas ao «LoveyDovey»",
+   "welcome_guide_welcome_description": "Aqui, cada encontro pode se transformar em uma história inesquecível. Esperamos que o «LoveyDovey» acompanhe você na criação de lindas memórias a dois.",
+
+   "welcome_guide_chat_title": "Modos de conversa",
+   "welcome_guide_chat_description": "O «LoveyDovey» oferece vários modos de conversa, cada um com uma experiência de interação diferente.",
+
+   "welcome_guide_daily_title": "Modo cotidiano",
+   "welcome_guide_daily_description": "Façam companhia um ao outro, compartilhem o dia a dia e aproveitem conversas leves e descontraídas.",
+
+   "welcome_guide_story_title": "Modo história",
+   "welcome_guide_story_description": "Avance na história do personagem e desbloqueie mais tramas e interações exclusivas.",
+
+   "welcome_guide_immersive_title": "Modo imersivo",
+   "welcome_guide_immersive_description": "Tenha conversas mais envolventes e realistas.",
+
+   "welcome_guide_chat_more": "Para saber mais sobre os modos de conversa, consulte a seção «Ajuda do jogo».",
+
+   "welcome_guide_encounter_title": "Encontros",
+   "welcome_guide_encounter_description": "Cada personagem tem personalidade, história e voz únicas. Ao encontrar um personagem de que goste, adicione-o como amigo para conversar, interagir, compartilhar seu dia a dia e criar memórias juntos.",
+
+   "welcome_guide_more_title": "Mais conteúdo",
+   "welcome_guide_more_description": "Há também coleções, criadores, loja e muitos outros recursos. Acesse «Ajuda do jogo» para saber mais.",
+   "preference_selection_max_error": "Você pode selecionar até {count} preferências.",
+   "@preference_selection_max_error": {
+      "placeholders": {
+         "count": {
+            "type": "int"
+         }
+      }
+   },
+
+   "preference_selection_save_failed": "Não foi possível salvar suas preferências no momento. Tente novamente mais tarde.",
+
+   "preference_selection_title": "Que tipo de pessoa você gostaria de conhecer?",
+   "preference_selection_description": "Escolha de 3 a 5 tipos de que gosta para o LoveyDovey começar a conhecer você.",
+   "preference_selection_recommendation_note": "As recomendações serão ajustadas gradualmente conforme suas interações para combinar melhor com você.",
+   "preference_selection_selected": "Selecionado",
+   "preference_selection_start": "Começar por Aqui",
+
+   "preference_group_personality": "Personalidade e estilo",
+   "preference_group_relationship_age": "Relação・Diferença de idade",
+   "preference_group_story": "Atmosfera da história",
+
+   "preference_tag_gentle": "Gentil",
+   "preference_tag_cold": "Distante",
+   "preference_tag_scheming": "Ardiloso",
+   "preference_tag_tsundere": "Tsundere",
+   "preference_tag_loyal": "Devotado",
+   "preference_tag_yandere": "Yandere",
+   "preference_tag_mysterious": "Misterioso",
+   "preference_tag_healing": "Acolhedor",
+   "preference_tag_gap_moe": "Contraste cativante",
+
+   "preference_tag_older": "Mais velho",
+   "preference_tag_younger": "Mais novo",
+
+   "preference_tag_ceo": "CEO dominante",
+   "preference_tag_school": "Escolar",
+   "preference_tag_workplace": "Trabalho",
+   "preference_tag_ancient": "Histórico",
+   "preference_tag_nonhuman": "Não humano",
+   "encounter_load_failed": "Não foi possível carregar os dados de encontros. Tente novamente mais tarde.",
+   "encounter_no_available_characters": "Ainda não há personagens disponíveis para conhecer",
+   "encounter_category_empty": "Não há personagens nesta categoria no momento",
+
+   "encounter_category_all": "Tudo",
+   "encounter_category_xianxia": "Xianxia",
+   "encounter_category_childhood_friend": "Amigos de infância",
+   "encounter_category_master_disciple": "Mestre e discípulo",
+   "encounter_category_sweet_romance": "Romance doce",
+   "encounter_category_other": "Outros",
+   "character_edit_tab_character_settings": "Configurações do personagem",
+   "character_edit_test": "Testar",
+
+   "character_edit_supporting_basic_info": "Informações básicas",
+   "character_edit_supporting_main_setting": "Relação com o personagem principal",
+   "character_edit_supporting_main_description": "Descreva a relação deste personagem secundário com o personagem principal e seu papel na história.",
+
+   "character_edit_banner_preview_hint": "Toque na imagem para visualizá-la em tamanho grande",
+   "character_edit_main_photo_hint": "A primeira imagem será usada como avatar principal",
+   "character_edit_other_photos": "Outras fotos do personagem",
+   "character_edit_photo_action_hint": "Toque na foto para visualizá-la; toque no lápis para editar suas configurações",
+
+   "character_edit_over_limit_warning": "⚠ {label} ultrapassou o limite de {count} caracteres. Corrija antes de publicar.",
+   "@character_edit_over_limit_warning": {
+      "placeholders": {
+         "label": {
+            "type": "String"
+         },
+         "count": {
+            "type": "String"
+         }
+      }
+   },
+   "memo_notification_channel_name": "Lembretes",
+   "memo_notification_channel_description": "Os personagens lembram os jogadores dos recados programados",
+
+   "memo_notification_title": "{characterName} lembra você",
+   "@memo_notification_title": {
+      "placeholders": {
+         "characterName": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_tsundere": "Não é como se eu estivesse preocupado com você. Só não quero que esqueça. Não se esqueça hoje: {memoContent}",
+   "@memo_notification_tsundere": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_dominant": "Já anotei seu compromisso. Cumpra-o no horário. Não se esqueça hoje: {memoContent}",
+   "@memo_notification_dominant": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_yandere": "Você não pode esquecer, está bem? Eu sempre vou me lembrar. Não se esqueça hoje: {memoContent}",
+   "@memo_notification_yandere": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_gentle": "Fiquei com receio de que você esquecesse por estar ocupado, então quis lembrar você. Não se esqueça hoje: {memoContent}",
+   "@memo_notification_gentle": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_cold": "Tenho algo para lembrar você. Não se esqueça hoje: {memoContent}",
+   "@memo_notification_cold": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_sunny": "Ei, você ainda tem algo importante para fazer hoje! Não se esqueça: {memoContent}",
+   "@memo_notification_sunny": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_lazy": "Embora eu queira continuar deitado, ainda preciso lembrar você. Não se esqueça hoje: {memoContent}",
+   "@memo_notification_lazy": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_older": "Seja obediente e não esqueça o que precisa fazer hoje. Lembre-se: {memoContent}",
+   "@memo_notification_older": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_younger": "Eu me lembrei direitinho por você! Não se esqueça hoje: {memoContent}",
+   "@memo_notification_younger": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_mechanical": "Lembrete ativado. Tarefa de hoje: {memoContent}",
+   "@memo_notification_mechanical": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_notification_default": "Não se esqueça hoje: {memoContent}",
+   "@memo_notification_default": {
+      "placeholders": {
+         "memoContent": {
+            "type": "String"
+         }
+      }
+   },
+   "recommendation_load_failed": "Não foi possível carregar as recomendações no momento. Tente novamente mais tarde.",
+   "recommendation_reload": "Recarregar",
+   "recommendation_empty": "Ainda não há personagens para recomendar.",
+
+   "recommendation_title": "Encontros escolhidos para você",
+
+   "recommendation_featured_title": "Comece conhecendo estes personagens",
+   "recommendation_featured_subtitle": "Primeiro, mostraremos os encontros que mais combinam com você.",
+
+   "recommendation_matched_behavior_title": "Cada vez mais parecido com suas preferências",
+   "recommendation_matched_initial_title": "Com base nas suas preferências iniciais",
+   "recommendation_matched_behavior_subtitle": "A partir do quarto dia, suas interações recentes também influenciarão a ordem.",
+   "recommendation_matched_initial_subtitle": "Por enquanto, usaremos as etiquetas escolhidas no início para reduzir as opções.",
+
+   "recommendation_explore_title": "Talvez você também goste",
+   "recommendation_explore_subtitle": "Manteremos algumas descobertas aleatórias para que você também possa conhecer alguém diferente de vez em quando.",
+
+   "recommendation_refreshing": "Preparando novos encontros para você……",
+
+   "recommendation_badge_for_you": "Recomendado para você",
+   "recommendation_badge_featured": "Encontro em destaque",
+   "recommendation_badge_explore": "Explorar",
+
+   "recommendation_default_occupation_hint": "Dê uma olhada — talvez seja seu próximo encontro de tirar o fôlego.",
+   "recommendation_explore_fallback": "Experimente algo diferente — talvez seja exatamente o que fará seu coração acelerar.",
+
+   "recommendation_behavior_hint_similar_type": "Ultimamente, você tem visto mais personagens desse tipo",
+   "recommendation_behavior_hint_forming": "Suas preferências de interação estão tomando forma aos poucos",
+   "recommendation_behavior_hint_recent": "Selecionado com base nas suas interações recentes",
+
+   "recommendation_reason_liked_tags": "Porque você gosta de・{tags}",
+   "@recommendation_reason_liked_tags": {
+      "placeholders": {
+         "tags": {
+            "type": "String"
+         }
+      }
+   },
+
+   "recommendation_reason_popular": "Muitas pessoas têm visitado este personagem ultimamente",
+   "recommendation_reason_default": "Talvez seja seu próximo encontro na hora certa",
+   "scene_delete_title": "Excluir cena?",
+
+   "scene_delete_content": "Tem certeza de que deseja excluir “{title}”? Esta ação não poderá ser desfeita.",
+   "@scene_delete_content": {
+      "placeholders": {
+         "title": {
+            "type": "String"
+         }
+      }
+   },
+
+   "scene_unnamed": "Cena sem título",
+   "scene_cancel": "Cancelar",
+   "scene_delete": "Excluir",
+   "scene_delete_failed": "Não foi possível excluir. Tente novamente mais tarde.",
+
+   "scene_start_failed": "Não foi possível iniciar a cena no momento. Tente novamente mais tarde.",
+
+   "scene_end_title": "Encerrar cena?",
+   "scene_end_content": "Após encerrar a cena, você voltará à conversa normal. O histórico da conversa atual não será excluído.",
+   "scene_end_action": "Encerrar cena",
+   "scene_ended": "Cena encerrada",
+   "scene_end_failed": "Não foi possível encerrar a cena no momento. Tente novamente mais tarde.",
+
+   "scene_active_label": "Em andamento",
+
+   "scene_opening": "Abertura do personagem: {opening}",
+   "@scene_opening": {
+      "placeholders": {
+         "opening": {
+            "type": "String"
+         }
+      }
+   },
+
+   "scene_edit": "Editar",
+   "scene_start": "Iniciar cena",
+
+   "scene_creator_load_failed": "Não foi possível carregar as cenas do criador.",
+   "scene_creator_empty_title": "Ainda não há cenas do criador",
+   "scene_creator_empty_body": "O criador deste personagem ainda não criou histórias adicionais.",
+
+   "scene_custom_load_failed": "Não foi possível carregar as cenas personalizadas.",
+   "scene_custom_empty_title": "Você ainda não criou suas próprias cenas",
+   "scene_custom_empty_body": "Crie uma história exclusiva para esta conversa.",
+   "scene_add": "Adicionar cena",
+
+   "scene_title": "Cenas",
+   "scene_tab_creator": "Cenas do criador",
+   "scene_tab_custom": "Criação própria",
+   "chat_book_player": "Jogador",
+
+   "chat_book_title": "Histórico de conversas",
+   "chat_book_export_pdf": "Exportar PDF",
+
+   "chat_book_brand": "— LoveyDovey",
+   "chat_book_change_cover": "Alterar capa",
+   "chat_book_cover_subtitle": "Nossos momentos juntos · Livro de lembranças",
+   "chat_book_choose_cover": "Escolher capa do livro de lembranças",
+
+   "chat_book_initial_story": "História inicial",
+
+   "chat_book_transcript_title": "{characterName} · Histórico de conversas",
+   "@chat_book_transcript_title": {
+      "placeholders": {
+         "characterName": {
+            "type": "String"
+         }
+      }
+   },
+
+   "chat_book_continuation": "{name} · Continuação",
+   "@chat_book_continuation": {
+      "placeholders": {
+         "name": {
+            "type": "String"
+         }
+      }
+   },
+
+   "chat_book_previous_page": "Página anterior",
+   "chat_book_next_page": "Próxima página",
+
+   "chat_book_photo_message": "〔Foto〕",
+   "chat_book_audio_message": "〔Mensagem de voz〕",
+   "chat_book_generic_message": "〔Mensagem〕",
+
+   "chat_book_export_failed": "Falha ao exportar o PDF: {error}",
+   "@chat_book_export_failed": {
+      "placeholders": {
+         "error": {
+            "type": "String"
+         }
+      }
+   },
+   "email_policy_open_failed": "Não foi possível abrir {title}. Verifique sua conexão e tente novamente.",
+   "@email_policy_open_failed": {
+      "placeholders": {
+         "title": {
+            "type": "String"
+         }
+      }
+   },
+
+   "email_policy_read_instruction": "Primeiro, abra e leia todo o conteúdo de {title}. Depois, volte ao «LoveyDovey» para tocar em «Li e concordo».",
+   "@email_policy_read_instruction": {
+      "placeholders": {
+         "title": {
+            "type": "String"
+         }
+      }
+   },
+
+   "email_policy_opening": "Abrindo……",
+
+   "email_policy_read_full": "Ler {title} na íntegra",
+   "@email_policy_read_full": {
+      "placeholders": {
+         "title": {
+            "type": "String"
+         }
+      }
+   },
+
+   "email_policy_opened_ready": "{title} foi aberto. Agora você pode confirmar sua concordância.",
+   "@email_policy_opened_ready": {
+      "placeholders": {
+         "title": {
+            "type": "String"
+         }
+      }
+   },
+
+   "email_policy_not_opened": "{title} ainda não foi aberto.",
+   "@email_policy_not_opened": {
+      "placeholders": {
+         "title": {
+            "type": "String"
+         }
+      }
+   },
+
+   "email_policy_cancel_login": "Cancelar login",
+   "email_policy_agree": "Li e concordo",
+
+   "email_policy_status_check_failed": "Não foi possível verificar o status de concordância no momento. Tente novamente mais tarde.",
+
+   "email_policy_login_notice": "No primeiro login ou quando os termos forem atualizados, você deverá ler e aceitar os Termos de Serviço e a Política de Privacidade.",
+
+   "email_policy_refresh": "Atualizar",
+   "email_policy_page_load_failed": "Não foi possível carregar a página",
+   "email_policy_check_network": "Verifique sua conexão e tente novamente.",
+   "email_policy_reload": "Recarregar",
+   "login_method_info_google_title": "Login rápido com Google",
+   "login_method_info_apple_title": "Entrar com Apple",
+   "login_method_info_facebook_title": "Entrar com Facebook",
+   "login_method_info_email_title": "Conta LoveyDovey (e-mail)",
+   "login_method_info_email_provider": "Conta LoveyDovey (e-mail)",
+
+   "login_method_info_content": "Entre no «LoveyDovey» usando {providerName}.\n\nAtenção:\n\n• {providerName} e os demais métodos de login utilizam sistemas de contas diferentes.\n\n• Se você criar uma conta usando {providerName}, continue entrando pelo mesmo método.\n\n• Os dados dos personagens, o histórico de conversas e o conteúdo adquirido não são compartilhados entre diferentes métodos de login.\n\nRecomendamos continuar usando o mesmo método após o primeiro login para evitar a criação de contas diferentes cujos dados não possam ser compartilhados.",
+   "@login_method_info_content": {
+      "placeholders": {
+         "providerName": {
+            "type": "String"
+         }
+      }
+   },
+
+   "login_method_info_got_it": "Entendi",
+   "creator_studio_delete_failed": "Não foi possível excluir: {error}",
+   "@creator_studio_delete_failed": {
+      "placeholders": {
+         "error": {
+            "type": "String"
+         }
+      }
+   },
+
+   "creator_studio_subtitle": "Guarde suas inspirações, organize seus personagens e conclua suas criações no seu próprio ritmo",
+
+   "creator_studio_load_failed": "Não foi possível carregar o estúdio: {error}",
+   "@creator_studio_load_failed": {
+      "placeholders": {
+         "error": {
+            "type": "String"
+         }
+      }
+   },
+
+   "creator_studio_add_character": "Adicionar personagem",
+
+   "creator_studio_public_title": "Personagens públicos",
+   "creator_studio_public_subtitle": "Publicados e disponíveis para outros jogadores conhecerem",
+   "creator_studio_public_empty": "Não há personagens públicos no momento",
+
+   "creator_studio_private_title": "Personagens privados",
+   "creator_studio_private_subtitle": "Visíveis somente para você",
+   "creator_studio_private_empty": "Não há personagens privados no momento",
+
+   "creator_studio_draft_title": "Rascunhos",
+   "creator_studio_draft_subtitle": "Criações ainda não concluídas",
+   "creator_studio_draft_empty": "Não há rascunhos inacabados no momento",
+
+   "creator_studio_draft_empty_title": "Ainda não há rascunhos aqui",
+   "creator_studio_draft_empty_hint": "Quando a inspiração surgir, anote-a primeiro aqui",
+
+   "creator_studio_status_public": "Público",
+   "creator_studio_status_private": "Privado",
+   "creator_studio_status_draft": "Rascunho",
+
+   "creator_studio_character_load_failed": "Não foi possível carregar os dados do personagem",
+
+   "creator_studio_delete_draft_tooltip": "Excluir rascunho",
+
+   "creator_studio_unnamed_creator": "Criador sem nome",
+   "creator_studio_no_bio": "Apresentação ainda não preenchida",
+   "chat_input_tools": "Recursos",
+   "chat_input_expand_tools": "Mostrar recursos",
+   "chat_input_stop": "Parar",
+   "chat_input_send": "Enviar",
+   "chat_side_menu_section_chat": "Conversa",
+   "chat_side_menu_section_relationship": "Relacionamento",
+   "chat_side_menu_section_memory": "Gerenciamento de memórias",
+   "character_navigator_confidential_title": "Arquivo confidencial",
+   "character_navigator_unavailable_message": "Este personagem pode ter sido definido como privado, retirado da plataforma, arquivado por violação das regras ou excluído.",
+   "character_navigator_got_it": "Entendi",
+
+   "character_navigator_load_failed_title": "Falha ao carregar",
+   "character_navigator_load_failed_message": "Os dados do personagem estão temporariamente indisponíveis. Tente novamente mais tarde.",
+   "character_navigator_confirm": "OK",
+   "character_profile_add_bookmark": "Salvar personagem",
+   "character_profile_remove_bookmark": "Remover dos salvos",
+
+   "character_profile_pronoun_female": "Ela",
+   "character_profile_pronoun_male": "Ele",
+   "character_profile_pronoun_neutral": "Elu",
+   "chat_home_pin_limit_reached": "Você pode fixar até 3 conversas. Desafixe outra conversa primeiro.",
+   "chat_home_pinned_success": "Conversa fixada",
+   "chat_home_unpinned_success": "Conversa desafixada",
+
+   "chat_home_pin_update_failed": "Não foi possível atualizar o status de fixação: {error}",
+   "@chat_home_pin_update_failed": {
+      "placeholders": {
+         "error": {
+            "type": "String"
+         }
+      }
+   },
+
+   "chat_home_unpin": "Desafixar",
+   "chat_home_pin": "Fixar conversa",
+
+   "chat_home_time_label": "Horário: {time}",
+   "@chat_home_time_label": {
+      "placeholders": {
+         "time": {
+            "type": "String"
+         }
+      }
+   },
+   "main_check_in_already_done": "Você já fez check-in hoje",
+   "nav_recommend": "Recomendações",
+   "moments_auto_reply_title": "Permitir que a IA responda automaticamente às publicações dos jogadores",
+   "moments_auto_reply_description": "Quando ativado, o sistema poderá escolher este personagem para responder às publicações dos jogadores.",
+   "mailShareTooltip": "Compartilhar carta",
+   "mailOriginalQuestionLabel": "Sua pergunta original",
+   "hidden_moments_empty_hint": "Ainda não há publicações ocultas",
+   "moment_search_unavailable": "A pesquisa está temporariamente indisponível. Tente novamente mais tarde.",
+   "moment_search_hint": "Pesquisar publicações públicas, personagens ou criadores",
+   "moment_search_instruction": "Digite o conteúdo da publicação, o nome do personagem ou o nome do criador",
+   "moment_search_no_results": "Nenhuma publicação pública relacionada foi encontrada",
+   "settingsErrorTitle": "Ocorreu um erro",
+   "settingsChangePasswordSubtitle": "Confirme sua senha atual e defina uma nova senha de login",
+   "settingsCreatorGuidelines": "Diretrizes para criadores",
+   "settingsPlayGuide": "Guia do jogo",
+   "language_selection_subtitle": "Escolha o idioma de sua preferência",
+   "search_character_hint": "Pesquisar personagens, criadores, profissões ou etiquetas",
+   "search_character_clear": "Limpar",
+   "search_character_recent": "Pesquisas recentes",
+   "search_character_load_failed": "Não foi possível carregar os dados da pesquisa. Tente novamente mais tarde.",
+   "search_character_popular": "Os favoritos do momento",
+   "search_character_result_count": "{count} personagens encontrados",
+   "@search_character_result_count": {
+      "placeholders": {
+         "count": {
+            "type": "int"
+         }
+      }
+   },
+   "shop_tab_monthly": "Passe mensal",
+
+   "shop_joined_days": "✦ Você está no LoveyDovey há {days} dias ✦",
+   "@shop_joined_days": {
+      "placeholders": {
+         "days": {
+            "type": "int"
+         }
+      }
+   },
+
+   "shop_vip_tier_1_title": "Amor à primeira vista",
+   "shop_vip_tier_1_reward": "20 pontos Flor + título exclusivo de iniciante",
+
+   "shop_vip_tier_2_title": "Cintilar do coração",
+   "shop_vip_tier_2_reward": "Moldura de avatar exclusiva 【Cintilar do coração】",
+
+   "shop_vip_tier_3_title": "Sussurros sob as estrelas",
+   "shop_vip_tier_3_reward": "Balão de conversa exclusivo + 50 pontos Flor",
+
+   "shop_vip_tier_4_title": "Pôr do sol romântico",
+   "shop_vip_tier_4_reward": "Ícone exclusivo do aplicativo",
+
+   "shop_vip_tier_5_title": "Coração palpitante",
+   "shop_vip_tier_5_reward": "Efeito ao tocar na tela (Lottie) + 100 pontos Flor",
+
+   "shop_vip_tier_6_title": "Promessa eterna",
+   "shop_vip_tier_6_reward": "Moldura de avatar animada avançada + 200 pontos Flor",
+
+   "shop_vip_tier_7_title": "Encontro de almas",
+   "shop_vip_tier_7_reward": "Efeito animado de balão de conversa + título avançado exclusivo",
+
+   "shop_vip_tier_8_title": "Devoção só para você",
+   "shop_vip_tier_8_reward": "Placa de nome animada premium + 500 pontos Flor",
+
+   "shop_vip_tier_9_title": "Galáxia deslumbrante",
+   "shop_vip_tier_9_reward": "Efeito de entrada Lottie exclusivo + atendimento dedicado",
+
+   "shop_vip_tier_10_title": "Amor supremo",
+   "shop_vip_tier_10_reward": "【Caixa de presente VIP física exclusiva】 (Carta manuscrita + Boneco do personagem)",
+
+   "shop_vip_total_bond": "Vínculo romântico acumulado",
+
+   "shop_vip_all_unlocked": "Você desbloqueou todos os privilégios premium!",
+
+   "shop_vip_next_unlock": "Recarregue mais NT$ {amount} para desbloquear o próximo nível",
+   "@shop_vip_next_unlock": {
+      "placeholders": {
+         "amount": {
+            "type": "int"
+         }
+      }
+   },
+   "call_connecting": "Conectando a chamada...",
+
+   "call_listening_auto_send": "Ouvindo... (Será enviado automaticamente quando você terminar de falar)",
+
+   "call_listening_release_to_send": "Ouvindo... (Solte para enviar)",
+
+   "call_sending_transcript": " {text}\n\n(Enviando...)",
+   "@call_sending_transcript": {
+      "placeholders": {
+         "text": {
+            "type": "String"
+         }
+      }
+   },
+   "help_translation_fallback": "O guia do jogo ainda não está disponível neste idioma. Por enquanto, ele será exibido em chinês tradicional.",
+
+   "help_all_categories": "Tudo",
+
+   "help_subtitle_companion": "Recursos para o dia a dia e ferramentas úteis",
+   "help_subtitle_ai_chat": "Conversa, voz e interações inteligentes",
+   "help_subtitle_creation": "Configurações de personagens e recursos de criação",
+   "help_subtitle_explore": "Exploração de personagens e conteúdo do jogo",
+   "help_subtitle_care": "Companhia carinhosa e cuidados diários",
+   "help_subtitle_general": "Recursos comuns e instruções de uso",
+   "chat_interact_fun": "Atividades divertidas",
+   "memo_notification_permission_missing": "As notificações ainda não estão ativadas. O lembrete será salvo, mas nenhum alerta do sistema será exibido.",
+
+   "memo_saved_with_reminder": "Lembrete salvo. {characterName} vai lembrar você!",
+   "@memo_saved_with_reminder": {
+      "placeholders": {
+         "characterName": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_saved_without_notification": "O lembrete foi salvo, mas as notificações ainda não estão ativadas.",
+
+   "memo_updated_with_reminder": "Lembrete atualizado. {characterName} vai lembrar você!",
+   "@memo_updated_with_reminder": {
+      "placeholders": {
+         "characterName": {
+            "type": "String"
+         }
+      }
+   },
+
+   "memo_updated_without_notification": "O lembrete foi atualizado, mas a permissão para notificações não está disponível no momento.",
+
+   "memo_load_error": "Ocorreu um erro ao carregar os dados: {error}",
+   "@memo_load_error": {
+      "placeholders": {
+         "error": {
+            "type": "String"
+         }
+      }
+   },
+   "story_summary_content_required": "O conteúdo da história não pode ficar vazio",
+
+   "story_summary_edit_hint": "Escreva a história de vocês...",
+   "profile_section_basic_info": "Informações básicas",
+   "profile_section_about_me": "Sobre mim",
+   "dice_duel_you": "Você",
+
+   "dice_duel_result_saved": "Resultado do duelo salvo!",
+
+   "dice_duel_rolling": "Reunindo energia cósmica..."}

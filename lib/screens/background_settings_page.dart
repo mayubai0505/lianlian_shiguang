@@ -274,6 +274,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
     final primary = theme.colorScheme.primary;
     final onSurface = theme.colorScheme.onSurface;
     final hasMultiplePhotos = cgList.length > 1;
+    final l10n = AppLocalizations.of(context)!;
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -401,7 +402,7 @@ class _BackgroundSettingsPageState extends State<BackgroundSettingsPage> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    '專屬照片',
+                    l10n.default_photo_desc,
                     style: GoogleFonts.notoSerifTc(
                       color: onSurface.withValues(alpha: 0.78),
                       fontSize: 16,

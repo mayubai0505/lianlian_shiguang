@@ -244,7 +244,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                 ),
                 content: Text(
                   l10n.daily_login_welcome(
-                    '戀戀拾光',
+                    l10n.app_name,
                     rewardAmount.toString(),
                   ),
                   style: GoogleFonts.notoSerifTc(
@@ -439,7 +439,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
                             ToastUtils.showCenterToast(
                               context,
-                              '今天已經簽到過囉',
+                              l10n.main_check_in_already_done,
                               isError: true,
                             );
 
@@ -651,7 +651,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                     AssetImage('assets/images/nav_recommend_mask.png'),
                     size: 26,
                   ),
-                  label: '推薦',
+                  label: l10n.nav_recommend,
                 ),
 
                 // 2. 邂逅

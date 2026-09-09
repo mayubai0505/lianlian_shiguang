@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 import '../repositories/character_repository.dart';
 import '../screens/character_profile_page.dart';
@@ -157,6 +158,7 @@ class CharacterNavigator {
       BuildContext context, {
         String? fallbackName,
       }) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (dialogContext) {
@@ -165,16 +167,16 @@ class CharacterNavigator {
             borderRadius:
             BorderRadius.circular(20),
           ),
-          title: const Row(
+          title: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.lock_outline_rounded,
                 color: Colors.grey,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
-                '機密檔案',
-                style: TextStyle(
+                l10n.character_navigator_confidential_title,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -208,10 +210,10 @@ class CharacterNavigator {
 
               const SizedBox(height: 10),
 
-              const Text(
-                '此角色可能已轉為私人、下架、違規封存或刪除。',
+              Text(
+                l10n.character_navigator_unavailable_message,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.grey,
                   height: 1.5,
                 ),
@@ -223,7 +225,7 @@ class CharacterNavigator {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text('我知道了'),
+              child: Text(l10n.character_navigator_got_it),
             ),
           ],
         );
@@ -234,6 +236,7 @@ class CharacterNavigator {
   static void _showErrorDialog(
       BuildContext context,
       ) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (dialogContext) {
@@ -242,16 +245,16 @@ class CharacterNavigator {
             borderRadius:
             BorderRadius.circular(20),
           ),
-          title: const Text('讀取失敗'),
-          content: const Text(
-            '暫時無法讀取角色資料，請稍後再試。',
+          title: Text(l10n.character_navigator_load_failed_title),
+          content: Text(
+            l10n.character_navigator_load_failed_message,
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text('確定'),
+              child: Text(l10n.character_navigator_confirm),
             ),
           ],
         );

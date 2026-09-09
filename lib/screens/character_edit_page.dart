@@ -3080,7 +3080,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
 
     final String firstTabLabel =
     l10n.localeName.toLowerCase().startsWith('zh')
-        ? '角色設定'
+        ? l10n.character_edit_tab_character_settings
         : l10n.tab_basic_story;
 
     return GestureDetector(
@@ -3125,7 +3125,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                   ),
                   label: Text(
                     l10n.localeName.toLowerCase().startsWith('zh')
-                        ? '測試'
+                        ? l10n.character_edit_test
                         : l10n.test_mode_tooltip,
                   ),
                   style: TextButton.styleFrom(
@@ -3492,7 +3492,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Text(
-                              '基本資料',
+                              l10n.character_edit_supporting_basic_info,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
@@ -3608,14 +3608,14 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
                             const SizedBox(height: 20),
 
                             Text(
-                              '與主角色的設定',
+                              l10n.character_edit_supporting_main_setting,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              '描述這名配角與主角色之間的關係，以及他在故事中的位置。',
+                              l10n.character_edit_supporting_main_description,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 height: 1.5,
                                 color: theme.colorScheme.onSurface
@@ -4198,7 +4198,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
           bannerProvider == null
               ? l10n.characterBannerDefaultHint
               : l10n.localeName.toLowerCase().startsWith('zh')
-              ? '點擊圖片可預覽大圖'
+              ? l10n.character_edit_banner_preview_hint
               : l10n.characterBannerDefaultHint,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
@@ -4353,7 +4353,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         const SizedBox(height: 4),
         Text(
           l10n.localeName.toLowerCase().startsWith('zh')
-              ? '第一張圖片將作為主要頭像'
+              ? l10n.character_edit_main_photo_hint
               : l10n.characterEditCharacterImage,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.48),
@@ -4454,7 +4454,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         const SizedBox(height: 18),
         Text(
           l10n.localeName.toLowerCase().startsWith('zh')
-              ? '其他角色照片'
+              ? l10n.character_edit_other_photos
               : l10n.charAlbumTitle,
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w700,
@@ -4538,7 +4538,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         const SizedBox(height: 6),
         Text(
           l10n.localeName.toLowerCase().startsWith('zh')
-              ? '點擊照片可預覽；鉛筆可編輯照片設定'
+              ? l10n.character_edit_photo_action_hint
               : l10n.charAlbumTitle,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.45),
@@ -4999,7 +4999,7 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
         VoidCallback? onToggleExpanded,
       }) {
     final theme = Theme.of(context);
-
+    final l10n = AppLocalizations.of(context)!;
     final int currentLength = controller.text.characters.length;
     final int overflow = currentLength - maxLength;
     const int collapseThreshold = 400;
@@ -5153,7 +5153,10 @@ class _CharacterEditPageState extends State<CharacterEditPage> {
               bottom: 6,
             ),
             child: Text(
-              '⚠ $label 已超出 ${numberFormatter.format(overflow)} 字，請修正後再發布。',
+              l10n.character_edit_over_limit_warning(
+                label,
+                numberFormatter.format(overflow),
+              ),
               style: const TextStyle(
                 color: Colors.red,
                 fontSize: 13,

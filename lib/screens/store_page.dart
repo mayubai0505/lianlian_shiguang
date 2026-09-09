@@ -203,7 +203,7 @@ class _StorePageState extends State<StorePage> {
                                 fontWeight: FontWeight.w400,
                               ),
                               tabs: [
-                                Tab(text: _monthlyTabLabel(context)),
+                                Tab(text: l10n.shop_tab_monthly),
                                 Tab(text: l10n.shop_tab_top_up),
                                 Tab(text: l10n.shop_tab_history),
                               ],
@@ -253,27 +253,6 @@ class _StorePageState extends State<StorePage> {
     return buffer.toString();
   }
 
-  String _monthlyTabLabel(BuildContext context) {
-    final languageCode = Localizations.localeOf(context).languageCode;
-
-    const labels = <String, String>{
-      'ar': 'قسم البطاقة الشهرية',
-      'en': 'Monthly Pass',
-      'es': 'Pase mensual',
-      'fr': 'Pass mensuel',
-      'hi': 'मासिक पास',
-      'id': 'Paket Bulanan',
-      'ja': '月間パス',
-      'ko': '월간 패스',
-      'ms': 'Pas Bulanan',
-      'pt': 'Passe mensal',
-      'th': 'บัตรรายเดือน',
-      'vi': 'Thẻ tháng',
-      'zh': '月卡專區',
-    };
-
-    return labels[languageCode] ?? labels['en']!;
-  }
 
   Widget _buildBalanceCard(
       BuildContext context,
@@ -409,7 +388,7 @@ class _StorePageState extends State<StorePage> {
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
-                        '✦ 已來到戀戀拾光 $daysSinceJoined 天 ✦',
+                        l10n.shop_joined_days(daysSinceJoined),
                         textAlign: TextAlign.center,
                         style: GoogleFonts.notoSerifTc(
                           fontSize: 11.5,
@@ -576,6 +555,7 @@ class _StorePageState extends State<StorePage> {
   // ==========================================
 
   Widget _buildVipTab() {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return const SizedBox.shrink();
 
@@ -593,16 +573,16 @@ class _StorePageState extends State<StorePage> {
 
         // ✨ 總裁定案的 10 階 VIP 尊榮課條
         final List<Map<String, dynamic>> vipTiers = [
-          {'amount': 30, 'title': '初見傾心', 'reward': '20 點花花 + 專屬新手稱號', 'icon': Icons.favorite_border},
-          {'amount': 70, 'title': '微光悸動', 'reward': '專屬頭像框【微光悸動】', 'icon': Icons.flare},
-          {'amount': 250, 'title': '星空呢喃', 'reward': '專屬聊天氣泡 + 50 點花花', 'icon': Icons.chat_bubble_outline},
-          {'amount': 520, 'title': '浪漫夕陽', 'reward': '專屬 App 桌面圖示 (Icon)', 'icon': Icons.image_outlined},
-          {'amount': 880, 'title': '怦然心動', 'reward': '點擊螢幕特效 (Lottie) + 100 點花花', 'icon': Icons.touch_app_outlined},
-          {'amount': 1314, 'title': '永恆誓約', 'reward': '進階動態頭像框 + 200 點花花', 'icon': Icons.diamond_outlined},
-          {'amount': 2000, 'title': '靈魂交會', 'reward': '動態聊天氣泡特效 + 專屬進階稱號', 'icon': Icons.chat_outlined},
-          {'amount': 3000, 'title': '專屬守候', 'reward': '頂級動態名牌 + 500 點花花', 'icon': Icons.stars_outlined},
-          {'amount': 6000, 'title': '璀璨星河', 'reward': '專屬進場 Lottie 特效 + 專屬客服', 'icon': Icons.auto_awesome},
-          {'amount': 10000, 'title': '頂級摯愛', 'reward': '【實體 VIP 專屬禮盒】(手寫信+代表娃)', 'icon': Icons.card_giftcard},
+          {'amount': 30, 'title': l10n.shop_vip_tier_1_title, 'reward': l10n.shop_vip_tier_1_reward, 'icon': Icons.favorite_border},
+          {'amount': 70, 'title': l10n.shop_vip_tier_2_title, 'reward': l10n.shop_vip_tier_2_reward, 'icon': Icons.flare},
+          {'amount': 250, 'title': l10n.shop_vip_tier_3_title, 'reward': l10n.shop_vip_tier_3_reward, 'icon': Icons.chat_bubble_outline},
+          {'amount': 520, 'title': l10n.shop_vip_tier_4_title, 'reward': l10n.shop_vip_tier_4_reward, 'icon': Icons.image_outlined},
+          {'amount': 880, 'title': l10n.shop_vip_tier_5_title, 'reward': l10n.shop_vip_tier_5_reward, 'icon': Icons.touch_app_outlined},
+          {'amount': 1314, 'title': l10n.shop_vip_tier_6_title, 'reward': l10n.shop_vip_tier_6_reward, 'icon': Icons.diamond_outlined},
+          {'amount': 2000, 'title': l10n.shop_vip_tier_7_title, 'reward': l10n.shop_vip_tier_7_reward, 'icon': Icons.chat_outlined},
+          {'amount': 3000, 'title': l10n.shop_vip_tier_8_title, 'reward': l10n.shop_vip_tier_8_reward, 'icon': Icons.stars_outlined},
+          {'amount': 6000, 'title': l10n.shop_vip_tier_9_title, 'reward': l10n.shop_vip_tier_9_reward, 'icon': Icons.auto_awesome},
+          {'amount': 10000, 'title': l10n.shop_vip_tier_10_title, 'reward': l10n.shop_vip_tier_10_reward, 'icon': Icons.card_giftcard},
         ];
 
         return ListView.builder(
@@ -635,6 +615,7 @@ class _StorePageState extends State<StorePage> {
 
   // ✨ VIP 上方總覽卡片 (結合朋友畫的手繪成長樹)
   Widget _buildVipProgressCard(int totalSpent, List<Map<String, dynamic>> tiers, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final primaryColor = theme.colorScheme.primary;
 
@@ -688,7 +669,7 @@ class _StorePageState extends State<StorePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('累積浪漫羈絆', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(l10n.shop_vip_total_bond, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                     Text('NT\$ $totalSpent', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -705,8 +686,8 @@ class _StorePageState extends State<StorePage> {
                 const SizedBox(height: 8),
                 Text(
                   totalSpent >= tiers.last['amount']
-                      ? '您已解鎖所有頂級特權！'
-                      : '再儲值 NT\$ ${nextTierAmount - totalSpent} 即可解鎖下一階',
+                      ? l10n.shop_vip_all_unlocked
+                      : l10n.shop_vip_next_unlock(nextTierAmount - totalSpent),
                   style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 12),
                 ),
               ],

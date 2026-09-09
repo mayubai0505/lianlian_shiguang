@@ -433,6 +433,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
     required String sessionId,
     required bool isPinned,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final user = _currentUser;
     if (user == null) return;
 
@@ -457,7 +458,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
           if (!mounted) return;
           ToastUtils.showCenterToast(
             context,
-            '最多可置頂 3 個聊天室，請先取消其他置頂聊天室。',
+            l10n.chat_home_pin_limit_reached,
           );
           return;
         }
@@ -468,7 +469,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
         });
 
         if (!mounted) return;
-        ToastUtils.showCenterToast(context, '已置頂聊天室');
+        ToastUtils.showCenterToast(context, l10n.chat_home_pinned_success);
       } else {
         await sessionsRef.doc(sessionId).update({
           'isPinned': false,
@@ -476,13 +477,13 @@ class _ChatHomePageState extends State<ChatHomePage> {
         });
 
         if (!mounted) return;
-        ToastUtils.showCenterToast(context, '已取消置頂');
+        ToastUtils.showCenterToast(context, l10n.chat_home_unpinned_success);
       }
     } catch (e) {
       if (!mounted) return;
       ToastUtils.showCenterToast(
         context,
-        '更新置頂狀態失敗：$e',
+        l10n.chat_home_pin_update_failed(e.toString()),
         isError: true,
       );
     }
@@ -552,7 +553,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                     color: primary,
                   ),
                   title: Text(
-                    isPinned ? '取消置頂' : '置頂聊天室',
+                    isPinned ? l10n.chat_home_unpin : l10n.chat_home_pin,
                     style: optionTextStyle(color: primary),
                   ),
                   onTap: () {
@@ -1212,7 +1213,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
                                                       ),
                                                       const SizedBox(height: 8),
                                                       Text(
-                                                        '時間：${_formatFullTimestamp(sessionData['lastActivity'] as Timestamp?)}',
+                                                        l10n.chat_home_time_label(_formatFullTimestamp(sessionData['lastActivity'] as Timestamp?)),
                                                         maxLines: 1,
                                                         overflow:
                                                         TextOverflow.ellipsis,

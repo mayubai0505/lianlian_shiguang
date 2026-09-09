@@ -456,7 +456,7 @@ class _EditStorySummaryPageState extends State<EditStorySummaryPage> {
     if (newContent.isEmpty) {
       ToastUtils.showCenterToast(
         context,
-        '故事內容不能是空的',
+        l10n.story_summary_content_required,
         isError: true,
       );
       return;
@@ -531,7 +531,7 @@ class _EditStorySummaryPageState extends State<EditStorySummaryPage> {
           maxLines: null,
           autofocus: true,
           decoration: InputDecoration(
-            hintText: '寫下你們的故事...',
+            hintText: l10n.story_summary_edit_hint,
             filled: true,
             fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
             border: OutlineInputBorder(

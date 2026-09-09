@@ -6664,4 +6664,1163 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get feedback_change_image => '変更';
+
+  @override
+  String get profile_backpack_title => '私だけのバッグと特典';
+
+  @override
+  String get profile_backpack_total_spent => '現在までのロマンチックな絆';
+
+  @override
+  String profile_backpack_total_spent_amount(int amount) {
+    return 'NT\$ $amount';
+  }
+
+  @override
+  String get profile_backpack_physical_gift_status => '現物ギフトボックスの解放状況：';
+
+  @override
+  String get profile_backpack_vip_gift_title => '【最愛ランク】VIP限定現物ギフトボックス';
+
+  @override
+  String get profile_backpack_vip_gift_contents =>
+      '内容：限定手書きレター＋キャラクターモチーフのぬいぐるみ＋公式感謝状';
+
+  @override
+  String get profile_backpack_edit_shipping_info => '配送先情報を変更';
+
+  @override
+  String get profile_backpack_unlock_shipping_info => '解放済み！タップして配送先情報を入力';
+
+  @override
+  String get profile_backpack_shipping_registered =>
+      '配送先住所を登録しました。できるだけ早く準備いたします！';
+
+  @override
+  String profile_backpack_amount_remaining(int amount) {
+    return 'あとNT\$ $amountで現物の豪華特典を解放できます！';
+  }
+
+  @override
+  String get profile_backpack_hint => 'ヒント：その他の外観やアバターフレームはバッグから確認できます。';
+
+  @override
+  String get profile_backpack_close => '閉じる';
+
+  @override
+  String get profile_physical_gift_title => '【最愛ランク】現物ギフトボックス解放';
+
+  @override
+  String get profile_physical_gift_description =>
+      '「LoveyDovey」への格別なご愛顧、誠にありがとうございます！\n以下の配送先情報をご入力ください。限定の手書きレターとキャラクターモチーフのぬいぐるみをお届けします：';
+
+  @override
+  String get profile_physical_gift_recipient_name => '受取人の本名';
+
+  @override
+  String get profile_physical_gift_phone => '電話番号';
+
+  @override
+  String get profile_physical_gift_address => '配送先住所（郵便番号を含む）';
+
+  @override
+  String get profile_physical_gift_character_name => '希望するキャラクターのぬいぐるみ名';
+
+  @override
+  String get profile_physical_gift_character_hint => '例：希望するキャラクター名を入力';
+
+  @override
+  String get profile_physical_gift_fill_later => 'あとで入力';
+
+  @override
+  String get profile_physical_gift_required_error =>
+      '配送先情報と希望するキャラクター名をすべて入力してください！';
+
+  @override
+  String get profile_physical_gift_submit_success =>
+      '配送先情報を送信しました！現物のサプライズを楽しみにお待ちください！';
+
+  @override
+  String get profile_physical_gift_confirm_submit => '送信する';
+
+  @override
+  String get profile_tooltip_announcement => 'お知らせ';
+
+  @override
+  String get profile_tooltip_settings => '設定';
+
+  @override
+  String get profile_tooltip_backpack => 'マイバッグ';
+
+  @override
+  String get profile_backpack_menu_title => 'マイバッグ';
+
+  @override
+  String get profile_about_me_title => '私について';
+
+  @override
+  String get profile_tab_bio_title => '自己紹介';
+
+  @override
+  String get profile_check_in_done => 'チェックイン済み';
+
+  @override
+  String get profile_check_in => 'チェックイン';
+
+  @override
+  String get profile_check_in_done_subtitle => '今日はもう足跡を残しました';
+
+  @override
+  String get profile_check_in_not_done_subtitle => '今日はまだチェックインしていません';
+
+  @override
+  String get profile_likes_label => 'いいね';
+
+  @override
+  String get profile_heartbeat_diary_subtitle => 'ときめいた瞬間を記録';
+
+  @override
+  String get profile_create_scene => 'シーンを作成';
+
+  @override
+  String get profile_link_invalid => 'リンクの形式が正しくありません';
+
+  @override
+  String get profile_link_open_failed => 'このリンクを開けません';
+
+  @override
+  String get profile_link_default_name => 'マイリンク';
+
+  @override
+  String get profile_publish_moment_short => '今をつづる';
+
+  @override
+  String edit_profile_default_link_name(int index) {
+    return 'マイリンク $index';
+  }
+
+  @override
+  String get edit_profile_done => '完了';
+
+  @override
+  String get edit_profile_social_links => 'SNSとリンク';
+
+  @override
+  String get edit_profile_add_link => 'リンクを追加';
+
+  @override
+  String get edit_profile_link_name_hint => 'リンク名';
+
+  @override
+  String get edit_profile_link_url_hint => 'リンクを入力';
+
+  @override
+  String get theme_name_starlight => '星明かりの紫';
+
+  @override
+  String get theme_name_sakura => '桜色';
+
+  @override
+  String get theme_name_ocean => 'オーシャンブルー';
+
+  @override
+  String get theme_name_sunset => 'サンセットオレンジ';
+
+  @override
+  String get theme_name_mint => 'フォレストミント';
+
+  @override
+  String get theme_name_midnight => 'ミッドナイトモード';
+
+  @override
+  String get theme_name_custom => 'カスタムカラー';
+
+  @override
+  String get theme_selection_choose_theme => 'テーマカラーを選択';
+
+  @override
+  String get theme_selection_title => '雰囲気を変える';
+
+  @override
+  String get theme_selection_description =>
+      'お気に入りのテーマカラーを選んで、LoveyDoveyをもっと自分らしく彩りましょう。';
+
+  @override
+  String get theme_selection_preview => 'プレビュー';
+
+  @override
+  String get theme_selection_characters => 'キャラクター';
+
+  @override
+  String get theme_selection_posts => '投稿';
+
+  @override
+  String theme_selection_previewing(String themeName) {
+    return '現在のプレビュー：$themeName';
+  }
+
+  @override
+  String get theme_selection_apply => 'テーマを適用';
+
+  @override
+  String get theme_selection_restore_default => 'デフォルトに戻す';
+
+  @override
+  String get theme_selection_choose_color => '自分だけのカラーを選択';
+
+  @override
+  String theme_selection_applied(String themeName) {
+    return '「$themeName」を適用しました';
+  }
+
+  @override
+  String get welcome_guide_help => 'プレイガイド';
+
+  @override
+  String get welcome_guide_start => '旅を始める';
+
+  @override
+  String get welcome_guide_next => '次へ';
+
+  @override
+  String get welcome_guide_welcome_title => '「LoveyDovey」へようこそ';
+
+  @override
+  String get welcome_guide_welcome_description =>
+      'ここでは、ひとつひとつの出会いが、忘れられない物語になるかもしれません。「LoveyDovey」とともに、ふたりだけの素敵な思い出を紡いでいきましょう。';
+
+  @override
+  String get welcome_guide_chat_title => 'チャットモード';
+
+  @override
+  String get welcome_guide_chat_description =>
+      '「LoveyDovey」には複数のチャットモードがあり、それぞれ異なる交流を楽しめます。';
+
+  @override
+  String get welcome_guide_daily_title => '日常モード';
+
+  @override
+  String get welcome_guide_daily_description =>
+      'お互いに寄り添い、日々の出来事を分かち合いながら、気軽な会話を楽しみましょう。';
+
+  @override
+  String get welcome_guide_story_title => 'ストーリーモード';
+
+  @override
+  String get welcome_guide_story_description =>
+      'キャラクターの物語を進め、特別なストーリーや交流をさらに解放しましょう。';
+
+  @override
+  String get welcome_guide_immersive_title => '没入モード';
+
+  @override
+  String get welcome_guide_immersive_description =>
+      'より深く入り込める、臨場感あふれる会話を体験できます。';
+
+  @override
+  String get welcome_guide_chat_more => 'チャットモードの詳しい紹介は「ゲームヘルプ」から確認できます。';
+
+  @override
+  String get welcome_guide_encounter_title => '出会い';
+
+  @override
+  String get welcome_guide_encounter_description =>
+      'キャラクターには、それぞれ個性豊かな性格、物語、声があります。お気に入りのキャラクターに出会ったら、フレンドに追加して会話や交流を楽しみ、日常を分かち合いながら、ふたりだけの思い出を作りましょう。';
+
+  @override
+  String get welcome_guide_more_title => 'さらに楽しめるコンテンツ';
+
+  @override
+  String get welcome_guide_more_description =>
+      'コレクション、クリエイター、ショップなど、多彩な機能も用意されています。詳しくは「ゲームヘルプ」をご覧ください。';
+
+  @override
+  String preference_selection_max_error(int count) {
+    return '選択できる好みは最大$count個です。';
+  }
+
+  @override
+  String get preference_selection_save_failed =>
+      '現在、好みを保存できません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get preference_selection_title => 'どんな人と出会いたいですか？';
+
+  @override
+  String get preference_selection_description =>
+      '好きなタイプを3～5個選んでください。LoveyDoveyがここからあなたのことを知っていきます。';
+
+  @override
+  String get preference_selection_recommendation_note =>
+      '今後は実際の交流に合わせて、あなたにより合うおすすめへ少しずつ調整されます。';
+
+  @override
+  String get preference_selection_selected => '選択済み';
+
+  @override
+  String get preference_selection_start => 'ここから始める';
+
+  @override
+  String get preference_group_personality => '性格・雰囲気';
+
+  @override
+  String get preference_group_relationship_age => '関係性・年齢差';
+
+  @override
+  String get preference_group_story => '物語の雰囲気';
+
+  @override
+  String get preference_tag_gentle => '優しい';
+
+  @override
+  String get preference_tag_cold => 'クール';
+
+  @override
+  String get preference_tag_scheming => '腹黒';
+
+  @override
+  String get preference_tag_tsundere => 'ツンデレ';
+
+  @override
+  String get preference_tag_loyal => '忠犬系';
+
+  @override
+  String get preference_tag_yandere => 'ヤンデレ';
+
+  @override
+  String get preference_tag_mysterious => 'ミステリアス';
+
+  @override
+  String get preference_tag_healing => '癒やし系';
+
+  @override
+  String get preference_tag_gap_moe => 'ギャップ萌え';
+
+  @override
+  String get preference_tag_older => '年上';
+
+  @override
+  String get preference_tag_younger => '年下';
+
+  @override
+  String get preference_tag_ceo => '俺様社長';
+
+  @override
+  String get preference_tag_school => '学園';
+
+  @override
+  String get preference_tag_workplace => '職場';
+
+  @override
+  String get preference_tag_ancient => '時代もの';
+
+  @override
+  String get preference_tag_nonhuman => '人外';
+
+  @override
+  String get encounter_load_failed => '出会いのデータを読み込めませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get encounter_no_available_characters => '現在、出会えるキャラクターはいません';
+
+  @override
+  String get encounter_category_empty => '現在、このカテゴリーにキャラクターはいません';
+
+  @override
+  String get encounter_category_all => 'すべて';
+
+  @override
+  String get encounter_category_xianxia => '仙侠';
+
+  @override
+  String get encounter_category_childhood_friend => '幼なじみ';
+
+  @override
+  String get encounter_category_master_disciple => '師弟';
+
+  @override
+  String get encounter_category_sweet_romance => '溺愛';
+
+  @override
+  String get encounter_category_other => 'その他';
+
+  @override
+  String get character_edit_tab_character_settings => 'キャラクター設定';
+
+  @override
+  String get character_edit_test => 'テスト';
+
+  @override
+  String get character_edit_supporting_basic_info => '基本情報';
+
+  @override
+  String get character_edit_supporting_main_setting => 'メインキャラクターとの関係';
+
+  @override
+  String get character_edit_supporting_main_description =>
+      'このサブキャラクターとメインキャラクターの関係や、物語での立ち位置を説明してください。';
+
+  @override
+  String get character_edit_banner_preview_hint => '画像をタップすると拡大表示できます';
+
+  @override
+  String get character_edit_main_photo_hint => '1枚目の画像がメインアイコンとして使用されます';
+
+  @override
+  String get character_edit_other_photos => 'その他のキャラクター画像';
+
+  @override
+  String get character_edit_photo_action_hint =>
+      '画像をタップするとプレビューできます。鉛筆アイコンから画像設定を編集できます';
+
+  @override
+  String character_edit_over_limit_warning(String label, String count) {
+    return '⚠ $labelが$count文字を超えています。修正してから公開してください。';
+  }
+
+  @override
+  String get memo_notification_channel_name => 'メモのリマインダー';
+
+  @override
+  String get memo_notification_channel_description => '設定したメモをキャラクターがお知らせします';
+
+  @override
+  String memo_notification_title(String characterName) {
+    return '$characterNameからのリマインダー';
+  }
+
+  @override
+  String memo_notification_tsundere(String memoContent) {
+    return 'べ、別に心配してるわけじゃない。ただ忘れられたら困るだけ。今日、忘れないで：$memoContent';
+  }
+
+  @override
+  String memo_notification_dominant(String memoContent) {
+    return '予定はもう覚えておいた。時間どおりに済ませろ。今日、忘れるな：$memoContent';
+  }
+
+  @override
+  String memo_notification_yandere(String memoContent) {
+    return '忘れちゃだめだよ？　私はずっと覚えてるから。今日、忘れないで：$memoContent';
+  }
+
+  @override
+  String memo_notification_gentle(String memoContent) {
+    return '忙しくて忘れてしまいそうだから、ちょっとだけお知らせに来たよ。今日、忘れないでね：$memoContent';
+  }
+
+  @override
+  String memo_notification_cold(String memoContent) {
+    return 'ひとつ伝えておく。今日、忘れないように：$memoContent';
+  }
+
+  @override
+  String memo_notification_sunny(String memoContent) {
+    return 'ねえ、今日はまだ大事なことがあるよ！　忘れないでね：$memoContent';
+  }
+
+  @override
+  String memo_notification_lazy(String memoContent) {
+    return 'このまま寝転んでいたいけど、一応知らせておくね。今日、忘れないで：$memoContent';
+  }
+
+  @override
+  String memo_notification_older(String memoContent) {
+    return 'いい子だから、今日のことを忘れないようにね。覚えておいて：$memoContent';
+  }
+
+  @override
+  String memo_notification_younger(String memoContent) {
+    return 'ちゃんと代わりに覚えておいたよ！　今日、忘れないでね：$memoContent';
+  }
+
+  @override
+  String memo_notification_mechanical(String memoContent) {
+    return 'リマインダーを起動しました。本日のタスク：$memoContent';
+  }
+
+  @override
+  String memo_notification_default(String memoContent) {
+    return '今日、忘れないで：$memoContent';
+  }
+
+  @override
+  String get recommendation_load_failed =>
+      '現在、おすすめを読み込めません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get recommendation_reload => '再読み込み';
+
+  @override
+  String get recommendation_empty => '現在、おすすめできるキャラクターはいません。';
+
+  @override
+  String get recommendation_title => 'あなたのために選んだ出会い';
+
+  @override
+  String get recommendation_featured_title => 'まずはこの人たちから';
+
+  @override
+  String get recommendation_featured_subtitle => 'あなたに特に合いそうな出会いを先にご紹介します。';
+
+  @override
+  String get recommendation_matched_behavior_title => 'あなたの好みに近づいています';
+
+  @override
+  String get recommendation_matched_initial_title => '最初に選んだ好みに合わせて';
+
+  @override
+  String get recommendation_matched_behavior_subtitle =>
+      '4日目以降は、最近の交流も表示順に反映されます。';
+
+  @override
+  String get recommendation_matched_initial_subtitle =>
+      '今は最初に選んだタグを使って、候補を絞り込んでいます。';
+
+  @override
+  String get recommendation_explore_title => 'こんな人も好きかも';
+
+  @override
+  String get recommendation_explore_subtitle =>
+      'ときには思いがけない相手と出会えるよう、ランダムなおすすめも少し残しています。';
+
+  @override
+  String get recommendation_refreshing => '新しい出会いを探しています……';
+
+  @override
+  String get recommendation_badge_for_you => 'あなたへのおすすめ';
+
+  @override
+  String get recommendation_badge_featured => '注目の出会い';
+
+  @override
+  String get recommendation_badge_explore => '新しい発見';
+
+  @override
+  String get recommendation_default_occupation_hint =>
+      '少し覗いてみませんか？　次に心ときめく相手かもしれません。';
+
+  @override
+  String get recommendation_explore_fallback =>
+      'いつもと違う方向にも、思いがけないときめきがあるかもしれません。';
+
+  @override
+  String get recommendation_behavior_hint_similar_type =>
+      '最近、このタイプのキャラクターをよく見ています';
+
+  @override
+  String get recommendation_behavior_hint_forming => '最近の交流から好みが少しずつ見えてきました';
+
+  @override
+  String get recommendation_behavior_hint_recent => '最近の交流をもとに選びました';
+
+  @override
+  String recommendation_reason_liked_tags(String tags) {
+    return '「$tags」が好きなあなたへ';
+  }
+
+  @override
+  String get recommendation_reason_popular => '最近、多くの人がこのキャラクターを見ています';
+
+  @override
+  String get recommendation_reason_default => '次の運命の出会いになるかもしれません';
+
+  @override
+  String get scene_delete_title => 'シーンを削除しますか？';
+
+  @override
+  String scene_delete_content(String title) {
+    return '「$title」を削除しますか？削除すると元に戻せません。';
+  }
+
+  @override
+  String get scene_unnamed => 'タイトル未設定のシーン';
+
+  @override
+  String get scene_cancel => 'キャンセル';
+
+  @override
+  String get scene_delete => '削除';
+
+  @override
+  String get scene_delete_failed => '削除に失敗しました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get scene_start_failed => '現在、シーンを開始できません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get scene_end_title => 'シーンを終了しますか？';
+
+  @override
+  String get scene_end_content => '終了すると通常のチャットに戻ります。現在の会話履歴は削除されません。';
+
+  @override
+  String get scene_end_action => 'シーンを終了';
+
+  @override
+  String get scene_ended => 'シーンを終了しました';
+
+  @override
+  String get scene_end_failed => '現在、シーンを終了できません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get scene_active_label => '進行中';
+
+  @override
+  String scene_opening(String opening) {
+    return 'キャラクターの導入：$opening';
+  }
+
+  @override
+  String get scene_edit => '編集';
+
+  @override
+  String get scene_start => 'シーンを開始';
+
+  @override
+  String get scene_creator_load_failed => 'クリエイターシーンを読み込めませんでした。';
+
+  @override
+  String get scene_creator_empty_title => 'クリエイターシーンはまだありません';
+
+  @override
+  String get scene_creator_empty_body => 'このキャラクターのクリエイターは、まだ追加の物語を作成していません。';
+
+  @override
+  String get scene_custom_load_failed => '自作シーンを読み込めませんでした。';
+
+  @override
+  String get scene_custom_empty_title => '自分のシーンはまだありません';
+
+  @override
+  String get scene_custom_empty_body => 'このチャットだけの、あなただけの物語を作りましょう。';
+
+  @override
+  String get scene_add => 'シーンを追加';
+
+  @override
+  String get scene_title => 'シーン';
+
+  @override
+  String get scene_tab_creator => 'クリエイターシーン';
+
+  @override
+  String get scene_tab_custom => '自分で作成';
+
+  @override
+  String get chat_book_player => 'プレイヤー';
+
+  @override
+  String get chat_book_title => '会話記録';
+
+  @override
+  String get chat_book_export_pdf => 'PDFを書き出す';
+
+  @override
+  String get chat_book_brand => '— LoveyDovey';
+
+  @override
+  String get chat_book_change_cover => '表紙を変更';
+
+  @override
+  String get chat_book_cover_subtitle => 'ふたりで過ごした時間 · 会話記念ブック';
+
+  @override
+  String get chat_book_choose_cover => '記念ブックの表紙を選択';
+
+  @override
+  String get chat_book_initial_story => '最初の物語';
+
+  @override
+  String chat_book_transcript_title(String characterName) {
+    return '$characterName · 会話記録';
+  }
+
+  @override
+  String chat_book_continuation(String name) {
+    return '$name · 続き';
+  }
+
+  @override
+  String get chat_book_previous_page => '前のページ';
+
+  @override
+  String get chat_book_next_page => '次のページ';
+
+  @override
+  String get chat_book_photo_message => '〔写真〕';
+
+  @override
+  String get chat_book_audio_message => '〔ボイスメッセージ〕';
+
+  @override
+  String get chat_book_generic_message => '〔メッセージ〕';
+
+  @override
+  String chat_book_export_failed(String error) {
+    return 'PDFの書き出しに失敗しました：$error';
+  }
+
+  @override
+  String email_policy_open_failed(String title) {
+    return '$titleを開けませんでした。ネットワーク接続を確認して、もう一度お試しください。';
+  }
+
+  @override
+  String email_policy_read_instruction(String title) {
+    return '最初に$titleを開き、全文をお読みください。読み終えたら「LoveyDovey」に戻ると、「確認して同意する」を押せるようになります。';
+  }
+
+  @override
+  String get email_policy_opening => '開いています……';
+
+  @override
+  String email_policy_read_full(String title) {
+    return '$titleの全文を読む';
+  }
+
+  @override
+  String email_policy_opened_ready(String title) {
+    return '$titleを開きました。同意を確認できます。';
+  }
+
+  @override
+  String email_policy_not_opened(String title) {
+    return '$titleをまだ開いていません。';
+  }
+
+  @override
+  String get email_policy_cancel_login => 'ログインをキャンセル';
+
+  @override
+  String get email_policy_agree => '確認して同意する';
+
+  @override
+  String get email_policy_status_check_failed =>
+      '現在、規約への同意状況を確認できません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get email_policy_login_notice =>
+      '初回ログイン時または規約の更新時に、利用規約とプライバシーポリシーをお読みいただき、同意をお願いしています。';
+
+  @override
+  String get email_policy_refresh => '更新';
+
+  @override
+  String get email_policy_page_load_failed => 'ページを読み込めませんでした';
+
+  @override
+  String get email_policy_check_network => 'ネットワーク接続を確認して、もう一度お試しください。';
+
+  @override
+  String get email_policy_reload => '再読み込み';
+
+  @override
+  String get login_method_info_google_title => 'Googleでかんたんログイン';
+
+  @override
+  String get login_method_info_apple_title => 'Appleでログイン';
+
+  @override
+  String get login_method_info_facebook_title => 'Facebookでログイン';
+
+  @override
+  String get login_method_info_email_title => 'LoveyDoveyアカウント（メール）';
+
+  @override
+  String get login_method_info_email_provider => 'LoveyDoveyアカウント（メール）';
+
+  @override
+  String login_method_info_content(String providerName) {
+    return '$providerNameを使用して「LoveyDovey」にログインします。\n\nご注意ください：\n\n• $providerNameとその他のログイン方法は、それぞれ異なるアカウントとして扱われます。\n\n• $providerNameでアカウントを作成した場合は、今後も同じ方法でログインしてください。\n\n• キャラクターデータ、チャット履歴、購入内容は、ほかのログイン方法で作成したアカウントとは共有されません。\n\n異なるアカウントが作成され、データを共有できなくなることを防ぐため、初回ログイン後も同じログイン方法を使用することをおすすめします。';
+  }
+
+  @override
+  String get login_method_info_got_it => 'わかりました';
+
+  @override
+  String creator_studio_delete_failed(String error) {
+    return '削除に失敗しました：$error';
+  }
+
+  @override
+  String get creator_studio_subtitle => 'ひらめきを集め、キャラクターを整理しながら、ゆっくり作品を仕上げましょう';
+
+  @override
+  String creator_studio_load_failed(String error) {
+    return 'スタジオを読み込めませんでした：$error';
+  }
+
+  @override
+  String get creator_studio_add_character => 'キャラクターを追加';
+
+  @override
+  String get creator_studio_public_title => '公開キャラクター';
+
+  @override
+  String get creator_studio_public_subtitle => '公開済みで、ほかのプレイヤーも見つけることができます';
+
+  @override
+  String get creator_studio_public_empty => '現在、公開キャラクターはいません';
+
+  @override
+  String get creator_studio_private_title => '非公開キャラクター';
+
+  @override
+  String get creator_studio_private_subtitle => '自分だけが見ることができます';
+
+  @override
+  String get creator_studio_private_empty => '現在、非公開キャラクターはいません';
+
+  @override
+  String get creator_studio_draft_title => '下書き';
+
+  @override
+  String get creator_studio_draft_subtitle => 'まだ完成していない作品';
+
+  @override
+  String get creator_studio_draft_empty => '現在、未完成の下書きはありません';
+
+  @override
+  String get creator_studio_draft_empty_title => '下書きはまだありません';
+
+  @override
+  String get creator_studio_draft_empty_hint => 'ひらめいたら、まずはここに残しておきましょう';
+
+  @override
+  String get creator_studio_status_public => '公開中';
+
+  @override
+  String get creator_studio_status_private => '非公開';
+
+  @override
+  String get creator_studio_status_draft => '下書き';
+
+  @override
+  String get creator_studio_character_load_failed => 'キャラクターデータを読み込めませんでした';
+
+  @override
+  String get creator_studio_delete_draft_tooltip => '下書きを削除';
+
+  @override
+  String get creator_studio_unnamed_creator => '名前未設定のクリエイター';
+
+  @override
+  String get creator_studio_no_bio => '自己紹介はまだ入力されていません';
+
+  @override
+  String get chat_input_tools => '機能';
+
+  @override
+  String get chat_input_expand_tools => '機能を表示';
+
+  @override
+  String get chat_input_stop => '停止';
+
+  @override
+  String get chat_input_send => '送信';
+
+  @override
+  String get chat_side_menu_section_chat => 'チャット';
+
+  @override
+  String get chat_side_menu_section_relationship => '関係';
+
+  @override
+  String get chat_side_menu_section_memory => '記憶管理';
+
+  @override
+  String get character_navigator_confidential_title => '機密ファイル';
+
+  @override
+  String get character_navigator_unavailable_message =>
+      'このキャラクターは非公開に変更されたか、公開停止、規約違反による保管、または削除された可能性があります。';
+
+  @override
+  String get character_navigator_got_it => 'わかりました';
+
+  @override
+  String get character_navigator_load_failed_title => '読み込みに失敗しました';
+
+  @override
+  String get character_navigator_load_failed_message =>
+      '現在、キャラクターデータを読み込めません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get character_navigator_confirm => 'OK';
+
+  @override
+  String get character_profile_add_bookmark => 'キャラクターを保存';
+
+  @override
+  String get character_profile_remove_bookmark => '保存を解除';
+
+  @override
+  String get character_profile_pronoun_female => '彼女';
+
+  @override
+  String get character_profile_pronoun_male => '彼';
+
+  @override
+  String get character_profile_pronoun_neutral => 'そのキャラクター';
+
+  @override
+  String get chat_home_pin_limit_reached =>
+      '固定できるチャットは3件までです。先にほかのチャットの固定を解除してください。';
+
+  @override
+  String get chat_home_pinned_success => 'チャットを固定しました';
+
+  @override
+  String get chat_home_unpinned_success => '固定を解除しました';
+
+  @override
+  String chat_home_pin_update_failed(String error) {
+    return '固定状態を更新できませんでした：$error';
+  }
+
+  @override
+  String get chat_home_unpin => '固定を解除';
+
+  @override
+  String get chat_home_pin => 'チャットを固定';
+
+  @override
+  String chat_home_time_label(String time) {
+    return '時間：$time';
+  }
+
+  @override
+  String get main_check_in_already_done => '今日はすでにチェックイン済みです';
+
+  @override
+  String get nav_recommend => 'おすすめ';
+
+  @override
+  String get moments_auto_reply_title => 'AIによるプレイヤー投稿への自動返信を許可';
+
+  @override
+  String get moments_auto_reply_description =>
+      'オンにすると、このキャラクターがプレイヤーの投稿に返信するようシステムから選ばれることがあります。';
+
+  @override
+  String get mailOriginalQuestionLabel => '最初に尋ねたこと';
+
+  @override
+  String get hidden_moments_empty_hint => '非表示にした投稿はまだありません';
+
+  @override
+  String get moment_search_unavailable => '現在、検索を利用できません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get moment_search_hint => '公開投稿、キャラクター、クリエイターを検索';
+
+  @override
+  String get moment_search_instruction => '投稿内容、キャラクター名、またはクリエイター名を入力';
+
+  @override
+  String get moment_search_no_results => '関連する公開投稿が見つかりません';
+
+  @override
+  String get settingsErrorTitle => 'エラーが発生しました';
+
+  @override
+  String get settingsChangePasswordSubtitle => '現在のパスワードを確認して、新しいログインパスワードを設定';
+
+  @override
+  String get settingsCreatorGuidelines => 'クリエイターガイドライン';
+
+  @override
+  String get settingsPlayGuide => 'プレイガイド';
+
+  @override
+  String get language_selection_subtitle => '使い慣れた言語を選択してください';
+
+  @override
+  String get search_character_hint => 'キャラクター、クリエイター、職業、タグを検索';
+
+  @override
+  String get search_character_clear => 'クリア';
+
+  @override
+  String get search_character_recent => '最近の検索';
+
+  @override
+  String get search_character_load_failed =>
+      '検索データを読み込めませんでした。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get search_character_popular => '最近みんなが注目しているキャラクター';
+
+  @override
+  String search_character_result_count(int count) {
+    return '$count人のキャラクターが見つかりました';
+  }
+
+  @override
+  String get shop_tab_monthly => 'マンスリーパス';
+
+  @override
+  String shop_joined_days(int days) {
+    return '✦ LoveyDoveyに来てから$days日目 ✦';
+  }
+
+  @override
+  String get shop_vip_tier_1_title => 'ひと目惚れ';
+
+  @override
+  String get shop_vip_tier_1_reward => 'フラワー20ポイント＋初心者限定称号';
+
+  @override
+  String get shop_vip_tier_2_title => 'きらめく鼓動';
+
+  @override
+  String get shop_vip_tier_2_reward => '限定アバターフレーム【きらめく鼓動】';
+
+  @override
+  String get shop_vip_tier_3_title => '星空のささやき';
+
+  @override
+  String get shop_vip_tier_3_reward => '限定チャットバブル＋フラワー50ポイント';
+
+  @override
+  String get shop_vip_tier_4_title => 'ロマンチックな夕暮れ';
+
+  @override
+  String get shop_vip_tier_4_reward => '限定アプリアイコン';
+
+  @override
+  String get shop_vip_tier_5_title => '胸のときめき';
+
+  @override
+  String get shop_vip_tier_5_reward => '画面タップエフェクト（Lottie）＋フラワー100ポイント';
+
+  @override
+  String get shop_vip_tier_6_title => '永遠の誓い';
+
+  @override
+  String get shop_vip_tier_6_reward => '上級アニメーションアバターフレーム＋フラワー200ポイント';
+
+  @override
+  String get shop_vip_tier_7_title => '魂の邂逅';
+
+  @override
+  String get shop_vip_tier_7_reward => 'アニメーションチャットバブル＋限定上級称号';
+
+  @override
+  String get shop_vip_tier_8_title => 'あなただけを想って';
+
+  @override
+  String get shop_vip_tier_8_reward => '最高級アニメーションネームプレート＋フラワー500ポイント';
+
+  @override
+  String get shop_vip_tier_9_title => 'きらめく銀河';
+
+  @override
+  String get shop_vip_tier_9_reward => '限定登場Lottieエフェクト＋専用カスタマーサポート';
+
+  @override
+  String get shop_vip_tier_10_title => '最愛ランク';
+
+  @override
+  String get shop_vip_tier_10_reward => '【VIP限定現物ギフトボックス】（手書きレター＋キャラクターぬいぐるみ）';
+
+  @override
+  String get shop_vip_total_bond => '累計ロマンチックな絆';
+
+  @override
+  String get shop_vip_all_unlocked => 'すべての最高級特典を解放しました！';
+
+  @override
+  String shop_vip_next_unlock(int amount) {
+    return 'あとNT\$ $amountチャージすると次のランクを解放できます';
+  }
+
+  @override
+  String get call_connecting => '通話に接続しています...';
+
+  @override
+  String get call_listening_auto_send => '聞き取り中...（話し終えると自動で送信されます）';
+
+  @override
+  String get call_listening_release_to_send => '聞き取り中...（指を離すと送信されます）';
+
+  @override
+  String call_sending_transcript(String text) {
+    return ' $text\n\n（送信中...）';
+  }
+
+  @override
+  String get help_translation_fallback =>
+      'この言語のプレイガイドはまだ提供されていないため、一時的に繁体字中国語で表示します。';
+
+  @override
+  String get help_all_categories => 'すべて';
+
+  @override
+  String get help_subtitle_companion => '日常機能と便利なサポートツール';
+
+  @override
+  String get help_subtitle_ai_chat => 'チャット、音声、スマートインタラクション関連';
+
+  @override
+  String get help_subtitle_creation => 'キャラクター設定と創作機能関連';
+
+  @override
+  String get help_subtitle_explore => 'キャラクターやゲームコンテンツの探索';
+
+  @override
+  String get help_subtitle_care => '優しい寄り添いと日々の気遣い';
+
+  @override
+  String get help_subtitle_general => '一般的な機能と操作方法';
+
+  @override
+  String get chat_interact_fun => '楽しい遊び';
+
+  @override
+  String get memo_notification_permission_missing =>
+      '通知が許可されていません。メモは保存されますが、システムからのリマインダーは表示されません。';
+
+  @override
+  String memo_saved_with_reminder(String characterName) {
+    return 'メモを保存しました。$characterNameがリマインドしてくれます！';
+  }
+
+  @override
+  String get memo_saved_without_notification => 'メモを保存しましたが、通知はまだ許可されていません。';
+
+  @override
+  String memo_updated_with_reminder(String characterName) {
+    return 'メモを更新しました。$characterNameがリマインドしてくれます！';
+  }
+
+  @override
+  String get memo_updated_without_notification => 'メモを更新しましたが、現在は通知が許可されていません。';
+
+  @override
+  String memo_load_error(String error) {
+    return 'データの読み込み中にエラーが発生しました：$error';
+  }
+
+  @override
+  String get story_summary_content_required => 'ストーリーの内容を入力してください';
+
+  @override
+  String get story_summary_edit_hint => '二人の物語を書いてください...';
+
+  @override
+  String get profile_section_basic_info => '基本情報';
+
+  @override
+  String get profile_section_about_me => '私について';
+
+  @override
+  String get dice_duel_you => 'あなた';
+
+  @override
+  String get dice_duel_result_saved => '対決結果を保存しました！';
+
+  @override
+  String get dice_duel_rolling => '宇宙のエネルギーを集めています...';
 }

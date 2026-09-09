@@ -6160,7 +6160,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get mailAddCollectionTooltip => 'Simpan surat';
 
   @override
-  String get mailShareTooltip => 'Kongsi surat';
+  String get mailShareTooltip => 'Kongsi Surat';
 
   @override
   String mailQixiDayNumber(int day) {
@@ -7069,4 +7069,1228 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get feedback_change_image => 'Tukar';
+
+  @override
+  String get profile_backpack_title =>
+      'Beg Galas dan Keistimewaan Eksklusif Saya';
+
+  @override
+  String get profile_backpack_total_spent => 'Jumlah Ikatan Romantik Semasa';
+
+  @override
+  String profile_backpack_total_spent_amount(int amount) {
+    return 'NT\$ $amount';
+  }
+
+  @override
+  String get profile_backpack_physical_gift_status =>
+      'Status Buka Kunci Kotak Hadiah Fizikal:';
+
+  @override
+  String get profile_backpack_vip_gift_title =>
+      '【Kasih Tertinggi】Kotak Hadiah VIP Fizikal Eksklusif';
+
+  @override
+  String get profile_backpack_vip_gift_contents =>
+      'Mengandungi: surat tulisan tangan eksklusif + anak patung watak + surat penghargaan rasmi';
+
+  @override
+  String get profile_backpack_edit_shipping_info =>
+      'Ubah Maklumat Alamat Penghantaran';
+
+  @override
+  String get profile_backpack_unlock_shipping_info =>
+      'Telah dibuka! Ketik di sini untuk mengisi maklumat penghantaran';
+
+  @override
+  String get profile_backpack_shipping_registered =>
+      'Alamat penghantaran anda berjaya didaftarkan. Kami akan menyediakan hadiah anda secepat mungkin!';
+
+  @override
+  String profile_backpack_amount_remaining(int amount) {
+    return 'Hanya perlu NT\$ $amount lagi untuk membuka ganjaran fizikal utama!';
+  }
+
+  @override
+  String get profile_backpack_hint =>
+      'Petua: Penampilan dan bingkai avatar lain boleh dilihat di dalam beg galas.';
+
+  @override
+  String get profile_backpack_close => 'Tutup';
+
+  @override
+  String get profile_physical_gift_title =>
+      '【Kasih Tertinggi】Kotak Hadiah Fizikal Dibuka';
+
+  @override
+  String get profile_physical_gift_description =>
+      'Terima kasih atas sokongan luar biasa anda terhadap 「LoveyDovey」!\nSila isi maklumat penghantaran berikut. Kami akan menghantar surat tulisan tangan eksklusif dan anak patung watak kepada anda:';
+
+  @override
+  String get profile_physical_gift_recipient_name =>
+      'Nama Penuh Sebenar Penerima';
+
+  @override
+  String get profile_physical_gift_phone => 'Nombor Telefon';
+
+  @override
+  String get profile_physical_gift_address =>
+      'Alamat Penghantaran Lengkap (Termasuk Poskod)';
+
+  @override
+  String get profile_physical_gift_character_name =>
+      'Nama Watak bagi Anak Patung yang Diinginkan';
+
+  @override
+  String get profile_physical_gift_character_hint =>
+      'Contoh: Masukkan nama watak';
+
+  @override
+  String get profile_physical_gift_fill_later => 'Isi Kemudian';
+
+  @override
+  String get profile_physical_gift_required_error =>
+      'Sila lengkapkan maklumat penghantaran dan masukkan nama watak pilihan anda!';
+
+  @override
+  String get profile_physical_gift_submit_success =>
+      'Maklumat penghantaran berjaya dihantar! Nantikan kejutan fizikal daripada kami!';
+
+  @override
+  String get profile_physical_gift_confirm_submit => 'Sahkan Penghantaran';
+
+  @override
+  String get profile_tooltip_announcement => 'Pengumuman';
+
+  @override
+  String get profile_tooltip_settings => 'Tetapan';
+
+  @override
+  String get profile_tooltip_backpack => 'Beg Galas Saya';
+
+  @override
+  String get profile_backpack_menu_title => 'Beg Galas Saya';
+
+  @override
+  String get profile_about_me_title => 'Tentang Saya';
+
+  @override
+  String get profile_tab_bio_title => 'Pengenalan Diri';
+
+  @override
+  String get profile_check_in_done => 'Sudah Daftar Masuk';
+
+  @override
+  String get profile_check_in => 'Daftar Masuk';
+
+  @override
+  String get profile_check_in_done_subtitle =>
+      'Anda telah meninggalkan jejak hari ini';
+
+  @override
+  String get profile_check_in_not_done_subtitle =>
+      'Belum mendaftar masuk hari ini';
+
+  @override
+  String get profile_likes_label => 'Suka';
+
+  @override
+  String get profile_heartbeat_diary_subtitle => 'Catat detik yang mendebarkan';
+
+  @override
+  String get profile_create_scene => 'Cipta Babak';
+
+  @override
+  String get profile_link_invalid => 'Format pautan tidak betul';
+
+  @override
+  String get profile_link_open_failed => 'Pautan ini tidak dapat dibuka';
+
+  @override
+  String get profile_link_default_name => 'Pautan Saya';
+
+  @override
+  String get profile_publish_moment_short => 'Tuliskan Detik Ini';
+
+  @override
+  String edit_profile_default_link_name(int index) {
+    return 'Pautan Saya $index';
+  }
+
+  @override
+  String get edit_profile_done => 'Selesai';
+
+  @override
+  String get edit_profile_social_links => 'Media Sosial & Pautan';
+
+  @override
+  String get edit_profile_add_link => 'Tambah Pautan';
+
+  @override
+  String get edit_profile_link_name_hint => 'Nama Pautan';
+
+  @override
+  String get edit_profile_link_url_hint => 'Masukkan Pautan';
+
+  @override
+  String get theme_name_starlight => 'Ungu Cahaya Bintang';
+
+  @override
+  String get theme_name_sakura => 'Merah Jambu Sakura';
+
+  @override
+  String get theme_name_ocean => 'Biru Lautan';
+
+  @override
+  String get theme_name_sunset => 'Jingga Senja';
+
+  @override
+  String get theme_name_mint => 'Pudina Hutan';
+
+  @override
+  String get theme_name_midnight => 'Mod Tengah Malam';
+
+  @override
+  String get theme_name_custom => 'Warna Tersuai';
+
+  @override
+  String get theme_selection_choose_theme => 'Pilih Warna Tema';
+
+  @override
+  String get theme_selection_title => 'Tukar Suasana';
+
+  @override
+  String get theme_selection_description =>
+      'Pilih warna tema kegemaran anda agar LoveyDovey lebih mencerminkan gaya anda.';
+
+  @override
+  String get theme_selection_preview => 'Pratonton';
+
+  @override
+  String get theme_selection_characters => 'Watak';
+
+  @override
+  String get theme_selection_posts => 'Siaran';
+
+  @override
+  String theme_selection_previewing(String themeName) {
+    return 'Pratonton semasa: $themeName';
+  }
+
+  @override
+  String get theme_selection_apply => 'Gunakan Tema';
+
+  @override
+  String get theme_selection_restore_default => 'Pulihkan Lalai';
+
+  @override
+  String get theme_selection_choose_color => 'Pilih Warna Istimewa Anda';
+
+  @override
+  String theme_selection_applied(String themeName) {
+    return '“$themeName” telah digunakan';
+  }
+
+  @override
+  String get welcome_guide_help => 'Panduan Permainan';
+
+  @override
+  String get welcome_guide_start => 'Mulakan Perjalanan';
+
+  @override
+  String get welcome_guide_next => 'Seterusnya';
+
+  @override
+  String get welcome_guide_welcome_title => 'Selamat Datang ke 「LoveyDovey」';
+
+  @override
+  String get welcome_guide_welcome_description =>
+      'Di sini, setiap pertemuan mungkin menjadi sebuah kisah yang tidak dapat dilupakan. Semoga 「LoveyDovey」sentiasa menemani anda mencipta kenangan indah bersama.';
+
+  @override
+  String get welcome_guide_chat_title => 'Mod Sembang';
+
+  @override
+  String get welcome_guide_chat_description =>
+      '「LoveyDovey」menawarkan pelbagai mod sembang dan setiap mod memberikan pengalaman interaksi yang berbeza.';
+
+  @override
+  String get welcome_guide_daily_title => 'Mod Harian';
+
+  @override
+  String get welcome_guide_daily_description =>
+      'Temani satu sama lain, kongsi kehidupan seharian dan nikmati perbualan yang santai bersama.';
+
+  @override
+  String get welcome_guide_story_title => 'Mod Cerita';
+
+  @override
+  String get welcome_guide_story_description =>
+      'Majukan kisah watak dan buka lebih banyak jalan cerita serta interaksi eksklusif.';
+
+  @override
+  String get welcome_guide_immersive_title => 'Mod Imersif';
+
+  @override
+  String get welcome_guide_immersive_description =>
+      'Nikmati perbualan yang lebih mendalam dan terasa lebih nyata.';
+
+  @override
+  String get welcome_guide_chat_more =>
+      'Maklumat lanjut mengenai mod sembang boleh dilihat dalam “Bantuan Permainan”.';
+
+  @override
+  String get welcome_guide_encounter_title => 'Pertemuan';
+
+  @override
+  String get welcome_guide_encounter_description =>
+      'Setiap watak mempunyai personaliti, kisah dan suara yang unik. Apabila anda menemui watak yang disukai, tambahkan watak itu sebagai rakan untuk berbual, berinteraksi, berkongsi kehidupan dan mencipta kenangan bersama.';
+
+  @override
+  String get welcome_guide_more_title => 'Lebih Banyak Kandungan';
+
+  @override
+  String get welcome_guide_more_description =>
+      'Terdapat juga koleksi, pencipta, kedai dan pelbagai ciri menarik yang lain. Kunjungi “Bantuan Permainan” untuk mengetahui lebih lanjut.';
+
+  @override
+  String preference_selection_max_error(int count) {
+    return 'Anda boleh memilih maksimum $count pilihan.';
+  }
+
+  @override
+  String get preference_selection_save_failed =>
+      'Pilihan anda tidak dapat disimpan buat masa ini. Sila cuba lagi kemudian.';
+
+  @override
+  String get preference_selection_title =>
+      'Apakah jenis orang yang ingin anda temui?';
+
+  @override
+  String get preference_selection_description =>
+      'Pilih 3–5 jenis yang anda sukai supaya LoveyDovey boleh mula mengenali anda.';
+
+  @override
+  String get preference_selection_recommendation_note =>
+      'Cadangan akan diselaraskan secara beransur-ansur berdasarkan interaksi sebenar anda agar lebih sesuai dengan cita rasa anda.';
+
+  @override
+  String get preference_selection_selected => 'Dipilih';
+
+  @override
+  String get preference_selection_start => 'Mulakan dari Sini';
+
+  @override
+  String get preference_group_personality => 'Personaliti & Perwatakan';
+
+  @override
+  String get preference_group_relationship_age => 'Hubungan・Perbezaan Usia';
+
+  @override
+  String get preference_group_story => 'Suasana Cerita';
+
+  @override
+  String get preference_tag_gentle => 'Lembut';
+
+  @override
+  String get preference_tag_cold => 'Dingin';
+
+  @override
+  String get preference_tag_scheming => 'Licik';
+
+  @override
+  String get preference_tag_tsundere => 'Tsundere';
+
+  @override
+  String get preference_tag_loyal => 'Setia';
+
+  @override
+  String get preference_tag_yandere => 'Yandere';
+
+  @override
+  String get preference_tag_mysterious => 'Misteri';
+
+  @override
+  String get preference_tag_healing => 'Menenangkan';
+
+  @override
+  String get preference_tag_gap_moe => 'Kontras Menawan';
+
+  @override
+  String get preference_tag_older => 'Lebih Tua';
+
+  @override
+  String get preference_tag_younger => 'Lebih Muda';
+
+  @override
+  String get preference_tag_ceo => 'CEO Dominan';
+
+  @override
+  String get preference_tag_school => 'Sekolah';
+
+  @override
+  String get preference_tag_workplace => 'Tempat Kerja';
+
+  @override
+  String get preference_tag_ancient => 'Berlatar Sejarah';
+
+  @override
+  String get preference_tag_nonhuman => 'Bukan Manusia';
+
+  @override
+  String get encounter_load_failed =>
+      'Gagal memuatkan data pertemuan. Sila cuba lagi kemudian.';
+
+  @override
+  String get encounter_no_available_characters =>
+      'Belum ada watak yang boleh ditemui';
+
+  @override
+  String get encounter_category_empty => 'Belum ada watak dalam kategori ini';
+
+  @override
+  String get encounter_category_all => 'Semua';
+
+  @override
+  String get encounter_category_xianxia => 'Xianxia';
+
+  @override
+  String get encounter_category_childhood_friend => 'Rakan Sejak Kecil';
+
+  @override
+  String get encounter_category_master_disciple => 'Guru dan Murid';
+
+  @override
+  String get encounter_category_sweet_romance => 'Percintaan Manis';
+
+  @override
+  String get encounter_category_other => 'Lain-lain';
+
+  @override
+  String get character_edit_tab_character_settings => 'Tetapan Watak';
+
+  @override
+  String get character_edit_test => 'Uji';
+
+  @override
+  String get character_edit_supporting_basic_info => 'Maklumat Asas';
+
+  @override
+  String get character_edit_supporting_main_setting =>
+      'Hubungan dengan Watak Utama';
+
+  @override
+  String get character_edit_supporting_main_description =>
+      'Terangkan hubungan watak sampingan ini dengan watak utama serta peranannya dalam cerita.';
+
+  @override
+  String get character_edit_banner_preview_hint =>
+      'Ketik imej untuk melihat pratonton bersaiz penuh';
+
+  @override
+  String get character_edit_main_photo_hint =>
+      'Imej pertama akan digunakan sebagai avatar utama';
+
+  @override
+  String get character_edit_other_photos => 'Foto Watak Lain';
+
+  @override
+  String get character_edit_photo_action_hint =>
+      'Ketik foto untuk melihat pratonton; ketik ikon pensel untuk mengedit tetapannya';
+
+  @override
+  String character_edit_over_limit_warning(String label, String count) {
+    return '⚠ $label melebihi had $count aksara. Sila betulkan sebelum diterbitkan.';
+  }
+
+  @override
+  String get memo_notification_channel_name => 'Peringatan Memo';
+
+  @override
+  String get memo_notification_channel_description =>
+      'Watak mengingatkan pemain tentang memo yang telah ditetapkan';
+
+  @override
+  String memo_notification_title(String characterName) {
+    return '$characterName Mengingatkan Anda';
+  }
+
+  @override
+  String memo_notification_tsundere(String memoContent) {
+    return 'Bukannya saya risau tentang awak, saya cuma tidak mahu awak terlupa. Jangan lupa hari ini: $memoContent';
+  }
+
+  @override
+  String memo_notification_dominant(String memoContent) {
+    return 'Jadual awak sudah saya catat. Selesaikannya tepat pada masanya. Jangan lupa hari ini: $memoContent';
+  }
+
+  @override
+  String memo_notification_yandere(String memoContent) {
+    return 'Awak tidak boleh lupa, faham? Saya akan sentiasa mengingatinya. Jangan lupa hari ini: $memoContent';
+  }
+
+  @override
+  String memo_notification_gentle(String memoContent) {
+    return 'Saya bimbang awak akan terlupa kerana terlalu sibuk, jadi saya ingin mengingatkan awak. Jangan lupa hari ini: $memoContent';
+  }
+
+  @override
+  String memo_notification_cold(String memoContent) {
+    return 'Ada sesuatu yang perlu saya ingatkan. Jangan lupa hari ini: $memoContent';
+  }
+
+  @override
+  String memo_notification_sunny(String memoContent) {
+    return 'Hei, masih ada satu perkara penting hari ini! Jangan lupa: $memoContent';
+  }
+
+  @override
+  String memo_notification_lazy(String memoContent) {
+    return 'Walaupun saya mahu terus berbaring, saya masih perlu mengingatkan awak. Jangan lupa hari ini: $memoContent';
+  }
+
+  @override
+  String memo_notification_older(String memoContent) {
+    return 'Jadilah baik dan jangan lupa urusan hari ini. Ingat: $memoContent';
+  }
+
+  @override
+  String memo_notification_younger(String memoContent) {
+    return 'Saya sudah mengingatinya baik-baik untuk awak! Jangan lupa hari ini: $memoContent';
+  }
+
+  @override
+  String memo_notification_mechanical(String memoContent) {
+    return 'Peringatan diaktifkan. Tugasan hari ini: $memoContent';
+  }
+
+  @override
+  String memo_notification_default(String memoContent) {
+    return 'Jangan lupa hari ini: $memoContent';
+  }
+
+  @override
+  String get recommendation_load_failed =>
+      'Cadangan tidak dapat dimuatkan buat masa ini. Sila cuba lagi kemudian.';
+
+  @override
+  String get recommendation_reload => 'Muat Semula';
+
+  @override
+  String get recommendation_empty => 'Belum ada watak yang boleh dicadangkan.';
+
+  @override
+  String get recommendation_title => 'Pertemuan yang Dipilih untuk Anda';
+
+  @override
+  String get recommendation_featured_title => 'Kenali Mereka Terlebih Dahulu';
+
+  @override
+  String get recommendation_featured_subtitle =>
+      'Kami akan memaparkan pertemuan yang paling sesuai dengan anda terlebih dahulu.';
+
+  @override
+  String get recommendation_matched_behavior_title =>
+      'Semakin Menyerupai Cita Rasa Anda';
+
+  @override
+  String get recommendation_matched_initial_title =>
+      'Berdasarkan Pilihan Awal Anda';
+
+  @override
+  String get recommendation_matched_behavior_subtitle =>
+      'Mulai selepas hari keempat, interaksi terkini anda turut mempengaruhi susunan.';
+
+  @override
+  String get recommendation_matched_initial_subtitle =>
+      'Buat masa ini, kami menggunakan tag pilihan awal anda untuk mengecilkan skop cadangan.';
+
+  @override
+  String get recommendation_explore_title => 'Mungkin Anda Juga Akan Suka';
+
+  @override
+  String get recommendation_explore_subtitle =>
+      'Kami mengekalkan beberapa pilihan rawak agar anda sesekali dapat bertemu seseorang yang berbeza.';
+
+  @override
+  String get recommendation_refreshing =>
+      'Menyediakan pertemuan baharu untuk anda……';
+
+  @override
+  String get recommendation_badge_for_you => 'Untuk Anda';
+
+  @override
+  String get recommendation_badge_featured => 'Pertemuan Pilihan';
+
+  @override
+  String get recommendation_badge_explore => 'Terokai';
+
+  @override
+  String get recommendation_default_occupation_hint =>
+      'Buka dan lihat—mungkin inilah pertemuan seterusnya yang mendebarkan hati anda.';
+
+  @override
+  String get recommendation_explore_fallback =>
+      'Cuba arah yang berbeza—mungkin itulah yang benar-benar menyentuh hati anda.';
+
+  @override
+  String get recommendation_behavior_hint_similar_type =>
+      'Kebelakangan ini anda sering melihat watak jenis ini';
+
+  @override
+  String get recommendation_behavior_hint_forming =>
+      'Pilihan interaksi anda sedang terbentuk secara beransur-ansur';
+
+  @override
+  String get recommendation_behavior_hint_recent =>
+      'Dipilih berdasarkan interaksi terkini anda';
+
+  @override
+  String recommendation_reason_liked_tags(String tags) {
+    return 'Kerana anda menyukai・$tags';
+  }
+
+  @override
+  String get recommendation_reason_popular =>
+      'Ramai orang melihat watak ini baru-baru ini';
+
+  @override
+  String get recommendation_reason_default =>
+      'Mungkin inilah pertemuan seterusnya yang tepat untuk anda';
+
+  @override
+  String get scene_delete_title => 'Padam Babak?';
+
+  @override
+  String scene_delete_content(String title) {
+    return 'Adakah anda pasti mahu memadamkan “$title”? Babak yang dipadamkan tidak boleh dipulihkan.';
+  }
+
+  @override
+  String get scene_unnamed => 'Babak Tanpa Tajuk';
+
+  @override
+  String get scene_cancel => 'Batal';
+
+  @override
+  String get scene_delete => 'Padam';
+
+  @override
+  String get scene_delete_failed =>
+      'Gagal memadamkan. Sila cuba lagi kemudian.';
+
+  @override
+  String get scene_start_failed =>
+      'Babak tidak dapat dimulakan buat masa ini. Sila cuba lagi kemudian.';
+
+  @override
+  String get scene_end_title => 'Tamatkan Babak?';
+
+  @override
+  String get scene_end_content =>
+      'Selepas babak ditamatkan, anda akan kembali ke sembang biasa. Sejarah perbualan semasa tidak akan dipadamkan.';
+
+  @override
+  String get scene_end_action => 'Tamatkan Babak';
+
+  @override
+  String get scene_ended => 'Babak Telah Tamat';
+
+  @override
+  String get scene_end_failed =>
+      'Babak tidak dapat ditamatkan buat masa ini. Sila cuba lagi kemudian.';
+
+  @override
+  String get scene_active_label => 'Sedang Berlangsung';
+
+  @override
+  String scene_opening(String opening) {
+    return 'Pembukaan Watak: $opening';
+  }
+
+  @override
+  String get scene_edit => 'Edit';
+
+  @override
+  String get scene_start => 'Mulakan Babak';
+
+  @override
+  String get scene_creator_load_failed => 'Gagal memuatkan babak pencipta.';
+
+  @override
+  String get scene_creator_empty_title => 'Belum Ada Babak Pencipta';
+
+  @override
+  String get scene_creator_empty_body =>
+      'Pencipta watak ini belum mencipta sebarang cerita tambahan.';
+
+  @override
+  String get scene_custom_load_failed =>
+      'Gagal memuatkan babak ciptaan sendiri.';
+
+  @override
+  String get scene_custom_empty_title => 'Anda Belum Mempunyai Babak Sendiri';
+
+  @override
+  String get scene_custom_empty_body =>
+      'Cipta sebuah cerita yang hanya milik anda untuk ruang sembang ini.';
+
+  @override
+  String get scene_add => 'Tambah Babak';
+
+  @override
+  String get scene_title => 'Babak';
+
+  @override
+  String get scene_tab_creator => 'Babak Pencipta';
+
+  @override
+  String get scene_tab_custom => 'Cipta Sendiri';
+
+  @override
+  String get chat_book_player => 'Pemain';
+
+  @override
+  String get chat_book_title => 'Rekod Perbualan';
+
+  @override
+  String get chat_book_export_pdf => 'Eksport PDF';
+
+  @override
+  String get chat_book_brand => '— LoveyDovey';
+
+  @override
+  String get chat_book_change_cover => 'Tukar Kulit Buku';
+
+  @override
+  String get chat_book_cover_subtitle =>
+      'Detik Kita Bersama · Buku Kenangan Perbualan';
+
+  @override
+  String get chat_book_choose_cover => 'Pilih Kulit Buku Kenangan';
+
+  @override
+  String get chat_book_initial_story => 'Kisah Permulaan';
+
+  @override
+  String chat_book_transcript_title(String characterName) {
+    return '$characterName · Rekod Perbualan';
+  }
+
+  @override
+  String chat_book_continuation(String name) {
+    return '$name · Sambungan';
+  }
+
+  @override
+  String get chat_book_previous_page => 'Halaman Sebelumnya';
+
+  @override
+  String get chat_book_next_page => 'Halaman Seterusnya';
+
+  @override
+  String get chat_book_photo_message => '〔Foto〕';
+
+  @override
+  String get chat_book_audio_message => '〔Mesej Suara〕';
+
+  @override
+  String get chat_book_generic_message => '〔Mesej〕';
+
+  @override
+  String chat_book_export_failed(String error) {
+    return 'Gagal mengeksport PDF: $error';
+  }
+
+  @override
+  String email_policy_open_failed(String title) {
+    return 'Tidak dapat membuka $title. Sila semak sambungan rangkaian dan cuba lagi.';
+  }
+
+  @override
+  String email_policy_read_instruction(String title) {
+    return 'Sila buka dan baca $title sepenuhnya terlebih dahulu. Selepas membacanya, kembali ke 「LoveyDovey」dan ketik “Saya Telah Membaca dan Bersetuju”.';
+  }
+
+  @override
+  String get email_policy_opening => 'Sedang membuka……';
+
+  @override
+  String email_policy_read_full(String title) {
+    return 'Baca $title Sepenuhnya';
+  }
+
+  @override
+  String email_policy_opened_ready(String title) {
+    return '$title telah dibuka. Anda kini boleh mengesahkan persetujuan.';
+  }
+
+  @override
+  String email_policy_not_opened(String title) {
+    return '$title masih belum dibuka.';
+  }
+
+  @override
+  String get email_policy_cancel_login => 'Batalkan Log Masuk';
+
+  @override
+  String get email_policy_agree => 'Saya Telah Membaca dan Bersetuju';
+
+  @override
+  String get email_policy_status_check_failed =>
+      'Status persetujuan terma tidak dapat disahkan buat masa ini. Sila cuba lagi kemudian.';
+
+  @override
+  String get email_policy_login_notice =>
+      'Semasa log masuk kali pertama atau apabila terma dikemas kini, anda perlu membaca dan bersetuju dengan Terma Perkhidmatan serta Dasar Privasi.';
+
+  @override
+  String get email_policy_refresh => 'Segar Semula';
+
+  @override
+  String get email_policy_page_load_failed => 'Gagal Memuatkan Halaman';
+
+  @override
+  String get email_policy_check_network =>
+      'Sila semak sambungan rangkaian dan cuba lagi.';
+
+  @override
+  String get email_policy_reload => 'Muat Semula';
+
+  @override
+  String get login_method_info_google_title => 'Log Masuk Pantas dengan Google';
+
+  @override
+  String get login_method_info_apple_title => 'Log Masuk dengan Apple';
+
+  @override
+  String get login_method_info_facebook_title => 'Log Masuk dengan Facebook';
+
+  @override
+  String get login_method_info_email_title => 'Akaun LoveyDovey (E-mel)';
+
+  @override
+  String get login_method_info_email_provider => 'Akaun LoveyDovey (E-mel)';
+
+  @override
+  String login_method_info_content(String providerName) {
+    return 'Log masuk ke 「LoveyDovey」menggunakan $providerName.\n\nSila ambil perhatian:\n\n• $providerName dan kaedah log masuk yang lain menggunakan sistem akaun yang berbeza.\n\n• Jika anda mencipta akaun menggunakan $providerName, sila terus log masuk menggunakan kaedah yang sama.\n\n• Data watak, sejarah sembang dan kandungan yang dibeli tidak dikongsi dengan kaedah log masuk lain.\n\nKami mengesyorkan agar anda terus menggunakan kaedah log masuk yang sama selepas log masuk kali pertama untuk mengelakkan penciptaan akaun berbeza yang datanya tidak dapat dikongsi.';
+  }
+
+  @override
+  String get login_method_info_got_it => 'Faham';
+
+  @override
+  String creator_studio_delete_failed(String error) {
+    return 'Gagal memadamkan: $error';
+  }
+
+  @override
+  String get creator_studio_subtitle =>
+      'Simpan inspirasi, susun watak dan siapkan karya anda secara beransur-ansur';
+
+  @override
+  String creator_studio_load_failed(String error) {
+    return 'Gagal memuatkan studio: $error';
+  }
+
+  @override
+  String get creator_studio_add_character => 'Tambah Watak';
+
+  @override
+  String get creator_studio_public_title => 'Watak Awam';
+
+  @override
+  String get creator_studio_public_subtitle =>
+      'Telah diterbitkan dan boleh ditemukan oleh pemain lain';
+
+  @override
+  String get creator_studio_public_empty => 'Belum ada watak awam';
+
+  @override
+  String get creator_studio_private_title => 'Watak Peribadi';
+
+  @override
+  String get creator_studio_private_subtitle => 'Hanya anda boleh melihatnya';
+
+  @override
+  String get creator_studio_private_empty => 'Belum ada watak peribadi';
+
+  @override
+  String get creator_studio_draft_title => 'Draf';
+
+  @override
+  String get creator_studio_draft_subtitle => 'Karya yang masih belum selesai';
+
+  @override
+  String get creator_studio_draft_empty => 'Belum ada draf yang belum selesai';
+
+  @override
+  String get creator_studio_draft_empty_title => 'Belum Ada Draf di Sini';
+
+  @override
+  String get creator_studio_draft_empty_hint =>
+      'Apabila mendapat ilham, catatkannya di sini dahulu';
+
+  @override
+  String get creator_studio_status_public => 'Awam';
+
+  @override
+  String get creator_studio_status_private => 'Peribadi';
+
+  @override
+  String get creator_studio_status_draft => 'Draf';
+
+  @override
+  String get creator_studio_character_load_failed =>
+      'Gagal memuatkan data watak';
+
+  @override
+  String get creator_studio_delete_draft_tooltip => 'Padam Draf';
+
+  @override
+  String get creator_studio_unnamed_creator => 'Pencipta Tanpa Nama';
+
+  @override
+  String get creator_studio_no_bio => 'Belum mengisi pengenalan diri';
+
+  @override
+  String get chat_input_tools => 'Ciri';
+
+  @override
+  String get chat_input_expand_tools => 'Paparkan Ciri';
+
+  @override
+  String get chat_input_stop => 'Hentikan';
+
+  @override
+  String get chat_input_send => 'Hantar';
+
+  @override
+  String get chat_side_menu_section_chat => 'Sembang';
+
+  @override
+  String get chat_side_menu_section_relationship => 'Hubungan';
+
+  @override
+  String get chat_side_menu_section_memory => 'Pengurusan Ingatan';
+
+  @override
+  String get character_navigator_confidential_title => 'Fail Sulit';
+
+  @override
+  String get character_navigator_unavailable_message =>
+      'Watak ini mungkin telah dijadikan peribadi, ditarik daripada platform, diarkibkan kerana pelanggaran atau dipadamkan.';
+
+  @override
+  String get character_navigator_got_it => 'Faham';
+
+  @override
+  String get character_navigator_load_failed_title => 'Gagal Memuatkan';
+
+  @override
+  String get character_navigator_load_failed_message =>
+      'Data watak tidak dapat dimuatkan buat sementara waktu. Sila cuba lagi kemudian.';
+
+  @override
+  String get character_navigator_confirm => 'OK';
+
+  @override
+  String get character_profile_add_bookmark => 'Simpan Watak';
+
+  @override
+  String get character_profile_remove_bookmark => 'Keluarkan daripada Simpanan';
+
+  @override
+  String get character_profile_pronoun_female => 'Dia';
+
+  @override
+  String get character_profile_pronoun_male => 'Dia';
+
+  @override
+  String get character_profile_pronoun_neutral => 'Mereka';
+
+  @override
+  String get chat_home_pin_limit_reached =>
+      'Anda boleh menyematkan maksimum 3 ruang sembang. Sila nyahsemat ruang sembang lain terlebih dahulu.';
+
+  @override
+  String get chat_home_pinned_success => 'Ruang Sembang Disematkan';
+
+  @override
+  String get chat_home_unpinned_success => 'Sematan Dibatalkan';
+
+  @override
+  String chat_home_pin_update_failed(String error) {
+    return 'Gagal mengemas kini status sematan: $error';
+  }
+
+  @override
+  String get chat_home_unpin => 'Nyahsemat';
+
+  @override
+  String get chat_home_pin => 'Sematkan Ruang Sembang';
+
+  @override
+  String chat_home_time_label(String time) {
+    return 'Masa: $time';
+  }
+
+  @override
+  String get main_check_in_already_done =>
+      'Anda sudah mendaftar masuk hari ini';
+
+  @override
+  String get nav_recommend => 'Cadangan';
+
+  @override
+  String get moments_auto_reply_title =>
+      'Benarkan AI Membalas Siaran Pemain Secara Automatik';
+
+  @override
+  String get moments_auto_reply_description =>
+      'Apabila diaktifkan, sistem boleh memilih watak ini untuk membalas siaran pemain.';
+
+  @override
+  String get mailOriginalQuestionLabel => 'Soalan Asal Anda';
+
+  @override
+  String get hidden_moments_empty_hint => 'Belum ada siaran yang disembunyikan';
+
+  @override
+  String get moment_search_unavailable =>
+      'Carian tidak tersedia buat sementara waktu. Sila cuba lagi kemudian.';
+
+  @override
+  String get moment_search_hint => 'Cari siaran awam, watak atau pencipta';
+
+  @override
+  String get moment_search_instruction =>
+      'Masukkan kandungan siaran, nama watak atau nama pencipta';
+
+  @override
+  String get moment_search_no_results =>
+      'Tiada siaran awam berkaitan ditemukan';
+
+  @override
+  String get settingsErrorTitle => 'Ralat Berlaku';
+
+  @override
+  String get settingsChangePasswordSubtitle =>
+      'Sahkan kata laluan semasa, kemudian tetapkan kata laluan log masuk yang baharu';
+
+  @override
+  String get settingsCreatorGuidelines => 'Garis Panduan Pencipta';
+
+  @override
+  String get settingsPlayGuide => 'Panduan Permainan';
+
+  @override
+  String get language_selection_subtitle =>
+      'Pilih bahasa yang biasa anda gunakan';
+
+  @override
+  String get search_character_hint =>
+      'Cari watak, pencipta, pekerjaan atau tag';
+
+  @override
+  String get search_character_clear => 'Kosongkan';
+
+  @override
+  String get search_character_recent => 'Carian Terkini';
+
+  @override
+  String get search_character_load_failed =>
+      'Gagal memuatkan data carian. Sila cuba lagi kemudian.';
+
+  @override
+  String get search_character_popular => 'Sedang Digemari';
+
+  @override
+  String search_character_result_count(int count) {
+    return '$count watak ditemukan';
+  }
+
+  @override
+  String get shop_tab_monthly => 'Pas Bulanan';
+
+  @override
+  String shop_joined_days(int days) {
+    return '✦ Anda telah bersama LoveyDovey selama $days hari ✦';
+  }
+
+  @override
+  String get shop_vip_tier_1_title => 'Cinta Pandang Pertama';
+
+  @override
+  String get shop_vip_tier_1_reward =>
+      '20 Mata Bunga + Gelaran Pemula Eksklusif';
+
+  @override
+  String get shop_vip_tier_2_title => 'Debaran Cahaya';
+
+  @override
+  String get shop_vip_tier_2_reward =>
+      'Bingkai Avatar Eksklusif 【Debaran Cahaya】';
+
+  @override
+  String get shop_vip_tier_3_title => 'Bisikan Langit Berbintang';
+
+  @override
+  String get shop_vip_tier_3_reward =>
+      'Gelembung Sembang Eksklusif + 50 Mata Bunga';
+
+  @override
+  String get shop_vip_tier_4_title => 'Senja Romantik';
+
+  @override
+  String get shop_vip_tier_4_reward => 'Ikon Aplikasi Eksklusif';
+
+  @override
+  String get shop_vip_tier_5_title => 'Debaran Hati';
+
+  @override
+  String get shop_vip_tier_5_reward =>
+      'Kesan Ketikan Skrin (Lottie) + 100 Mata Bunga';
+
+  @override
+  String get shop_vip_tier_6_title => 'Ikrar Abadi';
+
+  @override
+  String get shop_vip_tier_6_reward =>
+      'Bingkai Avatar Animasi Lanjutan + 200 Mata Bunga';
+
+  @override
+  String get shop_vip_tier_7_title => 'Pertemuan Jiwa';
+
+  @override
+  String get shop_vip_tier_7_reward =>
+      'Kesan Gelembung Sembang Animasi + Gelaran Lanjutan Eksklusif';
+
+  @override
+  String get shop_vip_tier_8_title => 'Setia Hanya Untukmu';
+
+  @override
+  String get shop_vip_tier_8_reward =>
+      'Plat Nama Animasi Premium + 500 Mata Bunga';
+
+  @override
+  String get shop_vip_tier_9_title => 'Galaksi Gemilang';
+
+  @override
+  String get shop_vip_tier_9_reward =>
+      'Kesan Kemasukan Lottie Eksklusif + Khidmat Pelanggan Khas';
+
+  @override
+  String get shop_vip_tier_10_title => 'Kasih Tertinggi';
+
+  @override
+  String get shop_vip_tier_10_reward =>
+      '【Kotak Hadiah VIP Fizikal Eksklusif】 (Surat Tulisan Tangan + Anak Patung Watak)';
+
+  @override
+  String get shop_vip_total_bond => 'Jumlah Ikatan Romantik';
+
+  @override
+  String get shop_vip_all_unlocked =>
+      'Anda telah membuka semua keistimewaan premium!';
+
+  @override
+  String shop_vip_next_unlock(int amount) {
+    return 'Tambah nilai NT\$ $amount lagi untuk membuka tahap seterusnya';
+  }
+
+  @override
+  String get call_connecting => 'Sedang menyambungkan panggilan...';
+
+  @override
+  String get call_listening_auto_send =>
+      'Sedang mendengar... (Akan dihantar secara automatik selepas anda selesai bercakap)';
+
+  @override
+  String get call_listening_release_to_send =>
+      'Sedang mendengar... (Lepaskan untuk menghantar)';
+
+  @override
+  String call_sending_transcript(String text) {
+    return ' $text\n\n(Sedang menghantar...)';
+  }
+
+  @override
+  String get help_translation_fallback =>
+      'Panduan permainan belum tersedia dalam bahasa ini. Bahasa Cina Tradisional akan dipaparkan buat sementara waktu.';
+
+  @override
+  String get help_all_categories => 'Semua';
+
+  @override
+  String get help_subtitle_companion => 'Ciri harian dan alat bantuan berguna';
+
+  @override
+  String get help_subtitle_ai_chat => 'Sembang, suara dan interaksi pintar';
+
+  @override
+  String get help_subtitle_creation => 'Tetapan watak dan ciri penciptaan';
+
+  @override
+  String get help_subtitle_explore => 'Terokai watak dan kandungan permainan';
+
+  @override
+  String get help_subtitle_care => 'Teman yang mesra dan perhatian harian';
+
+  @override
+  String get help_subtitle_general => 'Ciri umum dan panduan penggunaan';
+
+  @override
+  String get chat_interact_fun => '재미있는 활동';
+
+  @override
+  String get memo_notification_permission_missing =>
+      'Kebenaran pemberitahuan belum diaktifkan. Memo masih akan disimpan, tetapi peringatan sistem tidak akan dipaparkan.';
+
+  @override
+  String memo_saved_with_reminder(String characterName) {
+    return 'Memo telah disimpan. $characterName akan mengingatkan anda!';
+  }
+
+  @override
+  String get memo_saved_without_notification =>
+      'Memo telah disimpan, tetapi kebenaran pemberitahuan belum diaktifkan.';
+
+  @override
+  String memo_updated_with_reminder(String characterName) {
+    return 'Memo telah dikemas kini. $characterName akan mengingatkan anda!';
+  }
+
+  @override
+  String get memo_updated_without_notification =>
+      'Memo telah dikemas kini, tetapi kebenaran pemberitahuan tidak diberikan buat masa ini.';
+
+  @override
+  String memo_load_error(String error) {
+    return 'Ralat berlaku semasa memuatkan data: $error';
+  }
+
+  @override
+  String get story_summary_content_required =>
+      'Kandungan cerita tidak boleh kosong';
+
+  @override
+  String get story_summary_edit_hint => 'Tuliskan kisah anda berdua...';
+
+  @override
+  String get profile_section_basic_info => 'Maklumat Asas';
+
+  @override
+  String get profile_section_about_me => 'Tentang Saya';
+
+  @override
+  String get dice_duel_you => 'Anda';
+
+  @override
+  String get dice_duel_result_saved => 'Keputusan pertarungan telah disimpan!';
+
+  @override
+  String get dice_duel_rolling => 'Sedang mengumpulkan tenaga kosmik...';
 }

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 import '../help/help_content_zh.dart';
 import 'help_models.dart';
@@ -240,19 +241,22 @@ class _HelpPageState extends State<HelpPage> {
     color: theme.colorScheme.primary.withValues(alpha: .25),
   );
 
-  Widget _fallback(ThemeData theme) => Container(
-    margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-    padding: const EdgeInsets.all(9),
-    decoration: BoxDecoration(
-      color: theme.colorScheme.primaryContainer.withValues(alpha: .6),
-      borderRadius: BorderRadius.circular(13),
-    ),
-    child: Text(
-      '目前尚未提供此語言的遊玩指南，暫時顯示繁體中文。',
-      textAlign: TextAlign.center,
-      style: _serif(size: 11.5),
-    ),
-  );
+  Widget _fallback(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: const EdgeInsets.all(9),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: .6),
+        borderRadius: BorderRadius.circular(13),
+      ),
+      child: Text(
+        l10n.help_translation_fallback,
+        textAlign: TextAlign.center,
+        style: _serif(size: 11.5),
+      ),
+    );
+  }
 
   Widget _welcome(ThemeData theme, HelpGuideContent content) {
     final primary = theme.colorScheme.primary;
@@ -368,10 +372,11 @@ class _HelpPageState extends State<HelpPage> {
       );
 
   Widget _filters(ThemeData theme, List<HelpCategory> categories) {
+    final l10n = AppLocalizations.of(context)!;
     final entries = <({String? id, String label, String asset})>[
       (
       id: null,
-      label: '全部',
+      label: l10n.help_all_categories,
       asset: 'assets/images/guide/guide_category_moments.png',
       ),
       ...categories.map(
@@ -446,14 +451,23 @@ class _HelpPageState extends State<HelpPage> {
   }
 
   String _subtitle(String title) {
-    if (title.contains('生活') || title.contains('陪伴')) return '日常功能與貼心小幫手';
-    if (title.contains('AI') || title.contains('聊天') || title.contains('語音')) {
-      return '聊天、語音與智慧互動相關';
+    final l10n = AppLocalizations.of(context)!;
+    if (title.contains('生活') || title.contains('陪伴')) {
+      return l10n.help_subtitle_companion;
     }
-    if (title.contains('角色') || title.contains('創作')) return '角色設定與創作功能相關';
-    if (title.contains('搜尋') || title.contains('遊玩')) return '探索角色與遊戲內容';
-    if (title.contains('關懷')) return '溫柔陪伴與日常關懷';
-    return '常見功能與操作說明';
+    if (title.contains('AI') || title.contains('聊天') || title.contains('語音')) {
+      return l10n.help_subtitle_ai_chat;
+    }
+    if (title.contains('角色') || title.contains('創作')) {
+      return l10n.help_subtitle_creation;
+    }
+    if (title.contains('搜尋') || title.contains('遊玩')) {
+      return l10n.help_subtitle_explore;
+    }
+    if (title.contains('關懷')) {
+      return l10n.help_subtitle_care;
+    }
+    return l10n.help_subtitle_general;
   }
 
   String _asset(String title, int index) {

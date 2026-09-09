@@ -9,6 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/app_constants.dart';
 import 'character_model.dart';
 import 'character_profile_page.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+
 
 class RecommendationPage extends StatefulWidget {
   const RecommendationPage({super.key});
@@ -63,6 +65,7 @@ class RecommendationPageState extends State<RecommendationPage> {
   }
 
   Future<void> _loadRecommendations({bool refresh = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     if (refresh) {
       if (mounted) {
         setState(() => _isRefreshing = true);
@@ -202,7 +205,7 @@ class RecommendationPageState extends State<RecommendationPage> {
       setState(() {
         _isLoading = false;
         _isRefreshing = false;
-        _errorMessage = '目前無法載入推薦，請稍後再試。';
+        _errorMessage = l10n.recommendation_load_failed;
       });
     }
   }
@@ -365,17 +368,71 @@ class RecommendationPageState extends State<RecommendationPage> {
     return signals.toList();
   }
 
+
+  String _preferenceTagLabel(
+      String tag,
+      AppLocalizations l10n,
+      ) {
+    switch (tag) {
+      case '溫柔':
+        return l10n.preference_tag_gentle;
+      case '高冷':
+        return l10n.preference_tag_cold;
+      case '腹黑':
+        return l10n.preference_tag_scheming;
+      case '傲嬌':
+        return l10n.preference_tag_tsundere;
+      case '忠犬':
+        return l10n.preference_tag_loyal;
+      case '病嬌':
+        return l10n.preference_tag_yandere;
+      case '神秘':
+        return l10n.preference_tag_mysterious;
+      case '治癒':
+        return l10n.preference_tag_healing;
+      case '反差感':
+        return l10n.preference_tag_gap_moe;
+      case '年上':
+        return l10n.preference_tag_older;
+      case '年下':
+        return l10n.preference_tag_younger;
+      case '霸總':
+        return l10n.preference_tag_ceo;
+      case '校園':
+        return l10n.preference_tag_school;
+      case '職場':
+        return l10n.preference_tag_workplace;
+      case '古風':
+        return l10n.preference_tag_ancient;
+      case '非人':
+        return l10n.preference_tag_nonhuman;
+      default:
+        return tag;
+    }
+  }
+
+  String _translatedTagList(
+      Iterable<String> tags,
+      AppLocalizations l10n, {
+        String separator = '・',
+      }) {
+    return tags
+        .map((tag) => _preferenceTagLabel(tag, l10n))
+        .join(separator);
+  }
+
   String _prettyBehaviorHint(Character character) {
+    final l10n = AppLocalizations.of(context)!;
     final tags = character.personalityTags.where((e) => e.trim().isNotEmpty).take(2).toList();
     if (tags.isNotEmpty) {
-      return '最近常停留在這類型角色';
+      return l10n.recommendation_behavior_hint_similar_type;
     }
 
     if (character.occupation.trim().isNotEmpty) {
-      return '最近互動偏好正在慢慢成形';
+      return l10n.recommendation_behavior_hint_forming;
     }
 
-    return '依照你最近的互動為你整理';
+    return l10n.recommendation_behavior_hint_recent;
   }
 
   String _normalize(String value) {
@@ -469,6 +526,7 @@ class RecommendationPageState extends State<RecommendationPage> {
     final colors = theme.colorScheme;
     final onSurface = colors.onSurface;
     final topInset = MediaQuery.paddingOf(context).top;
+    final l10n = AppLocalizations.of(context)!;
 
     if (_isLoading) {
       return Center(
@@ -505,7 +563,7 @@ class RecommendationPageState extends State<RecommendationPage> {
               OutlinedButton(
                 onPressed: () => _loadRecommendations(),
                 child: Text(
-                  '重新載入',
+                  l10n.recommendation_reload,
                   style: GoogleFonts.notoSerifTc(),
                 ),
               ),
@@ -530,7 +588,7 @@ class RecommendationPageState extends State<RecommendationPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              '目前還沒有可以推薦的角色。',
+              l10n.recommendation_empty,
               textAlign: TextAlign.center,
               style: GoogleFonts.notoSerifTc(
                 fontSize: 14,
@@ -563,7 +621,7 @@ class RecommendationPageState extends State<RecommendationPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '為你挑選的相遇',
+                              l10n.recommendation_title,
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 23,
                                 fontWeight: FontWeight.w700,
@@ -594,7 +652,7 @@ class RecommendationPageState extends State<RecommendationPage> {
                             ),
                           ),
                           child: Text(
-                            '#$tag',
+                            '#${_preferenceTagLabel(tag, l10n)}',
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
@@ -614,8 +672,8 @@ class RecommendationPageState extends State<RecommendationPage> {
           if (_featuredItems.isNotEmpty)
             SliverToBoxAdapter(
               child: _SectionTitle(
-                title: '先看看這幾位',
-                subtitle: '會先放最適合你的幾個相遇。',
+                title: l10n.recommendation_featured_title,
+                subtitle: l10n.recommendation_featured_subtitle,
               ),
             ),
           if (_featuredItems.isNotEmpty)
@@ -634,7 +692,12 @@ class RecommendationPageState extends State<RecommendationPage> {
                       child: _FeaturedRecommendationCard(
                         item: item,
                         imageUrl: _imageUrl(item.character),
-                        reasonText: item.reasonText(_phase, _prettyBehaviorHint(item.character)),
+                        reasonText: item.reasonText(
+                          _phase,
+                          _prettyBehaviorHint(item.character),
+                          l10n,
+                              (tag) => _preferenceTagLabel(tag, l10n),
+                        ),
                         onTap: () => _openCharacter(item.character),
                       ),
                     );
@@ -645,10 +708,10 @@ class RecommendationPageState extends State<RecommendationPage> {
           if (_matchedItems.isNotEmpty)
             SliverToBoxAdapter(
               child: _SectionTitle(
-                title: _phase.useBehaviorPreference ? '越來越像你的偏好' : '依照你一開始喜歡的方向',
+                title: _phase.useBehaviorPreference ? l10n.recommendation_matched_behavior_title : l10n.recommendation_matched_initial_title,
                 subtitle: _phase.useBehaviorPreference
-                    ? '第 4 天後開始，最近互動會一起影響排序。'
-                    : '現在先用你剛開始勾選的標籤，幫你縮小範圍。',
+                    ? l10n.recommendation_matched_behavior_subtitle
+                    : l10n.recommendation_matched_initial_subtitle,
               ),
             ),
           if (_matchedItems.isNotEmpty)
@@ -661,7 +724,12 @@ class RecommendationPageState extends State<RecommendationPage> {
                     child: _CompactRecommendationCard(
                       item: item,
                       imageUrl: _imageUrl(item.character),
-                      reasonText: item.reasonText(_phase, _prettyBehaviorHint(item.character)),
+                      reasonText: item.reasonText(
+                        _phase,
+                        _prettyBehaviorHint(item.character),
+                        l10n,
+                            (tag) => _preferenceTagLabel(tag, l10n),
+                      ),
                       onTap: () => _openCharacter(item.character),
                     ),
                   );
@@ -672,8 +740,8 @@ class RecommendationPageState extends State<RecommendationPage> {
           if (_exploreItems.isNotEmpty)
             SliverToBoxAdapter(
               child: _SectionTitle(
-                title: '也許你會喜歡',
-                subtitle: '保留一些隨機探索，讓您也能偶爾遇見不一樣的人。',
+                title: l10n.recommendation_explore_title,
+                subtitle: l10n.recommendation_explore_subtitle,
               ),
             ),
           if (_exploreItems.isNotEmpty)
@@ -705,7 +773,7 @@ class RecommendationPageState extends State<RecommendationPage> {
                 padding: const EdgeInsets.only(bottom: 18),
                 child: Center(
                   child: Text(
-                    '正在為你整理新的相遇……',
+                    l10n.recommendation_refreshing,
                     style: GoogleFonts.notoSerifTc(
                       fontSize: 12,
                       color: onSurface.withValues(alpha: 0.48),
@@ -775,11 +843,54 @@ class _FeaturedRecommendationCard extends StatelessWidget {
     required this.onTap,
   });
 
+  String _translateKnownPreferenceTag(
+      String tag,
+      AppLocalizations l10n,
+      ) {
+    switch (tag) {
+      case '溫柔':
+        return l10n.preference_tag_gentle;
+      case '高冷':
+        return l10n.preference_tag_cold;
+      case '腹黑':
+        return l10n.preference_tag_scheming;
+      case '傲嬌':
+        return l10n.preference_tag_tsundere;
+      case '忠犬':
+        return l10n.preference_tag_loyal;
+      case '病嬌':
+        return l10n.preference_tag_yandere;
+      case '神秘':
+        return l10n.preference_tag_mysterious;
+      case '治癒':
+        return l10n.preference_tag_healing;
+      case '反差感':
+        return l10n.preference_tag_gap_moe;
+      case '年上':
+        return l10n.preference_tag_older;
+      case '年下':
+        return l10n.preference_tag_younger;
+      case '霸總':
+        return l10n.preference_tag_ceo;
+      case '校園':
+        return l10n.preference_tag_school;
+      case '職場':
+        return l10n.preference_tag_workplace;
+      case '古風':
+        return l10n.preference_tag_ancient;
+      case '非人':
+        return l10n.preference_tag_nonhuman;
+      default:
+        return tag;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final onSurface = colors.onSurface;
     final character = item.character;
+    final l10n = AppLocalizations.of(context)!;
 
     return Material(
       color: Colors.transparent,
@@ -829,7 +940,7 @@ class _FeaturedRecommendationCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
-                            item.initialMatchedTags.isNotEmpty ? '為你推薦' : '精選相遇',
+                            item.initialMatchedTags.isNotEmpty ? l10n.recommendation_badge_for_you : l10n.recommendation_badge_featured,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700,
@@ -902,7 +1013,7 @@ class _FeaturedRecommendationCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(999),
                               ),
                               child: Text(
-                                '#$tag',
+                                '#${_translateKnownPreferenceTag(tag, l10n)}',
                                 style: GoogleFonts.notoSerifTc(
                                   fontSize: 10.5,
                                   color: colors.primary,
@@ -916,7 +1027,7 @@ class _FeaturedRecommendationCard extends StatelessWidget {
                       Text(
                         character.occupation.trim().isNotEmpty
                             ? character.occupation
-                            : '點開看看，也許剛好就是你下一次心動。',
+                            : l10n.recommendation_default_occupation_hint,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.notoSerifTc(
@@ -949,11 +1060,54 @@ class _CompactRecommendationCard extends StatelessWidget {
     required this.onTap,
   });
 
+  String _translateKnownPreferenceTag(
+      String tag,
+      AppLocalizations l10n,
+      ) {
+    switch (tag) {
+      case '溫柔':
+        return l10n.preference_tag_gentle;
+      case '高冷':
+        return l10n.preference_tag_cold;
+      case '腹黑':
+        return l10n.preference_tag_scheming;
+      case '傲嬌':
+        return l10n.preference_tag_tsundere;
+      case '忠犬':
+        return l10n.preference_tag_loyal;
+      case '病嬌':
+        return l10n.preference_tag_yandere;
+      case '神秘':
+        return l10n.preference_tag_mysterious;
+      case '治癒':
+        return l10n.preference_tag_healing;
+      case '反差感':
+        return l10n.preference_tag_gap_moe;
+      case '年上':
+        return l10n.preference_tag_older;
+      case '年下':
+        return l10n.preference_tag_younger;
+      case '霸總':
+        return l10n.preference_tag_ceo;
+      case '校園':
+        return l10n.preference_tag_school;
+      case '職場':
+        return l10n.preference_tag_workplace;
+      case '古風':
+        return l10n.preference_tag_ancient;
+      case '非人':
+        return l10n.preference_tag_nonhuman;
+      default:
+        return tag;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final onSurface = colors.onSurface;
     final character = item.character;
+    final l10n = AppLocalizations.of(context)!;
 
     return Material(
       color: Colors.transparent,
@@ -1034,7 +1188,7 @@ class _CompactRecommendationCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
-                              '#$tag',
+                              '#${_translateKnownPreferenceTag(tag, l10n)}',
                               style: GoogleFonts.notoSerifTc(
                                 fontSize: 10.5,
                                 color: colors.primary,
@@ -1065,11 +1219,54 @@ class _ExploreRecommendationCard extends StatelessWidget {
     required this.onTap,
   });
 
+  String _translateKnownPreferenceTag(
+      String tag,
+      AppLocalizations l10n,
+      ) {
+    switch (tag) {
+      case '溫柔':
+        return l10n.preference_tag_gentle;
+      case '高冷':
+        return l10n.preference_tag_cold;
+      case '腹黑':
+        return l10n.preference_tag_scheming;
+      case '傲嬌':
+        return l10n.preference_tag_tsundere;
+      case '忠犬':
+        return l10n.preference_tag_loyal;
+      case '病嬌':
+        return l10n.preference_tag_yandere;
+      case '神秘':
+        return l10n.preference_tag_mysterious;
+      case '治癒':
+        return l10n.preference_tag_healing;
+      case '反差感':
+        return l10n.preference_tag_gap_moe;
+      case '年上':
+        return l10n.preference_tag_older;
+      case '年下':
+        return l10n.preference_tag_younger;
+      case '霸總':
+        return l10n.preference_tag_ceo;
+      case '校園':
+        return l10n.preference_tag_school;
+      case '職場':
+        return l10n.preference_tag_workplace;
+      case '古風':
+        return l10n.preference_tag_ancient;
+      case '非人':
+        return l10n.preference_tag_nonhuman;
+      default:
+        return tag;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final onSurface = colors.onSurface;
     final character = item.character;
+    final l10n = AppLocalizations.of(context)!;
 
     return Material(
       color: Colors.transparent,
@@ -1119,7 +1316,7 @@ class _ExploreRecommendationCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: Text(
-                            '探索',
+                            l10n.recommendation_badge_explore,
                             style: GoogleFonts.notoSerifTc(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700,
@@ -1149,8 +1346,11 @@ class _ExploreRecommendationCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         character.personalityTags.take(2).join('・').isNotEmpty
-                            ? character.personalityTags.take(2).join('・')
-                            : '換個方向，也許會剛好對上你的心動點。',
+                            ? character.personalityTags
+                            .take(2)
+                            .map((tag) => _translateKnownPreferenceTag(tag, l10n))
+                            .join('・')
+                            : l10n.recommendation_explore_fallback,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.notoSerifTc(
@@ -1215,20 +1415,32 @@ class _RecommendationItem {
     required this.randomTieBreak,
   });
 
-  String reasonText(_RecommendationPhaseInfo phase, String fallbackBehaviorHint) {
+  String reasonText(
+      _RecommendationPhaseInfo phase,
+      String fallbackBehaviorHint,
+      AppLocalizations l10n,
+      String Function(String tag) translateTag,
+      ) {
     if (phase.useBehaviorPreference && behaviorMatchedScore > 0) {
       return fallbackBehaviorHint;
     }
 
     if (initialMatchedTags.isNotEmpty) {
-      return '因為你喜歡・${initialMatchedTags.take(2).join('・')}';
+      final translatedTags = initialMatchedTags
+          .take(2)
+          .map(translateTag)
+          .join('・');
+
+      return l10n.recommendation_reason_liked_tags(
+        translatedTags,
+      );
     }
 
     if (popularityScore > 1.4) {
-      return '最近也有不少人點進去看看';
+      return l10n.recommendation_reason_popular;
     }
 
-    return '也許會是你下一次剛好的相遇';
+    return l10n.recommendation_reason_default;
   }
 }
 

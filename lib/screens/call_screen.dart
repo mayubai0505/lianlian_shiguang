@@ -443,9 +443,10 @@ class _CallOverlayState extends State<CallOverlay> {
   // ==================== 🎤 玩家與系統互動事件 ====================
 
   Future<void> _startFirstGreeting() async {
+    final l10n = AppLocalizations.of(context)!;
     // 🌟 解決文字閃現：一進來就先顯示「接通中」，就不會跑出預設的「請對麥克風說話」了
     setState(() {
-      _sttText = '電話接通中...';
+      _sttText = l10n.call_connecting;
     });
 
     // 使用全域的音效播放器
@@ -461,6 +462,7 @@ class _CallOverlayState extends State<CallOverlay> {
   // ==================== 🎤 智能語音辨識中樞 ====================
 
   void _listen() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_isListening) {
       var status = await Permission.microphone.request();
       if (status != PermissionStatus.granted) return;
@@ -483,7 +485,7 @@ class _CallOverlayState extends State<CallOverlay> {
         setState(() {
           _isListening = true;
           // 🌟 升級點 2：給玩家超清晰的指示，不用再疑惑要不要按停止
-          _sttText = '正在聆聽... (講完會自動發送)';
+          _sttText = l10n.call_listening_auto_send;
         });
 
         _speech.listen(
@@ -629,6 +631,7 @@ class _CallOverlayState extends State<CallOverlay> {
   }
 
   void _startListening() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_isListening) return;
     var status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) return;
@@ -637,7 +640,7 @@ class _CallOverlayState extends State<CallOverlay> {
     if (available) {
       setState(() {
         _isListening = true;
-        _sttText = '正在聆聽... (鬆開手指發送)';
+        _sttText = l10n.call_listening_release_to_send;
       });
 
       _speech.listen(
@@ -658,6 +661,7 @@ class _CallOverlayState extends State<CallOverlay> {
 
   // 🌟 2. 鬆開手指的瞬間：停止並發送
   Future<void> _stopAndSend() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_isListening) return;
 
     // 讓子彈飛一會兒，確保語音引擎收到最後一個字
@@ -669,7 +673,8 @@ class _CallOverlayState extends State<CallOverlay> {
     String textToSend = _sttText ?? '';
     debugPrint("🛑 準備發送的原始文字: $textToSend"); // 🕵️‍♂️ 監視器 1
 
-    if (textToSend.contains('正在聆聽')) {
+    if (textToSend == l10n.call_listening_auto_send ||
+        textToSend == l10n.call_listening_release_to_send) {
       textToSend = ''; // 代表根本沒錄到聲音
     } else {
       textToSend = textToSend.trim();
@@ -680,7 +685,7 @@ class _CallOverlayState extends State<CallOverlay> {
       debugPrint("⚠️ 文字為空，啟動防呆機制，取消發送。"); // 🕵️‍♂️ 監視器 2
       if (mounted) {
         setState(() {
-          _sttText = AppLocalizations.of(context)!.press_mic_to_speak;
+          _sttText = l10n.press_mic_to_speak;
         });
       }
       return;
@@ -690,14 +695,14 @@ class _CallOverlayState extends State<CallOverlay> {
 
     // 成功錄到字，給予發送提示
     setState(() {
-      _sttText = '🗣️ $textToSend\n\n(發送中...)';
+      _sttText = l10n.call_sending_transcript(textToSend);
     });
 
     await Future.delayed(const Duration(milliseconds: 800));
 
     if (mounted) {
       setState(() {
-        _sttText = AppLocalizations.of(context)!.character_thinking(widget.character.name);
+        _sttText = l10n.character_thinking(widget.character.name);
       });
     }
 

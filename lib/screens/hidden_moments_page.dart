@@ -346,6 +346,7 @@ class HiddenMomentsPage extends StatelessWidget {
       ) {
     final theme = Theme.of(context);
     final onSurface = theme.colorScheme.onSurface;
+    final l10n = AppLocalizations.of(context)!;
 
     return Align(
       alignment: const Alignment(0, -0.12),
@@ -375,7 +376,7 @@ class HiddenMomentsPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '暫時還沒有被隱藏的動態喔',
+              l10n.hidden_moments_empty_hint,
               textAlign: TextAlign.center,
               style: GoogleFonts.notoSerifTc(
                 color: onSurface.withValues(alpha: 0.40),

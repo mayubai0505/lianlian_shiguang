@@ -139,7 +139,7 @@ class LanguageSelectionPage extends StatelessWidget {
                                         ),
                                         const SizedBox(height: 5),
                                         Text(
-                                          '選擇你習慣的語言',
+                                          l10n.language_selection_subtitle,
                                           style: GoogleFonts.notoSerifTc(
                                             color: textColor.withValues(
                                               alpha: 0.55,

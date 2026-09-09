@@ -4,6 +4,10 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
+import 'dart:ui' show PlatformDispatcher;
+
+
 class ReminderNotificationService {
   ReminderNotificationService._();
 
@@ -160,6 +164,7 @@ class ReminderNotificationService {
   }
 
   static String _buildCharacterReminderBody({
+    required AppLocalizations l10n,
     required String memoContent,
     String? personalityType,
   }) {
@@ -167,58 +172,58 @@ class ReminderNotificationService {
         personalityType?.trim().toLowerCase() ?? '';
 
     if (type.contains('傲嬌')) {
-      return '我才不是擔心你，只是怕你忘記而已。今天別忘了：$memoContent';
+      return l10n.memo_notification_tsundere(memoContent);
     }
 
     if (type.contains('霸總') ||
         type.contains('強勢') ||
         type.contains('總裁')) {
-      return '行程已經替你記好了，準時完成。今天別忘了：$memoContent';
+      return l10n.memo_notification_dominant(memoContent);
     }
 
     if (type.contains('病嬌')) {
-      return '不可以忘記喔，我可是會一直記得的。今天別忘了：$memoContent';
+      return l10n.memo_notification_yandere(memoContent);
     }
 
     if (type.contains('溫柔') ||
         type.contains('知性') ||
         type.contains('暖男')) {
-      return '怕你忙著忙著就忘了，所以想提醒你一下。今天別忘了：$memoContent';
+      return l10n.memo_notification_gentle(memoContent);
     }
 
     if (type.contains('高冷') ||
         type.contains('冷淡') ||
         type.contains('冷酷')) {
-      return '提醒你一件事。今天別忘了：$memoContent';
+      return l10n.memo_notification_cold(memoContent);
     }
 
     if (type.contains('陽光') ||
         type.contains('活潑') ||
         type.contains('少年')) {
-      return '嘿，今天還有一件重要的事喔！別忘了：$memoContent';
+      return l10n.memo_notification_sunny(memoContent);
     }
 
     if (type.contains('慵懶')) {
-      return '雖然很想繼續躺著，但還是得提醒你。今天別忘了：$memoContent';
+      return l10n.memo_notification_lazy(memoContent);
     }
 
     if (type.contains('年上') ||
         type.contains('哥哥') ||
         type.contains('成熟')) {
-      return '乖，今天的事情別忘記了。記得：$memoContent';
+      return l10n.memo_notification_older(memoContent);
     }
 
     if (type.contains('年下') ||
         type.contains('奶狗')) {
-      return '我有乖乖幫你記住喔！今天別忘了：$memoContent';
+      return l10n.memo_notification_younger(memoContent);
     }
 
     if (type.contains('機械') ||
         type.contains('ai')) {
-      return '提醒事項已啟動。今日任務：$memoContent';
+      return l10n.memo_notification_mechanical(memoContent);
     }
 
-    return '今天別忘了：$memoContent';
+    return l10n.memo_notification_default(memoContent);
   }
 
   static Future<void> scheduleMemoNotification({
@@ -230,6 +235,10 @@ class ReminderNotificationService {
     String? personalityType,
   }) async {
     await initialize();
+
+    final l10n = await AppLocalizations.delegate.load(
+      PlatformDispatcher.instance.locale,
+    );
 
     final now = tz.TZDateTime.now(tz.local);
 
@@ -252,10 +261,10 @@ class ReminderNotificationService {
     final notificationId =
     notificationIdFromMemoId(memoId);
 
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       'memo_reminders',
-      '備忘錄提醒',
-      channelDescription: '由角色提醒玩家已設定的備忘事項',
+      l10n.memo_notification_channel_name,
+      channelDescription: l10n.memo_notification_channel_description,
 
       icon: 'ic_notification',
 
@@ -272,20 +281,21 @@ class ReminderNotificationService {
       presentSound: true,
     );
 
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     final String reminderBody =
     _buildCharacterReminderBody(
+      l10n: l10n,
       memoContent: memoContent,
       personalityType: personalityType,
     );
 
     await _plugin.zonedSchedule(
       id: notificationId,
-      title: '$characterName 提醒你',
+      title: l10n.memo_notification_title(characterName),
       body: reminderBody,
       scheduledDate: scheduledDate,
       notificationDetails: details,

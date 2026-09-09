@@ -3370,5 +3370,781 @@
 
     "feedback_remove_image": "Hapus Gambar",
     "feedback_selected_image": "Gambar Dipilih",
-    "feedback_change_image": "Ganti"
+    "feedback_change_image": "Ganti",
+    "profile_backpack_title": "Ransel dan Hak Istimewa Eksklusif Saya",
+    "profile_backpack_total_spent": "Total Ikatan Romantis Saat Ini",
+    "profile_backpack_total_spent_amount": "NT$ {amount}",
+    "@profile_backpack_total_spent_amount": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+
+    "profile_backpack_physical_gift_status": "Status Pembukaan Kotak Hadiah Fisik:",
+    "profile_backpack_vip_gift_title": "【Kekasih Tertinggi】Kotak Hadiah VIP Fisik Eksklusif",
+    "profile_backpack_vip_gift_contents": "Berisi: surat tulisan tangan eksklusif + boneka karakter + surat ucapan terima kasih resmi",
+
+    "profile_backpack_edit_shipping_info": "Ubah Informasi Alamat Pengiriman",
+    "profile_backpack_unlock_shipping_info": "Telah terbuka! Ketuk di sini untuk mengisi informasi pengiriman",
+    "profile_backpack_shipping_registered": "Alamat pengiriman Anda berhasil didaftarkan. Kami akan segera menyiapkan hadiah Anda!",
+
+    "profile_backpack_amount_remaining": "Hanya perlu NT$ {amount} lagi untuk membuka hadiah fisik utama!",
+    "@profile_backpack_amount_remaining": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+
+    "profile_backpack_hint": "Tips: Tampilan dan bingkai avatar lainnya dapat dilihat di dalam ransel.",
+    "profile_backpack_close": "Tutup",
+
+    "profile_physical_gift_title": "【Kekasih Tertinggi】Kotak Hadiah Fisik Terbuka",
+    "profile_physical_gift_description": "Terima kasih atas dukungan luar biasa Anda untuk 「LoveyDovey」!\nSilakan isi informasi pengiriman berikut. Kami akan mengirimkan surat tulisan tangan eksklusif dan boneka karakter kepada Anda:",
+
+    "profile_physical_gift_recipient_name": "Nama Lengkap Penerima",
+    "profile_physical_gift_phone": "Nomor Telepon",
+    "profile_physical_gift_address": "Alamat Pengiriman Lengkap (Termasuk Kode Pos)",
+    "profile_physical_gift_character_name": "Nama Karakter yang Boneka Perwakilannya Diinginkan",
+    "profile_physical_gift_character_hint": "Contoh: Masukkan nama karakter",
+
+    "profile_physical_gift_fill_later": "Isi Nanti",
+    "profile_physical_gift_required_error": "Lengkapi informasi pengiriman dan masukkan nama karakter pilihan Anda!",
+    "profile_physical_gift_submit_success": "Informasi pengiriman berhasil dikirim! Nantikan kejutan fisik dari kami!",
+    "profile_physical_gift_confirm_submit": "Konfirmasi Pengiriman",
+
+    "profile_tooltip_announcement": "Pengumuman",
+    "profile_tooltip_settings": "Pengaturan",
+    "profile_tooltip_backpack": "Ransel Saya",
+    "profile_backpack_menu_title": "Ransel Saya",
+
+    "profile_about_me_title": "Tentang Saya",
+    "profile_tab_bio_title": "Perkenalan Diri",
+
+    "profile_check_in_done": "Sudah Check-in",
+    "profile_check_in": "Check-in",
+    "profile_check_in_done_subtitle": "Anda telah meninggalkan jejak hari ini",
+    "profile_check_in_not_done_subtitle": "Belum check-in hari ini",
+
+    "profile_likes_label": "Suka",
+    "profile_heartbeat_diary_subtitle": "Catat setiap momen yang mendebarkan",
+
+    "profile_create_scene": "Buat Adegan",
+
+    "profile_link_invalid": "Format tautan tidak valid",
+    "profile_link_open_failed": "Tautan ini tidak dapat dibuka",
+    "profile_link_default_name": "Tautan Saya",
+
+    "profile_publish_moment_short": "Tuliskan Momen Ini",
+    "edit_profile_default_link_name": "Tautan Saya {index}",
+    "@edit_profile_default_link_name": {
+        "placeholders": {
+            "index": {
+                "type": "int"
+            }
+        }
+    },
+
+    "edit_profile_done": "Selesai",
+    "edit_profile_social_links": "Media Sosial & Tautan",
+    "edit_profile_add_link": "Tambah Tautan",
+    "edit_profile_link_name_hint": "Nama Tautan",
+    "edit_profile_link_url_hint": "Masukkan Tautan",
+    "theme_name_starlight": "Ungu Cahaya Bintang",
+    "theme_name_sakura": "Merah Muda Sakura",
+    "theme_name_ocean": "Biru Samudra",
+    "theme_name_sunset": "Oranye Senja",
+    "theme_name_mint": "Mint Hutan",
+    "theme_name_midnight": "Mode Tengah Malam",
+    "theme_name_custom": "Warna Kustom",
+
+    "theme_selection_choose_theme": "Pilih Warna Tema",
+    "theme_selection_title": "Ubah Suasana",
+    "theme_selection_description": "Pilih warna tema yang Anda sukai agar LoveyDovey semakin mencerminkan diri Anda.",
+    "theme_selection_preview": "Pratinjau",
+
+    "theme_selection_characters": "Karakter",
+    "theme_selection_posts": "Postingan",
+
+    "theme_selection_previewing": "Pratinjau saat ini: {themeName}",
+    "@theme_selection_previewing": {
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "theme_selection_apply": "Terapkan Tema",
+    "theme_selection_restore_default": "Pulihkan Bawaan",
+    "theme_selection_choose_color": "Pilih Warna Khas Anda",
+
+    "theme_selection_applied": "“{themeName}” telah diterapkan",
+    "@theme_selection_applied": {
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "welcome_guide_help": "Panduan Bermain",
+    "welcome_guide_start": "Mulai Perjalanan",
+    "welcome_guide_next": "Berikutnya",
+
+    "welcome_guide_welcome_title": "Selamat Datang di 「LoveyDovey」",
+    "welcome_guide_welcome_description": "Di sini, setiap pertemuan dapat menjadi kisah yang tak terlupakan. Semoga 「LoveyDovey」senantiasa menemani Anda menciptakan kenangan indah bersama.",
+
+    "welcome_guide_chat_title": "Mode Obrolan",
+    "welcome_guide_chat_description": "「LoveyDovey」menyediakan berbagai mode obrolan dengan pengalaman interaksi yang berbeda.",
+
+    "welcome_guide_daily_title": "Mode Harian",
+    "welcome_guide_daily_description": "Saling menemani, berbagi keseharian, dan menikmati obrolan santai bersama.",
+
+    "welcome_guide_story_title": "Mode Cerita",
+    "welcome_guide_story_description": "Majukan kisah karakter dan buka lebih banyak alur cerita serta interaksi eksklusif.",
+
+    "welcome_guide_immersive_title": "Mode Imersif",
+    "welcome_guide_immersive_description": "Nikmati percakapan yang lebih mendalam dan terasa nyata.",
+
+    "welcome_guide_chat_more": "Informasi lebih lanjut mengenai mode obrolan dapat dilihat di “Bantuan Game”.",
+
+    "welcome_guide_encounter_title": "Pertemuan",
+    "welcome_guide_encounter_description": "Setiap karakter memiliki kepribadian, kisah, dan suara yang unik. Setelah menemukan karakter yang Anda sukai, tambahkan sebagai teman untuk mengobrol, berinteraksi, berbagi keseharian, dan menciptakan kenangan bersama.",
+
+    "welcome_guide_more_title": "Lebih Banyak Konten",
+    "welcome_guide_more_description": "Tersedia juga koleksi, kreator, toko, dan berbagai fitur menarik lainnya. Kunjungi “Bantuan Game” untuk mengetahui lebih lanjut.",
+    "preference_selection_max_error": "Anda dapat memilih maksimal {count} preferensi.",
+    "@preference_selection_max_error": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+
+    "preference_selection_save_failed": "Preferensi Anda saat ini tidak dapat disimpan. Silakan coba lagi nanti.",
+
+    "preference_selection_title": "Orang seperti apa yang ingin Anda temui?",
+    "preference_selection_description": "Pilih 3–5 tipe yang Anda sukai agar LoveyDovey dapat mulai mengenal Anda.",
+    "preference_selection_recommendation_note": "Rekomendasi akan disesuaikan secara bertahap berdasarkan interaksi Anda agar semakin sesuai dengan selera Anda.",
+    "preference_selection_selected": "Dipilih",
+    "preference_selection_start": "Mulai dari Sini",
+
+    "preference_group_personality": "Kepribadian & Karakter",
+    "preference_group_relationship_age": "Hubungan・Perbedaan Usia",
+    "preference_group_story": "Suasana Cerita",
+
+    "preference_tag_gentle": "Lembut",
+    "preference_tag_cold": "Dingin",
+    "preference_tag_scheming": "Licik",
+    "preference_tag_tsundere": "Tsundere",
+    "preference_tag_loyal": "Setia",
+    "preference_tag_yandere": "Yandere",
+    "preference_tag_mysterious": "Misterius",
+    "preference_tag_healing": "Menenangkan",
+    "preference_tag_gap_moe": "Kontras Tak Terduga",
+
+    "preference_tag_older": "Lebih Tua",
+    "preference_tag_younger": "Lebih Muda",
+
+    "preference_tag_ceo": "CEO Dominan",
+    "preference_tag_school": "Sekolah",
+    "preference_tag_workplace": "Tempat Kerja",
+    "preference_tag_ancient": "Historis",
+    "preference_tag_nonhuman": "Nonmanusia",
+    "encounter_load_failed": "Gagal memuat data pertemuan. Silakan coba lagi nanti.",
+    "encounter_no_available_characters": "Belum ada karakter yang dapat ditemui",
+    "encounter_category_empty": "Saat ini belum ada karakter dalam kategori ini",
+
+    "encounter_category_all": "Semua",
+    "encounter_category_xianxia": "Xianxia",
+    "encounter_category_childhood_friend": "Teman Masa Kecil",
+    "encounter_category_master_disciple": "Guru dan Murid",
+    "encounter_category_sweet_romance": "Romansa Manis",
+    "encounter_category_other": "Lainnya",
+    "character_edit_tab_character_settings": "Pengaturan Karakter",
+    "character_edit_test": "Uji",
+
+    "character_edit_supporting_basic_info": "Informasi Dasar",
+    "character_edit_supporting_main_setting": "Hubungan dengan Karakter Utama",
+    "character_edit_supporting_main_description": "Jelaskan hubungan karakter pendukung ini dengan karakter utama serta perannya dalam cerita.",
+
+    "character_edit_banner_preview_hint": "Ketuk gambar untuk melihat pratinjau ukuran penuh",
+    "character_edit_main_photo_hint": "Gambar pertama akan digunakan sebagai avatar utama",
+    "character_edit_other_photos": "Foto Karakter Lainnya",
+    "character_edit_photo_action_hint": "Ketuk foto untuk melihat pratinjau; ketuk ikon pensil untuk mengedit pengaturannya",
+
+    "character_edit_over_limit_warning": "⚠ {label} melebihi batas {count} karakter. Perbaiki sebelum dipublikasikan.",
+    "@character_edit_over_limit_warning": {
+        "placeholders": {
+            "label": {
+                "type": "String"
+            },
+            "count": {
+                "type": "String"
+            }
+        }
+    },
+    "memo_notification_channel_name": "Pengingat Memo",
+    "memo_notification_channel_description": "Karakter mengingatkan pemain tentang memo yang telah dijadwalkan",
+
+    "memo_notification_title": "{characterName} Mengingatkan Anda",
+    "@memo_notification_title": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_tsundere": "Bukan berarti aku mengkhawatirkanmu. Aku hanya tidak ingin kamu lupa. Hari ini jangan lupa: {memoContent}",
+    "@memo_notification_tsundere": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_dominant": "Jadwalmu sudah kucatat. Selesaikan tepat waktu. Hari ini jangan lupa: {memoContent}",
+    "@memo_notification_dominant": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_yandere": "Kamu tidak boleh lupa, ya. Aku akan terus mengingatnya. Hari ini jangan lupa: {memoContent}",
+    "@memo_notification_yandere": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_gentle": "Aku khawatir kamu akan lupa karena terlalu sibuk, jadi aku ingin mengingatkanmu. Hari ini jangan lupa: {memoContent}",
+    "@memo_notification_gentle": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_cold": "Ada sesuatu yang perlu kuingatkan. Hari ini jangan lupa: {memoContent}",
+    "@memo_notification_cold": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_sunny": "Hei, masih ada satu hal penting hari ini! Jangan lupa: {memoContent}",
+    "@memo_notification_sunny": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_lazy": "Meski rasanya ingin terus rebahan, aku tetap harus mengingatkanmu. Hari ini jangan lupa: {memoContent}",
+    "@memo_notification_lazy": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_older": "Anak baik, jangan lupakan urusanmu hari ini. Ingat: {memoContent}",
+    "@memo_notification_older": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_younger": "Aku sudah mengingatnya baik-baik untukmu! Hari ini jangan lupa: {memoContent}",
+    "@memo_notification_younger": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_mechanical": "Pengingat diaktifkan. Tugas hari ini: {memoContent}",
+    "@memo_notification_mechanical": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_notification_default": "Hari ini jangan lupa: {memoContent}",
+    "@memo_notification_default": {
+        "placeholders": {
+            "memoContent": {
+                "type": "String"
+            }
+        }
+    },
+    "recommendation_load_failed": "Rekomendasi saat ini tidak dapat dimuat. Silakan coba lagi nanti.",
+    "recommendation_reload": "Muat Ulang",
+    "recommendation_empty": "Belum ada karakter yang dapat direkomendasikan.",
+
+    "recommendation_title": "Pertemuan yang Dipilih untuk Anda",
+
+    "recommendation_featured_title": "Lihat Mereka Terlebih Dahulu",
+    "recommendation_featured_subtitle": "Kami akan menampilkan pertemuan yang paling sesuai dengan Anda terlebih dahulu.",
+
+    "recommendation_matched_behavior_title": "Semakin Sesuai dengan Selera Anda",
+    "recommendation_matched_initial_title": "Berdasarkan Preferensi Awal Anda",
+    "recommendation_matched_behavior_subtitle": "Mulai setelah hari keempat, interaksi terbaru Anda juga akan memengaruhi urutan.",
+    "recommendation_matched_initial_subtitle": "Untuk saat ini, kami akan menggunakan tag yang Anda pilih di awal untuk mempersempit pilihan.",
+
+    "recommendation_explore_title": "Mungkin Anda Juga Menyukainya",
+    "recommendation_explore_subtitle": "Kami akan mempertahankan beberapa pilihan acak agar Anda sesekali dapat bertemu seseorang yang berbeda.",
+
+    "recommendation_refreshing": "Menyiapkan pertemuan baru untuk Anda……",
+
+    "recommendation_badge_for_you": "Untuk Anda",
+    "recommendation_badge_featured": "Pertemuan Pilihan",
+    "recommendation_badge_explore": "Jelajahi",
+
+    "recommendation_default_occupation_hint": "Buka dan lihat—mungkin inilah pertemuan berikutnya yang membuat hati Anda berdebar.",
+    "recommendation_explore_fallback": "Coba arah yang berbeda—mungkin justru sesuai dengan hal yang membuat hati Anda berdebar.",
+
+    "recommendation_behavior_hint_similar_type": "Akhir-akhir ini Anda sering melihat karakter jenis ini",
+    "recommendation_behavior_hint_forming": "Preferensi interaksi Anda perlahan mulai terbentuk",
+    "recommendation_behavior_hint_recent": "Dipilih berdasarkan interaksi terbaru Anda",
+
+    "recommendation_reason_liked_tags": "Karena Anda menyukai・{tags}",
+    "@recommendation_reason_liked_tags": {
+        "placeholders": {
+            "tags": {
+                "type": "String"
+            }
+        }
+    },
+
+    "recommendation_reason_popular": "Banyak orang melihat karakter ini belakangan ini",
+    "recommendation_reason_default": "Mungkin inilah pertemuan berikutnya yang tepat untuk Anda",
+    "scene_delete_title": "Hapus Adegan?",
+
+    "scene_delete_content": "Yakin ingin menghapus “{title}”? Adegan yang dihapus tidak dapat dipulihkan.",
+    "@scene_delete_content": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "scene_unnamed": "Adegan Tanpa Judul",
+    "scene_cancel": "Batal",
+    "scene_delete": "Hapus",
+    "scene_delete_failed": "Gagal menghapus. Silakan coba lagi nanti.",
+
+    "scene_start_failed": "Adegan saat ini tidak dapat dimulai. Silakan coba lagi nanti.",
+
+    "scene_end_title": "Akhiri Adegan?",
+    "scene_end_content": "Setelah adegan berakhir, Anda akan kembali ke obrolan biasa. Riwayat percakapan saat ini tidak akan dihapus.",
+    "scene_end_action": "Akhiri Adegan",
+    "scene_ended": "Adegan Telah Berakhir",
+    "scene_end_failed": "Adegan saat ini tidak dapat diakhiri. Silakan coba lagi nanti.",
+
+    "scene_active_label": "Sedang Berlangsung",
+
+    "scene_opening": "Pembuka Karakter: {opening}",
+    "@scene_opening": {
+        "placeholders": {
+            "opening": {
+                "type": "String"
+            }
+        }
+    },
+
+    "scene_edit": "Edit",
+    "scene_start": "Mulai Adegan",
+
+    "scene_creator_load_failed": "Gagal memuat adegan kreator.",
+    "scene_creator_empty_title": "Belum Ada Adegan Kreator",
+    "scene_creator_empty_body": "Kreator karakter ini belum membuat cerita tambahan.",
+
+    "scene_custom_load_failed": "Gagal memuat adegan buatan sendiri.",
+    "scene_custom_empty_title": "Anda Belum Memiliki Adegan Sendiri",
+    "scene_custom_empty_body": "Buat cerita yang hanya menjadi milik Anda untuk ruang obrolan ini.",
+    "scene_add": "Tambah Adegan",
+
+    "scene_title": "Adegan",
+    "scene_tab_creator": "Adegan Kreator",
+    "scene_tab_custom": "Buat Sendiri",
+    "chat_book_player": "Pemain",
+
+    "chat_book_title": "Riwayat Percakapan",
+    "chat_book_export_pdf": "Ekspor PDF",
+
+    "chat_book_brand": "— LoveyDovey",
+    "chat_book_change_cover": "Ganti Sampul",
+    "chat_book_cover_subtitle": "Momen Kita Bersama · Buku Kenangan Percakapan",
+    "chat_book_choose_cover": "Pilih Sampul Buku Kenangan",
+
+    "chat_book_initial_story": "Cerita Awal",
+
+    "chat_book_transcript_title": "{characterName} · Riwayat Percakapan",
+    "@chat_book_transcript_title": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_book_continuation": "{name} · Lanjutan",
+    "@chat_book_continuation": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_book_previous_page": "Halaman Sebelumnya",
+    "chat_book_next_page": "Halaman Berikutnya",
+
+    "chat_book_photo_message": "〔Foto〕",
+    "chat_book_audio_message": "〔Pesan Suara〕",
+    "chat_book_generic_message": "〔Pesan〕",
+
+    "chat_book_export_failed": "Gagal mengekspor PDF: {error}",
+    "@chat_book_export_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "email_policy_open_failed": "Tidak dapat membuka {title}. Periksa koneksi jaringan Anda dan coba lagi.",
+    "@email_policy_open_failed": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_read_instruction": "Buka dan baca {title} selengkapnya terlebih dahulu. Setelah selesai, kembali ke 「LoveyDovey」dan ketuk “Saya Telah Membaca dan Menyetujui”.",
+    "@email_policy_read_instruction": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_opening": "Membuka……",
+
+    "email_policy_read_full": "Baca {title} Selengkapnya",
+    "@email_policy_read_full": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_opened_ready": "{title} telah dibuka. Anda kini dapat mengonfirmasi persetujuan.",
+    "@email_policy_opened_ready": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_not_opened": "{title} belum dibuka.",
+    "@email_policy_not_opened": {
+        "placeholders": {
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+
+    "email_policy_cancel_login": "Batalkan Login",
+    "email_policy_agree": "Saya Telah Membaca dan Menyetujui",
+
+    "email_policy_status_check_failed": "Status persetujuan saat ini tidak dapat diverifikasi. Silakan coba lagi nanti.",
+
+    "email_policy_login_notice": "Saat login pertama kali atau ketika ketentuan diperbarui, Anda akan diminta membaca dan menyetujui Ketentuan Layanan serta Kebijakan Privasi.",
+
+    "email_policy_refresh": "Segarkan",
+    "email_policy_page_load_failed": "Gagal Memuat Halaman",
+    "email_policy_check_network": "Periksa koneksi jaringan Anda dan coba lagi.",
+    "email_policy_reload": "Muat Ulang",
+    "login_method_info_google_title": "Login Cepat dengan Google",
+    "login_method_info_apple_title": "Login dengan Apple",
+    "login_method_info_facebook_title": "Login dengan Facebook",
+    "login_method_info_email_title": "Akun LoveyDovey (Email)",
+    "login_method_info_email_provider": "Akun LoveyDovey (Email)",
+
+    "login_method_info_content": "Login ke 「LoveyDovey」menggunakan {providerName}.\n\nHarap diperhatikan:\n\n• {providerName} dan metode login lainnya menggunakan sistem akun yang berbeda.\n\n• Jika Anda membuat akun menggunakan {providerName}, silakan terus login dengan metode yang sama.\n\n• Data karakter, riwayat obrolan, dan konten yang dibeli tidak dibagikan dengan metode login lainnya.\n\nKami menyarankan agar Anda terus menggunakan metode login yang sama setelah login pertama untuk menghindari pembuatan akun berbeda yang datanya tidak dapat dibagikan.",
+    "@login_method_info_content": {
+        "placeholders": {
+            "providerName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "login_method_info_got_it": "Mengerti",
+    "creator_studio_delete_failed": "Gagal menghapus: {error}",
+    "@creator_studio_delete_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_studio_subtitle": "Simpan inspirasi, atur karakter, dan selesaikan karya Anda secara perlahan",
+
+    "creator_studio_load_failed": "Gagal memuat studio: {error}",
+    "@creator_studio_load_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "creator_studio_add_character": "Tambah Karakter",
+
+    "creator_studio_public_title": "Karakter Publik",
+    "creator_studio_public_subtitle": "Telah diterbitkan dan dapat ditemukan pemain lain",
+    "creator_studio_public_empty": "Belum ada karakter publik",
+
+    "creator_studio_private_title": "Karakter Privat",
+    "creator_studio_private_subtitle": "Hanya dapat dilihat oleh Anda",
+    "creator_studio_private_empty": "Belum ada karakter privat",
+
+    "creator_studio_draft_title": "Draf",
+    "creator_studio_draft_subtitle": "Karya yang belum selesai",
+    "creator_studio_draft_empty": "Belum ada draf yang belum selesai",
+
+    "creator_studio_draft_empty_title": "Belum Ada Draf di Sini",
+    "creator_studio_draft_empty_hint": "Saat inspirasi muncul, catatlah terlebih dahulu di sini",
+
+    "creator_studio_status_public": "Publik",
+    "creator_studio_status_private": "Privat",
+    "creator_studio_status_draft": "Draf",
+
+    "creator_studio_character_load_failed": "Gagal memuat data karakter",
+
+    "creator_studio_delete_draft_tooltip": "Hapus Draf",
+
+    "creator_studio_unnamed_creator": "Kreator Tanpa Nama",
+    "creator_studio_no_bio": "Belum mengisi perkenalan diri",
+    "chat_input_tools": "Fitur",
+    "chat_input_expand_tools": "Tampilkan Fitur",
+    "chat_input_stop": "Hentikan",
+    "chat_input_send": "Kirim",
+    "chat_side_menu_section_chat": "Obrolan",
+    "chat_side_menu_section_relationship": "Hubungan",
+    "chat_side_menu_section_memory": "Kelola Ingatan",
+    "character_navigator_confidential_title": "Berkas Rahasia",
+    "character_navigator_unavailable_message": "Karakter ini mungkin telah dijadikan privat, ditarik dari platform, diarsipkan karena pelanggaran, atau dihapus.",
+    "character_navigator_got_it": "Mengerti",
+
+    "character_navigator_load_failed_title": "Gagal Memuat",
+    "character_navigator_load_failed_message": "Data karakter untuk sementara tidak dapat dimuat. Silakan coba lagi nanti.",
+    "character_navigator_confirm": "OK",
+    "character_profile_add_bookmark": "Simpan Karakter",
+    "character_profile_remove_bookmark": "Hapus dari Tersimpan",
+
+    "character_profile_pronoun_female": "Dia",
+    "character_profile_pronoun_male": "Dia",
+    "character_profile_pronoun_neutral": "Mereka",
+    "chat_home_pin_limit_reached": "Anda dapat menyematkan maksimal 3 obrolan. Lepaskan sematan obrolan lain terlebih dahulu.",
+    "chat_home_pinned_success": "Obrolan Disematkan",
+    "chat_home_unpinned_success": "Sematan Dilepas",
+
+    "chat_home_pin_update_failed": "Gagal memperbarui status sematan: {error}",
+    "@chat_home_pin_update_failed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+
+    "chat_home_unpin": "Lepas Sematan",
+    "chat_home_pin": "Sematkan Obrolan",
+
+    "chat_home_time_label": "Waktu: {time}",
+    "@chat_home_time_label": {
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "main_check_in_already_done": "Anda sudah check-in hari ini",
+    "nav_recommend": "Rekomendasi",
+    "moments_auto_reply_title": "Izinkan AI Membalas Postingan Pemain Secara Otomatis",
+    "moments_auto_reply_description": "Jika diaktifkan, sistem dapat memilih karakter ini untuk membalas postingan pemain.",
+    "hidden_moments_empty_hint": "Belum ada postingan yang disembunyikan",
+    "moment_search_unavailable": "Pencarian untuk sementara tidak tersedia. Silakan coba lagi nanti.",
+    "moment_search_hint": "Cari postingan publik, karakter, atau kreator",
+    "moment_search_instruction": "Masukkan isi postingan, nama karakter, atau nama kreator",
+    "moment_search_no_results": "Postingan publik terkait tidak ditemukan",
+    "settingsErrorTitle": "Terjadi Kesalahan",
+    "settingsChangePasswordSubtitle": "Verifikasi kata sandi saat ini, lalu atur kata sandi login yang baru",
+    "settingsCreatorGuidelines": "Pedoman Kreator",
+    "settingsPlayGuide": "Panduan Bermain",
+    "language_selection_subtitle": "Pilih bahasa yang biasa Anda gunakan",
+    "search_character_hint": "Cari karakter, kreator, pekerjaan, atau tag",
+    "search_character_clear": "Hapus",
+    "search_character_recent": "Pencarian Terbaru",
+    "search_character_load_failed": "Gagal memuat data pencarian. Silakan coba lagi nanti.",
+    "search_character_popular": "Sedang Populer",
+    "search_character_result_count": "Ditemukan {count} karakter",
+    "@search_character_result_count": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shop_tab_monthly": "Paket Bulanan",
+
+    "shop_joined_days": "✦ Anda telah bersama LoveyDovey selama {days} hari ✦",
+    "@shop_joined_days": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+
+    "shop_vip_tier_1_title": "Cinta pada Pandangan Pertama",
+    "shop_vip_tier_1_reward": "20 Poin Bunga + Gelar Pemula Eksklusif",
+
+    "shop_vip_tier_2_title": "Debaran Cahaya",
+    "shop_vip_tier_2_reward": "Bingkai Avatar Eksklusif 【Debaran Cahaya】",
+
+    "shop_vip_tier_3_title": "Bisikan Langit Berbintang",
+    "shop_vip_tier_3_reward": "Gelembung Obrolan Eksklusif + 50 Poin Bunga",
+
+    "shop_vip_tier_4_title": "Senja Romantis",
+    "shop_vip_tier_4_reward": "Ikon Aplikasi Eksklusif",
+
+    "shop_vip_tier_5_title": "Jantung Berdebar",
+    "shop_vip_tier_5_reward": "Efek Ketuk Layar (Lottie) + 100 Poin Bunga",
+
+    "shop_vip_tier_6_title": "Janji Abadi",
+    "shop_vip_tier_6_reward": "Bingkai Avatar Animasi Tingkat Lanjut + 200 Poin Bunga",
+
+    "shop_vip_tier_7_title": "Pertemuan Jiwa",
+    "shop_vip_tier_7_reward": "Efek Gelembung Obrolan Animasi + Gelar Tingkat Lanjut Eksklusif",
+
+    "shop_vip_tier_8_title": "Setia Hanya Untukmu",
+    "shop_vip_tier_8_reward": "Papan Nama Animasi Premium + 500 Poin Bunga",
+
+    "shop_vip_tier_9_title": "Galaksi Gemerlap",
+    "shop_vip_tier_9_reward": "Efek Masuk Lottie Eksklusif + Dukungan Pelanggan Khusus",
+
+    "shop_vip_tier_10_title": "Kekasih Tertinggi",
+    "shop_vip_tier_10_reward": "【Kotak Hadiah VIP Fisik Eksklusif】 (Surat Tulisan Tangan + Boneka Karakter)",
+
+    "shop_vip_total_bond": "Total Ikatan Romantis",
+
+    "shop_vip_all_unlocked": "Anda telah membuka semua hak istimewa premium!",
+
+    "shop_vip_next_unlock": "Isi ulang NT$ {amount} lagi untuk membuka tingkat berikutnya",
+    "@shop_vip_next_unlock": {
+        "placeholders": {
+            "amount": {
+                "type": "int"
+            }
+        }
+    },
+    "call_connecting": "Menghubungkan panggilan...",
+
+    "call_listening_auto_send": "Mendengarkan... (Akan dikirim otomatis setelah Anda selesai berbicara)",
+
+    "call_listening_release_to_send": "Mendengarkan... (Lepaskan untuk mengirim)",
+
+    "call_sending_transcript": " {text}\n\n(Mengirim...)",
+    "@call_sending_transcript": {
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "help_translation_fallback": "Panduan bermain belum tersedia dalam bahasa ini. Untuk sementara, panduan akan ditampilkan dalam bahasa Tionghoa Tradisional.",
+
+    "help_all_categories": "Semua",
+
+    "help_subtitle_companion": "Fitur harian dan alat bantu praktis",
+    "help_subtitle_ai_chat": "Obrolan, suara, dan interaksi pintar",
+    "help_subtitle_creation": "Pengaturan karakter dan fitur kreasi",
+    "help_subtitle_explore": "Jelajahi karakter dan konten game",
+    "help_subtitle_care": "Kebersamaan yang hangat dan perhatian sehari-hari",
+    "help_subtitle_general": "Fitur umum dan petunjuk penggunaan",
+    "chat_interact_fun": "Aktivitas Seru",
+    "memo_notification_permission_missing": "Izin notifikasi belum diaktifkan. Memo akan tetap disimpan, tetapi pengingat sistem tidak akan ditampilkan.",
+
+    "memo_saved_with_reminder": "Memo telah disimpan. {characterName} akan mengingatkanmu!",
+    "@memo_saved_with_reminder": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_saved_without_notification": "Memo telah disimpan, tetapi izin notifikasi belum diaktifkan.",
+
+    "memo_updated_with_reminder": "Memo telah diperbarui. {characterName} akan mengingatkanmu!",
+    "@memo_updated_with_reminder": {
+        "placeholders": {
+            "characterName": {
+                "type": "String"
+            }
+        }
+    },
+
+    "memo_updated_without_notification": "Memo telah diperbarui, tetapi izin notifikasi saat ini belum diberikan.",
+
+    "memo_load_error": "Terjadi kesalahan saat memuat data: {error}",
+    "@memo_load_error": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "story_summary_content_required": "Isi cerita tidak boleh kosong",
+
+    "story_summary_edit_hint": "Tuliskan kisah kalian...",
+    "profile_section_basic_info": "Informasi Dasar",
+    "profile_section_about_me": "Tentang Saya",
+    "dice_duel_you": "Kamu",
+
+    "dice_duel_result_saved": "Hasil duel telah disimpan!",
+
+    "dice_duel_rolling": "Mengumpulkan energi kosmik..."
+
 }

@@ -7069,4 +7069,1231 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get feedback_change_image => 'Thay đổi';
+
+  @override
+  String get profile_backpack_title => 'Ba lô và đặc quyền riêng của tôi';
+
+  @override
+  String get profile_backpack_total_spent => 'Tổng liên kết lãng mạn hiện tại';
+
+  @override
+  String profile_backpack_total_spent_amount(int amount) {
+    return 'NT\$ $amount';
+  }
+
+  @override
+  String get profile_backpack_physical_gift_status =>
+      'Trạng thái mở khóa hộp quà hiện vật:';
+
+  @override
+  String get profile_backpack_vip_gift_title =>
+      '【Tình yêu tối thượng】Hộp quà VIP hiện vật độc quyền';
+
+  @override
+  String get profile_backpack_vip_gift_contents =>
+      'Bao gồm: thư viết tay độc quyền + búp bê đại diện nhân vật + thư cảm ơn chính thức';
+
+  @override
+  String get profile_backpack_edit_shipping_info =>
+      'Chỉnh sửa thông tin nhận hàng';
+
+  @override
+  String get profile_backpack_unlock_shipping_info =>
+      'Đã mở khóa! Nhấn vào đây để nhập thông tin nhận hàng';
+
+  @override
+  String get profile_backpack_shipping_registered =>
+      'Bạn đã đăng ký địa chỉ nhận hàng thành công. Chúng tôi sẽ chuẩn bị quà trong thời gian sớm nhất!';
+
+  @override
+  String profile_backpack_amount_remaining(int amount) {
+    return 'Chỉ còn NT\$ $amount nữa để mở khóa phần thưởng hiện vật lớn!';
+  }
+
+  @override
+  String get profile_backpack_hint =>
+      'Mẹo nhỏ: Bạn có thể xem các giao diện và khung ảnh đại diện khác trong ba lô.';
+
+  @override
+  String get profile_backpack_close => 'Đóng';
+
+  @override
+  String get profile_physical_gift_title =>
+      '【Tình yêu tối thượng】Mở khóa hộp quà hiện vật';
+
+  @override
+  String get profile_physical_gift_description =>
+      'Cảm ơn bạn vì đã luôn hết lòng ủng hộ 《LoveyDovey》!\nVui lòng điền thông tin nhận hàng bên dưới. Chúng tôi sẽ gửi đến bạn thư viết tay độc quyền và búp bê đại diện nhân vật:';
+
+  @override
+  String get profile_physical_gift_recipient_name =>
+      'Họ tên thật của người nhận';
+
+  @override
+  String get profile_physical_gift_phone => 'Số điện thoại liên hệ';
+
+  @override
+  String get profile_physical_gift_address =>
+      'Địa chỉ nhận hàng đầy đủ (bao gồm mã bưu chính)';
+
+  @override
+  String get profile_physical_gift_character_name =>
+      'Tên nhân vật bạn muốn nhận búp bê đại diện';
+
+  @override
+  String get profile_physical_gift_character_hint =>
+      'Ví dụ: Nhập tên nhân vật mong muốn';
+
+  @override
+  String get profile_physical_gift_fill_later => 'Điền sau';
+
+  @override
+  String get profile_physical_gift_required_error =>
+      'Vui lòng điền đầy đủ thông tin nhận hàng và tên nhân vật bạn yêu thích!';
+
+  @override
+  String get profile_physical_gift_submit_success =>
+      'Thông tin nhận hàng đã được gửi thành công! Hãy chờ đón món quà bất ngờ từ chúng tôi!';
+
+  @override
+  String get profile_physical_gift_confirm_submit => 'Xác nhận gửi';
+
+  @override
+  String get profile_tooltip_announcement => 'Thông báo';
+
+  @override
+  String get profile_tooltip_settings => 'Cài đặt';
+
+  @override
+  String get profile_tooltip_backpack => 'Ba lô của tôi';
+
+  @override
+  String get profile_backpack_menu_title => 'Ba lô của tôi';
+
+  @override
+  String get profile_about_me_title => 'Về tôi';
+
+  @override
+  String get profile_tab_bio_title => 'Giới thiệu bản thân';
+
+  @override
+  String get profile_check_in_done => 'Đã điểm danh';
+
+  @override
+  String get profile_check_in => 'Điểm danh';
+
+  @override
+  String get profile_check_in_done_subtitle => 'Hôm nay bạn đã để lại dấu chân';
+
+  @override
+  String get profile_check_in_not_done_subtitle => 'Hôm nay bạn chưa điểm danh';
+
+  @override
+  String get profile_likes_label => 'Lượt thích';
+
+  @override
+  String get profile_heartbeat_diary_subtitle =>
+      'Ghi lại những khoảnh khắc rung động';
+
+  @override
+  String get profile_create_scene => 'Tạo phân cảnh';
+
+  @override
+  String get profile_link_invalid => 'Định dạng liên kết không hợp lệ';
+
+  @override
+  String get profile_link_open_failed => 'Không thể mở liên kết này';
+
+  @override
+  String get profile_link_default_name => 'Liên kết của tôi';
+
+  @override
+  String get profile_publish_moment_short => 'Viết về khoảnh khắc này';
+
+  @override
+  String edit_profile_default_link_name(int index) {
+    return 'Liên kết của tôi $index';
+  }
+
+  @override
+  String get edit_profile_done => 'Hoàn tất';
+
+  @override
+  String get edit_profile_social_links => 'Mạng xã hội và liên kết';
+
+  @override
+  String get edit_profile_add_link => 'Thêm liên kết';
+
+  @override
+  String get edit_profile_link_name_hint => 'Tên liên kết';
+
+  @override
+  String get edit_profile_link_url_hint => 'Nhập liên kết';
+
+  @override
+  String get theme_name_starlight => 'Tím ánh sao';
+
+  @override
+  String get theme_name_sakura => 'Hồng anh đào';
+
+  @override
+  String get theme_name_ocean => 'Xanh đại dương';
+
+  @override
+  String get theme_name_sunset => 'Cam hoàng hôn';
+
+  @override
+  String get theme_name_mint => 'Bạc hà rừng xanh';
+
+  @override
+  String get theme_name_midnight => 'Chế độ đêm';
+
+  @override
+  String get theme_name_custom => 'Màu tùy chỉnh';
+
+  @override
+  String get theme_selection_choose_theme => 'Chọn màu chủ đề';
+
+  @override
+  String get theme_selection_title => 'Thay đổi không khí';
+
+  @override
+  String get theme_selection_description =>
+      'Chọn màu chủ đề bạn yêu thích để LoveyDovey mang đậm phong cách của riêng bạn.';
+
+  @override
+  String get theme_selection_preview => 'Xem trước';
+
+  @override
+  String get theme_selection_characters => 'Nhân vật';
+
+  @override
+  String get theme_selection_posts => 'Bài viết';
+
+  @override
+  String theme_selection_previewing(String themeName) {
+    return 'Đang xem trước: $themeName';
+  }
+
+  @override
+  String get theme_selection_apply => 'Áp dụng chủ đề';
+
+  @override
+  String get theme_selection_restore_default => 'Khôi phục mặc định';
+
+  @override
+  String get theme_selection_choose_color => 'Chọn màu sắc riêng của bạn';
+
+  @override
+  String theme_selection_applied(String themeName) {
+    return 'Đã áp dụng “$themeName”';
+  }
+
+  @override
+  String get welcome_guide_help => 'Hướng dẫn chơi';
+
+  @override
+  String get welcome_guide_start => 'Bắt đầu hành trình';
+
+  @override
+  String get welcome_guide_next => 'Tiếp theo';
+
+  @override
+  String get welcome_guide_welcome_title => 'Chào mừng đến với 《LoveyDovey》';
+
+  @override
+  String get welcome_guide_welcome_description =>
+      'Tại đây, mỗi cuộc gặp gỡ đều có thể trở thành một câu chuyện khó quên. Mong rằng 《LoveyDovey》sẽ luôn đồng hành cùng bạn để tạo nên những kỷ niệm đẹp chỉ thuộc về hai người.';
+
+  @override
+  String get welcome_guide_chat_title => 'Chế độ trò chuyện';
+
+  @override
+  String get welcome_guide_chat_description =>
+      '《LoveyDovey》cung cấp nhiều chế độ trò chuyện, mỗi chế độ mang đến một trải nghiệm tương tác khác nhau.';
+
+  @override
+  String get welcome_guide_daily_title => 'Chế độ thường ngày';
+
+  @override
+  String get welcome_guide_daily_description =>
+      'Ở bên nhau, chia sẻ cuộc sống và tận hưởng những cuộc trò chuyện nhẹ nhàng, thoải mái.';
+
+  @override
+  String get welcome_guide_story_title => 'Chế độ cốt truyện';
+
+  @override
+  String get welcome_guide_story_description =>
+      'Phát triển câu chuyện của nhân vật và mở khóa thêm nhiều tình tiết cùng tương tác độc quyền.';
+
+  @override
+  String get welcome_guide_immersive_title => 'Chế độ nhập vai';
+
+  @override
+  String get welcome_guide_immersive_description =>
+      'Trải nghiệm những cuộc trò chuyện cuốn hút và chân thực hơn.';
+
+  @override
+  String get welcome_guide_chat_more =>
+      'Bạn có thể xem thêm thông tin về các chế độ trò chuyện trong mục “Hướng dẫn trò chơi”.';
+
+  @override
+  String get welcome_guide_encounter_title => 'Gặp gỡ';
+
+  @override
+  String get welcome_guide_encounter_description =>
+      'Mỗi nhân vật đều có tính cách, câu chuyện và giọng nói riêng. Khi gặp được nhân vật mình yêu thích, bạn có thể thêm họ làm bạn, trò chuyện, tương tác, chia sẻ cuộc sống và cùng nhau tạo nên những kỷ niệm riêng.';
+
+  @override
+  String get welcome_guide_more_title => 'Nhiều nội dung hơn';
+
+  @override
+  String get welcome_guide_more_description =>
+      'Ngoài ra còn có bộ sưu tập, nhà sáng tạo, cửa hàng cùng nhiều tính năng phong phú khác. Hãy đến mục “Hướng dẫn trò chơi” để tìm hiểu thêm.';
+
+  @override
+  String preference_selection_max_error(int count) {
+    return 'Bạn chỉ có thể chọn tối đa $count sở thích.';
+  }
+
+  @override
+  String get preference_selection_save_failed =>
+      'Hiện không thể lưu sở thích của bạn, vui lòng thử lại sau.';
+
+  @override
+  String get preference_selection_title =>
+      'Bạn muốn gặp một người như thế nào?';
+
+  @override
+  String get preference_selection_description =>
+      'Chọn 3–5 kiểu người bạn yêu thích để LoveyDovey bắt đầu hiểu bạn hơn.';
+
+  @override
+  String get preference_selection_recommendation_note =>
+      'Sau này, đề xuất sẽ dần được điều chỉnh dựa trên tương tác thực tế để phù hợp với bạn hơn.';
+
+  @override
+  String get preference_selection_selected => 'Đã chọn';
+
+  @override
+  String get preference_selection_start => 'Bắt đầu từ đây';
+
+  @override
+  String get preference_group_personality => 'Tính cách・Khí chất';
+
+  @override
+  String get preference_group_relationship_age => 'Mối quan hệ・Độ tuổi';
+
+  @override
+  String get preference_group_story => 'Không khí câu chuyện';
+
+  @override
+  String get preference_tag_gentle => 'Dịu dàng';
+
+  @override
+  String get preference_tag_cold => 'Lạnh lùng';
+
+  @override
+  String get preference_tag_scheming => 'Thâm sâu';
+
+  @override
+  String get preference_tag_tsundere => 'Tsundere';
+
+  @override
+  String get preference_tag_loyal => 'Trung thành';
+
+  @override
+  String get preference_tag_yandere => 'Yandere';
+
+  @override
+  String get preference_tag_mysterious => 'Bí ẩn';
+
+  @override
+  String get preference_tag_healing => 'Chữa lành';
+
+  @override
+  String get preference_tag_gap_moe => 'Tương phản cuốn hút';
+
+  @override
+  String get preference_tag_older => 'Lớn tuổi hơn';
+
+  @override
+  String get preference_tag_younger => 'Nhỏ tuổi hơn';
+
+  @override
+  String get preference_tag_ceo => 'Tổng tài bá đạo';
+
+  @override
+  String get preference_tag_school => 'Học đường';
+
+  @override
+  String get preference_tag_workplace => 'Công sở';
+
+  @override
+  String get preference_tag_ancient => 'Cổ trang';
+
+  @override
+  String get preference_tag_nonhuman => 'Phi nhân loại';
+
+  @override
+  String get encounter_load_failed =>
+      'Không thể tải dữ liệu gặp gỡ, vui lòng thử lại sau.';
+
+  @override
+  String get encounter_no_available_characters =>
+      'Hiện chưa có nhân vật nào để gặp gỡ';
+
+  @override
+  String get encounter_category_empty =>
+      'Hiện chưa có nhân vật trong danh mục này';
+
+  @override
+  String get encounter_category_all => 'Tất cả';
+
+  @override
+  String get encounter_category_xianxia => 'Tiên hiệp';
+
+  @override
+  String get encounter_category_childhood_friend => 'Thanh mai trúc mã';
+
+  @override
+  String get encounter_category_master_disciple => 'Sư đồ';
+
+  @override
+  String get encounter_category_sweet_romance => 'Ngọt sủng';
+
+  @override
+  String get encounter_category_other => 'Khác';
+
+  @override
+  String get character_edit_tab_character_settings => 'Thiết lập nhân vật';
+
+  @override
+  String get character_edit_test => 'Kiểm tra';
+
+  @override
+  String get character_edit_supporting_basic_info => 'Thông tin cơ bản';
+
+  @override
+  String get character_edit_supporting_main_setting =>
+      'Mối quan hệ với nhân vật chính';
+
+  @override
+  String get character_edit_supporting_main_description =>
+      'Mô tả mối quan hệ giữa nhân vật phụ này với nhân vật chính và vai trò của họ trong câu chuyện.';
+
+  @override
+  String get character_edit_banner_preview_hint =>
+      'Nhấn vào hình ảnh để xem kích thước lớn';
+
+  @override
+  String get character_edit_main_photo_hint =>
+      'Hình ảnh đầu tiên sẽ được dùng làm ảnh đại diện chính';
+
+  @override
+  String get character_edit_other_photos => 'Hình ảnh khác của nhân vật';
+
+  @override
+  String get character_edit_photo_action_hint =>
+      'Nhấn vào hình ảnh để xem trước; nhấn biểu tượng bút chì để chỉnh sửa thiết lập hình ảnh';
+
+  @override
+  String character_edit_over_limit_warning(String label, String count) {
+    return '⚠ $label đã vượt quá giới hạn $count ký tự. Vui lòng chỉnh sửa trước khi đăng.';
+  }
+
+  @override
+  String get memo_notification_channel_name => 'Nhắc nhở ghi chú';
+
+  @override
+  String get memo_notification_channel_description =>
+      'Nhân vật nhắc người chơi về những ghi chú đã thiết lập';
+
+  @override
+  String memo_notification_title(String characterName) {
+    return '$characterName nhắc bạn';
+  }
+
+  @override
+  String memo_notification_tsundere(String memoContent) {
+    return 'Tôi đâu có lo cho bạn, chỉ sợ bạn quên thôi. Hôm nay đừng quên: $memoContent';
+  }
+
+  @override
+  String memo_notification_dominant(String memoContent) {
+    return 'Lịch trình đã được tôi ghi nhớ giúp bạn rồi. Hãy hoàn thành đúng giờ. Hôm nay đừng quên: $memoContent';
+  }
+
+  @override
+  String memo_notification_yandere(String memoContent) {
+    return 'Không được quên đâu nhé, vì tôi sẽ luôn ghi nhớ. Hôm nay đừng quên: $memoContent';
+  }
+
+  @override
+  String memo_notification_gentle(String memoContent) {
+    return 'Sợ bạn bận quá rồi quên mất nên tôi muốn nhắc bạn một chút. Hôm nay đừng quên: $memoContent';
+  }
+
+  @override
+  String memo_notification_cold(String memoContent) {
+    return 'Có một việc cần nhắc bạn. Hôm nay đừng quên: $memoContent';
+  }
+
+  @override
+  String memo_notification_sunny(String memoContent) {
+    return 'Này, hôm nay vẫn còn một việc quan trọng đấy! Đừng quên: $memoContent';
+  }
+
+  @override
+  String memo_notification_lazy(String memoContent) {
+    return 'Dù rất muốn nằm tiếp nhưng tôi vẫn phải nhắc bạn. Hôm nay đừng quên: $memoContent';
+  }
+
+  @override
+  String memo_notification_older(String memoContent) {
+    return 'Ngoan nào, đừng quên việc hôm nay nhé. Hãy nhớ: $memoContent';
+  }
+
+  @override
+  String memo_notification_younger(String memoContent) {
+    return 'Tôi đã ngoan ngoãn nhớ giúp bạn rồi đấy! Hôm nay đừng quên: $memoContent';
+  }
+
+  @override
+  String memo_notification_mechanical(String memoContent) {
+    return 'Đã kích hoạt lời nhắc. Nhiệm vụ hôm nay: $memoContent';
+  }
+
+  @override
+  String memo_notification_default(String memoContent) {
+    return 'Hôm nay đừng quên: $memoContent';
+  }
+
+  @override
+  String get recommendation_load_failed =>
+      'Hiện không thể tải đề xuất, vui lòng thử lại sau.';
+
+  @override
+  String get recommendation_reload => 'Tải lại';
+
+  @override
+  String get recommendation_empty => 'Hiện chưa có nhân vật nào để đề xuất.';
+
+  @override
+  String get recommendation_title => 'Những cuộc gặp gỡ dành riêng cho bạn';
+
+  @override
+  String get recommendation_featured_title => 'Hãy gặp những người này trước';
+
+  @override
+  String get recommendation_featured_subtitle =>
+      'Những cuộc gặp gỡ phù hợp nhất với bạn sẽ được ưu tiên hiển thị.';
+
+  @override
+  String get recommendation_matched_behavior_title =>
+      'Ngày càng gần với sở thích của bạn';
+
+  @override
+  String get recommendation_matched_initial_title =>
+      'Dựa trên sở thích ban đầu của bạn';
+
+  @override
+  String get recommendation_matched_behavior_subtitle =>
+      'Bắt đầu sau ngày thứ 4, những tương tác gần đây cũng sẽ ảnh hưởng đến thứ tự đề xuất.';
+
+  @override
+  String get recommendation_matched_initial_subtitle =>
+      'Hiện tại, chúng tôi sẽ dùng các thẻ bạn chọn lúc đầu để thu hẹp phạm vi.';
+
+  @override
+  String get recommendation_explore_title => 'Có thể bạn cũng sẽ thích';
+
+  @override
+  String get recommendation_explore_subtitle =>
+      'Chúng tôi sẽ giữ lại một số lựa chọn ngẫu nhiên để đôi khi bạn có thể gặp được một người thật khác biệt.';
+
+  @override
+  String get recommendation_refreshing =>
+      'Đang chuẩn bị những cuộc gặp gỡ mới cho bạn……';
+
+  @override
+  String get recommendation_badge_for_you => 'Đề xuất cho bạn';
+
+  @override
+  String get recommendation_badge_featured => 'Gặp gỡ nổi bật';
+
+  @override
+  String get recommendation_badge_explore => 'Khám phá';
+
+  @override
+  String get recommendation_default_occupation_hint =>
+      'Hãy mở ra xem thử, biết đâu đây chính là người tiếp theo khiến bạn rung động.';
+
+  @override
+  String get recommendation_explore_fallback =>
+      'Thử một hướng khác xem sao, biết đâu lại chạm đúng điểm rung động của bạn.';
+
+  @override
+  String get recommendation_behavior_hint_similar_type =>
+      'Gần đây bạn thường dành nhiều thời gian cho kiểu nhân vật này';
+
+  @override
+  String get recommendation_behavior_hint_forming =>
+      'Sở thích tương tác gần đây của bạn đang dần hình thành';
+
+  @override
+  String get recommendation_behavior_hint_recent =>
+      'Được chọn dựa trên những tương tác gần đây của bạn';
+
+  @override
+  String recommendation_reason_liked_tags(String tags) {
+    return 'Vì bạn thích・$tags';
+  }
+
+  @override
+  String get recommendation_reason_popular =>
+      'Gần đây có khá nhiều người ghé xem nhân vật này';
+
+  @override
+  String get recommendation_reason_default =>
+      'Có thể đây sẽ là cuộc gặp gỡ tiếp theo vừa vặn với bạn';
+
+  @override
+  String get scene_delete_title => 'Xóa phân cảnh?';
+
+  @override
+  String scene_delete_content(String title) {
+    return 'Bạn có chắc muốn xóa “$title” không? Sau khi xóa sẽ không thể khôi phục.';
+  }
+
+  @override
+  String get scene_unnamed => 'Phân cảnh chưa đặt tên';
+
+  @override
+  String get scene_cancel => 'Hủy';
+
+  @override
+  String get scene_delete => 'Xóa';
+
+  @override
+  String get scene_delete_failed => 'Không thể xóa, vui lòng thử lại sau.';
+
+  @override
+  String get scene_start_failed =>
+      'Hiện không thể bắt đầu phân cảnh, vui lòng thử lại sau.';
+
+  @override
+  String get scene_end_title => 'Kết thúc phân cảnh?';
+
+  @override
+  String get scene_end_content =>
+      'Sau khi kết thúc, bạn sẽ trở lại trò chuyện thông thường nhưng lịch sử cuộc trò chuyện hiện tại sẽ không bị xóa.';
+
+  @override
+  String get scene_end_action => 'Kết thúc phân cảnh';
+
+  @override
+  String get scene_ended => 'Phân cảnh đã kết thúc';
+
+  @override
+  String get scene_end_failed =>
+      'Hiện không thể kết thúc phân cảnh, vui lòng thử lại sau.';
+
+  @override
+  String get scene_active_label => 'Đang diễn ra';
+
+  @override
+  String scene_opening(String opening) {
+    return 'Mở đầu của nhân vật: $opening';
+  }
+
+  @override
+  String get scene_edit => 'Chỉnh sửa';
+
+  @override
+  String get scene_start => 'Bắt đầu phân cảnh';
+
+  @override
+  String get scene_creator_load_failed =>
+      'Không thể tải phân cảnh của nhà sáng tạo.';
+
+  @override
+  String get scene_creator_empty_title =>
+      'Hiện chưa có phân cảnh của nhà sáng tạo';
+
+  @override
+  String get scene_creator_empty_body =>
+      'Nhà sáng tạo của nhân vật này chưa tạo thêm câu chuyện nào.';
+
+  @override
+  String get scene_custom_load_failed => 'Không thể tải phân cảnh tự tạo.';
+
+  @override
+  String get scene_custom_empty_title => 'Bạn chưa có phân cảnh riêng';
+
+  @override
+  String get scene_custom_empty_body =>
+      'Tạo một câu chuyện chỉ thuộc về bạn dành riêng cho phòng trò chuyện này.';
+
+  @override
+  String get scene_add => 'Thêm phân cảnh';
+
+  @override
+  String get scene_title => 'Phân cảnh';
+
+  @override
+  String get scene_tab_creator => 'Phân cảnh của nhà sáng tạo';
+
+  @override
+  String get scene_tab_custom => 'Tự tạo';
+
+  @override
+  String get chat_book_player => 'Người chơi';
+
+  @override
+  String get chat_book_title => 'Lịch sử trò chuyện';
+
+  @override
+  String get chat_book_export_pdf => 'Xuất PDF';
+
+  @override
+  String get chat_book_brand => '— LoveyDovey';
+
+  @override
+  String get chat_book_change_cover => 'Đổi bìa';
+
+  @override
+  String get chat_book_cover_subtitle =>
+      'Khoảnh khắc bên nhau · Sách kỷ niệm trò chuyện';
+
+  @override
+  String get chat_book_choose_cover => 'Chọn bìa sách kỷ niệm';
+
+  @override
+  String get chat_book_initial_story => 'Câu chuyện ban đầu';
+
+  @override
+  String chat_book_transcript_title(String characterName) {
+    return '$characterName · Lịch sử trò chuyện';
+  }
+
+  @override
+  String chat_book_continuation(String name) {
+    return '$name · Tiếp';
+  }
+
+  @override
+  String get chat_book_previous_page => 'Trang trước';
+
+  @override
+  String get chat_book_next_page => 'Trang tiếp theo';
+
+  @override
+  String get chat_book_photo_message => '〔Hình ảnh〕';
+
+  @override
+  String get chat_book_audio_message => '〔Tin nhắn thoại〕';
+
+  @override
+  String get chat_book_generic_message => '〔Tin nhắn〕';
+
+  @override
+  String chat_book_export_failed(String error) {
+    return 'Không thể xuất PDF: $error';
+  }
+
+  @override
+  String email_policy_open_failed(String title) {
+    return 'Không thể mở $title, vui lòng kiểm tra kết nối mạng rồi thử lại.';
+  }
+
+  @override
+  String email_policy_read_instruction(String title) {
+    return 'Trước tiên, vui lòng mở và đọc toàn bộ $title. Sau khi đọc xong, hãy quay lại 《LoveyDovey》để nhấn “Tôi đã đọc và đồng ý”.';
+  }
+
+  @override
+  String get email_policy_opening => 'Đang mở……';
+
+  @override
+  String email_policy_read_full(String title) {
+    return 'Đọc toàn bộ $title';
+  }
+
+  @override
+  String email_policy_opened_ready(String title) {
+    return 'Đã mở $title. Bạn có thể xác nhận đồng ý.';
+  }
+
+  @override
+  String email_policy_not_opened(String title) {
+    return 'Bạn chưa mở $title.';
+  }
+
+  @override
+  String get email_policy_cancel_login => 'Hủy đăng nhập';
+
+  @override
+  String get email_policy_agree => 'Tôi đã đọc và đồng ý';
+
+  @override
+  String get email_policy_status_check_failed =>
+      'Hiện không thể xác nhận trạng thái đồng ý với điều khoản, vui lòng thử lại sau.';
+
+  @override
+  String get email_policy_login_notice =>
+      'Khi đăng nhập lần đầu hoặc khi điều khoản được cập nhật, hệ thống sẽ yêu cầu bạn đọc và đồng ý với Điều khoản dịch vụ cùng Chính sách quyền riêng tư.';
+
+  @override
+  String get email_policy_refresh => 'Làm mới';
+
+  @override
+  String get email_policy_page_load_failed => 'Không thể tải trang';
+
+  @override
+  String get email_policy_check_network =>
+      'Vui lòng kiểm tra kết nối mạng rồi thử lại.';
+
+  @override
+  String get email_policy_reload => 'Tải lại';
+
+  @override
+  String get login_method_info_google_title => 'Đăng nhập nhanh bằng Google';
+
+  @override
+  String get login_method_info_apple_title => 'Đăng nhập bằng Apple';
+
+  @override
+  String get login_method_info_facebook_title => 'Đăng nhập bằng Facebook';
+
+  @override
+  String get login_method_info_email_title => 'Tài khoản LoveyDovey (Email)';
+
+  @override
+  String get login_method_info_email_provider => 'Tài khoản LoveyDovey (Email)';
+
+  @override
+  String login_method_info_content(String providerName) {
+    return 'Đăng nhập vào 《LoveyDovey》bằng $providerName.\n\nXin lưu ý:\n\n• $providerName và các phương thức đăng nhập khác sử dụng những hệ thống tài khoản riêng biệt.\n\n• Nếu tạo tài khoản bằng $providerName, vui lòng tiếp tục sử dụng cùng phương thức đó để đăng nhập.\n\n• Dữ liệu nhân vật, lịch sử trò chuyện và nội dung đã mua sẽ không được chia sẻ với các phương thức đăng nhập khác.\n\nBạn nên tiếp tục sử dụng cùng một phương thức sau lần đăng nhập đầu tiên để tránh tạo nhiều tài khoản riêng biệt khiến dữ liệu không thể dùng chung.';
+  }
+
+  @override
+  String get login_method_info_got_it => 'Đã hiểu';
+
+  @override
+  String creator_studio_delete_failed(String error) {
+    return 'Không thể xóa: $error';
+  }
+
+  @override
+  String get creator_studio_subtitle =>
+      'Lưu giữ cảm hứng, sắp xếp nhân vật và từ từ hoàn thiện tác phẩm của bạn';
+
+  @override
+  String creator_studio_load_failed(String error) {
+    return 'Không thể tải xưởng sáng tạo: $error';
+  }
+
+  @override
+  String get creator_studio_add_character => 'Thêm nhân vật';
+
+  @override
+  String get creator_studio_public_title => 'Nhân vật công khai';
+
+  @override
+  String get creator_studio_public_subtitle =>
+      'Đã được đăng và người chơi khác có thể khám phá';
+
+  @override
+  String get creator_studio_public_empty => 'Hiện chưa có nhân vật công khai';
+
+  @override
+  String get creator_studio_private_title => 'Nhân vật riêng tư';
+
+  @override
+  String get creator_studio_private_subtitle => 'Chỉ mình bạn có thể nhìn thấy';
+
+  @override
+  String get creator_studio_private_empty => 'Hiện chưa có nhân vật riêng tư';
+
+  @override
+  String get creator_studio_draft_title => 'Bản nháp';
+
+  @override
+  String get creator_studio_draft_subtitle => 'Những tác phẩm chưa hoàn thiện';
+
+  @override
+  String get creator_studio_draft_empty =>
+      'Hiện không có bản nháp nào chưa hoàn thiện';
+
+  @override
+  String get creator_studio_draft_empty_title => 'Chưa có bản nháp nào ở đây';
+
+  @override
+  String get creator_studio_draft_empty_hint =>
+      'Khi có cảm hứng, hãy ghi lại ở đây trước';
+
+  @override
+  String get creator_studio_status_public => 'Công khai';
+
+  @override
+  String get creator_studio_status_private => 'Riêng tư';
+
+  @override
+  String get creator_studio_status_draft => 'Bản nháp';
+
+  @override
+  String get creator_studio_character_load_failed =>
+      'Không thể tải dữ liệu nhân vật';
+
+  @override
+  String get creator_studio_delete_draft_tooltip => 'Xóa bản nháp';
+
+  @override
+  String get creator_studio_unnamed_creator => 'Nhà sáng tạo chưa đặt tên';
+
+  @override
+  String get creator_studio_no_bio => 'Chưa điền phần giới thiệu bản thân';
+
+  @override
+  String get chat_input_tools => 'Tính năng';
+
+  @override
+  String get chat_input_expand_tools => 'Mở rộng tính năng';
+
+  @override
+  String get chat_input_stop => 'Dừng';
+
+  @override
+  String get chat_input_send => 'Gửi';
+
+  @override
+  String get chat_side_menu_section_chat => 'Trò chuyện';
+
+  @override
+  String get chat_side_menu_section_relationship => 'Mối quan hệ';
+
+  @override
+  String get chat_side_menu_section_memory => 'Quản lý ký ức';
+
+  @override
+  String get character_navigator_confidential_title => 'Hồ sơ mật';
+
+  @override
+  String get character_navigator_unavailable_message =>
+      'Nhân vật này có thể đã được chuyển sang riêng tư, gỡ khỏi nền tảng, lưu trữ do vi phạm hoặc bị xóa.';
+
+  @override
+  String get character_navigator_got_it => 'Tôi hiểu rồi';
+
+  @override
+  String get character_navigator_load_failed_title => 'Không thể tải';
+
+  @override
+  String get character_navigator_load_failed_message =>
+      'Tạm thời không thể tải dữ liệu nhân vật, vui lòng thử lại sau.';
+
+  @override
+  String get character_navigator_confirm => 'Xác nhận';
+
+  @override
+  String get character_profile_add_bookmark => 'Lưu nhân vật';
+
+  @override
+  String get character_profile_remove_bookmark => 'Bỏ lưu';
+
+  @override
+  String get character_profile_pronoun_female => 'Cô ấy';
+
+  @override
+  String get character_profile_pronoun_male => 'Anh ấy';
+
+  @override
+  String get character_profile_pronoun_neutral => 'Nhân vật ấy';
+
+  @override
+  String get chat_home_pin_limit_reached =>
+      'Bạn chỉ có thể ghim tối đa 3 cuộc trò chuyện. Vui lòng bỏ ghim một cuộc trò chuyện khác trước.';
+
+  @override
+  String get chat_home_pinned_success => 'Đã ghim cuộc trò chuyện';
+
+  @override
+  String get chat_home_unpinned_success => 'Đã bỏ ghim';
+
+  @override
+  String chat_home_pin_update_failed(String error) {
+    return 'Không thể cập nhật trạng thái ghim: $error';
+  }
+
+  @override
+  String get chat_home_unpin => 'Bỏ ghim';
+
+  @override
+  String get chat_home_pin => 'Ghim cuộc trò chuyện';
+
+  @override
+  String chat_home_time_label(String time) {
+    return 'Thời gian: $time';
+  }
+
+  @override
+  String get main_check_in_already_done => 'Hôm nay bạn đã điểm danh rồi';
+
+  @override
+  String get nav_recommend => 'Đề xuất';
+
+  @override
+  String get moments_auto_reply_title =>
+      'Cho phép AI tự động phản hồi bài viết của người chơi';
+
+  @override
+  String get moments_auto_reply_description =>
+      'Khi bật, hệ thống có thể chọn nhân vật này để phản hồi bài viết của người chơi.';
+
+  @override
+  String get mailOriginalQuestionLabel => 'Câu hỏi ban đầu của bạn';
+
+  @override
+  String get hidden_moments_empty_hint => 'Hiện chưa có bài viết nào bị ẩn';
+
+  @override
+  String get moment_search_unavailable =>
+      'Tính năng tìm kiếm tạm thời không khả dụng, vui lòng thử lại sau.';
+
+  @override
+  String get moment_search_hint =>
+      'Tìm kiếm bài viết công khai, nhân vật hoặc nhà sáng tạo';
+
+  @override
+  String get moment_search_instruction =>
+      'Nhập nội dung bài viết, tên nhân vật hoặc tên nhà sáng tạo';
+
+  @override
+  String get moment_search_no_results =>
+      'Không tìm thấy bài viết công khai liên quan';
+
+  @override
+  String get settingsErrorTitle => 'Đã xảy ra lỗi';
+
+  @override
+  String get settingsChangePasswordSubtitle =>
+      'Xác minh mật khẩu hiện tại rồi thiết lập mật khẩu đăng nhập mới';
+
+  @override
+  String get settingsCreatorGuidelines => 'Quy định dành cho nhà sáng tạo';
+
+  @override
+  String get settingsPlayGuide => 'Hướng dẫn chơi';
+
+  @override
+  String get language_selection_subtitle => 'Chọn ngôn ngữ bạn thường sử dụng';
+
+  @override
+  String get search_character_hint =>
+      'Tìm kiếm nhân vật, nhà sáng tạo, nghề nghiệp hoặc thẻ';
+
+  @override
+  String get search_character_clear => 'Xóa';
+
+  @override
+  String get search_character_recent => 'Tìm kiếm gần đây';
+
+  @override
+  String get search_character_load_failed =>
+      'Không thể tải dữ liệu tìm kiếm, vui lòng thử lại sau.';
+
+  @override
+  String get search_character_popular => 'Đang được yêu thích gần đây';
+
+  @override
+  String search_character_result_count(int count) {
+    return 'Tìm thấy $count nhân vật';
+  }
+
+  @override
+  String get shop_tab_monthly => 'Gói tháng';
+
+  @override
+  String shop_joined_days(int days) {
+    return '✦ Bạn đã đến với LoveyDovey được $days ngày ✦';
+  }
+
+  @override
+  String get shop_vip_tier_1_title => 'Vừa gặp đã yêu';
+
+  @override
+  String get shop_vip_tier_1_reward =>
+      '20 điểm Hoa + danh hiệu người mới độc quyền';
+
+  @override
+  String get shop_vip_tier_2_title => 'Rung động ánh sáng';
+
+  @override
+  String get shop_vip_tier_2_reward =>
+      'Khung ảnh đại diện độc quyền 【Rung động ánh sáng】';
+
+  @override
+  String get shop_vip_tier_3_title => 'Lời thì thầm dưới trời sao';
+
+  @override
+  String get shop_vip_tier_3_reward =>
+      'Bong bóng trò chuyện độc quyền + 50 điểm Hoa';
+
+  @override
+  String get shop_vip_tier_4_title => 'Hoàng hôn lãng mạn';
+
+  @override
+  String get shop_vip_tier_4_reward => 'Biểu tượng ứng dụng độc quyền';
+
+  @override
+  String get shop_vip_tier_5_title => 'Trái tim rung động';
+
+  @override
+  String get shop_vip_tier_5_reward =>
+      'Hiệu ứng chạm màn hình (Lottie) + 100 điểm Hoa';
+
+  @override
+  String get shop_vip_tier_6_title => 'Lời thề vĩnh cửu';
+
+  @override
+  String get shop_vip_tier_6_reward =>
+      'Khung ảnh đại diện động cao cấp + 200 điểm Hoa';
+
+  @override
+  String get shop_vip_tier_7_title => 'Giao hòa tâm hồn';
+
+  @override
+  String get shop_vip_tier_7_reward =>
+      'Hiệu ứng bong bóng trò chuyện động + danh hiệu cao cấp độc quyền';
+
+  @override
+  String get shop_vip_tier_8_title => 'Chỉ đợi riêng người';
+
+  @override
+  String get shop_vip_tier_8_reward =>
+      'Bảng tên động cao cấp nhất + 500 điểm Hoa';
+
+  @override
+  String get shop_vip_tier_9_title => 'Dải ngân hà rực rỡ';
+
+  @override
+  String get shop_vip_tier_9_reward =>
+      'Hiệu ứng xuất hiện Lottie độc quyền + hỗ trợ khách hàng riêng';
+
+  @override
+  String get shop_vip_tier_10_title => 'Tình yêu tối thượng';
+
+  @override
+  String get shop_vip_tier_10_reward =>
+      '【Hộp quà VIP hiện vật độc quyền】 (Thư viết tay + Búp bê nhân vật)';
+
+  @override
+  String get shop_vip_total_bond => 'Liên kết lãng mạn tích lũy';
+
+  @override
+  String get shop_vip_all_unlocked =>
+      'Bạn đã mở khóa toàn bộ đặc quyền cao cấp!';
+
+  @override
+  String shop_vip_next_unlock(int amount) {
+    return 'Nạp thêm NT\$ $amount để mở khóa cấp tiếp theo';
+  }
+
+  @override
+  String get call_connecting => 'Đang kết nối cuộc gọi...';
+
+  @override
+  String get call_listening_auto_send =>
+      'Đang lắng nghe... (Sẽ tự động gửi khi bạn nói xong)';
+
+  @override
+  String get call_listening_release_to_send =>
+      'Đang lắng nghe... (Thả tay để gửi)';
+
+  @override
+  String call_sending_transcript(String text) {
+    return ' $text\n\n(Đang gửi...)';
+  }
+
+  @override
+  String get help_translation_fallback =>
+      'Hiện chưa có hướng dẫn chơi bằng ngôn ngữ này. Hệ thống sẽ tạm thời hiển thị bằng tiếng Trung phồn thể.';
+
+  @override
+  String get help_all_categories => 'Tất cả';
+
+  @override
+  String get help_subtitle_companion =>
+      'Các tính năng hằng ngày và công cụ hỗ trợ hữu ích';
+
+  @override
+  String get help_subtitle_ai_chat =>
+      'Trò chuyện, giọng nói và tương tác thông minh';
+
+  @override
+  String get help_subtitle_creation =>
+      'Thiết lập nhân vật và các tính năng sáng tạo';
+
+  @override
+  String get help_subtitle_explore => 'Khám phá nhân vật và nội dung trò chơi';
+
+  @override
+  String get help_subtitle_care => 'Đồng hành dịu dàng và quan tâm mỗi ngày';
+
+  @override
+  String get help_subtitle_general =>
+      'Các tính năng phổ biến và hướng dẫn sử dụng';
+
+  @override
+  String get chat_interact_fun => 'Hoạt động thú vị';
+
+  @override
+  String get memo_notification_permission_missing =>
+      'Quyền thông báo chưa được bật. Ghi chú vẫn sẽ được lưu nhưng thông báo hệ thống sẽ không hiển thị.';
+
+  @override
+  String memo_saved_with_reminder(String characterName) {
+    return 'Đã lưu ghi chú. $characterName sẽ nhắc bạn!';
+  }
+
+  @override
+  String get memo_saved_without_notification =>
+      'Đã lưu ghi chú nhưng quyền thông báo chưa được bật.';
+
+  @override
+  String memo_updated_with_reminder(String characterName) {
+    return 'Đã cập nhật ghi chú. $characterName sẽ nhắc bạn!';
+  }
+
+  @override
+  String get memo_updated_without_notification =>
+      'Đã cập nhật ghi chú nhưng hiện chưa có quyền thông báo.';
+
+  @override
+  String memo_load_error(String error) {
+    return 'Đã xảy ra lỗi khi tải dữ liệu: $error';
+  }
+
+  @override
+  String get story_summary_content_required =>
+      'Nội dung câu chuyện không được để trống';
+
+  @override
+  String get story_summary_edit_hint => 'Viết nên câu chuyện của hai người...';
+
+  @override
+  String get profile_section_basic_info => 'Thông tin cơ bản';
+
+  @override
+  String get profile_section_about_me => 'Về tôi';
+
+  @override
+  String get dice_duel_you => 'Bạn';
+
+  @override
+  String get dice_duel_result_saved => 'Đã lưu kết quả đối đầu!';
+
+  @override
+  String get dice_duel_rolling => 'Đang hội tụ năng lượng vũ trụ...';
 }

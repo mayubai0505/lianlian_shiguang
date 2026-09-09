@@ -6548,6 +6548,1140 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get feedback_change_image => '更換';
+
+  @override
+  String get profile_backpack_title => '我的專屬背包與特權';
+
+  @override
+  String get profile_backpack_total_spent => '目前累積浪漫羈絆';
+
+  @override
+  String profile_backpack_total_spent_amount(int amount) {
+    return 'NT\$ $amount';
+  }
+
+  @override
+  String get profile_backpack_physical_gift_status => '實體禮盒解鎖狀態：';
+
+  @override
+  String get profile_backpack_vip_gift_title => '【頂級摯愛】實體 VIP 專屬禮盒';
+
+  @override
+  String get profile_backpack_vip_gift_contents => '含：專屬手寫信 + 角色代表娃 + 官方感謝信';
+
+  @override
+  String get profile_backpack_edit_shipping_info => '修改收件地址資訊';
+
+  @override
+  String get profile_backpack_unlock_shipping_info => '已解鎖！點此填寫收件資訊';
+
+  @override
+  String get profile_backpack_shipping_registered => '您已成功登記收件地址，我們會盡快為您準備！';
+
+  @override
+  String profile_backpack_amount_remaining(int amount) {
+    return '還差 NT\$ $amount 即可解鎖實體大賞！';
+  }
+
+  @override
+  String get profile_backpack_hint => '小提示：其他外觀與頭像框可以在背包裡查看喔。';
+
+  @override
+  String get profile_backpack_close => '關閉';
+
+  @override
+  String get profile_physical_gift_title => '【頂級摯愛】實體禮盒解鎖';
+
+  @override
+  String get profile_physical_gift_description =>
+      '感謝玩家對《戀戀拾光》的極致守候！\n請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：';
+
+  @override
+  String get profile_physical_gift_recipient_name => '收件人真實姓名';
+
+  @override
+  String get profile_physical_gift_phone => '聯絡電話';
+
+  @override
+  String get profile_physical_gift_address => '完整收件地址（含郵遞區號）';
+
+  @override
+  String get profile_physical_gift_character_name => '想要收到的角色代表娃名字';
+
+  @override
+  String get profile_physical_gift_character_hint => '例如：欲輸入的角色名稱';
+
+  @override
+  String get profile_physical_gift_fill_later => '稍後填寫';
+
+  @override
+  String get profile_physical_gift_required_error => '請完整填寫收件資訊與心儀的角色名稱喔！';
+
+  @override
+  String get profile_physical_gift_submit_success => '收件資訊已成功送出！請期待我們的實體驚喜！';
+
+  @override
+  String get profile_physical_gift_confirm_submit => '確認送出';
+
+  @override
+  String get profile_tooltip_announcement => '公告';
+
+  @override
+  String get profile_tooltip_settings => '設定';
+
+  @override
+  String get profile_tooltip_backpack => '我的背包';
+
+  @override
+  String get profile_backpack_menu_title => '我的背包';
+
+  @override
+  String get profile_about_me_title => '關於我';
+
+  @override
+  String get profile_tab_bio_title => '自我介紹';
+
+  @override
+  String get profile_check_in_done => '已簽到';
+
+  @override
+  String get profile_check_in => '簽到';
+
+  @override
+  String get profile_check_in_done_subtitle => '今天已留下足跡';
+
+  @override
+  String get profile_check_in_not_done_subtitle => '今日尚未簽到';
+
+  @override
+  String get profile_likes_label => '喜歡';
+
+  @override
+  String get profile_heartbeat_diary_subtitle => '記下心動瞬間';
+
+  @override
+  String get profile_create_scene => '創建劇場';
+
+  @override
+  String get profile_link_invalid => '連結格式不正確';
+
+  @override
+  String get profile_link_open_failed => '無法開啟這個連結';
+
+  @override
+  String get profile_link_default_name => '我的連結';
+
+  @override
+  String get profile_publish_moment_short => '寫下此刻';
+
+  @override
+  String edit_profile_default_link_name(int index) {
+    return '我的連結 $index';
+  }
+
+  @override
+  String get edit_profile_done => '完成';
+
+  @override
+  String get edit_profile_social_links => '社群與連結';
+
+  @override
+  String get edit_profile_add_link => '新增連結';
+
+  @override
+  String get edit_profile_link_name_hint => '連結名稱';
+
+  @override
+  String get edit_profile_link_url_hint => '輸入連結';
+
+  @override
+  String get theme_name_starlight => '拾光紫';
+
+  @override
+  String get theme_name_sakura => '櫻花粉';
+
+  @override
+  String get theme_name_ocean => '湛藍海';
+
+  @override
+  String get theme_name_sunset => '夕陽橙';
+
+  @override
+  String get theme_name_mint => '薄荷森';
+
+  @override
+  String get theme_name_midnight => '深夜模式';
+
+  @override
+  String get theme_name_custom => '自定義色彩';
+
+  @override
+  String get theme_selection_choose_theme => '選擇主題色';
+
+  @override
+  String get theme_selection_title => '更換氛圍';
+
+  @override
+  String get theme_selection_description => '挑選你喜歡的主題色，讓戀戀拾光更像你的樣子。';
+
+  @override
+  String get theme_selection_preview => '預覽效果';
+
+  @override
+  String get theme_selection_characters => '角色';
+
+  @override
+  String get theme_selection_posts => '動態';
+
+  @override
+  String theme_selection_previewing(String themeName) {
+    return '目前預覽：$themeName';
+  }
+
+  @override
+  String get theme_selection_apply => '套用主題';
+
+  @override
+  String get theme_selection_restore_default => '恢復預設';
+
+  @override
+  String get theme_selection_choose_color => '挑選你的專屬色彩';
+
+  @override
+  String theme_selection_applied(String themeName) {
+    return '已套用「$themeName」';
+  }
+
+  @override
+  String get welcome_guide_help => '遊玩指南';
+
+  @override
+  String get welcome_guide_start => '開始旅程';
+
+  @override
+  String get welcome_guide_next => '下一步';
+
+  @override
+  String get welcome_guide_welcome_title => '歡迎來到《戀戀拾光》';
+
+  @override
+  String get welcome_guide_welcome_description =>
+      '在這裡，每一次相遇，都可能成為一段難忘的故事。希望《戀戀拾光》能陪伴你，創造屬於你們的美好回憶。';
+
+  @override
+  String get welcome_guide_chat_title => '聊天模式';
+
+  @override
+  String get welcome_guide_chat_description => '《戀戀拾光》提供多種聊天模式，每種模式都有不同的互動體驗。';
+
+  @override
+  String get welcome_guide_daily_title => '日常模式';
+
+  @override
+  String get welcome_guide_daily_description => '陪伴彼此、分享生活，享受輕鬆自在的聊天時光。';
+
+  @override
+  String get welcome_guide_story_title => '劇情模式';
+
+  @override
+  String get welcome_guide_story_description => '推進角色故事，解鎖更多專屬劇情與互動。';
+
+  @override
+  String get welcome_guide_immersive_title => '沉浸模式';
+
+  @override
+  String get welcome_guide_immersive_description => '體驗更投入、更有臨場感的對話。';
+
+  @override
+  String get welcome_guide_chat_more => '更多聊天模式介紹，可於「遊戲說明」查看。';
+
+  @override
+  String get welcome_guide_encounter_title => '邂逅';
+
+  @override
+  String get welcome_guide_encounter_description =>
+      '每位角色都擁有獨特的個性、故事與聲音。遇見喜歡的角色後，可以加入好友，與他聊天互動、分享生活，一起創造屬於你們的回憶。';
+
+  @override
+  String get welcome_guide_more_title => '更多內容';
+
+  @override
+  String get welcome_guide_more_description =>
+      '還有收藏、創作者、商城等豐富功能，歡迎前往「遊戲說明」了解更多。';
+
+  @override
+  String preference_selection_max_error(int count) {
+    return '最多選擇 $count 個偏好。';
+  }
+
+  @override
+  String get preference_selection_save_failed => '目前無法儲存偏好，請稍後再試。';
+
+  @override
+  String get preference_selection_title => '你想遇見怎樣的人？';
+
+  @override
+  String get preference_selection_description => '選擇 3～5 個你喜歡的類型，戀戀會先從這裡開始認識你。';
+
+  @override
+  String get preference_selection_recommendation_note =>
+      '之後也會依照你的實際互動，慢慢調整更適合你的推薦。';
+
+  @override
+  String get preference_selection_selected => '已選';
+
+  @override
+  String get preference_selection_start => '就從這裡開始';
+
+  @override
+  String get preference_group_personality => '性格氣質';
+
+  @override
+  String get preference_group_relationship_age => '關係・年齡感';
+
+  @override
+  String get preference_group_story => '故事氛圍';
+
+  @override
+  String get preference_tag_gentle => '溫柔';
+
+  @override
+  String get preference_tag_cold => '高冷';
+
+  @override
+  String get preference_tag_scheming => '腹黑';
+
+  @override
+  String get preference_tag_tsundere => '傲嬌';
+
+  @override
+  String get preference_tag_loyal => '忠犬';
+
+  @override
+  String get preference_tag_yandere => '病嬌';
+
+  @override
+  String get preference_tag_mysterious => '神秘';
+
+  @override
+  String get preference_tag_healing => '治癒';
+
+  @override
+  String get preference_tag_gap_moe => '反差感';
+
+  @override
+  String get preference_tag_older => '年上';
+
+  @override
+  String get preference_tag_younger => '年下';
+
+  @override
+  String get preference_tag_ceo => '霸總';
+
+  @override
+  String get preference_tag_school => '校園';
+
+  @override
+  String get preference_tag_workplace => '職場';
+
+  @override
+  String get preference_tag_ancient => '古風';
+
+  @override
+  String get preference_tag_nonhuman => '非人';
+
+  @override
+  String get encounter_load_failed => '邂逅資料載入失敗，請稍後再試。';
+
+  @override
+  String get encounter_no_available_characters => '目前還沒有可以邂逅的角色';
+
+  @override
+  String get encounter_category_empty => '這個分類目前還沒有角色';
+
+  @override
+  String get encounter_category_all => '全部';
+
+  @override
+  String get encounter_category_xianxia => '仙俠';
+
+  @override
+  String get encounter_category_childhood_friend => '青梅竹馬';
+
+  @override
+  String get encounter_category_master_disciple => '師徒';
+
+  @override
+  String get encounter_category_sweet_romance => '甜寵';
+
+  @override
+  String get encounter_category_other => '其他';
+
+  @override
+  String get character_edit_tab_character_settings => '角色設定';
+
+  @override
+  String get character_edit_test => '測試';
+
+  @override
+  String get character_edit_supporting_basic_info => '基本資料';
+
+  @override
+  String get character_edit_supporting_main_setting => '與主角色的設定';
+
+  @override
+  String get character_edit_supporting_main_description =>
+      '描述這名配角與主角色之間的關係，以及他在故事中的位置。';
+
+  @override
+  String get character_edit_banner_preview_hint => '點擊圖片可預覽大圖';
+
+  @override
+  String get character_edit_main_photo_hint => '第一張圖片將作為主要頭像';
+
+  @override
+  String get character_edit_other_photos => '其他角色照片';
+
+  @override
+  String get character_edit_photo_action_hint => '點擊照片可預覽；鉛筆可編輯照片設定';
+
+  @override
+  String character_edit_over_limit_warning(String label, String count) {
+    return '⚠ $label 已超出 $count 字，請修正後再發布。';
+  }
+
+  @override
+  String get memo_notification_channel_name => '備忘錄提醒';
+
+  @override
+  String get memo_notification_channel_description => '由角色提醒玩家已設定的備忘事項';
+
+  @override
+  String memo_notification_title(String characterName) {
+    return '$characterName 提醒你';
+  }
+
+  @override
+  String memo_notification_tsundere(String memoContent) {
+    return '我才不是擔心你，只是怕你忘記而已。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_dominant(String memoContent) {
+    return '行程已經替你記好了，準時完成。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_yandere(String memoContent) {
+    return '不可以忘記喔，我可是會一直記得的。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_gentle(String memoContent) {
+    return '怕你忙著忙著就忘了，所以想提醒你一下。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_cold(String memoContent) {
+    return '提醒你一件事。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_sunny(String memoContent) {
+    return '嘿，今天還有一件重要的事喔！別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_lazy(String memoContent) {
+    return '雖然很想繼續躺著，但還是得提醒你。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_older(String memoContent) {
+    return '乖，今天的事情別忘記了。記得：$memoContent';
+  }
+
+  @override
+  String memo_notification_younger(String memoContent) {
+    return '我有乖乖幫你記住喔！今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_mechanical(String memoContent) {
+    return '提醒事項已啟動。今日任務：$memoContent';
+  }
+
+  @override
+  String memo_notification_default(String memoContent) {
+    return '今天別忘了：$memoContent';
+  }
+
+  @override
+  String get recommendation_load_failed => '目前無法載入推薦，請稍後再試。';
+
+  @override
+  String get recommendation_reload => '重新載入';
+
+  @override
+  String get recommendation_empty => '目前還沒有可以推薦的角色。';
+
+  @override
+  String get recommendation_title => '為你挑選的相遇';
+
+  @override
+  String get recommendation_featured_title => '先看看這幾位';
+
+  @override
+  String get recommendation_featured_subtitle => '會先放最適合你的幾個相遇。';
+
+  @override
+  String get recommendation_matched_behavior_title => '越來越像你的偏好';
+
+  @override
+  String get recommendation_matched_initial_title => '依照你一開始喜歡的方向';
+
+  @override
+  String get recommendation_matched_behavior_subtitle =>
+      '第 4 天後開始，最近互動會一起影響排序。';
+
+  @override
+  String get recommendation_matched_initial_subtitle => '現在先用你剛開始勾選的標籤，幫你縮小範圍。';
+
+  @override
+  String get recommendation_explore_title => '也許你會喜歡';
+
+  @override
+  String get recommendation_explore_subtitle => '保留一些隨機探索，讓你也能偶爾遇見不一樣的人。';
+
+  @override
+  String get recommendation_refreshing => '正在為你整理新的相遇……';
+
+  @override
+  String get recommendation_badge_for_you => '為你推薦';
+
+  @override
+  String get recommendation_badge_featured => '精選相遇';
+
+  @override
+  String get recommendation_badge_explore => '探索';
+
+  @override
+  String get recommendation_default_occupation_hint => '點開看看，也許剛好就是你下一次心動。';
+
+  @override
+  String get recommendation_explore_fallback => '換個方向，也許會剛好對上你的心動點。';
+
+  @override
+  String get recommendation_behavior_hint_similar_type => '最近常停留在這類型角色';
+
+  @override
+  String get recommendation_behavior_hint_forming => '最近互動偏好正在慢慢成形';
+
+  @override
+  String get recommendation_behavior_hint_recent => '依照你最近的互動為你整理';
+
+  @override
+  String recommendation_reason_liked_tags(String tags) {
+    return '因為你喜歡・$tags';
+  }
+
+  @override
+  String get recommendation_reason_popular => '最近也有不少人點進去看看';
+
+  @override
+  String get recommendation_reason_default => '也許會是你下一次剛好的相遇';
+
+  @override
+  String get scene_delete_title => '刪除劇場？';
+
+  @override
+  String scene_delete_content(String title) {
+    return '確定要刪除「$title」嗎？刪除後無法復原。';
+  }
+
+  @override
+  String get scene_unnamed => '未命名劇場';
+
+  @override
+  String get scene_cancel => '取消';
+
+  @override
+  String get scene_delete => '刪除';
+
+  @override
+  String get scene_delete_failed => '刪除失敗，請稍後再試。';
+
+  @override
+  String get scene_start_failed => '目前無法開始劇場，請稍後再試。';
+
+  @override
+  String get scene_end_title => '結束劇場？';
+
+  @override
+  String get scene_end_content => '結束後會回到一般聊天，但目前的對話紀錄不會被刪除。';
+
+  @override
+  String get scene_end_action => '結束劇場';
+
+  @override
+  String get scene_ended => '劇場已結束';
+
+  @override
+  String get scene_end_failed => '目前無法結束劇場，請稍後再試。';
+
+  @override
+  String get scene_active_label => '目前正在進行';
+
+  @override
+  String scene_opening(String opening) {
+    return '角色開場：$opening';
+  }
+
+  @override
+  String get scene_edit => '編輯';
+
+  @override
+  String get scene_start => '開始劇場';
+
+  @override
+  String get scene_creator_load_failed => '創作者劇場讀取失敗。';
+
+  @override
+  String get scene_creator_empty_title => '目前還沒有創作者劇場';
+
+  @override
+  String get scene_creator_empty_body => '這個角色的創作者還沒有建立額外故事。';
+
+  @override
+  String get scene_custom_load_failed => '自行創建劇場讀取失敗。';
+
+  @override
+  String get scene_custom_empty_title => '還沒有自己的劇場';
+
+  @override
+  String get scene_custom_empty_body => '為這間聊天室建立一段只屬於你的故事。';
+
+  @override
+  String get scene_add => '新增劇場';
+
+  @override
+  String get scene_title => '劇場';
+
+  @override
+  String get scene_tab_creator => '創作者劇場';
+
+  @override
+  String get scene_tab_custom => '自行創建';
+
+  @override
+  String get chat_book_player => '玩家';
+
+  @override
+  String get chat_book_title => '對話紀錄';
+
+  @override
+  String get chat_book_export_pdf => '匯出 PDF';
+
+  @override
+  String get chat_book_brand => '— 戀戀拾光';
+
+  @override
+  String get chat_book_change_cover => '更換封面';
+
+  @override
+  String get chat_book_cover_subtitle => '與你的拾光 · 對話紀念書';
+
+  @override
+  String get chat_book_choose_cover => '選擇紀念書封面';
+
+  @override
+  String get chat_book_initial_story => '初始故事';
+
+  @override
+  String chat_book_transcript_title(String characterName) {
+    return '$characterName · 對話紀錄';
+  }
+
+  @override
+  String chat_book_continuation(String name) {
+    return '$name · 續';
+  }
+
+  @override
+  String get chat_book_previous_page => '上一頁';
+
+  @override
+  String get chat_book_next_page => '下一頁';
+
+  @override
+  String get chat_book_photo_message => '〔照片〕';
+
+  @override
+  String get chat_book_audio_message => '〔語音訊息〕';
+
+  @override
+  String get chat_book_generic_message => '〔訊息〕';
+
+  @override
+  String chat_book_export_failed(String error) {
+    return '匯出 PDF 失敗：$error';
+  }
+
+  @override
+  String email_policy_open_failed(String title) {
+    return '無法開啟$title，請確認網路後再試。';
+  }
+
+  @override
+  String email_policy_read_instruction(String title) {
+    return '請先開啟並閱讀完整$title。閱讀後回到《戀戀拾光》，即可按下「我已閱讀並同意」。';
+  }
+
+  @override
+  String get email_policy_opening => '正在開啟……';
+
+  @override
+  String email_policy_read_full(String title) {
+    return '閱讀完整$title';
+  }
+
+  @override
+  String email_policy_opened_ready(String title) {
+    return '已開啟$title，可以確認同意。';
+  }
+
+  @override
+  String email_policy_not_opened(String title) {
+    return '尚未開啟$title。';
+  }
+
+  @override
+  String get email_policy_cancel_login => '取消登入';
+
+  @override
+  String get email_policy_agree => '我已閱讀並同意';
+
+  @override
+  String get email_policy_status_check_failed => '目前無法確認條款狀態，請稍後再試。';
+
+  @override
+  String get email_policy_login_notice => '首次登入或條款更新時，系統將請您閱讀並同意服務條款及隱私權政策。';
+
+  @override
+  String get email_policy_refresh => '重新整理';
+
+  @override
+  String get email_policy_page_load_failed => '頁面載入失敗';
+
+  @override
+  String get email_policy_check_network => '請確認網路連線後再試一次。';
+
+  @override
+  String get email_policy_reload => '重新載入';
+
+  @override
+  String get login_method_info_google_title => 'Google 快速登入';
+
+  @override
+  String get login_method_info_apple_title => 'Apple 登入';
+
+  @override
+  String get login_method_info_facebook_title => 'Facebook 登入';
+
+  @override
+  String get login_method_info_email_title => '戀戀帳號（Email）';
+
+  @override
+  String get login_method_info_email_provider => '戀戀帳號（Email）';
+
+  @override
+  String login_method_info_content(String providerName) {
+    return '使用 $providerName 登入《戀戀拾光》。\n\n請注意：\n\n• $providerName 與其他登入方式為不同帳號系統。\n\n• 若使用 $providerName 建立帳號，請持續使用相同方式登入。\n\n• 角色資料、聊天紀錄與購買內容不會與其他登入方式互通。\n\n建議首次登入後持續使用相同的登入方式，以避免建立不同帳號而導致資料無法共用。';
+  }
+
+  @override
+  String get login_method_info_got_it => '知道了';
+
+  @override
+  String creator_studio_delete_failed(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get creator_studio_subtitle => '收藏靈感，整理角色，慢慢完成你的作品';
+
+  @override
+  String creator_studio_load_failed(String error) {
+    return '工作室讀取失敗：$error';
+  }
+
+  @override
+  String get creator_studio_add_character => '新增角色';
+
+  @override
+  String get creator_studio_public_title => '公開角色';
+
+  @override
+  String get creator_studio_public_subtitle => '已上架，可被其他玩家認識';
+
+  @override
+  String get creator_studio_public_empty => '目前沒有公開角色';
+
+  @override
+  String get creator_studio_private_title => '私人角色';
+
+  @override
+  String get creator_studio_private_subtitle => '只有你自己看得到';
+
+  @override
+  String get creator_studio_private_empty => '目前沒有私人角色';
+
+  @override
+  String get creator_studio_draft_title => '草稿';
+
+  @override
+  String get creator_studio_draft_subtitle => '尚未完成的創作';
+
+  @override
+  String get creator_studio_draft_empty => '目前沒有尚未完成的草稿';
+
+  @override
+  String get creator_studio_draft_empty_title => '這裡還沒有草稿';
+
+  @override
+  String get creator_studio_draft_empty_hint => '靈感來了，就先記在這裡吧';
+
+  @override
+  String get creator_studio_status_public => '已公開';
+
+  @override
+  String get creator_studio_status_private => '私人';
+
+  @override
+  String get creator_studio_status_draft => '草稿';
+
+  @override
+  String get creator_studio_character_load_failed => '角色資料讀取失敗';
+
+  @override
+  String get creator_studio_delete_draft_tooltip => '刪除草稿';
+
+  @override
+  String get creator_studio_unnamed_creator => '未命名創作者';
+
+  @override
+  String get creator_studio_no_bio => '尚未填寫自我介紹';
+
+  @override
+  String get chat_input_tools => '功能';
+
+  @override
+  String get chat_input_expand_tools => '展開功能';
+
+  @override
+  String get chat_input_stop => '停止';
+
+  @override
+  String get chat_input_send => '傳送';
+
+  @override
+  String get chat_side_menu_section_chat => '聊天';
+
+  @override
+  String get chat_side_menu_section_relationship => '關係';
+
+  @override
+  String get chat_side_menu_section_memory => '記憶管理';
+
+  @override
+  String get character_navigator_confidential_title => '機密檔案';
+
+  @override
+  String get character_navigator_unavailable_message =>
+      '此角色可能已轉為私人、下架、違規封存或刪除。';
+
+  @override
+  String get character_navigator_got_it => '我知道了';
+
+  @override
+  String get character_navigator_load_failed_title => '讀取失敗';
+
+  @override
+  String get character_navigator_load_failed_message => '暫時無法讀取角色資料，請稍後再試。';
+
+  @override
+  String get character_navigator_confirm => '確定';
+
+  @override
+  String get character_profile_add_bookmark => '收藏角色';
+
+  @override
+  String get character_profile_remove_bookmark => '取消收藏';
+
+  @override
+  String get character_profile_pronoun_female => '她';
+
+  @override
+  String get character_profile_pronoun_male => '他';
+
+  @override
+  String get character_profile_pronoun_neutral => '它';
+
+  @override
+  String get chat_home_pin_limit_reached => '最多可置頂 3 個聊天室，請先取消其他置頂聊天室。';
+
+  @override
+  String get chat_home_pinned_success => '已置頂聊天室';
+
+  @override
+  String get chat_home_unpinned_success => '已取消置頂';
+
+  @override
+  String chat_home_pin_update_failed(String error) {
+    return '更新置頂狀態失敗：$error';
+  }
+
+  @override
+  String get chat_home_unpin => '取消置頂';
+
+  @override
+  String get chat_home_pin => '置頂聊天室';
+
+  @override
+  String chat_home_time_label(String time) {
+    return '時間：$time';
+  }
+
+  @override
+  String get main_check_in_already_done => '今天已經簽到過囉';
+
+  @override
+  String get nav_recommend => '推薦';
+
+  @override
+  String get moments_auto_reply_title => '允許 AI 自動回覆玩家動態';
+
+  @override
+  String get moments_auto_reply_description => '開啟後，角色才會被系統安排回覆玩家。';
+
+  @override
+  String get mailOriginalQuestionLabel => '你原本詢問';
+
+  @override
+  String get hidden_moments_empty_hint => '暫時還沒有被隱藏的動態喔';
+
+  @override
+  String get moment_search_unavailable => '搜尋暫時無法使用，請稍後再試。';
+
+  @override
+  String get moment_search_hint => '搜尋公開貼文、角色或創作者';
+
+  @override
+  String get moment_search_instruction => '輸入貼文內容、角色名稱或創作者名稱';
+
+  @override
+  String get moment_search_no_results => '找不到相關的公開貼文';
+
+  @override
+  String get settingsErrorTitle => '發生錯誤';
+
+  @override
+  String get settingsChangePasswordSubtitle => '驗證目前密碼後設定新的登入密碼';
+
+  @override
+  String get settingsCreatorGuidelines => '創作者規範';
+
+  @override
+  String get settingsPlayGuide => '遊玩指南';
+
+  @override
+  String get language_selection_subtitle => '選擇你習慣的語言';
+
+  @override
+  String get search_character_hint => '搜尋角色、創作者、職業或標籤';
+
+  @override
+  String get search_character_clear => '清除';
+
+  @override
+  String get search_character_recent => '最近搜尋';
+
+  @override
+  String get search_character_load_failed => '搜尋資料載入失敗，請稍後再試。';
+
+  @override
+  String get search_character_popular => '大家最近都在喜歡';
+
+  @override
+  String search_character_result_count(int count) {
+    return '找到 $count 位角色';
+  }
+
+  @override
+  String get shop_tab_monthly => '月卡專區';
+
+  @override
+  String shop_joined_days(int days) {
+    return '✦ 已來到戀戀拾光 $days 天 ✦';
+  }
+
+  @override
+  String get shop_vip_tier_1_title => '初見傾心';
+
+  @override
+  String get shop_vip_tier_1_reward => '20 點花花 + 專屬新手稱號';
+
+  @override
+  String get shop_vip_tier_2_title => '微光悸動';
+
+  @override
+  String get shop_vip_tier_2_reward => '專屬頭像框【微光悸動】';
+
+  @override
+  String get shop_vip_tier_3_title => '星空呢喃';
+
+  @override
+  String get shop_vip_tier_3_reward => '專屬聊天氣泡 + 50 點花花';
+
+  @override
+  String get shop_vip_tier_4_title => '浪漫夕陽';
+
+  @override
+  String get shop_vip_tier_4_reward => '專屬 App 桌面圖示 (Icon)';
+
+  @override
+  String get shop_vip_tier_5_title => '怦然心動';
+
+  @override
+  String get shop_vip_tier_5_reward => '點擊螢幕特效 (Lottie) + 100 點花花';
+
+  @override
+  String get shop_vip_tier_6_title => '永恆誓約';
+
+  @override
+  String get shop_vip_tier_6_reward => '進階動態頭像框 + 200 點花花';
+
+  @override
+  String get shop_vip_tier_7_title => '靈魂交會';
+
+  @override
+  String get shop_vip_tier_7_reward => '動態聊天氣泡特效 + 專屬進階稱號';
+
+  @override
+  String get shop_vip_tier_8_title => '專屬守候';
+
+  @override
+  String get shop_vip_tier_8_reward => '頂級動態名牌 + 500 點花花';
+
+  @override
+  String get shop_vip_tier_9_title => '璀璨星河';
+
+  @override
+  String get shop_vip_tier_9_reward => '專屬進場 Lottie 特效 + 專屬客服';
+
+  @override
+  String get shop_vip_tier_10_title => '頂級摯愛';
+
+  @override
+  String get shop_vip_tier_10_reward => '【實體 VIP 專屬禮盒】(手寫信+代表娃)';
+
+  @override
+  String get shop_vip_total_bond => '累積浪漫羈絆';
+
+  @override
+  String get shop_vip_all_unlocked => '您已解鎖所有頂級特權！';
+
+  @override
+  String shop_vip_next_unlock(int amount) {
+    return '再儲值 NT\$ $amount 即可解鎖下一階';
+  }
+
+  @override
+  String get call_connecting => '電話接通中...';
+
+  @override
+  String get call_listening_auto_send => '正在聆聽... (講完會自動發送)';
+
+  @override
+  String get call_listening_release_to_send => '正在聆聽... (鬆開手指發送)';
+
+  @override
+  String call_sending_transcript(String text) {
+    return ' $text\n\n(發送中...)';
+  }
+
+  @override
+  String get help_translation_fallback => '目前尚未提供此語言的遊玩指南，暫時顯示繁體中文。';
+
+  @override
+  String get help_all_categories => '全部';
+
+  @override
+  String get help_subtitle_companion => '日常功能與貼心小幫手';
+
+  @override
+  String get help_subtitle_ai_chat => '聊天、語音與智慧互動相關';
+
+  @override
+  String get help_subtitle_creation => '角色設定與創作功能相關';
+
+  @override
+  String get help_subtitle_explore => '探索角色與遊戲內容';
+
+  @override
+  String get help_subtitle_care => '溫柔陪伴與日常關懷';
+
+  @override
+  String get help_subtitle_general => '常見功能與操作說明';
+
+  @override
+  String get chat_interact_fun => '趣味玩法';
+
+  @override
+  String get memo_notification_permission_missing =>
+      '尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。';
+
+  @override
+  String memo_saved_with_reminder(String characterName) {
+    return '備忘錄已儲存，$characterName 會提醒你！';
+  }
+
+  @override
+  String get memo_saved_without_notification => '備忘錄已儲存，但尚未開啟通知權限。';
+
+  @override
+  String memo_updated_with_reminder(String characterName) {
+    return '備忘錄已更新，$characterName 會提醒你！';
+  }
+
+  @override
+  String get memo_updated_without_notification => '備忘錄已更新，但目前沒有通知權限。';
+
+  @override
+  String memo_load_error(String error) {
+    return '讀取資料時發生錯誤: $error';
+  }
+
+  @override
+  String get story_summary_content_required => '故事內容不能是空的';
+
+  @override
+  String get story_summary_edit_hint => '寫下你們的故事...';
+
+  @override
+  String get profile_section_basic_info => '基本資料';
+
+  @override
+  String get profile_section_about_me => '關於這個我';
+
+  @override
+  String get dice_duel_you => '你';
+
+  @override
+  String get dice_duel_result_saved => '對決結果已封存！';
+
+  @override
+  String get dice_duel_rolling => '宇宙能量匯聚中...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -13093,6 +14227,1137 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get feedback_change_image => '更换';
+
+  @override
+  String get profile_backpack_title => '我的专属背包与特权';
+
+  @override
+  String get profile_backpack_total_spent => '目前累计浪漫羁绊';
+
+  @override
+  String profile_backpack_total_spent_amount(int amount) {
+    return 'NT\$ $amount';
+  }
+
+  @override
+  String get profile_backpack_physical_gift_status => '实体礼盒解锁状态：';
+
+  @override
+  String get profile_backpack_vip_gift_title => '【顶级挚爱】实体 VIP 专属礼盒';
+
+  @override
+  String get profile_backpack_vip_gift_contents => '含：专属手写信 + 角色代表娃 + 官方感谢信';
+
+  @override
+  String get profile_backpack_edit_shipping_info => '修改收件地址信息';
+
+  @override
+  String get profile_backpack_unlock_shipping_info => '已解锁！点击此处填写收件信息';
+
+  @override
+  String get profile_backpack_shipping_registered => '您已成功登记收件地址，我们会尽快为您准备！';
+
+  @override
+  String profile_backpack_amount_remaining(int amount) {
+    return '还差 NT\$ $amount 即可解锁实体大奖！';
+  }
+
+  @override
+  String get profile_backpack_hint => '小提示：其他外观与头像框可以在背包里查看哦。';
+
+  @override
+  String get profile_backpack_close => '关闭';
+
+  @override
+  String get profile_physical_gift_title => '【顶级挚爱】实体礼盒解锁';
+
+  @override
+  String get profile_physical_gift_description =>
+      '感谢玩家对《恋恋拾光》的极致守候！\n请填写以下收件信息，我们将为您寄送专属手写信与角色代表娃娃：';
+
+  @override
+  String get profile_physical_gift_recipient_name => '收件人真实姓名';
+
+  @override
+  String get profile_physical_gift_phone => '联系电话';
+
+  @override
+  String get profile_physical_gift_address => '完整收件地址（含邮政编码）';
+
+  @override
+  String get profile_physical_gift_character_name => '想要收到的角色代表娃名字';
+
+  @override
+  String get profile_physical_gift_character_hint => '例如：想要的角色名称';
+
+  @override
+  String get profile_physical_gift_fill_later => '稍后填写';
+
+  @override
+  String get profile_physical_gift_required_error => '请完整填写收件信息与心仪的角色名称哦！';
+
+  @override
+  String get profile_physical_gift_submit_success => '收件信息已成功提交！请期待我们的实体惊喜！';
+
+  @override
+  String get profile_physical_gift_confirm_submit => '确认提交';
+
+  @override
+  String get profile_tooltip_announcement => '公告';
+
+  @override
+  String get profile_tooltip_settings => '设置';
+
+  @override
+  String get profile_tooltip_backpack => '我的背包';
+
+  @override
+  String get profile_backpack_menu_title => '我的背包';
+
+  @override
+  String get profile_about_me_title => '关于我';
+
+  @override
+  String get profile_tab_bio_title => '自我介绍';
+
+  @override
+  String get profile_check_in_done => '已签到';
+
+  @override
+  String get profile_check_in => '签到';
+
+  @override
+  String get profile_check_in_done_subtitle => '今天已留下足迹';
+
+  @override
+  String get profile_check_in_not_done_subtitle => '今日尚未签到';
+
+  @override
+  String get profile_likes_label => '喜欢';
+
+  @override
+  String get profile_heartbeat_diary_subtitle => '记下心动瞬间';
+
+  @override
+  String get profile_create_scene => '创建剧场';
+
+  @override
+  String get profile_link_invalid => '链接格式不正确';
+
+  @override
+  String get profile_link_open_failed => '无法打开这个链接';
+
+  @override
+  String get profile_link_default_name => '我的链接';
+
+  @override
+  String get profile_publish_moment_short => '写下此刻';
+
+  @override
+  String edit_profile_default_link_name(int index) {
+    return '我的链接 $index';
+  }
+
+  @override
+  String get edit_profile_done => '完成';
+
+  @override
+  String get edit_profile_social_links => '社交平台与链接';
+
+  @override
+  String get edit_profile_add_link => '新增链接';
+
+  @override
+  String get edit_profile_link_name_hint => '链接名称';
+
+  @override
+  String get edit_profile_link_url_hint => '输入链接';
+
+  @override
+  String get theme_name_starlight => '拾光紫';
+
+  @override
+  String get theme_name_sakura => '樱花粉';
+
+  @override
+  String get theme_name_ocean => '湛蓝海';
+
+  @override
+  String get theme_name_sunset => '夕阳橙';
+
+  @override
+  String get theme_name_mint => '薄荷森';
+
+  @override
+  String get theme_name_midnight => '深夜模式';
+
+  @override
+  String get theme_name_custom => '自定义色彩';
+
+  @override
+  String get theme_selection_choose_theme => '选择主题色';
+
+  @override
+  String get theme_selection_title => '更换氛围';
+
+  @override
+  String get theme_selection_description => '挑选你喜欢的主题色，让恋恋拾光更像你的样子。';
+
+  @override
+  String get theme_selection_preview => '预览效果';
+
+  @override
+  String get theme_selection_characters => '角色';
+
+  @override
+  String get theme_selection_posts => '动态';
+
+  @override
+  String theme_selection_previewing(String themeName) {
+    return '当前预览：$themeName';
+  }
+
+  @override
+  String get theme_selection_apply => '应用主题';
+
+  @override
+  String get theme_selection_restore_default => '恢复默认';
+
+  @override
+  String get theme_selection_choose_color => '挑选你的专属色彩';
+
+  @override
+  String theme_selection_applied(String themeName) {
+    return '已应用“$themeName”';
+  }
+
+  @override
+  String get welcome_guide_help => '游玩指南';
+
+  @override
+  String get welcome_guide_start => '开始旅程';
+
+  @override
+  String get welcome_guide_next => '下一步';
+
+  @override
+  String get welcome_guide_welcome_title => '欢迎来到《恋恋拾光》';
+
+  @override
+  String get welcome_guide_welcome_description =>
+      '在这里，每一次相遇，都可能成为一段难忘的故事。希望《恋恋拾光》能陪伴你，创造属于你们的美好回忆。';
+
+  @override
+  String get welcome_guide_chat_title => '聊天模式';
+
+  @override
+  String get welcome_guide_chat_description => '《恋恋拾光》提供多种聊天模式，每种模式都有不同的互动体验。';
+
+  @override
+  String get welcome_guide_daily_title => '日常模式';
+
+  @override
+  String get welcome_guide_daily_description => '陪伴彼此、分享生活，享受轻松自在的聊天时光。';
+
+  @override
+  String get welcome_guide_story_title => '剧情模式';
+
+  @override
+  String get welcome_guide_story_description => '推进角色故事，解锁更多专属剧情与互动。';
+
+  @override
+  String get welcome_guide_immersive_title => '沉浸模式';
+
+  @override
+  String get welcome_guide_immersive_description => '体验更投入、更有临场感的对话。';
+
+  @override
+  String get welcome_guide_chat_more => '更多聊天模式介绍，可在“游戏说明”中查看。';
+
+  @override
+  String get welcome_guide_encounter_title => '邂逅';
+
+  @override
+  String get welcome_guide_encounter_description =>
+      '每位角色都拥有独特的个性、故事与声音。遇见喜欢的角色后，可以添加好友，与其聊天互动、分享生活，一起创造属于你们的回忆。';
+
+  @override
+  String get welcome_guide_more_title => '更多内容';
+
+  @override
+  String get welcome_guide_more_description =>
+      '还有收藏、创作者、商城等丰富功能，欢迎前往“游戏说明”了解更多。';
+
+  @override
+  String preference_selection_max_error(int count) {
+    return '最多选择 $count 个偏好。';
+  }
+
+  @override
+  String get preference_selection_save_failed => '目前无法保存偏好，请稍后再试。';
+
+  @override
+  String get preference_selection_title => '你想遇见怎样的人？';
+
+  @override
+  String get preference_selection_description => '选择 3～5 个你喜欢的类型，恋恋会先从这里开始认识你。';
+
+  @override
+  String get preference_selection_recommendation_note =>
+      '之后也会根据你的实际互动，慢慢调整更适合你的推荐。';
+
+  @override
+  String get preference_selection_selected => '已选';
+
+  @override
+  String get preference_selection_start => '就从这里开始';
+
+  @override
+  String get preference_group_personality => '性格气质';
+
+  @override
+  String get preference_group_relationship_age => '关系・年龄感';
+
+  @override
+  String get preference_group_story => '故事氛围';
+
+  @override
+  String get preference_tag_gentle => '温柔';
+
+  @override
+  String get preference_tag_cold => '高冷';
+
+  @override
+  String get preference_tag_scheming => '腹黑';
+
+  @override
+  String get preference_tag_tsundere => '傲娇';
+
+  @override
+  String get preference_tag_loyal => '忠犬';
+
+  @override
+  String get preference_tag_yandere => '病娇';
+
+  @override
+  String get preference_tag_mysterious => '神秘';
+
+  @override
+  String get preference_tag_healing => '治愈';
+
+  @override
+  String get preference_tag_gap_moe => '反差感';
+
+  @override
+  String get preference_tag_older => '年上';
+
+  @override
+  String get preference_tag_younger => '年下';
+
+  @override
+  String get preference_tag_ceo => '霸总';
+
+  @override
+  String get preference_tag_school => '校园';
+
+  @override
+  String get preference_tag_workplace => '职场';
+
+  @override
+  String get preference_tag_ancient => '古风';
+
+  @override
+  String get preference_tag_nonhuman => '非人';
+
+  @override
+  String get encounter_load_failed => '邂逅数据加载失败，请稍后再试。';
+
+  @override
+  String get encounter_no_available_characters => '目前还没有可以邂逅的角色';
+
+  @override
+  String get encounter_category_empty => '这个分类目前还没有角色';
+
+  @override
+  String get encounter_category_all => '全部';
+
+  @override
+  String get encounter_category_xianxia => '仙侠';
+
+  @override
+  String get encounter_category_childhood_friend => '青梅竹马';
+
+  @override
+  String get encounter_category_master_disciple => '师徒';
+
+  @override
+  String get encounter_category_sweet_romance => '甜宠';
+
+  @override
+  String get encounter_category_other => '其他';
+
+  @override
+  String get character_edit_tab_character_settings => '角色设置';
+
+  @override
+  String get character_edit_test => '测试';
+
+  @override
+  String get character_edit_supporting_basic_info => '基本资料';
+
+  @override
+  String get character_edit_supporting_main_setting => '与主角色的设置';
+
+  @override
+  String get character_edit_supporting_main_description =>
+      '描述这名配角与主角色之间的关系，以及其在故事中的定位。';
+
+  @override
+  String get character_edit_banner_preview_hint => '点击图片可预览大图';
+
+  @override
+  String get character_edit_main_photo_hint => '第一张图片将作为主要头像';
+
+  @override
+  String get character_edit_other_photos => '其他角色照片';
+
+  @override
+  String get character_edit_photo_action_hint => '点击照片可预览；点击铅笔图标可编辑照片设置';
+
+  @override
+  String character_edit_over_limit_warning(String label, String count) {
+    return '⚠ $label 已超出 $count 字，请修改后再发布。';
+  }
+
+  @override
+  String get memo_notification_channel_name => '备忘录提醒';
+
+  @override
+  String get memo_notification_channel_description => '由角色提醒玩家已设置的备忘事项';
+
+  @override
+  String memo_notification_title(String characterName) {
+    return '$characterName 提醒你';
+  }
+
+  @override
+  String memo_notification_tsundere(String memoContent) {
+    return '我才不是担心你，只是怕你忘记而已。今天别忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_dominant(String memoContent) {
+    return '行程已经替你记好了，准时完成。今天别忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_yandere(String memoContent) {
+    return '不可以忘记哦，我可是会一直记得的。今天别忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_gentle(String memoContent) {
+    return '怕你忙着忙着就忘了，所以想提醒你一下。今天别忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_cold(String memoContent) {
+    return '提醒你一件事。今天别忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_sunny(String memoContent) {
+    return '嘿，今天还有一件重要的事哦！别忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_lazy(String memoContent) {
+    return '虽然很想继续躺着，但还是得提醒你。今天别忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_older(String memoContent) {
+    return '乖，今天的事情别忘记了。记得：$memoContent';
+  }
+
+  @override
+  String memo_notification_younger(String memoContent) {
+    return '我有乖乖帮你记住哦！今天别忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_mechanical(String memoContent) {
+    return '提醒事项已启动。今日任务：$memoContent';
+  }
+
+  @override
+  String memo_notification_default(String memoContent) {
+    return '今天别忘了：$memoContent';
+  }
+
+  @override
+  String get recommendation_load_failed => '目前无法加载推荐，请稍后再试。';
+
+  @override
+  String get recommendation_reload => '重新加载';
+
+  @override
+  String get recommendation_empty => '目前还没有可以推荐的角色。';
+
+  @override
+  String get recommendation_title => '为你挑选的相遇';
+
+  @override
+  String get recommendation_featured_title => '先看看这几位';
+
+  @override
+  String get recommendation_featured_subtitle => '会先放最适合你的几个相遇。';
+
+  @override
+  String get recommendation_matched_behavior_title => '越来越像你的偏好';
+
+  @override
+  String get recommendation_matched_initial_title => '按照你一开始喜欢的方向';
+
+  @override
+  String get recommendation_matched_behavior_subtitle =>
+      '第 4 天后开始，最近互动会一起影响排序。';
+
+  @override
+  String get recommendation_matched_initial_subtitle => '现在先用你刚开始勾选的标签，帮你缩小范围。';
+
+  @override
+  String get recommendation_explore_title => '也许你会喜欢';
+
+  @override
+  String get recommendation_explore_subtitle => '保留一些随机探索，让你也能偶尔遇见不一样的人。';
+
+  @override
+  String get recommendation_refreshing => '正在为你整理新的相遇……';
+
+  @override
+  String get recommendation_badge_for_you => '为你推荐';
+
+  @override
+  String get recommendation_badge_featured => '精选相遇';
+
+  @override
+  String get recommendation_badge_explore => '探索';
+
+  @override
+  String get recommendation_default_occupation_hint => '点开看看，也许刚好就是你下一次心动。';
+
+  @override
+  String get recommendation_explore_fallback => '换个方向，也许会刚好对上你的心动点。';
+
+  @override
+  String get recommendation_behavior_hint_similar_type => '最近常停留在这类角色';
+
+  @override
+  String get recommendation_behavior_hint_forming => '最近互动偏好正在慢慢成形';
+
+  @override
+  String get recommendation_behavior_hint_recent => '按照你最近的互动为你整理';
+
+  @override
+  String recommendation_reason_liked_tags(String tags) {
+    return '因为你喜欢・$tags';
+  }
+
+  @override
+  String get recommendation_reason_popular => '最近也有不少人点进去看看';
+
+  @override
+  String get recommendation_reason_default => '也许会是你下一次刚好的相遇';
+
+  @override
+  String get scene_delete_title => '删除剧场？';
+
+  @override
+  String scene_delete_content(String title) {
+    return '确定要删除“$title”吗？删除后无法恢复。';
+  }
+
+  @override
+  String get scene_unnamed => '未命名剧场';
+
+  @override
+  String get scene_cancel => '取消';
+
+  @override
+  String get scene_delete => '删除';
+
+  @override
+  String get scene_delete_failed => '删除失败，请稍后再试。';
+
+  @override
+  String get scene_start_failed => '目前无法开始剧场，请稍后再试。';
+
+  @override
+  String get scene_end_title => '结束剧场？';
+
+  @override
+  String get scene_end_content => '结束后会回到一般聊天，但目前的对话记录不会被删除。';
+
+  @override
+  String get scene_end_action => '结束剧场';
+
+  @override
+  String get scene_ended => '剧场已结束';
+
+  @override
+  String get scene_end_failed => '目前无法结束剧场，请稍后再试。';
+
+  @override
+  String get scene_active_label => '目前正在进行';
+
+  @override
+  String scene_opening(String opening) {
+    return '角色开场：$opening';
+  }
+
+  @override
+  String get scene_edit => '编辑';
+
+  @override
+  String get scene_start => '开始剧场';
+
+  @override
+  String get scene_creator_load_failed => '创作者剧场读取失败。';
+
+  @override
+  String get scene_creator_empty_title => '目前还没有创作者剧场';
+
+  @override
+  String get scene_creator_empty_body => '这个角色的创作者还没有创建额外故事。';
+
+  @override
+  String get scene_custom_load_failed => '自行创建剧场读取失败。';
+
+  @override
+  String get scene_custom_empty_title => '还没有自己的剧场';
+
+  @override
+  String get scene_custom_empty_body => '为这间聊天室创建一段只属于你的故事。';
+
+  @override
+  String get scene_add => '新增剧场';
+
+  @override
+  String get scene_title => '剧场';
+
+  @override
+  String get scene_tab_creator => '创作者剧场';
+
+  @override
+  String get scene_tab_custom => '自行创建';
+
+  @override
+  String get chat_book_player => '玩家';
+
+  @override
+  String get chat_book_title => '对话记录';
+
+  @override
+  String get chat_book_export_pdf => '导出 PDF';
+
+  @override
+  String get chat_book_brand => '— 恋恋拾光';
+
+  @override
+  String get chat_book_change_cover => '更换封面';
+
+  @override
+  String get chat_book_cover_subtitle => '与你的拾光 · 对话纪念书';
+
+  @override
+  String get chat_book_choose_cover => '选择纪念书封面';
+
+  @override
+  String get chat_book_initial_story => '初始故事';
+
+  @override
+  String chat_book_transcript_title(String characterName) {
+    return '$characterName · 对话记录';
+  }
+
+  @override
+  String chat_book_continuation(String name) {
+    return '$name · 续';
+  }
+
+  @override
+  String get chat_book_previous_page => '上一页';
+
+  @override
+  String get chat_book_next_page => '下一页';
+
+  @override
+  String get chat_book_photo_message => '〔照片〕';
+
+  @override
+  String get chat_book_audio_message => '〔语音消息〕';
+
+  @override
+  String get chat_book_generic_message => '〔消息〕';
+
+  @override
+  String chat_book_export_failed(String error) {
+    return '导出 PDF 失败：$error';
+  }
+
+  @override
+  String email_policy_open_failed(String title) {
+    return '无法打开$title，请确认网络后再试。';
+  }
+
+  @override
+  String email_policy_read_instruction(String title) {
+    return '请先打开并阅读完整$title。阅读后回到《恋恋拾光》，即可点击“我已阅读并同意”。';
+  }
+
+  @override
+  String get email_policy_opening => '正在打开……';
+
+  @override
+  String email_policy_read_full(String title) {
+    return '阅读完整$title';
+  }
+
+  @override
+  String email_policy_opened_ready(String title) {
+    return '已打开$title，可以确认同意。';
+  }
+
+  @override
+  String email_policy_not_opened(String title) {
+    return '尚未打开$title。';
+  }
+
+  @override
+  String get email_policy_cancel_login => '取消登录';
+
+  @override
+  String get email_policy_agree => '我已阅读并同意';
+
+  @override
+  String get email_policy_status_check_failed => '目前无法确认条款状态，请稍后再试。';
+
+  @override
+  String get email_policy_login_notice => '首次登录或条款更新时，系统将请您阅读并同意服务条款及隐私政策。';
+
+  @override
+  String get email_policy_refresh => '刷新';
+
+  @override
+  String get email_policy_page_load_failed => '页面加载失败';
+
+  @override
+  String get email_policy_check_network => '请确认网络连接后再试一次。';
+
+  @override
+  String get email_policy_reload => '重新加载';
+
+  @override
+  String get login_method_info_google_title => 'Google 快速登录';
+
+  @override
+  String get login_method_info_apple_title => 'Apple 登录';
+
+  @override
+  String get login_method_info_facebook_title => 'Facebook 登录';
+
+  @override
+  String get login_method_info_email_title => '恋恋账号（Email）';
+
+  @override
+  String get login_method_info_email_provider => '恋恋账号（Email）';
+
+  @override
+  String login_method_info_content(String providerName) {
+    return '使用 $providerName 登录《恋恋拾光》。\n\n请注意：\n\n• $providerName 与其他登录方式为不同账号系统。\n\n• 若使用 $providerName 创建账号，请持续使用相同方式登录。\n\n• 角色资料、聊天记录与购买内容不会与其他登录方式互通。\n\n建议首次登录后持续使用相同的登录方式，以避免创建不同账号而导致数据无法共用。';
+  }
+
+  @override
+  String get login_method_info_got_it => '知道了';
+
+  @override
+  String creator_studio_delete_failed(String error) {
+    return '删除失败：$error';
+  }
+
+  @override
+  String get creator_studio_subtitle => '收藏灵感，整理角色，慢慢完成你的作品';
+
+  @override
+  String creator_studio_load_failed(String error) {
+    return '工作室读取失败：$error';
+  }
+
+  @override
+  String get creator_studio_add_character => '新增角色';
+
+  @override
+  String get creator_studio_public_title => '公开角色';
+
+  @override
+  String get creator_studio_public_subtitle => '已上架，可被其他玩家认识';
+
+  @override
+  String get creator_studio_public_empty => '目前没有公开角色';
+
+  @override
+  String get creator_studio_private_title => '私人角色';
+
+  @override
+  String get creator_studio_private_subtitle => '只有你自己看得到';
+
+  @override
+  String get creator_studio_private_empty => '目前没有私人角色';
+
+  @override
+  String get creator_studio_draft_title => '草稿';
+
+  @override
+  String get creator_studio_draft_subtitle => '尚未完成的创作';
+
+  @override
+  String get creator_studio_draft_empty => '目前没有尚未完成的草稿';
+
+  @override
+  String get creator_studio_draft_empty_title => '这里还没有草稿';
+
+  @override
+  String get creator_studio_draft_empty_hint => '灵感来了，就先记在这里吧';
+
+  @override
+  String get creator_studio_status_public => '已公开';
+
+  @override
+  String get creator_studio_status_private => '私人';
+
+  @override
+  String get creator_studio_status_draft => '草稿';
+
+  @override
+  String get creator_studio_character_load_failed => '角色资料读取失败';
+
+  @override
+  String get creator_studio_delete_draft_tooltip => '删除草稿';
+
+  @override
+  String get creator_studio_unnamed_creator => '未命名创作者';
+
+  @override
+  String get creator_studio_no_bio => '尚未填写自我介绍';
+
+  @override
+  String get chat_input_tools => '功能';
+
+  @override
+  String get chat_input_expand_tools => '展开功能';
+
+  @override
+  String get chat_input_stop => '停止';
+
+  @override
+  String get chat_input_send => '发送';
+
+  @override
+  String get chat_side_menu_section_chat => '聊天';
+
+  @override
+  String get chat_side_menu_section_relationship => '关系';
+
+  @override
+  String get chat_side_menu_section_memory => '记忆管理';
+
+  @override
+  String get character_navigator_confidential_title => '机密档案';
+
+  @override
+  String get character_navigator_unavailable_message =>
+      '此角色可能已转为私人、下架、违规封存或删除。';
+
+  @override
+  String get character_navigator_got_it => '我知道了';
+
+  @override
+  String get character_navigator_load_failed_title => '读取失败';
+
+  @override
+  String get character_navigator_load_failed_message => '暂时无法读取角色资料，请稍后再试。';
+
+  @override
+  String get character_navigator_confirm => '确定';
+
+  @override
+  String get character_profile_add_bookmark => '收藏角色';
+
+  @override
+  String get character_profile_remove_bookmark => '取消收藏';
+
+  @override
+  String get character_profile_pronoun_female => '她';
+
+  @override
+  String get character_profile_pronoun_male => '他';
+
+  @override
+  String get character_profile_pronoun_neutral => '它';
+
+  @override
+  String get chat_home_pin_limit_reached => '最多可置顶 3 个聊天室，请先取消其他置顶聊天室。';
+
+  @override
+  String get chat_home_pinned_success => '已置顶聊天室';
+
+  @override
+  String get chat_home_unpinned_success => '已取消置顶';
+
+  @override
+  String chat_home_pin_update_failed(String error) {
+    return '更新置顶状态失败：$error';
+  }
+
+  @override
+  String get chat_home_unpin => '取消置顶';
+
+  @override
+  String get chat_home_pin => '置顶聊天室';
+
+  @override
+  String chat_home_time_label(String time) {
+    return '时间：$time';
+  }
+
+  @override
+  String get main_check_in_already_done => '今天已经签到过啦';
+
+  @override
+  String get nav_recommend => '推荐';
+
+  @override
+  String get moments_auto_reply_title => '允许 AI 自动回复玩家动态';
+
+  @override
+  String get moments_auto_reply_description => '开启后，系统才会安排该角色回复玩家。';
+
+  @override
+  String get mailOriginalQuestionLabel => '你原本询问';
+
+  @override
+  String get hidden_moments_empty_hint => '暂时还没有被隐藏的动态哦';
+
+  @override
+  String get moment_search_unavailable => '搜索暂时无法使用，请稍后再试。';
+
+  @override
+  String get moment_search_hint => '搜索公开帖子、角色或创作者';
+
+  @override
+  String get moment_search_instruction => '输入帖子内容、角色名称或创作者名称';
+
+  @override
+  String get moment_search_no_results => '找不到相关的公开帖子';
+
+  @override
+  String get settingsErrorTitle => '发生错误';
+
+  @override
+  String get settingsChangePasswordSubtitle => '验证当前密码后设置新的登录密码';
+
+  @override
+  String get settingsCreatorGuidelines => '创作者规范';
+
+  @override
+  String get settingsPlayGuide => '游玩指南';
+
+  @override
+  String get language_selection_subtitle => '选择你习惯使用的语言';
+
+  @override
+  String get search_character_hint => '搜索角色、创作者、职业或标签';
+
+  @override
+  String get search_character_clear => '清除';
+
+  @override
+  String get search_character_recent => '最近搜索';
+
+  @override
+  String get search_character_load_failed => '搜索数据加载失败，请稍后再试。';
+
+  @override
+  String get search_character_popular => '大家最近都在喜欢';
+
+  @override
+  String search_character_result_count(int count) {
+    return '找到 $count 位角色';
+  }
+
+  @override
+  String get shop_tab_monthly => '月卡专区';
+
+  @override
+  String shop_joined_days(int days) {
+    return '✦ 已来到恋恋拾光 $days 天 ✦';
+  }
+
+  @override
+  String get shop_vip_tier_1_title => '初见倾心';
+
+  @override
+  String get shop_vip_tier_1_reward => '20 点花花 + 专属新手称号';
+
+  @override
+  String get shop_vip_tier_2_title => '微光悸动';
+
+  @override
+  String get shop_vip_tier_2_reward => '专属头像框【微光悸动】';
+
+  @override
+  String get shop_vip_tier_3_title => '星空呢喃';
+
+  @override
+  String get shop_vip_tier_3_reward => '专属聊天气泡 + 50 点花花';
+
+  @override
+  String get shop_vip_tier_4_title => '浪漫夕阳';
+
+  @override
+  String get shop_vip_tier_4_reward => '专属 App 桌面图标 (Icon)';
+
+  @override
+  String get shop_vip_tier_5_title => '怦然心动';
+
+  @override
+  String get shop_vip_tier_5_reward => '点击屏幕特效 (Lottie) + 100 点花花';
+
+  @override
+  String get shop_vip_tier_6_title => '永恒誓约';
+
+  @override
+  String get shop_vip_tier_6_reward => '进阶动态头像框 + 200 点花花';
+
+  @override
+  String get shop_vip_tier_7_title => '灵魂交会';
+
+  @override
+  String get shop_vip_tier_7_reward => '动态聊天气泡特效 + 专属进阶称号';
+
+  @override
+  String get shop_vip_tier_8_title => '专属守候';
+
+  @override
+  String get shop_vip_tier_8_reward => '顶级动态名牌 + 500 点花花';
+
+  @override
+  String get shop_vip_tier_9_title => '璀璨星河';
+
+  @override
+  String get shop_vip_tier_9_reward => '专属进场 Lottie 特效 + 专属客服';
+
+  @override
+  String get shop_vip_tier_10_title => '顶级挚爱';
+
+  @override
+  String get shop_vip_tier_10_reward => '【实体 VIP 专属礼盒】(手写信+代表娃)';
+
+  @override
+  String get shop_vip_total_bond => '累计浪漫羁绊';
+
+  @override
+  String get shop_vip_all_unlocked => '您已解锁所有顶级特权！';
+
+  @override
+  String shop_vip_next_unlock(int amount) {
+    return '再充值 NT\$ $amount 即可解锁下一阶';
+  }
+
+  @override
+  String get call_connecting => '电话接通中...';
+
+  @override
+  String get call_listening_auto_send => '正在聆听...（讲完会自动发送）';
+
+  @override
+  String get call_listening_release_to_send => '正在聆听...（松开手指发送）';
+
+  @override
+  String call_sending_transcript(String text) {
+    return ' $text\n\n（发送中...）';
+  }
+
+  @override
+  String get help_translation_fallback => '目前尚未提供此语言的游玩指南，暂时显示繁体中文。';
+
+  @override
+  String get help_all_categories => '全部';
+
+  @override
+  String get help_subtitle_companion => '日常功能与贴心小助手';
+
+  @override
+  String get help_subtitle_ai_chat => '聊天、语音与智能互动相关';
+
+  @override
+  String get help_subtitle_creation => '角色设置与创作功能相关';
+
+  @override
+  String get help_subtitle_explore => '探索角色与游戏内容';
+
+  @override
+  String get help_subtitle_care => '温柔陪伴与日常关怀';
+
+  @override
+  String get help_subtitle_general => '常见功能与操作说明';
+
+  @override
+  String get chat_interact_fun => '趣味玩法';
+
+  @override
+  String get memo_notification_permission_missing =>
+      '尚未开启通知权限，备忘录仍会保存，但不会显示系统提醒。';
+
+  @override
+  String memo_saved_with_reminder(String characterName) {
+    return '备忘录已保存，$characterName 会提醒你！';
+  }
+
+  @override
+  String get memo_saved_without_notification => '备忘录已保存，但尚未开启通知权限。';
+
+  @override
+  String memo_updated_with_reminder(String characterName) {
+    return '备忘录已更新，$characterName 会提醒你！';
+  }
+
+  @override
+  String get memo_updated_without_notification => '备忘录已更新，但目前没有通知权限。';
+
+  @override
+  String memo_load_error(String error) {
+    return '读取数据时发生错误：$error';
+  }
+
+  @override
+  String get story_summary_content_required => '故事内容不能为空';
+
+  @override
+  String get profile_section_basic_info => '基本资料';
+
+  @override
+  String get profile_section_about_me => '关于这个我';
+
+  @override
+  String get dice_duel_you => '你';
+
+  @override
+  String get dice_duel_result_saved => '对决结果已封存！';
+
+  @override
+  String get dice_duel_rolling => '宇宙能量汇聚中...';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).
@@ -19639,4 +21904,1138 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get feedback_change_image => '更換';
+
+  @override
+  String get profile_backpack_title => '我的專屬背包與特權';
+
+  @override
+  String get profile_backpack_total_spent => '目前累積浪漫羈絆';
+
+  @override
+  String profile_backpack_total_spent_amount(int amount) {
+    return 'NT\$ $amount';
+  }
+
+  @override
+  String get profile_backpack_physical_gift_status => '實體禮盒解鎖狀態：';
+
+  @override
+  String get profile_backpack_vip_gift_title => '【頂級摯愛】實體 VIP 專屬禮盒';
+
+  @override
+  String get profile_backpack_vip_gift_contents => '含：專屬手寫信 + 角色代表娃 + 官方感謝信';
+
+  @override
+  String get profile_backpack_edit_shipping_info => '修改收件地址資訊';
+
+  @override
+  String get profile_backpack_unlock_shipping_info => '已解鎖！點此填寫收件資訊';
+
+  @override
+  String get profile_backpack_shipping_registered => '您已成功登記收件地址，我們會盡快為您準備！';
+
+  @override
+  String profile_backpack_amount_remaining(int amount) {
+    return '還差 NT\$ $amount 即可解鎖實體大賞！';
+  }
+
+  @override
+  String get profile_backpack_hint => '小提示：其他外觀與頭像框可以在背包裡查看喔。';
+
+  @override
+  String get profile_backpack_close => '關閉';
+
+  @override
+  String get profile_physical_gift_title => '【頂級摯愛】實體禮盒解鎖';
+
+  @override
+  String get profile_physical_gift_description =>
+      '感謝玩家對《戀戀拾光》的極致守候！\n請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：';
+
+  @override
+  String get profile_physical_gift_recipient_name => '收件人真實姓名';
+
+  @override
+  String get profile_physical_gift_phone => '聯絡電話';
+
+  @override
+  String get profile_physical_gift_address => '完整收件地址（含郵遞區號）';
+
+  @override
+  String get profile_physical_gift_character_name => '想要收到的角色代表娃名字';
+
+  @override
+  String get profile_physical_gift_character_hint => '例如：欲輸入的角色名稱';
+
+  @override
+  String get profile_physical_gift_fill_later => '稍後填寫';
+
+  @override
+  String get profile_physical_gift_required_error => '請完整填寫收件資訊與心儀的角色名稱喔！';
+
+  @override
+  String get profile_physical_gift_submit_success => '收件資訊已成功送出！請期待我們的實體驚喜！';
+
+  @override
+  String get profile_physical_gift_confirm_submit => '確認送出';
+
+  @override
+  String get profile_tooltip_announcement => '公告';
+
+  @override
+  String get profile_tooltip_settings => '設定';
+
+  @override
+  String get profile_tooltip_backpack => '我的背包';
+
+  @override
+  String get profile_backpack_menu_title => '我的背包';
+
+  @override
+  String get profile_about_me_title => '關於我';
+
+  @override
+  String get profile_tab_bio_title => '自我介紹';
+
+  @override
+  String get profile_check_in_done => '已簽到';
+
+  @override
+  String get profile_check_in => '簽到';
+
+  @override
+  String get profile_check_in_done_subtitle => '今天已留下足跡';
+
+  @override
+  String get profile_check_in_not_done_subtitle => '今日尚未簽到';
+
+  @override
+  String get profile_likes_label => '喜歡';
+
+  @override
+  String get profile_heartbeat_diary_subtitle => '記下心動瞬間';
+
+  @override
+  String get profile_create_scene => '創建劇場';
+
+  @override
+  String get profile_link_invalid => '連結格式不正確';
+
+  @override
+  String get profile_link_open_failed => '無法開啟這個連結';
+
+  @override
+  String get profile_link_default_name => '我的連結';
+
+  @override
+  String get profile_publish_moment_short => '寫下此刻';
+
+  @override
+  String edit_profile_default_link_name(int index) {
+    return '我的連結 $index';
+  }
+
+  @override
+  String get edit_profile_done => '完成';
+
+  @override
+  String get edit_profile_social_links => '社群與連結';
+
+  @override
+  String get edit_profile_add_link => '新增連結';
+
+  @override
+  String get edit_profile_link_name_hint => '連結名稱';
+
+  @override
+  String get edit_profile_link_url_hint => '輸入連結';
+
+  @override
+  String get theme_name_starlight => '拾光紫';
+
+  @override
+  String get theme_name_sakura => '櫻花粉';
+
+  @override
+  String get theme_name_ocean => '湛藍海';
+
+  @override
+  String get theme_name_sunset => '夕陽橙';
+
+  @override
+  String get theme_name_mint => '薄荷森';
+
+  @override
+  String get theme_name_midnight => '深夜模式';
+
+  @override
+  String get theme_name_custom => '自定義色彩';
+
+  @override
+  String get theme_selection_choose_theme => '選擇主題色';
+
+  @override
+  String get theme_selection_title => '更換氛圍';
+
+  @override
+  String get theme_selection_description => '挑選你喜歡的主題色，讓戀戀拾光更像你的樣子。';
+
+  @override
+  String get theme_selection_preview => '預覽效果';
+
+  @override
+  String get theme_selection_characters => '角色';
+
+  @override
+  String get theme_selection_posts => '動態';
+
+  @override
+  String theme_selection_previewing(String themeName) {
+    return '目前預覽：$themeName';
+  }
+
+  @override
+  String get theme_selection_apply => '套用主題';
+
+  @override
+  String get theme_selection_restore_default => '恢復預設';
+
+  @override
+  String get theme_selection_choose_color => '挑選你的專屬色彩';
+
+  @override
+  String theme_selection_applied(String themeName) {
+    return '已套用「$themeName」';
+  }
+
+  @override
+  String get welcome_guide_help => '遊玩指南';
+
+  @override
+  String get welcome_guide_start => '開始旅程';
+
+  @override
+  String get welcome_guide_next => '下一步';
+
+  @override
+  String get welcome_guide_welcome_title => '歡迎來到《戀戀拾光》';
+
+  @override
+  String get welcome_guide_welcome_description =>
+      '在這裡，每一次相遇，都可能成為一段難忘的故事。希望《戀戀拾光》能陪伴你，創造屬於你們的美好回憶。';
+
+  @override
+  String get welcome_guide_chat_title => '聊天模式';
+
+  @override
+  String get welcome_guide_chat_description => '《戀戀拾光》提供多種聊天模式，每種模式都有不同的互動體驗。';
+
+  @override
+  String get welcome_guide_daily_title => '日常模式';
+
+  @override
+  String get welcome_guide_daily_description => '陪伴彼此、分享生活，享受輕鬆自在的聊天時光。';
+
+  @override
+  String get welcome_guide_story_title => '劇情模式';
+
+  @override
+  String get welcome_guide_story_description => '推進角色故事，解鎖更多專屬劇情與互動。';
+
+  @override
+  String get welcome_guide_immersive_title => '沉浸模式';
+
+  @override
+  String get welcome_guide_immersive_description => '體驗更投入、更有臨場感的對話。';
+
+  @override
+  String get welcome_guide_chat_more => '更多聊天模式介紹，可於「遊戲說明」查看。';
+
+  @override
+  String get welcome_guide_encounter_title => '邂逅';
+
+  @override
+  String get welcome_guide_encounter_description =>
+      '每位角色都擁有獨特的個性、故事與聲音。遇見喜歡的角色後，可以加入好友，與他聊天互動、分享生活，一起創造屬於你們的回憶。';
+
+  @override
+  String get welcome_guide_more_title => '更多內容';
+
+  @override
+  String get welcome_guide_more_description =>
+      '還有收藏、創作者、商城等豐富功能，歡迎前往「遊戲說明」了解更多。';
+
+  @override
+  String preference_selection_max_error(int count) {
+    return '最多選擇 $count 個偏好。';
+  }
+
+  @override
+  String get preference_selection_save_failed => '目前無法儲存偏好，請稍後再試。';
+
+  @override
+  String get preference_selection_title => '你想遇見怎樣的人？';
+
+  @override
+  String get preference_selection_description => '選擇 3～5 個你喜歡的類型，戀戀會先從這裡開始認識你。';
+
+  @override
+  String get preference_selection_recommendation_note =>
+      '之後也會依照你的實際互動，慢慢調整更適合你的推薦。';
+
+  @override
+  String get preference_selection_selected => '已選';
+
+  @override
+  String get preference_selection_start => '就從這裡開始';
+
+  @override
+  String get preference_group_personality => '性格氣質';
+
+  @override
+  String get preference_group_relationship_age => '關係・年齡感';
+
+  @override
+  String get preference_group_story => '故事氛圍';
+
+  @override
+  String get preference_tag_gentle => '溫柔';
+
+  @override
+  String get preference_tag_cold => '高冷';
+
+  @override
+  String get preference_tag_scheming => '腹黑';
+
+  @override
+  String get preference_tag_tsundere => '傲嬌';
+
+  @override
+  String get preference_tag_loyal => '忠犬';
+
+  @override
+  String get preference_tag_yandere => '病嬌';
+
+  @override
+  String get preference_tag_mysterious => '神秘';
+
+  @override
+  String get preference_tag_healing => '治癒';
+
+  @override
+  String get preference_tag_gap_moe => '反差感';
+
+  @override
+  String get preference_tag_older => '年上';
+
+  @override
+  String get preference_tag_younger => '年下';
+
+  @override
+  String get preference_tag_ceo => '霸總';
+
+  @override
+  String get preference_tag_school => '校園';
+
+  @override
+  String get preference_tag_workplace => '職場';
+
+  @override
+  String get preference_tag_ancient => '古風';
+
+  @override
+  String get preference_tag_nonhuman => '非人';
+
+  @override
+  String get encounter_load_failed => '邂逅資料載入失敗，請稍後再試。';
+
+  @override
+  String get encounter_no_available_characters => '目前還沒有可以邂逅的角色';
+
+  @override
+  String get encounter_category_empty => '這個分類目前還沒有角色';
+
+  @override
+  String get encounter_category_all => '全部';
+
+  @override
+  String get encounter_category_xianxia => '仙俠';
+
+  @override
+  String get encounter_category_childhood_friend => '青梅竹馬';
+
+  @override
+  String get encounter_category_master_disciple => '師徒';
+
+  @override
+  String get encounter_category_sweet_romance => '甜寵';
+
+  @override
+  String get encounter_category_other => '其他';
+
+  @override
+  String get character_edit_tab_character_settings => '角色設定';
+
+  @override
+  String get character_edit_test => '測試';
+
+  @override
+  String get character_edit_supporting_basic_info => '基本資料';
+
+  @override
+  String get character_edit_supporting_main_setting => '與主角色的設定';
+
+  @override
+  String get character_edit_supporting_main_description =>
+      '描述這名配角與主角色之間的關係，以及他在故事中的位置。';
+
+  @override
+  String get character_edit_banner_preview_hint => '點擊圖片可預覽大圖';
+
+  @override
+  String get character_edit_main_photo_hint => '第一張圖片將作為主要頭像';
+
+  @override
+  String get character_edit_other_photos => '其他角色照片';
+
+  @override
+  String get character_edit_photo_action_hint => '點擊照片可預覽；鉛筆可編輯照片設定';
+
+  @override
+  String character_edit_over_limit_warning(String label, String count) {
+    return '⚠ $label 已超出 $count 字，請修正後再發布。';
+  }
+
+  @override
+  String get memo_notification_channel_name => '備忘錄提醒';
+
+  @override
+  String get memo_notification_channel_description => '由角色提醒玩家已設定的備忘事項';
+
+  @override
+  String memo_notification_title(String characterName) {
+    return '$characterName 提醒你';
+  }
+
+  @override
+  String memo_notification_tsundere(String memoContent) {
+    return '我才不是擔心你，只是怕你忘記而已。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_dominant(String memoContent) {
+    return '行程已經替你記好了，準時完成。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_yandere(String memoContent) {
+    return '不可以忘記喔，我可是會一直記得的。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_gentle(String memoContent) {
+    return '怕你忙著忙著就忘了，所以想提醒你一下。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_cold(String memoContent) {
+    return '提醒你一件事。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_sunny(String memoContent) {
+    return '嘿，今天還有一件重要的事喔！別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_lazy(String memoContent) {
+    return '雖然很想繼續躺著，但還是得提醒你。今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_older(String memoContent) {
+    return '乖，今天的事情別忘記了。記得：$memoContent';
+  }
+
+  @override
+  String memo_notification_younger(String memoContent) {
+    return '我有乖乖幫你記住喔！今天別忘了：$memoContent';
+  }
+
+  @override
+  String memo_notification_mechanical(String memoContent) {
+    return '提醒事項已啟動。今日任務：$memoContent';
+  }
+
+  @override
+  String memo_notification_default(String memoContent) {
+    return '今天別忘了：$memoContent';
+  }
+
+  @override
+  String get recommendation_load_failed => '目前無法載入推薦，請稍後再試。';
+
+  @override
+  String get recommendation_reload => '重新載入';
+
+  @override
+  String get recommendation_empty => '目前還沒有可以推薦的角色。';
+
+  @override
+  String get recommendation_title => '為你挑選的相遇';
+
+  @override
+  String get recommendation_featured_title => '先看看這幾位';
+
+  @override
+  String get recommendation_featured_subtitle => '會先放最適合你的幾個相遇。';
+
+  @override
+  String get recommendation_matched_behavior_title => '越來越像你的偏好';
+
+  @override
+  String get recommendation_matched_initial_title => '依照你一開始喜歡的方向';
+
+  @override
+  String get recommendation_matched_behavior_subtitle =>
+      '第 4 天後開始，最近互動會一起影響排序。';
+
+  @override
+  String get recommendation_matched_initial_subtitle => '現在先用你剛開始勾選的標籤，幫你縮小範圍。';
+
+  @override
+  String get recommendation_explore_title => '也許你會喜歡';
+
+  @override
+  String get recommendation_explore_subtitle => '保留一些隨機探索，讓你也能偶爾遇見不一樣的人。';
+
+  @override
+  String get recommendation_refreshing => '正在為你整理新的相遇……';
+
+  @override
+  String get recommendation_badge_for_you => '為你推薦';
+
+  @override
+  String get recommendation_badge_featured => '精選相遇';
+
+  @override
+  String get recommendation_badge_explore => '探索';
+
+  @override
+  String get recommendation_default_occupation_hint => '點開看看，也許剛好就是你下一次心動。';
+
+  @override
+  String get recommendation_explore_fallback => '換個方向，也許會剛好對上你的心動點。';
+
+  @override
+  String get recommendation_behavior_hint_similar_type => '最近常停留在這類型角色';
+
+  @override
+  String get recommendation_behavior_hint_forming => '最近互動偏好正在慢慢成形';
+
+  @override
+  String get recommendation_behavior_hint_recent => '依照你最近的互動為你整理';
+
+  @override
+  String recommendation_reason_liked_tags(String tags) {
+    return '因為你喜歡・$tags';
+  }
+
+  @override
+  String get recommendation_reason_popular => '最近也有不少人點進去看看';
+
+  @override
+  String get recommendation_reason_default => '也許會是你下一次剛好的相遇';
+
+  @override
+  String get scene_delete_title => '刪除劇場？';
+
+  @override
+  String scene_delete_content(String title) {
+    return '確定要刪除「$title」嗎？刪除後無法復原。';
+  }
+
+  @override
+  String get scene_unnamed => '未命名劇場';
+
+  @override
+  String get scene_cancel => '取消';
+
+  @override
+  String get scene_delete => '刪除';
+
+  @override
+  String get scene_delete_failed => '刪除失敗，請稍後再試。';
+
+  @override
+  String get scene_start_failed => '目前無法開始劇場，請稍後再試。';
+
+  @override
+  String get scene_end_title => '結束劇場？';
+
+  @override
+  String get scene_end_content => '結束後會回到一般聊天，但目前的對話紀錄不會被刪除。';
+
+  @override
+  String get scene_end_action => '結束劇場';
+
+  @override
+  String get scene_ended => '劇場已結束';
+
+  @override
+  String get scene_end_failed => '目前無法結束劇場，請稍後再試。';
+
+  @override
+  String get scene_active_label => '目前正在進行';
+
+  @override
+  String scene_opening(String opening) {
+    return '角色開場：$opening';
+  }
+
+  @override
+  String get scene_edit => '編輯';
+
+  @override
+  String get scene_start => '開始劇場';
+
+  @override
+  String get scene_creator_load_failed => '創作者劇場讀取失敗。';
+
+  @override
+  String get scene_creator_empty_title => '目前還沒有創作者劇場';
+
+  @override
+  String get scene_creator_empty_body => '這個角色的創作者還沒有建立額外故事。';
+
+  @override
+  String get scene_custom_load_failed => '自行創建劇場讀取失敗。';
+
+  @override
+  String get scene_custom_empty_title => '還沒有自己的劇場';
+
+  @override
+  String get scene_custom_empty_body => '為這間聊天室建立一段只屬於你的故事。';
+
+  @override
+  String get scene_add => '新增劇場';
+
+  @override
+  String get scene_title => '劇場';
+
+  @override
+  String get scene_tab_creator => '創作者劇場';
+
+  @override
+  String get scene_tab_custom => '自行創建';
+
+  @override
+  String get chat_book_player => '玩家';
+
+  @override
+  String get chat_book_title => '對話紀錄';
+
+  @override
+  String get chat_book_export_pdf => '匯出 PDF';
+
+  @override
+  String get chat_book_brand => '— 戀戀拾光';
+
+  @override
+  String get chat_book_change_cover => '更換封面';
+
+  @override
+  String get chat_book_cover_subtitle => '與你的拾光 · 對話紀念書';
+
+  @override
+  String get chat_book_choose_cover => '選擇紀念書封面';
+
+  @override
+  String get chat_book_initial_story => '初始故事';
+
+  @override
+  String chat_book_transcript_title(String characterName) {
+    return '$characterName · 對話紀錄';
+  }
+
+  @override
+  String chat_book_continuation(String name) {
+    return '$name · 續';
+  }
+
+  @override
+  String get chat_book_previous_page => '上一頁';
+
+  @override
+  String get chat_book_next_page => '下一頁';
+
+  @override
+  String get chat_book_photo_message => '〔照片〕';
+
+  @override
+  String get chat_book_audio_message => '〔語音訊息〕';
+
+  @override
+  String get chat_book_generic_message => '〔訊息〕';
+
+  @override
+  String chat_book_export_failed(String error) {
+    return '匯出 PDF 失敗：$error';
+  }
+
+  @override
+  String email_policy_open_failed(String title) {
+    return '無法開啟$title，請確認網路後再試。';
+  }
+
+  @override
+  String email_policy_read_instruction(String title) {
+    return '請先開啟並閱讀完整$title。閱讀後回到《戀戀拾光》，即可按下「我已閱讀並同意」。';
+  }
+
+  @override
+  String get email_policy_opening => '正在開啟……';
+
+  @override
+  String email_policy_read_full(String title) {
+    return '閱讀完整$title';
+  }
+
+  @override
+  String email_policy_opened_ready(String title) {
+    return '已開啟$title，可以確認同意。';
+  }
+
+  @override
+  String email_policy_not_opened(String title) {
+    return '尚未開啟$title。';
+  }
+
+  @override
+  String get email_policy_cancel_login => '取消登入';
+
+  @override
+  String get email_policy_agree => '我已閱讀並同意';
+
+  @override
+  String get email_policy_status_check_failed => '目前無法確認條款狀態，請稍後再試。';
+
+  @override
+  String get email_policy_login_notice => '首次登入或條款更新時，系統將請您閱讀並同意服務條款及隱私權政策。';
+
+  @override
+  String get email_policy_refresh => '重新整理';
+
+  @override
+  String get email_policy_page_load_failed => '頁面載入失敗';
+
+  @override
+  String get email_policy_check_network => '請確認網路連線後再試一次。';
+
+  @override
+  String get email_policy_reload => '重新載入';
+
+  @override
+  String get login_method_info_google_title => 'Google 快速登入';
+
+  @override
+  String get login_method_info_apple_title => 'Apple 登入';
+
+  @override
+  String get login_method_info_facebook_title => 'Facebook 登入';
+
+  @override
+  String get login_method_info_email_title => '戀戀帳號（Email）';
+
+  @override
+  String get login_method_info_email_provider => '戀戀帳號（Email）';
+
+  @override
+  String login_method_info_content(String providerName) {
+    return '使用 $providerName 登入《戀戀拾光》。\n\n請注意：\n\n• $providerName 與其他登入方式為不同帳號系統。\n\n• 若使用 $providerName 建立帳號，請持續使用相同方式登入。\n\n• 角色資料、聊天紀錄與購買內容不會與其他登入方式互通。\n\n建議首次登入後持續使用相同的登入方式，以避免建立不同帳號而導致資料無法共用。';
+  }
+
+  @override
+  String get login_method_info_got_it => '知道了';
+
+  @override
+  String creator_studio_delete_failed(String error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get creator_studio_subtitle => '收藏靈感，整理角色，慢慢完成你的作品';
+
+  @override
+  String creator_studio_load_failed(String error) {
+    return '工作室讀取失敗：$error';
+  }
+
+  @override
+  String get creator_studio_add_character => '新增角色';
+
+  @override
+  String get creator_studio_public_title => '公開角色';
+
+  @override
+  String get creator_studio_public_subtitle => '已上架，可被其他玩家認識';
+
+  @override
+  String get creator_studio_public_empty => '目前沒有公開角色';
+
+  @override
+  String get creator_studio_private_title => '私人角色';
+
+  @override
+  String get creator_studio_private_subtitle => '只有你自己看得到';
+
+  @override
+  String get creator_studio_private_empty => '目前沒有私人角色';
+
+  @override
+  String get creator_studio_draft_title => '草稿';
+
+  @override
+  String get creator_studio_draft_subtitle => '尚未完成的創作';
+
+  @override
+  String get creator_studio_draft_empty => '目前沒有尚未完成的草稿';
+
+  @override
+  String get creator_studio_draft_empty_title => '這裡還沒有草稿';
+
+  @override
+  String get creator_studio_draft_empty_hint => '靈感來了，就先記在這裡吧';
+
+  @override
+  String get creator_studio_status_public => '已公開';
+
+  @override
+  String get creator_studio_status_private => '私人';
+
+  @override
+  String get creator_studio_status_draft => '草稿';
+
+  @override
+  String get creator_studio_character_load_failed => '角色資料讀取失敗';
+
+  @override
+  String get creator_studio_delete_draft_tooltip => '刪除草稿';
+
+  @override
+  String get creator_studio_unnamed_creator => '未命名創作者';
+
+  @override
+  String get creator_studio_no_bio => '尚未填寫自我介紹';
+
+  @override
+  String get chat_input_tools => '功能';
+
+  @override
+  String get chat_input_expand_tools => '展開功能';
+
+  @override
+  String get chat_input_stop => '停止';
+
+  @override
+  String get chat_input_send => '傳送';
+
+  @override
+  String get chat_side_menu_section_chat => '聊天';
+
+  @override
+  String get chat_side_menu_section_relationship => '關係';
+
+  @override
+  String get chat_side_menu_section_memory => '記憶管理';
+
+  @override
+  String get character_navigator_confidential_title => '機密檔案';
+
+  @override
+  String get character_navigator_unavailable_message =>
+      '此角色可能已轉為私人、下架、違規封存或刪除。';
+
+  @override
+  String get character_navigator_got_it => '我知道了';
+
+  @override
+  String get character_navigator_load_failed_title => '讀取失敗';
+
+  @override
+  String get character_navigator_load_failed_message => '暫時無法讀取角色資料，請稍後再試。';
+
+  @override
+  String get character_navigator_confirm => '確定';
+
+  @override
+  String get character_profile_add_bookmark => '收藏角色';
+
+  @override
+  String get character_profile_remove_bookmark => '取消收藏';
+
+  @override
+  String get character_profile_pronoun_female => '她';
+
+  @override
+  String get character_profile_pronoun_male => '他';
+
+  @override
+  String get character_profile_pronoun_neutral => '它';
+
+  @override
+  String get chat_home_pin_limit_reached => '最多可置頂 3 個聊天室，請先取消其他置頂聊天室。';
+
+  @override
+  String get chat_home_pinned_success => '已置頂聊天室';
+
+  @override
+  String get chat_home_unpinned_success => '已取消置頂';
+
+  @override
+  String chat_home_pin_update_failed(String error) {
+    return '更新置頂狀態失敗：$error';
+  }
+
+  @override
+  String get chat_home_unpin => '取消置頂';
+
+  @override
+  String get chat_home_pin => '置頂聊天室';
+
+  @override
+  String chat_home_time_label(String time) {
+    return '時間：$time';
+  }
+
+  @override
+  String get main_check_in_already_done => '今天已經簽到過囉';
+
+  @override
+  String get nav_recommend => '推薦';
+
+  @override
+  String get moments_auto_reply_title => '允許 AI 自動回覆玩家動態';
+
+  @override
+  String get moments_auto_reply_description => '開啟後，角色才會被系統安排回覆玩家。';
+
+  @override
+  String get mailOriginalQuestionLabel => '你原本詢問';
+
+  @override
+  String get hidden_moments_empty_hint => '暫時還沒有被隱藏的動態喔';
+
+  @override
+  String get moment_search_unavailable => '搜尋暫時無法使用，請稍後再試。';
+
+  @override
+  String get moment_search_hint => '搜尋公開貼文、角色或創作者';
+
+  @override
+  String get moment_search_instruction => '輸入貼文內容、角色名稱或創作者名稱';
+
+  @override
+  String get moment_search_no_results => '找不到相關的公開貼文';
+
+  @override
+  String get settingsErrorTitle => '發生錯誤';
+
+  @override
+  String get settingsChangePasswordSubtitle => '驗證目前密碼後設定新的登入密碼';
+
+  @override
+  String get settingsCreatorGuidelines => '創作者規範';
+
+  @override
+  String get settingsPlayGuide => '遊玩指南';
+
+  @override
+  String get language_selection_subtitle => '選擇你習慣的語言';
+
+  @override
+  String get search_character_hint => '搜尋角色、創作者、職業或標籤';
+
+  @override
+  String get search_character_clear => '清除';
+
+  @override
+  String get search_character_recent => '最近搜尋';
+
+  @override
+  String get search_character_load_failed => '搜尋資料載入失敗，請稍後再試。';
+
+  @override
+  String get search_character_popular => '大家最近都在喜歡';
+
+  @override
+  String search_character_result_count(int count) {
+    return '找到 $count 位角色';
+  }
+
+  @override
+  String get shop_tab_monthly => '月卡專區';
+
+  @override
+  String shop_joined_days(int days) {
+    return '✦ 已來到戀戀拾光 $days 天 ✦';
+  }
+
+  @override
+  String get shop_vip_tier_1_title => '初見傾心';
+
+  @override
+  String get shop_vip_tier_1_reward => '20 點花花 + 專屬新手稱號';
+
+  @override
+  String get shop_vip_tier_2_title => '微光悸動';
+
+  @override
+  String get shop_vip_tier_2_reward => '專屬頭像框【微光悸動】';
+
+  @override
+  String get shop_vip_tier_3_title => '星空呢喃';
+
+  @override
+  String get shop_vip_tier_3_reward => '專屬聊天氣泡 + 50 點花花';
+
+  @override
+  String get shop_vip_tier_4_title => '浪漫夕陽';
+
+  @override
+  String get shop_vip_tier_4_reward => '專屬 App 桌面圖示 (Icon)';
+
+  @override
+  String get shop_vip_tier_5_title => '怦然心動';
+
+  @override
+  String get shop_vip_tier_5_reward => '點擊螢幕特效 (Lottie) + 100 點花花';
+
+  @override
+  String get shop_vip_tier_6_title => '永恆誓約';
+
+  @override
+  String get shop_vip_tier_6_reward => '進階動態頭像框 + 200 點花花';
+
+  @override
+  String get shop_vip_tier_7_title => '靈魂交會';
+
+  @override
+  String get shop_vip_tier_7_reward => '動態聊天氣泡特效 + 專屬進階稱號';
+
+  @override
+  String get shop_vip_tier_8_title => '專屬守候';
+
+  @override
+  String get shop_vip_tier_8_reward => '頂級動態名牌 + 500 點花花';
+
+  @override
+  String get shop_vip_tier_9_title => '璀璨星河';
+
+  @override
+  String get shop_vip_tier_9_reward => '專屬進場 Lottie 特效 + 專屬客服';
+
+  @override
+  String get shop_vip_tier_10_title => '頂級摯愛';
+
+  @override
+  String get shop_vip_tier_10_reward => '【實體 VIP 專屬禮盒】(手寫信+代表娃)';
+
+  @override
+  String get shop_vip_total_bond => '累積浪漫羈絆';
+
+  @override
+  String get shop_vip_all_unlocked => '您已解鎖所有頂級特權！';
+
+  @override
+  String shop_vip_next_unlock(int amount) {
+    return '再儲值 NT\$ $amount 即可解鎖下一階';
+  }
+
+  @override
+  String get call_connecting => '電話接通中...';
+
+  @override
+  String get call_listening_auto_send => '正在聆聽... (講完會自動發送)';
+
+  @override
+  String get call_listening_release_to_send => '正在聆聽... (鬆開手指發送)';
+
+  @override
+  String call_sending_transcript(String text) {
+    return ' $text\n\n(發送中...)';
+  }
+
+  @override
+  String get help_translation_fallback => '目前尚未提供此語言的遊玩指南，暫時顯示繁體中文。';
+
+  @override
+  String get help_all_categories => '全部';
+
+  @override
+  String get help_subtitle_companion => '日常功能與貼心小幫手';
+
+  @override
+  String get help_subtitle_ai_chat => '聊天、語音與智慧互動相關';
+
+  @override
+  String get help_subtitle_creation => '角色設定與創作功能相關';
+
+  @override
+  String get help_subtitle_explore => '探索角色與遊戲內容';
+
+  @override
+  String get help_subtitle_care => '溫柔陪伴與日常關懷';
+
+  @override
+  String get help_subtitle_general => '常見功能與操作說明';
+
+  @override
+  String get chat_interact_fun => '趣味玩法';
+
+  @override
+  String get memo_notification_permission_missing =>
+      '尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。';
+
+  @override
+  String memo_saved_with_reminder(String characterName) {
+    return '備忘錄已儲存，$characterName 會提醒你！';
+  }
+
+  @override
+  String get memo_saved_without_notification => '備忘錄已儲存，但尚未開啟通知權限。';
+
+  @override
+  String memo_updated_with_reminder(String characterName) {
+    return '備忘錄已更新，$characterName 會提醒你！';
+  }
+
+  @override
+  String get memo_updated_without_notification => '備忘錄已更新，但目前沒有通知權限。';
+
+  @override
+  String memo_load_error(String error) {
+    return '讀取資料時發生錯誤: $error';
+  }
+
+  @override
+  String get story_summary_content_required => '故事內容不能是空的';
+
+  @override
+  String get story_summary_edit_hint => '寫下你們的故事...';
+
+  @override
+  String get profile_section_basic_info => '基本資料';
+
+  @override
+  String get profile_section_about_me => '關於這個我';
+
+  @override
+  String get dice_duel_you => '你';
+
+  @override
+  String get dice_duel_result_saved => '對決結果已封存！';
+
+  @override
+  String get dice_duel_rolling => '宇宙能量匯聚中...';
 }

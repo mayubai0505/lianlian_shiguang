@@ -150,28 +150,30 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showLoginMethodInfoDialog(LoginMethod method) {
+    final l10n = AppLocalizations.of(context)!;
+
     String title = '';
     String providerName = '';
 
     switch (method) {
       case LoginMethod.google:
-        title = 'Google 快速登入';
+        title = l10n.login_method_info_google_title;
         providerName = 'Google';
         break;
 
       case LoginMethod.apple:
-        title = 'Apple 登入';
+        title = l10n.login_method_info_apple_title;
         providerName = 'Apple';
         break;
 
       case LoginMethod.facebook:
-        title = 'Facebook 登入';
+        title = l10n.login_method_info_facebook_title;
         providerName = 'Facebook';
         break;
 
       case LoginMethod.email:
-        title = '戀戀帳號（Email）';
-        providerName = '戀戀帳號（Email）';
+        title = l10n.login_method_info_email_title;
+        providerName = l10n.login_method_info_email_provider;
         break;
     }
 
@@ -182,25 +184,13 @@ class _LoginPageState extends State<LoginPage> {
           title: Text(title),
           content: SingleChildScrollView(
             child: Text(
-              '''
-使用 $providerName 登入《戀戀拾光》。
-
-請注意：
-
-• $providerName 與其他登入方式為不同帳號系統。
-
-• 若使用 $providerName 建立帳號，請持續使用相同方式登入。
-
-• 角色資料、聊天紀錄與購買內容不會與其他登入方式互通。
-
-建議首次登入後持續使用相同的登入方式，以避免建立不同帳號而導致資料無法共用。
-''',
+              l10n.login_method_info_content(providerName),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('知道了'),
+              child: Text(l10n.login_method_info_got_it),
             ),
           ],
         );
@@ -212,6 +202,7 @@ class _LoginPageState extends State<LoginPage> {
     required String title,
     required String url,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     bool hasOpenedPolicy = false;
     bool isOpening = false;
 
@@ -261,7 +252,7 @@ class _LoginPageState extends State<LoginPage> {
                     if (dialogContext.mounted) {
                       ToastUtils.showCenterToast(
                         dialogContext,
-                        '無法開啟$title，請確認網路後再試。',
+                        l10n.email_policy_open_failed(title),
                         customIcon: Icons.link_off_rounded,
                       );
                     }
@@ -301,8 +292,7 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '請先開啟並閱讀完整$title。'
-                              '閱讀後回到《戀戀拾光》，即可按下「我已閱讀並同意」。',
+                          l10n.email_policy_read_instruction(title),
                           style: const TextStyle(
                             fontSize: 14,
                             height: 1.6,
@@ -329,8 +319,8 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             label: Text(
                               isOpening
-                                  ? '正在開啟……'
-                                  : '閱讀完整$title',
+                                  ? l10n.email_policy_opening
+                                  : l10n.email_policy_read_full(title),
                             ),
                           ),
                         ),
@@ -367,8 +357,8 @@ class _LoginPageState extends State<LoginPage> {
                               Expanded(
                                 child: Text(
                                   hasOpenedPolicy
-                                      ? '已開啟$title，可以確認同意。'
-                                      : '尚未開啟$title。',
+                                      ? l10n.email_policy_opened_ready(title)
+                                      : l10n.email_policy_not_opened(title),
                                   style: TextStyle(
                                     color: hasOpenedPolicy
                                         ? Colors.green
@@ -389,7 +379,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.of(dialogContext)
                               .pop(false);
                         },
-                        child: const Text('取消登入'),
+                        child: Text(l10n.email_policy_cancel_login),
                       ),
                       ElevatedButton(
                         onPressed: hasOpenedPolicy
@@ -403,7 +393,7 @@ class _LoginPageState extends State<LoginPage> {
                           const Color(0xFF7B1FA2),
                           foregroundColor: Colors.white,
                         ),
-                        child: const Text('我已閱讀並同意'),
+                        child: Text(l10n.email_policy_agree),
                       ),
                     ],
                   ),
@@ -509,7 +499,7 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         ToastUtils.showCenterToast(
           context,
-          '目前無法確認條款狀態，請稍後再試。',
+          l10n.email_policy_status_check_failed,
           customIcon: Icons.error_outline,
         );
       }
@@ -523,6 +513,7 @@ class _LoginPageState extends State<LoginPage> {
       Future<Map<String, dynamic>?> Function() loginMethod,) async {
     setState(() => _isLoginLoading = true);
     _showLoadingDialog(context);
+    final l10n = AppLocalizations.of(context)!;
 
     try {
       print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -570,7 +561,7 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted) {
         ToastUtils.showCenterToast(
           context,
-          '連線異常，請稍後再試：$e',
+          l10n.auth_error_network_failed,
           customIcon: Icons.cloud_off_rounded,
         );
       }
@@ -763,7 +754,7 @@ class _LoginPageState extends State<LoginPage> {
                     horizontal: 40,
                   ),
                   child: Text(
-                    '首次登入或條款更新時，系統將請您閱讀並同意服務條款及隱私權政策。',
+                    l10n.email_policy_login_notice,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
@@ -987,6 +978,7 @@ class _PolicyWebViewPageState extends State<_PolicyWebViewPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -998,7 +990,7 @@ class _PolicyWebViewPageState extends State<_PolicyWebViewPage> {
         title: Text(widget.title),
         actions: [
           IconButton(
-            tooltip: '重新整理',
+            tooltip: l10n.email_policy_refresh,
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () {
               setState(() {
@@ -1036,16 +1028,16 @@ class _PolicyWebViewPageState extends State<_PolicyWebViewPage> {
                       color: theme.colorScheme.primary,
                     ),
                     const SizedBox(height: 18),
-                    const Text(
-                      '頁面載入失敗',
-                      style: TextStyle(
+                    Text(
+                      l10n.email_policy_page_load_failed,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const Text(
-                      '請確認網路連線後再試一次。',
+                    Text(
+                      l10n.email_policy_check_network,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 22),
@@ -1061,7 +1053,7 @@ class _PolicyWebViewPageState extends State<_PolicyWebViewPage> {
                         );
                       },
                       icon: const Icon(Icons.refresh_rounded),
-                      label: const Text('重新載入'),
+                      label: Text(l10n.email_policy_reload),
                     ),
                   ],
                 ),

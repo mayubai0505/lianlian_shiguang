@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/app_constants.dart';
 import 'custom_scene_edit_page.dart';
+import 'package:lianlian_shiguang/l10n/generated/app_localizations.dart';
 
 class ScenePage extends StatefulWidget {
   final String characterId;
@@ -100,6 +101,7 @@ class _ScenePageState extends State<ScenePage>
   Future<void> _deleteCustomScene(
       DocumentSnapshot<Map<String, dynamic>> sceneDoc,
       ) async {
+    final l10n = AppLocalizations.of(context)!;
     final title = (sceneDoc.data()?['title'] ?? '').toString().trim();
 
     final confirmed = await showDialog<bool>(
@@ -109,27 +111,27 @@ class _ScenePageState extends State<ScenePage>
           borderRadius: BorderRadius.circular(22),
         ),
         title: Text(
-          '刪除劇場？',
+          l10n.scene_delete_title,
           style: GoogleFonts.notoSerifTc(
             fontWeight: FontWeight.w700,
           ),
         ),
         content: Text(
-          '確定要刪除「${title.isEmpty ? '這個劇場' : title}」嗎？刪除後無法復原。',
+          l10n.scene_delete_content(title.isEmpty ? l10n.scene_unnamed : title),
           style: GoogleFonts.notoSerifTc(height: 1.6),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
             child: Text(
-              '取消',
+              l10n.scene_cancel,
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             child: Text(
-              '刪除',
+              l10n.scene_delete,
               style: GoogleFonts.notoSerifTc(
                 color: Colors.redAccent,
                 fontWeight: FontWeight.w700,
@@ -151,7 +153,7 @@ class _ScenePageState extends State<ScenePage>
         ..showSnackBar(
           SnackBar(
             content: Text(
-              '刪除失敗，請稍後再試。',
+              l10n.scene_delete_failed,
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
@@ -192,6 +194,8 @@ class _ScenePageState extends State<ScenePage>
     required String description,
     required String opening,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       await _sessionRef.set(
         {
@@ -221,7 +225,7 @@ class _ScenePageState extends State<ScenePage>
         ..showSnackBar(
           SnackBar(
             content: Text(
-              '目前無法開始劇場，請稍後再試。',
+              l10n.scene_start_failed,
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
@@ -230,6 +234,8 @@ class _ScenePageState extends State<ScenePage>
   }
 
   Future<void> _endActiveScene() async {
+    final l10n = AppLocalizations.of(context)!;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -238,13 +244,13 @@ class _ScenePageState extends State<ScenePage>
             borderRadius: BorderRadius.circular(22),
           ),
           title: Text(
-            '結束劇場？',
+            l10n.scene_end_title,
             style: GoogleFonts.notoSerifTc(
               fontWeight: FontWeight.w700,
             ),
           ),
           content: Text(
-            '結束後會回到一般聊天，但目前的對話紀錄不會被刪除。',
+            l10n.scene_end_content,
             style: GoogleFonts.notoSerifTc(
               height: 1.6,
             ),
@@ -253,14 +259,14 @@ class _ScenePageState extends State<ScenePage>
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
               child: Text(
-                '取消',
+                l10n.scene_cancel,
                 style: GoogleFonts.notoSerifTc(),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(
-                '結束劇場',
+                l10n.scene_end_action,
                 style: GoogleFonts.notoSerifTc(
                   color: Colors.redAccent,
                   fontWeight: FontWeight.w700,
@@ -291,7 +297,7 @@ class _ScenePageState extends State<ScenePage>
         ..showSnackBar(
           SnackBar(
             content: Text(
-              '劇場已結束',
+              l10n.scene_ended,
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
@@ -304,7 +310,7 @@ class _ScenePageState extends State<ScenePage>
         ..showSnackBar(
           SnackBar(
             content: Text(
-              '目前無法結束劇場，請稍後再試。',
+              l10n.scene_end_failed,
               style: GoogleFonts.notoSerifTc(),
             ),
           ),
@@ -313,6 +319,8 @@ class _ScenePageState extends State<ScenePage>
   }
 
   Widget _buildActiveSceneBanner(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: _sessionRef.snapshots(),
       builder: (context, snapshot) {
@@ -347,7 +355,7 @@ class _ScenePageState extends State<ScenePage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '目前正在進行',
+                      l10n.scene_active_label,
                       style: GoogleFonts.notoSerifTc(
                         fontSize: 11.5,
                         color: theme.colorScheme.onSurface
@@ -356,7 +364,7 @@ class _ScenePageState extends State<ScenePage>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      sceneTitle.isEmpty ? '未命名劇場' : sceneTitle,
+                      sceneTitle.isEmpty ? l10n.scene_unnamed : sceneTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.notoSerifTc(
@@ -372,7 +380,7 @@ class _ScenePageState extends State<ScenePage>
               TextButton(
                 onPressed: _endActiveScene,
                 child: Text(
-                  '結束劇場',
+                  l10n.scene_end_action,
                   style: GoogleFonts.notoSerifTc(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -392,6 +400,7 @@ class _ScenePageState extends State<ScenePage>
     required DocumentSnapshot<Map<String, dynamic>> doc,
     required bool isCreator,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final data = doc.data() ?? const <String, dynamic>{};
     final title = (data['title'] ?? '').toString().trim();
     final description = (data['description'] ?? '').toString().trim();
@@ -420,7 +429,7 @@ class _ScenePageState extends State<ScenePage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title.isEmpty ? '未命名劇場' : title,
+            title.isEmpty ? l10n.scene_unnamed : title,
             style: GoogleFonts.notoSerifTc(
               fontSize: 17,
               fontWeight: FontWeight.w700,
@@ -448,7 +457,7 @@ class _ScenePageState extends State<ScenePage>
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Text(
-                '角色開場：$opening',
+                l10n.scene_opening(opening),
                 style: GoogleFonts.notoSerifTc(
                   fontSize: 12,
                   height: 1.55,
@@ -464,7 +473,7 @@ class _ScenePageState extends State<ScenePage>
                 TextButton(
                   onPressed: () => _openCustomEditor(sceneDoc: doc),
                   child: Text(
-                    '編輯',
+                    l10n.scene_edit,
                     style: GoogleFonts.notoSerifTc(
                       color: primary,
                       fontWeight: FontWeight.w700,
@@ -474,7 +483,7 @@ class _ScenePageState extends State<ScenePage>
                 TextButton(
                   onPressed: () => _deleteCustomScene(doc),
                   child: Text(
-                    '刪除',
+                    l10n.scene_delete,
                     style: GoogleFonts.notoSerifTc(
                       color: Colors.redAccent,
                       fontWeight: FontWeight.w700,
@@ -495,7 +504,7 @@ class _ScenePageState extends State<ScenePage>
                   ),
                 ),
                 child: Text(
-                  '開始劇場',
+                  l10n.scene_start,
                   style: GoogleFonts.notoSerifTc(
                     fontWeight: FontWeight.w700,
                   ),
@@ -509,6 +518,8 @@ class _ScenePageState extends State<ScenePage>
   }
 
   Widget _buildCreatorTab(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: _creatorScenesRef
           .orderBy('createdAt', descending: false)
@@ -525,7 +536,7 @@ class _ScenePageState extends State<ScenePage>
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              '創作者劇場讀取失敗。',
+              l10n.scene_creator_load_failed,
               style: GoogleFonts.notoSerifTc(),
             ),
           );
@@ -537,8 +548,8 @@ class _ScenePageState extends State<ScenePage>
         if (docs.isEmpty) {
           return _emptyState(
             theme,
-            title: '目前還沒有創作者劇場',
-            body: '這個角色的創作者還沒有建立額外故事。',
+            title: l10n.scene_creator_empty_title,
+            body: l10n.scene_creator_empty_body,
           );
         }
 
@@ -559,6 +570,8 @@ class _ScenePageState extends State<ScenePage>
   }
 
   Widget _buildCustomTab(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: _customScenesRef
           .orderBy('createdAt', descending: false)
@@ -575,7 +588,7 @@ class _ScenePageState extends State<ScenePage>
         if (snapshot.hasError) {
           return Center(
             child: Text(
-              '自行創建劇場讀取失敗。',
+              l10n.scene_custom_load_failed,
               style: GoogleFonts.notoSerifTc(),
             ),
           );
@@ -589,8 +602,8 @@ class _ScenePageState extends State<ScenePage>
             if (docs.isEmpty)
               _emptyState(
                 theme,
-                title: '還沒有自己的劇場',
-                body: '為這間聊天室建立一段只屬於你的故事。',
+                title: l10n.scene_custom_empty_title,
+                body: l10n.scene_custom_empty_body,
               )
             else
               ListView(
@@ -615,7 +628,7 @@ class _ScenePageState extends State<ScenePage>
                 foregroundColor: theme.colorScheme.onPrimary,
                 elevation: 1,
                 label: Text(
-                  '新增劇場',
+                  l10n.scene_add,
                   style: GoogleFonts.notoSerifTc(
                     fontWeight: FontWeight.w700,
                   ),
@@ -666,6 +679,7 @@ class _ScenePageState extends State<ScenePage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -674,7 +688,7 @@ class _ScenePageState extends State<ScenePage>
         backgroundColor: Colors.transparent,
         foregroundColor: theme.colorScheme.onSurface,
         title: Text(
-          '劇場',
+          l10n.scene_title,
           style: GoogleFonts.notoSerifTc(
             fontWeight: FontWeight.w700,
           ),
@@ -689,9 +703,9 @@ class _ScenePageState extends State<ScenePage>
             fontWeight: FontWeight.w700,
           ),
           unselectedLabelStyle: GoogleFonts.notoSerifTc(),
-          tabs: const [
-            Tab(text: '創作者劇場'),
-            Tab(text: '自行創建'),
+          tabs: [
+            Tab(text: l10n.scene_tab_creator),
+            Tab(text: l10n.scene_tab_custom),
           ],
         ),
       ),

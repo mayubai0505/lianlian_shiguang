@@ -97,6 +97,7 @@ class _MemoPageState extends State<MemoPage> {
       String content,
       DateTime reminderDate,
       ) async {
+    final l10n = AppLocalizations.of(context)!;
     if (_userId == null) return;
 
     final bool notificationGranted =
@@ -106,7 +107,7 @@ class _MemoPageState extends State<MemoPage> {
     if (!notificationGranted && mounted) {
       ToastUtils.showCenterToast(
         context,
-        '尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。',
+        l10n.memo_notification_permission_missing,
         isError: true,
       );
     }
@@ -161,8 +162,8 @@ class _MemoPageState extends State<MemoPage> {
     ToastUtils.showCenterToast(
       context,
       notificationGranted
-          ? '備忘錄已儲存，${reminderCharacter.name} 會提醒你！'
-          : '備忘錄已儲存，但尚未開啟通知權限。',
+          ? l10n.memo_saved_with_reminder(reminderCharacter.name)
+          : l10n.memo_saved_without_notification,
       customIcon:
       Icons.notifications_active_outlined,
     );
@@ -300,6 +301,7 @@ class _MemoPageState extends State<MemoPage> {
       String newContent,
       DateTime newReminderDate,
       ) async {
+    final l10n = AppLocalizations.of(context)!;
     if (_userId == null) return;
 
     final bool permissionGranted =
@@ -358,8 +360,8 @@ class _MemoPageState extends State<MemoPage> {
     ToastUtils.showCenterToast(
       context,
       permissionGranted
-          ? '備忘錄已更新，${reminderCharacter.name} 會提醒你！'
-          : '備忘錄已更新，但目前沒有通知權限。',
+          ? l10n.memo_updated_with_reminder(reminderCharacter.name)
+          : l10n.memo_updated_without_notification,
       customIcon:
       Icons.notifications_active_outlined,
     );
@@ -500,7 +502,7 @@ class _MemoPageState extends State<MemoPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Text(
-                      '讀取資料時發生錯誤: ${snapshot.error}',
+                      l10n.memo_load_error(snapshot.error.toString()),
                       textAlign: TextAlign.center,
                       style: GoogleFonts.notoSerifTc(
                         color: onSurface.withValues(alpha: 0.60),

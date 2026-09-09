@@ -12159,6 +12159,2088 @@ abstract class AppLocalizations {
   /// In zh_Hant, this message translates to:
   /// **'更換'**
   String get feedback_change_image;
+
+  /// No description provided for @profile_backpack_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的專屬背包與特權'**
+  String get profile_backpack_title;
+
+  /// No description provided for @profile_backpack_total_spent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前累積浪漫羈絆'**
+  String get profile_backpack_total_spent;
+
+  /// No description provided for @profile_backpack_total_spent_amount.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'NT\$ {amount}'**
+  String profile_backpack_total_spent_amount(int amount);
+
+  /// No description provided for @profile_backpack_physical_gift_status.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'實體禮盒解鎖狀態：'**
+  String get profile_backpack_physical_gift_status;
+
+  /// No description provided for @profile_backpack_vip_gift_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【頂級摯愛】實體 VIP 專屬禮盒'**
+  String get profile_backpack_vip_gift_title;
+
+  /// No description provided for @profile_backpack_vip_gift_contents.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'含：專屬手寫信 + 角色代表娃 + 官方感謝信'**
+  String get profile_backpack_vip_gift_contents;
+
+  /// No description provided for @profile_backpack_edit_shipping_info.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'修改收件地址資訊'**
+  String get profile_backpack_edit_shipping_info;
+
+  /// No description provided for @profile_backpack_unlock_shipping_info.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已解鎖！點此填寫收件資訊'**
+  String get profile_backpack_unlock_shipping_info;
+
+  /// No description provided for @profile_backpack_shipping_registered.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您已成功登記收件地址，我們會盡快為您準備！'**
+  String get profile_backpack_shipping_registered;
+
+  /// No description provided for @profile_backpack_amount_remaining.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還差 NT\$ {amount} 即可解鎖實體大賞！'**
+  String profile_backpack_amount_remaining(int amount);
+
+  /// No description provided for @profile_backpack_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'小提示：其他外觀與頭像框可以在背包裡查看喔。'**
+  String get profile_backpack_hint;
+
+  /// No description provided for @profile_backpack_close.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關閉'**
+  String get profile_backpack_close;
+
+  /// No description provided for @profile_physical_gift_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【頂級摯愛】實體禮盒解鎖'**
+  String get profile_physical_gift_title;
+
+  /// No description provided for @profile_physical_gift_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'感謝玩家對《戀戀拾光》的極致守候！\n請填寫以下收件資訊，我們將為您寄送專屬手寫信與角色代表娃娃：'**
+  String get profile_physical_gift_description;
+
+  /// No description provided for @profile_physical_gift_recipient_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收件人真實姓名'**
+  String get profile_physical_gift_recipient_name;
+
+  /// No description provided for @profile_physical_gift_phone.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聯絡電話'**
+  String get profile_physical_gift_phone;
+
+  /// No description provided for @profile_physical_gift_address.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完整收件地址（含郵遞區號）'**
+  String get profile_physical_gift_address;
+
+  /// No description provided for @profile_physical_gift_character_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'想要收到的角色代表娃名字'**
+  String get profile_physical_gift_character_name;
+
+  /// No description provided for @profile_physical_gift_character_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'例如：欲輸入的角色名稱'**
+  String get profile_physical_gift_character_hint;
+
+  /// No description provided for @profile_physical_gift_fill_later.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'稍後填寫'**
+  String get profile_physical_gift_fill_later;
+
+  /// No description provided for @profile_physical_gift_required_error.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請完整填寫收件資訊與心儀的角色名稱喔！'**
+  String get profile_physical_gift_required_error;
+
+  /// No description provided for @profile_physical_gift_submit_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收件資訊已成功送出！請期待我們的實體驚喜！'**
+  String get profile_physical_gift_submit_success;
+
+  /// No description provided for @profile_physical_gift_confirm_submit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確認送出'**
+  String get profile_physical_gift_confirm_submit;
+
+  /// No description provided for @profile_tooltip_announcement.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'公告'**
+  String get profile_tooltip_announcement;
+
+  /// No description provided for @profile_tooltip_settings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'設定'**
+  String get profile_tooltip_settings;
+
+  /// No description provided for @profile_tooltip_backpack.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的背包'**
+  String get profile_tooltip_backpack;
+
+  /// No description provided for @profile_backpack_menu_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的背包'**
+  String get profile_backpack_menu_title;
+
+  /// No description provided for @profile_about_me_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關於我'**
+  String get profile_about_me_title;
+
+  /// No description provided for @profile_tab_bio_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自我介紹'**
+  String get profile_tab_bio_title;
+
+  /// No description provided for @profile_check_in_done.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已簽到'**
+  String get profile_check_in_done;
+
+  /// No description provided for @profile_check_in.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'簽到'**
+  String get profile_check_in;
+
+  /// No description provided for @profile_check_in_done_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天已留下足跡'**
+  String get profile_check_in_done_subtitle;
+
+  /// No description provided for @profile_check_in_not_done_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今日尚未簽到'**
+  String get profile_check_in_not_done_subtitle;
+
+  /// No description provided for @profile_likes_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'喜歡'**
+  String get profile_likes_label;
+
+  /// No description provided for @profile_heartbeat_diary_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記下心動瞬間'**
+  String get profile_heartbeat_diary_subtitle;
+
+  /// No description provided for @profile_create_scene.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創建劇場'**
+  String get profile_create_scene;
+
+  /// No description provided for @profile_link_invalid.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'連結格式不正確'**
+  String get profile_link_invalid;
+
+  /// No description provided for @profile_link_open_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法開啟這個連結'**
+  String get profile_link_open_failed;
+
+  /// No description provided for @profile_link_default_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的連結'**
+  String get profile_link_default_name;
+
+  /// No description provided for @profile_publish_moment_short.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寫下此刻'**
+  String get profile_publish_moment_short;
+
+  /// No description provided for @edit_profile_default_link_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我的連結 {index}'**
+  String edit_profile_default_link_name(int index);
+
+  /// No description provided for @edit_profile_done.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'完成'**
+  String get edit_profile_done;
+
+  /// No description provided for @edit_profile_social_links.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'社群與連結'**
+  String get edit_profile_social_links;
+
+  /// No description provided for @edit_profile_add_link.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增連結'**
+  String get edit_profile_add_link;
+
+  /// No description provided for @edit_profile_link_name_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'連結名稱'**
+  String get edit_profile_link_name_hint;
+
+  /// No description provided for @edit_profile_link_url_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'輸入連結'**
+  String get edit_profile_link_url_hint;
+
+  /// No description provided for @theme_name_starlight.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'拾光紫'**
+  String get theme_name_starlight;
+
+  /// No description provided for @theme_name_sakura.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'櫻花粉'**
+  String get theme_name_sakura;
+
+  /// No description provided for @theme_name_ocean.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'湛藍海'**
+  String get theme_name_ocean;
+
+  /// No description provided for @theme_name_sunset.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'夕陽橙'**
+  String get theme_name_sunset;
+
+  /// No description provided for @theme_name_mint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'薄荷森'**
+  String get theme_name_mint;
+
+  /// No description provided for @theme_name_midnight.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'深夜模式'**
+  String get theme_name_midnight;
+
+  /// No description provided for @theme_name_custom.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自定義色彩'**
+  String get theme_name_custom;
+
+  /// No description provided for @theme_selection_choose_theme.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇主題色'**
+  String get theme_selection_choose_theme;
+
+  /// No description provided for @theme_selection_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更換氛圍'**
+  String get theme_selection_title;
+
+  /// No description provided for @theme_selection_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'挑選你喜歡的主題色，讓戀戀拾光更像你的樣子。'**
+  String get theme_selection_description;
+
+  /// No description provided for @theme_selection_preview.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'預覽效果'**
+  String get theme_selection_preview;
+
+  /// No description provided for @theme_selection_characters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色'**
+  String get theme_selection_characters;
+
+  /// No description provided for @theme_selection_posts.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動態'**
+  String get theme_selection_posts;
+
+  /// No description provided for @theme_selection_previewing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前預覽：{themeName}'**
+  String theme_selection_previewing(String themeName);
+
+  /// No description provided for @theme_selection_apply.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'套用主題'**
+  String get theme_selection_apply;
+
+  /// No description provided for @theme_selection_restore_default.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'恢復預設'**
+  String get theme_selection_restore_default;
+
+  /// No description provided for @theme_selection_choose_color.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'挑選你的專屬色彩'**
+  String get theme_selection_choose_color;
+
+  /// No description provided for @theme_selection_applied.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已套用「{themeName}」'**
+  String theme_selection_applied(String themeName);
+
+  /// No description provided for @welcome_guide_help.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'遊玩指南'**
+  String get welcome_guide_help;
+
+  /// No description provided for @welcome_guide_start.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開始旅程'**
+  String get welcome_guide_start;
+
+  /// No description provided for @welcome_guide_next.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'下一步'**
+  String get welcome_guide_next;
+
+  /// No description provided for @welcome_guide_welcome_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'歡迎來到《戀戀拾光》'**
+  String get welcome_guide_welcome_title;
+
+  /// No description provided for @welcome_guide_welcome_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'在這裡，每一次相遇，都可能成為一段難忘的故事。希望《戀戀拾光》能陪伴你，創造屬於你們的美好回憶。'**
+  String get welcome_guide_welcome_description;
+
+  /// No description provided for @welcome_guide_chat_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聊天模式'**
+  String get welcome_guide_chat_title;
+
+  /// No description provided for @welcome_guide_chat_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'《戀戀拾光》提供多種聊天模式，每種模式都有不同的互動體驗。'**
+  String get welcome_guide_chat_description;
+
+  /// No description provided for @welcome_guide_daily_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'日常模式'**
+  String get welcome_guide_daily_title;
+
+  /// No description provided for @welcome_guide_daily_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'陪伴彼此、分享生活，享受輕鬆自在的聊天時光。'**
+  String get welcome_guide_daily_description;
+
+  /// No description provided for @welcome_guide_story_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'劇情模式'**
+  String get welcome_guide_story_title;
+
+  /// No description provided for @welcome_guide_story_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'推進角色故事，解鎖更多專屬劇情與互動。'**
+  String get welcome_guide_story_description;
+
+  /// No description provided for @welcome_guide_immersive_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'沉浸模式'**
+  String get welcome_guide_immersive_title;
+
+  /// No description provided for @welcome_guide_immersive_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'體驗更投入、更有臨場感的對話。'**
+  String get welcome_guide_immersive_description;
+
+  /// No description provided for @welcome_guide_chat_more.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更多聊天模式介紹，可於「遊戲說明」查看。'**
+  String get welcome_guide_chat_more;
+
+  /// No description provided for @welcome_guide_encounter_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'邂逅'**
+  String get welcome_guide_encounter_title;
+
+  /// No description provided for @welcome_guide_encounter_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'每位角色都擁有獨特的個性、故事與聲音。遇見喜歡的角色後，可以加入好友，與他聊天互動、分享生活，一起創造屬於你們的回憶。'**
+  String get welcome_guide_encounter_description;
+
+  /// No description provided for @welcome_guide_more_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更多內容'**
+  String get welcome_guide_more_title;
+
+  /// No description provided for @welcome_guide_more_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還有收藏、創作者、商城等豐富功能，歡迎前往「遊戲說明」了解更多。'**
+  String get welcome_guide_more_description;
+
+  /// No description provided for @preference_selection_max_error.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最多選擇 {count} 個偏好。'**
+  String preference_selection_max_error(int count);
+
+  /// No description provided for @preference_selection_save_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前無法儲存偏好，請稍後再試。'**
+  String get preference_selection_save_failed;
+
+  /// No description provided for @preference_selection_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'你想遇見怎樣的人？'**
+  String get preference_selection_title;
+
+  /// No description provided for @preference_selection_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇 3～5 個你喜歡的類型，戀戀會先從這裡開始認識你。'**
+  String get preference_selection_description;
+
+  /// No description provided for @preference_selection_recommendation_note.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'之後也會依照你的實際互動，慢慢調整更適合你的推薦。'**
+  String get preference_selection_recommendation_note;
+
+  /// No description provided for @preference_selection_selected.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已選'**
+  String get preference_selection_selected;
+
+  /// No description provided for @preference_selection_start.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'就從這裡開始'**
+  String get preference_selection_start;
+
+  /// No description provided for @preference_group_personality.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'性格氣質'**
+  String get preference_group_personality;
+
+  /// No description provided for @preference_group_relationship_age.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關係・年齡感'**
+  String get preference_group_relationship_age;
+
+  /// No description provided for @preference_group_story.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'故事氛圍'**
+  String get preference_group_story;
+
+  /// No description provided for @preference_tag_gentle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'溫柔'**
+  String get preference_tag_gentle;
+
+  /// No description provided for @preference_tag_cold.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'高冷'**
+  String get preference_tag_cold;
+
+  /// No description provided for @preference_tag_scheming.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'腹黑'**
+  String get preference_tag_scheming;
+
+  /// No description provided for @preference_tag_tsundere.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'傲嬌'**
+  String get preference_tag_tsundere;
+
+  /// No description provided for @preference_tag_loyal.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'忠犬'**
+  String get preference_tag_loyal;
+
+  /// No description provided for @preference_tag_yandere.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'病嬌'**
+  String get preference_tag_yandere;
+
+  /// No description provided for @preference_tag_mysterious.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'神秘'**
+  String get preference_tag_mysterious;
+
+  /// No description provided for @preference_tag_healing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'治癒'**
+  String get preference_tag_healing;
+
+  /// No description provided for @preference_tag_gap_moe.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'反差感'**
+  String get preference_tag_gap_moe;
+
+  /// No description provided for @preference_tag_older.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'年上'**
+  String get preference_tag_older;
+
+  /// No description provided for @preference_tag_younger.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'年下'**
+  String get preference_tag_younger;
+
+  /// No description provided for @preference_tag_ceo.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'霸總'**
+  String get preference_tag_ceo;
+
+  /// No description provided for @preference_tag_school.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'校園'**
+  String get preference_tag_school;
+
+  /// No description provided for @preference_tag_workplace.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'職場'**
+  String get preference_tag_workplace;
+
+  /// No description provided for @preference_tag_ancient.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'古風'**
+  String get preference_tag_ancient;
+
+  /// No description provided for @preference_tag_nonhuman.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'非人'**
+  String get preference_tag_nonhuman;
+
+  /// No description provided for @encounter_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'邂逅資料載入失敗，請稍後再試。'**
+  String get encounter_load_failed;
+
+  /// No description provided for @encounter_no_available_characters.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有可以邂逅的角色'**
+  String get encounter_no_available_characters;
+
+  /// No description provided for @encounter_category_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個分類目前還沒有角色'**
+  String get encounter_category_empty;
+
+  /// No description provided for @encounter_category_all.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'全部'**
+  String get encounter_category_all;
+
+  /// No description provided for @encounter_category_xianxia.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'仙俠'**
+  String get encounter_category_xianxia;
+
+  /// No description provided for @encounter_category_childhood_friend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'青梅竹馬'**
+  String get encounter_category_childhood_friend;
+
+  /// No description provided for @encounter_category_master_disciple.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'師徒'**
+  String get encounter_category_master_disciple;
+
+  /// No description provided for @encounter_category_sweet_romance.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'甜寵'**
+  String get encounter_category_sweet_romance;
+
+  /// No description provided for @encounter_category_other.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'其他'**
+  String get encounter_category_other;
+
+  /// No description provided for @character_edit_tab_character_settings.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色設定'**
+  String get character_edit_tab_character_settings;
+
+  /// No description provided for @character_edit_test.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'測試'**
+  String get character_edit_test;
+
+  /// No description provided for @character_edit_supporting_basic_info.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'基本資料'**
+  String get character_edit_supporting_basic_info;
+
+  /// No description provided for @character_edit_supporting_main_setting.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與主角色的設定'**
+  String get character_edit_supporting_main_setting;
+
+  /// No description provided for @character_edit_supporting_main_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'描述這名配角與主角色之間的關係，以及他在故事中的位置。'**
+  String get character_edit_supporting_main_description;
+
+  /// No description provided for @character_edit_banner_preview_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊圖片可預覽大圖'**
+  String get character_edit_banner_preview_hint;
+
+  /// No description provided for @character_edit_main_photo_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'第一張圖片將作為主要頭像'**
+  String get character_edit_main_photo_hint;
+
+  /// No description provided for @character_edit_other_photos.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'其他角色照片'**
+  String get character_edit_other_photos;
+
+  /// No description provided for @character_edit_photo_action_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊照片可預覽；鉛筆可編輯照片設定'**
+  String get character_edit_photo_action_hint;
+
+  /// No description provided for @character_edit_over_limit_warning.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'⚠ {label} 已超出 {count} 字，請修正後再發布。'**
+  String character_edit_over_limit_warning(String label, String count);
+
+  /// No description provided for @memo_notification_channel_name.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄提醒'**
+  String get memo_notification_channel_name;
+
+  /// No description provided for @memo_notification_channel_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'由角色提醒玩家已設定的備忘事項'**
+  String get memo_notification_channel_description;
+
+  /// No description provided for @memo_notification_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{characterName} 提醒你'**
+  String memo_notification_title(String characterName);
+
+  /// No description provided for @memo_notification_tsundere.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我才不是擔心你，只是怕你忘記而已。今天別忘了：{memoContent}'**
+  String memo_notification_tsundere(String memoContent);
+
+  /// No description provided for @memo_notification_dominant.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'行程已經替你記好了，準時完成。今天別忘了：{memoContent}'**
+  String memo_notification_dominant(String memoContent);
+
+  /// No description provided for @memo_notification_yandere.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'不可以忘記喔，我可是會一直記得的。今天別忘了：{memoContent}'**
+  String memo_notification_yandere(String memoContent);
+
+  /// No description provided for @memo_notification_gentle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'怕你忙著忙著就忘了，所以想提醒你一下。今天別忘了：{memoContent}'**
+  String memo_notification_gentle(String memoContent);
+
+  /// No description provided for @memo_notification_cold.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'提醒你一件事。今天別忘了：{memoContent}'**
+  String memo_notification_cold(String memoContent);
+
+  /// No description provided for @memo_notification_sunny.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'嘿，今天還有一件重要的事喔！別忘了：{memoContent}'**
+  String memo_notification_sunny(String memoContent);
+
+  /// No description provided for @memo_notification_lazy.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'雖然很想繼續躺著，但還是得提醒你。今天別忘了：{memoContent}'**
+  String memo_notification_lazy(String memoContent);
+
+  /// No description provided for @memo_notification_older.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'乖，今天的事情別忘記了。記得：{memoContent}'**
+  String memo_notification_older(String memoContent);
+
+  /// No description provided for @memo_notification_younger.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我有乖乖幫你記住喔！今天別忘了：{memoContent}'**
+  String memo_notification_younger(String memoContent);
+
+  /// No description provided for @memo_notification_mechanical.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'提醒事項已啟動。今日任務：{memoContent}'**
+  String memo_notification_mechanical(String memoContent);
+
+  /// No description provided for @memo_notification_default.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天別忘了：{memoContent}'**
+  String memo_notification_default(String memoContent);
+
+  /// No description provided for @recommendation_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前無法載入推薦，請稍後再試。'**
+  String get recommendation_load_failed;
+
+  /// No description provided for @recommendation_reload.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新載入'**
+  String get recommendation_reload;
+
+  /// No description provided for @recommendation_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有可以推薦的角色。'**
+  String get recommendation_empty;
+
+  /// No description provided for @recommendation_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'為你挑選的相遇'**
+  String get recommendation_title;
+
+  /// No description provided for @recommendation_featured_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'先看看這幾位'**
+  String get recommendation_featured_title;
+
+  /// No description provided for @recommendation_featured_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'會先放最適合你的幾個相遇。'**
+  String get recommendation_featured_subtitle;
+
+  /// No description provided for @recommendation_matched_behavior_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'越來越像你的偏好'**
+  String get recommendation_matched_behavior_title;
+
+  /// No description provided for @recommendation_matched_initial_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'依照你一開始喜歡的方向'**
+  String get recommendation_matched_initial_title;
+
+  /// No description provided for @recommendation_matched_behavior_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'第 4 天後開始，最近互動會一起影響排序。'**
+  String get recommendation_matched_behavior_subtitle;
+
+  /// No description provided for @recommendation_matched_initial_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'現在先用你剛開始勾選的標籤，幫你縮小範圍。'**
+  String get recommendation_matched_initial_subtitle;
+
+  /// No description provided for @recommendation_explore_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'也許你會喜歡'**
+  String get recommendation_explore_title;
+
+  /// No description provided for @recommendation_explore_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'保留一些隨機探索，讓你也能偶爾遇見不一樣的人。'**
+  String get recommendation_explore_subtitle;
+
+  /// No description provided for @recommendation_refreshing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在為你整理新的相遇……'**
+  String get recommendation_refreshing;
+
+  /// No description provided for @recommendation_badge_for_you.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'為你推薦'**
+  String get recommendation_badge_for_you;
+
+  /// No description provided for @recommendation_badge_featured.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'精選相遇'**
+  String get recommendation_badge_featured;
+
+  /// No description provided for @recommendation_badge_explore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'探索'**
+  String get recommendation_badge_explore;
+
+  /// No description provided for @recommendation_default_occupation_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點開看看，也許剛好就是你下一次心動。'**
+  String get recommendation_default_occupation_hint;
+
+  /// No description provided for @recommendation_explore_fallback.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'換個方向，也許會剛好對上你的心動點。'**
+  String get recommendation_explore_fallback;
+
+  /// No description provided for @recommendation_behavior_hint_similar_type.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最近常停留在這類型角色'**
+  String get recommendation_behavior_hint_similar_type;
+
+  /// No description provided for @recommendation_behavior_hint_forming.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最近互動偏好正在慢慢成形'**
+  String get recommendation_behavior_hint_forming;
+
+  /// No description provided for @recommendation_behavior_hint_recent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'依照你最近的互動為你整理'**
+  String get recommendation_behavior_hint_recent;
+
+  /// No description provided for @recommendation_reason_liked_tags.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'因為你喜歡・{tags}'**
+  String recommendation_reason_liked_tags(String tags);
+
+  /// No description provided for @recommendation_reason_popular.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最近也有不少人點進去看看'**
+  String get recommendation_reason_popular;
+
+  /// No description provided for @recommendation_reason_default.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'也許會是你下一次剛好的相遇'**
+  String get recommendation_reason_default;
+
+  /// No description provided for @scene_delete_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除劇場？'**
+  String get scene_delete_title;
+
+  /// No description provided for @scene_delete_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定要刪除「{title}」嗎？刪除後無法復原。'**
+  String scene_delete_content(String title);
+
+  /// No description provided for @scene_unnamed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未命名劇場'**
+  String get scene_unnamed;
+
+  /// No description provided for @scene_cancel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消'**
+  String get scene_cancel;
+
+  /// No description provided for @scene_delete.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除'**
+  String get scene_delete;
+
+  /// No description provided for @scene_delete_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗，請稍後再試。'**
+  String get scene_delete_failed;
+
+  /// No description provided for @scene_start_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前無法開始劇場，請稍後再試。'**
+  String get scene_start_failed;
+
+  /// No description provided for @scene_end_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'結束劇場？'**
+  String get scene_end_title;
+
+  /// No description provided for @scene_end_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'結束後會回到一般聊天，但目前的對話紀錄不會被刪除。'**
+  String get scene_end_content;
+
+  /// No description provided for @scene_end_action.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'結束劇場'**
+  String get scene_end_action;
+
+  /// No description provided for @scene_ended.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'劇場已結束'**
+  String get scene_ended;
+
+  /// No description provided for @scene_end_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前無法結束劇場，請稍後再試。'**
+  String get scene_end_failed;
+
+  /// No description provided for @scene_active_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前正在進行'**
+  String get scene_active_label;
+
+  /// No description provided for @scene_opening.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色開場：{opening}'**
+  String scene_opening(String opening);
+
+  /// No description provided for @scene_edit.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'編輯'**
+  String get scene_edit;
+
+  /// No description provided for @scene_start.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開始劇場'**
+  String get scene_start;
+
+  /// No description provided for @scene_creator_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者劇場讀取失敗。'**
+  String get scene_creator_load_failed;
+
+  /// No description provided for @scene_creator_empty_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前還沒有創作者劇場'**
+  String get scene_creator_empty_title;
+
+  /// No description provided for @scene_creator_empty_body.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這個角色的創作者還沒有建立額外故事。'**
+  String get scene_creator_empty_body;
+
+  /// No description provided for @scene_custom_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自行創建劇場讀取失敗。'**
+  String get scene_custom_load_failed;
+
+  /// No description provided for @scene_custom_empty_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'還沒有自己的劇場'**
+  String get scene_custom_empty_title;
+
+  /// No description provided for @scene_custom_empty_body.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'為這間聊天室建立一段只屬於你的故事。'**
+  String get scene_custom_empty_body;
+
+  /// No description provided for @scene_add.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增劇場'**
+  String get scene_add;
+
+  /// No description provided for @scene_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'劇場'**
+  String get scene_title;
+
+  /// No description provided for @scene_tab_creator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者劇場'**
+  String get scene_tab_creator;
+
+  /// No description provided for @scene_tab_custom.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'自行創建'**
+  String get scene_tab_custom;
+
+  /// No description provided for @chat_book_player.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'玩家'**
+  String get chat_book_player;
+
+  /// No description provided for @chat_book_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'對話紀錄'**
+  String get chat_book_title;
+
+  /// No description provided for @chat_book_export_pdf.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'匯出 PDF'**
+  String get chat_book_export_pdf;
+
+  /// No description provided for @chat_book_brand.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'— 戀戀拾光'**
+  String get chat_book_brand;
+
+  /// No description provided for @chat_book_change_cover.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更換封面'**
+  String get chat_book_change_cover;
+
+  /// No description provided for @chat_book_cover_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'與你的拾光 · 對話紀念書'**
+  String get chat_book_cover_subtitle;
+
+  /// No description provided for @chat_book_choose_cover.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇紀念書封面'**
+  String get chat_book_choose_cover;
+
+  /// No description provided for @chat_book_initial_story.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'初始故事'**
+  String get chat_book_initial_story;
+
+  /// No description provided for @chat_book_transcript_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{characterName} · 對話紀錄'**
+  String chat_book_transcript_title(String characterName);
+
+  /// No description provided for @chat_book_continuation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'{name} · 續'**
+  String chat_book_continuation(String name);
+
+  /// No description provided for @chat_book_previous_page.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'上一頁'**
+  String get chat_book_previous_page;
+
+  /// No description provided for @chat_book_next_page.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'下一頁'**
+  String get chat_book_next_page;
+
+  /// No description provided for @chat_book_photo_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'〔照片〕'**
+  String get chat_book_photo_message;
+
+  /// No description provided for @chat_book_audio_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'〔語音訊息〕'**
+  String get chat_book_audio_message;
+
+  /// No description provided for @chat_book_generic_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'〔訊息〕'**
+  String get chat_book_generic_message;
+
+  /// No description provided for @chat_book_export_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'匯出 PDF 失敗：{error}'**
+  String chat_book_export_failed(String error);
+
+  /// No description provided for @email_policy_open_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'無法開啟{title}，請確認網路後再試。'**
+  String email_policy_open_failed(String title);
+
+  /// No description provided for @email_policy_read_instruction.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請先開啟並閱讀完整{title}。閱讀後回到《戀戀拾光》，即可按下「我已閱讀並同意」。'**
+  String email_policy_read_instruction(String title);
+
+  /// No description provided for @email_policy_opening.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在開啟……'**
+  String get email_policy_opening;
+
+  /// No description provided for @email_policy_read_full.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'閱讀完整{title}'**
+  String email_policy_read_full(String title);
+
+  /// No description provided for @email_policy_opened_ready.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已開啟{title}，可以確認同意。'**
+  String email_policy_opened_ready(String title);
+
+  /// No description provided for @email_policy_not_opened.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未開啟{title}。'**
+  String email_policy_not_opened(String title);
+
+  /// No description provided for @email_policy_cancel_login.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消登入'**
+  String get email_policy_cancel_login;
+
+  /// No description provided for @email_policy_agree.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我已閱讀並同意'**
+  String get email_policy_agree;
+
+  /// No description provided for @email_policy_status_check_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前無法確認條款狀態，請稍後再試。'**
+  String get email_policy_status_check_failed;
+
+  /// No description provided for @email_policy_login_notice.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'首次登入或條款更新時，系統將請您閱讀並同意服務條款及隱私權政策。'**
+  String get email_policy_login_notice;
+
+  /// No description provided for @email_policy_refresh.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新整理'**
+  String get email_policy_refresh;
+
+  /// No description provided for @email_policy_page_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頁面載入失敗'**
+  String get email_policy_page_load_failed;
+
+  /// No description provided for @email_policy_check_network.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'請確認網路連線後再試一次。'**
+  String get email_policy_check_network;
+
+  /// No description provided for @email_policy_reload.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'重新載入'**
+  String get email_policy_reload;
+
+  /// No description provided for @login_method_info_google_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'Google 快速登入'**
+  String get login_method_info_google_title;
+
+  /// No description provided for @login_method_info_apple_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'Apple 登入'**
+  String get login_method_info_apple_title;
+
+  /// No description provided for @login_method_info_facebook_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'Facebook 登入'**
+  String get login_method_info_facebook_title;
+
+  /// No description provided for @login_method_info_email_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀帳號（Email）'**
+  String get login_method_info_email_title;
+
+  /// No description provided for @login_method_info_email_provider.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'戀戀帳號（Email）'**
+  String get login_method_info_email_provider;
+
+  /// No description provided for @login_method_info_content.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'使用 {providerName} 登入《戀戀拾光》。\n\n請注意：\n\n• {providerName} 與其他登入方式為不同帳號系統。\n\n• 若使用 {providerName} 建立帳號，請持續使用相同方式登入。\n\n• 角色資料、聊天紀錄與購買內容不會與其他登入方式互通。\n\n建議首次登入後持續使用相同的登入方式，以避免建立不同帳號而導致資料無法共用。'**
+  String login_method_info_content(String providerName);
+
+  /// No description provided for @login_method_info_got_it.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'知道了'**
+  String get login_method_info_got_it;
+
+  /// No description provided for @creator_studio_delete_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除失敗：{error}'**
+  String creator_studio_delete_failed(String error);
+
+  /// No description provided for @creator_studio_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏靈感，整理角色，慢慢完成你的作品'**
+  String get creator_studio_subtitle;
+
+  /// No description provided for @creator_studio_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'工作室讀取失敗：{error}'**
+  String creator_studio_load_failed(String error);
+
+  /// No description provided for @creator_studio_add_character.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'新增角色'**
+  String get creator_studio_add_character;
+
+  /// No description provided for @creator_studio_public_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'公開角色'**
+  String get creator_studio_public_title;
+
+  /// No description provided for @creator_studio_public_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已上架，可被其他玩家認識'**
+  String get creator_studio_public_subtitle;
+
+  /// No description provided for @creator_studio_public_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有公開角色'**
+  String get creator_studio_public_empty;
+
+  /// No description provided for @creator_studio_private_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'私人角色'**
+  String get creator_studio_private_title;
+
+  /// No description provided for @creator_studio_private_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'只有你自己看得到'**
+  String get creator_studio_private_subtitle;
+
+  /// No description provided for @creator_studio_private_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有私人角色'**
+  String get creator_studio_private_empty;
+
+  /// No description provided for @creator_studio_draft_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'草稿'**
+  String get creator_studio_draft_title;
+
+  /// No description provided for @creator_studio_draft_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未完成的創作'**
+  String get creator_studio_draft_subtitle;
+
+  /// No description provided for @creator_studio_draft_empty.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前沒有尚未完成的草稿'**
+  String get creator_studio_draft_empty;
+
+  /// No description provided for @creator_studio_draft_empty_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'這裡還沒有草稿'**
+  String get creator_studio_draft_empty_title;
+
+  /// No description provided for @creator_studio_draft_empty_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'靈感來了，就先記在這裡吧'**
+  String get creator_studio_draft_empty_hint;
+
+  /// No description provided for @creator_studio_status_public.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已公開'**
+  String get creator_studio_status_public;
+
+  /// No description provided for @creator_studio_status_private.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'私人'**
+  String get creator_studio_status_private;
+
+  /// No description provided for @creator_studio_status_draft.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'草稿'**
+  String get creator_studio_status_draft;
+
+  /// No description provided for @creator_studio_character_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色資料讀取失敗'**
+  String get creator_studio_character_load_failed;
+
+  /// No description provided for @creator_studio_delete_draft_tooltip.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'刪除草稿'**
+  String get creator_studio_delete_draft_tooltip;
+
+  /// No description provided for @creator_studio_unnamed_creator.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'未命名創作者'**
+  String get creator_studio_unnamed_creator;
+
+  /// No description provided for @creator_studio_no_bio.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未填寫自我介紹'**
+  String get creator_studio_no_bio;
+
+  /// No description provided for @chat_input_tools.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'功能'**
+  String get chat_input_tools;
+
+  /// No description provided for @chat_input_expand_tools.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'展開功能'**
+  String get chat_input_expand_tools;
+
+  /// No description provided for @chat_input_stop.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'停止'**
+  String get chat_input_stop;
+
+  /// No description provided for @chat_input_send.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'傳送'**
+  String get chat_input_send;
+
+  /// No description provided for @chat_side_menu_section_chat.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聊天'**
+  String get chat_side_menu_section_chat;
+
+  /// No description provided for @chat_side_menu_section_relationship.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關係'**
+  String get chat_side_menu_section_relationship;
+
+  /// No description provided for @chat_side_menu_section_memory.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'記憶管理'**
+  String get chat_side_menu_section_memory;
+
+  /// No description provided for @character_navigator_confidential_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'機密檔案'**
+  String get character_navigator_confidential_title;
+
+  /// No description provided for @character_navigator_unavailable_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'此角色可能已轉為私人、下架、違規封存或刪除。'**
+  String get character_navigator_unavailable_message;
+
+  /// No description provided for @character_navigator_got_it.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'我知道了'**
+  String get character_navigator_got_it;
+
+  /// No description provided for @character_navigator_load_failed_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取失敗'**
+  String get character_navigator_load_failed_title;
+
+  /// No description provided for @character_navigator_load_failed_message.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'暫時無法讀取角色資料，請稍後再試。'**
+  String get character_navigator_load_failed_message;
+
+  /// No description provided for @character_navigator_confirm.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'確定'**
+  String get character_navigator_confirm;
+
+  /// No description provided for @character_profile_add_bookmark.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'收藏角色'**
+  String get character_profile_add_bookmark;
+
+  /// No description provided for @character_profile_remove_bookmark.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消收藏'**
+  String get character_profile_remove_bookmark;
+
+  /// No description provided for @character_profile_pronoun_female.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'她'**
+  String get character_profile_pronoun_female;
+
+  /// No description provided for @character_profile_pronoun_male.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'他'**
+  String get character_profile_pronoun_male;
+
+  /// No description provided for @character_profile_pronoun_neutral.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'它'**
+  String get character_profile_pronoun_neutral;
+
+  /// No description provided for @chat_home_pin_limit_reached.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最多可置頂 3 個聊天室，請先取消其他置頂聊天室。'**
+  String get chat_home_pin_limit_reached;
+
+  /// No description provided for @chat_home_pinned_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已置頂聊天室'**
+  String get chat_home_pinned_success;
+
+  /// No description provided for @chat_home_unpinned_success.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'已取消置頂'**
+  String get chat_home_unpinned_success;
+
+  /// No description provided for @chat_home_pin_update_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'更新置頂狀態失敗：{error}'**
+  String chat_home_pin_update_failed(String error);
+
+  /// No description provided for @chat_home_unpin.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'取消置頂'**
+  String get chat_home_unpin;
+
+  /// No description provided for @chat_home_pin.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'置頂聊天室'**
+  String get chat_home_pin;
+
+  /// No description provided for @chat_home_time_label.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'時間：{time}'**
+  String chat_home_time_label(String time);
+
+  /// No description provided for @main_check_in_already_done.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'今天已經簽到過囉'**
+  String get main_check_in_already_done;
+
+  /// No description provided for @nav_recommend.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'推薦'**
+  String get nav_recommend;
+
+  /// No description provided for @moments_auto_reply_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'允許 AI 自動回覆玩家動態'**
+  String get moments_auto_reply_title;
+
+  /// No description provided for @moments_auto_reply_description.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'開啟後，角色才會被系統安排回覆玩家。'**
+  String get moments_auto_reply_description;
+
+  /// No description provided for @mailOriginalQuestionLabel.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'你原本詢問'**
+  String get mailOriginalQuestionLabel;
+
+  /// No description provided for @hidden_moments_empty_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'暫時還沒有被隱藏的動態喔'**
+  String get hidden_moments_empty_hint;
+
+  /// No description provided for @moment_search_unavailable.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'搜尋暫時無法使用，請稍後再試。'**
+  String get moment_search_unavailable;
+
+  /// No description provided for @moment_search_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'搜尋公開貼文、角色或創作者'**
+  String get moment_search_hint;
+
+  /// No description provided for @moment_search_instruction.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'輸入貼文內容、角色名稱或創作者名稱'**
+  String get moment_search_instruction;
+
+  /// No description provided for @moment_search_no_results.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找不到相關的公開貼文'**
+  String get moment_search_no_results;
+
+  /// No description provided for @settingsErrorTitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'發生錯誤'**
+  String get settingsErrorTitle;
+
+  /// No description provided for @settingsChangePasswordSubtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'驗證目前密碼後設定新的登入密碼'**
+  String get settingsChangePasswordSubtitle;
+
+  /// No description provided for @settingsCreatorGuidelines.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'創作者規範'**
+  String get settingsCreatorGuidelines;
+
+  /// No description provided for @settingsPlayGuide.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'遊玩指南'**
+  String get settingsPlayGuide;
+
+  /// No description provided for @language_selection_subtitle.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'選擇你習慣的語言'**
+  String get language_selection_subtitle;
+
+  /// No description provided for @search_character_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'搜尋角色、創作者、職業或標籤'**
+  String get search_character_hint;
+
+  /// No description provided for @search_character_clear.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'清除'**
+  String get search_character_clear;
+
+  /// No description provided for @search_character_recent.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'最近搜尋'**
+  String get search_character_recent;
+
+  /// No description provided for @search_character_load_failed.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'搜尋資料載入失敗，請稍後再試。'**
+  String get search_character_load_failed;
+
+  /// No description provided for @search_character_popular.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'大家最近都在喜歡'**
+  String get search_character_popular;
+
+  /// No description provided for @search_character_result_count.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'找到 {count} 位角色'**
+  String search_character_result_count(int count);
+
+  /// No description provided for @shop_tab_monthly.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'月卡專區'**
+  String get shop_tab_monthly;
+
+  /// No description provided for @shop_joined_days.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'✦ 已來到戀戀拾光 {days} 天 ✦'**
+  String shop_joined_days(int days);
+
+  /// No description provided for @shop_vip_tier_1_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'初見傾心'**
+  String get shop_vip_tier_1_title;
+
+  /// No description provided for @shop_vip_tier_1_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'20 點花花 + 專屬新手稱號'**
+  String get shop_vip_tier_1_reward;
+
+  /// No description provided for @shop_vip_tier_2_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'微光悸動'**
+  String get shop_vip_tier_2_title;
+
+  /// No description provided for @shop_vip_tier_2_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬頭像框【微光悸動】'**
+  String get shop_vip_tier_2_reward;
+
+  /// No description provided for @shop_vip_tier_3_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'星空呢喃'**
+  String get shop_vip_tier_3_title;
+
+  /// No description provided for @shop_vip_tier_3_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬聊天氣泡 + 50 點花花'**
+  String get shop_vip_tier_3_reward;
+
+  /// No description provided for @shop_vip_tier_4_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'浪漫夕陽'**
+  String get shop_vip_tier_4_title;
+
+  /// No description provided for @shop_vip_tier_4_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬 App 桌面圖示 (Icon)'**
+  String get shop_vip_tier_4_reward;
+
+  /// No description provided for @shop_vip_tier_5_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'怦然心動'**
+  String get shop_vip_tier_5_title;
+
+  /// No description provided for @shop_vip_tier_5_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'點擊螢幕特效 (Lottie) + 100 點花花'**
+  String get shop_vip_tier_5_reward;
+
+  /// No description provided for @shop_vip_tier_6_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'永恆誓約'**
+  String get shop_vip_tier_6_title;
+
+  /// No description provided for @shop_vip_tier_6_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'進階動態頭像框 + 200 點花花'**
+  String get shop_vip_tier_6_reward;
+
+  /// No description provided for @shop_vip_tier_7_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'靈魂交會'**
+  String get shop_vip_tier_7_title;
+
+  /// No description provided for @shop_vip_tier_7_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'動態聊天氣泡特效 + 專屬進階稱號'**
+  String get shop_vip_tier_7_reward;
+
+  /// No description provided for @shop_vip_tier_8_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬守候'**
+  String get shop_vip_tier_8_title;
+
+  /// No description provided for @shop_vip_tier_8_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頂級動態名牌 + 500 點花花'**
+  String get shop_vip_tier_8_reward;
+
+  /// No description provided for @shop_vip_tier_9_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'璀璨星河'**
+  String get shop_vip_tier_9_title;
+
+  /// No description provided for @shop_vip_tier_9_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'專屬進場 Lottie 特效 + 專屬客服'**
+  String get shop_vip_tier_9_reward;
+
+  /// No description provided for @shop_vip_tier_10_title.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'頂級摯愛'**
+  String get shop_vip_tier_10_title;
+
+  /// No description provided for @shop_vip_tier_10_reward.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'【實體 VIP 專屬禮盒】(手寫信+代表娃)'**
+  String get shop_vip_tier_10_reward;
+
+  /// No description provided for @shop_vip_total_bond.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'累積浪漫羈絆'**
+  String get shop_vip_total_bond;
+
+  /// No description provided for @shop_vip_all_unlocked.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'您已解鎖所有頂級特權！'**
+  String get shop_vip_all_unlocked;
+
+  /// No description provided for @shop_vip_next_unlock.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'再儲值 NT\$ {amount} 即可解鎖下一階'**
+  String shop_vip_next_unlock(int amount);
+
+  /// No description provided for @call_connecting.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'電話接通中...'**
+  String get call_connecting;
+
+  /// No description provided for @call_listening_auto_send.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在聆聽... (講完會自動發送)'**
+  String get call_listening_auto_send;
+
+  /// No description provided for @call_listening_release_to_send.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'正在聆聽... (鬆開手指發送)'**
+  String get call_listening_release_to_send;
+
+  /// No description provided for @call_sending_transcript.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **' {text}\n\n(發送中...)'**
+  String call_sending_transcript(String text);
+
+  /// No description provided for @help_translation_fallback.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'目前尚未提供此語言的遊玩指南，暫時顯示繁體中文。'**
+  String get help_translation_fallback;
+
+  /// No description provided for @help_all_categories.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'全部'**
+  String get help_all_categories;
+
+  /// No description provided for @help_subtitle_companion.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'日常功能與貼心小幫手'**
+  String get help_subtitle_companion;
+
+  /// No description provided for @help_subtitle_ai_chat.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'聊天、語音與智慧互動相關'**
+  String get help_subtitle_ai_chat;
+
+  /// No description provided for @help_subtitle_creation.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'角色設定與創作功能相關'**
+  String get help_subtitle_creation;
+
+  /// No description provided for @help_subtitle_explore.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'探索角色與遊戲內容'**
+  String get help_subtitle_explore;
+
+  /// No description provided for @help_subtitle_care.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'溫柔陪伴與日常關懷'**
+  String get help_subtitle_care;
+
+  /// No description provided for @help_subtitle_general.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'常見功能與操作說明'**
+  String get help_subtitle_general;
+
+  /// No description provided for @chat_interact_fun.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'趣味玩法'**
+  String get chat_interact_fun;
+
+  /// No description provided for @memo_notification_permission_missing.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'尚未開啟通知權限，備忘錄仍會儲存，但不會顯示系統提醒。'**
+  String get memo_notification_permission_missing;
+
+  /// No description provided for @memo_saved_with_reminder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄已儲存，{characterName} 會提醒你！'**
+  String memo_saved_with_reminder(String characterName);
+
+  /// No description provided for @memo_saved_without_notification.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄已儲存，但尚未開啟通知權限。'**
+  String get memo_saved_without_notification;
+
+  /// No description provided for @memo_updated_with_reminder.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄已更新，{characterName} 會提醒你！'**
+  String memo_updated_with_reminder(String characterName);
+
+  /// No description provided for @memo_updated_without_notification.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'備忘錄已更新，但目前沒有通知權限。'**
+  String get memo_updated_without_notification;
+
+  /// No description provided for @memo_load_error.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'讀取資料時發生錯誤: {error}'**
+  String memo_load_error(String error);
+
+  /// No description provided for @story_summary_content_required.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'故事內容不能是空的'**
+  String get story_summary_content_required;
+
+  /// No description provided for @story_summary_edit_hint.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'寫下你們的故事...'**
+  String get story_summary_edit_hint;
+
+  /// No description provided for @profile_section_basic_info.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'基本資料'**
+  String get profile_section_basic_info;
+
+  /// No description provided for @profile_section_about_me.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'關於這個我'**
+  String get profile_section_about_me;
+
+  /// No description provided for @dice_duel_you.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'你'**
+  String get dice_duel_you;
+
+  /// No description provided for @dice_duel_result_saved.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'對決結果已封存！'**
+  String get dice_duel_result_saved;
+
+  /// No description provided for @dice_duel_rolling.
+  ///
+  /// In zh_Hant, this message translates to:
+  /// **'宇宙能量匯聚中...'**
+  String get dice_duel_rolling;
 }
 
 class _AppLocalizationsDelegate
